@@ -1,10 +1,19 @@
 Pokemon Collection Frontend - Comprehensive To-Do List
 
-This is the comprehensive To-Do list for the Pokemon Collection Frontend project. The frontend is located at SAFESPACE/pokemon-collection-frontend, and it interfaces with the backend located at SAFESPACE/pokemon-collection-backend. Each item represents a completed step in the development process, derived from the detailed build blueprint.
+This is the comprehensive To-Do list for the Pokemon Collection Frontend project. The frontend is located at SAFESPACE/pokemon-collection-frontend, and it interfaces with the backend located at SAFESPACE/pokemon-collection-backend.
 
-Phase 1: Foundational Setup & Core Utilities
+🚨 **IMPORTANT**: Backend Analysis Update - This TODO list has been updated to reflect the ACTUAL backend API structure based on the real backend documentation.
 
-1.1. Project Initialization & Basic Setup
+**Backend Configuration:**
+- Backend URL: http://localhost:3000/api (Port 3000, NOT 3001)
+- Express.js 5.1.0 with MongoDB/Mongoose 8.16.1
+- Uses Decimal128 for prices (converted to numbers in frontend)
+- Comprehensive search with Fuse.js + MongoDB text search + 5-minute caching
+- Polymorphic auction system supporting PSA/Raw cards and sealed products
+
+Phase 1: Foundational Setup & Core Utilities ✅
+
+1.1. Project Initialization & Basic Setup ✅
 
 [x] Action: Initialize a new React project.
 [x] Sub-action: Open your terminal.
@@ -15,7 +24,8 @@ Verification:
 [x] Run npm install to install initial dependencies.
 [x] Run npm run dev (for Vite) or npm start (for CRA).
 [x] Open your browser to http://localhost:5173 (or http://localhost:3000) and confirm the default React app is displayed.
-1.2. Tailwind CSS Integration
+
+1.2. Tailwind CSS Integration ✅
 
 [x] Action: Integrate Tailwind CSS into the project.
 [x] Sub-action: Install Tailwind CSS, PostCSS, and Autoprefixer as development dependencies: npm install -D tailwindcss postcss autoprefixer.
@@ -25,7 +35,8 @@ Verification:
 [x] Sub-action: Apply a simple Tailwind class (e.g., text-3xl font-bold underline text-blue-500) to an existing element in src/App.tsx to visually confirm integration.
 Verification:
 [x] Run npm run dev and observe the styling in the browser.
-1.3. Install Core Frontend Libraries
+
+1.3. Install Core Frontend Libraries ✅
 
 [x] Action: Integrate the essential frontend libraries into the project.
 [x] Sub-action: Install zustand for state management: npm install zustand.
@@ -35,7 +46,8 @@ Verification:
 [x] Sub-action: Install lucide-react for icons: npm install lucide-react.
 Verification:
 [x] Check package.json for correct entries.
-1.4. Establish Initial Directory Structure
+
+1.4. Establish Initial Directory Structure ✅
 
 [x] Action: Set up the foundational layered directory structure.
 [x] Sub-action: Create src/api/.
@@ -54,18 +66,23 @@ Verification:
 [x] Sub-action: Add a .gitkeep file inside each newly created directory.
 Verification:
 [x] Use ls -R src/ in your terminal to visually confirm the directory structure.
-1.5. Implement Global Utilities - Constants & Logger
+
+1.5. Implement Global Utilities - Constants & Logger ✅
 
 [x] Action: Develop the initial global utility modules for constants and logging.
 [x] Sub-action: Create src/utils/constants.ts.
- [x] Define API_BASE_URL as a string pointing to http://localhost:3001/api. Add a comment indicating the backend location: SAFESPACE/pokemon-collection-backend.
- [x] Define TypeScript enums for PaymentMethod, DeliveryMethod, and Source with their respective string values.
+ [x] UPDATED: Changed API_BASE_URL to http://localhost:3000/api (backend runs on port 3000).
+ [x] UPDATED: Corrected TypeScript enums to match exact backend schema values:
+   - PaymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer' 
+   - DeliveryMethod: 'Sent' | 'Local Meetup'
+   - Source: 'Facebook' | 'DBA'
 [x] Sub-action: Create src/utils/logger.ts.
  [x] Implement log and error functions that wrap console.log and console.error respectively.
  [x] Ensure log only outputs in non-production environments.
 Verification:
 [x] Import log into App.tsx and add a log('App loaded!');. Run npm run dev and check the browser console.
-1.6. Implement Global Utilities - Error Handler & API Client
+
+1.6. Implement Global Utilities - Error Handler & API Client ✅
 
 [x] Action: Develop the global error handling utility and the central API client.
 [x] Sub-action: Create src/utils/errorHandler.ts.
@@ -78,86 +95,297 @@ Verification:
  [x] Add an Axios response interceptor that calls handleApiError for any failed requests and then Promise.reject(error).
 Verification:
 [x] In App.tsx, import apiClient and add a dummy apiClient.get('/non-existent-endpoint') call within a useEffect. Run npm run dev and confirm an alert appears for the error.
-Phase 2: Data Models & Core API Clients
+Phase 2: Data Models & Core API Clients 🔄
 
-2.1. Define Core Data Models
+2.1. Define Core Data Models ✅
 
- Action: Define the essential TypeScript interfaces for your application's data models.
- Sub-action: Create src/domain/models/common.ts.
- Define IPriceHistoryEntry interface (e.g., date: string; price: number;).
- Define ISaleDetails interface to match the backend schema (including nested buyerAddress).
- Sub-action: Create src/domain/models/card.ts.
- Define ICard interface (for reference cards, e.g., id, cardName, setName, pokemonNumber, baseName, variety, psaGrades?).
- Define ISet interface (e.g., id, setName, year).
- Define IPsaGradedCard interface (for collection items, including cardId referencing ICard, myPrice, grade, dateAdded, images: string[], priceHistory: IPriceHistoryEntry[], sold: boolean, saleDetails?: ISaleDetails).
- Define IRawCard interface (similar to IPsaGradedCard but with condition instead of grade).
- Sub-action: Create src/domain/models/sealedProduct.ts.
- Define ISealedProduct interface (for reference products, e.g., id, productName, category).
- Define ISealedProductCollectionItem interface (for collection items, including productId referencing ISealedProduct, myPrice, dateAdded, images: string[], priceHistory: IPriceHistoryEntry[], sold: boolean, saleDetails?: ISaleDetails).
- Sub-action: Create src/domain/models/auction.ts.
- Define IAuctionItem interface (polymorphic: itemId: string, itemCategory: 'psaGradedCard' | 'rawCard' | 'sealedProduct', salePrice?: number, sold?: boolean).
- Define IAuction interface (e.g., id, topText, bottomText, auctionDate, items: IAuctionItem[], totalValue, soldValue).
- Sub-action: Create src/domain/models/sale.ts.
- Define ISalesSummary interface (e.g., totalRevenue, calculatedTotalProfit, averageMargin, totalItemsSold).
- Define ISalesGraphData interface (e.g., date: string, revenue: number, profit: number).
- Define ISale interface (for individual sale records, including id, itemCategory, itemName, myPrice, actualSoldPrice, dateSold, source).
+[x] Action: UPDATE existing TypeScript interfaces to match ACTUAL backend schemas.
+
+**COMPLETED**: Data models updated to match actual backend schemas:
+
+[x] Sub-action: Update src/domain/models/common.ts.
+ [x] CORRECTED IPriceHistoryEntry interface: { price: number, dateUpdated: string }
+ [x] UPDATED ISaleDetails interface to match backend saleDetails schema:
+   - paymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer'
+   - actualSoldPrice: number (Decimal128 converted to number)
+   - deliveryMethod: 'Sent' | 'Local Meetup'
+   - source: 'Facebook' | 'DBA'
+   - buyerFullName, buyerAddress: { streetName, postnr, city }
+   - buyerPhoneNumber, buyerEmail, trackingNumber
+   - dateSold: string (ISO date)
+
+[x] Sub-action: Update src/domain/models/card.ts.
+ [x] UPDATED ISet interface to match backend Sets schema (no changes needed - already correct)
+ [x] UPDATED ICard interface to match backend Cards schema:
+   - Updated psaGrades: { psa_1: number, psa_2: number, ..., psa_10: number }
+ [x] UPDATED IPsaGradedCard interface to match backend PsaGradedCards schema:
+   - grade: string (backend uses String type, not number)
+   - Updated priceHistory structure to match backend
+ [x] UPDATED IRawCard interface to match backend RawCards schema (already correct)
+
+[x] Sub-action: Update src/domain/models/sealedProduct.ts.
+ [x] CREATED ICardMarketReferenceProduct interface to match backend
+ [x] UPDATED ISealedProduct interface to match backend SealedProducts schema:
+   - Added SealedProductCategory enum with exact backend values
+   - Fixed availability: number (not boolean)
+   - Updated field names and structure to match backend
+   - productId: ObjectId (required) - Reference to CardMarketReferenceProducts
+   - category: String (enum) - Booster Box, ETB, etc.
+   - setName: String (required)
+   - name: String (required)
+   - availability: Number (required)
+   - cardMarketPrice: Decimal128 (required) -> convert to number
+   - myPrice: Decimal128 (required) -> convert to number
+   - priceHistory: [{ price: Decimal128, dateUpdated: Date }]
+   - images: [String]
+   - dateAdded: Date
+   - sold: Boolean
+   - saleDetails: ISaleDetails
+
+[ ] Sub-action: Create/Update src/domain/models/auction.ts.
+ [ ] UPDATE IAuctionItem interface to match backend schema (polymorphic):
+   - itemId: ObjectId - Reference to any collection item
+   - itemCategory: String - Type: "PsaGradedCard", "RawCard", "SealedProduct" 
+   - sold: Boolean - Individual item sale status
+   - salePrice: Decimal128 -> convert to number
+ [ ] UPDATE IAuction interface to match backend Auctions schema:
+   - topText: String (required) - Auction description header
+   - bottomText: String (required) - Auction description footer  
+   - auctionDate: Date - Scheduled auction date
+   - status: String (enum) - draft, active, sold, expired
+   - generatedFacebookPost: String - Auto-generated marketing content
+   - isActive: Boolean (legacy field)
+   - items: [IAuctionItem] - Polymorphic item references
+   - totalValue: Number - Calculated total value
+   - soldValue: Number - Total sold value
+   - createdAt: Date
+   - updatedAt: Date
+
+[ ] Sub-action: Create src/domain/models/sale.ts.
+ [ ] CREATE ISalesSummary interface based on backend /api/sales/summary response:
+   - totalRevenue: Number
+   - totalProfit: Number  
+   - averageMargin: Number
+   - totalItems: Number
+   - categoryBreakdown: { psaGradedCard: {count, revenue}, rawCard: {count, revenue}, sealedProduct: {count, revenue} }
+ [ ] CREATE ISalesGraphData interface based on backend /api/sales/graph-data:
+   - date: String (ISO date)
+   - revenue: Number 
+   - profit: Number
+ [ ] CREATE ISale interface for individual sale records (aggregated from sold items):
+   - id: String
+   - itemCategory: String
+   - itemName: String  
+   - myPrice: Number
+   - actualSoldPrice: Number
+   - dateSold: String (ISO date)
+   - source: String
+
 Verification:
-Create dummy data objects that conform to these interfaces to ensure they are correctly typed.
-2.2. Implement Basic API Clients (GET Operations)
+[ ] Create dummy data objects that conform to the UPDATED interfaces
+[ ] Verify interfaces match the backend API response structure exactly
+[ ] Test with real backend data to ensure proper type safety
+2.2. Implement CORRECTED API Clients (GET Operations) 
 
- Action: Implement the initial GET operations for the core API clients.
- Sub-action: Open src/api/cardsApi.ts.
- Implement getCards(params?: any): Promise<ICard[]> to fetch all reference cards.
- Implement searchCards(query: string, params?: any): Promise<ICard[]> for general card search.
- Implement getCardSuggestions(query: string, limit?: number): Promise<string[]> for autocomplete.
- Implement getBestMatchCard(query: string): Promise<ICard | null> for auto-fill during item creation.
- Sub-action: Open src/api/setsApi.ts.
- Implement getSets(): Promise<ISet[]> to fetch all reference sets.
- Implement getPaginatedSets(params?: any): Promise<{ sets: ISet[], total: number }> for paginated set search.
- Sub-action: Open src/api/sealedProductsApi.ts.
- Implement getSealedProducts(params?: any): Promise<ISealedProduct[]> to fetch all reference sealed products.
- Implement searchSealedProductsByCategory(category: string, params?: any): Promise<ISealedProduct[]> for category-specific search.
- Sub-action: Ensure all API client functions use the apiClient instance from src/api/apiClient.ts.
+[ ] Action: Implement API clients matching ACTUAL backend endpoints.
+
+**BACKEND ENDPOINTS (Real API Structure):**
+
+[ ] Sub-action: Create src/api/cardsApi.ts with CORRECT backend endpoints:
+ [ ] Implement getCards(params?: { setId?: string, cardName?: string, baseName?: string }): Promise<ICard[]> 
+   - Endpoint: GET /api/cards
+   - Backend supports: setId, cardName, baseName parameters
+ [ ] Implement searchCards(query: string, params?: { limit?: number, setName?: string }): Promise<ICard[]>
+   - Endpoint: GET /api/cards/search?q={query}
+   - Backend returns: Search results with scoring, cached responses
+ [ ] Implement getCardSuggestions(query: string, limit?: number): Promise<string[]>
+   - Endpoint: GET /api/cards/suggestions?q={query}&limit={limit}
+   - Backend returns: Suggestion array with 10-minute cache
+ [ ] Implement getBestMatchCard(query: string): Promise<ICard | null>
+   - Endpoint: GET /api/cards/search-best-match?q={query}
+   - Backend returns: Best match with relevance scoring
+ [ ] Implement getCardById(id: string): Promise<ICard>
+   - Endpoint: GET /api/cards/{id}
+   - Backend returns: Single card with population
+
+[ ] Sub-action: Create src/api/setsApi.ts with CORRECT backend endpoints:
+ [ ] Implement getSets(): Promise<ISet[]>
+   - Endpoint: GET /api/sets
+   - Backend returns: Complete sets array
+ [ ] Implement getPaginatedSets(params?: { page?: number, limit?: number, year?: number, search?: string }): Promise<{ sets: ISet[], total: number }>
+   - Endpoint: GET /api/sets/paginated
+   - Backend supports: page, limit, year, search parameters
+ [ ] Implement getSetById(id: string): Promise<ISet>
+   - Endpoint: GET /api/sets/{id}
+   - Backend returns: Single set
+
+[ ] Sub-action: Create src/api/cardMarketRefProductsApi.ts (NEW - based on backend):
+ [ ] This is the REFERENCE data for sealed products from CardMarket
+ [ ] Implement getCardMarketRefProducts(params?: any): Promise<ICardMarketReferenceProduct[]>
+   - Endpoint: GET /api/cardmarket-ref-products (need to verify exact endpoint)
+   - Backend stores reference data with pricing info
+
+[ ] Sub-action: Create src/api/sealedProductsApi.ts with CORRECT backend endpoints:
+ [ ] Implement getSealedProducts(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+   - Endpoint: GET /api/sealed-products
+   - Backend supports: category, setName, sold filters
+ [ ] Implement getSealedProductById(id: string): Promise<ISealedProduct>
+   - Endpoint: GET /api/sealed-products/{id}
+   - Backend returns: Single sealed product
+
+[ ] Sub-action: Create src/api/collectionApi.ts with COLLECTION management endpoints:
+ **PSA Graded Cards Collection:**
+ [ ] Implement getPsaGradedCards(params?: { grade?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IPsaGradedCard[]>
+   - Endpoint: GET /api/psa-graded-cards
+ [ ] Implement getPsaGradedCardById(id: string): Promise<IPsaGradedCard>
+   - Endpoint: GET /api/psa-graded-cards/{id}
+ [ ] Implement createPsaGradedCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+   - Endpoint: POST /api/psa-graded-cards
+ [ ] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+   - Endpoint: PUT /api/psa-graded-cards/{id}
+ [ ] Implement deletePsaGradedCard(id: string): Promise<void>
+   - Endpoint: DELETE /api/psa-graded-cards/{id}
+ [ ] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>
+   - Endpoint: PATCH /api/psa-graded-cards/{id}/mark-sold
+
+ **Raw Cards Collection:**
+ [ ] Implement getRawCards(params?: { condition?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IRawCard[]>
+   - Endpoint: GET /api/raw-cards
+ [ ] Implement similar CRUD operations for raw cards (POST, PUT, DELETE, PATCH mark-sold)
+
+ **Sealed Products Collection:**
+ [ ] Implement getSealedProductCollection(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+   - Endpoint: GET /api/sealed-products  
+ [ ] Implement similar CRUD operations for sealed products (POST, PUT, DELETE, PATCH mark-sold)
+
+[ ] Sub-action: Create src/api/auctionsApi.ts with CORRECT backend endpoints:
+ [ ] Implement getAuctions(params?: { status?: string }): Promise<IAuction[]>
+   - Endpoint: GET /api/auctions
+ [ ] Implement getAuctionById(id: string): Promise<IAuction>
+   - Endpoint: GET /api/auctions/{id} (with populated items)
+ [ ] Implement createAuction(data: Partial<IAuction>): Promise<IAuction>
+   - Endpoint: POST /api/auctions
+ [ ] Implement updateAuction(id: string, data: Partial<IAuction>): Promise<IAuction>
+   - Endpoint: PUT /api/auctions/{id}
+ [ ] Implement deleteAuction(id: string): Promise<void>
+   - Endpoint: DELETE /api/auctions/{id}
+ [ ] Implement addItemToAuction(id: string, itemData: { itemId: string, itemCategory: string }): Promise<IAuction>
+   - Endpoint: POST /api/auctions/{id}/items
+ [ ] Implement removeItemFromAuction(id: string, itemId: string): Promise<IAuction>
+   - Endpoint: DELETE /api/auctions/{id}/items
+ [ ] Implement markAuctionItemSold(id: string, saleData: any): Promise<IAuction>
+   - Endpoint: PATCH /api/auctions/{id}/items/sold
+
+[ ] Sub-action: Create src/api/salesApi.ts with ANALYTICS endpoints:
+ [ ] Implement getSalesData(params?: { startDate?: string, endDate?: string, category?: string }): Promise<ISale[]>
+   - Endpoint: GET /api/sales
+ [ ] Implement getSalesSummary(params?: { startDate?: string, endDate?: string }): Promise<ISalesSummary>
+   - Endpoint: GET /api/sales/summary
+ [ ] Implement getSalesGraphData(params?: { startDate?: string, endDate?: string }): Promise<ISalesGraphData[]>
+   - Endpoint: GET /api/sales/graph-data
+
+[ ] Sub-action: Create src/api/uploadApi.ts with IMAGE upload endpoints:
+ [ ] Implement uploadSingleImage(image: File): Promise<string>
+   - Endpoint: POST /api/upload/image
+ [ ] Implement uploadMultipleImages(images: File[]): Promise<string[]>
+   - Endpoint: POST /api/upload/images
+ [ ] Implement cleanupImages(imageUrls: string[]): Promise<void>
+   - Endpoint: DELETE /api/upload/cleanup
+ [ ] Implement cleanupAllOrphanedImages(): Promise<void>
+   - Endpoint: DELETE /api/upload/cleanup-all
+
+[ ] Sub-action: Ensure all API client functions use the apiClient instance from src/api/apiClient.ts.
+
+**Response Structure (Backend Standard):**
+```typescript
+// Success response
+{
+  "success": true,
+  "data": [...],
+  "meta": {
+    "cached"?: boolean,
+    "cacheKey"?: string,
+    "hitRate"?: number,
+    "pagination"?: {
+      "currentPage": number,
+      "totalPages": number,
+      "hasNextPage": boolean,
+      "hasPrevPage": boolean
+    }
+  }
+}
+
+// Error response  
+{
+  "success": false,
+  "status": "error",
+  "message": "Human-readable error description",
+  "details"?: "Additional technical details",
+  "stack"?: "Stack trace (development only)"
+}
+```
+
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for getCards, searchCards, getCardSuggestions, getBestMatchCard in src/api/cardsApi.test.ts.
-Verify that these functions successfully fetch data from the real backend and return data conforming to the defined interfaces.
-Phase 3: Core Domain Services & Basic Hooks
+[ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
+[ ] Write integration tests for ALL API functions in respective .test.ts files.
+[ ] Verify that ALL functions successfully fetch data from the real backend.
+[ ] Verify response data conforms to the CORRECTED interfaces.
+[ ] Test error handling for failed requests.
+Phase 3: Core Domain Services & Basic Hooks 🔄
 
-3.1. Implement Sales Analytics Domain Service
+3.1. Implement Sales Analytics Domain Service (AWAITING MODEL UPDATES)
 
- Action: Implement the core business logic for sales analytics.
- Sub-action: Create src/domain/services/SalesAnalyticsService.ts.
- Sub-action: Implement calculateTotalProfit(sales: ISale[]): number.
- Sub-action: Implement calculateAverageMargin(sales: ISale[]): number.
- Sub-action: Implement processGraphData(rawData: any[]): ISalesGraphData[].
+[ ] Action: Implement the core business logic for sales analytics.
+[ ] Sub-action: Create src/domain/services/SalesAnalyticsService.ts.
+ [ ] Implement calculateTotalProfit(sales: ISale[]): number.
+ [ ] Implement calculateAverageMargin(sales: ISale[]): number.
+ [ ] Implement processGraphData(rawData: any[]): ISalesGraphData[].
+ [ ] Add aggregation functions for category breakdown analysis.
+ [ ] Add time-series data processing for trend analysis.
 Verification:
-Write unit tests for each function in src/domain/services/SalesAnalyticsService.test.ts.
-3.2. Implement Basic Collection Hook (Fetch Only)
+[ ] Write unit tests for each function in src/domain/services/SalesAnalyticsService.test.ts.
+[ ] Test with sample data matching backend /api/sales response format.
 
- Action: Implement the initial version of the useCollection hook for fetching collection data.
- Sub-action: Create src/hooks/useCollection.ts.
- Sub-action: Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
- Sub-action: Implement a useEffect hook that, on component mount, fetches all PSA graded cards, raw cards, and sealed products using the respective collectionApi GET functions.
- Sub-action: Set loading state to true during fetches and false afterwards. Handle any errors by setting the error state.
-Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for useCollection in src/hooks/useCollection.test.ts.
-Verify that loading state changes correctly.
-Verify that collection states are populated with data from the real backend.
-Test error handling.
-3.3. Implement Basic Search Hook (Term Management)
+3.2. Implement Collection Management Hook (AWAITING API CLIENTS)
 
- Action: Implement the initial version of the useSearch hook for managing search terms and basic suggestions.
- Sub-action: Create src/hooks/useSearch.ts.
- Sub-action: Initialize useState for searchTerm, searchResults, suggestions, and loading.
- Sub-action: Implement a useCallback function handleSearch(query: string) that updates searchTerm and triggers a search.
- Sub-action: Implement a useCallback function handleSuggestionSelect(suggestion: string) that updates searchTerm and triggers a search.
- Sub-action: Implement a useEffect with a debounce mechanism that calls cardsApi.getCardSuggestions whenever searchTerm changes (after debounce delay). Update the suggestions state.
+[ ] Action: Implement the useCollection hook for comprehensive collection management.
+[ ] Sub-action: Create src/hooks/useCollection.ts.
+ [ ] Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
+ [ ] Implement useEffect hook that fetches ALL collection data using CORRECTED collectionApi functions.
+ [ ] Add CRUD operations: addPsaCard, updatePsaCard, deletePsaCard, markPsaCardSold.
+ [ ] Add similar CRUD operations for rawCards and sealedProducts.
+ [ ] Implement optimistic updates for better UX.
+ [ ] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
+[ ] Sub-action: Set loading state during fetches and handle errors properly.
 Verification:
-Write unit tests for useSearch in src/hooks/useSearch.test.ts.
-Verify searchTerm updates correctly.
-Test the debounce logic.
+[ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
+[ ] Write integration tests for useCollection in src/hooks/useCollection.test.ts.
+[ ] Verify loading state changes correctly.
+[ ] Verify collection states are populated with REAL backend data.
+[ ] Test CRUD operations against real backend.
+[ ] Test error handling and optimistic updates.
+
+3.3. Implement Enhanced Search Hook (BACKEND-ALIGNED)
+
+[ ] Action: Implement the useSearch hook with ACTUAL backend search capabilities.
+[ ] Sub-action: Create src/hooks/useSearch.ts.
+ [ ] Initialize useState for searchTerm, searchResults, suggestions, loading, searchMeta.
+ [ ] Implement handleSearch(query: string) that calls cardsApi.searchCards with caching.
+ [ ] Implement handleSuggestionSelect(suggestion: string) with hierarchical logic.
+ [ ] Implement useEffect with debounce for cardsApi.getCardSuggestions.
+ [ ] Add support for search metadata (cached, hitRate, queryTime from backend).
+ [ ] Add support for search filters (setName, category, year).
+ [ ] Implement getBestMatch for auto-fill functionality.
+[ ] Sub-action: Implement hierarchical search logic:
+ [ ] Set search filters Card/Product search based on selected set.
+ [ ] Product/Card selection auto-fills set information.
+ [ ] No simultaneous suggestions (single field focus).
+Verification:
+[ ] Write unit tests for useSearch in src/hooks/useSearch.test.ts.
+[ ] Verify searchTerm updates correctly.
+[ ] Test debounce logic with real backend.
+[ ] Test hierarchical search behavior.
+[ ] Verify search metadata is properly handled.
 Phase 4: Collection Management - View & Add (Initial UI)
 
 4.1. Develop Common UI Components
@@ -466,15 +694,59 @@ Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 Write integration tests for Collection page to verify text file export.
 12.3. Finalize README.md
 
- Action: Finalize the README.md file for the project.
- Sub-action: Open README.md at the project root.
- Sub-action: Add a clear project title and a brief description.
- Sub-action: Include a "Setup" section with detailed instructions for:
- Cloning the repository.
- Installing dependencies (npm install).
- Starting the development server (npm run dev).
- Crucially, mention that the backend (SAFESPACE/pokemon-collection-backend) must be running for the frontend to function correctly. Provide instructions on how to start the backend.
- Sub-action: Add a "Testing" section outlining how to run unit, integration, and E2E tests.
- Sub-action: Include a "Git Workflow" section summarizing the branching strategy and commit guidelines.
+[ ] Action: Finalize the README.md file for the project.
+[ ] Sub-action: Open README.md at the project root.
+[ ] Sub-action: Add a clear project title and a brief description.
+[ ] Sub-action: Include a "Setup" section with detailed instructions for:
+ [ ] Cloning the repository.
+ [ ] Installing dependencies (npm install).
+ [ ] Starting the development server (npm run dev).
+ [ ] **CRITICAL**: Backend (SAFESPACE/pokemon-collection-backend) must be running on PORT 3000.
+ [ ] Provide instructions on how to start the backend: cd ../pokemon-collection-backend && npm run dev.
+[ ] Sub-action: Add a "Testing" section outlining how to run unit, integration, and E2E tests.
+[ ] Sub-action: Include a "Git Workflow" section summarizing the branching strategy and commit guidelines.
 Verification:
-Read through the README.md to ensure clarity, accuracy, and completeness.
+[ ] Read through the README.md to ensure clarity, accuracy, and completeness.
+
+---
+
+## 🚨 CRITICAL NEXT STEPS SUMMARY
+
+**IMMEDIATE PRIORITY TASKS (Required before continuing):**
+
+1. **FIX DATA MODELS** (Phase 2.1):
+   - Update all interfaces in `src/domain/models/` to match ACTUAL backend schemas
+   - Fix ISaleDetails structure to match backend saleDetails schema
+   - Add missing ICardMarketReferenceProduct interface
+   - Correct PSA grades structure (psa_1, psa_2, etc.)
+
+2. **IMPLEMENT CORRECTED API CLIENTS** (Phase 2.2):
+   - Create all missing API client files with CORRECT endpoints
+   - Implement proper response handling for backend's success/error format
+   - Add collectionApi.ts for CRUD operations on collection items
+   - Test ALL API functions against REAL backend on PORT 3000
+
+3. **UPDATE CONSTANTS & ENUMS**:
+   - ✅ API_BASE_URL already corrected to localhost:3000
+   - Verify PaymentMethod, DeliveryMethod, Source enums match backend validation
+
+**ARCHITECTURE ALIGNMENT:**
+- Backend uses Express.js 5.1.0 + MongoDB/Mongoose 8.16.1
+- Decimal128 prices converted to numbers in frontend
+- Advanced search with Fuse.js + MongoDB text search + 5-minute caching
+- Polymorphic auction system supporting PSA/Raw cards and sealed products
+- Comprehensive error handling with structured responses
+
+**DEVELOPMENT WORKFLOW:**
+1. Start backend: `cd ../pokemon-collection-backend && npm run dev` (PORT 3000)
+2. Start frontend: `npm run dev` (PORT 5173)
+3. Run integration tests against REAL backend (no mocking allowed)
+4. Use actual backend responses to verify interface accuracy
+
+**TESTING STRATEGY:**
+- Unit tests: Domain services, pure components, utility functions
+- Integration tests: Hooks with API clients, components with hooks (REAL API calls)
+- E2E tests: Full user flows with real backend interaction
+- NO MOCKING for API interactions per project requirements
+
+This TODO list has been updated to reflect the ACTUAL backend structure. Proceed with Phase 2.1 (data model corrections) before advancing to subsequent phases.

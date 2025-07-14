@@ -1,26 +1,21 @@
 // API Configuration
 // Backend location: SAFESPACE/pokemon-collection-backend
-export const API_BASE_URL = 'http://localhost:3001/api';
+// Backend runs on PORT 3000 (confirmed from server.js: const PORT = process.env.PORT || 3000)
+export const API_BASE_URL = 'http://localhost:3000/api';
 
-// Enum definitions for consistent data handling
+// Enum definitions matching actual backend schema values
 export enum PaymentMethod {
-  CASH = 'Cash',
-  PAYPAL = 'PayPal',
-  BANK_TRANSFER = 'Bank Transfer',
-  CARD = 'Card',
-  OTHER = 'Other'
+  CASH = 'CASH',
+  MOBILEPAY = 'Mobilepay',
+  BANK_TRANSFER = 'BankTransfer'
 }
 
 export enum DeliveryMethod {
-  PICKUP = 'Pickup',
-  SENT = 'Sent'
+  SENT = 'Sent',
+  LOCAL_MEETUP = 'Local Meetup'
 }
 
 export enum Source {
   FACEBOOK = 'Facebook',
-  EBAY = 'eBay',
-  TCGPLAYER = 'TCGPlayer',
-  LOCAL_STORE = 'Local Store',
-  FRIEND = 'Friend',
-  OTHER = 'Other'
+  DBA = 'DBA'
 }
