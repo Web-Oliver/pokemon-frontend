@@ -187,114 +187,114 @@ Verification:
 [ ] Test with real backend data to ensure proper type safety
 2.2. Implement CORRECTED API Clients (GET Operations) 
 
-[ ] Action: Implement API clients matching ACTUAL backend endpoints.
+[x] Action: Implement API clients matching ACTUAL backend endpoints.
 
 **BACKEND ENDPOINTS (Real API Structure):**
 
-[ ] Sub-action: Create src/api/cardsApi.ts with CORRECT backend endpoints:
- [ ] Implement getCards(params?: { setId?: string, cardName?: string, baseName?: string }): Promise<ICard[]> 
+[x] Sub-action: Create src/api/cardsApi.ts with CORRECT backend endpoints:
+ [x] Implement getCards(params?: { setId?: string, cardName?: string, baseName?: string }): Promise<ICard[]> 
    - Endpoint: GET /api/cards
    - Backend supports: setId, cardName, baseName parameters
- [ ] Implement searchCards(query: string, params?: { limit?: number, setName?: string }): Promise<ICard[]>
+ [x] Implement searchCards(query: string, params?: { limit?: number, setName?: string }): Promise<ICard[]>
    - Endpoint: GET /api/cards/search?q={query}
    - Backend returns: Search results with scoring, cached responses
- [ ] Implement getCardSuggestions(query: string, limit?: number): Promise<string[]>
+ [x] Implement getCardSuggestions(query: string, limit?: number): Promise<string[]>
    - Endpoint: GET /api/cards/suggestions?q={query}&limit={limit}
    - Backend returns: Suggestion array with 10-minute cache
- [ ] Implement getBestMatchCard(query: string): Promise<ICard | null>
+ [x] Implement getBestMatchCard(query: string): Promise<ICard | null>
    - Endpoint: GET /api/cards/search-best-match?q={query}
    - Backend returns: Best match with relevance scoring
- [ ] Implement getCardById(id: string): Promise<ICard>
+ [x] Implement getCardById(id: string): Promise<ICard>
    - Endpoint: GET /api/cards/{id}
    - Backend returns: Single card with population
 
-[ ] Sub-action: Create src/api/setsApi.ts with CORRECT backend endpoints:
- [ ] Implement getSets(): Promise<ISet[]>
+[x] Sub-action: Create src/api/setsApi.ts with CORRECT backend endpoints:
+ [x] Implement getSets(): Promise<ISet[]>
    - Endpoint: GET /api/sets
    - Backend returns: Complete sets array
- [ ] Implement getPaginatedSets(params?: { page?: number, limit?: number, year?: number, search?: string }): Promise<{ sets: ISet[], total: number }>
+ [x] Implement getPaginatedSets(params?: { page?: number, limit?: number, year?: number, search?: string }): Promise<{ sets: ISet[], total: number }>
    - Endpoint: GET /api/sets/paginated
    - Backend supports: page, limit, year, search parameters
- [ ] Implement getSetById(id: string): Promise<ISet>
+ [x] Implement getSetById(id: string): Promise<ISet>
    - Endpoint: GET /api/sets/{id}
    - Backend returns: Single set
 
-[ ] Sub-action: Create src/api/cardMarketRefProductsApi.ts (NEW - based on backend):
- [ ] This is the REFERENCE data for sealed products from CardMarket
- [ ] Implement getCardMarketRefProducts(params?: any): Promise<ICardMarketReferenceProduct[]>
+[x] Sub-action: Create src/api/cardMarketRefProductsApi.ts (NEW - based on backend):
+ [x] This is the REFERENCE data for sealed products from CardMarket
+ [x] Implement getCardMarketRefProducts(params?: any): Promise<ICardMarketReferenceProduct[]>
    - Endpoint: GET /api/cardmarket-ref-products (need to verify exact endpoint)
    - Backend stores reference data with pricing info
 
-[ ] Sub-action: Create src/api/sealedProductsApi.ts with CORRECT backend endpoints:
- [ ] Implement getSealedProducts(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+[x] Sub-action: Create src/api/sealedProductsApi.ts with CORRECT backend endpoints:
+ [x] Implement getSealedProducts(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
    - Endpoint: GET /api/sealed-products
    - Backend supports: category, setName, sold filters
- [ ] Implement getSealedProductById(id: string): Promise<ISealedProduct>
+ [x] Implement getSealedProductById(id: string): Promise<ISealedProduct>
    - Endpoint: GET /api/sealed-products/{id}
    - Backend returns: Single sealed product
 
-[ ] Sub-action: Create src/api/collectionApi.ts with COLLECTION management endpoints:
+[x] Sub-action: Create src/api/collectionApi.ts with COLLECTION management endpoints:
  **PSA Graded Cards Collection:**
- [ ] Implement getPsaGradedCards(params?: { grade?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IPsaGradedCard[]>
+ [x] Implement getPsaGradedCards(params?: { grade?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IPsaGradedCard[]>
    - Endpoint: GET /api/psa-graded-cards
- [ ] Implement getPsaGradedCardById(id: string): Promise<IPsaGradedCard>
+ [x] Implement getPsaGradedCardById(id: string): Promise<IPsaGradedCard>
    - Endpoint: GET /api/psa-graded-cards/{id}
- [ ] Implement createPsaGradedCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+ [x] Implement createPsaGradedCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
    - Endpoint: POST /api/psa-graded-cards
- [ ] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+ [x] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
    - Endpoint: PUT /api/psa-graded-cards/{id}
- [ ] Implement deletePsaGradedCard(id: string): Promise<void>
+ [x] Implement deletePsaGradedCard(id: string): Promise<void>
    - Endpoint: DELETE /api/psa-graded-cards/{id}
- [ ] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>
+ [x] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>
    - Endpoint: PATCH /api/psa-graded-cards/{id}/mark-sold
 
  **Raw Cards Collection:**
- [ ] Implement getRawCards(params?: { condition?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IRawCard[]>
+ [x] Implement getRawCards(params?: { condition?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IRawCard[]>
    - Endpoint: GET /api/raw-cards
- [ ] Implement similar CRUD operations for raw cards (POST, PUT, DELETE, PATCH mark-sold)
+ [x] Implement similar CRUD operations for raw cards (POST, PUT, DELETE, PATCH mark-sold)
 
  **Sealed Products Collection:**
- [ ] Implement getSealedProductCollection(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+ [x] Implement getSealedProductCollection(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
    - Endpoint: GET /api/sealed-products  
- [ ] Implement similar CRUD operations for sealed products (POST, PUT, DELETE, PATCH mark-sold)
+ [x] Implement similar CRUD operations for sealed products (POST, PUT, DELETE, PATCH mark-sold)
 
-[ ] Sub-action: Create src/api/auctionsApi.ts with CORRECT backend endpoints:
- [ ] Implement getAuctions(params?: { status?: string }): Promise<IAuction[]>
+[x] Sub-action: Create src/api/auctionsApi.ts with CORRECT backend endpoints:
+ [x] Implement getAuctions(params?: { status?: string }): Promise<IAuction[]>
    - Endpoint: GET /api/auctions
- [ ] Implement getAuctionById(id: string): Promise<IAuction>
+ [x] Implement getAuctionById(id: string): Promise<IAuction>
    - Endpoint: GET /api/auctions/{id} (with populated items)
- [ ] Implement createAuction(data: Partial<IAuction>): Promise<IAuction>
+ [x] Implement createAuction(data: Partial<IAuction>): Promise<IAuction>
    - Endpoint: POST /api/auctions
- [ ] Implement updateAuction(id: string, data: Partial<IAuction>): Promise<IAuction>
+ [x] Implement updateAuction(id: string, data: Partial<IAuction>): Promise<IAuction>
    - Endpoint: PUT /api/auctions/{id}
- [ ] Implement deleteAuction(id: string): Promise<void>
+ [x] Implement deleteAuction(id: string): Promise<void>
    - Endpoint: DELETE /api/auctions/{id}
- [ ] Implement addItemToAuction(id: string, itemData: { itemId: string, itemCategory: string }): Promise<IAuction>
+ [x] Implement addItemToAuction(id: string, itemData: { itemId: string, itemCategory: string }): Promise<IAuction>
    - Endpoint: POST /api/auctions/{id}/items
- [ ] Implement removeItemFromAuction(id: string, itemId: string): Promise<IAuction>
+ [x] Implement removeItemFromAuction(id: string, itemId: string): Promise<IAuction>
    - Endpoint: DELETE /api/auctions/{id}/items
- [ ] Implement markAuctionItemSold(id: string, saleData: any): Promise<IAuction>
+ [x] Implement markAuctionItemSold(id: string, saleData: any): Promise<IAuction>
    - Endpoint: PATCH /api/auctions/{id}/items/sold
 
-[ ] Sub-action: Create src/api/salesApi.ts with ANALYTICS endpoints:
- [ ] Implement getSalesData(params?: { startDate?: string, endDate?: string, category?: string }): Promise<ISale[]>
+[x] Sub-action: Create src/api/salesApi.ts with ANALYTICS endpoints:
+ [x] Implement getSalesData(params?: { startDate?: string, endDate?: string, category?: string }): Promise<ISale[]>
    - Endpoint: GET /api/sales
- [ ] Implement getSalesSummary(params?: { startDate?: string, endDate?: string }): Promise<ISalesSummary>
+ [x] Implement getSalesSummary(params?: { startDate?: string, endDate?: string }): Promise<ISalesSummary>
    - Endpoint: GET /api/sales/summary
- [ ] Implement getSalesGraphData(params?: { startDate?: string, endDate?: string }): Promise<ISalesGraphData[]>
+ [x] Implement getSalesGraphData(params?: { startDate?: string, endDate?: string }): Promise<ISalesGraphData[]>
    - Endpoint: GET /api/sales/graph-data
 
-[ ] Sub-action: Create src/api/uploadApi.ts with IMAGE upload endpoints:
- [ ] Implement uploadSingleImage(image: File): Promise<string>
+[x] Sub-action: Create src/api/uploadApi.ts with IMAGE upload endpoints:
+ [x] Implement uploadSingleImage(image: File): Promise<string>
    - Endpoint: POST /api/upload/image
- [ ] Implement uploadMultipleImages(images: File[]): Promise<string[]>
+ [x] Implement uploadMultipleImages(images: File[]): Promise<string[]>
    - Endpoint: POST /api/upload/images
- [ ] Implement cleanupImages(imageUrls: string[]): Promise<void>
+ [x] Implement cleanupImages(imageUrls: string[]): Promise<void>
    - Endpoint: DELETE /api/upload/cleanup
- [ ] Implement cleanupAllOrphanedImages(): Promise<void>
+ [x] Implement cleanupAllOrphanedImages(): Promise<void>
    - Endpoint: DELETE /api/upload/cleanup-all
 
-[ ] Sub-action: Ensure all API client functions use the apiClient instance from src/api/apiClient.ts.
+[x] Sub-action: Ensure all API client functions use the apiClient instance from src/api/apiClient.ts.
 
 **Response Structure (Backend Standard):**
 ```typescript
@@ -331,32 +331,32 @@ Verification:
 [ ] Verify that ALL functions successfully fetch data from the real backend.
 [ ] Verify response data conforms to the CORRECTED interfaces.
 [ ] Test error handling for failed requests.
-Phase 3: Core Domain Services & Basic Hooks 🔄
+Phase 3: Core Domain Services & Basic Hooks ✅
 
-3.1. Implement Sales Analytics Domain Service (AWAITING MODEL UPDATES)
+3.1. Implement Sales Analytics Domain Service ✅
 
-[ ] Action: Implement the core business logic for sales analytics.
-[ ] Sub-action: Create src/domain/services/SalesAnalyticsService.ts.
- [ ] Implement calculateTotalProfit(sales: ISale[]): number.
- [ ] Implement calculateAverageMargin(sales: ISale[]): number.
- [ ] Implement processGraphData(rawData: any[]): ISalesGraphData[].
- [ ] Add aggregation functions for category breakdown analysis.
- [ ] Add time-series data processing for trend analysis.
+[x] Action: Implement the core business logic for sales analytics.
+[x] Sub-action: Create src/domain/services/SalesAnalyticsService.ts.
+ [x] Implement calculateTotalProfit(sales: ISale[]): number.
+ [x] Implement calculateAverageMargin(sales: ISale[]): number.
+ [x] Implement processGraphData(rawData: any[]): ISalesGraphData[].
+ [x] Add aggregation functions for category breakdown analysis.
+ [x] Add time-series data processing for trend analysis.
 Verification:
-[ ] Write unit tests for each function in src/domain/services/SalesAnalyticsService.test.ts.
-[ ] Test with sample data matching backend /api/sales response format.
+[x] Write unit tests for each function in src/domain/services/SalesAnalyticsService.test.ts.
+[x] Test with sample data matching backend /api/sales response format.
 
-3.2. Implement Collection Management Hook (AWAITING API CLIENTS)
+3.2. Implement Collection Management Hook ✅
 
-[ ] Action: Implement the useCollection hook for comprehensive collection management.
-[ ] Sub-action: Create src/hooks/useCollection.ts.
- [ ] Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
- [ ] Implement useEffect hook that fetches ALL collection data using CORRECTED collectionApi functions.
- [ ] Add CRUD operations: addPsaCard, updatePsaCard, deletePsaCard, markPsaCardSold.
- [ ] Add similar CRUD operations for rawCards and sealedProducts.
- [ ] Implement optimistic updates for better UX.
- [ ] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
-[ ] Sub-action: Set loading state during fetches and handle errors properly.
+[x] Action: Implement the useCollection hook for comprehensive collection management.
+[x] Sub-action: Create src/hooks/useCollection.ts.
+ [x] Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
+ [x] Implement useEffect hook that fetches ALL collection data using CORRECTED collectionApi functions.
+ [x] Add CRUD operations: addPsaCard, updatePsaCard, deletePsaCard, markPsaCardSold.
+ [x] Add similar CRUD operations for rawCards and sealedProducts.
+ [x] Implement optimistic updates for better UX.
+ [x] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
+[x] Sub-action: Set loading state during fetches and handle errors properly.
 Verification:
 [ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
 [ ] Write integration tests for useCollection in src/hooks/useCollection.test.ts.
@@ -365,21 +365,21 @@ Verification:
 [ ] Test CRUD operations against real backend.
 [ ] Test error handling and optimistic updates.
 
-3.3. Implement Enhanced Search Hook (BACKEND-ALIGNED)
+3.3. Implement Enhanced Search Hook (BACKEND-ALIGNED) ✅
 
-[ ] Action: Implement the useSearch hook with ACTUAL backend search capabilities.
-[ ] Sub-action: Create src/hooks/useSearch.ts.
- [ ] Initialize useState for searchTerm, searchResults, suggestions, loading, searchMeta.
- [ ] Implement handleSearch(query: string) that calls cardsApi.searchCards with caching.
- [ ] Implement handleSuggestionSelect(suggestion: string) with hierarchical logic.
- [ ] Implement useEffect with debounce for cardsApi.getCardSuggestions.
- [ ] Add support for search metadata (cached, hitRate, queryTime from backend).
- [ ] Add support for search filters (setName, category, year).
- [ ] Implement getBestMatch for auto-fill functionality.
-[ ] Sub-action: Implement hierarchical search logic:
- [ ] Set search filters Card/Product search based on selected set.
- [ ] Product/Card selection auto-fills set information.
- [ ] No simultaneous suggestions (single field focus).
+[x] Action: Implement the useSearch hook with ACTUAL backend search capabilities.
+[x] Sub-action: Create src/hooks/useSearch.ts.
+ [x] Initialize useState for searchTerm, searchResults, suggestions, loading, searchMeta.
+ [x] Implement handleSearch(query: string) that calls cardsApi.searchCards with caching.
+ [x] Implement handleSuggestionSelect(suggestion: string) with hierarchical logic.
+ [x] Implement useEffect with debounce for cardsApi.getCardSuggestions.
+ [x] Add support for search metadata (cached, hitRate, queryTime from backend).
+ [x] Add support for search filters (setName, category, year).
+ [x] Implement getBestMatch for auto-fill functionality.
+[x] Sub-action: Implement hierarchical search logic:
+ [x] Set search filters Card/Product search based on selected set.
+ [x] Product/Card selection auto-fills set information.
+ [x] No simultaneous suggestions (single field focus).
 Verification:
 [ ] Write unit tests for useSearch in src/hooks/useSearch.test.ts.
 [ ] Verify searchTerm updates correctly.
