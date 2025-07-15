@@ -20,6 +20,7 @@ import Search from './pages/Search'
 import SetSearch from './pages/SetSearch'
 import SealedProductSearch from './pages/SealedProductSearch'
 import Auctions from './pages/Auctions'
+import AuctionDetail from './pages/AuctionDetail'
 import SalesAnalytics from './pages/SalesAnalytics'
 import AddEditItem from './pages/AddEditItem'
 import TestPage from './pages/TestPage'
@@ -59,6 +60,14 @@ function App() {
 
   // Route configuration - simple routing without external router library
   const renderPage = () => {
+    // Handle dynamic auction detail routes
+    if (currentPath.startsWith('/auctions/') && currentPath !== '/auctions') {
+      const auctionId = currentPath.split('/auctions/')[1];
+      if (auctionId && !auctionId.includes('/')) {
+        return <AuctionDetail auctionId={auctionId} />;
+      }
+    }
+
     switch (currentPath) {
       case '/dashboard':
         return <Dashboard />;

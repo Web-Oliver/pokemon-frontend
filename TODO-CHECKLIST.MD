@@ -583,22 +583,38 @@ Verification:
 [x] Write integration tests for SealedProductSearch page.
 Phase 9: Auction Management
 
-9.1. Implement Auction List & Detail Pages
+9.1. Implement Auction List & Detail Pages ✅
 
- Action: Implement the Auction List and Auction Detail pages.
- Sub-action: Create src/pages/Auctions.tsx.
- Display a list of auctions using useAuction hook's auctions state.
- Implement filters by status.
- Each list item should link to an AuctionDetail page.
- Sub-action: Create src/pages/AuctionDetail.tsx.
- Fetch a single auction by ID using useAuction.fetchAuctionById.
- Display auction details: topText, bottomText, auctionDate.
- List items included in the auction, showing itemCategory, salePrice, sold status.
- Display totalValue and soldValue.
- Sub-action: Update src/App.tsx to include routes for /auctions and /auctions/:id.
+[x] Action: Implement the Auction List and Auction Detail pages.
+[x] Sub-action: Create src/hooks/useAuction.ts.
+ [x] Implement comprehensive auction management hook with all CRUD operations.
+ [x] Add state management for auctions list and currentAuction.
+ [x] Implement fetchAuctions, fetchAuctionById, createAuction, updateAuction, deleteAuction.
+ [x] Add addItemToAuction, removeItemFromAuction, markAuctionItemSold functionality.
+[x] Sub-action: Create src/pages/Auctions.tsx.
+ [x] Display a list of auctions using useAuction hook's auctions state.
+ [x] Implement filters by status with real-time filtering.
+ [x] Each list item should link to an AuctionDetail page.
+ [x] Add beautiful auction stats dashboard with active, draft, and completed counts.
+ [x] Implement sorting by status priority and auction date.
+ [x] Add proper loading, error, and empty states.
+[x] Sub-action: Create src/pages/AuctionDetail.tsx.
+ [x] Fetch a single auction by ID using useAuction.fetchAuctionById.
+ [x] Display auction details: topText, bottomText, auctionDate.
+ [x] List items included in the auction, showing itemCategory, salePrice, sold status.
+ [x] Display totalValue and soldValue with progress tracking.
+ [x] Add edit and delete auction functionality.
+ [x] Implement auction item management with mark sold/remove options.
+ [x] Display auction metadata and Facebook post if available.
+[x] Sub-action: Update src/App.tsx to include routes for /auctions and /auctions/:id.
+ [x] Added dynamic routing for auction detail pages.
+ [x] Integrated AuctionDetail component with proper auctionId extraction.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for Auctions and AuctionDetail pages.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for Auctions and AuctionDetail pages.
+ [x] Created comprehensive test suite for Auctions page (src/pages/Auctions.test.tsx).
+ [x] Created comprehensive test suite for AuctionDetail page (src/pages/AuctionDetail.test.tsx).
+ [x] Tests cover loading states, error handling, navigation, filtering, and all UI interactions.
 9.2. Implement Add Item to Auction Modal
 
  Action: Implement the "Add Item to Auction" modal functionality.
