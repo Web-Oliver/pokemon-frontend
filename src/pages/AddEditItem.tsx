@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Star, Package, Archive } from 'lucide-react';
 import Button from '../components/common/Button';
 import ImageUploader from '../components/ImageUploader';
+import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -72,64 +73,52 @@ const AddEditItem: React.FC = () => {
     }
   ];
 
-  // Render form based on selected item type (placeholder implementations for now)
+  // Handle successful form submission
+  const handleFormSuccess = () => {
+    handleBackToCollection();
+  };
+
+  // Handle form cancellation
+  const handleFormCancel = () => {
+    setSelectedItemType(null);
+  };
+
+  // Render form based on selected item type
   const renderForm = () => {
     if (!selectedItemType) {
       return null;
     }
 
-    // These will be replaced with actual form components in Phase 4.6
-    const formContent = (() => {
-      switch (selectedItemType) {
-        case 'psa-graded':
-          return (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-medium text-blue-900 mb-2">PSA Graded Card Form</h3>
-              <p className="text-blue-700">
-                Form for adding PSA graded cards will be implemented in Phase 4.6
-              </p>
-            </div>
-          );
-        case 'raw-card':
-          return (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-medium text-green-900 mb-2">Raw Card Form</h3>
-              <p className="text-green-700">
-                Form for adding raw cards will be implemented in Phase 4.6
-              </p>
-            </div>
-          );
-        case 'sealed-product':
-          return (
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-medium text-purple-900 mb-2">Sealed Product Form</h3>
-              <p className="text-purple-700">
-                Form for adding sealed products will be implemented in Phase 4.6
-              </p>
-            </div>
-          );
-        default:
-          return null;
-      }
-    })();
-
-    return (
-      <div className="space-y-6">
-        {formContent}
-        
-        {/* Image Uploader Section */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
-          <ImageUploader
-            onImagesChange={handleImagesChange}
-            existingImageUrls={[]}
-            multiple={true}
-            maxFiles={8}
-            maxFileSize={5}
+    switch (selectedItemType) {
+      case 'psa-graded':
+        return (
+          <AddEditPsaCardForm
+            onCancel={handleFormCancel}
+            onSuccess={handleFormSuccess}
+            isEditing={false}
           />
-        </div>
-      </div>
-    );
+        );
+      case 'raw-card':
+        return (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium text-green-900 mb-2">Raw Card Form</h3>
+            <p className="text-green-700">
+              Form for adding raw cards will be implemented in Phase 5.1
+            </p>
+          </div>
+        );
+      case 'sealed-product':
+        return (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-medium text-purple-900 mb-2">Sealed Product Form</h3>
+            <p className="text-purple-700">
+              Form for adding sealed products will be implemented in Phase 5.1
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -232,25 +221,6 @@ const AddEditItem: React.FC = () => {
             </div>
 
             {renderForm()}
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 mt-6 pt-6 border-t border-gray-200">
-              <Button
-                variant="secondary"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  // This will be implemented in Phase 4.6 with actual form submission
-                  alert('Save functionality will be implemented in Phase 4.6');
-                }}
-              >
-                Save
-              </Button>
-            </div>
           </div>
         )}
 

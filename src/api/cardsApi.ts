@@ -3,7 +3,7 @@
  * Handles all card-related API operations matching the backend endpoints
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { ICard } from '../domain/models/card';
 
 export interface CardsSearchParams {

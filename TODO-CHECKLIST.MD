@@ -434,43 +434,43 @@ Verification:
 Verification:
 [x] Write unit tests for ImageUploader in src/components/ImageUploader.test.tsx.
 [x] Integrate ImageUploader into src/pages/AddEditItem.tsx (temporarily) and test its functionality.
-4.6. Implement Initial Add Card Form & API Integration
+4.6. Implement Initial Add Card Form & API Integration ✅
 
- Action: Implement the initial AddEditPsaCardForm and integrate it with the useCollection hook for adding new PSA graded cards.
- Sub-action: Create src/components/forms/AddEditPsaCardForm.tsx.
- Sub-action: Use react-hook-form to manage the form state for myPrice, grade, dateAdded, and integrate the ImageUploader component.
- Sub-action: Implement the form submission handler. On submit, call useCollection.addPsaCard with the form data and the uploaded image files.
- Sub-action: After successful submission, navigate the user back to the /collection page.
- Sub-action: Update src/pages/AddEditItem.tsx to render AddEditPsaCardForm when the item type is "PSA Graded Card".
+[x] Action: Implement the initial AddEditPsaCardForm and integrate it with the useCollection hook for adding new PSA graded cards.
+[x] Sub-action: Create src/components/forms/AddEditPsaCardForm.tsx.
+[x] Sub-action: Use react-hook-form to manage the form state for myPrice, grade, dateAdded, and integrate the ImageUploader component.
+[x] Sub-action: Implement the form submission handler. On submit, call useCollection.addPsaCard with the form data and the uploaded image files.
+[x] Sub-action: After successful submission, navigate the user back to the /collection page.
+[x] Sub-action: Update src/pages/AddEditItem.tsx to render AddEditPsaCardForm when the item type is "PSA Graded Card".
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for AddEditPsaCardForm in src/components/forms/AddEditPsaCardForm.test.tsx.
-Verify successful card creation and redirection.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for AddEditPsaCardForm in src/components/forms/AddEditPsaCardForm.test.tsx.
+[x] Verify successful card creation and redirection.
 Phase 5: Collection Management - Smart Search & Auto-fill
 
-5.1. Integrate Smart Search into Add/Edit Card Forms
+5.1. Integrate Smart Search into Add/Edit Card Forms ✅
 
- Action: Integrate the smart search functionality for Set Name and Card Name into AddEditPsaCardForm and AddEditRawCardForm.
- Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx).
- Sub-action: Integrate useSearch hook.
- Sub-action: Add input fields for "Set Name" and "Card Name".
- Sub-action: Implement onChange handlers for these inputs to update searchTerm in useSearch.
- Sub-action: Display auto-completion suggestions from useSearch.suggestions in a dropdown/autocomplete list.
- Sub-action: On selecting a suggestion for "Set Name", filter subsequent "Card Name" searches to only show cards within that set.
- Sub-action: On selecting a suggestion for "Card Name", automatically call cardsApi.getBestMatchCard to fetch full card details.
+[x] Action: Integrate the smart search functionality for Set Name and Card Name into AddEditPsaCardForm and AddEditRawCardForm.
+[x] Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx).
+[x] Sub-action: Integrate useSearch hook.
+[x] Sub-action: Add input fields for "Set Name" and "Card Name".
+[x] Sub-action: Implement onChange handlers for these inputs to update searchTerm in useSearch.
+[x] Sub-action: Display auto-completion suggestions from useSearch.suggestions in a dropdown/autocomplete list.
+[x] Sub-action: On selecting a suggestion for "Set Name", filter subsequent "Card Name" searches to only show cards within that set.
+[x] Sub-action: On selecting a suggestion for "Card Name", automatically call cardsApi.getBestMatchCard to fetch full card details.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for AddEditPsaCardForm to verify smart search behavior.
-5.2. Implement Auto-fill Logic for Card Information
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for AddEditPsaCardForm to verify smart search behavior.
+5.2. Implement Auto-fill Logic for Card Information ✅
 
- Action: Implement the auto-fill logic for card information in AddEditPsaCardForm and AddEditRawCardForm.
- Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx).
- Sub-action: When cardsApi.getBestMatchCard returns a card object, automatically populate form fields like pokemonNumber, baseName, variety, and relevant psaGrades.
- Sub-action: Ensure myPrice and grade/condition fields remain user-editable and are not auto-filled.
- Sub-action: Update the form's internal state (using react-hook-form's setValue) with the auto-filled data.
+[x] Action: Implement the auto-fill logic for card information in AddEditPsaCardForm and AddEditRawCardForm.
+[x] Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx).
+[x] Sub-action: When cardsApi.getBestMatchCard returns a card object, automatically populate form fields like pokemonNumber, baseName, variety, and relevant psaGrades.
+[x] Sub-action: Ensure myPrice and grade/condition fields remain user-editable and are not auto-filled.
+[x] Sub-action: Update the form's internal state (using react-hook-form's setValue) with the auto-filled data.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for AddEditPsaCardForm to verify auto-fill behavior.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for AddEditPsaCardForm to verify auto-fill behavior.
 Phase 6: Collection Management - Update, Delete, Price History
 
 6.1. Implement Collection Item Update & Delete API Calls
