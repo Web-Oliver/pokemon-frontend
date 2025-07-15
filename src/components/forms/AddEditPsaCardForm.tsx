@@ -22,6 +22,7 @@ import Input from '../common/Input';
 import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ImageUploader from '../ImageUploader';
+import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -76,6 +77,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
+  const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
 
   const {
     register,
@@ -134,8 +137,28 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   const watchedGrade = watch('grade');
   const watchedPrice = watch('myPrice');
 
+  // Update current price when form price changes
+  useEffect(() => {
+    if (watchedPrice) {
+      const price = parseFloat(watchedPrice);
+      if (!isNaN(price)) {
+        setCurrentPrice(price);
+      }
+    }
+  }, [watchedPrice]);
+
   const handleImagesChange = (files: File[]) => {
     setSelectedImages(files);
+  };
+
+  const handlePriceUpdate = (newPrice: number, date: string) => {
+    // Add new price to history
+    const newEntry = { price: newPrice, dateUpdated: date };
+    setPriceHistory(prev => [...prev, newEntry]);
+    
+    // Update current price and form field
+    setCurrentPrice(newPrice);
+    setValue('myPrice', newPrice.toString());
   };
 
   // Autocomplete event handlers
@@ -192,8 +215,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
         images: imageUrls,
-        // Add initial price history entry
-        priceHistory: [{
+        // Use the updated price history, or create initial entry for new cards
+        priceHistory: priceHistory.length > 0 ? priceHistory : [{
           price: parseFloat(data.myPrice),
           dateUpdated: new Date().toISOString()
         }]
@@ -438,6 +461,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             />
           </div>
         </div>
+
+        {/* Price History Section (for editing existing cards) */}
+        {isEditing && priceHistory.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <PriceHistoryDisplay
+              priceHistory={priceHistory}
+              currentPrice={currentPrice}
+              onPriceUpdate={handlePriceUpdate}
+            />
+          </div>
+        )}
       </div>
 
       {/* Image Upload Section */}

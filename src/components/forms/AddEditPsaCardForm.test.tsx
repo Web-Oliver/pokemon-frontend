@@ -381,4 +381,89 @@ describe('AddEditPsaCardForm Integration Tests', () => {
       expect(screen.getByText('$1234.56')).toBeInTheDocument();
     });
   });
+
+  it('displays and allows updating price history when editing', async () => {
+    const user = userEvent.setup();
+    
+    const initialData = {
+      id: '1',
+      setName: 'Base Set',
+      cardName: 'Charizard',
+      pokemonNumber: '4/102',
+      baseName: 'Charizard',
+      variety: 'Shadowless',
+      grade: '9',
+      myPrice: 800,
+      dateAdded: '2024-01-01',
+      priceHistory: [
+        { price: 600, dateUpdated: '2024-01-01T00:00:00.000Z' },
+        { price: 750, dateUpdated: '2024-02-01T00:00:00.000Z' },
+        { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' }
+      ]
+    };
+
+    render(
+      <AddEditPsaCardForm
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+        initialData={initialData}
+        isEditing={true}
+      />
+    );
+
+    // Check that price history section is visible
+    expect(screen.getByText('Price History')).toBeInTheDocument();
+    expect(screen.getByText('Current Price')).toBeInTheDocument();
+    expect(screen.getByText('$800.00')).toBeInTheDocument();
+
+    // Check that price history entries are displayed
+    expect(screen.getByText('$600.00')).toBeInTheDocument();
+    expect(screen.getByText('$750.00')).toBeInTheDocument();
+
+    // Update price through price history component
+    const newPriceInput = screen.getByPlaceholderText('Enter new price');
+    await user.type(newPriceInput, '900.00');
+
+    const updatePriceButton = screen.getByRole('button', { name: 'Update Price' });
+    await user.click(updatePriceButton);
+
+    // Check that current price is updated
+    await waitFor(() => {
+      expect(screen.getByText('$900.00')).toBeInTheDocument();
+    });
+
+    // Check that the form price field is also updated
+    const priceField = screen.getByDisplayValue('900');
+    expect(priceField).toBeInTheDocument();
+
+    // Submit the form to verify price history is included
+    const submitButton = screen.getByRole('button', { name: /update card/i });
+    await user.click(submitButton);
+
+    // Verify API was called with updated price history
+    await waitFor(() => {
+      expect(mockUpdatePsaCard).toHaveBeenCalledWith('1', expect.objectContaining({
+        myPrice: 900,
+        priceHistory: expect.arrayContaining([
+          { price: 600, dateUpdated: '2024-01-01T00:00:00.000Z' },
+          { price: 750, dateUpdated: '2024-02-01T00:00:00.000Z' },
+          { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' },
+          { price: 900, dateUpdated: expect.any(String) }
+        ])
+      }));
+    });
+  });
+
+  it('does not show price history section when adding new card', () => {
+    render(
+      <AddEditPsaCardForm
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+        isEditing={false}
+      />
+    );
+
+    // Price history section should not be visible for new cards
+    expect(screen.queryByText('Price History')).not.toBeInTheDocument();
+  });
 });

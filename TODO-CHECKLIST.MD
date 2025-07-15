@@ -473,38 +473,38 @@ Verification:
 [x] Write integration tests for AddEditPsaCardForm to verify auto-fill behavior.
 Phase 6: Collection Management - Update, Delete, Price History
 
-6.1. Implement Collection Item Update & Delete API Calls
+6.1. Implement Collection Item Update & Delete API Calls ✅
 
- Action: Implement the API calls for updating and deleting collection items.
- Sub-action: Open src/api/collectionApi.ts.
- Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>.
- Implement deletePsaGradedCard(id: string): Promise<void>.
- Implement similar update and delete functions for IRawCard and ISealedProductCollectionItem.
- Sub-action: Open src/hooks/useCollection.ts.
- Add updatePsaCard(id: string, data: Partial<IPsaGradedCard>) function that calls collectionApi.updatePsaGradedCard and updates the local state.
- Add deletePsaCard(id: string) function that calls collectionApi.deletePsaGradedCard and removes the item from local state.
- Add similar update and delete functions for raw cards and sealed products.
+[x] Action: Implement the API calls for updating and deleting collection items.
+[x] Sub-action: Open src/api/collectionApi.ts.
+[x] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>.
+[x] Implement deletePsaGradedCard(id: string): Promise<void>.
+[x] Implement similar update and delete functions for IRawCard and ISealedProductCollectionItem.
+[x] Sub-action: Open src/hooks/useCollection.ts.
+[x] Add updatePsaCard(id: string, data: Partial<IPsaGradedCard>) function that calls collectionApi.updatePsaGradedCard and updates the local state.
+[x] Add deletePsaCard(id: string) function that calls collectionApi.deletePsaGradedCard and removes the item from local state.
+[x] Add similar update and delete functions for raw cards and sealed products.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for useCollection to verify update and delete operations.
-6.2. Develop Price History Display & Update Component
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for useCollection to verify update and delete operations.
+6.2. Develop Price History Display & Update Component ✅
 
- Action: Develop the PriceHistoryDisplay component and integrate its update functionality.
- Sub-action: Create src/components/PriceHistoryDisplay.tsx.
- Sub-action: This component should accept priceHistory: IPriceHistoryEntry[] as a prop and display it as a list.
- Sub-action: Include an input field and a "Update Price" button.
- Sub-action: The component should accept an onPriceUpdate prop (callback with the new price and current date).
+[x] Action: Develop the PriceHistoryDisplay component and integrate its update functionality.
+[x] Sub-action: Create src/components/PriceHistoryDisplay.tsx.
+[x] Sub-action: This component should accept priceHistory: IPriceHistoryEntry[] as a prop and display it as a list.
+[x] Sub-action: Include an input field and a "Update Price" button.
+[x] Sub-action: The component should accept an onPriceUpdate prop (callback with the new price and current date).
 Verification:
-Write unit tests for PriceHistoryDisplay in src/components/PriceHistoryDisplay.test.tsx.
-6.3. Integrate Price History into Add/Edit Item Forms
+[x] Write unit tests for PriceHistoryDisplay in src/components/PriceHistoryDisplay.test.tsx.
+6.3. Integrate Price History into Add/Edit Item Forms ✅
 
- Action: Integrate the PriceHistoryDisplay component into the AddEditPsaCardForm (and other item forms).
- Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx, AddEditSealedProductForm.tsx).
- Sub-action: Integrate the PriceHistoryDisplay component, passing the item's priceHistory prop.
- Sub-action: Implement the onPriceUpdate callback for PriceHistoryDisplay. This callback should update the myPrice field in the form's state and, when the form is saved, ensure this new price (and the corresponding priceHistory entry) is sent to the backend.
+[x] Action: Integrate the PriceHistoryDisplay component into the AddEditPsaCardForm (and other item forms).
+[x] Sub-action: Open src/components/forms/AddEditPsaCardForm.tsx (and AddEditRawCardForm.tsx, AddEditSealedProductForm.tsx).
+[x] Sub-action: Integrate the PriceHistoryDisplay component, passing the item's priceHistory prop.
+[x] Sub-action: Implement the onPriceUpdate callback for PriceHistoryDisplay. This callback should update the myPrice field in the form's state and, when the form is saved, ensure this new price (and the corresponding priceHistory entry) is sent to the backend.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for AddEditPsaCardForm to verify price history updates.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for AddEditPsaCardForm to verify price history updates.
 Phase 7: Collection Management - Mark as Sold
 
 7.1. Develop Mark as Sold Form Component
