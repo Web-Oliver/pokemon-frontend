@@ -505,33 +505,33 @@ Verification:
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 [x] Write integration tests for AddEditPsaCardForm to verify price history updates.
-Phase 7: Collection Management - Mark as Sold
+Phase 7: Collection Management - Mark as Sold 🔄
 
 7.1. Develop Mark as Sold Form Component
 
- Action: Develop the MarkSoldForm component.
- Sub-action: Create src/components/forms/MarkSoldForm.tsx.
- Sub-action: Use react-hook-form to manage the form state for saleDetails.
- Sub-action: Implement dropdowns/radio buttons for enum fields using Select and constants.ts enums.
- Sub-action: Implement a DatePicker component for dateSold.
- Sub-action: Implement conditional rendering for buyer information and tracking number fields based on deliveryMethod being 'Sent'.
- Sub-action: The component should accept an onSubmit prop and onCancel prop.
+[x] Action: Develop the MarkSoldForm component.
+[x] Sub-action: Create src/components/forms/MarkSoldForm.tsx.
+[x] Sub-action: Use react-hook-form to manage the form state for saleDetails.
+[x] Sub-action: Implement dropdowns/radio buttons for enum fields using Select and constants.ts enums.
+[x] Sub-action: Implement a DatePicker component for dateSold.
+[x] Sub-action: Implement conditional rendering for buyer information and tracking number fields based on deliveryMethod being 'Sent'.
+[x] Sub-action: The component should accept an onSubmit prop and onCancel prop.
 Verification:
-Write unit tests for MarkSoldForm in src/components/forms/MarkSoldForm.test.tsx.
+[x] Write unit tests for MarkSoldForm in src/components/forms/MarkSoldForm.test.tsx.
 7.2. Integrate Mark as Sold Functionality
 
- Action: Integrate the MarkSoldForm and the markPsaGradedCardSold functionality into the collection management flow.
- Sub-action: Open src/hooks/useCollection.ts.
- Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails) that calls collectionApi.markPsaGradedCardSold and updates the local state to move the item to the soldItems array.
- Implement similar functions for raw cards and sealed products.
- Sub-action: Open src/pages/Collection.tsx.
- Add a "Mark as Sold" button to each item in the collection list.
- When clicked, open a Modal component that renders the MarkSoldForm.
- Pass the onSubmit and onCancel callbacks to MarkSoldForm.
- Ensure the "Sold Items" tab in Collection.tsx correctly displays items where sold: true.
+[x] Action: Integrate the MarkSoldForm and the markPsaGradedCardSold functionality into the collection management flow.
+[x] Sub-action: Open src/hooks/useCollection.ts.
+[x] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails) that calls collectionApi.markPsaGradedCardSold and updates the local state to move the item to the soldItems array.
+[x] Implement similar functions for raw cards and sealed products.
+[x] Sub-action: Open src/pages/Collection.tsx.
+[x] Add a "Mark as Sold" button to each item in the collection list.
+[x] When clicked, open a Modal component that renders the MarkSoldForm.
+[x] Pass the onSubmit and onCancel callbacks to MarkSoldForm.
+[x] Ensure the "Sold Items" tab in Collection.tsx correctly displays items where sold: true.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for Collection page to verify mark as sold functionality.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for Collection page to verify mark as sold functionality.
 Phase 8: Search & Discovery
 
 8.1. Implement Global Search Bar & Results Page

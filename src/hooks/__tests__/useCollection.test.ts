@@ -29,7 +29,8 @@ const createMockSaleDetails = (): ISaleDetails => ({
 });
 
 const createMockPsaCard = (): Partial<IPsaGradedCard> => ({
-  cardId: '67890abcdef123456789012', // Mock ObjectId
+  cardName: 'Bulbasaur-Bulbasaur Quarter Deck', // Real card from backend
+  setName: 'Pokemon Battle Academy', // Real set from backend
   grade: '10',
   myPrice: 100,
   images: ['test-image-1.jpg'],
@@ -38,7 +39,8 @@ const createMockPsaCard = (): Partial<IPsaGradedCard> => ({
 });
 
 const createMockRawCard = (): Partial<IRawCard> => ({
-  cardId: '67890abcdef123456789012', // Mock ObjectId
+  cardName: 'Bulbasaur-Bulbasaur Quarter Deck', // Real card from backend
+  setName: 'Pokemon Battle Academy', // Real set from backend
   condition: 'Near Mint',
   myPrice: 75,
   images: ['test-image-2.jpg'],
