@@ -36,10 +36,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      paymentMethod: initialData?.paymentMethod || undefined,
-      actualSoldPrice: initialData?.actualSoldPrice || undefined,
-      deliveryMethod: initialData?.deliveryMethod || undefined,
-      source: initialData?.source || undefined,
+      paymentMethod: initialData?.paymentMethod || '', // Empty string for placeholder
+      actualSoldPrice: initialData?.actualSoldPrice,
+      deliveryMethod: initialData?.deliveryMethod || '', // Empty string for placeholder
+      source: initialData?.source || '', // Empty string for placeholder
       dateSold: initialData?.dateSold || new Date().toISOString().split('T')[0], // Default to today
       buyerFullName: initialData?.buyerFullName || '',
       buyerAddress: {
@@ -56,6 +56,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   // Watch deliveryMethod to conditionally show buyer info
   const deliveryMethod = watch('deliveryMethod');
   const showBuyerInfo = deliveryMethod === DeliveryMethod.SENT;
+  const showBuyerName = deliveryMethod === DeliveryMethod.LOCAL_MEETUP || deliveryMethod === DeliveryMethod.SENT;
 
   const onFormSubmit = (data: FormData) => {
     // Convert date to ISO string if it's not already
@@ -245,8 +246,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             />
           </div>
 
-          {/* Conditional Buyer Information - only show if delivery method is 'Sent' */}
-          {showBuyerInfo && (
+          {/* Conditional Buyer Information */}
+          {showBuyerName && (
             <div className='space-y-4 border-t pt-4'>
               <h4 className='font-medium text-gray-900'>Buyer Information</h4>
 
@@ -257,8 +258,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                   control={control}
                   rules={{
                     required:
-                      deliveryMethod === DeliveryMethod.SENT
-                        ? 'Buyer full name is required for shipped items'
+                      deliveryMethod === DeliveryMethod.SENT || deliveryMethod === DeliveryMethod.LOCAL_MEETUP
+                        ? 'Buyer full name is required'
                         : false,
                   }}
                   render={({ field }) => (
@@ -272,83 +273,20 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                 />
               </div>
 
-              {/* Buyer Contact */}
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div>
-                  <Controller
-                    name='buyerPhoneNumber'
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        label='Phone Number'
-                        type='tel'
-                        placeholder='+45 12 34 56 78'
-                        error={errors.buyerPhoneNumber?.message}
-                      />
-                    )}
-                  />
-                </div>
-
-                <div>
-                  <Controller
-                    name='buyerEmail'
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        label='Email'
-                        type='email'
-                        placeholder='buyer@example.com'
-                        error={errors.buyerEmail?.message}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Buyer Address */}
-              <div className='space-y-4'>
-                <h5 className='font-medium text-gray-700'>Shipping Address</h5>
-
-                <div>
-                  <Controller
-                    name='buyerAddress.streetName'
-                    control={control}
-                    rules={{
-                      required:
-                        deliveryMethod === DeliveryMethod.SENT
-                          ? 'Street address is required for shipped items'
-                          : false,
-                    }}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        label='Street Address *'
-                        placeholder='123 Main Street'
-                        error={errors.buyerAddress?.streetName?.message}
-                      />
-                    )}
-                  />
-                </div>
-
+              {/* Buyer Contact - only show for shipped items */}
+              {showBuyerInfo && (
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <div>
                     <Controller
-                      name='buyerAddress.postnr'
+                      name='buyerPhoneNumber'
                       control={control}
-                      rules={{
-                        required:
-                          deliveryMethod === DeliveryMethod.SENT
-                            ? 'Postal code is required for shipped items'
-                            : false,
-                      }}
                       render={({ field }) => (
                         <Input
                           {...field}
-                          label='Postal Code *'
-                          placeholder='12345'
-                          error={errors.buyerAddress?.postnr?.message}
+                          label='Phone Number'
+                          type='tel'
+                          placeholder='+45 12 34 56 78'
+                          error={errors.buyerPhoneNumber?.message}
                         />
                       )}
                     />
@@ -356,42 +294,109 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
                   <div>
                     <Controller
-                      name='buyerAddress.city'
+                      name='buyerEmail'
                       control={control}
-                      rules={{
-                        required:
-                          deliveryMethod === DeliveryMethod.SENT
-                            ? 'City is required for shipped items'
-                            : false,
-                      }}
                       render={({ field }) => (
                         <Input
                           {...field}
-                          label='City *'
-                          placeholder='Copenhagen'
-                          error={errors.buyerAddress?.city?.message}
+                          label='Email'
+                          type='email'
+                          placeholder='buyer@example.com'
+                          error={errors.buyerEmail?.message}
                         />
                       )}
                     />
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Tracking Number */}
-              <div>
-                <Controller
-                  name='trackingNumber'
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      label='Tracking Number'
-                      placeholder='1234567890'
-                      error={errors.trackingNumber?.message}
+              {/* Buyer Address - only show for shipped items */}
+              {showBuyerInfo && (
+                <div className='space-y-4'>
+                  <h5 className='font-medium text-gray-700'>Shipping Address</h5>
+
+                  <div>
+                    <Controller
+                      name='buyerAddress.streetName'
+                      control={control}
+                      rules={{
+                        required:
+                          deliveryMethod === DeliveryMethod.SENT
+                            ? 'Street address is required for shipped items'
+                            : false,
+                      }}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          label='Street Address *'
+                          placeholder='123 Main Street'
+                          error={errors.buyerAddress?.streetName?.message}
+                        />
+                      )}
                     />
-                  )}
-                />
-              </div>
+                  </div>
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div>
+                      <Controller
+                        name='buyerAddress.postnr'
+                        control={control}
+                        rules={{
+                          required:
+                            deliveryMethod === DeliveryMethod.SENT
+                              ? 'Postal code is required for shipped items'
+                              : false,
+                        }}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            label='Postal Code *'
+                            placeholder='12345'
+                            error={errors.buyerAddress?.postnr?.message}
+                          />
+                        )}
+                      />
+                    </div>
+
+                    <div>
+                      <Controller
+                        name='buyerAddress.city'
+                        control={control}
+                        rules={{
+                          required:
+                            deliveryMethod === DeliveryMethod.SENT
+                              ? 'City is required for shipped items'
+                              : false,
+                        }}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            label='City *'
+                            placeholder='Copenhagen'
+                            error={errors.buyerAddress?.city?.message}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tracking Number */}
+                  <div>
+                    <Controller
+                      name='trackingNumber'
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          label='Tracking Number'
+                          placeholder='1234567890'
+                          error={errors.trackingNumber?.message}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

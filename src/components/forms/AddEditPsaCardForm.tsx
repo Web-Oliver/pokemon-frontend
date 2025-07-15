@@ -41,6 +41,20 @@ interface FormData {
   grade: string;
   myPrice: string;
   dateAdded: string;
+  // Sale details fields (for sold items)
+  paymentMethod?: string;
+  actualSoldPrice?: string;
+  deliveryMethod?: string;
+  source?: string;
+  dateSold?: string;
+  buyerFullName?: string;
+  buyerPhoneNumber?: string;
+  buyerEmail?: string;
+  trackingNumber?: string;
+  // Buyer address fields
+  streetName?: string;
+  postnr?: string;
+  city?: string;
 }
 
 const PSA_GRADES = [
@@ -86,6 +100,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
@@ -96,21 +111,38 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       grade: initialData?.grade || '',
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
+      // Sale details for sold items
+      paymentMethod: initialData?.saleDetails?.paymentMethod || '',
+      actualSoldPrice: initialData?.saleDetails?.actualSoldPrice?.toString() || '',
+      deliveryMethod: initialData?.saleDetails?.deliveryMethod || '',
+      source: initialData?.saleDetails?.source || '',
+      dateSold: initialData?.saleDetails?.dateSold?.split('T')[0] || '', // Convert to date format
+      buyerFullName: initialData?.saleDetails?.buyerFullName || '',
+      buyerPhoneNumber: initialData?.saleDetails?.buyerPhoneNumber || '',
+      buyerEmail: initialData?.saleDetails?.buyerEmail || '',
+      trackingNumber: initialData?.saleDetails?.trackingNumber || '',
+      // Buyer address fields
+      streetName: initialData?.saleDetails?.buyerAddress?.streetName || '',
+      postnr: initialData?.saleDetails?.buyerAddress?.postnr || '',
+      city: initialData?.saleDetails?.buyerAddress?.city || '',
     },
+    mode: 'onChange',
   });
 
   // Sync search state with form values
   useEffect(() => {
     if (setName) {
-      setValue('setName', setName);
+      setValue('setName', setName, { shouldValidate: true });
+      clearErrors('setName');
     }
-  }, [setName, setValue]);
+  }, [setName, setValue, clearErrors]);
 
   useEffect(() => {
     if (cardProductName) {
-      setValue('cardName', cardProductName);
+      setValue('cardName', cardProductName, { shouldValidate: true });
+      clearErrors('cardName');
     }
-  }, [cardProductName, setValue]);
+  }, [cardProductName, setValue, clearErrors]);
 
   // Auto-fill logic when card is selected
   useEffect(() => {
@@ -120,9 +152,13 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         console.log('[PSA FORM AUTOFILL] Using selectedCardData:', selectedCardData);
 
         // Autofill all available card fields
-        setValue('pokemonNumber', selectedCardData.pokemonNumber || '');
-        setValue('baseName', selectedCardData.baseName || '');
-        setValue('variety', selectedCardData.variety || '');
+        setValue('pokemonNumber', selectedCardData.pokemonNumber || '', { shouldValidate: true });
+        setValue('baseName', selectedCardData.baseName || '', { shouldValidate: true });
+        setValue('variety', selectedCardData.variety || '', { shouldValidate: true });
+        
+        // Clear any validation errors for autofilled fields
+        clearErrors('pokemonNumber');
+        clearErrors('baseName');
 
         console.log('[PSA FORM AUTOFILL] Fields updated:', {
           pokemonNumber: selectedCardData.pokemonNumber,
@@ -140,6 +176,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   // Watch form fields for validation
   const watchedGrade = watch('grade');
   const watchedPrice = watch('myPrice');
+  const watchedDeliveryMethod = watch('deliveryMethod');
 
   // Update current price when form price changes
   useEffect(() => {
@@ -168,14 +205,14 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   // Autocomplete event handlers
   const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setValue('setName', value);
+    setValue('setName', value, { shouldValidate: true });
     updateSetName(value);
     setShowSuggestions(true);
   };
 
   const handleCardNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setValue('cardName', value);
+    setValue('cardName', value, { shouldValidate: true });
     updateCardProductName(value);
     setShowSuggestions(true);
   };
@@ -183,6 +220,13 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   const handleSuggestionClick = (suggestion: unknown, fieldType: 'set' | 'cardProduct') => {
     handleSuggestionSelect(suggestion, fieldType);
     setShowSuggestions(false);
+    
+    // Clear validation errors when suggestion is selected
+    if (fieldType === 'set') {
+      clearErrors('setName');
+    } else if (fieldType === 'cardProduct') {
+      clearErrors('cardName');
+    }
   };
 
   const handleInputFocus = (fieldType: 'set' | 'cardProduct') => {
@@ -202,34 +246,75 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     setIsSubmitting(true);
 
     try {
+      console.log('[PSA FORM SUBMIT] Form data:', data);
+      
       // Upload images first if any are selected
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
+        console.log('[PSA FORM SUBMIT] Uploading images:', selectedImages.length);
         imageUrls = await uploadMultipleImages(selectedImages);
+        console.log('[PSA FORM SUBMIT] Images uploaded:', imageUrls);
       }
 
-      // Prepare card data
-      const cardData: Partial<IPsaGradedCard> = {
-        setName: data.setName.trim(),
-        cardName: data.cardName.trim(),
-        pokemonNumber: data.pokemonNumber.trim(),
-        baseName: data.baseName.trim(),
-        variety: data.variety.trim() || undefined,
-        grade: data.grade,
-        myPrice: parseFloat(data.myPrice),
-        dateAdded: data.dateAdded,
-        images: imageUrls,
-        // Use the updated price history, or create initial entry for new cards
-        priceHistory:
-          priceHistory.length > 0
-            ? priceHistory
-            : [
-                {
-                  price: parseFloat(data.myPrice),
-                  dateUpdated: new Date().toISOString(),
-                },
-              ],
-      };
+      // Prepare card data based on item status
+      let cardData: Partial<IPsaGradedCard>;
+      
+      if (isEditing && initialData?.sold) {
+        // For sold items, only update sale details
+        cardData = {
+          saleDetails: {
+            ...initialData.saleDetails,
+            paymentMethod: data.paymentMethod as 'CASH' | 'Mobilepay' | 'BankTransfer' | undefined,
+            actualSoldPrice: data.actualSoldPrice ? parseFloat(data.actualSoldPrice) : undefined,
+            deliveryMethod: data.deliveryMethod as 'Sent' | 'Local Meetup' | undefined,
+            source: data.source as 'Facebook' | 'DBA' | undefined,
+            dateSold: data.dateSold ? new Date(data.dateSold).toISOString() : undefined,
+            buyerFullName: data.buyerFullName?.trim() || '',
+            buyerPhoneNumber: data.buyerPhoneNumber?.trim() || '',
+            buyerEmail: data.buyerEmail?.trim() || '',
+            trackingNumber: data.trackingNumber?.trim() || '',
+            buyerAddress: {
+              streetName: data.streetName?.trim() || '',
+              postnr: data.postnr?.trim() || '',
+              city: data.city?.trim() || '',
+            },
+          },
+        };
+      } else {
+        // For unsold items or new items, update card data
+        cardData = {
+          setName: data.setName.trim(),
+          cardName: data.cardName.trim(),
+          pokemonNumber: data.pokemonNumber.trim(),
+          baseName: data.baseName.trim(),
+          variety: data.variety.trim() || '',
+          grade: data.grade,
+          myPrice: parseFloat(data.myPrice),
+          dateAdded: new Date(data.dateAdded).toISOString(),
+          images: imageUrls.length > 0 ? imageUrls : initialData?.images,
+          // Use the updated price history, or create initial entry for new cards
+          priceHistory:
+            priceHistory.length > 0
+              ? priceHistory
+              : [
+                  {
+                    price: parseFloat(data.myPrice),
+                    dateUpdated: new Date().toISOString(),
+                  },
+                ],
+        };
+        
+        // For editing unsold items, preserve existing card info
+        if (isEditing) {
+          cardData = {
+            myPrice: parseFloat(data.myPrice),
+            images: imageUrls.length > 0 ? imageUrls : initialData?.images,
+            priceHistory: priceHistory.length > 0 ? priceHistory : initialData?.priceHistory,
+          };
+        }
+      }
+
+      console.log('[PSA FORM SUBMIT] Card data to submit:', cardData);
 
       if (isEditing && initialData?.id) {
         await updatePsaCard(initialData.id, cardData);
@@ -268,15 +353,18 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             </h3>
             <p className='text-blue-700 text-sm'>
               {isEditing
-                ? 'Update your PSA graded card information'
+                ? initialData?.sold 
+                  ? 'Update buyer information and tracking details'
+                  : 'Update price and images (card info is locked after adding)'
                 : 'Add a new PSA graded card to your collection'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Card Information Section */}
-      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+      {/* Card Information Section - Hidden for sold items */}
+      {!(isEditing && initialData?.sold) && (
+        <div className='bg-white border border-gray-200 rounded-lg p-6'>
         <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
           <div className='flex items-center'>
             <Calendar className='w-5 h-5 mr-2 text-gray-600' />
@@ -377,12 +465,10 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
           <div>
             <Input
-              label='Pokémon Number'
-              {...register('pokemonNumber', {
-                required: 'Pokémon number is required',
-              })}
+              label='Card Number (Optional)'
+              {...register('pokemonNumber')}
               error={errors.pokemonNumber?.message}
-              placeholder='e.g., 4/102, 25/102'
+              placeholder='e.g., 4, BW29, SL1, 50a, or leave empty'
             />
           </div>
 
@@ -407,56 +493,64 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           </div>
         </div>
       </div>
+      )}
 
-      {/* Grading & Pricing Section */}
-      <div className='bg-white border border-gray-200 rounded-lg p-6'>
-        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
-          <DollarSign className='w-5 h-5 mr-2 text-gray-600' />
-          Grading & Pricing
-        </h4>
+      {/* Grading & Pricing Section - Hidden for sold items */}
+      {!(isEditing && initialData?.sold) && (
+        <div className='bg-white border border-gray-200 rounded-lg p-6'>
+          <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
+            <DollarSign className='w-5 h-5 mr-2 text-gray-600' />
+            {isEditing ? 'Update Price' : 'Grading & Pricing'}
+          </h4>
 
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-          <div>
-            <Select
-              label='PSA Grade'
-              {...register('grade', {
-                required: 'PSA grade is required',
-              })}
-              error={errors.grade?.message}
-              options={PSA_GRADES}
-            />
-            {watchedGrade && (
-              <div className='mt-2 p-2 bg-blue-50 border border-blue-200 rounded'>
-                <span className='text-sm text-blue-800 font-medium'>
-                  Selected: {PSA_GRADES.find(g => g.value === watchedGrade)?.label}
-                </span>
-              </div>
-            )}
-          </div>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            {/* PSA Grade - Read-only when editing unsold items */}
+            <div>
+              <Select
+                label='PSA Grade'
+                {...register('grade', {
+                  required: 'PSA grade is required',
+                })}
+                error={errors.grade?.message}
+                options={PSA_GRADES}
+                disabled={isEditing} // Disable grade editing for existing items
+              />
+              {watchedGrade && (
+                <div className='mt-2 p-2 bg-blue-50 border border-blue-200 rounded'>
+                  <span className='text-sm text-blue-800 font-medium'>
+                    Selected: {PSA_GRADES.find(g => g.value === watchedGrade)?.label}
+                  </span>
+                </div>
+              )}
+              {isEditing && (
+                <p className='mt-1 text-xs text-gray-500'>Grade cannot be changed after adding</p>
+              )}
+            </div>
 
-          <div>
-            <Input
-              label='My Price ($)'
-              type='number'
-              step='0.01'
-              min='0'
-              {...register('myPrice', {
-                required: 'Price is required',
-                min: { value: 0, message: 'Price must be non-negative' },
-                pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format',
-                },
-              })}
-              error={errors.myPrice?.message}
-              placeholder='0.00'
-            />
-            {watchedPrice && (
-              <div className='mt-2 text-sm text-gray-600'>
-                ${parseFloat(watchedPrice || '0').toFixed(2)}
-              </div>
-            )}
-          </div>
+            {/* My Price - Always editable for unsold items */}
+            <div>
+              <Input
+                label='My Price (kr.)'
+                type='number'
+                step='0.01'
+                min='0'
+                {...register('myPrice', {
+                  required: 'Price is required',
+                  min: { value: 0, message: 'Price must be non-negative' },
+                  pattern: {
+                    value: /^\d+(\.\d{1,2})?$/,
+                    message: 'Invalid price format',
+                  },
+                })}
+                error={errors.myPrice?.message}
+                placeholder='0.00'
+              />
+              {watchedPrice && (
+                <div className='mt-2 text-sm text-gray-600'>
+                  {parseFloat(watchedPrice || '0')} kr.
+                </div>
+              )}
+            </div>
 
           <div>
             <Input
@@ -481,9 +575,11 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           </div>
         )}
       </div>
+      )}
 
-      {/* Image Upload Section */}
-      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+      {/* Image Upload Section - Available for unsold items only */}
+      {!(isEditing && initialData?.sold) && (
+        <div className='bg-white border border-gray-200 rounded-lg p-6'>
         <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
           <Camera className='w-5 h-5 mr-2 text-gray-600' />
           Card Images
@@ -503,6 +599,191 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           <p>• Include front, back, and detail shots for best results</p>
         </div>
       </div>
+      )}
+
+      {/* Sold Item Edit Section - Only for sold items */}
+      {isEditing && initialData?.sold && (
+        <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6'>
+          <h4 className='text-lg font-medium text-yellow-900 mb-6 flex items-center'>
+            <DollarSign className='w-5 h-5 mr-2 text-yellow-600' />
+            Update Sale Information
+          </h4>
+          
+          {/* Sale Details */}
+          <div className='mb-6'>
+            <h5 className='text-md font-medium text-yellow-800 mb-4'>Sale Details</h5>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+              <div>
+                <Select
+                  label='Payment Method'
+                  {...register('paymentMethod')}
+                  options={[
+                    { value: '', label: 'Select payment method' },
+                    { value: 'CASH', label: 'Cash' },
+                    { value: 'Mobilepay', label: 'Mobilepay' },
+                    { value: 'BankTransfer', label: 'Bank Transfer' },
+                  ]}
+                  className='bg-white'
+                />
+              </div>
+              
+              <div>
+                <Input
+                  label='Actual Sold Price (kr.)'
+                  type='number'
+                  step='0.01'
+                  min='0'
+                  {...register('actualSoldPrice')}
+                  placeholder='0.00'
+                  className='bg-white'
+                />
+              </div>
+              
+              <div>
+                <Select
+                  label='Source'
+                  {...register('source')}
+                  options={[
+                    { value: '', label: 'Select source' },
+                    { value: 'Facebook', label: 'Facebook' },
+                    { value: 'DBA', label: 'DBA' },
+                  ]}
+                  className='bg-white'
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Delivery Method */}
+          <div className='mb-6'>
+            <h5 className='text-md font-medium text-yellow-800 mb-4'>Delivery Method</h5>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div>
+                <Select
+                  label='Delivery Method'
+                  {...register('deliveryMethod')}
+                  options={[
+                    { value: '', label: 'Select delivery method' },
+                    { value: 'Sent', label: 'Sent (Shipping)' },
+                    { value: 'Local Meetup', label: 'Local Meetup' },
+                  ]}
+                  className='bg-white'
+                />
+              </div>
+              
+              <div>
+                <Input
+                  label='Date Sold'
+                  type='date'
+                  {...register('dateSold')}
+                  className='bg-white'
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Buyer Information */}
+          <div className='mb-6'>
+            <h5 className='text-md font-medium text-yellow-800 mb-4'>Buyer Information</h5>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div>
+                <Input
+                  label='Buyer Full Name'
+                  type='text'
+                  {...register('buyerFullName')}
+                  placeholder='Enter buyer name'
+                  className='bg-white'
+                />
+              </div>
+              
+              <div>
+                <Input
+                  label='Buyer Phone'
+                  type='text'
+                  {...register('buyerPhoneNumber')}
+                  placeholder='Enter buyer phone'
+                  className='bg-white'
+                />
+              </div>
+              
+              <div className='md:col-span-2'>
+                <Input
+                  label='Buyer Email'
+                  type='email'
+                  {...register('buyerEmail')}
+                  placeholder='Enter buyer email'
+                  className='bg-white'
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Conditional Address/Tracking Section */}
+          {watchedDeliveryMethod === 'Sent' && (
+            <div className='mb-6'>
+              <h5 className='text-md font-medium text-yellow-800 mb-4'>Shipping Information</h5>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div className='md:col-span-2'>
+                  <Input
+                    label='Street Address'
+                    type='text'
+                    {...register('streetName')}
+                    placeholder='Enter street address'
+                    className='bg-white'
+                  />
+                </div>
+                
+                <div>
+                  <Input
+                    label='Postal Code'
+                    type='text'
+                    {...register('postnr')}
+                    placeholder='Enter postal code'
+                    className='bg-white'
+                  />
+                </div>
+                
+                <div>
+                  <Input
+                    label='City'
+                    type='text'
+                    {...register('city')}
+                    placeholder='Enter city'
+                    className='bg-white'
+                  />
+                </div>
+                
+                <div className='md:col-span-2'>
+                  <Input
+                    label='Tracking Number'
+                    type='text'
+                    {...register('trackingNumber')}
+                    placeholder='Enter tracking number'
+                    className='bg-white'
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {watchedDeliveryMethod === 'Local Meetup' && (
+            <div className='mb-6'>
+              <h5 className='text-md font-medium text-yellow-800 mb-4'>Local Meetup Information</h5>
+              <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
+                <p className='text-sm text-blue-800'>
+                  <strong>Local Meetup:</strong> No shipping address or tracking required for local meetup deliveries.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <div className='p-3 bg-yellow-100 rounded border border-yellow-300'>
+            <p className='text-sm text-yellow-800'>
+              <strong>Note:</strong> This item is sold. You can only update sale information, buyer details, and delivery information.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>

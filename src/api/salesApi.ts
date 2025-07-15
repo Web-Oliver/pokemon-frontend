@@ -29,7 +29,59 @@ export interface SalesGraphDataParams {
  */
 export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
   const response = await apiClient.get('/sales', { params });
-  return response.data.data || response.data;
+  const rawData = response.data.data || response.data;
+  
+  // Transform backend data to match ISale interface
+  return rawData.map((item: any) => {
+    let itemName = 'Unknown Item';
+    
+    // Extract item name based on item type
+    if (item.itemType === 'sealedProduct') {
+      itemName = item.name || 'Unknown Sealed Product';
+    } else if (item.itemType === 'psaGradedCard' || item.itemType === 'rawCard') {
+      if (item.cardId?.cardName) {
+        itemName = item.cardId.cardName;
+        // Add set name if available
+        if (item.cardId.setId?.setName) {
+          itemName += ` (${item.cardId.setId.setName})`;
+        }
+        // Add grade for PSA cards
+        if (item.itemType === 'psaGradedCard' && item.grade) {
+          itemName += ` - PSA ${item.grade}`;
+        }
+      }
+    }
+    
+    // Handle Decimal128 conversion for myPrice
+    let myPrice = 0;
+    if (item.myPrice) {
+      if (typeof item.myPrice === 'object' && item.myPrice.$numberDecimal) {
+        myPrice = parseFloat(item.myPrice.$numberDecimal);
+      } else {
+        myPrice = Number(item.myPrice);
+      }
+    }
+    
+    // Handle Decimal128 conversion for actualSoldPrice
+    let actualSoldPrice = 0;
+    if (item.saleDetails?.actualSoldPrice) {
+      if (typeof item.saleDetails.actualSoldPrice === 'object' && item.saleDetails.actualSoldPrice.$numberDecimal) {
+        actualSoldPrice = parseFloat(item.saleDetails.actualSoldPrice.$numberDecimal);
+      } else {
+        actualSoldPrice = Number(item.saleDetails.actualSoldPrice);
+      }
+    }
+    
+    return {
+      id: item._id || item.id,
+      itemCategory: item.category || 'Unknown',
+      itemName,
+      myPrice,
+      actualSoldPrice,
+      dateSold: item.saleDetails?.dateSold || '',
+      source: item.saleDetails?.source || 'Unknown',
+    };
+  });
 };
 
 /**

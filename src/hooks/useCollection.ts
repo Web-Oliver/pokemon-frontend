@@ -129,18 +129,16 @@ export const useCollection = (): UseCollectionReturn => {
   // PSA Graded Cards Operations
   const addPsaCard = useCallback(
     async (cardData: Partial<IPsaGradedCard>) => {
-      setLoading(true);
       setError(null);
 
       try {
         log('Adding PSA graded card...');
         const newCard = await collectionApi.createPsaGradedCard(cardData);
 
-        // Optimistic update
+        // Optimistic update - immediately add to state
         setState(prev => ({
           ...prev,
           psaCards: [...prev.psaCards, newCard],
-          loading: false,
         }));
 
         log('PSA graded card added successfully');
@@ -148,10 +146,9 @@ export const useCollection = (): UseCollectionReturn => {
       } catch (error) {
         handleApiError(error, 'Failed to add PSA graded card');
         setError('Failed to add PSA graded card');
-        setLoading(false);
       }
     },
-    [setLoading, setError]
+    [setError]
   );
 
   const updatePsaCard = useCallback(
@@ -239,7 +236,6 @@ export const useCollection = (): UseCollectionReturn => {
   // Raw Cards Operations (similar pattern)
   const addRawCard = useCallback(
     async (cardData: Partial<IRawCard>) => {
-      setLoading(true);
       setError(null);
 
       try {
@@ -249,7 +245,6 @@ export const useCollection = (): UseCollectionReturn => {
         setState(prev => ({
           ...prev,
           rawCards: [...prev.rawCards, newCard],
-          loading: false,
         }));
 
         log('Raw card added successfully');
@@ -257,10 +252,9 @@ export const useCollection = (): UseCollectionReturn => {
       } catch (error) {
         handleApiError(error, 'Failed to add raw card');
         setError('Failed to add raw card');
-        setLoading(false);
       }
     },
-    [setLoading, setError]
+    [setError]
   );
 
   const updateRawCard = useCallback(
@@ -342,7 +336,6 @@ export const useCollection = (): UseCollectionReturn => {
   // Sealed Products Operations (similar pattern)
   const addSealedProduct = useCallback(
     async (productData: Partial<ISealedProduct>) => {
-      setLoading(true);
       setError(null);
 
       try {
@@ -352,7 +345,6 @@ export const useCollection = (): UseCollectionReturn => {
         setState(prev => ({
           ...prev,
           sealedProducts: [...prev.sealedProducts, newProduct],
-          loading: false,
         }));
 
         log('Sealed product added successfully');
@@ -360,10 +352,9 @@ export const useCollection = (): UseCollectionReturn => {
       } catch (error) {
         handleApiError(error, 'Failed to add sealed product');
         setError('Failed to add sealed product');
-        setLoading(false);
       }
     },
-    [setLoading, setError]
+    [setError]
   );
 
   const updateSealedProduct = useCallback(
@@ -448,6 +439,21 @@ export const useCollection = (): UseCollectionReturn => {
   useEffect(() => {
     fetchAllCollectionData();
   }, [fetchAllCollectionData]);
+
+  // Listen for collection update events (triggered when items are added from other pages)
+  useEffect(() => {
+    const handleCollectionUpdate = () => {
+      log('Collection update event received, refreshing data...');
+      refreshCollection();
+    };
+
+    // Listen for custom collection update events
+    window.addEventListener('collectionUpdated', handleCollectionUpdate);
+
+    return () => {
+      window.removeEventListener('collectionUpdated', handleCollectionUpdate);
+    };
+  }, [refreshCollection]);
 
   return {
     // State

@@ -12,11 +12,17 @@
  * - Stunning animations and hover effects
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Star, Package, Archive } from 'lucide-react';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import * as collectionApi from '../api/collectionApi';
+import { IPsaGradedCard, IRawCard } from '../domain/models/card';
+import { ISealedProduct } from '../domain/models/sealedProduct';
+import { handleApiError } from '../utils/errorHandler';
+import { log } from '../utils/logger';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -28,8 +34,66 @@ interface ItemTypeOption {
   color: string;
 }
 
+type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
+
 const AddEditItem: React.FC = () => {
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [itemData, setItemData] = useState<CollectionItem | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Parse URL to determine if in edit mode and get item details
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    
+    if (currentPath.startsWith('/collection/edit/')) {
+      const pathParts = currentPath.split('/');
+      if (pathParts.length === 5) {
+        const [, , , type, id] = pathParts;
+        setIsEditing(true);
+        fetchItemForEdit(type, id);
+      }
+    }
+  }, []);
+
+  // Fetch item data for editing
+  const fetchItemForEdit = async (type: string, id: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      log(`Fetching ${type} item with ID: ${id} for editing`);
+      let fetchedItem: CollectionItem;
+      let itemType: ItemType;
+
+      switch (type) {
+        case 'psa':
+          fetchedItem = await collectionApi.getPsaGradedCardById(id);
+          itemType = 'psa-graded';
+          break;
+        case 'raw':
+          fetchedItem = await collectionApi.getRawCardById(id);
+          itemType = 'raw-card';
+          break;
+        case 'sealed':
+          fetchedItem = await collectionApi.getSealedProductById(id);
+          itemType = 'sealed-product';
+          break;
+        default:
+          throw new Error(`Unknown item type: ${type}`);
+      }
+
+      setItemData(fetchedItem);
+      setSelectedItemType(itemType);
+      log('Item fetched successfully for editing');
+    } catch (err) {
+      handleApiError(err, 'Failed to fetch item for editing');
+      setError('Failed to load item for editing');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle navigation back to collection
   const handleBackToCollection = () => {
@@ -64,6 +128,8 @@ const AddEditItem: React.FC = () => {
 
   // Handle successful form submission
   const handleFormSuccess = () => {
+    // Dispatch custom event to notify collection page of updates
+    window.dispatchEvent(new CustomEvent('collectionUpdated'));
     handleBackToCollection();
   };
 
@@ -84,7 +150,8 @@ const AddEditItem: React.FC = () => {
           <AddEditPsaCardForm
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
-            isEditing={false}
+            isEditing={isEditing}
+            initialData={isEditing ? itemData as IPsaGradedCard : undefined}
           />
         );
       case 'raw-card':
@@ -92,7 +159,8 @@ const AddEditItem: React.FC = () => {
           <AddEditRawCardForm
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
-            isEditing={false}
+            isEditing={isEditing}
+            initialData={isEditing ? itemData as IRawCard : undefined}
           />
         );
       case 'sealed-product':
@@ -100,7 +168,8 @@ const AddEditItem: React.FC = () => {
           <AddEditSealedProductForm
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
-            isEditing={false}
+            isEditing={isEditing}
+            initialData={isEditing ? itemData as ISealedProduct : undefined}
           />
         );
       default:
@@ -138,10 +207,13 @@ const AddEditItem: React.FC = () => {
                 </button>
                 <div>
                   <h1 className='text-3xl font-bold bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 bg-clip-text text-transparent mb-2'>
-                    Add New Item
+                    {isEditing ? 'Edit Item' : 'Add New Item'}
                   </h1>
                   <p className='text-slate-600 font-medium'>
-                    Add a new item to your premium Pokémon collection
+                    {isEditing 
+                      ? 'Update your collection item details' 
+                      : 'Add a new item to your premium Pokémon collection'
+                    }
                   </p>
                 </div>
               </div>
@@ -154,8 +226,35 @@ const AddEditItem: React.FC = () => {
             </div>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 text-center'>
+              <LoadingSpinner size='lg' />
+              <p className='mt-4 text-slate-600 font-medium'>Loading item for editing...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className='bg-red-50/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-red-200/50 p-8'>
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <Archive className='w-8 h-8 text-red-600' />
+                </div>
+                <h3 className='text-xl font-bold text-red-900 mb-2'>Error Loading Item</h3>
+                <p className='text-red-700 mb-4'>{error}</p>
+                <button
+                  onClick={handleBackToCollection}
+                  className='bg-red-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-red-700 transition-colors'
+                >
+                  Back to Collection
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Context7 Premium Item Type Selection */}
-          {!selectedItemType && (
+          {!loading && !error && !selectedItemType && (
             <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-indigo-50/50'></div>
 
@@ -225,19 +324,21 @@ const AddEditItem: React.FC = () => {
           )}
 
           {/* Context7 Premium Selected Form */}
-          {selectedItemType && (
+          {!loading && !error && selectedItemType && (
             <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
 
               <div className='flex items-center justify-between mb-8 relative z-10'>
                 <div className='flex items-center'>
-                  <button
-                    onClick={() => setSelectedItemType(null)}
-                    className='mr-6 p-3 text-slate-600 hover:text-slate-900 hover:bg-white/60 hover:shadow-lg rounded-2xl backdrop-blur-sm border border-transparent hover:border-white/30 transition-all duration-300 group'
-                    aria-label='Back to item type selection'
-                  >
-                    <ArrowLeft className='w-6 h-6 group-hover:scale-110 transition-transform duration-300' />
-                  </button>
+                  {!isEditing && (
+                    <button
+                      onClick={() => setSelectedItemType(null)}
+                      className='mr-6 p-3 text-slate-600 hover:text-slate-900 hover:bg-white/60 hover:shadow-lg rounded-2xl backdrop-blur-sm border border-transparent hover:border-white/30 transition-all duration-300 group'
+                      aria-label='Back to item type selection'
+                    >
+                      <ArrowLeft className='w-6 h-6 group-hover:scale-110 transition-transform duration-300' />
+                    </button>
+                  )}
                   <div>
                     <h2 className='text-2xl font-bold bg-gradient-to-r from-slate-900 to-indigo-900 bg-clip-text text-transparent mb-2'>
                       {itemTypes.find(type => type.id === selectedItemType)?.name}

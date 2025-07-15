@@ -7,6 +7,22 @@
 import { ISale, ISalesGraphData } from '../models/sale';
 
 /**
+ * Calculate total revenue from sales data
+ * @param sales - Array of sales transactions
+ * @returns Total revenue amount
+ */
+export const calculateTotalRevenue = (sales: ISale[]): number => {
+  if (!sales || sales.length === 0) {
+    return 0;
+  }
+
+  return sales.reduce((total, sale) => {
+    const soldPrice = Number(sale.actualSoldPrice) || 0;
+    return total + soldPrice;
+  }, 0);
+};
+
+/**
  * Calculate total profit from sales data
  * @param sales - Array of sales transactions
  * @returns Total profit amount
@@ -17,29 +33,11 @@ export const calculateTotalProfit = (sales: ISale[]): number => {
   }
 
   return sales.reduce((total, sale) => {
-    const profit = sale.actualSoldPrice - sale.myPrice;
+    const actualPrice = Number(sale.actualSoldPrice) || 0;
+    const myPrice = Number(sale.myPrice) || 0;
+    const profit = actualPrice - myPrice;
     return total + profit;
   }, 0);
-};
-
-/**
- * Calculate average profit margin from sales data
- * @param sales - Array of sales transactions
- * @returns Average profit margin as percentage
- */
-export const calculateAverageMargin = (sales: ISale[]): number => {
-  if (!sales || sales.length === 0) {
-    return 0;
-  }
-
-  const totalMargin = sales.reduce((total, sale) => {
-    const profit = sale.actualSoldPrice - sale.myPrice;
-    // Use profit margin calculation: (profit / actualSoldPrice) * 100
-    const margin = sale.actualSoldPrice > 0 ? (profit / sale.actualSoldPrice) * 100 : 0;
-    return total + margin;
-  }, 0);
-
-  return totalMargin / sales.length;
 };
 
 /**
@@ -67,7 +65,7 @@ export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[
     const profit = Number(dataPoint.profit) || 0;
     const itemsSold = Number(dataPoint.itemCount || dataPoint.count) || 0;
 
-    // Calculate average margin client-side: (profit / revenue) * 100
+    // Calculate average margin: (profit / revenue) * 100
     const averageMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
     return {
@@ -101,16 +99,16 @@ export const aggregateByCategory = (sales: ISale[]) => {
   };
 
   sales.forEach(sale => {
-    // Convert PascalCase backend values to camelCase for internal use
+    // Convert backend values to camelCase for internal use
     let categoryKey: keyof typeof categoryData;
     switch (sale.itemCategory) {
-      case 'PsaGradedCard':
+      case 'PSA Graded Card':
         categoryKey = 'psaGradedCard';
         break;
-      case 'RawCard':
+      case 'Raw Card':
         categoryKey = 'rawCard';
         break;
-      case 'SealedProduct':
+      case 'Sealed Product':
         categoryKey = 'sealedProduct';
         break;
       default:
@@ -118,8 +116,11 @@ export const aggregateByCategory = (sales: ISale[]) => {
     }
 
     categoryData[categoryKey].count += 1;
-    categoryData[categoryKey].revenue += sale.actualSoldPrice;
-    const profit = sale.actualSoldPrice - sale.myPrice;
+    const actualPrice = Number(sale.actualSoldPrice) || 0;
+    const myPrice = Number(sale.myPrice) || 0;
+    const profit = actualPrice - myPrice;
+    
+    categoryData[categoryKey].revenue += actualPrice;
     categoryData[categoryKey].profit += profit;
   });
 
@@ -220,11 +221,14 @@ export const calculateKPIs = (sales: ISale[]) => {
     };
   }
 
-  const totalRevenue = sales.reduce((sum, sale) => sum + sale.actualSoldPrice, 0);
+  const totalRevenue = calculateTotalRevenue(sales);
   const totalProfit = calculateTotalProfit(sales);
-  const averageMargin = calculateAverageMargin(sales);
   const totalItems = sales.length;
-  const averageSalePrice = totalRevenue / totalItems;
+  const averageSalePrice = totalRevenue > 0 ? totalRevenue / totalItems : 0;
+
+  // Calculate average margin: (profit / revenue) * 100
+  const averageMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+  const profitabilityRatio = averageMargin; // Same as average margin
 
   const categoryBreakdown = aggregateByCategory(sales);
   const bestPerformingCategory = Object.entries(categoryBreakdown).reduce(
@@ -232,8 +236,6 @@ export const calculateKPIs = (sales: ISale[]) => {
       data.revenue > best.revenue ? { category, revenue: data.revenue } : best,
     { category: '', revenue: 0 }
   ).category;
-
-  const profitabilityRatio = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
   return {
     totalRevenue: Number(totalRevenue.toFixed(2)),

@@ -15,11 +15,16 @@ export interface IAuctionItem {
   // Additional fields for UI display (populated from referenced items)
   itemName?: string; // Display name populated from referenced item
   itemImage?: string; // Primary image populated from referenced item
+  setName?: string; // Set name for the card
+  grade?: string; // PSA grade for PSA cards
+  condition?: string; // Condition for raw cards
+  price?: number; // Original price of the item
 }
 
 // Updated IAuction interface to match backend Auctions schema
 export interface IAuction {
   id: string;
+  _id?: string; // MongoDB ObjectId (for backend compatibility)
   topText: string; // Auction description header (required)
   bottomText: string; // Auction description footer (required)
   auctionDate: string; // ISO date string - Scheduled auction date

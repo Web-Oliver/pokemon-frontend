@@ -111,10 +111,10 @@ export const useAuction = (): UseAuctionHook => {
         const updatedAuction = await auctionsApi.updateAuction(id, data);
 
         // Update auctions list
-        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+        setAuctions(prev => prev.map(auction => ((auction.id || auction._id) === id ? updatedAuction : auction)));
 
         // Update current auction if it's the one being updated
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(updatedAuction);
         }
       } catch (err) {
@@ -142,7 +142,7 @@ export const useAuction = (): UseAuctionHook => {
         setAuctions(prev => prev.filter(auction => auction.id !== id));
 
         // Clear current auction if it's the one being deleted
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(null);
         }
       } catch (err) {
@@ -167,10 +167,10 @@ export const useAuction = (): UseAuctionHook => {
         const updatedAuction = await auctionsApi.addItemToAuction(id, itemData);
 
         // Update auctions list
-        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+        setAuctions(prev => prev.map(auction => ((auction.id || auction._id) === id ? updatedAuction : auction)));
 
         // Update current auction if it's the one being updated
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(updatedAuction);
         }
       } catch (err) {
@@ -195,10 +195,10 @@ export const useAuction = (): UseAuctionHook => {
         const updatedAuction = await auctionsApi.removeItemFromAuction(id, itemId);
 
         // Update auctions list
-        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+        setAuctions(prev => prev.map(auction => ((auction.id || auction._id) === id ? updatedAuction : auction)));
 
         // Update current auction if it's the one being updated
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(updatedAuction);
         }
       } catch (err) {
@@ -223,10 +223,10 @@ export const useAuction = (): UseAuctionHook => {
         const updatedAuction = await auctionsApi.markAuctionItemSold(id, saleData);
 
         // Update auctions list
-        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+        setAuctions(prev => prev.map(auction => ((auction.id || auction._id) === id ? updatedAuction : auction)));
 
         // Update current auction if it's the one being updated
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(updatedAuction);
         }
       } catch (err) {
@@ -258,7 +258,7 @@ export const useAuction = (): UseAuctionHook => {
         const postText = await exportApi.generateAuctionFacebookPost(id);
 
         // Update the current auction with the generated post
-        if (currentAuction?.id === id) {
+        if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(prev => (prev ? { ...prev, generatedFacebookPost: postText } : null));
         }
 

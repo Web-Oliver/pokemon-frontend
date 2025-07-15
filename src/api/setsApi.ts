@@ -39,8 +39,29 @@ export const getSets = async (): Promise<ISet[]> => {
 export const getPaginatedSets = async (
   params?: PaginatedSetsParams
 ): Promise<PaginatedSetsResponse> => {
-  const response = await apiClient.get('/sets/paginated', { params });
-  return response.data.data || response.data;
+  // Convert 'search' to 'q' to match backend parameter
+  const backendParams = {
+    ...params,
+    ...(params?.search && { q: params.search }),
+  };
+  // Remove the 'search' param since backend uses 'q'
+  if (backendParams.search) {
+    delete backendParams.search;
+  }
+  
+  const response = await apiClient.get('/sets', { params: backendParams });
+  
+  // Backend returns: { sets, currentPage, totalPages, totalSets, hasNextPage, hasPrevPage }
+  // Transform to match frontend interface
+  const backendData = response.data;
+  return {
+    sets: backendData.sets || [],
+    total: backendData.totalSets || 0,
+    currentPage: backendData.currentPage || 1,
+    totalPages: backendData.totalPages || 1,
+    hasNextPage: backendData.hasNextPage || false,
+    hasPrevPage: backendData.hasPrevPage || false,
+  };
 };
 
 /**

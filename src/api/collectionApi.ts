@@ -13,7 +13,7 @@ import { ISaleDetails } from '../domain/models/common';
  * @param item - Item object or array of items
  * @returns Item(s) with id field mapped from _id
  */
-const mapItemIds = (item: unknown): unknown => {
+const mapItemIds = (item: any): any => {
   if (!item) {
     return item;
   }
@@ -22,8 +22,22 @@ const mapItemIds = (item: unknown): unknown => {
     return item.map(mapItemIds);
   }
 
-  if (item._id && !item.id) {
-    item.id = item._id;
+  if (typeof item === 'object') {
+    const newItem = { ...item };
+    
+    // Map _id to id for the current object
+    if (newItem._id && !newItem.id) {
+      newItem.id = newItem._id;
+    }
+
+    // Recursively process nested objects
+    Object.keys(newItem).forEach(key => {
+      if (typeof newItem[key] === 'object' && newItem[key] !== null) {
+        newItem[key] = mapItemIds(newItem[key]);
+      }
+    });
+
+    return newItem;
   }
 
   return item;
@@ -203,6 +217,17 @@ export const getSealedProductCollection = async (
   params?: SealedProductCollectionParams
 ): Promise<ISealedProduct[]> => {
   const response = await apiClient.get('/sealed-products', { params });
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
+};
+
+/**
+ * Get sealed product by ID
+ * @param id - Sealed product ID
+ * @returns Promise<ISealedProduct> - Single sealed product
+ */
+export const getSealedProductById = async (id: string): Promise<ISealedProduct> => {
+  const response = await apiClient.get(`/sealed-products/${id}`);
   const responseData = response.data.data || response.data;
   return mapItemIds(responseData);
 };

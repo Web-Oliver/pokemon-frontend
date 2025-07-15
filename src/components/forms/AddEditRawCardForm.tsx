@@ -379,12 +379,10 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
           <div>
             <Input
-              label='Pokémon Number'
-              {...register('pokemonNumber', {
-                required: 'Pokémon number is required',
-              })}
+              label='Card Number (Optional)'
+              {...register('pokemonNumber')}
               error={errors.pokemonNumber?.message}
-              placeholder='e.g., 4/102, 25/102'
+              placeholder='e.g., 4, BW29, SL1, 50a, or leave empty'
             />
           </div>
 
@@ -443,7 +441,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
           <div>
             <Input
-              label='My Price ($)'
+              label='My Price (kr.)'
               type='number'
               step='0.01'
               min='0'
@@ -460,7 +458,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             />
             {watchedPrice && (
               <div className='mt-2 text-sm text-emerald-600 font-semibold'>
-                ${parseFloat(watchedPrice || '0').toFixed(2)}
+                {parseFloat(watchedPrice || '0')} kr.
               </div>
             )}
           </div>

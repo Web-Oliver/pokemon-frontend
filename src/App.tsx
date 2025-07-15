@@ -8,7 +8,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import './App.css';
 import { log } from './utils/logger';
 import apiClient from './api/apiClient';
 import { Toaster } from 'react-hot-toast';
@@ -17,11 +16,13 @@ import { Toaster } from 'react-hot-toast';
 import MainLayout from './components/layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Collection from './pages/Collection';
+import CollectionItemDetail from './pages/CollectionItemDetail';
 import Search from './pages/Search';
 import SetSearch from './pages/SetSearch';
 import SealedProductSearch from './pages/SealedProductSearch';
 import Auctions from './pages/Auctions';
 import AuctionDetail from './pages/AuctionDetail';
+import CreateAuction from './pages/CreateAuction';
 import SalesAnalytics from './pages/SalesAnalytics';
 import AddEditItem from './pages/AddEditItem';
 import TestPage from './pages/TestPage';
@@ -32,19 +33,7 @@ function App() {
   // Test logger functionality
   log('App loaded!');
 
-  // Test API client error handling (keep for Phase 1 verification)
-  useEffect(() => {
-    const testApiClient = async () => {
-      try {
-        await apiClient.get('/non-existent-endpoint');
-      } catch (error) {
-        // Error is already handled by the interceptor
-        log('Expected API error occurred and was handled');
-      }
-    };
-
-    testApiClient();
-  }, []);
+  // Test API client error handling removed for cleaner console
 
   // Listen for navigation changes from MainLayout
   useEffect(() => {
@@ -61,11 +50,36 @@ function App() {
 
   // Route configuration - simple routing without external router library
   const renderPage = () => {
-    // Handle dynamic auction detail routes
+    // Handle dynamic auction routes
     if (currentPath.startsWith('/auctions/') && currentPath !== '/auctions') {
-      const auctionId = currentPath.split('/auctions/')[1];
-      if (auctionId && !auctionId.includes('/')) {
-        return <AuctionDetail auctionId={auctionId} />;
+      const routePart = currentPath.split('/auctions/')[1];
+      if (routePart === 'create') {
+        return <CreateAuction />;
+      }
+      if (routePart && !routePart.includes('/')) {
+        return <AuctionDetail auctionId={routePart} />;
+      }
+    }
+
+    // Handle edit routes: /collection/edit/{type}/{id}
+    if (currentPath.startsWith('/collection/edit/')) {
+      const pathParts = currentPath.split('/');
+      if (pathParts.length === 5) { // /collection/edit/{type}/{id}
+        const [, , , type, id] = pathParts;
+        if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
+          return <AddEditItem />;
+        }
+      }
+    }
+
+    // Handle dynamic collection item detail routes
+    if (currentPath.startsWith('/collection/') && currentPath !== '/collection' && currentPath !== '/collection/add') {
+      const pathParts = currentPath.split('/');
+      if (pathParts.length === 4) { // /collection/{type}/{id}
+        const [, , type, id] = pathParts;
+        if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
+          return <CollectionItemDetail />;
+        }
       }
     }
 

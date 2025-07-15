@@ -442,7 +442,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
           <div>
             <Input
-              label='CardMarket Price ($)'
+              label='CardMarket Price (kr.)'
               type='number'
               step='0.01'
               min='0'
@@ -465,7 +465,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
           <div>
             <Input
-              label='My Price ($)'
+              label='My Price (kr.)'
               type='number'
               step='0.01'
               min='0'
@@ -482,7 +482,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             />
             {watchedPrice && (
               <div className='mt-2 text-sm text-slate-600 font-semibold'>
-                Paid: ${parseFloat(watchedPrice || '0').toFixed(2)}
+                Paid: {parseFloat(watchedPrice || '0')} kr.
               </div>
             )}
           </div>

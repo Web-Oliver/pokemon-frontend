@@ -21,8 +21,8 @@ import { showWarningToast } from '../utils/errorHandler';
 
 export interface PriceHistoryDisplayProps {
   priceHistory: IPriceHistoryEntry[];
-  currentPrice: number;
-  onPriceUpdate: (newPrice: number, date: string) => void;
+  currentPrice?: number;
+  onPriceUpdate?: (newPrice: number, date: string) => void;
 }
 
 export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
@@ -33,6 +33,8 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
   const [newPrice, setNewPrice] = useState<string>('');
 
   const handlePriceUpdate = () => {
+    if (!onPriceUpdate) return;
+    
     const price = parseFloat(newPrice);
 
     if (isNaN(price) || price <= 0) {
@@ -54,8 +56,11 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
     setNewPrice(numericValue);
   };
 
-  const formatPrice = (price: number): string => {
-    return `$${price.toFixed(2)}`;
+  const formatPrice = (price: number | undefined | null): string => {
+    if (price === undefined || price === null || isNaN(price)) {
+      return '0 kr.';
+    }
+    return `${price} kr.`;
   };
 
   const formatDate = (dateString: string): string => {
@@ -195,6 +200,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
         </div>
 
         {/* Context7 Premium Update Price Section */}
+        {onPriceUpdate && (
         <div className='border-t border-slate-200/50 pt-8'>
           <div className='flex items-center mb-6'>
             <div className='w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-lg flex items-center justify-center mr-3'>
@@ -235,6 +241,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ import {
   DollarSign,
   Download,
   FileText,
+  Eye,
 } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
@@ -107,13 +108,22 @@ const Collection: React.FC = () => {
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
+  // Handle navigation to item detail page
+  const handleViewItemDetail = (
+    item: { id: string; cardName?: string; name?: string },
+    type: 'psa' | 'raw' | 'sealed'
+  ) => {
+    window.history.pushState({}, '', `/collection/${type}/${item.id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
   // Handle mark as sold button click
   const handleMarkAsSold = (
-    item: { _id: string; cardName?: string; name?: string },
+    item: { id: string; cardName?: string; name?: string },
     type: 'psa' | 'raw' | 'sealed'
   ) => {
     setSelectedItem({
-      id: item._id,
+      id: item.id,
       type,
       name: item.cardName || item.name || 'Unknown Item',
     });
@@ -157,9 +167,9 @@ const Collection: React.FC = () => {
   // Export functionality
   const getAllCollectionItems = () => {
     const allItems = [
-      ...psaCards.map(item => ({ ...item, _id: item._id || item.id })),
-      ...rawCards.map(item => ({ ...item, _id: item._id || item.id })),
-      ...sealedProducts.map(item => ({ ...item, _id: item._id || item.id })),
+      ...psaCards,
+      ...rawCards,
+      ...sealedProducts,
     ];
     return allItems;
   };
@@ -174,7 +184,7 @@ const Collection: React.FC = () => {
 
     setIsExporting(true);
     try {
-      const itemIds = allItems.map(item => item._id || item.id);
+      const itemIds = allItems.map(item => item.id);
       const blob = await getCollectionFacebookTextFile(itemIds);
       const filename = `collection-facebook-export-${new Date().toISOString().split('T')[0]}.txt`;
       downloadBlob(blob, filename);
@@ -224,7 +234,7 @@ const Collection: React.FC = () => {
 
   const selectAllItems = () => {
     const allItems = getAllCollectionItems();
-    const allIds = allItems.map(item => item._id || item.id);
+    const allIds = allItems.map(item => item.id);
     setSelectedItemsForExport(allIds);
   };
 
@@ -303,7 +313,7 @@ const Collection: React.FC = () => {
 
     // Render actual collection items with Mark as Sold functionality
     return (
-      <div className='space-y-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
         {data.map(
           (
             item: {
@@ -320,60 +330,137 @@ const Collection: React.FC = () => {
             },
             index: number
           ) => {
-            const itemType =
-              activeTab === 'psa-graded' ? 'psa' : activeTab === 'raw-cards' ? 'raw' : 'sealed';
+            // Determine item type based on item properties, especially important for sold items
+            const getItemType = (item: any, activeTab: string) => {
+              if (activeTab === 'psa-graded') return 'psa';
+              if (activeTab === 'raw-cards') return 'raw';
+              if (activeTab === 'sealed-products') return 'sealed';
+              
+              // For sold items, detect type based on item properties
+              if (activeTab === 'sold-items') {
+                if ('grade' in item || item.grade !== undefined) return 'psa';
+                if ('condition' in item || item.condition !== undefined) return 'raw';
+                if ('category' in item || item.category !== undefined) return 'sealed';
+                
+                // Fallback: check if item has cardId (PSA/Raw cards) or productId (sealed)
+                if (item.cardId || item.cardName) return item.grade ? 'psa' : 'raw';
+                if (item.productId || item.name) return 'sealed';
+              }
+              
+              return 'sealed'; // Default fallback
+            };
+            
+            const itemType = getItemType(item, activeTab);
             const isUnsoldTab = activeTab !== 'sold-items';
 
             return (
               <div
-                key={item._id || index}
-                className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'
+                key={item.id || index}
+                className='group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 hover:scale-105 hover:border-indigo-200/50 overflow-hidden'
               >
-                <div className='flex items-center justify-between'>
-                  <div className='flex-1'>
-                    <h4 className='font-medium text-gray-900'>
+                {/* Card Background Pattern */}
+                <div className='absolute inset-0 bg-gradient-to-br from-slate-50/50 to-indigo-50/30 opacity-60'></div>
+                
+                {/* Card Image Placeholder */}
+                <div className='relative z-10 mb-6'>
+                  <div className='w-full h-48 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner'>
+                    <div className='w-32 h-44 bg-gradient-to-br from-indigo-300 to-purple-300 rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300'>
+                      <div className='w-24 h-32 bg-gradient-to-br from-white/80 to-indigo-50/80 rounded-lg flex items-center justify-center'>
+                        <Package className='w-8 h-8 text-indigo-600' />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Content */}
+                <div className='relative z-10 space-y-4'>
+                  <div className='text-center'>
+                    <h4 className='text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
                       {item.cardId?.cardName ||
                         item.cardId?.name ||
                         item.cardName ||
                         item.name ||
-                        `Item ${index + 1}`}
+                        'Unknown'}
                     </h4>
-                    <div className='text-sm text-gray-500'>
-                      {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
-                      {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
-                      {activeTab === 'sealed-products' && `Category: ${item.category}`}
-                      {activeTab === 'sold-items' &&
-                        `Sold: ${item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}`}
+                    
+                    {/* Grade/Condition Badge */}
+                    <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/50'>
+                      {activeTab === 'psa-graded' && (
+                        <>
+                          <Star className='w-4 h-4 mr-1 text-yellow-500' />
+                          Grade {item.grade}
+                        </>
+                      )}
+                      {activeTab === 'raw-cards' && (
+                        <>
+                          <Package className='w-4 h-4 mr-1 text-emerald-500' />
+                          {item.condition}
+                        </>
+                      )}
+                      {activeTab === 'sealed-products' && (
+                        <>
+                          <Archive className='w-4 h-4 mr-1 text-purple-500' />
+                          {item.category}
+                        </>
+                      )}
+                      {activeTab === 'sold-items' && (
+                        <>
+                          <CheckCircle className='w-4 h-4 mr-1 text-green-500' />
+                          {item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  <div className='flex items-center space-x-4'>
-                    <div className='text-right'>
-                      <p className='font-semibold text-gray-900'>${item.myPrice || '0.00'}</p>
-                      {item.sold && (
-                        <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
-                          Sold
-                        </span>
-                      )}
-                      {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
-                        <p className='text-sm text-green-600 font-medium'>
-                          Sold: ${item.saleDetails.actualSoldPrice}
-                        </p>
-                      )}
-                    </div>
+                  {/* Price Display */}
+                  <div className='text-center space-y-2'>
+                    <p className='text-2xl font-bold text-slate-900'>
+                      {item.myPrice || '0'} kr.
+                    </p>
+                    
+                    {item.sold && (
+                      <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200/50'>
+                        <CheckCircle className='w-4 h-4 mr-1' />
+                        Sold
+                      </div>
+                    )}
+                    
+                    {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
+                      <p className='text-sm font-medium text-green-600'>
+                        Sold: {item.saleDetails.actualSoldPrice} kr.
+                      </p>
+                    )}
+                  </div>
 
-                    {/* Mark as Sold button - only show for unsold items in non-sold tabs */}
+                  {/* Action Buttons */}
+                  <div className='flex flex-col gap-3 pt-4'>
+                    {/* View Details Button - Always visible */}
+                    <button
+                      onClick={() => handleViewItemDetail(item, itemType)}
+                      className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                    >
+                      <Eye className='w-5 h-5 mr-2' />
+                      View Details
+                    </button>
+                    
+                    {/* Mark as Sold Button - Only for unsold items */}
                     {isUnsoldTab && !item.sold && (
                       <button
-                        onClick={() => handleMarkAsSold(item, itemType)}
-                        className='inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkAsSold(item, itemType);
+                        }}
+                        className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
                       >
-                        <DollarSign className='w-4 h-4 mr-1' />
+                        <DollarSign className='w-5 h-5 mr-2' />
                         Mark as Sold
                       </button>
                     )}
                   </div>
                 </div>
+
+                {/* Hover Effect Overlay */}
+                <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl'></div>
               </div>
             );
           }
@@ -619,7 +706,7 @@ const Collection: React.FC = () => {
             {/* Items list */}
             <div className='max-h-96 overflow-y-auto space-y-2'>
               {getAllCollectionItems().map(item => {
-                const itemId = item._id || item.id;
+                const itemId = item.id;
                 const isSelected = selectedItemsForExport.includes(itemId);
                 const itemType = item.grade
                   ? 'PSA Graded'
@@ -650,7 +737,7 @@ const Collection: React.FC = () => {
                             {item.cardName || item.name || 'Unknown Item'}
                           </h4>
                           <p className='text-sm text-gray-500'>
-                            {itemType} • ${item.myPrice || '0.00'}
+                            {itemType} • {item.myPrice || '0'} kr.
                           </p>
                         </div>
                       </div>

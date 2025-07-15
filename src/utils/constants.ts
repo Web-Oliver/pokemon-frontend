@@ -5,17 +5,17 @@ export const API_BASE_URL = 'http://localhost:3000/api';
 
 // Enum definitions matching actual backend schema values
 export enum PaymentMethod {
-  _CASH = 'CASH',
+  CASH = 'CASH',
   MOBILEPAY = 'Mobilepay',
-  _BANK_TRANSFER = 'BankTransfer',
+  BANK_TRANSFER = 'BankTransfer',
 }
 
 export enum DeliveryMethod {
   SENT = 'Sent',
-  _LOCAL_MEETUP = 'Local Meetup',
+  LOCAL_MEETUP = 'Local Meetup',
 }
 
 export enum Source {
-  _FACEBOOK = 'Facebook',
-  _DBA = 'DBA',
+  FACEBOOK = 'Facebook',
+  DBA = 'DBA',
 }

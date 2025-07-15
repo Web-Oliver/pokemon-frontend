@@ -281,7 +281,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
           </div>
 
           {/* Context7 Premium Suggestions List */}
-          <div className='relative max-h-80 overflow-y-auto scrollbar-premium'>
+          <div className='relative max-h-80 overflow-y-auto'>
             {suggestions.map((suggestion, index) => {
               const displayName = getDisplayName(suggestion);
               const metadata = renderSuggestionMetadata(suggestion);
