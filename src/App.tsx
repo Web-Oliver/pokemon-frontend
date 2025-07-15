@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { log } from './utils/logger'
 import apiClient from './api/apiClient'
+import { Toaster } from 'react-hot-toast'
 
 // Layout and Pages
 import MainLayout from './components/layouts/MainLayout'
@@ -94,9 +95,43 @@ function App() {
   };
 
   return (
-    <MainLayout>
-      {renderPage()}
-    </MainLayout>
+    <>
+      <MainLayout>
+        {renderPage()}
+      </MainLayout>
+      <Toaster 
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          // Global default options for all toasts
+          duration: 4000,
+          style: {
+            fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+            fontSize: '14px',
+            fontWeight: '500',
+            borderRadius: '8px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          },
+          success: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#16A34A',
+              secondary: '#FFFFFF',
+            },
+          },
+          error: {
+            duration: 5000,
+            iconTheme: {
+              primary: '#DC2626',
+              secondary: '#FFFFFF',
+            },
+          },
+        }}
+      />
+    </>
   )
 }
 

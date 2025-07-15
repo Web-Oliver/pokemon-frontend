@@ -9,7 +9,7 @@ import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import * as collectionApi from '../api/collectionApi';
-import { handleApiError } from '../utils/errorHandler';
+import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
 export interface CollectionState {
@@ -143,6 +143,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('PSA graded card added successfully');
+      showSuccessToast('PSA graded card added to collection!');
     } catch (error) {
       handleApiError(error, 'Failed to add PSA graded card');
       setError('Failed to add PSA graded card');
@@ -168,6 +169,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('PSA graded card updated successfully');
+      showSuccessToast('PSA graded card updated successfully!');
     } catch (error) {
       handleApiError(error, 'Failed to update PSA graded card');
       setError('Failed to update PSA graded card');
@@ -191,6 +193,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('PSA graded card deleted successfully');
+      showSuccessToast('PSA graded card removed from collection!');
     } catch (error) {
       handleApiError(error, 'Failed to delete PSA graded card');
       setError('Failed to delete PSA graded card');
@@ -215,6 +218,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('PSA graded card marked as sold successfully');
+      showSuccessToast('PSA graded card marked as sold! 💰');
     } catch (error) {
       handleApiError(error, 'Failed to mark PSA graded card as sold');
       setError('Failed to mark PSA graded card as sold');
@@ -238,6 +242,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('Raw card added successfully');
+      showSuccessToast('Raw card added to collection!');
     } catch (error) {
       handleApiError(error, 'Failed to add raw card');
       setError('Failed to add raw card');
@@ -330,6 +335,7 @@ export const useCollection = (): UseCollectionReturn => {
       }));
 
       log('Sealed product added successfully');
+      showSuccessToast('Sealed product added to collection!');
     } catch (error) {
       handleApiError(error, 'Failed to add sealed product');
       setError('Failed to add sealed product');

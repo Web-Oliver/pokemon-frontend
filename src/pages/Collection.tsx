@@ -12,12 +12,14 @@
  */
 
 import React, { useState } from 'react';
-import { Package, Star, Archive, CheckCircle, Plus, DollarSign } from 'lucide-react';
+import { Package, Star, Archive, CheckCircle, Plus, DollarSign, Download, FileText } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { useCollection } from '../hooks/useCollection';
 import { ISaleDetails } from '../domain/models/common';
+import { getCollectionFacebookTextFile, downloadBlob } from '../api/exportApi';
+import { showSuccessToast, showWarningToast, handleApiError } from '../utils/errorHandler';
 
 type TabType = 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
 
@@ -31,6 +33,9 @@ interface TabConfig {
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
   const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedItemsForExport, setSelectedItemsForExport] = useState<string[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{
     id: string;
     type: 'psa' | 'raw' | 'sealed';
@@ -134,6 +139,86 @@ const Collection: React.FC = () => {
   const handleModalClose = () => {
     setIsMarkSoldModalOpen(false);
     setSelectedItem(null);
+  };
+
+  // Export functionality
+  const getAllCollectionItems = () => {
+    const allItems = [
+      ...psaCards.map(item => ({ ...item, _id: item._id || item.id })),
+      ...rawCards.map(item => ({ ...item, _id: item._id || item.id })),
+      ...sealedProducts.map(item => ({ ...item, _id: item._id || item.id }))
+    ];
+    return allItems;
+  };
+
+  const handleExportAllItems = async () => {
+    const allItems = getAllCollectionItems();
+    
+    if (allItems.length === 0) {
+      showWarningToast('No items in collection to export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const itemIds = allItems.map(item => item._id || item.id);
+      const blob = await getCollectionFacebookTextFile(itemIds);
+      const filename = `collection-facebook-export-${new Date().toISOString().split('T')[0]}.txt`;
+      downloadBlob(blob, filename);
+      showSuccessToast(`Successfully exported ${itemIds.length} items to Facebook text file!`);
+    } catch (error) {
+      handleApiError(error, 'Failed to export collection to Facebook text file');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportSelectedItems = async () => {
+    if (selectedItemsForExport.length === 0) {
+      showWarningToast('Please select items to export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const blob = await getCollectionFacebookTextFile(selectedItemsForExport);
+      const filename = `collection-selected-export-${new Date().toISOString().split('T')[0]}.txt`;
+      downloadBlob(blob, filename);
+      showSuccessToast(`Successfully exported ${selectedItemsForExport.length} selected items!`);
+      setIsExportModalOpen(false);
+      setSelectedItemsForExport([]);
+    } catch (error) {
+      handleApiError(error, 'Failed to export selected items');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleOpenExportModal = () => {
+    const allItems = getAllCollectionItems();
+    if (allItems.length === 0) {
+      showWarningToast('No items in collection to export');
+      return;
+    }
+    setIsExportModalOpen(true);
+  };
+
+  const toggleItemSelection = (itemId: string) => {
+    setSelectedItemsForExport(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const selectAllItems = () => {
+    const allItems = getAllCollectionItems();
+    const allIds = allItems.map(item => item._id || item.id);
+    setSelectedItemsForExport(allIds);
+  };
+
+  const clearSelection = () => {
+    setSelectedItemsForExport([]);
   };
 
   // Render tab content based on active tab
@@ -275,13 +360,40 @@ const Collection: React.FC = () => {
                 Manage your Pokémon cards and sealed products
               </p>
             </div>
-            <button 
-              onClick={handleAddNewItem}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Item
-            </button>
+            <div className="flex items-center space-x-3">
+              {/* Export Buttons */}
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={handleExportAllItems}
+                  disabled={isExporting || loading}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isExporting ? (
+                    <LoadingSpinner size="sm" className="mr-2" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  Export All
+                </button>
+                
+                <button 
+                  onClick={handleOpenExportModal}
+                  disabled={isExporting || loading}
+                  className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  Select & Export
+                </button>
+              </div>
+              
+              <button 
+                onClick={handleAddNewItem}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Item
+              </button>
+            </div>
           </div>
         </div>
 
@@ -371,6 +483,112 @@ const Collection: React.FC = () => {
             {renderTabContent()}
           </div>
         </div>
+
+        {/* Export Selection Modal */}
+        <Modal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          title="Select Items to Export"
+          maxWidth="4xl"
+        >
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <p className="text-gray-600">
+                Select items from your collection to include in the Facebook text file export.
+              </p>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={selectAllItems}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  Select All
+                </button>
+                <span className="text-gray-300">|</span>
+                <button
+                  onClick={clearSelection}
+                  className="text-gray-600 hover:text-gray-700 text-sm font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+
+            {/* Selected count */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-blue-800 font-medium">
+                {selectedItemsForExport.length} items selected for export
+              </p>
+            </div>
+
+            {/* Items list */}
+            <div className="max-h-96 overflow-y-auto space-y-2">
+              {getAllCollectionItems().map((item) => {
+                const itemId = item._id || item.id;
+                const isSelected = selectedItemsForExport.includes(itemId);
+                const itemType = item.grade ? 'PSA Graded' : 
+                                item.condition ? 'Raw Card' : 'Sealed Product';
+                
+                return (
+                  <div
+                    key={itemId}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => toggleItemSelection(itemId)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleItemSelection(itemId)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-3"
+                        />
+                        <div>
+                          <h4 className="font-medium text-gray-900">
+                            {item.cardName || item.name || 'Unknown Item'}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {itemType} • ${item.myPrice || '0.00'}
+                          </p>
+                        </div>
+                      </div>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        itemType === 'PSA Graded' ? 'bg-blue-100 text-blue-800' :
+                        itemType === 'Raw Card' ? 'bg-green-100 text-green-800' :
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {itemType}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Export actions */}
+            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setIsExportModalOpen(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleExportSelectedItems}
+                disabled={selectedItemsForExport.length === 0 || isExporting}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
+              >
+                {isExporting ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Export Selected ({selectedItemsForExport.length})
+              </button>
+            </div>
+          </div>
+        </Modal>
 
         {/* Mark as Sold Modal */}
         <Modal

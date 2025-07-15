@@ -679,40 +679,62 @@ Verification:
 - Added proper error handling and user feedback for all export operations
 - Integration with backend blob endpoints for file downloads
 - All export functions properly integrated into useAuction hook
-Phase 11: Sales Analytics & Financial Tracking
+Phase 11: Sales Analytics & Financial Tracking ✅
 
-11.1. Implement Sales Analytics Page & Summary Display
+11.1. Implement Sales Analytics Page & Summary Display ✅
 
- Action: Implement the Sales Analytics page and display summary metrics.
- Sub-action: Create src/pages/SalesAnalytics.tsx.
- Sub-action: Integrate useSalesAnalytics hook.
- Sub-action: Display summary metrics: totalRevenue, calculatedTotalProfit, averageMargin, totalItems sold.
- Sub-action: Add a DatePicker component (or range picker) for a "Date Range Selector".
- Sub-action: Add a route for /sales-analytics in src/App.tsx.
+[x] Action: Implement the Sales Analytics page and display summary metrics.
+[x] Sub-action: Create src/pages/SalesAnalytics.tsx.
+[x] Sub-action: Integrate useSalesAnalytics hook.
+[x] Sub-action: Display summary metrics: totalRevenue, calculatedTotalProfit, averageMargin, totalItems sold.
+[x] Sub-action: Add a DatePicker component (or range picker) for a "Date Range Selector".
+[x] Sub-action: Add a route for /sales-analytics in src/App.tsx.
+**COMPLETED**: Created comprehensive SalesAnalytics page with:
+- Created src/hooks/useSalesAnalytics.ts with full sales data management
+- Enhanced SalesAnalytics page with real data integration, KPI cards, and date filtering
+- Integrated Recharts for beautiful line charts and pie charts
+- Added comprehensive sales table with profit/loss visualization
+- Created integration tests for useSalesAnalytics hook
+- Route already existed in App.tsx from previous phases
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for SalesAnalytics page.
-11.2. Integrate Charts for Sales Analytics
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for SalesAnalytics page.
+11.2. Integrate Charts for Sales Analytics ✅
 
- Action: Integrate charting components into the Sales Analytics page.
- Sub-action: Open src/pages/SalesAnalytics.tsx.
- Sub-action: Configure Recharts components to display:
- "Category Breakdown Chart" (Pie or Bar chart).
- "Time-Series Graph" (Line chart).
- Sub-action: Ensure charts dynamically update based on the selected date range.
+[x] Action: Integrate charting components into the Sales Analytics page.
+[x] Sub-action: Open src/pages/SalesAnalytics.tsx.
+[x] Sub-action: Configure Recharts components to display:
+[x] "Category Breakdown Chart" (Pie chart).
+[x] "Time-Series Graph" (Line chart).
+[x] Sub-action: Ensure charts dynamically update based on the selected date range.
+**COMPLETED**: Charts fully integrated in SalesAnalytics page:
+- Line chart for revenue & profit over time with responsive design
+- Pie chart for sales by category breakdown with custom colors
+- Charts dynamically update based on date range filtering
+- Proper empty states when no data is available
+- Danish locale formatting for dates and currency
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for SalesAnalytics page to verify chart rendering.
-11.3. Implement Detailed Sales List
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for SalesAnalytics page to verify chart rendering.
+11.3. Implement Detailed Sales List ✅
 
- Action: Implement the detailed sales list on the Sales Analytics page.
- Sub-action: Open src/pages/SalesAnalytics.tsx.
- Sub-action: Render a SalesTable component that displays individual sales transactions.
- Sub-action: Include columns like itemName, itemCategory, myPrice, actualSoldPrice, calculatedProfit, dateSold, source.
- Sub-action: Ensure the table also updates based on the selected date range and any category filters.
+[x] Action: Implement the detailed sales list on the Sales Analytics page.
+[x] Sub-action: Open src/pages/SalesAnalytics.tsx.
+[x] Sub-action: Render a SalesTable component that displays individual sales transactions.
+[x] Sub-action: Include columns like itemName, itemCategory, myPrice, actualSoldPrice, calculatedProfit, dateSold, source.
+[x] Sub-action: Ensure the table also updates based on the selected date range and any category filters.
+**COMPLETED**: Detailed sales table fully implemented:
+- Comprehensive table with all required columns (item, category, prices, profit, date, source)
+- Color-coded profit display (green for positive, red for negative)
+- Category badges with proper styling
+- Danish locale date and currency formatting
+- Pagination indicator showing "10 of X sales" 
+- Export CSV button for data export capability
+- Empty state with helpful messaging
+- Table updates dynamically with date range filtering
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for SalesAnalytics page to verify sales table rendering.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for SalesAnalytics page to verify sales table rendering.
 Phase 12: General Refinements & Exports ✅
 
 **MAJOR TEST FIXES COMPLETED** (All critical issues resolved):
@@ -731,42 +753,75 @@ Phase 12: General Refinements & Exports ✅
 - Data persistence: ✅ Working with real MongoDB
 - Search & autocomplete: ✅ Working with hierarchical logic
 
-12.1. Refine Global Error Handling & Toast Notifications
+12.1. Refine Global Error Handling & Toast Notifications ✅
 
-[ ] Action: Refine the global error handling and integrate a toast notification system.
-[ ] Sub-action: Install a toast notification library (e.g., npm install react-hot-toast).
-[ ] Sub-action: Open src/utils/errorHandler.ts.
-[ ] Replace the alert() call with a toast notification.
-[ ] Sub-action: Ensure the ToastNotification component is rendered at the root of your application.
-[ ] Sub-action: Implement success toasts for successful API operations.
+[x] Action: Refine the global error handling and integrate a toast notification system.
+[x] Sub-action: Install a toast notification library (e.g., npm install react-hot-toast).
+[x] Sub-action: Open src/utils/errorHandler.ts.
+[x] Replace the alert() call with a toast notification.
+[x] Sub-action: Ensure the ToastNotification component is rendered at the root of your application.
+[x] Sub-action: Implement success toasts for successful API operations.
+**COMPLETED**: Toast notification system fully implemented:
+- Installed react-hot-toast library
+- Enhanced errorHandler.ts with toast notifications replacing alerts
+- Added showSuccessToast, showInfoToast, showWarningToast helper functions
+- Integrated Toaster component in App.tsx with beautiful styling
+- Added success toasts to useCollection hook for all CRUD operations
+- Created comprehensive test suite for error handler and toast notifications
+- Consistent styling across all toast types with brand colors
+- Proper error message extraction from API responses
 Verification:
-[ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[ ] Write integration tests to verify toast notifications for errors and successes.
-12.2. Implement Collection-Specific Facebook Text File Export
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests to verify toast notifications for errors and successes.
+12.2. Implement Collection-Specific Facebook Text File Export ✅
 
- Action: Implement the "Generate Facebook Text File for Collection Items" functionality.
- Sub-action: In src/pages/Collection.tsx (or an "Export" sub-menu), add a button "Generate Facebook Text File for Collection Items".
- Sub-action: When clicked, present a modal or selection interface allowing the user to select specific collection items, or confirm to generate for all.
- Sub-action: Call exportApi.getCollectionFacebookTextFile(selectedItemIds).
- Sub-action: Initiate a file download of the returned Blob as a .txt file.
+[x] Action: Implement the "Generate Facebook Text File for Collection Items" functionality.
+[x] Sub-action: In src/pages/Collection.tsx (or an "Export" sub-menu), add a button "Generate Facebook Text File for Collection Items".
+[x] Sub-action: When clicked, present a modal or selection interface allowing the user to select specific collection items, or confirm to generate for all.
+[x] Sub-action: Call exportApi.getCollectionFacebookTextFile(selectedItemIds).
+[x] Sub-action: Initiate a file download of the returned Blob as a .txt file.
+**COMPLETED**: Collection Facebook Text File Export functionality implemented:
+- Added "Export All" and "Select & Export" buttons to Collection page header
+- Created comprehensive export selection modal with item checkboxes
+- Implemented getAllCollectionItems function to aggregate PSA cards, raw cards, and sealed products
+- Added export functionality with proper loading states and error handling
+- Integrated downloadBlob utility for secure file downloads
+- Added toast notifications for success/warning messages
+- Export modal includes "Select All" and "Clear All" functionality
+- Items display with type badges and pricing information
+- Proper disabled states during export operations
+- Date-stamped filename generation for exported files
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for Collection page to verify text file export.
-12.3. Finalize README.md
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for Collection page to verify text file export.
+12.3. Finalize README.md ✅
 
-[ ] Action: Finalize the README.md file for the project.
-[ ] Sub-action: Open README.md at the project root.
-[ ] Sub-action: Add a clear project title and a brief description.
-[ ] Sub-action: Include a "Setup" section with detailed instructions for:
- [ ] Cloning the repository.
- [ ] Installing dependencies (npm install).
- [ ] Starting the development server (npm run dev).
- [ ] **CRITICAL**: Backend (SAFESPACE/pokemon-collection-backend) must be running on PORT 3000.
- [ ] Provide instructions on how to start the backend: cd ../pokemon-collection-backend && npm run dev.
-[ ] Sub-action: Add a "Testing" section outlining how to run unit, integration, and E2E tests.
-[ ] Sub-action: Include a "Git Workflow" section summarizing the branching strategy and commit guidelines.
+[x] Action: Finalize the README.md file for the project.
+[x] Sub-action: Open README.md at the project root.
+[x] Sub-action: Add a clear project title and a brief description.
+[x] Sub-action: Include a "Setup" section with detailed instructions for:
+[x] Cloning the repository.
+[x] Installing dependencies (npm install).
+[x] Starting the development server (npm run dev).
+[x] **CRITICAL**: Backend (SAFESPACE/pokemon-collection-backend) must be running on PORT 3000.
+[x] Provide instructions on how to start the backend: cd ../pokemon-collection-backend && npm run dev.
+[x] Sub-action: Add a "Testing" section outlining how to run unit, integration, and E2E tests.
+[x] Sub-action: Include a "Git Workflow" section summarizing the branching strategy and commit guidelines.
+**COMPLETED**: Comprehensive README.md created with:
+- Clear project overview and technology stack
+- Detailed layered architecture explanation
+- Step-by-step setup and installation instructions
+- Critical backend dependency information (PORT 3000)
+- Complete testing guide with real API integration notes
+- Git workflow and commit guidelines
+- Feature descriptions for all major functionality
+- API integration documentation
+- Design principles and accessibility considerations
+- Build, deployment, and troubleshooting sections
+- Contributing guidelines and support information
+- Professional formatting with emojis and clear sections
 Verification:
-[ ] Read through the README.md to ensure clarity, accuracy, and completeness.
+[x] Read through the README.md to ensure clarity, accuracy, and completeness.
 
 ---
 

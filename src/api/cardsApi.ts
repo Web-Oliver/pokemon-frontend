@@ -11,7 +11,7 @@ import { ICard } from '../domain/models/card';
  * @param card - Card object or array of cards
  * @returns Card(s) with id field mapped from _id
  */
-const mapCardIds = (card: any): any => {
+const mapCardIds = (card: unknown): unknown => {
   if (!card) return card;
   
   if (Array.isArray(card)) {

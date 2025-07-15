@@ -13,7 +13,7 @@ import { ISaleDetails } from '../domain/models/common';
  * @param item - Item object or array of items
  * @returns Item(s) with id field mapped from _id
  */
-const mapItemIds = (item: any): any => {
+const mapItemIds = (item: unknown): unknown => {
   if (!item) return item;
   
   if (Array.isArray(item)) {
