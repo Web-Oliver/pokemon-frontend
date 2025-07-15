@@ -158,8 +158,8 @@ describe('Model Interface Validation', () => {
     const auctionItem: IAuctionItem = {
       itemId: 'psa_123',
       itemCategory: 'PsaGradedCard',
-      soldPrice: 150.00,
       sold: true,
+      salePrice: 150.00,
       itemName: 'Charizard Base Set PSA 9',
       itemImage: 'charizard.jpg'
     };
@@ -186,40 +186,39 @@ describe('Model Interface Validation', () => {
   test('Sales interfaces should accept valid data', () => {
     const salesSummary: ISalesSummary = {
       totalRevenue: 5000.00,
-      calculatedTotalProfit: 2000.00,
+      totalProfit: 2000.00,
       averageMargin: 40.0,
-      totalItemsSold: 25,
-      averageSalePrice: 200.00,
-      highestSale: 800.00,
-      lowestSale: 25.00,
-      revenueThisMonth: 1200.00,
-      revenueThisYear: 5000.00
+      totalItems: 25,
+      categoryBreakdown: {
+        psaGradedCard: {
+          count: 15,
+          revenue: 3000.00
+        },
+        rawCard: {
+          count: 8,
+          revenue: 1500.00
+        },
+        sealedProduct: {
+          count: 2,
+          revenue: 500.00
+        }
+      }
     };
 
     const salesGraphData: ISalesGraphData = {
-      date: '2024-01-15',
+      date: '2024-01-15T00:00:00.000Z',
       revenue: 300.00,
-      profit: 120.00,
-      itemsSold: 2,
-      averageMargin: 40.0
+      profit: 120.00
     };
 
     const sale: ISale = {
       id: 'sale_123',
       itemCategory: 'PsaGradedCard',
       itemName: 'Charizard Base Set PSA 9',
-      itemId: 'psa_123',
       myPrice: 100.00,
       actualSoldPrice: 150.00,
-      calculatedProfit: 35.01,
-      profitMargin: 23.34,
       dateSold: '2024-01-15T00:00:00.000Z',
-      source: 'ebay',
-      fees: 14.99,
-      paymentMethod: 'paypal',
-      buyerInfo: 'Repeat customer',
-      createdAt: '2024-01-15T00:00:00.000Z',
-      updatedAt: '2024-01-15T00:00:00.000Z'
+      source: 'Facebook'
     };
 
     expect(salesSummary.totalRevenue).toBeDefined();

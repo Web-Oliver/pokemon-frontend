@@ -1,17 +1,34 @@
+/**
+ * Main App Component
+ * 
+ * Root application component implementing basic routing and layout structure.
+ * Following CLAUDE.md guidelines for layered architecture and beautiful design.
+ * 
+ * Phase 4.2: Basic routing implementation with MainLayout integration
+ */
+
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { log } from './utils/logger'
 import apiClient from './api/apiClient'
 
+// Layout and Pages
+import MainLayout from './components/layouts/MainLayout'
+import Dashboard from './pages/Dashboard'
+import Collection from './pages/Collection'
+import Search from './pages/Search'
+import Auctions from './pages/Auctions'
+import SalesAnalytics from './pages/SalesAnalytics'
+import AddEditItem from './pages/AddEditItem'
+import TestPage from './pages/TestPage'
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentPath, setCurrentPath] = useState(window.location.pathname)
   
   // Test logger functionality
   log('App loaded!');
 
-  // Test API client error handling
+  // Test API client error handling (keep for Phase 1 verification)
   useEffect(() => {
     const testApiClient = async () => {
       try {
@@ -25,29 +42,46 @@ function App() {
     testApiClient();
   }, []);
 
+  // Listen for navigation changes from MainLayout
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Route configuration - simple routing without external router library
+  const renderPage = () => {
+    switch (currentPath) {
+      case '/dashboard':
+        return <Dashboard />;
+      case '/collection':
+        return <Collection />;
+      case '/collection/add':
+        return <AddEditItem />;
+      case '/search':
+        return <Search />;
+      case '/auctions':
+        return <Auctions />;
+      case '/sales-analytics':
+        return <SalesAnalytics />;
+      case '/test':
+        return <TestPage />;
+      default:
+        // Default to dashboard for root and unknown routes
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="text-3xl font-bold underline text-blue-500">Pokemon Collection Frontend</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <MainLayout>
+      {renderPage()}
+    </MainLayout>
   )
 }
 

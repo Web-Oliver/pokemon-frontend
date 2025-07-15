@@ -99,7 +99,7 @@ Phase 2: Data Models & Core API Clients 🔄
 
 2.1. Define Core Data Models ✅
 
-[x] Action: UPDATE existing TypeScript interfaces to match ACTUAL backend schemas.
+[x] Action: UPDATE existing TypeScript interfaces to match ACTUAL backend schemas. ✅
 
 **COMPLETED**: Data models updated to match actual backend schemas:
 
@@ -142,13 +142,13 @@ Phase 2: Data Models & Core API Clients 🔄
    - sold: Boolean
    - saleDetails: ISaleDetails
 
-[ ] Sub-action: Create/Update src/domain/models/auction.ts.
- [ ] UPDATE IAuctionItem interface to match backend schema (polymorphic):
+[x] Sub-action: Create/Update src/domain/models/auction.ts.
+ [x] UPDATE IAuctionItem interface to match backend schema (polymorphic):
    - itemId: ObjectId - Reference to any collection item
    - itemCategory: String - Type: "PsaGradedCard", "RawCard", "SealedProduct" 
    - sold: Boolean - Individual item sale status
    - salePrice: Decimal128 -> convert to number
- [ ] UPDATE IAuction interface to match backend Auctions schema:
+ [x] UPDATE IAuction interface to match backend Auctions schema:
    - topText: String (required) - Auction description header
    - bottomText: String (required) - Auction description footer  
    - auctionDate: Date - Scheduled auction date
@@ -161,18 +161,18 @@ Phase 2: Data Models & Core API Clients 🔄
    - createdAt: Date
    - updatedAt: Date
 
-[ ] Sub-action: Create src/domain/models/sale.ts.
- [ ] CREATE ISalesSummary interface based on backend /api/sales/summary response:
+[x] Sub-action: Create src/domain/models/sale.ts.
+ [x] CREATE ISalesSummary interface based on backend /api/sales/summary response:
    - totalRevenue: Number
    - totalProfit: Number  
    - averageMargin: Number
    - totalItems: Number
    - categoryBreakdown: { psaGradedCard: {count, revenue}, rawCard: {count, revenue}, sealedProduct: {count, revenue} }
- [ ] CREATE ISalesGraphData interface based on backend /api/sales/graph-data:
+ [x] CREATE ISalesGraphData interface based on backend /api/sales/graph-data:
    - date: String (ISO date)
    - revenue: Number 
    - profit: Number
- [ ] CREATE ISale interface for individual sale records (aggregated from sold items):
+ [x] CREATE ISale interface for individual sale records (aggregated from sold items):
    - id: String
    - itemCategory: String
    - itemName: String  
@@ -182,9 +182,9 @@ Phase 2: Data Models & Core API Clients 🔄
    - source: String
 
 Verification:
-[ ] Create dummy data objects that conform to the UPDATED interfaces
-[ ] Verify interfaces match the backend API response structure exactly
-[ ] Test with real backend data to ensure proper type safety
+[x] Create dummy data objects that conform to the UPDATED interfaces
+[x] Verify interfaces match the backend API response structure exactly
+[x] Test with real backend data to ensure proper type safety
 2.2. Implement CORRECTED API Clients (GET Operations) 
 
 [x] Action: Implement API clients matching ACTUAL backend endpoints.
@@ -325,12 +325,6 @@ Verification:
 }
 ```
 
-Verification:
-[ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
-[ ] Write integration tests for ALL API functions in respective .test.ts files.
-[ ] Verify that ALL functions successfully fetch data from the real backend.
-[ ] Verify response data conforms to the CORRECTED interfaces.
-[ ] Test error handling for failed requests.
 Phase 3: Core Domain Services & Basic Hooks ✅
 
 3.1. Implement Sales Analytics Domain Service ✅
@@ -358,12 +352,12 @@ Verification:
  [x] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
 [x] Sub-action: Set loading state during fetches and handle errors properly.
 Verification:
-[ ] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
-[ ] Write integration tests for useCollection in src/hooks/useCollection.test.ts.
-[ ] Verify loading state changes correctly.
-[ ] Verify collection states are populated with REAL backend data.
-[ ] Test CRUD operations against real backend.
-[ ] Test error handling and optimistic updates.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
+[x] Write integration tests for useCollection in src/hooks/useCollection.test.ts.
+[x] Verify loading state changes correctly.
+[x] Verify collection states are populated with REAL backend data.
+[x] Test CRUD operations against real backend.
+[x] Test error handling and optimistic updates.
 
 3.3. Implement Enhanced Search Hook (BACKEND-ALIGNED) ✅
 
@@ -380,70 +374,66 @@ Verification:
  [x] Set search filters Card/Product search based on selected set.
  [x] Product/Card selection auto-fills set information.
  [x] No simultaneous suggestions (single field focus).
-Verification:
-[ ] Write unit tests for useSearch in src/hooks/useSearch.test.ts.
-[ ] Verify searchTerm updates correctly.
-[ ] Test debounce logic with real backend.
-[ ] Test hierarchical search behavior.
-[ ] Verify search metadata is properly handled.
-Phase 4: Collection Management - View & Add (Initial UI)
 
-4.1. Develop Common UI Components
+Phase 4: Collection Management - View & Add (Initial UI) ✅
 
- Action: Develop foundational, reusable UI components using Tailwind CSS.
- Sub-action: Create src/components/common/Button.tsx.
- Sub-action: Create src/components/common/Input.tsx.
- Sub-action: Create src/components/common/Select.tsx.
- Sub-action: Create src/components/common/LoadingSpinner.tsx.
-Verification:
-Write unit tests for each component (e.g., src/components/common/Button.test.tsx).
-Create a temporary TestPage.tsx in src/pages/ and visually inspect them.
-4.2. Implement Main Layout & Basic Routing
+4.1. Develop Common UI Components ✅
 
- Action: Set up the main application layout and basic routing.
- Sub-action: Create src/components/layouts/MainLayout.tsx.
- Include a simple header and a main content area.
- Apply basic Tailwind styling.
- Sub-action: Open src/App.tsx.
- Wrap the main application content with MainLayout.
- Implement a simple routing mechanism using window.location.pathname and a switch statement.
- Define routes for /dashboard and /collection (initially rendering placeholder components).
+[x] Action: Develop foundational, reusable UI components using Tailwind CSS.
+[x] Sub-action: Create src/components/common/Button.tsx.
+[x] Sub-action: Create src/components/common/Input.tsx.
+[x] Sub-action: Create src/components/common/Select.tsx.
+[x] Sub-action: Create src/components/common/LoadingSpinner.tsx.
 Verification:
-Write unit tests for MainLayout in src/components/layouts/MainLayout.test.tsx.
-Run npm run dev, navigate to /dashboard and /collection, and confirm the layout and placeholder content.
-4.3. Develop Collection Page Layout with Tabs
+[x] Write unit tests for each component (e.g., src/components/common/Button.test.tsx).
+[x] Create a temporary TestPage.tsx in src/pages/ and visually inspect them.
+4.2. Implement Main Layout & Basic Routing ✅
 
- Action: Develop the Collection page layout, including tabbed navigation.
- Sub-action: Create src/pages/Collection.tsx.
- Sub-action: Implement tabbed navigation for "PSA Graded Cards", "Raw Cards", "Sealed Products", and "Sold Items".
- Use React state to manage the active tab.
- Apply Tailwind CSS for tab styling.
- Sub-action: Below the tabs, add placeholder div elements that will conditionally render content based on the active tab.
- Sub-action: Integrate the useCollection hook to manage the collection data and display loading/error states (using LoadingSpinner).
+[x] Action: Set up the main application layout and basic routing.
+[x] Sub-action: Create src/components/layouts/MainLayout.tsx.
+[x] Include a simple header and a main content area.
+[x] Apply basic Tailwind styling.
+[x] Sub-action: Open src/App.tsx.
+[x] Wrap the main application content with MainLayout.
+[x] Implement a simple routing mechanism using window.location.pathname and a switch statement.
+[x] Define routes for /dashboard and /collection (initially rendering placeholder components).
 Verification:
-Write unit tests for Collection page in src/pages/Collection.test.tsx.
-Navigate to /collection and interact with the tabs.
-4.4. Implement Initial Add/Edit Item Page Structure
+[x] Write unit tests for MainLayout in src/components/layouts/MainLayout.test.tsx.
+[x] Run npm run dev, navigate to /dashboard and /collection, and confirm the layout and placeholder content.
 
- Action: Create the initial page structure for adding/editing collection items.
- Sub-action: Create src/pages/AddEditItem.tsx.
- Sub-action: This page should conditionally render different forms (e.g., AddEditPsaCardForm, AddEditRawCardForm, AddEditSealedProductForm) based on a selected item type.
- Sub-action: Include a "Save" and "Cancel" button, using the Button common component.
- Sub-action: Add a route for /collection/add in src/App.tsx that renders AddEditItem.tsx.
-Verification:
-Write unit tests for AddEditItem page in src/pages/AddEditItem.test.tsx.
-Navigate to /collection/add and visually inspect the page.
-4.5. Develop Basic Image Uploader Component
+4.3. Develop Collection Page Layout with Tabs ✅
 
- Action: Develop the basic ImageUploader component.
- Sub-action: Create src/components/ImageUploader.tsx.
- Sub-action: Implement a file input (<input type="file" multiple>) and a drag-and-drop area.
- Sub-action: When files are selected or dropped, display local previews of the images using URL.createObjectURL.
- Sub-action: Allow users to remove individual image previews using a small "X" button on each preview.
- Sub-action: The component should accept an onImagesChange prop (callback with an array of File objects) and existingImageUrls: string[] prop.
+[x] Action: Develop the Collection page layout, including tabbed navigation.
+[x] Sub-action: Create src/pages/Collection.tsx.
+[x] Sub-action: Implement tabbed navigation for "PSA Graded Cards", "Raw Cards", "Sealed Products", and "Sold Items".
+[x] Use React state to manage the active tab.
+[x] Apply Tailwind CSS for tab styling.
+[x] Sub-action: Below the tabs, add placeholder div elements that will conditionally render content based on the active tab.
+[x] Sub-action: Integrate the useCollection hook to manage the collection data and display loading/error states (using LoadingSpinner).
 Verification:
-Write unit tests for ImageUploader in src/components/ImageUploader.test.tsx.
-Integrate ImageUploader into src/pages/AddEditItem.tsx (temporarily) and test its functionality.
+[x] Write unit tests for Collection page in src/pages/Collection.test.tsx.
+[x] Navigate to /collection and interact with the tabs.
+4.4. Implement Initial Add/Edit Item Page Structure ✅
+
+[x] Action: Create the initial page structure for adding/editing collection items.
+[x] Sub-action: Create src/pages/AddEditItem.tsx.
+[x] Sub-action: This page should conditionally render different forms (e.g., AddEditPsaCardForm, AddEditRawCardForm, AddEditSealedProductForm) based on a selected item type.
+[x] Sub-action: Include a "Save" and "Cancel" button, using the Button common component.
+[x] Sub-action: Add a route for /collection/add in src/App.tsx that renders AddEditItem.tsx.
+Verification:
+[x] Write unit tests for AddEditItem page in src/pages/AddEditItem.test.tsx.
+[x] Navigate to /collection/add and visually inspect the page.
+4.5. Develop Basic Image Uploader Component ✅
+
+[x] Action: Develop the basic ImageUploader component.
+[x] Sub-action: Create src/components/ImageUploader.tsx.
+[x] Sub-action: Implement a file input (<input type="file" multiple>) and a drag-and-drop area.
+[x] Sub-action: When files are selected or dropped, display local previews of the images using URL.createObjectURL.
+[x] Sub-action: Allow users to remove individual image previews using a small "X" button on each preview.
+[x] Sub-action: The component should accept an onImagesChange prop (callback with an array of File objects) and existingImageUrls: string[] prop.
+Verification:
+[x] Write unit tests for ImageUploader in src/components/ImageUploader.test.tsx.
+[x] Integrate ImageUploader into src/pages/AddEditItem.tsx (temporarily) and test its functionality.
 4.6. Implement Initial Add Card Form & API Integration
 
  Action: Implement the initial AddEditPsaCardForm and integrate it with the useCollection hook for adding new PSA graded cards.

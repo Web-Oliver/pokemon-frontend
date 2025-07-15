@@ -3,7 +3,7 @@
  * Handles CRUD operations for collection management (PSA cards, raw cards, sealed products)
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
