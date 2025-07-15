@@ -1,9 +1,9 @@
+/* Context7 Premium Design System */
+@import './styles/context7-premium.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Context7 Premium Design System */
-@import './styles/context7-premium.css';
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

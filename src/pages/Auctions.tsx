@@ -285,11 +285,11 @@ const Auctions: React.FC = () => {
               </div>
             ) : (
               <div className='divide-y divide-gray-200'>
-                {sortedAuctions.map(auction => (
+                {sortedAuctions.map((auction, index) => (
                   <div
-                    key={auction.id}
+                    key={auction.id || auction._id || `auction-${index}`}
                     className='p-6 hover:bg-gray-50 transition-colors cursor-pointer'
-                    onClick={() => navigateToAuctionDetail(auction.id)}
+                    onClick={() => navigateToAuctionDetail(auction.id || auction._id)}
                   >
                     <div className='flex items-center justify-between'>
                       <div className='flex-1 min-w-0'>

@@ -76,9 +76,13 @@ function App() {
         return <Collection />;
       case '/collection/add':
         return <AddEditItem />;
+      case '/add-item':
+        return <AddEditItem />;
       case '/search':
         return <Search />;
       case '/sets':
+        return <SetSearch />;
+      case '/set-search':
         return <SetSearch />;
       case '/sealed-products-search':
         return <SealedProductSearch />;

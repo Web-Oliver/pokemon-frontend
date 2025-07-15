@@ -39,22 +39,23 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 
 const SalesAnalytics: React.FC = () => {
-  const {
-    sales,
-    graphData,
-    loading,
-    error,
-    kpis,
-    categoryBreakdown,
-    trendAnalysis,
-    dateRange,
-    setDateRange,
-    refreshData,
-  } = useSalesAnalytics();
+  try {
+    const {
+      sales,
+      graphData,
+      loading,
+      error,
+      kpis,
+      categoryBreakdown,
+      trendAnalysis,
+      dateRange,
+      setDateRange,
+      refreshData,
+    } = useSalesAnalytics();
 
   const [dateRangeInput, setDateRangeInput] = useState({
-    startDate: dateRange.startDate || '',
-    endDate: dateRange.endDate || '',
+    startDate: dateRange?.startDate || '',
+    endDate: dateRange?.endDate || '',
   });
 
   // Chart colors
@@ -87,13 +88,15 @@ const SalesAnalytics: React.FC = () => {
   };
 
   // Prepare pie chart data
-  const pieChartData = Object.entries(categoryBreakdown)
-    .map(([category, data]) => ({
-      name: category.replace(/([A-Z])/g, ' $1').trim(),
-      value: data.revenue,
-      count: data.count,
-    }))
-    .filter(item => item.value > 0);
+  const pieChartData = categoryBreakdown
+    ? Object.entries(categoryBreakdown)
+        .map(([category, data]) => ({
+          name: category.replace(/([A-Z])/g, ' $1').trim(),
+          value: data?.revenue || 0,
+          count: data?.count || 0,
+        }))
+        .filter(item => item.value > 0)
+    : [];
 
   // Get trend icon
   const getTrendIcon = (trend: string) => {
@@ -107,7 +110,7 @@ const SalesAnalytics: React.FC = () => {
     }
   };
 
-  if (loading && sales.length === 0) {
+  if (loading && (!sales || sales.length === 0)) {
     return (
       <div className='p-6'>
         <div className='max-w-7xl mx-auto'>
@@ -191,13 +194,13 @@ const SalesAnalytics: React.FC = () => {
               <div className='ml-4 flex-1'>
                 <p className='text-sm font-medium text-gray-600'>Total Revenue</p>
                 <p className='text-2xl font-bold text-gray-900'>
-                  {formatCurrency(kpis.totalRevenue)}
+                  {formatCurrency(kpis?.totalRevenue || 0)}
                 </p>
-                {trendAnalysis.revenueGrowthRate !== 0 && (
+                {trendAnalysis?.revenueGrowthRate !== 0 && (
                   <div className='flex items-center mt-1'>
-                    {getTrendIcon(trendAnalysis.trend)}
+                    {getTrendIcon(trendAnalysis?.trend || 'neutral')}
                     <span className='text-xs text-gray-500 ml-1'>
-                      {formatPercentage(trendAnalysis.revenueGrowthRate)}
+                      {formatPercentage(trendAnalysis?.revenueGrowthRate || 0)}
                     </span>
                   </div>
                 )}
@@ -213,13 +216,13 @@ const SalesAnalytics: React.FC = () => {
               <div className='ml-4 flex-1'>
                 <p className='text-sm font-medium text-gray-600'>Total Profit</p>
                 <p className='text-2xl font-bold text-gray-900'>
-                  {formatCurrency(kpis.totalProfit)}
+                  {formatCurrency(kpis?.totalProfit || 0)}
                 </p>
-                {trendAnalysis.profitGrowthRate !== 0 && (
+                {trendAnalysis?.profitGrowthRate !== 0 && (
                   <div className='flex items-center mt-1'>
-                    {getTrendIcon(trendAnalysis.trend)}
+                    {getTrendIcon(trendAnalysis?.trend || 'neutral')}
                     <span className='text-xs text-gray-500 ml-1'>
-                      {formatPercentage(trendAnalysis.profitGrowthRate)}
+                      {formatPercentage(trendAnalysis?.profitGrowthRate || 0)}
                     </span>
                   </div>
                 )}
@@ -235,10 +238,10 @@ const SalesAnalytics: React.FC = () => {
               <div className='ml-4 flex-1'>
                 <p className='text-sm font-medium text-gray-600'>Avg Margin</p>
                 <p className='text-2xl font-bold text-gray-900'>
-                  {formatPercentage(kpis.averageMargin)}
+                  {formatPercentage(kpis?.averageMargin || 0)}
                 </p>
                 <p className='text-xs text-gray-500 mt-1'>
-                  Profit: {formatPercentage(kpis.profitabilityRatio)}
+                  Profit: {formatPercentage(kpis?.profitabilityRatio || 0)}
                 </p>
               </div>
             </div>
@@ -251,9 +254,9 @@ const SalesAnalytics: React.FC = () => {
               </div>
               <div className='ml-4 flex-1'>
                 <p className='text-sm font-medium text-gray-600'>Items Sold</p>
-                <p className='text-2xl font-bold text-gray-900'>{kpis.totalItems}</p>
+                <p className='text-2xl font-bold text-gray-900'>{kpis?.totalItems || 0}</p>
                 <p className='text-xs text-gray-500 mt-1'>
-                  Avg: {formatCurrency(kpis.averageSalePrice)}
+                  Avg: {formatCurrency(kpis?.averageSalePrice || 0)}
                 </p>
               </div>
             </div>
@@ -268,7 +271,7 @@ const SalesAnalytics: React.FC = () => {
               <h2 className='text-lg font-semibold text-gray-900'>Revenue & Profit Over Time</h2>
             </div>
             <div className='p-6'>
-              {graphData.length > 0 ? (
+              {graphData && graphData.length > 0 ? (
                 <ResponsiveContainer width='100%' height={300}>
                   <LineChart data={graphData}>
                     <CartesianGrid strokeDasharray='3 3' />
@@ -354,7 +357,7 @@ const SalesAnalytics: React.FC = () => {
           <div className='p-6 border-b border-gray-200'>
             <div className='flex justify-between items-center'>
               <h2 className='text-lg font-semibold text-gray-900'>Recent Sales</h2>
-              {sales.length > 0 && (
+              {sales && sales.length > 0 && (
                 <Button variant='secondary' size='sm'>
                   <Download className='w-4 h-4 mr-1' />
                   Export CSV
@@ -363,7 +366,7 @@ const SalesAnalytics: React.FC = () => {
             </div>
           </div>
           <div className='overflow-x-auto'>
-            {sales.length > 0 ? (
+            {sales && sales.length > 0 ? (
               <table className='min-w-full divide-y divide-gray-200'>
                 <thead className='bg-gray-50'>
                   <tr>
@@ -438,7 +441,7 @@ const SalesAnalytics: React.FC = () => {
             )}
           </div>
 
-          {sales.length > 10 && (
+          {sales && sales.length > 10 && (
             <div className='px-6 py-3 border-t border-gray-200 text-center'>
               <p className='text-sm text-gray-500'>
                 Showing 10 of {sales.length} sales.
@@ -450,6 +453,27 @@ const SalesAnalytics: React.FC = () => {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('[SALES ANALYTICS ERROR]', error);
+    return (
+      <div className='p-6'>
+        <div className='max-w-7xl mx-auto'>
+          <div className='bg-red-50 border border-red-200 rounded-lg p-6'>
+            <h2 className='text-lg font-semibold text-red-800 mb-2'>Sales Analytics Error</h2>
+            <p className='text-red-600 mb-4'>
+              There was an error loading the sales analytics page. Please try refreshing the page.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className='bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors'
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default SalesAnalytics;

@@ -16,7 +16,7 @@ import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
 
 interface ImageUploaderProps {
-  onImagesChange: (files: File[]) => void;
+  onImagesChange: (_files: File[]) => void;
   existingImageUrls?: string[];
   multiple?: boolean;
   maxFiles?: number;

@@ -17,11 +17,12 @@ import { IPriceHistoryEntry } from '../domain/models/common';
 import Button from './common/Button';
 import Input from './common/Input';
 import { log } from '../utils/logger';
+import { showWarningToast } from '../utils/errorHandler';
 
 export interface PriceHistoryDisplayProps {
   priceHistory: IPriceHistoryEntry[];
   currentPrice: number;
-  onPriceUpdate: (newPrice: number, date: string) => void;
+  onPriceUpdate: (_newPrice: number, _date: string) => void;
 }
 
 export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
@@ -35,7 +36,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
     const price = parseFloat(newPrice);
 
     if (isNaN(price) || price <= 0) {
-      alert('Please enter a valid price greater than 0');
+      showWarningToast('Please enter a valid price greater than 0');
       return;
     }
 

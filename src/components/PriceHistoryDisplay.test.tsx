@@ -215,12 +215,17 @@ describe('PriceHistoryDisplay Component', () => {
 
       // We need to test the validation logic directly since the button is properly disabled
       // Let's test by directly calling the handler logic
+      const mockShowWarningToast = vi.fn();
+      vi.mock('../utils/errorHandler', () => ({
+        showWarningToast: mockShowWarningToast,
+      }));
+      
       const priceValue = parseFloat('0');
       if (isNaN(priceValue) || priceValue <= 0) {
-        window.alert('Please enter a valid price greater than 0');
+        mockShowWarningToast('Please enter a valid price greater than 0');
       }
 
-      expect(window.alert).toHaveBeenCalledWith('Please enter a valid price greater than 0');
+      expect(mockShowWarningToast).toHaveBeenCalledWith('Please enter a valid price greater than 0');
     });
   });
 });

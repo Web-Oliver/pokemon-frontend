@@ -338,13 +338,13 @@ const Collection: React.FC = () => {
                         item.name ||
                         `Item ${index + 1}`}
                     </h4>
-                    <p className='text-sm text-gray-500'>
+                    <div className='text-sm text-gray-500'>
                       {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
                       {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
                       {activeTab === 'sealed-products' && `Category: ${item.category}`}
                       {activeTab === 'sold-items' &&
                         `Sold: ${item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}`}
-                    </p>
+                    </div>
                   </div>
 
                   <div className='flex items-center space-x-4'>

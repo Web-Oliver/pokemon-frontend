@@ -18,17 +18,17 @@ export interface UseAuctionState {
 }
 
 export interface UseAuctionActions {
-  fetchAuctions: (params?: auctionsApi.AuctionsParams) => Promise<void>;
-  fetchAuctionById: (id: string) => Promise<void>;
-  createAuction: (data: Partial<IAuction>) => Promise<IAuction>;
-  updateAuction: (id: string, data: Partial<IAuction>) => Promise<void>;
-  deleteAuction: (id: string) => Promise<void>;
-  addItemToAuction: (id: string, itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
-  removeItemFromAuction: (id: string, itemId: string) => Promise<void>;
-  markAuctionItemSold: (id: string, saleData: ISaleDetails & { itemId: string }) => Promise<void>;
-  generateFacebookPost: (id: string) => Promise<string>;
-  downloadAuctionTextFile: (id: string) => Promise<void>;
-  downloadAuctionImagesZip: (id: string) => Promise<void>;
+  fetchAuctions: (_params?: auctionsApi.AuctionsParams) => Promise<void>;
+  fetchAuctionById: (_id: string) => Promise<void>;
+  createAuction: (_data: Partial<IAuction>) => Promise<IAuction>;
+  updateAuction: (_id: string, _data: Partial<IAuction>) => Promise<void>;
+  deleteAuction: (_id: string) => Promise<void>;
+  addItemToAuction: (_id: string, _itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
+  removeItemFromAuction: (_id: string, _itemId: string) => Promise<void>;
+  markAuctionItemSold: (_id: string, _saleData: ISaleDetails & { itemId: string }) => Promise<void>;
+  generateFacebookPost: (_id: string) => Promise<string>;
+  downloadAuctionTextFile: (_id: string) => Promise<void>;
+  downloadAuctionImagesZip: (_id: string) => Promise<void>;
   clearCurrentAuction: () => void;
   clearError: () => void;
 }

@@ -25,6 +25,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { IAuctionItem } from '../domain/models/auction';
+import { showWarningToast, showSuccessToast } from '../utils/errorHandler';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -148,16 +149,25 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle delete auction
   const handleDeleteAuction = async () => {
-    if (
-      window.confirm('Are you sure you want to delete this auction? This action cannot be undone.')
-    ) {
-      try {
-        await deleteAuction(currentAuctionId);
-        navigateToAuctions();
-      } catch (err) {
-        // Error handled by the hook
+    // Show confirmation toast with custom action
+    showWarningToast(
+      'Are you sure you want to delete this auction? This action cannot be undone.',
+      {
+        duration: 0, // Keep until user interacts
+        action: {
+          label: 'Delete',
+          onClick: async () => {
+            try {
+              await deleteAuction(currentAuctionId);
+              showSuccessToast('Auction deleted successfully');
+              navigateToAuctions();
+            } catch (err) {
+              // Error handled by the hook
+            }
+          },
+        },
       }
-    }
+    );
   };
 
   // Handle add items to auction
@@ -169,13 +179,23 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle remove item from auction
   const handleRemoveItem = async (itemId: string) => {
-    if (window.confirm('Are you sure you want to remove this item from the auction?')) {
-      try {
-        await removeItemFromAuction(currentAuctionId, itemId);
-      } catch (err) {
-        // Error handled by the hook
+    showWarningToast(
+      'Are you sure you want to remove this item from the auction?',
+      {
+        duration: 0,
+        action: {
+          label: 'Remove',
+          onClick: async () => {
+            try {
+              await removeItemFromAuction(currentAuctionId, itemId);
+              showSuccessToast('Item removed from auction');
+            } catch (err) {
+              // Error handled by the hook
+            }
+          },
+        },
       }
-    }
+    );
   };
 
   // Handle Facebook post generation
@@ -193,7 +213,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const handleCopyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(generatedFacebookPost);
-      alert('Facebook post copied to clipboard!');
+      showSuccessToast('Facebook post copied to clipboard!');
     } catch (err) {
       // Fallback for older browsers
       try {
@@ -203,9 +223,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert('Facebook post copied to clipboard!');
+        showSuccessToast('Facebook post copied to clipboard!');
       } catch (fallbackErr) {
-        alert('Failed to copy to clipboard. Please copy manually.');
+        showWarningToast('Failed to copy to clipboard. Please copy manually.');
       }
     }
   };

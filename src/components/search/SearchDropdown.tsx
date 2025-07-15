@@ -373,7 +373,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       </div>
 
       {/* Custom scrollbar styles */}
-      <style jsx>{`
+      <style jsx="true">{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
