@@ -12,9 +12,12 @@
  */
 
 import React, { useState } from 'react';
-import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
+import { Package, Star, Archive, CheckCircle, Plus, DollarSign } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import Modal from '../components/common/Modal';
+import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { useCollection } from '../hooks/useCollection';
+import { ISaleDetails } from '../domain/models/common';
 
 type TabType = 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
 
@@ -27,13 +30,23 @@ interface TabConfig {
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
+  const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{
+    id: string;
+    type: 'psa' | 'raw' | 'sealed';
+    name: string;
+  } | null>(null);
+  
   const { 
     psaCards, 
     rawCards, 
     sealedProducts, 
     soldItems, 
     loading, 
-    error 
+    error,
+    markPsaCardSold,
+    markRawCardSold,
+    markSealedProductSold
   } = useCollection();
 
   // Tab configuration for clean, maintainable tab management
@@ -78,6 +91,48 @@ const Collection: React.FC = () => {
   const handleAddNewItem = () => {
     window.history.pushState({}, '', '/collection/add');
     window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  // Handle mark as sold button click
+  const handleMarkAsSold = (item: any, type: 'psa' | 'raw' | 'sealed') => {
+    setSelectedItem({
+      id: item._id,
+      type,
+      name: item.cardName || item.name || 'Unknown Item'
+    });
+    setIsMarkSoldModalOpen(true);
+  };
+
+  // Handle mark as sold form submission
+  const handleMarkSoldSubmit = async (saleDetails: ISaleDetails) => {
+    if (!selectedItem) return;
+
+    try {
+      switch (selectedItem.type) {
+        case 'psa':
+          await markPsaCardSold(selectedItem.id, saleDetails);
+          break;
+        case 'raw':
+          await markRawCardSold(selectedItem.id, saleDetails);
+          break;
+        case 'sealed':
+          await markSealedProductSold(selectedItem.id, saleDetails);
+          break;
+      }
+      
+      // Close modal and reset selected item
+      setIsMarkSoldModalOpen(false);
+      setSelectedItem(null);
+    } catch (error) {
+      console.error('Error marking item as sold:', error);
+      // Error handling is done by the useCollection hook
+    }
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setIsMarkSoldModalOpen(false);
+    setSelectedItem(null);
   };
 
   // Render tab content based on active tab
@@ -146,36 +201,61 @@ const Collection: React.FC = () => {
       );
     }
 
-    // Render actual collection items (basic list for now, will be enhanced in later phases)
+    // Render actual collection items with Mark as Sold functionality
     return (
       <div className="space-y-4">
-        {data.map((item: any, index: number) => (
-          <div key={item._id || index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium text-gray-900">
-                  {item.cardName || item.name || `Item ${index + 1}`}
-                </h4>
-                <p className="text-sm text-gray-500">
-                  {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
-                  {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
-                  {activeTab === 'sealed-products' && `Category: ${item.category}`}
-                  {activeTab === 'sold-items' && `Sold: ${item.dateSold}`}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-900">
-                  ${item.myPrice || '0.00'}
-                </p>
-                {item.sold && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Sold
-                  </span>
-                )}
+        {data.map((item: any, index: number) => {
+          const itemType = activeTab === 'psa-graded' ? 'psa' : 
+                          activeTab === 'raw-cards' ? 'raw' : 'sealed';
+          const isUnsoldTab = activeTab !== 'sold-items';
+          
+          return (
+            <div key={item._id || index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">
+                    {item.cardName || item.name || `Item ${index + 1}`}
+                  </h4>
+                  <p className="text-sm text-gray-500">
+                    {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
+                    {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
+                    {activeTab === 'sealed-products' && `Category: ${item.category}`}
+                    {activeTab === 'sold-items' && `Sold: ${item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}`}
+                  </p>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <p className="font-semibold text-gray-900">
+                      ${item.myPrice || '0.00'}
+                    </p>
+                    {item.sold && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Sold
+                      </span>
+                    )}
+                    {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
+                      <p className="text-sm text-green-600 font-medium">
+                        Sold: ${item.saleDetails.actualSoldPrice}
+                      </p>
+                    )}
+                  </div>
+                  
+                  {/* Mark as Sold button - only show for unsold items in non-sold tabs */}
+                  {isUnsoldTab && !item.sold && (
+                    <button
+                      onClick={() => handleMarkAsSold(item, itemType)}
+                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    >
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      Mark as Sold
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -289,6 +369,20 @@ const Collection: React.FC = () => {
             {renderTabContent()}
           </div>
         </div>
+
+        {/* Mark as Sold Modal */}
+        <Modal
+          isOpen={isMarkSoldModalOpen}
+          onClose={handleModalClose}
+          title={`Mark "${selectedItem?.name}" as Sold`}
+          maxWidth="2xl"
+        >
+          <MarkSoldForm
+            onSubmit={handleMarkSoldSubmit}
+            onCancel={handleModalClose}
+            isLoading={loading}
+          />
+        </Modal>
 
       </div>
     </div>

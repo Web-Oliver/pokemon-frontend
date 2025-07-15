@@ -505,9 +505,9 @@ Verification:
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 [x] Write integration tests for AddEditPsaCardForm to verify price history updates.
-Phase 7: Collection Management - Mark as Sold 🔄
+Phase 7: Collection Management - Mark as Sold ✅
 
-7.1. Develop Mark as Sold Form Component
+7.1. Develop Mark as Sold Form Component ✅
 
 [x] Action: Develop the MarkSoldForm component.
 [x] Sub-action: Create src/components/forms/MarkSoldForm.tsx.
@@ -518,7 +518,7 @@ Phase 7: Collection Management - Mark as Sold 🔄
 [x] Sub-action: The component should accept an onSubmit prop and onCancel prop.
 Verification:
 [x] Write unit tests for MarkSoldForm in src/components/forms/MarkSoldForm.test.tsx.
-7.2. Integrate Mark as Sold Functionality
+7.2. Integrate Mark as Sold Functionality ✅
 
 [x] Action: Integrate the MarkSoldForm and the markPsaGradedCardSold functionality into the collection management flow.
 [x] Sub-action: Open src/hooks/useCollection.ts.
@@ -529,10 +529,13 @@ Verification:
 [x] When clicked, open a Modal component that renders the MarkSoldForm.
 [x] Pass the onSubmit and onCancel callbacks to MarkSoldForm.
 [x] Ensure the "Sold Items" tab in Collection.tsx correctly displays items where sold: true.
+[x] **COMPLETED**: Created Modal component (src/components/common/Modal.tsx) with comprehensive tests.
+[x] **COMPLETED**: Integrated Mark as Sold functionality with proper state management and error handling.
+[x] **COMPLETED**: Added conditional rendering for sold/unsold items and proper tab-specific behavior.
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 [x] Write integration tests for Collection page to verify mark as sold functionality.
-Phase 8: Search & Discovery 🔄
+Phase 8: Search & Discovery ✅
 
 8.1. Implement Global Search Bar & Results Page
 
@@ -550,26 +553,34 @@ Phase 8: Search & Discovery 🔄
 Verification:
 Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 Write integration tests for Search page to verify global search functionality.
-8.2. Implement Dedicated Set Search Page
+8.2. Implement Dedicated Set Search Page ✅
 
- Action: Implement the dedicated Set Search page.
- Sub-action: Create src/pages/SetSearch.tsx.
- Sub-action: Implement a search input for set names and a filter/input for year.
- Sub-action: Use setsApi.getPaginatedSets to fetch and display paginated set results.
- Sub-action: Add a route for /sets in src/App.tsx.
+[x] Action: Implement the dedicated Set Search page.
+[x] Sub-action: Create src/pages/SetSearch.tsx.
+[x] Sub-action: Implement a search input for set names and a filter/input for year.
+[x] Sub-action: Use setsApi.getPaginatedSets to fetch and display paginated set results.
+[x] Sub-action: Add a route for /sets in src/App.tsx.
+[x] **COMPLETED**: Created comprehensive SetSearch page with beautiful design, pagination, and responsive layout.
+[x] **COMPLETED**: Implemented advanced search filters with Enter key support and clear functionality.
+[x] **COMPLETED**: Added proper loading, error, and empty states with user-friendly messaging.
+[x] **COMPLETED**: Integrated with setsApi.getPaginatedSets for real backend interaction.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for SetSearch page.
-8.3. Implement Sealed Products Subcategory Search
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for SetSearch page.
+8.3. Implement Sealed Products Subcategory Search ✅
 
- Action: Implement the dedicated Sealed Products Subcategory Search functionality.
- Sub-action: Create src/pages/SealedProductSearch.tsx.
- Sub-action: Implement a dropdown or filter options for category.
- Sub-action: Use sealedProductsApi.searchSealedProductsByCategory to fetch and display filtered sealed product results.
- Sub-action: Add a route for /sealed-products-search in src/App.tsx.
+[x] Action: Implement the dedicated Sealed Products Subcategory Search functionality.
+[x] Sub-action: Create src/pages/SealedProductSearch.tsx.
+[x] Sub-action: Implement a dropdown or filter options for category.
+[x] Sub-action: Use sealedProductsApi.searchSealedProductsByCategory to fetch and display filtered sealed product results.
+[x] Sub-action: Add a route for /sealed-products-search in src/App.tsx.
+[x] **COMPLETED**: Created comprehensive SealedProductSearch page with category filtering, set name filtering, and availability filtering.
+[x] **COMPLETED**: Implemented beautiful product grid layout with pricing, availability, and image display.
+[x] **COMPLETED**: Added proper loading, error, and empty states with user-friendly messaging.
+[x] **COMPLETED**: Integrated with both getSealedProducts and searchSealedProductsByCategory APIs for flexible search.
 Verification:
-Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-Write integration tests for SealedProductSearch page.
+[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+[x] Write integration tests for SealedProductSearch page.
 Phase 9: Auction Management
 
 9.1. Implement Auction List & Detail Pages

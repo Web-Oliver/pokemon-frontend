@@ -17,6 +17,8 @@ import MainLayout from './components/layouts/MainLayout'
 import Dashboard from './pages/Dashboard'
 import Collection from './pages/Collection'
 import Search from './pages/Search'
+import SetSearch from './pages/SetSearch'
+import SealedProductSearch from './pages/SealedProductSearch'
 import Auctions from './pages/Auctions'
 import SalesAnalytics from './pages/SalesAnalytics'
 import AddEditItem from './pages/AddEditItem'
@@ -66,6 +68,10 @@ function App() {
         return <AddEditItem />;
       case '/search':
         return <Search />;
+      case '/sets':
+        return <SetSearch />;
+      case '/sealed-products-search':
+        return <SealedProductSearch />;
       case '/auctions':
         return <Auctions />;
       case '/sales-analytics':
