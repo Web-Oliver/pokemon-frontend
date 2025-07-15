@@ -44,20 +44,20 @@ export interface SearchState {
 
 export interface UseSearchReturn extends SearchState {
   // Search operations
-  handleSearch: (query: string) => Promise<void>;
+  handleSearch: (_query: string) => Promise<void>;
   handleSuggestionSelect: (
-    suggestion: SetResult | CardResult | ProductResult | CategoryResult,
-    fieldType: 'set' | 'category' | 'cardProduct'
+    _suggestion: SetResult | CardResult | ProductResult | CategoryResult,
+    _fieldType: 'set' | 'category' | 'cardProduct'
   ) => void;
-  getBestMatch: (query: string) => Promise<ICard | null>;
+  getBestMatch: (_query: string) => Promise<ICard | null>;
 
   // Hierarchical search operations
-  updateSetName: (value: string) => void;
-  updateCategoryName: (value: string) => void;
-  updateCardProductName: (value: string) => void;
+  updateSetName: (_value: string) => void;
+  updateCategoryName: (_value: string) => void;
+  updateCardProductName: (_value: string) => void;
   clearSelectedSet: () => void;
   clearSelectedCategory: () => void;
-  setActiveField: (field: 'set' | 'category' | 'cardProduct' | null) => void;
+  setActiveField: (_field: 'set' | 'category' | 'cardProduct' | null) => void;
 
   // General operations
   clearSearch: () => void;

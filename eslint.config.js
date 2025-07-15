@@ -44,7 +44,13 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       
       // TypeScript specific rules
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': 'off', // Disable base rule in favor of TypeScript version
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+        destructuredArrayIgnorePattern: '^_'
+      }],
       '@typescript-eslint/no-explicit-any': 'warn',
       
       // Code quality rules

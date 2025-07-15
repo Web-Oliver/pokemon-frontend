@@ -16,7 +16,7 @@ import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
 
 interface ImageUploaderProps {
-  onImagesChange: (_files: File[]) => void;
+  onImagesChange: (files: File[]) => void;
   existingImageUrls?: string[];
   multiple?: boolean;
   maxFiles?: number;
@@ -67,12 +67,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   // Process selected files
-  const processFiles = (files: FileList | File[]) => {
+  const processFiles = (_files: FileList | File[]) => {
     const newFiles: File[] = [];
     const newPreviews: ImagePreview[] = [];
     let errorMessage = '';
 
-    const fileArray = Array.from(files);
+    const fileArray = Array.from(_files);
 
     // Check total file count
     const currentFileCount = previews.filter(p => !p.isExisting).length;

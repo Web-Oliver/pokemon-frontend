@@ -23,22 +23,22 @@ export interface CollectionState {
 
 export interface UseCollectionReturn extends CollectionState {
   // PSA Graded Cards operations
-  addPsaCard: (cardData: Partial<IPsaGradedCard>) => Promise<void>;
-  updatePsaCard: (id: string, cardData: Partial<IPsaGradedCard>) => Promise<void>;
-  deletePsaCard: (id: string) => Promise<void>;
-  markPsaCardSold: (id: string, saleDetails: ISaleDetails) => Promise<void>;
+  addPsaCard: (_cardData: Partial<IPsaGradedCard>) => Promise<void>;
+  updatePsaCard: (_id: string, _cardData: Partial<IPsaGradedCard>) => Promise<void>;
+  deletePsaCard: (_id: string) => Promise<void>;
+  markPsaCardSold: (_id: string, _saleDetails: ISaleDetails) => Promise<void>;
 
   // Raw Cards operations
-  addRawCard: (cardData: Partial<IRawCard>) => Promise<void>;
-  updateRawCard: (id: string, cardData: Partial<IRawCard>) => Promise<void>;
-  deleteRawCard: (id: string) => Promise<void>;
-  markRawCardSold: (id: string, saleDetails: ISaleDetails) => Promise<void>;
+  addRawCard: (_cardData: Partial<IRawCard>) => Promise<void>;
+  updateRawCard: (_id: string, _cardData: Partial<IRawCard>) => Promise<void>;
+  deleteRawCard: (_id: string) => Promise<void>;
+  markRawCardSold: (_id: string, _saleDetails: ISaleDetails) => Promise<void>;
 
   // Sealed Products operations
-  addSealedProduct: (productData: Partial<ISealedProduct>) => Promise<void>;
-  updateSealedProduct: (id: string, productData: Partial<ISealedProduct>) => Promise<void>;
-  deleteSealedProduct: (id: string) => Promise<void>;
-  markSealedProductSold: (id: string, saleDetails: ISaleDetails) => Promise<void>;
+  addSealedProduct: (_productData: Partial<ISealedProduct>) => Promise<void>;
+  updateSealedProduct: (_id: string, _productData: Partial<ISealedProduct>) => Promise<void>;
+  deleteSealedProduct: (_id: string) => Promise<void>;
+  markSealedProductSold: (_id: string, _saleDetails: ISaleDetails) => Promise<void>;
 
   // General operations
   refreshCollection: () => Promise<void>;

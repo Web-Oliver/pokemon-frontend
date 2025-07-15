@@ -22,7 +22,7 @@ import { showWarningToast } from '../utils/errorHandler';
 export interface PriceHistoryDisplayProps {
   priceHistory: IPriceHistoryEntry[];
   currentPrice: number;
-  onPriceUpdate: (_newPrice: number, _date: string) => void;
+  onPriceUpdate: (newPrice: number, date: string) => void;
 }
 
 export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({

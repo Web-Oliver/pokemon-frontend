@@ -39,10 +39,10 @@ export interface UseSalesAnalyticsResult {
 
   // Date Range Filter
   dateRange: DateRange;
-  setDateRange: (range: DateRange) => void;
+  setDateRange: (_range: DateRange) => void;
 
   // Actions
-  fetchSalesData: (params?: DateRange) => Promise<void>;
+  fetchSalesData: (_params?: DateRange) => Promise<void>;
   refreshData: () => Promise<void>;
 }
 

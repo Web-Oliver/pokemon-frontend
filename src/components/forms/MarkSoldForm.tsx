@@ -13,7 +13,7 @@ import Input from '../common/Input';
 import Select from '../common/Select';
 
 interface MarkSoldFormProps {
-  onSubmit: (_saleDetails: ISaleDetails) => void;
+  onSubmit: (saleDetails: ISaleDetails) => void;
   onCancel: () => void;
   initialData?: Partial<ISaleDetails>;
   isLoading?: boolean;

@@ -219,13 +219,15 @@ describe('PriceHistoryDisplay Component', () => {
       vi.mock('../utils/errorHandler', () => ({
         showWarningToast: mockShowWarningToast,
       }));
-      
+
       const priceValue = parseFloat('0');
       if (isNaN(priceValue) || priceValue <= 0) {
         mockShowWarningToast('Please enter a valid price greater than 0');
       }
 
-      expect(mockShowWarningToast).toHaveBeenCalledWith('Please enter a valid price greater than 0');
+      expect(mockShowWarningToast).toHaveBeenCalledWith(
+        'Please enter a valid price greater than 0'
+      );
     });
   });
 });

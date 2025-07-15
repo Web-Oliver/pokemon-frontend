@@ -359,6 +359,7 @@ describe('AuctionDetail Page Integration Tests', () => {
 
     it('should confirm before deleting auction', () => {
       mockUseAuction.currentAuction = mockAuction;
+      // eslint-disable-next-line no-unused-vars
       (global.confirm as unknown as { mockReturnValue: (value: boolean) => void }).mockReturnValue(
         false
       );
@@ -376,6 +377,7 @@ describe('AuctionDetail Page Integration Tests', () => {
 
     it('should delete auction when confirmed', async () => {
       mockUseAuction.currentAuction = mockAuction;
+      // eslint-disable-next-line no-unused-vars
       (global.confirm as unknown as { mockReturnValue: (value: boolean) => void }).mockReturnValue(
         true
       );

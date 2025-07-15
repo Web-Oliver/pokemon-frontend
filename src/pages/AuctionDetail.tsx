@@ -179,23 +179,20 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle remove item from auction
   const handleRemoveItem = async (itemId: string) => {
-    showWarningToast(
-      'Are you sure you want to remove this item from the auction?',
-      {
-        duration: 0,
-        action: {
-          label: 'Remove',
-          onClick: async () => {
-            try {
-              await removeItemFromAuction(currentAuctionId, itemId);
-              showSuccessToast('Item removed from auction');
-            } catch (err) {
-              // Error handled by the hook
-            }
-          },
+    showWarningToast('Are you sure you want to remove this item from the auction?', {
+      duration: 0,
+      action: {
+        label: 'Remove',
+        onClick: async () => {
+          try {
+            await removeItemFromAuction(currentAuctionId, itemId);
+            showSuccessToast('Item removed from auction');
+          } catch (err) {
+            // Error handled by the hook
+          }
         },
-      }
-    );
+      },
+    });
   };
 
   // Handle Facebook post generation

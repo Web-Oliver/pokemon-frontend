@@ -248,6 +248,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
     });
 
     test('should show loading state during submission', async () => {
+      // eslint-disable-next-line no-unused-vars
       let resolvePromise: (value: unknown) => void;
       const submissionPromise = new Promise(resolve => {
         resolvePromise = resolve;
