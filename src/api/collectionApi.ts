@@ -8,6 +8,25 @@ import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 
+/**
+ * Helper function to map _id to id for MongoDB compatibility
+ * @param item - Item object or array of items
+ * @returns Item(s) with id field mapped from _id
+ */
+const mapItemIds = (item: any): any => {
+  if (!item) return item;
+  
+  if (Array.isArray(item)) {
+    return item.map(mapItemIds);
+  }
+  
+  if (item._id && !item.id) {
+    item.id = item._id;
+  }
+  
+  return item;
+};
+
 // PSA Graded Cards Collection APIs
 export interface PsaGradedCardsParams {
   grade?: string;
@@ -25,7 +44,8 @@ export const getPsaGradedCards = async (
   params?: PsaGradedCardsParams
 ): Promise<IPsaGradedCard[]> => {
   const response = await apiClient.get('/psa-graded-cards', { params });
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -35,7 +55,8 @@ export const getPsaGradedCards = async (
  */
 export const getPsaGradedCardById = async (id: string): Promise<IPsaGradedCard> => {
   const response = await apiClient.get(`/psa-graded-cards/${id}`);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -47,7 +68,8 @@ export const createPsaGradedCard = async (
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
   const response = await apiClient.post('/psa-graded-cards', data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -61,7 +83,8 @@ export const updatePsaGradedCard = async (
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
   const response = await apiClient.put(`/psa-graded-cards/${id}`, data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -83,10 +106,9 @@ export const markPsaGradedCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IPsaGradedCard> => {
-  const response = await apiClient.patch(`/psa-graded-cards/${id}/mark-sold`, {
-    saleDetails
-  });
-  return response.data.data || response.data;
+  const response = await apiClient.post(`/psa-graded-cards/${id}/mark-sold`, saleDetails);
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 // Raw Cards Collection APIs
@@ -104,7 +126,8 @@ export interface RawCardsParams {
  */
 export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> => {
   const response = await apiClient.get('/raw-cards', { params });
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -114,7 +137,8 @@ export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> 
  */
 export const getRawCardById = async (id: string): Promise<IRawCard> => {
   const response = await apiClient.get(`/raw-cards/${id}`);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -124,7 +148,8 @@ export const getRawCardById = async (id: string): Promise<IRawCard> => {
  */
 export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> => {
   const response = await apiClient.post('/raw-cards', data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -138,7 +163,8 @@ export const updateRawCard = async (
   data: Partial<IRawCard>
 ): Promise<IRawCard> => {
   const response = await apiClient.put(`/raw-cards/${id}`, data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -160,10 +186,9 @@ export const markRawCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IRawCard> => {
-  const response = await apiClient.patch(`/raw-cards/${id}/mark-sold`, {
-    saleDetails
-  });
-  return response.data.data || response.data;
+  const response = await apiClient.post(`/raw-cards/${id}/mark-sold`, saleDetails);
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 // Sealed Products Collection APIs
@@ -182,7 +207,8 @@ export const getSealedProductCollection = async (
   params?: SealedProductCollectionParams
 ): Promise<ISealedProduct[]> => {
   const response = await apiClient.get('/sealed-products', { params });
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -194,7 +220,8 @@ export const createSealedProduct = async (
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
   const response = await apiClient.post('/sealed-products', data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -208,7 +235,8 @@ export const updateSealedProduct = async (
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
   const response = await apiClient.put(`/sealed-products/${id}`, data);
-  return response.data.data || response.data;
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };
 
 /**
@@ -230,8 +258,7 @@ export const markSealedProductSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<ISealedProduct> => {
-  const response = await apiClient.patch(`/sealed-products/${id}/mark-sold`, {
-    saleDetails
-  });
-  return response.data.data || response.data;
+  const response = await apiClient.post(`/sealed-products/${id}/mark-sold`, saleDetails);
+  const responseData = response.data.data || response.data;
+  return mapItemIds(responseData);
 };

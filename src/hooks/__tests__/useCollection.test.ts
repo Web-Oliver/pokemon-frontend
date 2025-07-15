@@ -68,14 +68,14 @@ describe('useCollection Integration Tests', () => {
     console.log('Start backend with: cd ../pokemon-collection-backend && npm run dev');
   });
 
-  it('should initialize with empty state and loading false', () => {
+  it('should initialize with empty state and start loading', () => {
     const { result } = renderHook(() => useCollection());
 
     expect(result.current.psaCards).toEqual([]);
     expect(result.current.rawCards).toEqual([]);
     expect(result.current.sealedProducts).toEqual([]);
     expect(result.current.soldItems).toEqual([]);
-    expect(result.current.loading).toBe(false);
+    expect(result.current.loading).toBe(true); // Loading should be true immediately due to useEffect
     expect(result.current.error).toBe(null);
   });
 

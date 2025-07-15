@@ -28,8 +28,10 @@ export interface ISalesSummary {
 // Updated ISalesGraphData interface based on backend /api/sales/graph-data
 export interface ISalesGraphData {
   date: string; // ISO date string
-  revenue: number; // Revenue for this date
+  revenue: number; // Revenue for this date (mapped from backend 'sales')
   profit: number; // Profit for this date
+  itemsSold?: number; // Number of items sold (mapped from backend 'itemCount')
+  averageMargin?: number; // Average margin percentage (calculated client-side)
 }
 
 // Updated ISale interface for individual sale records (aggregated from sold items)

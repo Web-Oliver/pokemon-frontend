@@ -6,6 +6,25 @@
 import apiClient from './apiClient';
 import { ICard } from '../domain/models/card';
 
+/**
+ * Helper function to map _id to id for MongoDB compatibility
+ * @param card - Card object or array of cards
+ * @returns Card(s) with id field mapped from _id
+ */
+const mapCardIds = (card: any): any => {
+  if (!card) return card;
+  
+  if (Array.isArray(card)) {
+    return card.map(mapCardIds);
+  }
+  
+  if (card._id && !card.id) {
+    card.id = card._id;
+  }
+  
+  return card;
+};
+
 export interface CardsSearchParams {
   setId?: string;
   cardName?: string;
@@ -28,7 +47,8 @@ export interface SearchResponse {
  */
 export const getCards = async (params?: CardsSearchParams): Promise<ICard[]> => {
   const response = await apiClient.get('/cards', { params });
-  return response.data.data || response.data;
+  const data = response.data.data || response.data;
+  return mapCardIds(data);
 };
 
 /**
@@ -44,7 +64,8 @@ export const searchCards = async (
   const response = await apiClient.get('/cards/search', {
     params: { q: query, ...params }
   });
-  return response.data.data || response.data;
+  const data = response.data.data || response.data;
+  return mapCardIds(data);
 };
 
 /**
@@ -72,7 +93,18 @@ export const getBestMatchCard = async (query: string): Promise<ICard | null> => 
   const response = await apiClient.get('/cards/search-best-match', {
     params: { q: query }
   });
-  return response.data.data || response.data;
+  
+  const data = response.data.data || response.data;
+  
+  // If backend returns an array, return the first item or null if empty
+  let card = null;
+  if (Array.isArray(data)) {
+    card = data.length > 0 ? data[0] : null;
+  } else {
+    card = data || null;
+  }
+  
+  return mapCardIds(card);
 };
 
 /**
@@ -82,5 +114,6 @@ export const getBestMatchCard = async (query: string): Promise<ICard | null> => 
  */
 export const getCardById = async (id: string): Promise<ICard> => {
   const response = await apiClient.get(`/cards/${id}`);
-  return response.data.data || response.data;
+  const data = response.data.data || response.data;
+  return mapCardIds(data);
 };

@@ -146,13 +146,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle add items to auction
   const handleAddItems = async (items: { itemId: string; itemCategory: string }[]) => {
-    try {
-      for (const item of items) {
-        await addItemToAuction(currentAuctionId, item);
-      }
-    } catch (err) {
-      // Error handled by the hook
-      throw err;
+    for (const item of items) {
+      await addItemToAuction(currentAuctionId, item);
     }
   };
 

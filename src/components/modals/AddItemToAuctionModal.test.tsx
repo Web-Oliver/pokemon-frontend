@@ -69,7 +69,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
     vi.clearAllMocks();
     
     // Mock useCollection hook implementation
-    (useCollection as any).mockReturnValue({
+    (useCollection as ReturnType<typeof vi.fn>).mockReturnValue({
       psaCards: mockPsaCards,
       rawCards: mockRawCards,
       sealedProducts: mockSealedProducts,
@@ -329,7 +329,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
   describe('Loading and Error States', () => {
     test('should display loading spinner when loading', () => {
-      (useCollection as any).mockReturnValue({
+      (useCollection as ReturnType<typeof vi.fn>).mockReturnValue({
         psaCards: [],
         rawCards: [],
         sealedProducts: [],
@@ -349,7 +349,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
     });
 
     test('should display error message when error occurs', () => {
-      (useCollection as any).mockReturnValue({
+      (useCollection as ReturnType<typeof vi.fn>).mockReturnValue({
         psaCards: [],
         rawCards: [],
         sealedProducts: [],
@@ -369,7 +369,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
     });
 
     test('should display empty state when no collection items', () => {
-      (useCollection as any).mockReturnValue({
+      (useCollection as ReturnType<typeof vi.fn>).mockReturnValue({
         psaCards: [],
         rawCards: [],
         sealedProducts: [],

@@ -34,7 +34,8 @@ export const calculateAverageMargin = (sales: ISale[]): number => {
 
   const totalMargin = sales.reduce((total, sale) => {
     const profit = sale.actualSoldPrice - sale.myPrice;
-    const margin = sale.myPrice > 0 ? (profit / sale.myPrice) * 100 : 0;
+    // Use profit margin calculation: (profit / actualSoldPrice) * 100
+    const margin = sale.actualSoldPrice > 0 ? (profit / sale.actualSoldPrice) * 100 : 0;
     return total + margin;
   }, 0);
 
@@ -49,8 +50,11 @@ export const calculateAverageMargin = (sales: ISale[]): number => {
 interface RawGraphDataPoint {
   date?: string;
   _id?: { date?: string };
-  revenue?: number;
+  sales?: number; // Backend uses 'sales' not 'revenue'
+  revenue?: number; // Support both formats for backwards compatibility
   profit?: number;
+  itemCount?: number; // Backend uses 'itemCount' not 'itemsSold'
+  count?: number; // Support both formats for backwards compatibility
 }
 
 export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[] => {
@@ -58,11 +62,22 @@ export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[
     return [];
   }
 
-  return rawData.map((dataPoint) => ({
-    date: dataPoint.date || dataPoint._id?.date || '',
-    revenue: Number(dataPoint.revenue) || 0,
-    profit: Number(dataPoint.profit) || 0,
-  }));
+  return rawData.map((dataPoint) => {
+    const revenue = Number(dataPoint.sales || dataPoint.revenue) || 0;
+    const profit = Number(dataPoint.profit) || 0;
+    const itemsSold = Number(dataPoint.itemCount || dataPoint.count) || 0;
+    
+    // Calculate average margin client-side: (profit / revenue) * 100
+    const averageMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
+
+    return {
+      date: dataPoint.date || dataPoint._id?.date || '',
+      revenue,
+      profit,
+      itemsSold,
+      averageMargin: Number(averageMargin.toFixed(2)),
+    };
+  });
 };
 
 /**
@@ -86,13 +101,26 @@ export const aggregateByCategory = (sales: ISale[]) => {
   };
 
   sales.forEach((sale) => {
-    const category = sale.itemCategory as keyof typeof categoryData;
-    if (categoryData[category]) {
-      categoryData[category].count += 1;
-      categoryData[category].revenue += sale.actualSoldPrice;
-      const profit = sale.actualSoldPrice - sale.myPrice;
-      categoryData[category].profit += profit;
+    // Convert PascalCase backend values to camelCase for internal use
+    let categoryKey: keyof typeof categoryData;
+    switch (sale.itemCategory) {
+      case 'PsaGradedCard':
+        categoryKey = 'psaGradedCard';
+        break;
+      case 'RawCard':
+        categoryKey = 'rawCard';
+        break;
+      case 'SealedProduct':
+        categoryKey = 'sealedProduct';
+        break;
+      default:
+        return; // Skip unknown categories
     }
+    
+    categoryData[categoryKey].count += 1;
+    categoryData[categoryKey].revenue += sale.actualSoldPrice;
+    const profit = sale.actualSoldPrice - sale.myPrice;
+    categoryData[categoryKey].profit += profit;
   });
 
   return categoryData;

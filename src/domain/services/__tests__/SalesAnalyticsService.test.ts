@@ -102,7 +102,7 @@ describe('SalesAnalyticsService', () => {
         revenue: 150,
         profit: 50,
         itemsSold: 1,
-        averageMargin: 0,
+        averageMargin: 33.33, // (50/150) * 100 = 33.33%
       });
     });
 

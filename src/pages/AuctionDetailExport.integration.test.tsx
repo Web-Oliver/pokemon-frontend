@@ -82,7 +82,7 @@ describe('AuctionDetail Export Features Integration Tests', () => {
       writable: true
     });
 
-    (useAuction as any).mockReturnValue({
+    (useAuction as ReturnType<typeof vi.fn>).mockReturnValue({
       currentAuction: mockAuction,
       loading: false,
       error: null,
@@ -190,14 +190,14 @@ describe('AuctionDetail Export Features Integration Tests', () => {
       const mockPostText = 'Generated Facebook post content';
       mockGenerateFacebookPost.mockResolvedValue(mockPostText);
       mockClipboard.writeText.mockRejectedValue(new Error('Clipboard API not available'));
-      (global.document.execCommand as any).mockReturnValue(true);
+      (global.document.execCommand as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
       // Mock createElement and body methods
       const mockTextArea = {
         value: '',
         select: vi.fn()
       };
-      vi.spyOn(document, 'createElement').mockReturnValue(mockTextArea as any);
+      vi.spyOn(document, 'createElement').mockReturnValue(mockTextArea as HTMLTextAreaElement);
       vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
       vi.spyOn(document.body, 'removeChild').mockImplementation(() => {});
 
@@ -278,7 +278,7 @@ describe('AuctionDetail Export Features Integration Tests', () => {
 
   describe('Loading States', () => {
     test('should disable buttons when loading', () => {
-      (useAuction as any).mockReturnValue({
+      (useAuction as ReturnType<typeof vi.fn>).mockReturnValue({
         currentAuction: mockAuction,
         loading: true,
         error: null,

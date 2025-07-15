@@ -19,7 +19,7 @@ describe('Export API Integration Tests', () => {
     test('should generate Facebook post for auction', async () => {
       const mockPostText = 'Check out this amazing Pokemon auction! 🎯\n\nItems include:\n- Charizard PSA 10\n- Blastoise PSA 9\n\nStarting soon!';
       
-      (apiClient.post as any).mockResolvedValue({
+      (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: {
           success: true,
           data: mockPostText
@@ -35,7 +35,7 @@ describe('Export API Integration Tests', () => {
     test('should handle different response formats', async () => {
       const mockPostText = 'Another auction post format';
       
-      (apiClient.post as any).mockResolvedValue({
+      (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: {
           post: mockPostText
         }
@@ -48,7 +48,7 @@ describe('Export API Integration Tests', () => {
     test('should handle direct string response', async () => {
       const mockPostText = 'Direct string response';
       
-      (apiClient.post as any).mockResolvedValue({
+      (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: mockPostText
       });
 
@@ -61,7 +61,7 @@ describe('Export API Integration Tests', () => {
     test('should get auction Facebook text file', async () => {
       const mockBlob = new Blob(['Facebook post content'], { type: 'text/plain' });
       
-      (apiClient.get as any).mockResolvedValue({
+      (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: mockBlob
       });
 
@@ -76,7 +76,7 @@ describe('Export API Integration Tests', () => {
     test('should zip auction images', async () => {
       const mockZipBlob = new Blob(['zip file content'], { type: 'application/zip' });
       
-      (apiClient.get as any).mockResolvedValue({
+      (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: mockZipBlob
       });
 
@@ -92,7 +92,7 @@ describe('Export API Integration Tests', () => {
       const mockBlob = new Blob(['Collection post content'], { type: 'text/plain' });
       const selectedItemIds = ['item1', 'item2', 'item3'];
       
-      (apiClient.post as any).mockResolvedValue({
+      (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: mockBlob
       });
 
@@ -126,7 +126,7 @@ describe('Export API Integration Tests', () => {
         download: '',
         click: mockClick
       };
-      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as HTMLAnchorElement);
       vi.spyOn(document.body, 'appendChild').mockImplementation(mockAppendChild);
       vi.spyOn(document.body, 'removeChild').mockImplementation(mockRemoveChild);
 
@@ -150,14 +150,14 @@ describe('Export API Integration Tests', () => {
   describe('Error Handling', () => {
     test('should handle API errors for Facebook post generation', async () => {
       const mockError = new Error('API Error');
-      (apiClient.post as any).mockRejectedValue(mockError);
+      (apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
       await expect(exportApi.generateAuctionFacebookPost('auction123')).rejects.toThrow('API Error');
     });
 
     test('should handle API errors for file downloads', async () => {
       const mockError = new Error('Download Error');
-      (apiClient.get as any).mockRejectedValue(mockError);
+      (apiClient.get as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
       await expect(exportApi.getAuctionFacebookTextFile('auction123')).rejects.toThrow('Download Error');
       await expect(exportApi.zipAuctionImages('auction123')).rejects.toThrow('Download Error');
@@ -165,7 +165,7 @@ describe('Export API Integration Tests', () => {
 
     test('should handle API errors for collection text file', async () => {
       const mockError = new Error('Collection Error');
-      (apiClient.post as any).mockRejectedValue(mockError);
+      (apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
       await expect(exportApi.getCollectionFacebookTextFile(['item1'])).rejects.toThrow('Collection Error');
     });

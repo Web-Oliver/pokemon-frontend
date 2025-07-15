@@ -311,7 +311,7 @@ describe('useSearch Integration Tests', () => {
         bestMatch = await result.current.getBestMatch('nonexistentcard12345');
       });
 
-      // Should return null for non-existent cards
+      // Should return null for non-existent cards (no best match found)
       expect(bestMatch).toBe(null);
     }, 10000);
   });
