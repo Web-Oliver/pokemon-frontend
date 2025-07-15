@@ -14,16 +14,18 @@ import { ISaleDetails } from '../domain/models/common';
  * @returns Item(s) with id field mapped from _id
  */
 const mapItemIds = (item: unknown): unknown => {
-  if (!item) return item;
-  
+  if (!item) {
+    return item;
+  }
+
   if (Array.isArray(item)) {
     return item.map(mapItemIds);
   }
-  
+
   if (item._id && !item.id) {
     item.id = item._id;
   }
-  
+
   return item;
 };
 
@@ -158,10 +160,7 @@ export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> 
  * @param data - Updated raw card data
  * @returns Promise<IRawCard> - Updated raw card
  */
-export const updateRawCard = async (
-  id: string,
-  data: Partial<IRawCard>
-): Promise<IRawCard> => {
+export const updateRawCard = async (id: string, data: Partial<IRawCard>): Promise<IRawCard> => {
   const response = await apiClient.put(`/raw-cards/${id}`, data);
   const responseData = response.data.data || response.data;
   return mapItemIds(responseData);
@@ -182,10 +181,7 @@ export const deleteRawCard = async (id: string): Promise<void> => {
  * @param saleDetails - Sale details
  * @returns Promise<IRawCard> - Updated raw card
  */
-export const markRawCardSold = async (
-  id: string,
-  saleDetails: ISaleDetails
-): Promise<IRawCard> => {
+export const markRawCardSold = async (id: string, saleDetails: ISaleDetails): Promise<IRawCard> => {
   const response = await apiClient.post(`/raw-cards/${id}/mark-sold`, saleDetails);
   const responseData = response.data.data || response.data;
   return mapItemIds(responseData);

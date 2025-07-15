@@ -50,7 +50,7 @@ const createMockRawCard = (): Partial<IRawCard> => ({
 
 const createMockSealedProduct = (): Partial<ISealedProduct> => ({
   productId: '686da80432db32c7cc73d73d', // Real product ID from backend
-  category: 'Blisters', // Real category from backend  
+  category: 'Blisters', // Real category from backend
   setName: 'Destined Rivals',
   name: 'Destined Rivals: Kangaskhan 3-Pack Blister',
   availability: 10,
@@ -88,9 +88,12 @@ describe('useCollection Integration Tests', () => {
     });
 
     // Should complete loading and populate data
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    }, { timeout: 10000 });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 10000 }
+    );
 
     // Verify data structure (actual data depends on backend state)
     expect(Array.isArray(result.current.psaCards)).toBe(true);
@@ -103,9 +106,12 @@ describe('useCollection Integration Tests', () => {
     const { result } = renderHook(() => useCollection());
 
     // Wait for initial load
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    }, { timeout: 10000 });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 10000 }
+    );
 
     // Trigger refresh
     await act(async () => {
@@ -113,9 +119,12 @@ describe('useCollection Integration Tests', () => {
     });
 
     // Should load again
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    }, { timeout: 10000 });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 10000 }
+    );
 
     expect(result.current.error).toBe(null);
   });
@@ -136,9 +145,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       const initialCount = result.current.psaCards.length;
       const mockCard = createMockPsaCard();
@@ -147,9 +159,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.addPsaCard(mockCard);
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Verify card was added (optimistic update)
       expect(result.current.psaCards.length).toBe(initialCount + 1);
@@ -160,9 +175,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Test invalid data handling
       const invalidCard = {} as Partial<IPsaGradedCard>;
@@ -171,9 +189,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.addPsaCard(invalidCard);
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Should handle errors gracefully
       // Error state might be set depending on backend validation
@@ -186,9 +207,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       const initialCount = result.current.rawCards.length;
       const mockCard = createMockRawCard();
@@ -197,9 +221,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.addRawCard(mockCard);
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Verify card was added
       expect(result.current.rawCards.length).toBe(initialCount + 1);
@@ -213,9 +240,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       const initialCount = result.current.sealedProducts.length;
       const mockProduct = createMockSealedProduct();
@@ -224,9 +254,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.addSealedProduct(mockProduct);
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Verify product was added
       expect(result.current.sealedProducts.length).toBe(initialCount + 1);
@@ -240,9 +273,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Only test if we have PSA cards
       if (result.current.psaCards.length > 0) {
@@ -253,9 +289,12 @@ describe('useCollection Integration Tests', () => {
           await result.current.updatePsaCard(cardToUpdate.id!, updateData);
         });
 
-        await waitFor(() => {
-          expect(result.current.loading).toBe(false);
-        }, { timeout: 10000 });
+        await waitFor(
+          () => {
+            expect(result.current.loading).toBe(false);
+          },
+          { timeout: 10000 }
+        );
 
         // Find updated card
         const updatedCard = result.current.psaCards.find(card => card.id === cardToUpdate.id);
@@ -270,9 +309,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Only test if we have PSA cards
       if (result.current.psaCards.length > 0) {
@@ -284,9 +326,12 @@ describe('useCollection Integration Tests', () => {
           await result.current.markPsaCardSold(cardToSell.id!, saleDetails);
         });
 
-        await waitFor(() => {
-          expect(result.current.loading).toBe(false);
-        }, { timeout: 10000 });
+        await waitFor(
+          () => {
+            expect(result.current.loading).toBe(false);
+          },
+          { timeout: 10000 }
+        );
 
         // Verify card moved to sold items
         expect(result.current.soldItems.length).toBe(initialSoldCount + 1);
@@ -308,9 +353,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.deletePsaCard('invalid-id-that-does-not-exist');
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Should handle error without crashing
       // Error state handling depends on backend implementation
@@ -323,9 +371,12 @@ describe('useCollection Integration Tests', () => {
       const { result } = renderHook(() => useCollection());
 
       // Wait for initial load
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Store initial state for later comparison if needed
       console.log('Initial collection state:', {
@@ -340,9 +391,12 @@ describe('useCollection Integration Tests', () => {
         await result.current.refreshCollection();
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // State should be consistent after refresh
       expect(result.current.psaCards.length).toBeGreaterThanOrEqual(0);

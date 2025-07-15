@@ -1,6 +1,6 @@
 /**
  * useSalesAnalytics Hook Integration Tests
- * 
+ *
  * Tests the sales analytics hook with real backend integration.
  * Following CLAUDE.md guidelines - NO MOCKING for API interactions.
  */
@@ -13,7 +13,7 @@ import { ISale, ISalesSummary, ISalesGraphData } from '../../domain/models/sale'
 // Mock console.log for testing
 const mockLog = vi.fn();
 vi.mock('../../utils/logger', () => ({
-  log: mockLog
+  log: mockLog,
 }));
 
 // Mock API modules for testing
@@ -24,7 +24,7 @@ const mockGetSalesGraphData = vi.fn();
 vi.mock('../../api/salesApi', () => ({
   getSalesData: mockGetSalesData,
   getSalesSummary: mockGetSalesSummary,
-  getSalesGraphData: mockGetSalesGraphData
+  getSalesGraphData: mockGetSalesGraphData,
 }));
 
 describe('useSalesAnalytics Hook Integration Tests', () => {
@@ -37,7 +37,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       myPrice: 100,
       actualSoldPrice: 150,
       dateSold: '2024-01-15T00:00:00.000Z',
-      source: 'Facebook'
+      source: 'Facebook',
     },
     {
       id: '2',
@@ -46,8 +46,8 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       myPrice: 500,
       actualSoldPrice: 750,
       dateSold: '2024-01-20T00:00:00.000Z',
-      source: 'DBA'
-    }
+      source: 'DBA',
+    },
   ];
 
   const mockSummary: ISalesSummary = {
@@ -58,8 +58,8 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
     categoryBreakdown: {
       psaGradedCard: { count: 1, revenue: 150 },
       rawCard: { count: 0, revenue: 0 },
-      sealedProduct: { count: 1, revenue: 750 }
-    }
+      sealedProduct: { count: 1, revenue: 750 },
+    },
   };
 
   const mockGraphData: ISalesGraphData[] = [
@@ -68,21 +68,21 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       revenue: 150,
       profit: 50,
       itemsSold: 1,
-      averageMargin: 33.33
+      averageMargin: 33.33,
     },
     {
       date: '2024-01-20',
       revenue: 750,
       profit: 250,
       itemsSold: 1,
-      averageMargin: 33.33
-    }
+      averageMargin: 33.33,
+    },
   ];
 
   beforeEach(() => {
     // Reset all mocks before each test
     vi.clearAllMocks();
-    
+
     // Set up default successful responses
     mockGetSalesData.mockResolvedValue(mockSales);
     mockGetSalesSummary.mockResolvedValue(mockSummary);
@@ -146,7 +146,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       mockGetSalesSummary.mockResolvedValue({
         ...mockSummary,
         totalItems: 1,
-        totalRevenue: 150
+        totalRevenue: 150,
       });
       mockGetSalesGraphData.mockResolvedValue(mockGraphData.slice(0, 1));
 
@@ -154,7 +154,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       await act(async () => {
         result.current.setDateRange({
           startDate: '2024-01-15',
-          endDate: '2024-01-15'
+          endDate: '2024-01-15',
         });
       });
 
@@ -166,21 +166,21 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       // Should have called API with date range parameters
       expect(mockGetSalesData).toHaveBeenCalledWith({
         startDate: '2024-01-15',
-        endDate: '2024-01-15'
+        endDate: '2024-01-15',
       });
       expect(mockGetSalesSummary).toHaveBeenCalledWith({
         startDate: '2024-01-15',
-        endDate: '2024-01-15'
+        endDate: '2024-01-15',
       });
       expect(mockGetSalesGraphData).toHaveBeenCalledWith({
         startDate: '2024-01-15',
-        endDate: '2024-01-15'
+        endDate: '2024-01-15',
       });
 
       // Date range should be updated
       expect(result.current.dateRange).toEqual({
         startDate: '2024-01-15',
-        endDate: '2024-01-15'
+        endDate: '2024-01-15',
       });
     });
   });
@@ -194,7 +194,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       });
 
       const kpis = result.current.kpis;
-      
+
       expect(kpis.totalRevenue).toBe(900); // 150 + 750
       expect(kpis.totalProfit).toBe(300); // (150-100) + (750-500)
       expect(kpis.totalItems).toBe(2);
@@ -210,15 +210,15 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       });
 
       const categoryBreakdown = result.current.categoryBreakdown;
-      
+
       expect(categoryBreakdown.psaGradedCard.count).toBe(1);
       expect(categoryBreakdown.psaGradedCard.revenue).toBe(150);
       expect(categoryBreakdown.psaGradedCard.profit).toBe(50);
-      
+
       expect(categoryBreakdown.sealedProduct.count).toBe(1);
       expect(categoryBreakdown.sealedProduct.revenue).toBe(750);
       expect(categoryBreakdown.sealedProduct.profit).toBe(250);
-      
+
       expect(categoryBreakdown.rawCard.count).toBe(0);
       expect(categoryBreakdown.rawCard.revenue).toBe(0);
     });
@@ -231,7 +231,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       });
 
       const trendAnalysis = result.current.trendAnalysis;
-      
+
       // With two data points: from 150 to 750 revenue
       expect(trendAnalysis.revenueGrowthRate).toBe(400); // ((750-150)/150) * 100
       expect(trendAnalysis.trend).toBe('up'); // >5% growth
@@ -251,7 +251,7 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       await act(async () => {
         result.current.setDateRange({
           startDate: '2024-01-01',
-          endDate: '2024-01-31'
+          endDate: '2024-01-31',
         });
       });
 
@@ -274,15 +274,15 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       // Should have called API with current date range
       expect(mockGetSalesData).toHaveBeenCalledWith({
         startDate: '2024-01-01',
-        endDate: '2024-01-31'
+        endDate: '2024-01-31',
       });
       expect(mockGetSalesSummary).toHaveBeenCalledWith({
         startDate: '2024-01-01',
-        endDate: '2024-01-31'
+        endDate: '2024-01-31',
       });
       expect(mockGetSalesGraphData).toHaveBeenCalledWith({
         startDate: '2024-01-01',
-        endDate: '2024-01-31'
+        endDate: '2024-01-31',
       });
     });
   });
@@ -307,8 +307,8 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
         categoryBreakdown: {
           psaGradedCard: { count: 0, revenue: 0 },
           rawCard: { count: 0, revenue: 0 },
-          sealedProduct: { count: 0, revenue: 0 }
-        }
+          sealedProduct: { count: 0, revenue: 0 },
+        },
       });
       mockGetSalesGraphData.mockResolvedValue([]);
 
@@ -316,14 +316,14 @@ describe('useSalesAnalytics Hook Integration Tests', () => {
       await act(async () => {
         await result.current.fetchSalesData({
           startDate: '2024-02-01',
-          endDate: '2024-02-28'
+          endDate: '2024-02-28',
         });
       });
 
       // Should have called API with custom parameters
       expect(mockGetSalesData).toHaveBeenCalledWith({
         startDate: '2024-02-01',
-        endDate: '2024-02-28'
+        endDate: '2024-02-28',
       });
     });
   });

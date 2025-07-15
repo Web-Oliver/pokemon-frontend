@@ -63,14 +63,17 @@ describe('useSearch Integration Tests', () => {
         await result.current.handleSearch('charizard');
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       expect(result.current.searchTerm).toBe('charizard');
       expect(Array.isArray(result.current.searchResults)).toBe(true);
       expect(result.current.error).toBe(null);
-      
+
       // Should have search metadata
       expect(result.current.searchMeta).toBeDefined();
       expect(typeof result.current.searchMeta?.queryTime).toBe('number');
@@ -95,9 +98,12 @@ describe('useSearch Integration Tests', () => {
         await result.current.handleSearch('nonexistentpokemoncard12345');
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       expect(result.current.searchTerm).toBe('nonexistentpokemoncard12345');
       expect(result.current.searchResults).toEqual([]);
@@ -118,9 +124,12 @@ describe('useSearch Integration Tests', () => {
       expect(result.current.activeField).toBe('category');
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
+        },
+        { timeout: 5000 }
+      );
     }, 10000);
 
     it('should handle category selection and clear card/product field', async () => {
@@ -174,9 +183,12 @@ describe('useSearch Integration Tests', () => {
       expect(result.current.activeField).toBe('set');
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
+        },
+        { timeout: 5000 }
+      );
     }, 10000);
 
     it('should update card/product name and trigger suggestions', async () => {
@@ -190,9 +202,12 @@ describe('useSearch Integration Tests', () => {
       expect(result.current.activeField).toBe('cardProduct');
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
+        },
+        { timeout: 5000 }
+      );
     }, 10000);
 
     it('should handle set selection and clear card/product field', async () => {
@@ -220,10 +235,13 @@ describe('useSearch Integration Tests', () => {
 
       // Pass suggestion as object with setInfo like real API response
       await act(async () => {
-        result.current.handleSuggestionSelect({
-          cardName: 'Charizard',
-          setInfo: { setName: 'Base Set' }
-        }, 'cardProduct');
+        result.current.handleSuggestionSelect(
+          {
+            cardName: 'Charizard',
+            setInfo: { setName: 'Base Set' },
+          },
+          'cardProduct'
+        );
       });
 
       expect(result.current.cardProductName).toBe('Charizard');
@@ -289,10 +307,13 @@ describe('useSearch Integration Tests', () => {
       });
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        // Suggestions should be fetched for sets containing 'base'
-        expect(result.current.suggestions).toBeDefined();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          // Suggestions should be fetched for sets containing 'base'
+          expect(result.current.suggestions).toBeDefined();
+        },
+        { timeout: 5000 }
+      );
 
       expect(result.current.activeField).toBe('set');
     }, 10000);
@@ -305,10 +326,13 @@ describe('useSearch Integration Tests', () => {
       });
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        // Suggestions should be fetched for cards containing 'pika'
-        expect(result.current.suggestions).toBeDefined();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          // Suggestions should be fetched for cards containing 'pika'
+          expect(result.current.suggestions).toBeDefined();
+        },
+        { timeout: 5000 }
+      );
 
       expect(result.current.activeField).toBe('cardProduct');
     }, 10000);
@@ -327,9 +351,12 @@ describe('useSearch Integration Tests', () => {
       });
 
       // Wait for debounced suggestions
-      await waitFor(() => {
-        expect(result.current.suggestions).toBeDefined();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.suggestions).toBeDefined();
+        },
+        { timeout: 5000 }
+      );
 
       // Suggestions should be filtered by the selected set
       expect(result.current.selectedSet).toBe('Base Set');
@@ -360,7 +387,7 @@ describe('useSearch Integration Tests', () => {
 
       // Should return a card object or null
       expect(bestMatch === null || typeof bestMatch === 'object').toBe(true);
-      
+
       if (bestMatch) {
         expect(bestMatch).toHaveProperty('_id');
         expect(bestMatch).toHaveProperty('cardName');
@@ -403,9 +430,12 @@ describe('useSearch Integration Tests', () => {
       });
 
       // Wait for final debounced call
-      await waitFor(() => {
-        expect(result.current.setName).toBe('base');
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.setName).toBe('base');
+        },
+        { timeout: 2000 }
+      );
 
       // Only the final query should trigger suggestions
       expect(result.current.activeField).toBe('set');
@@ -431,9 +461,12 @@ describe('useSearch Integration Tests', () => {
         await result.current.handleSearch('pikachu');
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // State should be consistent
       expect(result.current.setName).toBe('Base Set');
@@ -441,7 +474,7 @@ describe('useSearch Integration Tests', () => {
       expect(result.current.cardProductName).toBe('charizard');
       expect(result.current.searchTerm).toBe('pikachu');
       expect(Array.isArray(result.current.searchResults)).toBe(true);
-      
+
       // Should have searchMeta from the search
       expect(result.current.searchMeta).toBeDefined();
       if (result.current.searchMeta) {
@@ -460,9 +493,12 @@ describe('useSearch Integration Tests', () => {
         await result.current.handleSearch('测试查询'); // Non-ASCII characters
       });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(result.current.loading).toBe(false);
+        },
+        { timeout: 10000 }
+      );
 
       // Should handle gracefully without crashing
       expect(result.current.searchTerm).toBe('测试查询');
@@ -478,9 +514,12 @@ describe('useSearch Integration Tests', () => {
       });
 
       // Wait for debounced call
-      await waitFor(() => {
-        expect(result.current.setName).toBe('!@#$%^&*()');
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(result.current.setName).toBe('!@#$%^&*()');
+        },
+        { timeout: 2000 }
+      );
 
       // Should handle gracefully
       expect(result.current.activeField).toBe('set');
@@ -497,9 +536,12 @@ describe('useSearch Integration Tests', () => {
         result.current.updateSetName('base');
       });
 
-      await waitFor(() => {
-        expect(result.current.activeField).toBe('set');
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.activeField).toBe('set');
+        },
+        { timeout: 1000 }
+      );
 
       // Switch to card/product field
       await act(async () => {
@@ -520,9 +562,12 @@ describe('useSearch Integration Tests', () => {
         result.current.updateSetName('base');
       });
 
-      await waitFor(() => {
-        expect(result.current.activeField).toBe('set');
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(result.current.activeField).toBe('set');
+        },
+        { timeout: 1000 }
+      );
 
       // Change to card/product field
       await act(async () => {

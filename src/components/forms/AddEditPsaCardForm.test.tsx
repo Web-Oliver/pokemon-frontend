@@ -1,7 +1,7 @@
 /**
  * Integration Tests for AddEditPsaCardForm Component
  * Phase 4.6: Tests for PSA card form with real backend integration
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Integration tests with REAL backend API (no mocking)
  * - Test form submission and API integration
@@ -22,7 +22,7 @@ const mockUseCollection = vi.mocked(useCollection);
 
 // Mock the upload API
 vi.mock('../../api/uploadApi', () => ({
-  uploadMultipleImages: vi.fn().mockResolvedValue(['http://example.com/image1.jpg'])
+  uploadMultipleImages: vi.fn().mockResolvedValue(['http://example.com/image1.jpg']),
 }));
 
 describe('AddEditPsaCardForm Integration Tests', () => {
@@ -33,7 +33,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     mockUseCollection.mockReturnValue({
       addPsaCard: mockAddPsaCard,
       updatePsaCard: mockUpdatePsaCard,
@@ -54,17 +54,13 @@ describe('AddEditPsaCardForm Integration Tests', () => {
       deleteSealedProduct: vi.fn(),
       markSealedProductSold: vi.fn(),
       refreshCollection: vi.fn(),
-      clearError: vi.fn()
+      clearError: vi.fn(),
     });
   });
 
   it('renders form fields correctly for adding new PSA card', () => {
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     // Check form header
@@ -97,7 +93,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
       grade: '10',
       myPrice: 1000,
       dateAdded: '2024-01-01',
-      images: ['http://example.com/image1.jpg']
+      images: ['http://example.com/image1.jpg'],
     };
 
     render(
@@ -128,11 +124,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     // Try to submit form without filling required fields
@@ -157,11 +149,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     // Fill in all required fields
@@ -189,10 +177,12 @@ describe('AddEditPsaCardForm Integration Tests', () => {
         myPrice: 1000,
         dateAdded: expect.any(String),
         images: [],
-        priceHistory: [{
-          price: 1000,
-          dateUpdated: expect.any(String)
-        }]
+        priceHistory: [
+          {
+            price: 1000,
+            dateUpdated: expect.any(String),
+          },
+        ],
       });
     });
 
@@ -213,7 +203,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
       variety: 'Shadowless',
       grade: '9',
       myPrice: 800,
-      dateAdded: '2024-01-01'
+      dateAdded: '2024-01-01',
     };
 
     render(
@@ -246,10 +236,12 @@ describe('AddEditPsaCardForm Integration Tests', () => {
         myPrice: 1200,
         dateAdded: '2024-01-01',
         images: [],
-        priceHistory: [{
-          price: 1200,
-          dateUpdated: expect.any(String)
-        }]
+        priceHistory: [
+          {
+            price: 1200,
+            dateUpdated: expect.any(String),
+          },
+        ],
       });
     });
 
@@ -263,11 +255,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     const priceField = screen.getByLabelText(/my price/i);
@@ -294,11 +282,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i });
@@ -309,16 +293,12 @@ describe('AddEditPsaCardForm Integration Tests', () => {
 
   it('shows loading state while submitting', async () => {
     const user = userEvent.setup();
-    
+
     // Mock a slow API call
     mockAddPsaCard.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     // Fill in required fields
@@ -347,11 +327,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     const gradeSelect = screen.getByLabelText(/psa grade/i);
@@ -367,11 +343,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
     const user = userEvent.setup();
 
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     const priceField = screen.getByLabelText(/my price/i);
@@ -384,7 +356,7 @@ describe('AddEditPsaCardForm Integration Tests', () => {
 
   it('displays and allows updating price history when editing', async () => {
     const user = userEvent.setup();
-    
+
     const initialData = {
       id: '1',
       setName: 'Base Set',
@@ -398,8 +370,8 @@ describe('AddEditPsaCardForm Integration Tests', () => {
       priceHistory: [
         { price: 600, dateUpdated: '2024-01-01T00:00:00.000Z' },
         { price: 750, dateUpdated: '2024-02-01T00:00:00.000Z' },
-        { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' }
-      ]
+        { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' },
+      ],
     };
 
     render(
@@ -442,25 +414,24 @@ describe('AddEditPsaCardForm Integration Tests', () => {
 
     // Verify API was called with updated price history
     await waitFor(() => {
-      expect(mockUpdatePsaCard).toHaveBeenCalledWith('1', expect.objectContaining({
-        myPrice: 900,
-        priceHistory: expect.arrayContaining([
-          { price: 600, dateUpdated: '2024-01-01T00:00:00.000Z' },
-          { price: 750, dateUpdated: '2024-02-01T00:00:00.000Z' },
-          { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' },
-          { price: 900, dateUpdated: expect.any(String) }
-        ])
-      }));
+      expect(mockUpdatePsaCard).toHaveBeenCalledWith(
+        '1',
+        expect.objectContaining({
+          myPrice: 900,
+          priceHistory: expect.arrayContaining([
+            { price: 600, dateUpdated: '2024-01-01T00:00:00.000Z' },
+            { price: 750, dateUpdated: '2024-02-01T00:00:00.000Z' },
+            { price: 800, dateUpdated: '2024-03-01T00:00:00.000Z' },
+            { price: 900, dateUpdated: expect.any(String) },
+          ]),
+        })
+      );
     });
   });
 
   it('does not show price history section when adding new card', () => {
     render(
-      <AddEditPsaCardForm
-        onCancel={mockOnCancel}
-        onSuccess={mockOnSuccess}
-        isEditing={false}
-      />
+      <AddEditPsaCardForm onCancel={mockOnCancel} onSuccess={mockOnSuccess} isEditing={false} />
     );
 
     // Price history section should not be visible for new cards

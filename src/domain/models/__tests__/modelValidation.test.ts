@@ -5,7 +5,11 @@
 
 import { IPriceHistoryEntry, ISaleDetails, IBuyerAddress } from '../common';
 import { ISet, ICard, IPsaGradedCard, IRawCard, IPsaGrades } from '../card';
-import { ISealedProduct, ICardMarketReferenceProduct, SealedProductCategory } from '../sealedProduct';
+import {
+  ISealedProduct,
+  ICardMarketReferenceProduct,
+  SealedProductCategory,
+} from '../sealedProduct';
 import { IAuction, IAuctionItem } from '../auction';
 import { ISalesSummary, ISalesGraphData, ISale } from '../sale';
 
@@ -13,26 +17,26 @@ describe('Model Interface Validation', () => {
   test('Common interfaces should accept valid data', () => {
     const priceHistoryEntry: IPriceHistoryEntry = {
       dateUpdated: '2024-01-15T00:00:00.000Z',
-      price: 29.99
+      price: 29.99,
     };
 
     const buyerAddress: IBuyerAddress = {
       streetName: '123 Main St',
       postnr: '12345',
-      city: 'Anytown'
+      city: 'Anytown',
     };
 
     const saleDetails: ISaleDetails = {
       paymentMethod: 'CASH',
-      actualSoldPrice: 150.00,
+      actualSoldPrice: 150.0,
       deliveryMethod: 'Sent',
       source: 'Facebook',
       dateSold: '2024-01-15T00:00:00.000Z',
       buyerFullName: 'John Doe',
-      buyerAddress: buyerAddress,
+      buyerAddress,
       buyerEmail: 'john@example.com',
       buyerPhoneNumber: '+1-555-0123',
-      trackingNumber: 'TR123456789'
+      trackingNumber: 'TR123456789',
     };
 
     expect(priceHistoryEntry.dateUpdated).toBeDefined();
@@ -47,7 +51,7 @@ describe('Model Interface Validation', () => {
       year: 1998,
       setUrl: 'https://example.com/base-set',
       totalCardsInSet: 102,
-      totalPsaPopulation: 50000
+      totalPsaPopulation: 50000,
     };
 
     const psaGrades: IPsaGrades = {
@@ -60,7 +64,7 @@ describe('Model Interface Validation', () => {
       psa_7: 200,
       psa_8: 300,
       psa_9: 500,
-      psa_10: 150
+      psa_10: 150,
     };
 
     const card: ICard = {
@@ -70,10 +74,10 @@ describe('Model Interface Validation', () => {
       cardName: 'Charizard',
       baseName: 'Charizard',
       variety: 'Holo',
-      psaGrades: psaGrades,
+      psaGrades,
       psaTotalGradedForCard: 1432,
       setName: 'Base Set',
-      year: 1998
+      year: 1998,
     };
 
     const psaGradedCard: IPsaGradedCard = {
@@ -81,10 +85,10 @@ describe('Model Interface Validation', () => {
       cardId: 'card_123',
       grade: '9',
       images: ['image1.jpg', 'image2.jpg'],
-      myPrice: 100.00,
+      myPrice: 100.0,
       priceHistory: [
-        { dateUpdated: '2024-01-01T00:00:00.000Z', price: 80.00 },
-        { dateUpdated: '2024-01-15T00:00:00.000Z', price: 100.00 }
+        { dateUpdated: '2024-01-01T00:00:00.000Z', price: 80.0 },
+        { dateUpdated: '2024-01-15T00:00:00.000Z', price: 100.0 },
       ],
       dateAdded: '2024-01-01T00:00:00.000Z',
       sold: false,
@@ -92,7 +96,7 @@ describe('Model Interface Validation', () => {
       setName: 'Base Set',
       pokemonNumber: '4',
       baseName: 'Charizard',
-      variety: 'Holo'
+      variety: 'Holo',
     };
 
     const rawCard: IRawCard = {
@@ -100,17 +104,15 @@ describe('Model Interface Validation', () => {
       cardId: 'card_123',
       condition: 'Near Mint',
       images: ['image1.jpg'],
-      myPrice: 50.00,
-      priceHistory: [
-        { dateUpdated: '2024-01-01T00:00:00.000Z', price: 50.00 }
-      ],
+      myPrice: 50.0,
+      priceHistory: [{ dateUpdated: '2024-01-01T00:00:00.000Z', price: 50.0 }],
       dateAdded: '2024-01-01T00:00:00.000Z',
       sold: false,
       cardName: 'Charizard',
       setName: 'Base Set',
       pokemonNumber: '4',
       baseName: 'Charizard',
-      variety: 'Holo'
+      variety: 'Holo',
     };
 
     expect(set.setName).toBeDefined();
@@ -125,10 +127,10 @@ describe('Model Interface Validation', () => {
       name: 'Base Set Booster Box',
       setName: 'Base Set',
       available: true,
-      price: 5000.00,
+      price: 5000.0,
       category: 'Booster-Boxes',
       url: 'https://cardmarket.com/product/123',
-      lastUpdated: '2024-01-15T00:00:00.000Z'
+      lastUpdated: '2024-01-15T00:00:00.000Z',
     };
 
     const sealedProduct: ISealedProduct = {
@@ -138,16 +140,16 @@ describe('Model Interface Validation', () => {
       setName: 'Base Set',
       name: 'Base Set Booster Box',
       availability: 10,
-      cardMarketPrice: 5000.00,
-      myPrice: 4500.00,
+      cardMarketPrice: 5000.0,
+      myPrice: 4500.0,
       priceHistory: [
-        { dateUpdated: '2024-01-01T00:00:00.000Z', price: 4200.00 },
-        { dateUpdated: '2024-01-15T00:00:00.000Z', price: 4500.00 }
+        { dateUpdated: '2024-01-01T00:00:00.000Z', price: 4200.0 },
+        { dateUpdated: '2024-01-15T00:00:00.000Z', price: 4500.0 },
       ],
       images: ['box1.jpg', 'box2.jpg'],
       dateAdded: '2024-01-01T00:00:00.000Z',
       sold: false,
-      productName: 'Base Set Booster Box'
+      productName: 'Base Set Booster Box',
     };
 
     expect(cardMarketProduct.name).toBeDefined();
@@ -159,9 +161,9 @@ describe('Model Interface Validation', () => {
       itemId: 'psa_123',
       itemCategory: 'PsaGradedCard',
       sold: true,
-      salePrice: 150.00,
+      salePrice: 150.0,
       itemName: 'Charizard Base Set PSA 9',
-      itemImage: 'charizard.jpg'
+      itemImage: 'charizard.jpg',
     };
 
     const auction: IAuction = {
@@ -173,10 +175,10 @@ describe('Model Interface Validation', () => {
       generatedFacebookPost: 'Check out these amazing Pokemon cards!',
       isActive: true,
       items: [auctionItem],
-      totalValue: 500.00,
-      soldValue: 150.00,
+      totalValue: 500.0,
+      soldValue: 150.0,
       createdAt: '2024-01-15T00:00:00.000Z',
-      updatedAt: '2024-01-15T00:00:00.000Z'
+      updatedAt: '2024-01-15T00:00:00.000Z',
     };
 
     expect(auctionItem.itemCategory).toBeDefined();
@@ -185,40 +187,40 @@ describe('Model Interface Validation', () => {
 
   test('Sales interfaces should accept valid data', () => {
     const salesSummary: ISalesSummary = {
-      totalRevenue: 5000.00,
-      totalProfit: 2000.00,
+      totalRevenue: 5000.0,
+      totalProfit: 2000.0,
       averageMargin: 40.0,
       totalItems: 25,
       categoryBreakdown: {
         psaGradedCard: {
           count: 15,
-          revenue: 3000.00
+          revenue: 3000.0,
         },
         rawCard: {
           count: 8,
-          revenue: 1500.00
+          revenue: 1500.0,
         },
         sealedProduct: {
           count: 2,
-          revenue: 500.00
-        }
-      }
+          revenue: 500.0,
+        },
+      },
     };
 
     const salesGraphData: ISalesGraphData = {
       date: '2024-01-15T00:00:00.000Z',
-      revenue: 300.00,
-      profit: 120.00
+      revenue: 300.0,
+      profit: 120.0,
     };
 
     const sale: ISale = {
       id: 'sale_123',
       itemCategory: 'PsaGradedCard',
       itemName: 'Charizard Base Set PSA 9',
-      myPrice: 100.00,
-      actualSoldPrice: 150.00,
+      myPrice: 100.0,
+      actualSoldPrice: 150.0,
       dateSold: '2024-01-15T00:00:00.000Z',
-      source: 'Facebook'
+      source: 'Facebook',
     };
 
     expect(salesSummary.totalRevenue).toBeDefined();

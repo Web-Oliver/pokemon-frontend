@@ -103,135 +103,142 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Update auction
    */
-  const updateAuction = useCallback(async (id: string, data: Partial<IAuction>) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const updatedAuction = await auctionsApi.updateAuction(id, data);
-      
-      // Update auctions list
-      setAuctions(prev => prev.map(auction => 
-        auction.id === id ? updatedAuction : auction
-      ));
-      
-      // Update current auction if it's the one being updated
-      if (currentAuction?.id === id) {
-        setCurrentAuction(updatedAuction);
+  const updateAuction = useCallback(
+    async (id: string, data: Partial<IAuction>) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const updatedAuction = await auctionsApi.updateAuction(id, data);
+
+        // Update auctions list
+        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+
+        // Update current auction if it's the one being updated
+        if (currentAuction?.id === id) {
+          setCurrentAuction(updatedAuction);
+        }
+      } catch (err) {
+        const errorMessage = `Failed to update auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = `Failed to update auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Delete auction
    */
-  const deleteAuction = useCallback(async (id: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await auctionsApi.deleteAuction(id);
-      
-      // Remove from auctions list
-      setAuctions(prev => prev.filter(auction => auction.id !== id));
-      
-      // Clear current auction if it's the one being deleted
-      if (currentAuction?.id === id) {
-        setCurrentAuction(null);
+  const deleteAuction = useCallback(
+    async (id: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        await auctionsApi.deleteAuction(id);
+
+        // Remove from auctions list
+        setAuctions(prev => prev.filter(auction => auction.id !== id));
+
+        // Clear current auction if it's the one being deleted
+        if (currentAuction?.id === id) {
+          setCurrentAuction(null);
+        }
+      } catch (err) {
+        const errorMessage = `Failed to delete auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = `Failed to delete auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Add item to auction
    */
-  const addItemToAuction = useCallback(async (id: string, itemData: auctionsApi.AddItemToAuctionData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const updatedAuction = await auctionsApi.addItemToAuction(id, itemData);
-      
-      // Update auctions list
-      setAuctions(prev => prev.map(auction => 
-        auction.id === id ? updatedAuction : auction
-      ));
-      
-      // Update current auction if it's the one being updated
-      if (currentAuction?.id === id) {
-        setCurrentAuction(updatedAuction);
+  const addItemToAuction = useCallback(
+    async (id: string, itemData: auctionsApi.AddItemToAuctionData) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const updatedAuction = await auctionsApi.addItemToAuction(id, itemData);
+
+        // Update auctions list
+        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+
+        // Update current auction if it's the one being updated
+        if (currentAuction?.id === id) {
+          setCurrentAuction(updatedAuction);
+        }
+      } catch (err) {
+        const errorMessage = `Failed to add item to auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = `Failed to add item to auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Remove item from auction
    */
-  const removeItemFromAuction = useCallback(async (id: string, itemId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const updatedAuction = await auctionsApi.removeItemFromAuction(id, itemId);
-      
-      // Update auctions list
-      setAuctions(prev => prev.map(auction => 
-        auction.id === id ? updatedAuction : auction
-      ));
-      
-      // Update current auction if it's the one being updated
-      if (currentAuction?.id === id) {
-        setCurrentAuction(updatedAuction);
+  const removeItemFromAuction = useCallback(
+    async (id: string, itemId: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const updatedAuction = await auctionsApi.removeItemFromAuction(id, itemId);
+
+        // Update auctions list
+        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+
+        // Update current auction if it's the one being updated
+        if (currentAuction?.id === id) {
+          setCurrentAuction(updatedAuction);
+        }
+      } catch (err) {
+        const errorMessage = `Failed to remove item from auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = `Failed to remove item from auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Mark auction item as sold
    */
-  const markAuctionItemSold = useCallback(async (id: string, saleData: ISaleDetails & { itemId: string }) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const updatedAuction = await auctionsApi.markAuctionItemSold(id, saleData);
-      
-      // Update auctions list
-      setAuctions(prev => prev.map(auction => 
-        auction.id === id ? updatedAuction : auction
-      ));
-      
-      // Update current auction if it's the one being updated
-      if (currentAuction?.id === id) {
-        setCurrentAuction(updatedAuction);
+  const markAuctionItemSold = useCallback(
+    async (id: string, saleData: ISaleDetails & { itemId: string }) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const updatedAuction = await auctionsApi.markAuctionItemSold(id, saleData);
+
+        // Update auctions list
+        setAuctions(prev => prev.map(auction => (auction.id === id ? updatedAuction : auction)));
+
+        // Update current auction if it's the one being updated
+        if (currentAuction?.id === id) {
+          setCurrentAuction(updatedAuction);
+        }
+      } catch (err) {
+        const errorMessage = `Failed to mark auction item as sold for auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errorMessage = `Failed to mark auction item as sold for auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Clear current auction
@@ -243,27 +250,30 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Generate Facebook post for auction
    */
-  const generateFacebookPost = useCallback(async (id: string): Promise<string> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const postText = await exportApi.generateAuctionFacebookPost(id);
-      
-      // Update the current auction with the generated post
-      if (currentAuction?.id === id) {
-        setCurrentAuction(prev => prev ? { ...prev, generatedFacebookPost: postText } : null);
+  const generateFacebookPost = useCallback(
+    async (id: string): Promise<string> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const postText = await exportApi.generateAuctionFacebookPost(id);
+
+        // Update the current auction with the generated post
+        if (currentAuction?.id === id) {
+          setCurrentAuction(prev => (prev ? { ...prev, generatedFacebookPost: postText } : null));
+        }
+
+        return postText;
+      } catch (err) {
+        const errorMessage = `Failed to generate Facebook post for auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
       }
-      
-      return postText;
-    } catch (err) {
-      const errorMessage = `Failed to generate Facebook post for auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentAuction?.id]);
+    },
+    [currentAuction?.id]
+  );
 
   /**
    * Download auction text file
@@ -334,6 +344,6 @@ export const useAuction = (): UseAuctionHook => {
     downloadAuctionTextFile,
     downloadAuctionImagesZip,
     clearCurrentAuction,
-    clearError
+    clearError,
   };
 };

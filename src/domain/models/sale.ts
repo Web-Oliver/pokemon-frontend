@@ -6,7 +6,7 @@
 // Updated ISalesSummary interface based on backend /api/sales/summary response
 export interface ISalesSummary {
   totalRevenue: number; // Total revenue from all sales
-  totalProfit: number; // Total profit (revenue - costs) 
+  totalProfit: number; // Total profit (revenue - costs)
   averageMargin: number; // Average profit margin percentage
   totalItems: number; // Total number of items sold
   categoryBreakdown: {

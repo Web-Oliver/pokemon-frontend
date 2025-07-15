@@ -24,7 +24,7 @@ describe('SealedProductSearch Page Integration Tests', () => {
       myPrice: 4800,
       images: ['image1.jpg', 'image2.jpg'],
       sold: false,
-      productId: 'ref-1'
+      productId: 'ref-1',
     },
     {
       _id: 'product-2',
@@ -36,7 +36,7 @@ describe('SealedProductSearch Page Integration Tests', () => {
       myPrice: 140,
       images: [],
       sold: true,
-      productId: 'ref-2'
+      productId: 'ref-2',
     },
     {
       _id: 'product-3',
@@ -48,14 +48,16 @@ describe('SealedProductSearch Page Integration Tests', () => {
       myPrice: 22,
       images: ['image3.jpg'],
       sold: false,
-      productId: 'ref-3'
-    }
+      productId: 'ref-3',
+    },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockSealedProductsApi.getSealedProducts.mockResolvedValue(mockSealedProducts);
-    mockSealedProductsApi.searchSealedProductsByCategory.mockResolvedValue(mockSealedProducts.filter(p => p.category === 'Booster Box'));
+    mockSealedProductsApi.searchSealedProductsByCategory.mockResolvedValue(
+      mockSealedProducts.filter(p => p.category === 'Booster Box')
+    );
   });
 
   afterEach(() => {
@@ -67,7 +69,9 @@ describe('SealedProductSearch Page Integration Tests', () => {
       render(<SealedProductSearch />);
 
       expect(screen.getByText('Sealed Product Search')).toBeInTheDocument();
-      expect(screen.getByText('Browse and search Pokémon sealed products by category')).toBeInTheDocument();
+      expect(
+        screen.getByText('Browse and search Pokémon sealed products by category')
+      ).toBeInTheDocument();
       expect(screen.getByLabelText('Category')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Filter by set...')).toBeInTheDocument();
       expect(screen.getByLabelText('Available only')).toBeInTheDocument();
@@ -108,7 +112,10 @@ describe('SealedProductSearch Page Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith('Booster Box', {});
+        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith(
+          'Booster Box',
+          {}
+        );
       });
     });
 
@@ -135,7 +142,7 @@ describe('SealedProductSearch Page Integration Tests', () => {
 
       await waitFor(() => {
         expect(mockSealedProductsApi.getSealedProducts).toHaveBeenCalledWith({
-          setName: 'Base Set'
+          setName: 'Base Set',
         });
       });
     });
@@ -155,9 +162,12 @@ describe('SealedProductSearch Page Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith('Booster Box', {
-          available: true
-        });
+        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith(
+          'Booster Box',
+          {
+            available: true,
+          }
+        );
       });
     });
 
@@ -170,7 +180,7 @@ describe('SealedProductSearch Page Integration Tests', () => {
 
       await waitFor(() => {
         expect(mockSealedProductsApi.getSealedProducts).toHaveBeenCalledWith({
-          setName: 'Jungle'
+          setName: 'Jungle',
         });
       });
     });
@@ -276,7 +286,9 @@ describe('SealedProductSearch Page Integration Tests', () => {
 
     it('should filter products by category', async () => {
       // Mock filtered response
-      mockSealedProductsApi.searchSealedProductsByCategory.mockResolvedValue([mockSealedProducts[0]]);
+      mockSealedProductsApi.searchSealedProductsByCategory.mockResolvedValue([
+        mockSealedProducts[0],
+      ]);
 
       render(<SealedProductSearch />);
 
@@ -343,7 +355,9 @@ describe('SealedProductSearch Page Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('No Products Found')).toBeInTheDocument();
-        expect(screen.getByText('Try adjusting your search criteria to find more products.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Try adjusting your search criteria to find more products.')
+        ).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Clear Filters' })).toBeInTheDocument();
       });
     });
@@ -373,10 +387,13 @@ describe('SealedProductSearch Page Integration Tests', () => {
       fireEvent.click(searchButton);
 
       await waitFor(() => {
-        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith('Booster Box', {
-          setName: 'Base Set',
-          available: true
-        });
+        expect(mockSealedProductsApi.searchSealedProductsByCategory).toHaveBeenCalledWith(
+          'Booster Box',
+          {
+            setName: 'Base Set',
+            available: true,
+          }
+        );
       });
     });
   });

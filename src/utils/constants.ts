@@ -7,15 +7,15 @@ export const API_BASE_URL = 'http://localhost:3000/api';
 export enum PaymentMethod {
   CASH = 'CASH',
   MOBILEPAY = 'Mobilepay',
-  BANK_TRANSFER = 'BankTransfer'
+  BANK_TRANSFER = 'BankTransfer',
 }
 
 export enum DeliveryMethod {
   SENT = 'Sent',
-  LOCAL_MEETUP = 'Local Meetup'
+  LOCAL_MEETUP = 'Local Meetup',
 }
 
 export enum Source {
   FACEBOOK = 'Facebook',
-  DBA = 'DBA'
+  DBA = 'DBA',
 }

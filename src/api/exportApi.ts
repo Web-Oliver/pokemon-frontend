@@ -23,7 +23,7 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
  */
 export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blob> => {
   const response = await apiClient.get(`/auctions/${auctionId}/facebook-text-file`, {
-    responseType: 'blob'
+    responseType: 'blob',
   });
   return response.data;
 };
@@ -35,7 +35,7 @@ export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blo
  */
 export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   const response = await apiClient.get(`/auctions/${auctionId}/zip-images`, {
-    responseType: 'blob'
+    responseType: 'blob',
   });
   return response.data;
 };
@@ -46,11 +46,15 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
  * @returns Promise<Blob> - Text file blob for download
  */
 export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): Promise<Blob> => {
-  const response = await apiClient.post('/collection/facebook-text-file', {
-    itemIds: selectedItemIds
-  }, {
-    responseType: 'blob'
-  });
+  const response = await apiClient.post(
+    '/collection/facebook-text-file',
+    {
+      itemIds: selectedItemIds,
+    },
+    {
+      responseType: 'blob',
+    }
+  );
   return response.data;
 };
 

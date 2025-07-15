@@ -21,7 +21,7 @@ describe('MarkSoldForm Component', () => {
 
   const defaultProps = {
     onSubmit: mockOnSubmit,
-    onCancel: mockOnCancel
+    onCancel: mockOnCancel,
   };
 
   describe('Component Rendering', () => {
@@ -50,7 +50,7 @@ describe('MarkSoldForm Component', () => {
 
     it('sets default date to today', () => {
       render(<MarkSoldForm {...defaultProps} />);
-      
+
       const dateInput = screen.getByLabelText(/date sold/i) as HTMLInputElement;
       const today = new Date().toISOString().split('T')[0];
       expect(dateInput.value).toBe(today);
@@ -63,7 +63,7 @@ describe('MarkSoldForm Component', () => {
         deliveryMethod: DeliveryMethod.SENT, // Change to SENT so buyer fields are visible
         source: Source.FACEBOOK,
         buyerFullName: 'John Doe',
-        buyerEmail: 'john@example.com'
+        buyerEmail: 'john@example.com',
       };
 
       render(<MarkSoldForm {...defaultProps} initialData={initialData} />);
@@ -195,8 +195,12 @@ describe('MarkSoldForm Component', () => {
 
       // Check for buyer validation errors
       await waitFor(() => {
-        expect(screen.getByText(/buyer full name is required for shipped items/i)).toBeInTheDocument();
-        expect(screen.getByText(/street address is required for shipped items/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/buyer full name is required for shipped items/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/street address is required for shipped items/i)
+        ).toBeInTheDocument();
         expect(screen.getByText(/postal code is required for shipped items/i)).toBeInTheDocument();
         expect(screen.getByText(/city is required for shipped items/i)).toBeInTheDocument();
       });
@@ -212,7 +216,10 @@ describe('MarkSoldForm Component', () => {
       await user.type(screen.getByLabelText(/actual sold price/i), '150.50');
       await user.selectOptions(screen.getByLabelText(/payment method/i), PaymentMethod.CASH);
       await user.selectOptions(screen.getByLabelText(/source/i), Source.FACEBOOK);
-      await user.selectOptions(screen.getByLabelText(/delivery method/i), DeliveryMethod.LOCAL_MEETUP);
+      await user.selectOptions(
+        screen.getByLabelText(/delivery method/i),
+        DeliveryMethod.LOCAL_MEETUP
+      );
 
       // Submit form
       const submitButton = screen.getByRole('button', { name: /mark as sold/i });
@@ -285,7 +292,10 @@ describe('MarkSoldForm Component', () => {
       await user.type(screen.getByLabelText(/actual sold price/i), '100');
       await user.selectOptions(screen.getByLabelText(/payment method/i), PaymentMethod.CASH);
       await user.selectOptions(screen.getByLabelText(/source/i), Source.FACEBOOK);
-      await user.selectOptions(screen.getByLabelText(/delivery method/i), DeliveryMethod.LOCAL_MEETUP);
+      await user.selectOptions(
+        screen.getByLabelText(/delivery method/i),
+        DeliveryMethod.LOCAL_MEETUP
+      );
 
       // Set a specific date
       const dateInput = screen.getByLabelText(/date sold/i);
@@ -333,7 +343,7 @@ describe('MarkSoldForm Component', () => {
       render(<MarkSoldForm {...defaultProps} />);
 
       const paymentSelect = screen.getByLabelText(/payment method/i);
-      
+
       // Check that all payment methods are available
       expect(paymentSelect).toHaveTextContent('CASH');
       expect(paymentSelect).toHaveTextContent('MobilePay');
@@ -344,7 +354,7 @@ describe('MarkSoldForm Component', () => {
       render(<MarkSoldForm {...defaultProps} />);
 
       const deliverySelect = screen.getByLabelText(/delivery method/i);
-      
+
       // Check that all delivery methods are available
       expect(deliverySelect).toHaveTextContent('Sent');
       expect(deliverySelect).toHaveTextContent('Local Meetup');
@@ -354,7 +364,7 @@ describe('MarkSoldForm Component', () => {
       render(<MarkSoldForm {...defaultProps} />);
 
       const sourceSelect = screen.getByLabelText(/source/i);
-      
+
       // Check that all sources are available
       expect(sourceSelect).toHaveTextContent('Facebook');
       expect(sourceSelect).toHaveTextContent('DBA');

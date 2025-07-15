@@ -1,7 +1,7 @@
 /**
  * Add/Edit PSA Graded Card Form Component
  * Phase 4.6: Initial PSA card form with API integration
- * 
+ *
  * Following CLAUDE.md principles:
  * - Beautiful, award-winning design with modern aesthetics
  * - Single Responsibility: PSA card form management
@@ -53,26 +53,26 @@ const PSA_GRADES = [
   { value: '7', label: 'PSA 7 - Near Mint' },
   { value: '8', label: 'PSA 8 - Near Mint-Mint' },
   { value: '9', label: 'PSA 9 - Mint' },
-  { value: '10', label: 'PSA 10 - Gem Mint' }
+  { value: '10', label: 'PSA 10 - Gem Mint' },
 ];
 
 const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   onCancel,
   onSuccess,
   initialData,
-  isEditing = false
+  isEditing = false,
 }) => {
   const { addPsaCard, updatePsaCard, loading } = useCollection();
-  const { 
-    setName, 
-    cardProductName, 
-    suggestions, 
+  const {
+    setName,
+    cardProductName,
+    suggestions,
     activeField,
     selectedCardData,
     updateSetName,
-    updateCardProductName, 
+    updateCardProductName,
     handleSuggestionSelect,
-    setActiveField
+    setActiveField,
   } = useSearch();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,7 +85,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
   } = useForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
@@ -95,8 +95,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       variety: initialData?.variety || '',
       grade: initialData?.grade || '',
       myPrice: initialData?.myPrice?.toString() || '',
-      dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0]
-    }
+      dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
+    },
   });
 
   // Sync search state with form values
@@ -118,18 +118,18 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       // Use selectedCardData from search hook instead of making API call
       if (selectedCardData && activeField === null) {
         console.log('[PSA FORM AUTOFILL] Using selectedCardData:', selectedCardData);
-        
+
         // Autofill all available card fields
         setValue('pokemonNumber', selectedCardData.pokemonNumber || '');
         setValue('baseName', selectedCardData.baseName || '');
         setValue('variety', selectedCardData.variety || '');
-        
+
         console.log('[PSA FORM AUTOFILL] Fields updated:', {
           pokemonNumber: selectedCardData.pokemonNumber,
           baseName: selectedCardData.baseName,
-          variety: selectedCardData.variety
+          variety: selectedCardData.variety,
         });
-        
+
         // Note: myPrice and grade remain user-editable as specified
       }
     };
@@ -159,7 +159,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     // Add new price to history
     const newEntry = { price: newPrice, dateUpdated: date };
     setPriceHistory(prev => [...prev, newEntry]);
-    
+
     // Update current price and form field
     setCurrentPrice(newPrice);
     setValue('myPrice', newPrice.toString());
@@ -220,10 +220,15 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         dateAdded: data.dateAdded,
         images: imageUrls,
         // Use the updated price history, or create initial entry for new cards
-        priceHistory: priceHistory.length > 0 ? priceHistory : [{
-          price: parseFloat(data.myPrice),
-          dateUpdated: new Date().toISOString()
-        }]
+        priceHistory:
+          priceHistory.length > 0
+            ? priceHistory
+            : [
+                {
+                  price: parseFloat(data.myPrice),
+                  dateUpdated: new Date().toISOString(),
+                },
+              ],
       };
 
       if (isEditing && initialData?.id) {
@@ -243,80 +248,83 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
   if (loading && !isSubmitting) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
+      <div className='flex items-center justify-center py-12'>
+        <LoadingSpinner size='lg' />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       {/* Form Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-        <div className="flex items-center">
-          <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Award className="w-6 h-6 text-white" />
+      <div className='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6'>
+        <div className='flex items-center'>
+          <div className='w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center'>
+            <Award className='w-6 h-6 text-white' />
           </div>
-          <div className="ml-4">
-            <h3 className="text-lg font-semibold text-blue-900">
+          <div className='ml-4'>
+            <h3 className='text-lg font-semibold text-blue-900'>
               {isEditing ? 'Edit PSA Graded Card' : 'Add PSA Graded Card'}
             </h3>
-            <p className="text-blue-700 text-sm">
-              {isEditing ? 'Update your PSA graded card information' : 'Add a new PSA graded card to your collection'}
+            <p className='text-blue-700 text-sm'>
+              {isEditing
+                ? 'Update your PSA graded card information'
+                : 'Add a new PSA graded card to your collection'}
             </p>
           </div>
         </div>
       </div>
 
       {/* Card Information Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <Calendar className="w-5 h-5 mr-2 text-gray-600" />
+      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
+          <div className='flex items-center'>
+            <Calendar className='w-5 h-5 mr-2 text-gray-600' />
             Card Information
           </div>
           {setName && (
-            <div className="flex items-center text-sm text-blue-600">
-              <Search className="w-4 h-4 mr-1" />
+            <div className='flex items-center text-sm text-blue-600'>
+              <Search className='w-4 h-4 mr-1' />
               Filtering by: {setName}
             </div>
           )}
         </h4>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {/* Set Name with Smart Search */}
-          <div className="relative">
-            <label htmlFor="setName" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className='relative'>
+            <label htmlFor='setName' className='block text-sm font-medium text-gray-700 mb-1'>
               Set Name
-              <span className="text-red-500 ml-1">*</span>
+              <span className='text-red-500 ml-1'>*</span>
             </label>
-            <div className="relative">
+            <div className='relative'>
               <input
-                id="setName"
-                type="text"
-                {...register('setName', { 
+                id='setName'
+                type='text'
+                {...register('setName', {
                   required: 'Set name is required',
-                  minLength: { value: 2, message: 'Set name must be at least 2 characters' }
+                  minLength: { value: 2, message: 'Set name must be at least 2 characters' },
                 })}
                 onChange={handleSetNameChange}
                 onFocus={() => handleInputFocus('set')}
                 onBlur={handleInputBlur}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Base Set, Jungle, Fossil"
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                placeholder='e.g., Base Set, Jungle, Fossil'
               />
-              <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+              <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
             </div>
             {errors.setName && (
-              <p className="mt-1 text-sm text-red-600">{errors.setName.message}</p>
+              <p className='mt-1 text-sm text-red-600'>{errors.setName.message}</p>
             )}
-            
+
             {/* Context7 Award-Winning Set Suggestions Dropdown */}
             <SearchDropdown
               suggestions={suggestions}
               isVisible={showSuggestions && activeField === 'set'}
               activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) => handleSuggestionClick(suggestion, fieldType)}
+              onSuggestionSelect={(suggestion, fieldType) =>
+                handleSuggestionClick(suggestion, fieldType)
+              }
               onClose={() => {
                 setShowSuggestions(false);
                 setActiveField(null);
@@ -324,39 +332,41 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               searchTerm={setName}
             />
           </div>
-          
+
           {/* Card Name with Smart Search */}
-          <div className="relative">
-            <label htmlFor="cardName" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className='relative'>
+            <label htmlFor='cardName' className='block text-sm font-medium text-gray-700 mb-1'>
               Card Name
-              <span className="text-red-500 ml-1">*</span>
+              <span className='text-red-500 ml-1'>*</span>
             </label>
-            <div className="relative">
+            <div className='relative'>
               <input
-                id="cardName"
-                type="text"
-                {...register('cardName', { 
+                id='cardName'
+                type='text'
+                {...register('cardName', {
                   required: 'Card name is required',
-                  minLength: { value: 2, message: 'Card name must be at least 2 characters' }
+                  minLength: { value: 2, message: 'Card name must be at least 2 characters' },
                 })}
                 onChange={handleCardNameChange}
                 onFocus={() => handleInputFocus('cardProduct')}
                 onBlur={handleInputBlur}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Charizard, Pikachu"
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                placeholder='e.g., Charizard, Pikachu'
               />
-              <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+              <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
             </div>
             {errors.cardName && (
-              <p className="mt-1 text-sm text-red-600">{errors.cardName.message}</p>
+              <p className='mt-1 text-sm text-red-600'>{errors.cardName.message}</p>
             )}
-            
+
             {/* Context7 Award-Winning Card/Product Suggestions Dropdown */}
             <SearchDropdown
               suggestions={suggestions}
               isVisible={showSuggestions && activeField === 'cardProduct'}
               activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) => handleSuggestionClick(suggestion, fieldType)}
+              onSuggestionSelect={(suggestion, fieldType) =>
+                handleSuggestionClick(suggestion, fieldType)
+              }
               onClose={() => {
                 setShowSuggestions(false);
                 setActiveField(null);
@@ -364,96 +374,96 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               searchTerm={cardProductName}
             />
           </div>
-          
+
           <div>
             <Input
-              label="Pokémon Number"
-              {...register('pokemonNumber', { 
-                required: 'Pokémon number is required'
+              label='Pokémon Number'
+              {...register('pokemonNumber', {
+                required: 'Pokémon number is required',
               })}
               error={errors.pokemonNumber?.message}
-              placeholder="e.g., 4/102, 25/102"
+              placeholder='e.g., 4/102, 25/102'
             />
           </div>
-          
+
           <div>
             <Input
-              label="Base Name"
-              {...register('baseName', { 
-                required: 'Base name is required'
+              label='Base Name'
+              {...register('baseName', {
+                required: 'Base name is required',
               })}
               error={errors.baseName?.message}
-              placeholder="e.g., Charizard, Pikachu"
+              placeholder='e.g., Charizard, Pikachu'
             />
           </div>
-          
-          <div className="md:col-span-2">
+
+          <div className='md:col-span-2'>
             <Input
-              label="Variety (Optional)"
+              label='Variety (Optional)'
               {...register('variety')}
               error={errors.variety?.message}
-              placeholder="e.g., Holo, Shadowless, 1st Edition"
+              placeholder='e.g., Holo, Shadowless, 1st Edition'
             />
           </div>
         </div>
       </div>
 
       {/* Grading & Pricing Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
+      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
+          <DollarSign className='w-5 h-5 mr-2 text-gray-600' />
           Grading & Pricing
         </h4>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
           <div>
             <Select
-              label="PSA Grade"
-              {...register('grade', { 
-                required: 'PSA grade is required'
+              label='PSA Grade'
+              {...register('grade', {
+                required: 'PSA grade is required',
               })}
               error={errors.grade?.message}
               options={PSA_GRADES}
             />
             {watchedGrade && (
-              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
-                <span className="text-sm text-blue-800 font-medium">
+              <div className='mt-2 p-2 bg-blue-50 border border-blue-200 rounded'>
+                <span className='text-sm text-blue-800 font-medium'>
                   Selected: {PSA_GRADES.find(g => g.value === watchedGrade)?.label}
                 </span>
               </div>
             )}
           </div>
-          
+
           <div>
             <Input
-              label="My Price ($)"
-              type="number"
-              step="0.01"
-              min="0"
-              {...register('myPrice', { 
+              label='My Price ($)'
+              type='number'
+              step='0.01'
+              min='0'
+              {...register('myPrice', {
                 required: 'Price is required',
                 min: { value: 0, message: 'Price must be non-negative' },
                 pattern: {
                   value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format'
-                }
+                  message: 'Invalid price format',
+                },
               })}
               error={errors.myPrice?.message}
-              placeholder="0.00"
+              placeholder='0.00'
             />
             {watchedPrice && (
-              <div className="mt-2 text-sm text-gray-600">
+              <div className='mt-2 text-sm text-gray-600'>
                 ${parseFloat(watchedPrice || '0').toFixed(2)}
               </div>
             )}
           </div>
-          
+
           <div>
             <Input
-              label="Date Added"
-              type="date"
-              {...register('dateAdded', { 
-                required: 'Date added is required'
+              label='Date Added'
+              type='date'
+              {...register('dateAdded', {
+                required: 'Date added is required',
               })}
               error={errors.dateAdded?.message}
             />
@@ -462,7 +472,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
         {/* Price History Section (for editing existing cards) */}
         {isEditing && priceHistory.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className='mt-6 pt-6 border-t border-gray-200'>
             <PriceHistoryDisplay
               priceHistory={priceHistory}
               currentPrice={currentPrice}
@@ -473,12 +483,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       </div>
 
       {/* Image Upload Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <Camera className="w-5 h-5 mr-2 text-gray-600" />
+      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
+          <Camera className='w-5 h-5 mr-2 text-gray-600' />
           Card Images
         </h4>
-        
+
         <ImageUploader
           onImagesChange={handleImagesChange}
           existingImageUrls={initialData?.images || []}
@@ -486,8 +496,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           maxFiles={8}
           maxFileSize={5}
         />
-        
-        <div className="mt-3 text-sm text-gray-600">
+
+        <div className='mt-3 text-sm text-gray-600'>
           <p>• Upload up to 8 images (max 5MB each)</p>
           <p>• Supported formats: JPG, PNG, WebP</p>
           <p>• Include front, back, and detail shots for best results</p>
@@ -495,29 +505,21 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
+      <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>
+        <Button type='button' variant='secondary' onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting}
-          className="min-w-[120px]"
-        >
+
+        <Button type='submit' variant='primary' disabled={isSubmitting} className='min-w-[120px]'>
           {isSubmitting ? (
-            <div className="flex items-center">
-              <LoadingSpinner size="sm" className="mr-2" />
+            <div className='flex items-center'>
+              <LoadingSpinner size='sm' className='mr-2' />
               {isEditing ? 'Updating...' : 'Adding...'}
             </div>
+          ) : isEditing ? (
+            'Update Card'
           ) : (
-            isEditing ? 'Update Card' : 'Add Card'
+            'Add Card'
           )}
         </Button>
       </div>

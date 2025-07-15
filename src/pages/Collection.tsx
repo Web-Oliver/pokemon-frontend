@@ -1,9 +1,9 @@
 /**
  * Collection Page Component
- * 
+ *
  * Main collection management page with full tabbed navigation functionality.
  * Phase 4.3: Complete implementation with state management and useCollection integration.
- * 
+ *
  * Following CLAUDE.md principles:
  * - Beautiful, award-winning design with modern aesthetics
  * - Responsive layout for all device sizes
@@ -12,7 +12,16 @@
  */
 
 import React, { useState } from 'react';
-import { Package, Star, Archive, CheckCircle, Plus, DollarSign, Download, FileText } from 'lucide-react';
+import {
+  Package,
+  Star,
+  Archive,
+  CheckCircle,
+  Plus,
+  DollarSign,
+  Download,
+  FileText,
+} from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
@@ -41,17 +50,17 @@ const Collection: React.FC = () => {
     type: 'psa' | 'raw' | 'sealed';
     name: string;
   } | null>(null);
-  
-  const { 
-    psaCards, 
-    rawCards, 
-    sealedProducts, 
-    soldItems, 
-    loading, 
+
+  const {
+    psaCards,
+    rawCards,
+    sealedProducts,
+    soldItems,
+    loading,
     error,
     markPsaCardSold,
     markRawCardSold,
-    markSealedProductSold
+    markSealedProductSold,
   } = useCollection();
 
   // Tab configuration for clean, maintainable tab management
@@ -60,26 +69,26 @@ const Collection: React.FC = () => {
       id: 'psa-graded',
       name: 'PSA Graded Cards',
       icon: Star,
-      color: 'blue'
+      color: 'blue',
     },
     {
       id: 'raw-cards',
       name: 'Raw Cards',
       icon: Package,
-      color: 'green'
+      color: 'green',
     },
     {
       id: 'sealed-products',
       name: 'Sealed Products',
       icon: Archive,
-      color: 'purple'
+      color: 'purple',
     },
     {
       id: 'sold-items',
       name: 'Sold Items',
       icon: CheckCircle,
-      color: 'yellow'
-    }
+      color: 'yellow',
+    },
   ];
 
   // Get count for each collection type
@@ -87,7 +96,7 @@ const Collection: React.FC = () => {
     psaGraded: psaCards.length,
     rawCards: rawCards.length,
     sealedProducts: sealedProducts.length,
-    soldItems: soldItems.length
+    soldItems: soldItems.length,
   });
 
   const counts = getCounts();
@@ -99,18 +108,23 @@ const Collection: React.FC = () => {
   };
 
   // Handle mark as sold button click
-  const handleMarkAsSold = (item: { _id: string; cardName?: string; name?: string }, type: 'psa' | 'raw' | 'sealed') => {
+  const handleMarkAsSold = (
+    item: { _id: string; cardName?: string; name?: string },
+    type: 'psa' | 'raw' | 'sealed'
+  ) => {
     setSelectedItem({
       id: item._id,
       type,
-      name: item.cardName || item.name || 'Unknown Item'
+      name: item.cardName || item.name || 'Unknown Item',
     });
     setIsMarkSoldModalOpen(true);
   };
 
   // Handle mark as sold form submission
   const handleMarkSoldSubmit = async (saleDetails: ISaleDetails) => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
 
     try {
       switch (selectedItem.type) {
@@ -124,7 +138,7 @@ const Collection: React.FC = () => {
           await markSealedProductSold(selectedItem.id, saleDetails);
           break;
       }
-      
+
       // Close modal and reset selected item
       setIsMarkSoldModalOpen(false);
       setSelectedItem(null);
@@ -145,14 +159,14 @@ const Collection: React.FC = () => {
     const allItems = [
       ...psaCards.map(item => ({ ...item, _id: item._id || item.id })),
       ...rawCards.map(item => ({ ...item, _id: item._id || item.id })),
-      ...sealedProducts.map(item => ({ ...item, _id: item._id || item.id }))
+      ...sealedProducts.map(item => ({ ...item, _id: item._id || item.id })),
     ];
     return allItems;
   };
 
   const handleExportAllItems = async () => {
     const allItems = getAllCollectionItems();
-    
+
     if (allItems.length === 0) {
       showWarningToast('No items in collection to export');
       return;
@@ -203,10 +217,8 @@ const Collection: React.FC = () => {
   };
 
   const toggleItemSelection = (itemId: string) => {
-    setSelectedItemsForExport(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
+    setSelectedItemsForExport(prev =>
+      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
     );
   };
 
@@ -224,23 +236,23 @@ const Collection: React.FC = () => {
   const renderTabContent = () => {
     if (loading) {
       return (
-        <div className="flex justify-center items-center py-12">
-          <LoadingSpinner size="lg" />
+        <div className='flex justify-center items-center py-12'>
+          <LoadingSpinner size='lg' />
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className="text-center py-12">
-          <div className="text-red-500 mb-4">
-            <Package className="mx-auto w-12 h-12" />
+        <div className='text-center py-12'>
+          <div className='text-red-500 mb-4'>
+            <Package className='mx-auto w-12 h-12' />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Collection</h3>
-          <p className="text-gray-500 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          <h3 className='text-lg font-medium text-gray-900 mb-2'>Error Loading Collection</h3>
+          <p className='text-gray-500 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors'
           >
             Retry
           </button>
@@ -255,7 +267,10 @@ const Collection: React.FC = () => {
         case 'raw-cards':
           return { data: rawCards, emptyMessage: 'No raw cards in your collection yet.' };
         case 'sealed-products':
-          return { data: sealedProducts, emptyMessage: 'No sealed products in your collection yet.' };
+          return {
+            data: sealedProducts,
+            emptyMessage: 'No sealed products in your collection yet.',
+          };
         case 'sold-items':
           return { data: soldItems, emptyMessage: 'No sold items yet.' };
         default:
@@ -267,19 +282,19 @@ const Collection: React.FC = () => {
 
     if (data.length === 0) {
       return (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
+        <div className='text-center py-12'>
+          <div className='text-gray-400 mb-4'>
             {React.createElement(tabs.find(tab => tab.id === activeTab)?.icon || Package, {
-              className: "mx-auto w-12 h-12"
+              className: 'mx-auto w-12 h-12',
             })}
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Items Found</h3>
-          <p className="text-gray-500 mb-4">{emptyMessage}</p>
-          <button 
+          <h3 className='text-lg font-medium text-gray-900 mb-2'>No Items Found</h3>
+          <p className='text-gray-500 mb-4'>{emptyMessage}</p>
+          <button
             onClick={handleAddNewItem}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+            className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center'
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className='w-4 h-4 mr-2' />
             Add First Item
           </button>
         </div>
@@ -288,202 +303,231 @@ const Collection: React.FC = () => {
 
     // Render actual collection items with Mark as Sold functionality
     return (
-      <div className="space-y-4">
-        {data.map((item: {
-          _id: string;
-          cardId?: { cardName?: string; name?: string };
-          cardName?: string;
-          name?: string;
-          grade?: string;
-          condition?: string;
-          category?: string;
-          myPrice?: number;
-          sold?: boolean;
-          saleDetails?: { dateSold?: string; actualSoldPrice?: number };
-        }, index: number) => {
-          const itemType = activeTab === 'psa-graded' ? 'psa' : 
-                          activeTab === 'raw-cards' ? 'raw' : 'sealed';
-          const isUnsoldTab = activeTab !== 'sold-items';
-          
-          return (
-            <div key={item._id || index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">
-                    {item.cardId?.cardName || item.cardId?.name || item.cardName || item.name || `Item ${index + 1}`}
-                  </h4>
-                  <p className="text-sm text-gray-500">
-                    {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
-                    {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
-                    {activeTab === 'sealed-products' && `Category: ${item.category}`}
-                    {activeTab === 'sold-items' && `Sold: ${item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}`}
-                  </p>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-900">
-                      ${item.myPrice || '0.00'}
+      <div className='space-y-4'>
+        {data.map(
+          (
+            item: {
+              _id: string;
+              cardId?: { cardName?: string; name?: string };
+              cardName?: string;
+              name?: string;
+              grade?: string;
+              condition?: string;
+              category?: string;
+              myPrice?: number;
+              sold?: boolean;
+              saleDetails?: { dateSold?: string; actualSoldPrice?: number };
+            },
+            index: number
+          ) => {
+            const itemType =
+              activeTab === 'psa-graded' ? 'psa' : activeTab === 'raw-cards' ? 'raw' : 'sealed';
+            const isUnsoldTab = activeTab !== 'sold-items';
+
+            return (
+              <div
+                key={item._id || index}
+                className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'
+              >
+                <div className='flex items-center justify-between'>
+                  <div className='flex-1'>
+                    <h4 className='font-medium text-gray-900'>
+                      {item.cardId?.cardName ||
+                        item.cardId?.name ||
+                        item.cardName ||
+                        item.name ||
+                        `Item ${index + 1}`}
+                    </h4>
+                    <p className='text-sm text-gray-500'>
+                      {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
+                      {activeTab === 'raw-cards' && `Condition: ${item.condition}`}
+                      {activeTab === 'sealed-products' && `Category: ${item.category}`}
+                      {activeTab === 'sold-items' &&
+                        `Sold: ${item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}`}
                     </p>
-                    {item.sold && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Sold
-                      </span>
-                    )}
-                    {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
-                      <p className="text-sm text-green-600 font-medium">
-                        Sold: ${item.saleDetails.actualSoldPrice}
-                      </p>
+                  </div>
+
+                  <div className='flex items-center space-x-4'>
+                    <div className='text-right'>
+                      <p className='font-semibold text-gray-900'>${item.myPrice || '0.00'}</p>
+                      {item.sold && (
+                        <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                          Sold
+                        </span>
+                      )}
+                      {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
+                        <p className='text-sm text-green-600 font-medium'>
+                          Sold: ${item.saleDetails.actualSoldPrice}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Mark as Sold button - only show for unsold items in non-sold tabs */}
+                    {isUnsoldTab && !item.sold && (
+                      <button
+                        onClick={() => handleMarkAsSold(item, itemType)}
+                        className='inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
+                      >
+                        <DollarSign className='w-4 h-4 mr-1' />
+                        Mark as Sold
+                      </button>
                     )}
                   </div>
-                  
-                  {/* Mark as Sold button - only show for unsold items in non-sold tabs */}
-                  {isUnsoldTab && !item.sold && (
-                    <button
-                      onClick={() => handleMarkAsSold(item, itemType)}
-                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    >
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      Mark as Sold
-                    </button>
-                  )}
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
       {/* Context7 Premium Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="w-full h-full" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+      <div className='absolute inset-0 opacity-30'>
+        <div
+          className='w-full h-full'
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        ></div>
       </div>
 
-      <div className="relative z-10 p-8">
-        <div className="max-w-7xl mx-auto space-y-10">
-          
+      <div className='relative z-10 p-8'>
+        <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Page Header */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5"></div>
-            <div className="relative z-10 flex items-center justify-between">
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+            <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5'></div>
+            <div className='relative z-10 flex items-center justify-between'>
               <div>
-                <h1 className="text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
                   My Premium Collection
                 </h1>
-                <p className="text-xl text-slate-600 font-medium leading-relaxed">
+                <p className='text-xl text-slate-600 font-medium leading-relaxed'>
                   Manage your Pokémon cards and sealed products with award-winning style
                 </p>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className='flex items-center space-x-4'>
                 {/* Context7 Premium Export Buttons */}
-                <div className="flex items-center space-x-3">
-                  <button 
+                <div className='flex items-center space-x-3'>
+                  <button
                     onClick={handleExportAllItems}
                     disabled={isExporting || loading}
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                   >
                     {isExporting ? (
-                      <LoadingSpinner size="sm" className="mr-3" />
+                      <LoadingSpinner size='sm' className='mr-3' />
                     ) : (
-                      <Download className="w-5 h-5 mr-3" />
+                      <Download className='w-5 h-5 mr-3' />
                     )}
                     Export All
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={handleOpenExportModal}
                     disabled={isExporting || loading}
-                    className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className='bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                   >
-                    <FileText className="w-5 h-5 mr-3" />
+                    <FileText className='w-5 h-5 mr-3' />
                     Select & Export
                   </button>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={handleAddNewItem}
-                  className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20"
+                  className='bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20'
                 >
-                  <Plus className="w-5 h-5 mr-3" />
+                  <Plus className='w-5 h-5 mr-3' />
                   Add New Item
                 </button>
               </div>
             </div>
             {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
           </div>
 
           {/* Context7 Premium Collection Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-indigo-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <Star className="w-8 h-8 text-white" />
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-indigo-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <Star className='w-8 h-8 text-white' />
                 </div>
-                <div className="ml-6">
-                  <p className="text-sm font-bold text-indigo-600 tracking-wide uppercase mb-1">PSA Graded</p>
-                  <p className="text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300">
+                <div className='ml-6'>
+                  <p className='text-sm font-bold text-indigo-600 tracking-wide uppercase mb-1'>
+                    PSA Graded
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
                     {loading ? (
-                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
-                    ) : counts.psaGraded}
+                      <div className='w-12 h-8 bg-slate-200 rounded-lg animate-pulse'></div>
+                    ) : (
+                      counts.psaGraded
+                    )}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <Package className="w-8 h-8 text-white" />
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <Package className='w-8 h-8 text-white' />
                 </div>
-                <div className="ml-6">
-                  <p className="text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1">Raw Cards</p>
-                  <p className="text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300">
+                <div className='ml-6'>
+                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
+                    Raw Cards
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
                     {loading ? (
-                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
-                    ) : counts.rawCards}
+                      <div className='w-12 h-8 bg-slate-200 rounded-lg animate-pulse'></div>
+                    ) : (
+                      counts.rawCards
+                    )}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <Archive className="w-8 h-8 text-white" />
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <Archive className='w-8 h-8 text-white' />
                 </div>
-                <div className="ml-6">
-                  <p className="text-sm font-bold text-purple-600 tracking-wide uppercase mb-1">Sealed Products</p>
-                  <p className="text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300">
+                <div className='ml-6'>
+                  <p className='text-sm font-bold text-purple-600 tracking-wide uppercase mb-1'>
+                    Sealed Products
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
                     {loading ? (
-                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
-                    ) : counts.sealedProducts}
+                      <div className='w-12 h-8 bg-slate-200 rounded-lg animate-pulse'></div>
+                    ) : (
+                      counts.sealedProducts
+                    )}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <CheckCircle className="w-8 h-8 text-white" />
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <CheckCircle className='w-8 h-8 text-white' />
                 </div>
-                <div className="ml-6">
-                  <p className="text-sm font-bold text-amber-600 tracking-wide uppercase mb-1">Sold Items</p>
-                  <p className="text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300">
+                <div className='ml-6'>
+                  <p className='text-sm font-bold text-amber-600 tracking-wide uppercase mb-1'>
+                    Sold Items
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300'>
                     {loading ? (
-                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
-                    ) : counts.soldItems}
+                      <div className='w-12 h-8 bg-slate-200 rounded-lg animate-pulse'></div>
+                    ) : (
+                      counts.soldItems
+                    )}
                   </p>
                 </div>
               </div>
@@ -491,13 +535,13 @@ const Collection: React.FC = () => {
           </div>
 
           {/* Context7 Premium Tabbed Collection Content */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-blue-500/3"></div>
-            
-            <div className="relative z-10">
-              <div className="border-b border-slate-200/50 px-8 pt-8">
-                <nav className="-mb-px flex space-x-1">
-                  {tabs.map((tab) => {
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
+            <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-blue-500/3'></div>
+
+            <div className='relative z-10'>
+              <div className='border-b border-slate-200/50 px-8 pt-8'>
+                <nav className='-mb-px flex space-x-1'>
+                  {tabs.map(tab => {
                     const isActive = activeTab === tab.id;
                     const Icon = tab.icon;
                     return (
@@ -510,28 +554,28 @@ const Collection: React.FC = () => {
                             : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 hover:bg-slate-50/50'
                         }`}
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                            isActive 
-                              ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110' 
-                              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'
-                          }`}>
-                            <Icon className="w-4 h-4" />
+                        <div className='flex items-center space-x-3'>
+                          <div
+                            className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                              isActive
+                                ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110'
+                                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'
+                            }`}
+                          >
+                            <Icon className='w-4 h-4' />
                           </div>
-                          <span className="tracking-wide">{tab.name}</span>
+                          <span className='tracking-wide'>{tab.name}</span>
                         </div>
                         {isActive && (
-                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg animate-pulse"></div>
+                          <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg animate-pulse'></div>
                         )}
                       </button>
                     );
                   })}
                 </nav>
               </div>
-              
-              <div className="p-10">
-                {renderTabContent()}
-              </div>
+
+              <div className='p-10'>{renderTabContent()}</div>
             </div>
           </div>
         </div>
@@ -540,25 +584,25 @@ const Collection: React.FC = () => {
         <Modal
           isOpen={isExportModalOpen}
           onClose={() => setIsExportModalOpen(false)}
-          title="Select Items to Export"
-          maxWidth="4xl"
+          title='Select Items to Export'
+          maxWidth='4xl'
         >
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <p className="text-gray-600">
+          <div className='space-y-6'>
+            <div className='flex items-center justify-between'>
+              <p className='text-gray-600'>
                 Select items from your collection to include in the Facebook text file export.
               </p>
-              <div className="flex items-center space-x-2">
+              <div className='flex items-center space-x-2'>
                 <button
                   onClick={selectAllItems}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className='text-blue-600 hover:text-blue-700 text-sm font-medium'
                 >
                   Select All
                 </button>
-                <span className="text-gray-300">|</span>
+                <span className='text-gray-300'>|</span>
                 <button
                   onClick={clearSelection}
-                  className="text-gray-600 hover:text-gray-700 text-sm font-medium"
+                  className='text-gray-600 hover:text-gray-700 text-sm font-medium'
                 >
                   Clear All
                 </button>
@@ -566,50 +610,59 @@ const Collection: React.FC = () => {
             </div>
 
             {/* Selected count */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-blue-800 font-medium">
+            <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+              <p className='text-blue-800 font-medium'>
                 {selectedItemsForExport.length} items selected for export
               </p>
             </div>
 
             {/* Items list */}
-            <div className="max-h-96 overflow-y-auto space-y-2">
-              {getAllCollectionItems().map((item) => {
+            <div className='max-h-96 overflow-y-auto space-y-2'>
+              {getAllCollectionItems().map(item => {
                 const itemId = item._id || item.id;
                 const isSelected = selectedItemsForExport.includes(itemId);
-                const itemType = item.grade ? 'PSA Graded' : 
-                                item.condition ? 'Raw Card' : 'Sealed Product';
-                
+                const itemType = item.grade
+                  ? 'PSA Graded'
+                  : item.condition
+                    ? 'Raw Card'
+                    : 'Sealed Product';
+
                 return (
                   <div
                     key={itemId}
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                      isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => toggleItemSelection(itemId)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center'>
                         <input
-                          type="checkbox"
+                          type='checkbox'
                           checked={isSelected}
                           onChange={() => toggleItemSelection(itemId)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-3"
+                          className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-3'
                         />
                         <div>
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className='font-medium text-gray-900'>
                             {item.cardName || item.name || 'Unknown Item'}
                           </h4>
-                          <p className="text-sm text-gray-500">
+                          <p className='text-sm text-gray-500'>
                             {itemType} • ${item.myPrice || '0.00'}
                           </p>
                         </div>
                       </div>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        itemType === 'PSA Graded' ? 'bg-blue-100 text-blue-800' :
-                        itemType === 'Raw Card' ? 'bg-green-100 text-green-800' :
-                        'bg-purple-100 text-purple-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          itemType === 'PSA Graded'
+                            ? 'bg-blue-100 text-blue-800'
+                            : itemType === 'Raw Card'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-purple-100 text-purple-800'
+                        }`}
+                      >
                         {itemType}
                       </span>
                     </div>
@@ -619,22 +672,22 @@ const Collection: React.FC = () => {
             </div>
 
             {/* Export actions */}
-            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+            <div className='flex items-center justify-end space-x-3 pt-4 border-t border-gray-200'>
               <button
                 onClick={() => setIsExportModalOpen(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className='px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors'
               >
                 Cancel
               </button>
               <button
                 onClick={handleExportSelectedItems}
                 disabled={selectedItemsForExport.length === 0 || isExporting}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
+                className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center'
               >
                 {isExporting ? (
-                  <LoadingSpinner size="sm" className="mr-2" />
+                  <LoadingSpinner size='sm' className='mr-2' />
                 ) : (
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className='w-4 h-4 mr-2' />
                 )}
                 Export Selected ({selectedItemsForExport.length})
               </button>
@@ -647,7 +700,7 @@ const Collection: React.FC = () => {
           isOpen={isMarkSoldModalOpen}
           onClose={handleModalClose}
           title={`Mark "${selectedItem?.name}" as Sold`}
-          maxWidth="2xl"
+          maxWidth='2xl'
         >
           <MarkSoldForm
             onSubmit={handleMarkSoldSubmit}
@@ -655,7 +708,6 @@ const Collection: React.FC = () => {
             isLoading={loading}
           />
         </Modal>
-
       </div>
     </div>
   );

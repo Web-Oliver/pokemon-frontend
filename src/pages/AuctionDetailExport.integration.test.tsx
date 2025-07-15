@@ -14,10 +14,10 @@ vi.mock('../hooks/useAuction');
 
 // Mock navigator.clipboard
 const mockClipboard = {
-  writeText: vi.fn()
+  writeText: vi.fn(),
 };
 Object.assign(navigator, {
-  clipboard: mockClipboard
+  clipboard: mockClipboard,
 });
 
 // Mock document.execCommand
@@ -28,7 +28,7 @@ global.alert = vi.fn();
 
 // Mock the collection modal
 vi.mock('../components/modals/AddItemToAuctionModal', () => ({
-  default: () => <div data-testid="add-item-modal">Add Item Modal</div>
+  default: () => <div data-testid='add-item-modal'>Add Item Modal</div>,
 }));
 
 const mockAuction = {
@@ -46,7 +46,7 @@ const mockAuction = {
       itemName: 'Charizard PSA 10',
       sold: false,
       salePrice: 500,
-      itemImage: 'charizard.jpg'
+      itemImage: 'charizard.jpg',
     },
     {
       itemId: 'item2',
@@ -54,13 +54,13 @@ const mockAuction = {
       itemName: 'Blastoise Raw',
       sold: true,
       salePrice: 200,
-      itemImage: 'blastoise.jpg'
-    }
+      itemImage: 'blastoise.jpg',
+    },
   ],
   totalValue: 700,
   soldValue: 200,
   createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-02T00:00:00Z'
+  updatedAt: '2024-01-02T00:00:00Z',
 };
 
 describe('AuctionDetail Export Features Integration Tests', () => {
@@ -73,13 +73,13 @@ describe('AuctionDetail Export Features Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock URL to simulate auction detail page
     Object.defineProperty(window, 'location', {
       value: {
-        pathname: '/auctions/auction123'
+        pathname: '/auctions/auction123',
       },
-      writable: true
+      writable: true,
     });
 
     (useAuction as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -94,7 +94,7 @@ describe('AuctionDetail Export Features Integration Tests', () => {
       clearError: mockClearError,
       deleteAuction: vi.fn(),
       addItemToAuction: vi.fn(),
-      removeItemFromAuction: vi.fn()
+      removeItemFromAuction: vi.fn(),
     });
   });
 
@@ -195,7 +195,7 @@ describe('AuctionDetail Export Features Integration Tests', () => {
       // Mock createElement and body methods
       const mockTextArea = {
         value: '',
-        select: vi.fn()
+        select: vi.fn(),
       };
       vi.spyOn(document, 'createElement').mockReturnValue(mockTextArea as HTMLTextAreaElement);
       vi.spyOn(document.body, 'appendChild').mockImplementation(() => {});
@@ -290,7 +290,7 @@ describe('AuctionDetail Export Features Integration Tests', () => {
         clearError: mockClearError,
         deleteAuction: vi.fn(),
         addItemToAuction: vi.fn(),
-        removeItemFromAuction: vi.fn()
+        removeItemFromAuction: vi.fn(),
       });
 
       render(<AuctionDetail />);

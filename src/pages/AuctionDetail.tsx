@@ -5,7 +5,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, DollarSign, Package, Edit, Trash2, Plus, Check, X, FileText, Download, Copy, Share } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  DollarSign,
+  Package,
+  Edit,
+  Trash2,
+  Plus,
+  Check,
+  X,
+  FileText,
+  Download,
+  Copy,
+  Share,
+} from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
@@ -29,7 +43,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     downloadAuctionTextFile,
     downloadAuctionImagesZip,
     clearError,
-    clearCurrentAuction
+    clearCurrentAuction,
   } = useAuction();
 
   // Get auction ID from URL if not provided as prop
@@ -42,7 +56,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     // Extract auction ID from URL
     const pathParts = window.location.pathname.split('/');
     const urlAuctionId = auctionId || pathParts[pathParts.length - 1];
-    
+
     if (urlAuctionId && urlAuctionId !== 'auctions') {
       setCurrentAuctionId(urlAuctionId);
       fetchAuctionById(urlAuctionId);
@@ -72,7 +86,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     } catch {
       return 'Invalid Date';
@@ -84,7 +98,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -134,7 +148,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle delete auction
   const handleDeleteAuction = async () => {
-    if (window.confirm('Are you sure you want to delete this auction? This action cannot be undone.')) {
+    if (
+      window.confirm('Are you sure you want to delete this auction? This action cannot be undone.')
+    ) {
       try {
         await deleteAuction(currentAuctionId);
         navigateToAuctions();
@@ -219,9 +235,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <LoadingSpinner text="Loading auction details..." />
+      <div className='p-6'>
+        <div className='max-w-7xl mx-auto'>
+          <LoadingSpinner text='Loading auction details...' />
         </div>
       </div>
     );
@@ -229,17 +245,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   if (!currentAuction) {
     return (
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-12">
-            <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Auction not found</h3>
-            <p className="text-gray-600 mb-6">
+      <div className='p-6'>
+        <div className='max-w-7xl mx-auto'>
+          <div className='text-center py-12'>
+            <Package className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+            <h3 className='text-lg font-medium text-gray-900 mb-2'>Auction not found</h3>
+            <p className='text-gray-600 mb-6'>
               The auction you're looking for doesn't exist or has been deleted.
             </p>
-            <Button onClick={navigateToAuctions}>
-              Back to Auctions
-            </Button>
+            <Button onClick={navigateToAuctions}>Back to Auctions</Button>
           </div>
         </div>
       </div>
@@ -247,44 +261,44 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   }
 
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className='p-6'>
+      <div className='max-w-7xl mx-auto space-y-6'>
         {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className='bg-white rounded-lg shadow p-6'>
+          <div className='flex items-center justify-between mb-4'>
             <Button
               onClick={navigateToAuctions}
-              variant="outline"
-              className="inline-flex items-center"
+              variant='outline'
+              className='inline-flex items-center'
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className='w-4 h-4 mr-2' />
               Back to Auctions
             </Button>
-            
-            <div className="flex items-center space-x-3">
+
+            <div className='flex items-center space-x-3'>
               <Button
                 onClick={navigateToEditAuction}
-                variant="outline"
-                className="inline-flex items-center"
+                variant='outline'
+                className='inline-flex items-center'
               >
-                <Edit className="w-4 h-4 mr-2" />
+                <Edit className='w-4 h-4 mr-2' />
                 Edit
               </Button>
               <Button
                 onClick={handleDeleteAuction}
-                variant="outline"
-                className="inline-flex items-center text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                variant='outline'
+                className='inline-flex items-center text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <Trash2 className='w-4 h-4 mr-2' />
                 Delete
               </Button>
             </div>
           </div>
 
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-3 mb-2">
-                <h1 className="text-2xl font-bold text-gray-900">
+          <div className='flex items-start justify-between'>
+            <div className='flex-1 min-w-0'>
+              <div className='flex items-center space-x-3 mb-2'>
+                <h1 className='text-2xl font-bold text-gray-900'>
                   {currentAuction.topText || 'Untitled Auction'}
                 </h1>
                 <span
@@ -293,24 +307,26 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   {currentAuction.status.charAt(0).toUpperCase() + currentAuction.status.slice(1)}
                 </span>
               </div>
-              
-              <p className="text-gray-600 mb-4">
+
+              <p className='text-gray-600 mb-4'>
                 {currentAuction.bottomText || 'No description available'}
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="w-4 h-4 mr-2" />
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
+                <div className='flex items-center text-gray-600'>
+                  <Calendar className='w-4 h-4 mr-2' />
                   <span>{formatDate(currentAuction.auctionDate)}</span>
                 </div>
-                
-                <div className="flex items-center text-gray-600">
-                  <Package className="w-4 h-4 mr-2" />
-                  <span>{totalItems} item{totalItems !== 1 ? 's' : ''}</span>
+
+                <div className='flex items-center text-gray-600'>
+                  <Package className='w-4 h-4 mr-2' />
+                  <span>
+                    {totalItems} item{totalItems !== 1 ? 's' : ''}
+                  </span>
                 </div>
-                
-                <div className="flex items-center text-gray-600">
-                  <DollarSign className="w-4 h-4 mr-2" />
+
+                <div className='flex items-center text-gray-600'>
+                  <DollarSign className='w-4 h-4 mr-2' />
                   <span>Total Value: {formatCurrency(currentAuction.totalValue)}</span>
                 </div>
               </div>
@@ -320,20 +336,20 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <X className="h-5 w-5 text-red-400" />
+          <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+            <div className='flex items-center'>
+              <div className='flex-shrink-0'>
+                <X className='h-5 w-5 text-red-400' />
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className='ml-3'>
+                <p className='text-sm text-red-600'>{error}</p>
               </div>
-              <div className="ml-auto pl-3">
+              <div className='ml-auto pl-3'>
                 <button
                   onClick={clearError}
-                  className="inline-flex text-red-400 hover:text-red-600"
+                  className='inline-flex text-red-400 hover:text-red-600'
                 >
-                  <X className="h-4 w-4" />
+                  <X className='h-4 w-4' />
                 </button>
               </div>
             </div>
@@ -341,47 +357,45 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         )}
 
         {/* Progress and Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">Sales Progress</h3>
-              <span className="text-sm font-medium text-gray-900">
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <div className='bg-white rounded-lg shadow p-6'>
+            <div className='flex items-center justify-between mb-2'>
+              <h3 className='text-sm font-medium text-gray-600'>Sales Progress</h3>
+              <span className='text-sm font-medium text-gray-900'>
                 {soldItems}/{totalItems}
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className='w-full bg-gray-200 rounded-full h-2'>
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className='bg-blue-600 h-2 rounded-full transition-all duration-300'
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {progress.toFixed(1)}% of items sold
-            </p>
+            <p className='text-xs text-gray-500 mt-1'>{progress.toFixed(1)}% of items sold</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-600" />
+          <div className='bg-white rounded-lg shadow p-6'>
+            <div className='flex items-center'>
+              <div className='w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center'>
+                <DollarSign className='w-6 h-6 text-green-600' />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Sold Value</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className='ml-4'>
+                <p className='text-sm font-medium text-gray-600'>Sold Value</p>
+                <p className='text-2xl font-bold text-gray-900'>
                   {formatCurrency(currentAuction.soldValue)}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-blue-600" />
+          <div className='bg-white rounded-lg shadow p-6'>
+            <div className='flex items-center'>
+              <div className='w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center'>
+                <DollarSign className='w-6 h-6 text-blue-600' />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Remaining Value</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div className='ml-4'>
+                <p className='text-sm font-medium text-gray-600'>Remaining Value</p>
+                <p className='text-2xl font-bold text-gray-900'>
                   {formatCurrency(currentAuction.totalValue - currentAuction.soldValue)}
                 </p>
               </div>
@@ -390,30 +404,30 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         </div>
 
         {/* Export and Social Media Tools */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Export & Social Media Tools</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className='bg-white rounded-lg shadow p-6'>
+          <h3 className='text-lg font-semibold text-gray-900 mb-4'>Export & Social Media Tools</h3>
+
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             {/* Facebook Post Generation */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-gray-700">Facebook Post</h4>
-              <div className="space-y-2">
+            <div className='space-y-3'>
+              <h4 className='text-sm font-medium text-gray-700'>Facebook Post</h4>
+              <div className='space-y-2'>
                 <Button
                   onClick={handleGenerateFacebookPost}
                   disabled={loading}
-                  className="w-full flex items-center justify-center"
-                  variant="outline"
+                  className='w-full flex items-center justify-center'
+                  variant='outline'
                 >
-                  <Share className="w-4 h-4 mr-2" />
+                  <Share className='w-4 h-4 mr-2' />
                   Generate Post
                 </Button>
                 {showFacebookPost && generatedFacebookPost && (
                   <Button
                     onClick={handleCopyToClipboard}
-                    className="w-full flex items-center justify-center"
-                    variant="outline"
+                    className='w-full flex items-center justify-center'
+                    variant='outline'
                   >
-                    <Copy className="w-4 h-4 mr-2" />
+                    <Copy className='w-4 h-4 mr-2' />
                     Copy to Clipboard
                   </Button>
                 )}
@@ -421,29 +435,29 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             </div>
 
             {/* Text File Export */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-gray-700">Text File Export</h4>
+            <div className='space-y-3'>
+              <h4 className='text-sm font-medium text-gray-700'>Text File Export</h4>
               <Button
                 onClick={handleDownloadTextFile}
                 disabled={loading}
-                className="w-full flex items-center justify-center"
-                variant="outline"
+                className='w-full flex items-center justify-center'
+                variant='outline'
               >
-                <FileText className="w-4 h-4 mr-2" />
+                <FileText className='w-4 h-4 mr-2' />
                 Download Text File
               </Button>
             </div>
 
             {/* Images Zip Export */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-gray-700">Image Export</h4>
+            <div className='space-y-3'>
+              <h4 className='text-sm font-medium text-gray-700'>Image Export</h4>
               <Button
                 onClick={handleDownloadImagesZip}
                 disabled={loading}
-                className="w-full flex items-center justify-center"
-                variant="outline"
+                className='w-full flex items-center justify-center'
+                variant='outline'
               >
-                <Download className="w-4 h-4 mr-2" />
+                <Download className='w-4 h-4 mr-2' />
                 Download Images Zip
               </Button>
             </div>
@@ -451,30 +465,22 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Generated Facebook Post Display */}
           {showFacebookPost && generatedFacebookPost && (
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-gray-700">Generated Facebook Post</h4>
-                <Button
-                  onClick={() => setShowFacebookPost(false)}
-                  variant="outline"
-                  size="sm"
-                >
-                  <X className="w-4 h-4" />
+            <div className='mt-6'>
+              <div className='flex items-center justify-between mb-3'>
+                <h4 className='text-sm font-medium text-gray-700'>Generated Facebook Post</h4>
+                <Button onClick={() => setShowFacebookPost(false)} variant='outline' size='sm'>
+                  <X className='w-4 h-4' />
                 </Button>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 border">
+              <div className='bg-gray-50 rounded-lg p-4 border'>
                 <textarea
-                  className="w-full h-32 p-3 border-0 bg-transparent resize-none focus:outline-none text-sm"
+                  className='w-full h-32 p-3 border-0 bg-transparent resize-none focus:outline-none text-sm'
                   value={generatedFacebookPost}
                   readOnly
                 />
-                <div className="flex justify-end mt-2">
-                  <Button
-                    onClick={handleCopyToClipboard}
-                    size="sm"
-                    className="flex items-center"
-                  >
-                    <Copy className="w-4 h-4 mr-1" />
+                <div className='flex justify-end mt-2'>
+                  <Button onClick={handleCopyToClipboard} size='sm' className='flex items-center'>
+                    <Copy className='w-4 h-4 mr-1' />
                     Copy
                   </Button>
                 </div>
@@ -484,43 +490,41 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         </div>
 
         {/* Auction Items */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className='bg-white rounded-lg shadow'>
+          <div className='px-6 py-4 border-b border-gray-200 flex items-center justify-between'>
+            <h2 className='text-lg font-semibold text-gray-900'>
               Auction Items ({currentAuction.items.length})
             </h2>
             <Button
               onClick={() => setIsAddItemModalOpen(true)}
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              className='inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors'
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className='w-4 h-4 mr-2' />
               Add Items
             </Button>
           </div>
 
           {currentAuction.items.length === 0 ? (
-            <div className="p-12 text-center">
-              <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No items in auction</h3>
-              <p className="text-gray-600 mb-6">
-                Add items from your collection to this auction.
-              </p>
+            <div className='p-12 text-center'>
+              <Package className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+              <h3 className='text-lg font-medium text-gray-900 mb-2'>No items in auction</h3>
+              <p className='text-gray-600 mb-6'>Add items from your collection to this auction.</p>
               <Button
                 onClick={() => setIsAddItemModalOpen(true)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                className='inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors'
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className='w-4 h-4 mr-2' />
                 Add First Item
               </Button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className='divide-y divide-gray-200'>
               {currentAuction.items.map((item: IAuctionItem, index: number) => (
-                <div key={`${item.itemId}-${index}`} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">
+                <div key={`${item.itemId}-${index}`} className='p-6'>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex items-center space-x-3 mb-2'>
+                        <h3 className='text-lg font-medium text-gray-900'>
                           {item.itemName || 'Unknown Item'}
                         </h3>
                         <span
@@ -529,14 +533,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                           {formatItemCategory(item.itemCategory)}
                         </span>
                         {item.sold && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <Check className="w-3 h-3 mr-1" />
+                          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                            <Check className='w-3 h-3 mr-1' />
                             Sold
                           </span>
                         )}
                       </div>
-                      
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+
+                      <div className='flex items-center space-x-4 text-sm text-gray-600'>
                         <span>Item ID: {item.itemId}</span>
                         {item.salePrice && (
                           <span>Sale Price: {formatCurrency(item.salePrice)}</span>
@@ -544,21 +548,21 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       </div>
                     </div>
 
-                    <div className="ml-4 flex items-center space-x-2">
+                    <div className='ml-4 flex items-center space-x-2'>
                       {!item.sold && (
                         <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-green-600 hover:text-green-700 border-green-200 hover:border-green-300"
+                          variant='outline'
+                          size='sm'
+                          className='text-green-600 hover:text-green-700 border-green-200 hover:border-green-300'
                         >
                           Mark Sold
                         </Button>
                       )}
                       <Button
                         onClick={() => handleRemoveItem(item.itemId)}
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                        variant='outline'
+                        size='sm'
+                        className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
                       >
                         Remove
                       </Button>
@@ -566,11 +570,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
 
                   {item.itemImage && (
-                    <div className="mt-4">
+                    <div className='mt-4'>
                       <img
                         src={item.itemImage}
                         alt={item.itemName || 'Item image'}
-                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                        className='w-20 h-20 object-cover rounded-lg border border-gray-200'
                       />
                     </div>
                   )}
@@ -581,27 +585,27 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         </div>
 
         {/* Auction Metadata */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Auction Details</h3>
-          <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className='bg-white rounded-lg shadow p-6'>
+          <h3 className='text-lg font-semibold text-gray-900 mb-4'>Auction Details</h3>
+          <dl className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
             <div>
-              <dt className="font-medium text-gray-600">Created</dt>
-              <dd className="text-gray-900">{formatDate(currentAuction.createdAt)}</dd>
+              <dt className='font-medium text-gray-600'>Created</dt>
+              <dd className='text-gray-900'>{formatDate(currentAuction.createdAt)}</dd>
             </div>
             <div>
-              <dt className="font-medium text-gray-600">Last Updated</dt>
-              <dd className="text-gray-900">{formatDate(currentAuction.updatedAt)}</dd>
+              <dt className='font-medium text-gray-600'>Last Updated</dt>
+              <dd className='text-gray-900'>{formatDate(currentAuction.updatedAt)}</dd>
             </div>
             <div>
-              <dt className="font-medium text-gray-600">Active Status</dt>
-              <dd className="text-gray-900">{currentAuction.isActive ? 'Yes' : 'No'}</dd>
+              <dt className='font-medium text-gray-600'>Active Status</dt>
+              <dd className='text-gray-900'>{currentAuction.isActive ? 'Yes' : 'No'}</dd>
             </div>
             {currentAuction.generatedFacebookPost && (
-              <div className="md:col-span-2">
-                <dt className="font-medium text-gray-600">Generated Facebook Post</dt>
-                <dd className="text-gray-900 mt-1">
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="whitespace-pre-wrap text-sm">
+              <div className='md:col-span-2'>
+                <dt className='font-medium text-gray-600'>Generated Facebook Post</dt>
+                <dd className='text-gray-900 mt-1'>
+                  <div className='bg-gray-50 p-3 rounded-lg'>
+                    <p className='whitespace-pre-wrap text-sm'>
                       {currentAuction.generatedFacebookPost}
                     </p>
                   </div>

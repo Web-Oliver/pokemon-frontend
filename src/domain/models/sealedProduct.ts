@@ -19,7 +19,7 @@ export enum SealedProductCategory {
   ELITE_TRAINER_BOXES = 'Elite-Trainer-Boxes',
   THEME_DECKS = 'Theme-Decks',
   TINS = 'Tins',
-  TRAINER_KITS = 'Trainer-Kits'
+  TRAINER_KITS = 'Trainer-Kits',
 }
 
 // CardMarketReferenceProduct interface

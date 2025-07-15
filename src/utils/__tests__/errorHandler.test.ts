@@ -32,9 +32,9 @@ describe('Error Handler & Toast Notifications', () => {
   describe('handleApiError', () => {
     it('should show error toast with default message', () => {
       const error = new Error('Test error');
-      
+
       handleApiError(error);
-      
+
       expect(mockLogError).toHaveBeenCalledWith('API Error:', error);
       expect(mockToast.error).toHaveBeenCalledWith(
         'Test error',
@@ -54,9 +54,9 @@ describe('Error Handler & Toast Notifications', () => {
     it('should show error toast with custom user message', () => {
       const error = new Error('API error');
       const userMessage = 'Custom error message';
-      
+
       handleApiError(error, userMessage);
-      
+
       expect(mockToast.error).toHaveBeenCalledWith(
         userMessage,
         expect.objectContaining({
@@ -70,24 +70,21 @@ describe('Error Handler & Toast Notifications', () => {
       const error = {
         response: {
           data: {
-            message: 'Server error message'
-          }
-        }
+            message: 'Server error message',
+          },
+        },
       };
-      
+
       handleApiError(error);
-      
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Server error message',
-        expect.any(Object)
-      );
+
+      expect(mockToast.error).toHaveBeenCalledWith('Server error message', expect.any(Object));
     });
 
     it('should handle unknown error types gracefully', () => {
       const error = 'String error';
-      
+
       handleApiError(error);
-      
+
       expect(mockToast.error).toHaveBeenCalledWith(
         'An unexpected error occurred. Please try again.',
         expect.any(Object)
@@ -96,14 +93,14 @@ describe('Error Handler & Toast Notifications', () => {
 
     it('should handle null/undefined errors', () => {
       handleApiError(null);
-      
+
       expect(mockToast.error).toHaveBeenCalledWith(
         'An unexpected error occurred. Please try again.',
         expect.any(Object)
       );
-      
+
       handleApiError(undefined);
-      
+
       expect(mockToast.error).toHaveBeenCalledWith(
         'An unexpected error occurred. Please try again.',
         expect.any(Object)
@@ -114,9 +111,9 @@ describe('Error Handler & Toast Notifications', () => {
   describe('showSuccessToast', () => {
     it('should show success toast with default styling', () => {
       const message = 'Operation successful!';
-      
+
       showSuccessToast(message);
-      
+
       expect(mockToast.success).toHaveBeenCalledWith(
         message,
         expect.objectContaining({
@@ -135,9 +132,9 @@ describe('Error Handler & Toast Notifications', () => {
     it('should allow custom options to override defaults', () => {
       const message = 'Custom success!';
       const customOptions = { duration: 6000 };
-      
+
       showSuccessToast(message, customOptions);
-      
+
       expect(mockToast.success).toHaveBeenCalledWith(
         message,
         expect.objectContaining({
@@ -151,9 +148,9 @@ describe('Error Handler & Toast Notifications', () => {
   describe('showInfoToast', () => {
     it('should show info toast with correct styling', () => {
       const message = 'Information message';
-      
+
       showInfoToast(message);
-      
+
       expect(mockToast.default).toHaveBeenCalledWith(
         message,
         expect.objectContaining({
@@ -173,9 +170,9 @@ describe('Error Handler & Toast Notifications', () => {
   describe('showWarningToast', () => {
     it('should show warning toast with correct styling', () => {
       const message = 'Warning message';
-      
+
       showWarningToast(message);
-      
+
       expect(mockToast.default).toHaveBeenCalledWith(
         message,
         expect.objectContaining({
@@ -198,40 +195,34 @@ describe('Error Handler & Toast Notifications', () => {
         message: 'Generic error',
         response: {
           data: {
-            message: 'Specific API error'
-          }
-        }
+            message: 'Specific API error',
+          },
+        },
       };
-      
+
       handleApiError(error);
-      
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Specific API error',
-        expect.any(Object)
-      );
+
+      expect(mockToast.error).toHaveBeenCalledWith('Specific API error', expect.any(Object));
     });
 
     it('should fall back to error.message if no response data', () => {
       const error = {
-        message: 'Network error'
+        message: 'Network error',
       };
-      
+
       handleApiError(error);
-      
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Network error',
-        expect.any(Object)
-      );
+
+      expect(mockToast.error).toHaveBeenCalledWith('Network error', expect.any(Object));
     });
 
     it('should use default message for objects without meaningful error info', () => {
       const error = {
         code: 500,
-        status: 'Internal Server Error'
+        status: 'Internal Server Error',
       };
-      
+
       handleApiError(error);
-      
+
       expect(mockToast.error).toHaveBeenCalledWith(
         'An unexpected error occurred. Please try again.',
         expect.any(Object)
@@ -244,7 +235,7 @@ describe('Error Handler & Toast Notifications', () => {
       showSuccessToast('Success');
       showInfoToast('Info');
       showWarningToast('Warning');
-      
+
       // All should have consistent position and basic styling
       expect(mockToast.success).toHaveBeenCalledWith(
         'Success',
@@ -254,7 +245,7 @@ describe('Error Handler & Toast Notifications', () => {
           icon: expect.any(String),
         })
       );
-      
+
       expect(mockToast.default).toHaveBeenCalledWith(
         'Info',
         expect.objectContaining({
@@ -263,7 +254,7 @@ describe('Error Handler & Toast Notifications', () => {
           icon: expect.any(String),
         })
       );
-      
+
       expect(mockToast.default).toHaveBeenCalledWith(
         'Warning',
         expect.objectContaining({

@@ -9,7 +9,7 @@ export type ItemCategory = 'SealedProduct' | 'PsaGradedCard' | 'RawCard';
 // Updated IAuctionItem interface to match backend schema (polymorphic)
 export interface IAuctionItem {
   itemId: string; // ObjectId - Reference to any collection item
-  itemCategory: ItemCategory; // Type: "PsaGradedCard", "RawCard", "SealedProduct" 
+  itemCategory: ItemCategory; // Type: "PsaGradedCard", "RawCard", "SealedProduct"
   sold: boolean; // Individual item sale status
   salePrice?: number; // Decimal128 -> convert to number
   // Additional fields for UI display (populated from referenced items)

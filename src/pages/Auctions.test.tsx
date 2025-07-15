@@ -14,11 +14,11 @@ const mockUseAuction = {
   loading: false,
   error: null,
   fetchAuctions: vi.fn(),
-  clearError: vi.fn()
+  clearError: vi.fn(),
 };
 
 vi.mock('../hooks/useAuction', () => ({
-  useAuction: () => mockUseAuction
+  useAuction: () => mockUseAuction,
 }));
 
 // Mock navigation functions
@@ -45,20 +45,20 @@ describe('Auctions Page Integration Tests', () => {
   describe('Basic Rendering', () => {
     it('should render auction management header', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByText('Auction Management')).toBeInTheDocument();
       expect(screen.getByText('Manage your Pokemon card auctions')).toBeInTheDocument();
     });
 
     it('should render create auction button', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByRole('button', { name: /create auction/i })).toBeInTheDocument();
     });
 
     it('should render auction stats', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByText('Active Auctions')).toBeInTheDocument();
       expect(screen.getByText('Draft Auctions')).toBeInTheDocument();
       expect(screen.getByText('Completed')).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('Auctions Page Integration Tests', () => {
 
     it('should render filters section', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByText('Filters')).toBeInTheDocument();
       expect(screen.getByLabelText('Status')).toBeInTheDocument();
     });
@@ -76,7 +76,7 @@ describe('Auctions Page Integration Tests', () => {
     it('should show loading spinner when loading', () => {
       mockUseAuction.loading = true;
       render(<Auctions />);
-      
+
       expect(screen.getByText('Loading auctions...')).toBeInTheDocument();
     });
   });
@@ -85,17 +85,17 @@ describe('Auctions Page Integration Tests', () => {
     it('should display error message when there is an error', () => {
       mockUseAuction.error = 'Failed to load auctions';
       render(<Auctions />);
-      
+
       expect(screen.getByText('Failed to load auctions')).toBeInTheDocument();
     });
 
     it('should allow clearing error message', () => {
       mockUseAuction.error = 'Failed to load auctions';
       render(<Auctions />);
-      
+
       const closeButton = screen.getByRole('button', { name: '' }); // X button
       fireEvent.click(closeButton);
-      
+
       expect(mockUseAuction.clearError).toHaveBeenCalled();
     });
   });
@@ -103,14 +103,14 @@ describe('Auctions Page Integration Tests', () => {
   describe('Empty State', () => {
     it('should show empty state when no auctions', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByText('No auctions found')).toBeInTheDocument();
       expect(screen.getByText('Get started by creating your first auction.')).toBeInTheDocument();
     });
 
     it('should show create first auction button in empty state', () => {
       render(<Auctions />);
-      
+
       expect(screen.getByRole('button', { name: /create first auction/i })).toBeInTheDocument();
     });
   });
@@ -125,13 +125,13 @@ describe('Auctions Page Integration Tests', () => {
         auctionDate: '2024-01-15T10:00:00Z',
         items: [
           { itemId: 'item1', itemCategory: 'PsaGradedCard', sold: false },
-          { itemId: 'item2', itemCategory: 'RawCard', sold: true }
+          { itemId: 'item2', itemCategory: 'RawCard', sold: true },
         ],
         totalValue: 1000,
         soldValue: 500,
         createdAt: '2024-01-01T10:00:00Z',
         updatedAt: '2024-01-10T10:00:00Z',
-        isActive: true
+        isActive: true,
       },
       {
         id: '2',
@@ -144,14 +144,14 @@ describe('Auctions Page Integration Tests', () => {
         soldValue: 0,
         createdAt: '2024-01-05T10:00:00Z',
         updatedAt: '2024-01-08T10:00:00Z',
-        isActive: false
-      }
+        isActive: false,
+      },
     ];
 
     it('should display auction list with correct data', () => {
       mockUseAuction.auctions = mockAuctions;
       render(<Auctions />);
-      
+
       expect(screen.getByText('Test Auction 1')).toBeInTheDocument();
       expect(screen.getByText('Test Auction 2')).toBeInTheDocument();
       expect(screen.getByText('Auctions (2)')).toBeInTheDocument();
@@ -160,7 +160,7 @@ describe('Auctions Page Integration Tests', () => {
     it('should display auction status badges', () => {
       mockUseAuction.auctions = mockAuctions;
       render(<Auctions />);
-      
+
       expect(screen.getByText('Active')).toBeInTheDocument();
       expect(screen.getByText('Draft')).toBeInTheDocument();
     });
@@ -168,7 +168,7 @@ describe('Auctions Page Integration Tests', () => {
     it('should display auction stats correctly', () => {
       mockUseAuction.auctions = mockAuctions;
       render(<Auctions />);
-      
+
       expect(screen.getByText('2 items')).toBeInTheDocument();
       expect(screen.getByText('0 items')).toBeInTheDocument();
       expect(screen.getByText('Total: $1,000.00')).toBeInTheDocument();
@@ -178,7 +178,7 @@ describe('Auctions Page Integration Tests', () => {
     it('should navigate to auction detail when clicking on auction', () => {
       mockUseAuction.auctions = mockAuctions;
       render(<Auctions />);
-      
+
       const auctionItem = screen.getByText('Test Auction 1').closest('div');
       if (auctionItem) {
         fireEvent.click(auctionItem);
@@ -190,10 +190,10 @@ describe('Auctions Page Integration Tests', () => {
   describe('Filtering', () => {
     it('should call fetchAuctions with status filter when filter changes', async () => {
       render(<Auctions />);
-      
+
       const statusSelect = screen.getByLabelText('Status');
       fireEvent.change(statusSelect, { target: { value: 'active' } });
-      
+
       await waitFor(() => {
         expect(mockUseAuction.fetchAuctions).toHaveBeenCalledWith({ status: 'active' });
       });
@@ -201,22 +201,22 @@ describe('Auctions Page Integration Tests', () => {
 
     it('should show clear filters button when filter is applied', () => {
       render(<Auctions />);
-      
+
       const statusSelect = screen.getByLabelText('Status');
       fireEvent.change(statusSelect, { target: { value: 'active' } });
-      
+
       expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument();
     });
 
     it('should clear filters when clear button is clicked', () => {
       render(<Auctions />);
-      
+
       const statusSelect = screen.getByLabelText('Status');
       fireEvent.change(statusSelect, { target: { value: 'active' } });
-      
+
       const clearButton = screen.getByRole('button', { name: /clear filters/i });
       fireEvent.click(clearButton);
-      
+
       expect(mockUseAuction.fetchAuctions).toHaveBeenCalledWith();
     });
   });
@@ -224,10 +224,10 @@ describe('Auctions Page Integration Tests', () => {
   describe('Navigation', () => {
     it('should navigate to create auction page when create button is clicked', () => {
       render(<Auctions />);
-      
+
       const createButton = screen.getByRole('button', { name: /create auction/i });
       fireEvent.click(createButton);
-      
+
       expect(window.history.pushState).toHaveBeenCalledWith({}, '', '/auctions/create');
     });
   });
@@ -235,23 +235,71 @@ describe('Auctions Page Integration Tests', () => {
   describe('Stats Calculation', () => {
     it('should calculate and display auction statistics correctly', () => {
       const mockAuctionsWithStats = [
-        { id: '1', status: 'active', items: [], totalValue: 0, soldValue: 0, auctionDate: '', topText: '', bottomText: '', createdAt: '', updatedAt: '', isActive: true },
-        { id: '2', status: 'active', items: [], totalValue: 0, soldValue: 0, auctionDate: '', topText: '', bottomText: '', createdAt: '', updatedAt: '', isActive: true },
-        { id: '3', status: 'draft', items: [], totalValue: 0, soldValue: 0, auctionDate: '', topText: '', bottomText: '', createdAt: '', updatedAt: '', isActive: false },
-        { id: '4', status: 'sold', items: [], totalValue: 0, soldValue: 0, auctionDate: '', topText: '', bottomText: '', createdAt: '', updatedAt: '', isActive: false }
+        {
+          id: '1',
+          status: 'active',
+          items: [],
+          totalValue: 0,
+          soldValue: 0,
+          auctionDate: '',
+          topText: '',
+          bottomText: '',
+          createdAt: '',
+          updatedAt: '',
+          isActive: true,
+        },
+        {
+          id: '2',
+          status: 'active',
+          items: [],
+          totalValue: 0,
+          soldValue: 0,
+          auctionDate: '',
+          topText: '',
+          bottomText: '',
+          createdAt: '',
+          updatedAt: '',
+          isActive: true,
+        },
+        {
+          id: '3',
+          status: 'draft',
+          items: [],
+          totalValue: 0,
+          soldValue: 0,
+          auctionDate: '',
+          topText: '',
+          bottomText: '',
+          createdAt: '',
+          updatedAt: '',
+          isActive: false,
+        },
+        {
+          id: '4',
+          status: 'sold',
+          items: [],
+          totalValue: 0,
+          soldValue: 0,
+          auctionDate: '',
+          topText: '',
+          bottomText: '',
+          createdAt: '',
+          updatedAt: '',
+          isActive: false,
+        },
       ];
-      
+
       mockUseAuction.auctions = mockAuctionsWithStats;
       render(<Auctions />);
-      
+
       // Check active auctions count
       const activeSection = screen.getByText('Active Auctions').closest('div')?.parentElement;
       expect(activeSection).toHaveTextContent('2');
-      
+
       // Check draft auctions count
       const draftSection = screen.getByText('Draft Auctions').closest('div')?.parentElement;
       expect(draftSection).toHaveTextContent('1');
-      
+
       // Check completed auctions count
       const completedSection = screen.getByText('Completed').closest('div')?.parentElement;
       expect(completedSection).toHaveTextContent('1');

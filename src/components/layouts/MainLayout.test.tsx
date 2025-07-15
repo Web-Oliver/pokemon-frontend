@@ -1,6 +1,6 @@
 /**
  * MainLayout Component Tests
- * 
+ *
  * Unit tests for the MainLayout component following CLAUDE.md testing strategy.
  * Tests component rendering, navigation functionality, and responsive behavior.
  */
@@ -31,7 +31,7 @@ describe('MainLayout Component', () => {
     // Reset mocks before each test
     mockPushState.mockClear();
     mockDispatchEvent.mockClear();
-    
+
     // Reset window location pathname
     Object.defineProperty(window, 'location', {
       value: {
@@ -43,7 +43,7 @@ describe('MainLayout Component', () => {
 
   it('renders correctly with children', () => {
     const testContent = 'Test content';
-    
+
     render(
       <MainLayout>
         <div>{testContent}</div>
@@ -52,7 +52,7 @@ describe('MainLayout Component', () => {
 
     // Check if children are rendered
     expect(screen.getByText(testContent)).toBeInTheDocument();
-    
+
     // Check if main layout elements are present
     expect(screen.getByText('PokéCollection')).toBeInTheDocument();
     expect(screen.getAllByText('Dashboard')).toHaveLength(2); // One in nav, one in header
@@ -109,11 +109,9 @@ describe('MainLayout Component', () => {
 
     // Check if pushState was called with correct arguments
     expect(mockPushState).toHaveBeenCalledWith({}, '', '/collection');
-    
+
     // Check if popstate event was dispatched
-    expect(mockDispatchEvent).toHaveBeenCalledWith(
-      expect.any(PopStateEvent)
-    );
+    expect(mockDispatchEvent).toHaveBeenCalledWith(expect.any(PopStateEvent));
   });
 
   it('toggles mobile sidebar correctly', () => {
@@ -125,7 +123,7 @@ describe('MainLayout Component', () => {
 
     // Find mobile menu button using aria-label
     const menuButton = screen.getByLabelText('Open menu');
-    
+
     // Initially sidebar should be closed (transform -translate-x-full)
     // Find the actual sidebar container by its class that contains the transform
     const sidebar = document.querySelector('.fixed.inset-y-0.left-0.z-50');
@@ -133,7 +131,7 @@ describe('MainLayout Component', () => {
 
     // Click menu button to open sidebar
     fireEvent.click(menuButton);
-    
+
     // Sidebar should now be open (transform translate-x-0)
     expect(sidebar).toHaveClass('translate-x-0');
   });
@@ -148,7 +146,7 @@ describe('MainLayout Component', () => {
     // Open sidebar first
     const menuButton = screen.getByLabelText('Open menu');
     fireEvent.click(menuButton);
-    
+
     const sidebar = document.querySelector('.fixed.inset-y-0.left-0.z-50');
     expect(sidebar).toHaveClass('translate-x-0');
 
@@ -171,7 +169,7 @@ describe('MainLayout Component', () => {
     // Open sidebar first
     const menuButton = screen.getByLabelText('Open menu');
     fireEvent.click(menuButton);
-    
+
     const sidebar = document.querySelector('.fixed.inset-y-0.left-0.z-50');
     expect(sidebar).toHaveClass('translate-x-0');
 

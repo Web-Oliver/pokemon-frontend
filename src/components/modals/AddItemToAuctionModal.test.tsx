@@ -22,7 +22,7 @@ const mockPsaCards = [
     sold: false,
     setName: 'Base Set',
     images: ['image1.jpg'],
-    dateAdded: '2024-01-01'
+    dateAdded: '2024-01-01',
   },
   {
     id: 'psa2',
@@ -32,8 +32,8 @@ const mockPsaCards = [
     sold: false,
     setName: 'Base Set',
     images: ['image2.jpg'],
-    dateAdded: '2024-01-02'
-  }
+    dateAdded: '2024-01-02',
+  },
 ];
 
 const mockRawCards = [
@@ -45,8 +45,8 @@ const mockRawCards = [
     sold: false,
     setName: 'Base Set',
     images: ['image3.jpg'],
-    dateAdded: '2024-01-03'
-  }
+    dateAdded: '2024-01-03',
+  },
 ];
 
 const mockSealedProducts = [
@@ -57,8 +57,8 @@ const mockSealedProducts = [
     sold: false,
     setName: 'Base Set',
     images: ['image4.jpg'],
-    dateAdded: '2024-01-04'
-  }
+    dateAdded: '2024-01-04',
+  },
 ];
 
 describe('AddItemToAuctionModal Integration Tests', () => {
@@ -67,25 +67,21 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock useCollection hook implementation
     (useCollection as ReturnType<typeof vi.fn>).mockReturnValue({
       psaCards: mockPsaCards,
       rawCards: mockRawCards,
       sealedProducts: mockSealedProducts,
       loading: false,
-      error: null
+      error: null,
     });
   });
 
   describe('Modal Rendering', () => {
     test('should render modal when open', () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.getByText('Add Items to Auction')).toBeInTheDocument();
@@ -95,11 +91,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should not render modal when closed', () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={false}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={false} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.queryByText('Add Items to Auction')).not.toBeInTheDocument();
@@ -107,11 +99,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should display collection items', () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.getByText('Charizard - Grade 10')).toBeInTheDocument();
@@ -124,11 +112,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
   describe('Search and Filter Functionality', () => {
     test('should filter items by search term', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const searchInput = screen.getByPlaceholderText('Search items by name or set...');
@@ -142,11 +126,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should filter items by category', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const categorySelect = screen.getByDisplayValue('All Categories');
@@ -161,11 +141,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should display no items message when no results found', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const searchInput = screen.getByPlaceholderText('Search items by name or set...');
@@ -181,11 +157,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
   describe('Item Selection', () => {
     test('should select and deselect items', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const charizardItem = screen.getByText('Charizard - Grade 10').closest('div');
@@ -205,11 +177,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should select all items', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const selectAllButton = screen.getByText('Select All');
@@ -223,11 +191,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should update add button text based on selection', async () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const charizardItem = screen.getByText('Charizard - Grade 10').closest('div');
@@ -251,11 +215,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
       mockOnAddItems.mockResolvedValue(undefined);
 
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       // Select items
@@ -272,7 +232,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
       await waitFor(() => {
         expect(mockOnAddItems).toHaveBeenCalledWith([
           { itemId: 'psa1', itemCategory: 'PsaGradedCard' },
-          { itemId: 'psa2', itemCategory: 'PsaGradedCard' }
+          { itemId: 'psa2', itemCategory: 'PsaGradedCard' },
         ]);
         expect(mockOnClose).toHaveBeenCalled();
       });
@@ -280,11 +240,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should not submit when no items selected', () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const addButton = screen.getByText('Add 0 Items');
@@ -293,17 +249,13 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should show loading state during submission', async () => {
       let resolvePromise: (value: unknown) => void;
-      const submissionPromise = new Promise((resolve) => {
+      const submissionPromise = new Promise(resolve => {
         resolvePromise = resolve;
       });
       mockOnAddItems.mockReturnValue(submissionPromise);
 
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       // Select item
@@ -334,15 +286,11 @@ describe('AddItemToAuctionModal Integration Tests', () => {
         rawCards: [],
         sealedProducts: [],
         loading: true,
-        error: null
+        error: null,
       });
 
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.getByText('Loading collection items...')).toBeInTheDocument();
@@ -354,15 +302,11 @@ describe('AddItemToAuctionModal Integration Tests', () => {
         rawCards: [],
         sealedProducts: [],
         loading: false,
-        error: 'Failed to load collection'
+        error: 'Failed to load collection',
       });
 
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.getByText('Failed to load collection')).toBeInTheDocument();
@@ -374,15 +318,11 @@ describe('AddItemToAuctionModal Integration Tests', () => {
         rawCards: [],
         sealedProducts: [],
         loading: false,
-        error: null
+        error: null,
       });
 
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       expect(screen.getByText('No items found')).toBeInTheDocument();
@@ -393,11 +333,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
   describe('Modal Interaction', () => {
     test('should close modal when cancel button clicked', () => {
       render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       const cancelButton = screen.getByText('Cancel');
@@ -408,11 +344,7 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
     test('should reset state when modal closes', async () => {
       const { rerender } = render(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       // Select an item and search
@@ -424,19 +356,11 @@ describe('AddItemToAuctionModal Integration Tests', () => {
 
       // Close and reopen modal
       rerender(
-        <AddItemToAuctionModal
-          isOpen={false}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={false} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       rerender(
-        <AddItemToAuctionModal
-          isOpen={true}
-          onClose={mockOnClose}
-          onAddItems={mockOnAddItems}
-        />
+        <AddItemToAuctionModal isOpen={true} onClose={mockOnClose} onAddItems={mockOnAddItems} />
       );
 
       // Check that state is reset

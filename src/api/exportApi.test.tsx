@@ -17,13 +17,14 @@ describe('Export API Integration Tests', () => {
 
   describe('Facebook Post Generation', () => {
     test('should generate Facebook post for auction', async () => {
-      const mockPostText = 'Check out this amazing Pokemon auction! 🎯\n\nItems include:\n- Charizard PSA 10\n- Blastoise PSA 9\n\nStarting soon!';
-      
+      const mockPostText =
+        'Check out this amazing Pokemon auction! 🎯\n\nItems include:\n- Charizard PSA 10\n- Blastoise PSA 9\n\nStarting soon!';
+
       (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: {
           success: true,
-          data: mockPostText
-        }
+          data: mockPostText,
+        },
       });
 
       const result = await exportApi.generateAuctionFacebookPost('auction123');
@@ -34,11 +35,11 @@ describe('Export API Integration Tests', () => {
 
     test('should handle different response formats', async () => {
       const mockPostText = 'Another auction post format';
-      
+
       (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: {
-          post: mockPostText
-        }
+          post: mockPostText,
+        },
       });
 
       const result = await exportApi.generateAuctionFacebookPost('auction456');
@@ -47,9 +48,9 @@ describe('Export API Integration Tests', () => {
 
     test('should handle direct string response', async () => {
       const mockPostText = 'Direct string response';
-      
+
       (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: mockPostText
+        data: mockPostText,
       });
 
       const result = await exportApi.generateAuctionFacebookPost('auction789');
@@ -60,30 +61,30 @@ describe('Export API Integration Tests', () => {
   describe('File Downloads', () => {
     test('should get auction Facebook text file', async () => {
       const mockBlob = new Blob(['Facebook post content'], { type: 'text/plain' });
-      
+
       (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: mockBlob
+        data: mockBlob,
       });
 
       const result = await exportApi.getAuctionFacebookTextFile('auction123');
 
       expect(apiClient.get).toHaveBeenCalledWith('/auctions/auction123/facebook-text-file', {
-        responseType: 'blob'
+        responseType: 'blob',
       });
       expect(result).toBe(mockBlob);
     });
 
     test('should zip auction images', async () => {
       const mockZipBlob = new Blob(['zip file content'], { type: 'application/zip' });
-      
+
       (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: mockZipBlob
+        data: mockZipBlob,
       });
 
       const result = await exportApi.zipAuctionImages('auction123');
 
       expect(apiClient.get).toHaveBeenCalledWith('/auctions/auction123/zip-images', {
-        responseType: 'blob'
+        responseType: 'blob',
       });
       expect(result).toBe(mockZipBlob);
     });
@@ -91,18 +92,22 @@ describe('Export API Integration Tests', () => {
     test('should get collection Facebook text file', async () => {
       const mockBlob = new Blob(['Collection post content'], { type: 'text/plain' });
       const selectedItemIds = ['item1', 'item2', 'item3'];
-      
+
       (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: mockBlob
+        data: mockBlob,
       });
 
       const result = await exportApi.getCollectionFacebookTextFile(selectedItemIds);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/collection/facebook-text-file', {
-        itemIds: selectedItemIds
-      }, {
-        responseType: 'blob'
-      });
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/collection/facebook-text-file',
+        {
+          itemIds: selectedItemIds,
+        },
+        {
+          responseType: 'blob',
+        }
+      );
       expect(result).toBe(mockBlob);
     });
   });
@@ -124,7 +129,7 @@ describe('Export API Integration Tests', () => {
       const mockLink = {
         href: '',
         download: '',
-        click: mockClick
+        click: mockClick,
       };
       vi.spyOn(document, 'createElement').mockReturnValue(mockLink as HTMLAnchorElement);
       vi.spyOn(document.body, 'appendChild').mockImplementation(mockAppendChild);
@@ -152,14 +157,18 @@ describe('Export API Integration Tests', () => {
       const mockError = new Error('API Error');
       (apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
-      await expect(exportApi.generateAuctionFacebookPost('auction123')).rejects.toThrow('API Error');
+      await expect(exportApi.generateAuctionFacebookPost('auction123')).rejects.toThrow(
+        'API Error'
+      );
     });
 
     test('should handle API errors for file downloads', async () => {
       const mockError = new Error('Download Error');
       (apiClient.get as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
-      await expect(exportApi.getAuctionFacebookTextFile('auction123')).rejects.toThrow('Download Error');
+      await expect(exportApi.getAuctionFacebookTextFile('auction123')).rejects.toThrow(
+        'Download Error'
+      );
       await expect(exportApi.zipAuctionImages('auction123')).rejects.toThrow('Download Error');
     });
 
@@ -167,7 +176,9 @@ describe('Export API Integration Tests', () => {
       const mockError = new Error('Collection Error');
       (apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
 
-      await expect(exportApi.getCollectionFacebookTextFile(['item1'])).rejects.toThrow('Collection Error');
+      await expect(exportApi.getCollectionFacebookTextFile(['item1'])).rejects.toThrow(
+        'Collection Error'
+      );
     });
   });
 });

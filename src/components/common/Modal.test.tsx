@@ -42,7 +42,7 @@ describe('Modal Component', () => {
 
     it('should render with title when provided', () => {
       render(
-        <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+        <Modal isOpen={true} onClose={mockOnClose} title='Test Modal'>
           <div>Modal content</div>
         </Modal>
       );
@@ -80,7 +80,7 @@ describe('Modal Component', () => {
 
     it('should call onClose when close button is clicked', () => {
       render(
-        <Modal isOpen={true} onClose={mockOnClose} title="Test Modal">
+        <Modal isOpen={true} onClose={mockOnClose} title='Test Modal'>
           <div>Modal content</div>
         </Modal>
       );
@@ -150,7 +150,7 @@ describe('Modal Component', () => {
   describe('Max Width Variants', () => {
     it('should apply correct max-width class for sm', () => {
       const { container } = render(
-        <Modal isOpen={true} onClose={mockOnClose} maxWidth="sm">
+        <Modal isOpen={true} onClose={mockOnClose} maxWidth='sm'>
           <div>Modal content</div>
         </Modal>
       );
@@ -160,7 +160,7 @@ describe('Modal Component', () => {
 
     it('should apply correct max-width class for lg', () => {
       const { container } = render(
-        <Modal isOpen={true} onClose={mockOnClose} maxWidth="lg">
+        <Modal isOpen={true} onClose={mockOnClose} maxWidth='lg'>
           <div>Modal content</div>
         </Modal>
       );

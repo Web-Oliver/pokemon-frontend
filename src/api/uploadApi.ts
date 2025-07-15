@@ -30,7 +30,7 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
  */
 export const uploadMultipleImages = async (images: File[]): Promise<string[]> => {
   const formData = new FormData();
-  images.forEach((image) => {
+  images.forEach(image => {
     formData.append(`images`, image);
   });
 
@@ -50,7 +50,7 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
  */
 export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
   await apiClient.delete('/upload/cleanup', {
-    data: { imageUrls }
+    data: { imageUrls },
   });
 };
 

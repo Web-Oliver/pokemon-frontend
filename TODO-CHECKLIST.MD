@@ -5,6 +5,7 @@ This is the comprehensive To-Do list for the Pokemon Collection Frontend project
 🚨 **IMPORTANT**: Backend Analysis Update - This TODO list has been updated to reflect the ACTUAL backend API structure based on the real backend documentation.
 
 **Backend Configuration:**
+
 - Backend URL: http://localhost:3000/api (Port 3000, NOT 3001)
 - Express.js 5.1.0 with MongoDB/Mongoose 8.16.1
 - Uses Decimal128 for prices (converted to numbers in frontend)
@@ -71,28 +72,29 @@ Verification:
 
 [x] Action: Develop the initial global utility modules for constants and logging.
 [x] Sub-action: Create src/utils/constants.ts.
- [x] UPDATED: Changed API_BASE_URL to http://localhost:3000/api (backend runs on port 3000).
- [x] UPDATED: Corrected TypeScript enums to match exact backend schema values:
-   - PaymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer' 
-   - DeliveryMethod: 'Sent' | 'Local Meetup'
-   - Source: 'Facebook' | 'DBA'
-[x] Sub-action: Create src/utils/logger.ts.
- [x] Implement log and error functions that wrap console.log and console.error respectively.
- [x] Ensure log only outputs in non-production environments.
-Verification:
-[x] Import log into App.tsx and add a log('App loaded!');. Run npm run dev and check the browser console.
+[x] UPDATED: Changed API_BASE_URL to http://localhost:3000/api (backend runs on port 3000).
+[x] UPDATED: Corrected TypeScript enums to match exact backend schema values:
 
-1.6. Implement Global Utilities - Error Handler & API Client ✅
+- PaymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer'
+- DeliveryMethod: 'Sent' | 'Local Meetup'
+- Source: 'Facebook' | 'DBA'
+  [x] Sub-action: Create src/utils/logger.ts.
+  [x] Implement log and error functions that wrap console.log and console.error respectively.
+  [x] Ensure log only outputs in non-production environments.
+  Verification:
+  [x] Import log into App.tsx and add a log('App loaded!');. Run npm run dev and check the browser console.
+
+  1.6. Implement Global Utilities - Error Handler & API Client ✅
 
 [x] Action: Develop the global error handling utility and the central API client.
 [x] Sub-action: Create src/utils/errorHandler.ts.
- [x] Implement handleApiError function that takes an error object and an optional message.
- [x] It should use the error function from src/utils/logger.ts to log the error.
- [x] For now, use a simple alert() to display a user-friendly message.
+[x] Implement handleApiError function that takes an error object and an optional message.
+[x] It should use the error function from src/utils/logger.ts to log the error.
+[x] For now, use a simple alert() to display a user-friendly message.
 [x] Sub-action: Create src/api/apiClient.ts.
- [x] Import axios and API_BASE_URL from src/utils/constants.ts, and handleApiError from src/utils/errorHandler.ts.
- [x] Create an Axios instance with baseURL set to API_BASE_URL and Content-Type header set to application/json.
- [x] Add an Axios response interceptor that calls handleApiError for any failed requests and then Promise.reject(error).
+[x] Import axios and API_BASE_URL from src/utils/constants.ts, and handleApiError from src/utils/errorHandler.ts.
+[x] Create an Axios instance with baseURL set to API_BASE_URL and Content-Type header set to application/json.
+[x] Add an Axios response interceptor that calls handleApiError for any failed requests and then Promise.reject(error).
 Verification:
 [x] In App.tsx, import apiClient and add a dummy apiClient.get('/non-existent-endpoint') call within a useEffect. Run npm run dev and confirm an alert appears for the error.
 Phase 2: Data Models & Core API Clients 🔄
@@ -104,199 +106,215 @@ Phase 2: Data Models & Core API Clients 🔄
 **COMPLETED**: Data models updated to match actual backend schemas:
 
 [x] Sub-action: Update src/domain/models/common.ts.
- [x] CORRECTED IPriceHistoryEntry interface: { price: number, dateUpdated: string }
- [x] UPDATED ISaleDetails interface to match backend saleDetails schema:
-   - paymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer'
-   - actualSoldPrice: number (Decimal128 converted to number)
-   - deliveryMethod: 'Sent' | 'Local Meetup'
-   - source: 'Facebook' | 'DBA'
-   - buyerFullName, buyerAddress: { streetName, postnr, city }
-   - buyerPhoneNumber, buyerEmail, trackingNumber
-   - dateSold: string (ISO date)
+[x] CORRECTED IPriceHistoryEntry interface: { price: number, dateUpdated: string }
+[x] UPDATED ISaleDetails interface to match backend saleDetails schema:
+
+- paymentMethod: 'CASH' | 'Mobilepay' | 'BankTransfer'
+- actualSoldPrice: number (Decimal128 converted to number)
+- deliveryMethod: 'Sent' | 'Local Meetup'
+- source: 'Facebook' | 'DBA'
+- buyerFullName, buyerAddress: { streetName, postnr, city }
+- buyerPhoneNumber, buyerEmail, trackingNumber
+- dateSold: string (ISO date)
 
 [x] Sub-action: Update src/domain/models/card.ts.
- [x] UPDATED ISet interface to match backend Sets schema (no changes needed - already correct)
- [x] UPDATED ICard interface to match backend Cards schema:
-   - Updated psaGrades: { psa_1: number, psa_2: number, ..., psa_10: number }
- [x] UPDATED IPsaGradedCard interface to match backend PsaGradedCards schema:
-   - grade: string (backend uses String type, not number)
-   - Updated priceHistory structure to match backend
- [x] UPDATED IRawCard interface to match backend RawCards schema (already correct)
+[x] UPDATED ISet interface to match backend Sets schema (no changes needed - already correct)
+[x] UPDATED ICard interface to match backend Cards schema:
+
+- Updated psaGrades: { psa_1: number, psa_2: number, ..., psa_10: number }
+  [x] UPDATED IPsaGradedCard interface to match backend PsaGradedCards schema:
+- grade: string (backend uses String type, not number)
+- Updated priceHistory structure to match backend
+  [x] UPDATED IRawCard interface to match backend RawCards schema (already correct)
 
 [x] Sub-action: Update src/domain/models/sealedProduct.ts.
- [x] CREATED ICardMarketReferenceProduct interface to match backend
- [x] UPDATED ISealedProduct interface to match backend SealedProducts schema:
-   - Added SealedProductCategory enum with exact backend values
-   - Fixed availability: number (not boolean)
-   - Updated field names and structure to match backend
-   - productId: ObjectId (required) - Reference to CardMarketReferenceProducts
-   - category: String (enum) - Booster Box, ETB, etc.
-   - setName: String (required)
-   - name: String (required)
-   - availability: Number (required)
-   - cardMarketPrice: Decimal128 (required) -> convert to number
-   - myPrice: Decimal128 (required) -> convert to number
-   - priceHistory: [{ price: Decimal128, dateUpdated: Date }]
-   - images: [String]
-   - dateAdded: Date
-   - sold: Boolean
-   - saleDetails: ISaleDetails
+[x] CREATED ICardMarketReferenceProduct interface to match backend
+[x] UPDATED ISealedProduct interface to match backend SealedProducts schema:
+
+- Added SealedProductCategory enum with exact backend values
+- Fixed availability: number (not boolean)
+- Updated field names and structure to match backend
+- productId: ObjectId (required) - Reference to CardMarketReferenceProducts
+- category: String (enum) - Booster Box, ETB, etc.
+- setName: String (required)
+- name: String (required)
+- availability: Number (required)
+- cardMarketPrice: Decimal128 (required) -> convert to number
+- myPrice: Decimal128 (required) -> convert to number
+- priceHistory: [{ price: Decimal128, dateUpdated: Date }]
+- images: [String]
+- dateAdded: Date
+- sold: Boolean
+- saleDetails: ISaleDetails
 
 [x] Sub-action: Create/Update src/domain/models/auction.ts.
- [x] UPDATE IAuctionItem interface to match backend schema (polymorphic):
-   - itemId: ObjectId - Reference to any collection item
-   - itemCategory: String - Type: "PsaGradedCard", "RawCard", "SealedProduct" 
-   - sold: Boolean - Individual item sale status
-   - salePrice: Decimal128 -> convert to number
- [x] UPDATE IAuction interface to match backend Auctions schema:
-   - topText: String (required) - Auction description header
-   - bottomText: String (required) - Auction description footer  
-   - auctionDate: Date - Scheduled auction date
-   - status: String (enum) - draft, active, sold, expired
-   - generatedFacebookPost: String - Auto-generated marketing content
-   - isActive: Boolean (legacy field)
-   - items: [IAuctionItem] - Polymorphic item references
-   - totalValue: Number - Calculated total value
-   - soldValue: Number - Total sold value
-   - createdAt: Date
-   - updatedAt: Date
+[x] UPDATE IAuctionItem interface to match backend schema (polymorphic):
+
+- itemId: ObjectId - Reference to any collection item
+- itemCategory: String - Type: "PsaGradedCard", "RawCard", "SealedProduct"
+- sold: Boolean - Individual item sale status
+- salePrice: Decimal128 -> convert to number
+  [x] UPDATE IAuction interface to match backend Auctions schema:
+- topText: String (required) - Auction description header
+- bottomText: String (required) - Auction description footer
+- auctionDate: Date - Scheduled auction date
+- status: String (enum) - draft, active, sold, expired
+- generatedFacebookPost: String - Auto-generated marketing content
+- isActive: Boolean (legacy field)
+- items: [IAuctionItem] - Polymorphic item references
+- totalValue: Number - Calculated total value
+- soldValue: Number - Total sold value
+- createdAt: Date
+- updatedAt: Date
 
 [x] Sub-action: Create src/domain/models/sale.ts.
- [x] CREATE ISalesSummary interface based on backend /api/sales/summary response:
-   - totalRevenue: Number
-   - totalProfit: Number  
-   - averageMargin: Number
-   - totalItems: Number
-   - categoryBreakdown: { psaGradedCard: {count, revenue}, rawCard: {count, revenue}, sealedProduct: {count, revenue} }
- [x] CREATE ISalesGraphData interface based on backend /api/sales/graph-data:
-   - date: String (ISO date)
-   - revenue: Number 
-   - profit: Number
- [x] CREATE ISale interface for individual sale records (aggregated from sold items):
-   - id: String
-   - itemCategory: String
-   - itemName: String  
-   - myPrice: Number
-   - actualSoldPrice: Number
-   - dateSold: String (ISO date)
-   - source: String
+[x] CREATE ISalesSummary interface based on backend /api/sales/summary response:
+
+- totalRevenue: Number
+- totalProfit: Number
+- averageMargin: Number
+- totalItems: Number
+- categoryBreakdown: { psaGradedCard: {count, revenue}, rawCard: {count, revenue}, sealedProduct: {count, revenue} }
+  [x] CREATE ISalesGraphData interface based on backend /api/sales/graph-data:
+- date: String (ISO date)
+- revenue: Number
+- profit: Number
+  [x] CREATE ISale interface for individual sale records (aggregated from sold items):
+- id: String
+- itemCategory: String
+- itemName: String
+- myPrice: Number
+- actualSoldPrice: Number
+- dateSold: String (ISO date)
+- source: String
 
 Verification:
 [x] Create dummy data objects that conform to the UPDATED interfaces
 [x] Verify interfaces match the backend API response structure exactly
 [x] Test with real backend data to ensure proper type safety
-2.2. Implement CORRECTED API Clients (GET Operations) 
+2.2. Implement CORRECTED API Clients (GET Operations)
 
 [x] Action: Implement API clients matching ACTUAL backend endpoints.
 
 **BACKEND ENDPOINTS (Real API Structure):**
 
 [x] Sub-action: Create src/api/cardsApi.ts with CORRECT backend endpoints:
- [x] Implement getCards(params?: { setId?: string, cardName?: string, baseName?: string }): Promise<ICard[]> 
-   - Endpoint: GET /api/cards
-   - Backend supports: setId, cardName, baseName parameters
- [x] Implement searchCards(query: string, params?: { limit?: number, setName?: string }): Promise<ICard[]>
-   - Endpoint: GET /api/cards/search?q={query}
-   - Backend returns: Search results with scoring, cached responses
- [x] Implement getCardSuggestions(query: string, limit?: number): Promise<string[]>
-   - Endpoint: GET /api/cards/suggestions?q={query}&limit={limit}
-   - Backend returns: Suggestion array with 10-minute cache
- [x] Implement getBestMatchCard(query: string): Promise<ICard | null>
-   - Endpoint: GET /api/cards/search-best-match?q={query}
-   - Backend returns: Best match with relevance scoring
- [x] Implement getCardById(id: string): Promise<ICard>
-   - Endpoint: GET /api/cards/{id}
-   - Backend returns: Single card with population
+[x] Implement getCards(params?: { setId?: string, cardName?: string, baseName?: string }): Promise<ICard[]>
+
+- Endpoint: GET /api/cards
+- Backend supports: setId, cardName, baseName parameters
+  [x] Implement searchCards(query: string, params?: { limit?: number, setName?: string }): Promise<ICard[]>
+- Endpoint: GET /api/cards/search?q={query}
+- Backend returns: Search results with scoring, cached responses
+  [x] Implement getCardSuggestions(query: string, limit?: number): Promise<string[]>
+- Endpoint: GET /api/cards/suggestions?q={query}&limit={limit}
+- Backend returns: Suggestion array with 10-minute cache
+  [x] Implement getBestMatchCard(query: string): Promise<ICard | null>
+- Endpoint: GET /api/cards/search-best-match?q={query}
+- Backend returns: Best match with relevance scoring
+  [x] Implement getCardById(id: string): Promise<ICard>
+- Endpoint: GET /api/cards/{id}
+- Backend returns: Single card with population
 
 [x] Sub-action: Create src/api/setsApi.ts with CORRECT backend endpoints:
- [x] Implement getSets(): Promise<ISet[]>
-   - Endpoint: GET /api/sets
-   - Backend returns: Complete sets array
- [x] Implement getPaginatedSets(params?: { page?: number, limit?: number, year?: number, search?: string }): Promise<{ sets: ISet[], total: number }>
-   - Endpoint: GET /api/sets/paginated
-   - Backend supports: page, limit, year, search parameters
- [x] Implement getSetById(id: string): Promise<ISet>
-   - Endpoint: GET /api/sets/{id}
-   - Backend returns: Single set
+[x] Implement getSets(): Promise<ISet[]>
+
+- Endpoint: GET /api/sets
+- Backend returns: Complete sets array
+  [x] Implement getPaginatedSets(params?: { page?: number, limit?: number, year?: number, search?: string }): Promise<{ sets: ISet[], total: number }>
+- Endpoint: GET /api/sets/paginated
+- Backend supports: page, limit, year, search parameters
+  [x] Implement getSetById(id: string): Promise<ISet>
+- Endpoint: GET /api/sets/{id}
+- Backend returns: Single set
 
 [x] Sub-action: Create src/api/cardMarketRefProductsApi.ts (NEW - based on backend):
- [x] This is the REFERENCE data for sealed products from CardMarket
- [x] Implement getCardMarketRefProducts(params?: any): Promise<ICardMarketReferenceProduct[]>
-   - Endpoint: GET /api/cardmarket-ref-products (need to verify exact endpoint)
-   - Backend stores reference data with pricing info
+[x] This is the REFERENCE data for sealed products from CardMarket
+[x] Implement getCardMarketRefProducts(params?: any): Promise<ICardMarketReferenceProduct[]>
+
+- Endpoint: GET /api/cardmarket-ref-products (need to verify exact endpoint)
+- Backend stores reference data with pricing info
 
 [x] Sub-action: Create src/api/sealedProductsApi.ts with CORRECT backend endpoints:
- [x] Implement getSealedProducts(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
-   - Endpoint: GET /api/sealed-products
-   - Backend supports: category, setName, sold filters
- [x] Implement getSealedProductById(id: string): Promise<ISealedProduct>
-   - Endpoint: GET /api/sealed-products/{id}
-   - Backend returns: Single sealed product
+[x] Implement getSealedProducts(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+
+- Endpoint: GET /api/sealed-products
+- Backend supports: category, setName, sold filters
+  [x] Implement getSealedProductById(id: string): Promise<ISealedProduct>
+- Endpoint: GET /api/sealed-products/{id}
+- Backend returns: Single sealed product
 
 [x] Sub-action: Create src/api/collectionApi.ts with COLLECTION management endpoints:
- **PSA Graded Cards Collection:**
- [x] Implement getPsaGradedCards(params?: { grade?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IPsaGradedCard[]>
-   - Endpoint: GET /api/psa-graded-cards
- [x] Implement getPsaGradedCardById(id: string): Promise<IPsaGradedCard>
-   - Endpoint: GET /api/psa-graded-cards/{id}
- [x] Implement createPsaGradedCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
-   - Endpoint: POST /api/psa-graded-cards
- [x] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
-   - Endpoint: PUT /api/psa-graded-cards/{id}
- [x] Implement deletePsaGradedCard(id: string): Promise<void>
-   - Endpoint: DELETE /api/psa-graded-cards/{id}
- [x] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>
-   - Endpoint: PATCH /api/psa-graded-cards/{id}/mark-sold
+**PSA Graded Cards Collection:**
+[x] Implement getPsaGradedCards(params?: { grade?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IPsaGradedCard[]>
 
- **Raw Cards Collection:**
- [x] Implement getRawCards(params?: { condition?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IRawCard[]>
-   - Endpoint: GET /api/raw-cards
- [x] Implement similar CRUD operations for raw cards (POST, PUT, DELETE, PATCH mark-sold)
+- Endpoint: GET /api/psa-graded-cards
+  [x] Implement getPsaGradedCardById(id: string): Promise<IPsaGradedCard>
+- Endpoint: GET /api/psa-graded-cards/{id}
+  [x] Implement createPsaGradedCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+- Endpoint: POST /api/psa-graded-cards
+  [x] Implement updatePsaGradedCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>
+- Endpoint: PUT /api/psa-graded-cards/{id}
+  [x] Implement deletePsaGradedCard(id: string): Promise<void>
+- Endpoint: DELETE /api/psa-graded-cards/{id}
+  [x] Implement markPsaGradedCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>
+- Endpoint: PATCH /api/psa-graded-cards/{id}/mark-sold
 
- **Sealed Products Collection:**
- [x] Implement getSealedProductCollection(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
-   - Endpoint: GET /api/sealed-products  
- [x] Implement similar CRUD operations for sealed products (POST, PUT, DELETE, PATCH mark-sold)
+**Raw Cards Collection:**
+[x] Implement getRawCards(params?: { condition?: string, setName?: string, cardName?: string, sold?: boolean }): Promise<IRawCard[]>
+
+- Endpoint: GET /api/raw-cards
+  [x] Implement similar CRUD operations for raw cards (POST, PUT, DELETE, PATCH mark-sold)
+
+**Sealed Products Collection:**
+[x] Implement getSealedProductCollection(params?: { category?: string, setName?: string, sold?: boolean }): Promise<ISealedProduct[]>
+
+- Endpoint: GET /api/sealed-products  
+  [x] Implement similar CRUD operations for sealed products (POST, PUT, DELETE, PATCH mark-sold)
 
 [x] Sub-action: Create src/api/auctionsApi.ts with CORRECT backend endpoints:
- [x] Implement getAuctions(params?: { status?: string }): Promise<IAuction[]>
-   - Endpoint: GET /api/auctions
- [x] Implement getAuctionById(id: string): Promise<IAuction>
-   - Endpoint: GET /api/auctions/{id} (with populated items)
- [x] Implement createAuction(data: Partial<IAuction>): Promise<IAuction>
-   - Endpoint: POST /api/auctions
- [x] Implement updateAuction(id: string, data: Partial<IAuction>): Promise<IAuction>
-   - Endpoint: PUT /api/auctions/{id}
- [x] Implement deleteAuction(id: string): Promise<void>
-   - Endpoint: DELETE /api/auctions/{id}
- [x] Implement addItemToAuction(id: string, itemData: { itemId: string, itemCategory: string }): Promise<IAuction>
-   - Endpoint: POST /api/auctions/{id}/items
- [x] Implement removeItemFromAuction(id: string, itemId: string): Promise<IAuction>
-   - Endpoint: DELETE /api/auctions/{id}/items
- [x] Implement markAuctionItemSold(id: string, saleData: any): Promise<IAuction>
-   - Endpoint: PATCH /api/auctions/{id}/items/sold
+[x] Implement getAuctions(params?: { status?: string }): Promise<IAuction[]>
+
+- Endpoint: GET /api/auctions
+  [x] Implement getAuctionById(id: string): Promise<IAuction>
+- Endpoint: GET /api/auctions/{id} (with populated items)
+  [x] Implement createAuction(data: Partial<IAuction>): Promise<IAuction>
+- Endpoint: POST /api/auctions
+  [x] Implement updateAuction(id: string, data: Partial<IAuction>): Promise<IAuction>
+- Endpoint: PUT /api/auctions/{id}
+  [x] Implement deleteAuction(id: string): Promise<void>
+- Endpoint: DELETE /api/auctions/{id}
+  [x] Implement addItemToAuction(id: string, itemData: { itemId: string, itemCategory: string }): Promise<IAuction>
+- Endpoint: POST /api/auctions/{id}/items
+  [x] Implement removeItemFromAuction(id: string, itemId: string): Promise<IAuction>
+- Endpoint: DELETE /api/auctions/{id}/items
+  [x] Implement markAuctionItemSold(id: string, saleData: any): Promise<IAuction>
+- Endpoint: PATCH /api/auctions/{id}/items/sold
 
 [x] Sub-action: Create src/api/salesApi.ts with ANALYTICS endpoints:
- [x] Implement getSalesData(params?: { startDate?: string, endDate?: string, category?: string }): Promise<ISale[]>
-   - Endpoint: GET /api/sales
- [x] Implement getSalesSummary(params?: { startDate?: string, endDate?: string }): Promise<ISalesSummary>
-   - Endpoint: GET /api/sales/summary
- [x] Implement getSalesGraphData(params?: { startDate?: string, endDate?: string }): Promise<ISalesGraphData[]>
-   - Endpoint: GET /api/sales/graph-data
+[x] Implement getSalesData(params?: { startDate?: string, endDate?: string, category?: string }): Promise<ISale[]>
+
+- Endpoint: GET /api/sales
+  [x] Implement getSalesSummary(params?: { startDate?: string, endDate?: string }): Promise<ISalesSummary>
+- Endpoint: GET /api/sales/summary
+  [x] Implement getSalesGraphData(params?: { startDate?: string, endDate?: string }): Promise<ISalesGraphData[]>
+- Endpoint: GET /api/sales/graph-data
 
 [x] Sub-action: Create src/api/uploadApi.ts with IMAGE upload endpoints:
- [x] Implement uploadSingleImage(image: File): Promise<string>
-   - Endpoint: POST /api/upload/image
- [x] Implement uploadMultipleImages(images: File[]): Promise<string[]>
-   - Endpoint: POST /api/upload/images
- [x] Implement cleanupImages(imageUrls: string[]): Promise<void>
-   - Endpoint: DELETE /api/upload/cleanup
- [x] Implement cleanupAllOrphanedImages(): Promise<void>
-   - Endpoint: DELETE /api/upload/cleanup-all
+[x] Implement uploadSingleImage(image: File): Promise<string>
+
+- Endpoint: POST /api/upload/image
+  [x] Implement uploadMultipleImages(images: File[]): Promise<string[]>
+- Endpoint: POST /api/upload/images
+  [x] Implement cleanupImages(imageUrls: string[]): Promise<void>
+- Endpoint: DELETE /api/upload/cleanup
+  [x] Implement cleanupAllOrphanedImages(): Promise<void>
+- Endpoint: DELETE /api/upload/cleanup-all
 
 [x] Sub-action: Ensure all API client functions use the apiClient instance from src/api/apiClient.ts.
 
 **Response Structure (Backend Standard):**
+
 ```typescript
 // Success response
 {
@@ -315,7 +333,7 @@ Verification:
   }
 }
 
-// Error response  
+// Error response
 {
   "success": false,
   "status": "error",
@@ -331,11 +349,11 @@ Phase 3: Core Domain Services & Basic Hooks ✅
 
 [x] Action: Implement the core business logic for sales analytics.
 [x] Sub-action: Create src/domain/services/SalesAnalyticsService.ts.
- [x] Implement calculateTotalProfit(sales: ISale[]): number.
- [x] Implement calculateAverageMargin(sales: ISale[]): number.
- [x] Implement processGraphData(rawData: any[]): ISalesGraphData[].
- [x] Add aggregation functions for category breakdown analysis.
- [x] Add time-series data processing for trend analysis.
+[x] Implement calculateTotalProfit(sales: ISale[]): number.
+[x] Implement calculateAverageMargin(sales: ISale[]): number.
+[x] Implement processGraphData(rawData: any[]): ISalesGraphData[].
+[x] Add aggregation functions for category breakdown analysis.
+[x] Add time-series data processing for trend analysis.
 Verification:
 [x] Write unit tests for each function in src/domain/services/SalesAnalyticsService.test.ts.
 [x] Test with sample data matching backend /api/sales response format.
@@ -344,12 +362,12 @@ Verification:
 
 [x] Action: Implement the useCollection hook for comprehensive collection management.
 [x] Sub-action: Create src/hooks/useCollection.ts.
- [x] Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
- [x] Implement useEffect hook that fetches ALL collection data using CORRECTED collectionApi functions.
- [x] Add CRUD operations: addPsaCard, updatePsaCard, deletePsaCard, markPsaCardSold.
- [x] Add similar CRUD operations for rawCards and sealedProducts.
- [x] Implement optimistic updates for better UX.
- [x] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
+[x] Initialize useState for psaCards, rawCards, sealedProducts, soldItems, loading, and error.
+[x] Implement useEffect hook that fetches ALL collection data using CORRECTED collectionApi functions.
+[x] Add CRUD operations: addPsaCard, updatePsaCard, deletePsaCard, markPsaCardSold.
+[x] Add similar CRUD operations for rawCards and sealedProducts.
+[x] Implement optimistic updates for better UX.
+[x] Handle find-or-create logic for Sets/Cards (backend auto-creates references).
 [x] Sub-action: Set loading state during fetches and handle errors properly.
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running on PORT 3000.
@@ -363,17 +381,17 @@ Verification:
 
 [x] Action: Implement the useSearch hook with ACTUAL backend search capabilities.
 [x] Sub-action: Create src/hooks/useSearch.ts.
- [x] Initialize useState for searchTerm, searchResults, suggestions, loading, searchMeta.
- [x] Implement handleSearch(query: string) that calls cardsApi.searchCards with caching.
- [x] Implement handleSuggestionSelect(suggestion: string) with hierarchical logic.
- [x] Implement useEffect with debounce for cardsApi.getCardSuggestions.
- [x] Add support for search metadata (cached, hitRate, queryTime from backend).
- [x] Add support for search filters (setName, category, year).
- [x] Implement getBestMatch for auto-fill functionality.
+[x] Initialize useState for searchTerm, searchResults, suggestions, loading, searchMeta.
+[x] Implement handleSearch(query: string) that calls cardsApi.searchCards with caching.
+[x] Implement handleSuggestionSelect(suggestion: string) with hierarchical logic.
+[x] Implement useEffect with debounce for cardsApi.getCardSuggestions.
+[x] Add support for search metadata (cached, hitRate, queryTime from backend).
+[x] Add support for search filters (setName, category, year).
+[x] Implement getBestMatch for auto-fill functionality.
 [x] Sub-action: Implement hierarchical search logic:
- [x] Set search filters Card/Product search based on selected set.
- [x] Product/Card selection auto-fills set information.
- [x] No simultaneous suggestions (single field focus).
+[x] Set search filters Card/Product search based on selected set.
+[x] Product/Card selection auto-fills set information.
+[x] No simultaneous suggestions (single field focus).
 
 Phase 4: Collection Management - View & Add (Initial UI) ✅
 
@@ -587,34 +605,34 @@ Phase 9: Auction Management
 
 [x] Action: Implement the Auction List and Auction Detail pages.
 [x] Sub-action: Create src/hooks/useAuction.ts.
- [x] Implement comprehensive auction management hook with all CRUD operations.
- [x] Add state management for auctions list and currentAuction.
- [x] Implement fetchAuctions, fetchAuctionById, createAuction, updateAuction, deleteAuction.
- [x] Add addItemToAuction, removeItemFromAuction, markAuctionItemSold functionality.
+[x] Implement comprehensive auction management hook with all CRUD operations.
+[x] Add state management for auctions list and currentAuction.
+[x] Implement fetchAuctions, fetchAuctionById, createAuction, updateAuction, deleteAuction.
+[x] Add addItemToAuction, removeItemFromAuction, markAuctionItemSold functionality.
 [x] Sub-action: Create src/pages/Auctions.tsx.
- [x] Display a list of auctions using useAuction hook's auctions state.
- [x] Implement filters by status with real-time filtering.
- [x] Each list item should link to an AuctionDetail page.
- [x] Add beautiful auction stats dashboard with active, draft, and completed counts.
- [x] Implement sorting by status priority and auction date.
- [x] Add proper loading, error, and empty states.
+[x] Display a list of auctions using useAuction hook's auctions state.
+[x] Implement filters by status with real-time filtering.
+[x] Each list item should link to an AuctionDetail page.
+[x] Add beautiful auction stats dashboard with active, draft, and completed counts.
+[x] Implement sorting by status priority and auction date.
+[x] Add proper loading, error, and empty states.
 [x] Sub-action: Create src/pages/AuctionDetail.tsx.
- [x] Fetch a single auction by ID using useAuction.fetchAuctionById.
- [x] Display auction details: topText, bottomText, auctionDate.
- [x] List items included in the auction, showing itemCategory, salePrice, sold status.
- [x] Display totalValue and soldValue with progress tracking.
- [x] Add edit and delete auction functionality.
- [x] Implement auction item management with mark sold/remove options.
- [x] Display auction metadata and Facebook post if available.
+[x] Fetch a single auction by ID using useAuction.fetchAuctionById.
+[x] Display auction details: topText, bottomText, auctionDate.
+[x] List items included in the auction, showing itemCategory, salePrice, sold status.
+[x] Display totalValue and soldValue with progress tracking.
+[x] Add edit and delete auction functionality.
+[x] Implement auction item management with mark sold/remove options.
+[x] Display auction metadata and Facebook post if available.
 [x] Sub-action: Update src/App.tsx to include routes for /auctions and /auctions/:id.
- [x] Added dynamic routing for auction detail pages.
- [x] Integrated AuctionDetail component with proper auctionId extraction.
+[x] Added dynamic routing for auction detail pages.
+[x] Integrated AuctionDetail component with proper auctionId extraction.
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 [x] Write integration tests for Auctions and AuctionDetail pages.
- [x] Created comprehensive test suite for Auctions page (src/pages/Auctions.test.tsx).
- [x] Created comprehensive test suite for AuctionDetail page (src/pages/AuctionDetail.test.tsx).
- [x] Tests cover loading states, error handling, navigation, filtering, and all UI interactions.
+[x] Created comprehensive test suite for Auctions page (src/pages/Auctions.test.tsx).
+[x] Created comprehensive test suite for AuctionDetail page (src/pages/AuctionDetail.test.tsx).
+[x] Tests cover loading states, error handling, navigation, filtering, and all UI interactions.
 9.2. Implement Add Item to Auction Modal ✅
 
 [x] Action: Implement the "Add Item to Auction" modal functionality.
@@ -628,6 +646,7 @@ Verification:
 [x] Write integration tests for AuctionDetail page to verify adding items to auction.
 
 **COMPLETED**: AddItemToAuctionModal component created with comprehensive functionality:
+
 - Created src/components/modals/AddItemToAuctionModal.tsx with beautiful modal design
 - Integrated search and filter functionality for collection items
 - Added item selection with visual feedback and bulk operations
@@ -636,9 +655,9 @@ Verification:
 - Created comprehensive test suite (17 tests) covering all functionality
 - Added support for PSA graded cards, raw cards, and sealed products
 - Proper loading states, error handling, and empty state messaging
-Phase 10: Auction Management - Export Features
+  Phase 10: Auction Management - Export Features
 
-10.1. Implement Facebook Post Generation for Auctions ✅
+  10.1. Implement Facebook Post Generation for Auctions ✅
 
 [x] Action: Implement the "Generate Facebook Post" functionality for auctions.
 [x] Sub-action: In src/pages/AuctionDetail.tsx, add a "Generate Facebook Post" button.
@@ -651,6 +670,7 @@ Verification:
 [x] Write integration tests for AuctionDetail page to verify Facebook post generation.
 
 **COMPLETED**: Facebook Post Generation functionality implemented:
+
 - Created src/api/exportApi.ts with comprehensive export API functions
 - Enhanced useAuction hook with generateFacebookPost, downloadAuctionTextFile, downloadAuctionImagesZip methods
 - Updated AuctionDetail page with beautiful "Export & Social Media Tools" section
@@ -658,7 +678,7 @@ Verification:
 - Implemented modern clipboard API with fallback for older browsers
 - Created comprehensive test suite for export API (10 tests passing)
 
-10.2. Implement Auction-Specific Image Zip & Text File Exports ✅
+  10.2. Implement Auction-Specific Image Zip & Text File Exports ✅
 
 [x] Action: Implement the auction-specific image zipping and text file export functionalities.
 [x] Sub-action: In src/pages/AuctionDetail.tsx, add two new buttons: "Zip All Images for Auction" and "Generate Auction Text File".
@@ -673,15 +693,16 @@ Verification:
 [x] Write integration tests for AuctionDetail page to verify image zip and text file exports.
 
 **COMPLETED**: Auction Export functionality implemented:
+
 - Added "Download Text File" and "Download Images Zip" buttons with proper loading states
 - Implemented downloadBlob utility function for secure file downloads
 - Created responsive grid layout for export tools with clear visual hierarchy
 - Added proper error handling and user feedback for all export operations
 - Integration with backend blob endpoints for file downloads
 - All export functions properly integrated into useAuction hook
-Phase 11: Sales Analytics & Financial Tracking ✅
+  Phase 11: Sales Analytics & Financial Tracking ✅
 
-11.1. Implement Sales Analytics Page & Summary Display ✅
+  11.1. Implement Sales Analytics Page & Summary Display ✅
 
 [x] Action: Implement the Sales Analytics page and display summary metrics.
 [x] Sub-action: Create src/pages/SalesAnalytics.tsx.
@@ -690,16 +711,17 @@ Phase 11: Sales Analytics & Financial Tracking ✅
 [x] Sub-action: Add a DatePicker component (or range picker) for a "Date Range Selector".
 [x] Sub-action: Add a route for /sales-analytics in src/App.tsx.
 **COMPLETED**: Created comprehensive SalesAnalytics page with:
+
 - Created src/hooks/useSalesAnalytics.ts with full sales data management
 - Enhanced SalesAnalytics page with real data integration, KPI cards, and date filtering
 - Integrated Recharts for beautiful line charts and pie charts
 - Added comprehensive sales table with profit/loss visualization
 - Created integration tests for useSalesAnalytics hook
 - Route already existed in App.tsx from previous phases
-Verification:
-[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[x] Write integration tests for SalesAnalytics page.
-11.2. Integrate Charts for Sales Analytics ✅
+  Verification:
+  [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+  [x] Write integration tests for SalesAnalytics page.
+  11.2. Integrate Charts for Sales Analytics ✅
 
 [x] Action: Integrate charting components into the Sales Analytics page.
 [x] Sub-action: Open src/pages/SalesAnalytics.tsx.
@@ -708,15 +730,16 @@ Verification:
 [x] "Time-Series Graph" (Line chart).
 [x] Sub-action: Ensure charts dynamically update based on the selected date range.
 **COMPLETED**: Charts fully integrated in SalesAnalytics page:
+
 - Line chart for revenue & profit over time with responsive design
 - Pie chart for sales by category breakdown with custom colors
 - Charts dynamically update based on date range filtering
 - Proper empty states when no data is available
 - Danish locale formatting for dates and currency
-Verification:
-[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[x] Write integration tests for SalesAnalytics page to verify chart rendering.
-11.3. Implement Detailed Sales List ✅
+  Verification:
+  [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+  [x] Write integration tests for SalesAnalytics page to verify chart rendering.
+  11.3. Implement Detailed Sales List ✅
 
 [x] Action: Implement the detailed sales list on the Sales Analytics page.
 [x] Sub-action: Open src/pages/SalesAnalytics.tsx.
@@ -724,18 +747,19 @@ Verification:
 [x] Sub-action: Include columns like itemName, itemCategory, myPrice, actualSoldPrice, calculatedProfit, dateSold, source.
 [x] Sub-action: Ensure the table also updates based on the selected date range and any category filters.
 **COMPLETED**: Detailed sales table fully implemented:
+
 - Comprehensive table with all required columns (item, category, prices, profit, date, source)
 - Color-coded profit display (green for positive, red for negative)
 - Category badges with proper styling
 - Danish locale date and currency formatting
-- Pagination indicator showing "10 of X sales" 
+- Pagination indicator showing "10 of X sales"
 - Export CSV button for data export capability
 - Empty state with helpful messaging
 - Table updates dynamically with date range filtering
-Verification:
-[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[x] Write integration tests for SalesAnalytics page to verify sales table rendering.
-Phase 12: General Refinements & Exports ✅
+  Verification:
+  [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+  [x] Write integration tests for SalesAnalytics page to verify sales table rendering.
+  Phase 12: General Refinements & Exports ✅
 
 **MAJOR TEST FIXES COMPLETED** (All critical issues resolved):
 
@@ -747,13 +771,14 @@ Phase 12: General Refinements & Exports ✅
 [x] **Reduced Test Failures**: From 47 failures to 39 failures (83% success rate)
 
 **Test Status Summary**:
+
 - Tests passing: 288/327 (88% pass rate)
 - Critical API integration: ✅ Working
 - Backend communication: ✅ Working on PORT 3000
 - Data persistence: ✅ Working with real MongoDB
 - Search & autocomplete: ✅ Working with hierarchical logic
 
-12.1. Refine Global Error Handling & Toast Notifications ✅
+  12.1. Refine Global Error Handling & Toast Notifications ✅
 
 [x] Action: Refine the global error handling and integrate a toast notification system.
 [x] Sub-action: Install a toast notification library (e.g., npm install react-hot-toast).
@@ -762,6 +787,7 @@ Phase 12: General Refinements & Exports ✅
 [x] Sub-action: Ensure the ToastNotification component is rendered at the root of your application.
 [x] Sub-action: Implement success toasts for successful API operations.
 **COMPLETED**: Toast notification system fully implemented:
+
 - Installed react-hot-toast library
 - Enhanced errorHandler.ts with toast notifications replacing alerts
 - Added showSuccessToast, showInfoToast, showWarningToast helper functions
@@ -770,10 +796,10 @@ Phase 12: General Refinements & Exports ✅
 - Created comprehensive test suite for error handler and toast notifications
 - Consistent styling across all toast types with brand colors
 - Proper error message extraction from API responses
-Verification:
-[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[x] Write integration tests to verify toast notifications for errors and successes.
-12.2. Implement Collection-Specific Facebook Text File Export ✅
+  Verification:
+  [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+  [x] Write integration tests to verify toast notifications for errors and successes.
+  12.2. Implement Collection-Specific Facebook Text File Export ✅
 
 [x] Action: Implement the "Generate Facebook Text File for Collection Items" functionality.
 [x] Sub-action: In src/pages/Collection.tsx (or an "Export" sub-menu), add a button "Generate Facebook Text File for Collection Items".
@@ -781,6 +807,7 @@ Verification:
 [x] Sub-action: Call exportApi.getCollectionFacebookTextFile(selectedItemIds).
 [x] Sub-action: Initiate a file download of the returned Blob as a .txt file.
 **COMPLETED**: Collection Facebook Text File Export functionality implemented:
+
 - Added "Export All" and "Select & Export" buttons to Collection page header
 - Created comprehensive export selection modal with item checkboxes
 - Implemented getAllCollectionItems function to aggregate PSA cards, raw cards, and sealed products
@@ -791,10 +818,10 @@ Verification:
 - Items display with type badges and pricing information
 - Proper disabled states during export operations
 - Date-stamped filename generation for exported files
-Verification:
-[x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
-[x] Write integration tests for Collection page to verify text file export.
-12.3. Finalize README.md ✅
+  Verification:
+  [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
+  [x] Write integration tests for Collection page to verify text file export.
+  12.3. Finalize README.md ✅
 
 [x] Action: Finalize the README.md file for the project.
 [x] Sub-action: Open README.md at the project root.
@@ -808,6 +835,7 @@ Verification:
 [x] Sub-action: Add a "Testing" section outlining how to run unit, integration, and E2E tests.
 [x] Sub-action: Include a "Git Workflow" section summarizing the branching strategy and commit guidelines.
 **COMPLETED**: Comprehensive README.md created with:
+
 - Clear project overview and technology stack
 - Detailed layered architecture explanation
 - Step-by-step setup and installation instructions
@@ -820,8 +848,8 @@ Verification:
 - Build, deployment, and troubleshooting sections
 - Contributing guidelines and support information
 - Professional formatting with emojis and clear sections
-Verification:
-[x] Read through the README.md to ensure clarity, accuracy, and completeness.
+  Verification:
+  [x] Read through the README.md to ensure clarity, accuracy, and completeness.
 
 ---
 
@@ -846,6 +874,7 @@ Verification:
    - Verify PaymentMethod, DeliveryMethod, Source enums match backend validation
 
 **ARCHITECTURE ALIGNMENT:**
+
 - Backend uses Express.js 5.1.0 + MongoDB/Mongoose 8.16.1
 - Decimal128 prices converted to numbers in frontend
 - Advanced search with Fuse.js + MongoDB text search + 5-minute caching
@@ -853,12 +882,14 @@ Verification:
 - Comprehensive error handling with structured responses
 
 **DEVELOPMENT WORKFLOW:**
+
 1. Start backend: `cd ../pokemon-collection-backend && npm run dev` (PORT 3000)
 2. Start frontend: `npm run dev` (PORT 5173)
 3. Run integration tests against REAL backend (no mocking allowed)
 4. Use actual backend responses to verify interface accuracy
 
 **TESTING STRATEGY:**
+
 - Unit tests: Domain services, pure components, utility functions
 - Integration tests: Hooks with API clients, components with hooks (REAL API calls)
 - E2E tests: Full user flows with real backend interaction

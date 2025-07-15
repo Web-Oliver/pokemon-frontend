@@ -37,9 +37,7 @@ export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> =
  * @param params - Optional filter parameters
  * @returns Promise<ISalesSummary> - Sales summary data
  */
-export const getSalesSummary = async (
-  params?: SalesSummaryParams
-): Promise<ISalesSummary> => {
+export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISalesSummary> => {
   const response = await apiClient.get('/sales/summary', { params });
   return response.data.data || response.data;
 };

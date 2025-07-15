@@ -46,7 +46,7 @@ export const searchSealedProductsByCategory = async (
   params?: { setName?: string; available?: boolean }
 ): Promise<ISealedProduct[]> => {
   const response = await apiClient.get('/sealed-products/search', {
-    params: { category, ...params }
+    params: { category, ...params },
   });
   return response.data.data || response.data;
 };

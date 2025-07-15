@@ -31,7 +31,7 @@ type CollectionItem = (IPsaGradedCard | IRawCard | ISealedProduct) & {
 const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   isOpen,
   onClose,
-  onAddItems
+  onAddItems,
 }) => {
   const { psaCards, rawCards, sealedProducts, loading, error } = useCollection();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -50,7 +50,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           itemType: 'PsaGradedCard' as const,
           displayName: `${card.cardName || 'Unknown Card'} - Grade ${card.grade}`,
           displayPrice: card.myPrice,
-          displayImage: card.images?.[0]
+          displayImage: card.images?.[0],
         })),
       ...rawCards
         .filter(card => !card.sold)
@@ -59,7 +59,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           itemType: 'RawCard' as const,
           displayName: `${card.cardName || 'Unknown Card'} - ${card.condition}`,
           displayPrice: card.myPrice,
-          displayImage: card.images?.[0]
+          displayImage: card.images?.[0],
         })),
       ...sealedProducts
         .filter(product => !product.sold)
@@ -68,8 +68,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           itemType: 'SealedProduct' as const,
           displayName: `${product.name || 'Unknown Product'} - ${product.setName}`,
           displayPrice: product.myPrice,
-          displayImage: product.images?.[0]
-        }))
+          displayImage: product.images?.[0],
+        })),
     ];
 
     // Apply filters
@@ -78,9 +78,10 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
     // Filter by search term
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.displayName.toLowerCase().includes(term) ||
-        (item.setName && item.setName.toLowerCase().includes(term))
+      filtered = filtered.filter(
+        item =>
+          item.displayName.toLowerCase().includes(term) ||
+          (item.setName && item.setName.toLowerCase().includes(term))
       );
     }
 
@@ -100,7 +101,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -110,7 +111,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
       return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     } catch {
       return 'Unknown';
@@ -167,7 +168,9 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
 
   // Handle submit
   const handleSubmit = async () => {
-    if (selectedItems.size === 0) return;
+    if (selectedItems.size === 0) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -175,7 +178,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
         const item = filteredItems.find(i => i.id === itemId);
         return {
           itemId,
-          itemCategory: item?.itemType || 'PsaGradedCard'
+          itemCategory: item?.itemType || 'PsaGradedCard',
         };
       });
 
@@ -206,84 +209,77 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   }, [isOpen]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Add Items to Auction"
-      maxWidth="2xl"
-    >
-      <div className="space-y-6">
+    <Modal isOpen={isOpen} onClose={handleClose} title='Add Items to Auction' maxWidth='2xl'>
+      <div className='space-y-6'>
         {/* Search and Filters */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
+        <div className='space-y-4'>
+          <div className='flex items-center space-x-4'>
+            <div className='flex-1'>
               <Input
-                type="text"
-                placeholder="Search items by name or set..."
+                type='text'
+                placeholder='Search items by name or set...'
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-                startIcon={<Search className="w-4 h-4 text-gray-400" />}
+                onChange={e => setSearchTerm(e.target.value)}
+                className='w-full'
+                startIcon={<Search className='w-4 h-4 text-gray-400' />}
               />
             </div>
-            <div className="w-48">
+            <div className='w-48'>
               <Select
                 value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
+                onChange={e => setFilterCategory(e.target.value)}
                 options={[
                   { value: 'all', label: 'All Categories' },
                   { value: 'PsaGradedCard', label: 'PSA Graded Cards' },
                   { value: 'RawCard', label: 'Raw Cards' },
-                  { value: 'SealedProduct', label: 'Sealed Products' }
+                  { value: 'SealedProduct', label: 'Sealed Products' },
                 ]}
               />
             </div>
           </div>
 
           {/* Selection Controls */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-4'>
               <Button
                 onClick={handleSelectAll}
-                variant="outline"
-                size="sm"
+                variant='outline'
+                size='sm'
                 disabled={filteredItems.length === 0}
               >
                 {selectedItems.size === filteredItems.length ? 'Deselect All' : 'Select All'}
               </Button>
-              <span className="text-sm text-gray-600">
+              <span className='text-sm text-gray-600'>
                 {selectedItems.size} of {filteredItems.length} items selected
               </span>
             </div>
-            <span className="text-sm text-gray-600">
-              {filteredItems.length} items available
-            </span>
+            <span className='text-sm text-gray-600'>{filteredItems.length} items available</span>
           </div>
         </div>
 
         {/* Content */}
         {loading ? (
-          <div className="py-12">
-            <LoadingSpinner text="Loading collection items..." />
+          <div className='py-12'>
+            <LoadingSpinner text='Loading collection items...' />
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+            <p className='text-sm text-red-600'>{error}</p>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="py-12 text-center">
-            <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-            <p className="text-gray-600">
+          <div className='py-12 text-center'>
+            <Package className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+            <h3 className='text-lg font-medium text-gray-900 mb-2'>No items found</h3>
+            <p className='text-gray-600'>
               {searchTerm || filterCategory !== 'all'
                 ? 'Try adjusting your search or filters.'
                 : 'No unsold items available in your collection.'}
             </p>
           </div>
         ) : (
-          <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-            <div className="divide-y divide-gray-200">
-              {filteredItems.map((item) => (
+          <div className='max-h-96 overflow-y-auto border border-gray-200 rounded-lg'>
+            <div className='divide-y divide-gray-200'>
+              {filteredItems.map(item => (
                 <div
                   key={item.id}
                   className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
@@ -291,9 +287,9 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
                   }`}
                   onClick={() => handleItemToggle(item.id)}
                 >
-                  <div className="flex items-start space-x-4">
+                  <div className='flex items-start space-x-4'>
                     {/* Selection Checkbox */}
-                    <div className="flex-shrink-0 mt-1">
+                    <div className='flex-shrink-0 mt-1'>
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                           selectedItems.has(item.id)
@@ -301,58 +297,54 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
                             : 'border-gray-300'
                         }`}
                       >
-                        {selectedItems.has(item.id) && (
-                          <Check className="w-3 h-3 text-white" />
-                        )}
+                        {selectedItems.has(item.id) && <Check className='w-3 h-3 text-white' />}
                       </div>
                     </div>
 
                     {/* Item Image */}
                     {item.displayImage && (
-                      <div className="flex-shrink-0">
+                      <div className='flex-shrink-0'>
                         <img
                           src={item.displayImage}
                           alt={item.displayName}
-                          className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                          className='w-16 h-16 object-cover rounded-lg border border-gray-200'
                         />
                       </div>
                     )}
 
                     {/* Item Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex items-start justify-between'>
+                        <div className='flex-1 min-w-0'>
+                          <h4 className='text-sm font-medium text-gray-900 truncate'>
                             {item.displayName}
                           </h4>
-                          <div className="mt-1 flex items-center space-x-2">
+                          <div className='mt-1 flex items-center space-x-2'>
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getItemCategoryColor(item.itemType)}`}
                             >
                               {formatItemCategory(item.itemType)}
                             </span>
                             {item.itemType === 'PsaGradedCard' && (
-                              <span className="inline-flex items-center text-xs text-gray-600">
-                                <Star className="w-3 h-3 mr-1" />
+                              <span className='inline-flex items-center text-xs text-gray-600'>
+                                <Star className='w-3 h-3 mr-1' />
                                 Grade {(item as IPsaGradedCard).grade}
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="ml-4 text-right">
-                          <div className="flex items-center text-sm font-medium text-gray-900">
-                            <DollarSign className="w-4 h-4 mr-1" />
+                        <div className='ml-4 text-right'>
+                          <div className='flex items-center text-sm font-medium text-gray-900'>
+                            <DollarSign className='w-4 h-4 mr-1' />
                             {formatCurrency(item.displayPrice)}
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
-                        {item.setName && (
-                          <span>Set: {item.setName}</span>
-                        )}
-                        <span className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
+                      <div className='mt-2 flex items-center text-xs text-gray-500 space-x-4'>
+                        {item.setName && <span>Set: {item.setName}</span>}
+                        <span className='flex items-center'>
+                          <Calendar className='w-3 h-3 mr-1' />
                           Added {formatDate(item.dateAdded)}
                         </span>
                       </div>
@@ -365,22 +357,18 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t">
-          <Button
-            onClick={handleClose}
-            variant="outline"
-            disabled={isSubmitting}
-          >
+        <div className='flex items-center justify-end space-x-3 pt-4 border-t'>
+          <Button onClick={handleClose} variant='outline' disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={selectedItems.size === 0 || isSubmitting}
-            className="min-w-[120px]"
+            className='min-w-[120px]'
           >
             {isSubmitting ? (
-              <div className="flex items-center">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              <div className='flex items-center'>
+                <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2' />
                 Adding...
               </div>
             ) : (

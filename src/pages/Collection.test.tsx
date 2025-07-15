@@ -24,7 +24,7 @@ describe('Collection Page - Mark as Sold Integration', () => {
         cardName: 'Charizard',
         grade: '10',
         myPrice: 1000,
-        sold: false
+        sold: false,
       },
       {
         _id: 'psa-2',
@@ -34,9 +34,9 @@ describe('Collection Page - Mark as Sold Integration', () => {
         sold: true,
         saleDetails: {
           actualSoldPrice: 550,
-          dateSold: '2024-01-15T00:00:00.000Z'
-        }
-      }
+          dateSold: '2024-01-15T00:00:00.000Z',
+        },
+      },
     ],
     rawCards: [
       {
@@ -44,8 +44,8 @@ describe('Collection Page - Mark as Sold Integration', () => {
         cardName: 'Venusaur',
         condition: 'Near Mint',
         myPrice: 200,
-        sold: false
-      }
+        sold: false,
+      },
     ],
     sealedProducts: [
       {
@@ -53,8 +53,8 @@ describe('Collection Page - Mark as Sold Integration', () => {
         name: 'Base Set Booster Box',
         category: 'Booster Box',
         myPrice: 5000,
-        sold: false
-      }
+        sold: false,
+      },
     ],
     soldItems: [
       {
@@ -65,15 +65,15 @@ describe('Collection Page - Mark as Sold Integration', () => {
         sold: true,
         saleDetails: {
           actualSoldPrice: 550,
-          dateSold: '2024-01-15T00:00:00.000Z'
-        }
-      }
+          dateSold: '2024-01-15T00:00:00.000Z',
+        },
+      },
     ],
     loading: false,
     error: null,
     markPsaCardSold: mockMarkPsaCardSold,
     markRawCardSold: mockMarkRawCardSold,
-    markSealedProductSold: mockMarkSealedProductSold
+    markSealedProductSold: mockMarkSealedProductSold,
   };
 
   beforeEach(() => {
@@ -113,7 +113,7 @@ describe('Collection Page - Mark as Sold Integration', () => {
       // Switch to PSA tab and check Blastoise (sold item)
       expect(screen.getByText('Blastoise')).toBeInTheDocument();
       expect(screen.getByText('Sold')).toBeInTheDocument();
-      
+
       // Should not have Mark as Sold button for sold items
       const charizardButton = screen.getByText('Mark as Sold');
       expect(charizardButton).toBeInTheDocument(); // Only for Charizard
@@ -243,17 +243,21 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'Facebook' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
-        .find(button => (button as HTMLButtonElement).type === 'submit');
+      const formSubmitButton = Array.from(
+        screen.getAllByRole('button', { name: 'Mark as Sold' })
+      ).find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);
 
       await waitFor(() => {
-        expect(mockMarkPsaCardSold).toHaveBeenCalledWith('psa-1', expect.objectContaining({
-          actualSoldPrice: 1100,
-          paymentMethod: 'CASH',
-          deliveryMethod: 'Local Meetup',
-          source: 'Facebook'
-        }));
+        expect(mockMarkPsaCardSold).toHaveBeenCalledWith(
+          'psa-1',
+          expect.objectContaining({
+            actualSoldPrice: 1100,
+            paymentMethod: 'CASH',
+            deliveryMethod: 'Local Meetup',
+            source: 'Facebook',
+          })
+        );
       });
     });
 
@@ -288,17 +292,21 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'DBA' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
-        .find(button => (button as HTMLButtonElement).type === 'submit');
+      const formSubmitButton = Array.from(
+        screen.getAllByRole('button', { name: 'Mark as Sold' })
+      ).find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);
 
       await waitFor(() => {
-        expect(mockMarkRawCardSold).toHaveBeenCalledWith('raw-1', expect.objectContaining({
-          actualSoldPrice: 250,
-          paymentMethod: 'Mobilepay',
-          deliveryMethod: 'Local Meetup',
-          source: 'DBA'
-        }));
+        expect(mockMarkRawCardSold).toHaveBeenCalledWith(
+          'raw-1',
+          expect.objectContaining({
+            actualSoldPrice: 250,
+            paymentMethod: 'Mobilepay',
+            deliveryMethod: 'Local Meetup',
+            source: 'DBA',
+          })
+        );
       });
     });
 
@@ -333,17 +341,21 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'Facebook' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
-        .find(button => (button as HTMLButtonElement).type === 'submit');
+      const formSubmitButton = Array.from(
+        screen.getAllByRole('button', { name: 'Mark as Sold' })
+      ).find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);
 
       await waitFor(() => {
-        expect(mockMarkSealedProductSold).toHaveBeenCalledWith('sealed-1', expect.objectContaining({
-          actualSoldPrice: 5500,
-          paymentMethod: 'BankTransfer',
-          deliveryMethod: 'Sent',
-          source: 'Facebook'
-        }));
+        expect(mockMarkSealedProductSold).toHaveBeenCalledWith(
+          'sealed-1',
+          expect.objectContaining({
+            actualSoldPrice: 5500,
+            paymentMethod: 'BankTransfer',
+            deliveryMethod: 'Sent',
+            source: 'Facebook',
+          })
+        );
       });
     });
   });
@@ -352,7 +364,7 @@ describe('Collection Page - Mark as Sold Integration', () => {
     it('should show loading spinner when loading', () => {
       mockUseCollection.mockReturnValue({
         ...mockCollectionData,
-        loading: true
+        loading: true,
       });
 
       render(<Collection />);
@@ -363,7 +375,7 @@ describe('Collection Page - Mark as Sold Integration', () => {
     it('should show error message when there is an error', () => {
       mockUseCollection.mockReturnValue({
         ...mockCollectionData,
-        error: 'Failed to load collection'
+        error: 'Failed to load collection',
       });
 
       render(<Collection />);
@@ -378,7 +390,7 @@ describe('Collection Page - Mark as Sold Integration', () => {
         psaCards: [],
         rawCards: [],
         sealedProducts: [],
-        soldItems: []
+        soldItems: [],
       });
 
       render(<Collection />);

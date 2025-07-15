@@ -95,7 +95,7 @@ describe('SalesAnalyticsService', () => {
       ];
 
       const result = processGraphData(rawData);
-      
+
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({
         date: '2024-01-15',
@@ -112,9 +112,7 @@ describe('SalesAnalyticsService', () => {
     });
 
     it('should handle malformed data', () => {
-      const rawData = [
-        { _id: { date: '2024-01-15' }, revenue: '150', profit: '50' },
-      ];
+      const rawData = [{ _id: { date: '2024-01-15' }, revenue: '150', profit: '50' }];
 
       const result = processGraphData(rawData);
       expect(result[0].revenue).toBe(150);
@@ -125,19 +123,19 @@ describe('SalesAnalyticsService', () => {
   describe('aggregateByCategory', () => {
     it('should aggregate sales by category correctly', () => {
       const result = aggregateByCategory(mockSales);
-      
+
       expect(result.psaGradedCard).toEqual({
         count: 1,
         revenue: 150,
         profit: 50,
       });
-      
+
       expect(result.rawCard).toEqual({
         count: 1,
         revenue: 80,
         profit: 30,
       });
-      
+
       expect(result.sealedProduct).toEqual({
         count: 1,
         revenue: 400,
@@ -147,7 +145,7 @@ describe('SalesAnalyticsService', () => {
 
     it('should return zero counts for empty array', () => {
       const result = aggregateByCategory([]);
-      
+
       expect(result.psaGradedCard.count).toBe(0);
       expect(result.rawCard.count).toBe(0);
       expect(result.sealedProduct.count).toBe(0);
@@ -163,7 +161,7 @@ describe('SalesAnalyticsService', () => {
 
     it('should calculate trend analysis correctly', () => {
       const result = calculateTrendAnalysis(mockGraphData);
-      
+
       expect(result.revenueGrowthRate).toBe(50); // (150-100)/100 * 100
       expect(result.profitGrowthRate).toBeCloseTo(66.67, 2);
       expect(result.trend).toBe('up');
@@ -171,7 +169,7 @@ describe('SalesAnalyticsService', () => {
 
     it('should handle insufficient data', () => {
       const result = calculateTrendAnalysis([mockGraphData[0]]);
-      
+
       expect(result.revenueGrowthRate).toBe(0);
       expect(result.profitGrowthRate).toBe(0);
       expect(result.trend).toBe('stable');
@@ -185,7 +183,7 @@ describe('SalesAnalyticsService', () => {
         '2024-01-18T00:00:00Z',
         '2024-02-15T00:00:00Z'
       );
-      
+
       expect(result).toHaveLength(2); // Excludes first sale from Jan 15
       expect(result[0].id).toBe('2');
       expect(result[1].id).toBe('3');
@@ -205,7 +203,7 @@ describe('SalesAnalyticsService', () => {
   describe('calculateKPIs', () => {
     it('should calculate KPIs correctly', () => {
       const result = calculateKPIs(mockSales);
-      
+
       expect(result.totalRevenue).toBe(630); // 150 + 80 + 400
       expect(result.totalProfit).toBe(180); // 50 + 30 + 100
       expect(result.totalItems).toBe(3);
@@ -216,7 +214,7 @@ describe('SalesAnalyticsService', () => {
 
     it('should handle empty sales data', () => {
       const result = calculateKPIs([]);
-      
+
       expect(result.totalRevenue).toBe(0);
       expect(result.totalProfit).toBe(0);
       expect(result.totalItems).toBe(0);

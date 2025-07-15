@@ -1,34 +1,34 @@
 /**
  * Main App Component
- * 
+ *
  * Root application component implementing basic routing and layout structure.
  * Following CLAUDE.md guidelines for layered architecture and beautiful design.
- * 
+ *
  * Phase 4.2: Basic routing implementation with MainLayout integration
  */
 
-import { useState, useEffect } from 'react'
-import './App.css'
-import { log } from './utils/logger'
-import apiClient from './api/apiClient'
-import { Toaster } from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import './App.css';
+import { log } from './utils/logger';
+import apiClient from './api/apiClient';
+import { Toaster } from 'react-hot-toast';
 
 // Layout and Pages
-import MainLayout from './components/layouts/MainLayout'
-import Dashboard from './pages/Dashboard'
-import Collection from './pages/Collection'
-import Search from './pages/Search'
-import SetSearch from './pages/SetSearch'
-import SealedProductSearch from './pages/SealedProductSearch'
-import Auctions from './pages/Auctions'
-import AuctionDetail from './pages/AuctionDetail'
-import SalesAnalytics from './pages/SalesAnalytics'
-import AddEditItem from './pages/AddEditItem'
-import TestPage from './pages/TestPage'
+import MainLayout from './components/layouts/MainLayout';
+import Dashboard from './pages/Dashboard';
+import Collection from './pages/Collection';
+import Search from './pages/Search';
+import SetSearch from './pages/SetSearch';
+import SealedProductSearch from './pages/SealedProductSearch';
+import Auctions from './pages/Auctions';
+import AuctionDetail from './pages/AuctionDetail';
+import SalesAnalytics from './pages/SalesAnalytics';
+import AddEditItem from './pages/AddEditItem';
+import TestPage from './pages/TestPage';
 
 function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname)
-  
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
   // Test logger functionality
   log('App loaded!');
 
@@ -42,7 +42,7 @@ function App() {
         log('Expected API error occurred and was handled');
       }
     };
-    
+
     testApiClient();
   }, []);
 
@@ -53,7 +53,7 @@ function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
-    
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
@@ -96,20 +96,19 @@ function App() {
 
   return (
     <>
-      <MainLayout>
-        {renderPage()}
-      </MainLayout>
-      <Toaster 
-        position="top-right"
+      <MainLayout>{renderPage()}</MainLayout>
+      <Toaster
+        position='top-right'
         reverseOrder={false}
         gutter={8}
-        containerClassName=""
+        containerClassName=''
         containerStyle={{}}
         toastOptions={{
           // Global default options for all toasts
           duration: 4000,
           style: {
-            fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+            fontFamily:
+              'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
             fontSize: '14px',
             fontWeight: '500',
             borderRadius: '8px',
@@ -132,7 +131,7 @@ function App() {
         }}
       />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

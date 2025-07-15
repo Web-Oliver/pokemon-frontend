@@ -62,11 +62,11 @@ export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[
     return [];
   }
 
-  return rawData.map((dataPoint) => {
+  return rawData.map(dataPoint => {
     const revenue = Number(dataPoint.sales || dataPoint.revenue) || 0;
     const profit = Number(dataPoint.profit) || 0;
     const itemsSold = Number(dataPoint.itemCount || dataPoint.count) || 0;
-    
+
     // Calculate average margin client-side: (profit / revenue) * 100
     const averageMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
@@ -100,7 +100,7 @@ export const aggregateByCategory = (sales: ISale[]) => {
     sealedProduct: { count: 0, revenue: 0, profit: 0 },
   };
 
-  sales.forEach((sale) => {
+  sales.forEach(sale => {
     // Convert PascalCase backend values to camelCase for internal use
     let categoryKey: keyof typeof categoryData;
     switch (sale.itemCategory) {
@@ -116,7 +116,7 @@ export const aggregateByCategory = (sales: ISale[]) => {
       default:
         return; // Skip unknown categories
     }
-    
+
     categoryData[categoryKey].count += 1;
     categoryData[categoryKey].revenue += sale.actualSoldPrice;
     const profit = sale.actualSoldPrice - sale.myPrice;
@@ -140,24 +140,29 @@ export const calculateTrendAnalysis = (graphData: ISalesGraphData[]) => {
     };
   }
 
-  const sortedData = [...graphData].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+  const sortedData = [...graphData].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   const firstPeriod = sortedData[0];
   const lastPeriod = sortedData[sortedData.length - 1];
 
-  const revenueGrowthRate = firstPeriod.revenue > 0 
-    ? ((lastPeriod.revenue - firstPeriod.revenue) / firstPeriod.revenue) * 100
-    : 0;
+  const revenueGrowthRate =
+    firstPeriod.revenue > 0
+      ? ((lastPeriod.revenue - firstPeriod.revenue) / firstPeriod.revenue) * 100
+      : 0;
 
-  const profitGrowthRate = firstPeriod.profit > 0
-    ? ((lastPeriod.profit - firstPeriod.profit) / firstPeriod.profit) * 100
-    : 0;
+  const profitGrowthRate =
+    firstPeriod.profit > 0
+      ? ((lastPeriod.profit - firstPeriod.profit) / firstPeriod.profit) * 100
+      : 0;
 
   let trend: 'up' | 'down' | 'stable' = 'stable';
-  if (revenueGrowthRate > 5) trend = 'up';
-  else if (revenueGrowthRate < -5) trend = 'down';
+  if (revenueGrowthRate > 5) {
+    trend = 'up';
+  } else if (revenueGrowthRate < -5) {
+    trend = 'down';
+  }
 
   return {
     revenueGrowthRate: Number(revenueGrowthRate.toFixed(2)),
@@ -182,17 +187,17 @@ export const filterSalesByDateRange = (
     return [];
   }
 
-  return sales.filter((sale) => {
+  return sales.filter(sale => {
     const saleDate = new Date(sale.dateSold);
-    
+
     if (startDate && saleDate < new Date(startDate)) {
       return false;
     }
-    
+
     if (endDate && saleDate > new Date(endDate)) {
       return false;
     }
-    
+
     return true;
   });
 };
@@ -220,12 +225,13 @@ export const calculateKPIs = (sales: ISale[]) => {
   const averageMargin = calculateAverageMargin(sales);
   const totalItems = sales.length;
   const averageSalePrice = totalRevenue / totalItems;
-  
+
   const categoryBreakdown = aggregateByCategory(sales);
-  const bestPerformingCategory = Object.entries(categoryBreakdown)
-    .reduce((best, [category, data]) => 
-      data.revenue > best.revenue ? { category, revenue: data.revenue } : best
-    , { category: '', revenue: 0 }).category;
+  const bestPerformingCategory = Object.entries(categoryBreakdown).reduce(
+    (best, [category, data]) =>
+      data.revenue > best.revenue ? { category, revenue: data.revenue } : best,
+    { category: '', revenue: 0 }
+  ).category;
 
   const profitabilityRatio = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 

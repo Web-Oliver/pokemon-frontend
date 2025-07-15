@@ -12,16 +12,18 @@ import { ICard } from '../domain/models/card';
  * @returns Card(s) with id field mapped from _id
  */
 const mapCardIds = (card: unknown): unknown => {
-  if (!card) return card;
-  
+  if (!card) {
+    return card;
+  }
+
   if (Array.isArray(card)) {
     return card.map(mapCardIds);
   }
-  
+
   if (card._id && !card.id) {
     card.id = card._id;
   }
-  
+
   return card;
 };
 
@@ -62,7 +64,7 @@ export const searchCards = async (
   params?: { limit?: number; setName?: string }
 ): Promise<ICard[]> => {
   const response = await apiClient.get('/cards/search', {
-    params: { q: query, ...params }
+    params: { q: query, ...params },
   });
   const data = response.data.data || response.data;
   return mapCardIds(data);
@@ -74,12 +76,9 @@ export const searchCards = async (
  * @param limit - Maximum number of suggestions (default: 10)
  * @returns Promise<string[]> - Array of suggestion strings
  */
-export const getCardSuggestions = async (
-  query: string,
-  limit: number = 10
-): Promise<string[]> => {
+export const getCardSuggestions = async (query: string, limit: number = 10): Promise<string[]> => {
   const response = await apiClient.get('/cards/suggestions', {
-    params: { q: query, limit }
+    params: { q: query, limit },
   });
   return response.data.data || response.data;
 };
@@ -91,11 +90,11 @@ export const getCardSuggestions = async (
  */
 export const getBestMatchCard = async (query: string): Promise<ICard | null> => {
   const response = await apiClient.get('/cards/search-best-match', {
-    params: { q: query }
+    params: { q: query },
   });
-  
+
   const data = response.data.data || response.data;
-  
+
   // If backend returns an array, return the first item or null if empty
   let card = null;
   if (Array.isArray(data)) {
@@ -103,7 +102,7 @@ export const getBestMatchCard = async (query: string): Promise<ICard | null> => 
   } else {
     card = data || null;
   }
-  
+
   return mapCardIds(card);
 };
 

@@ -20,7 +20,7 @@ apiClient.interceptors.response.use(
     // Return successful responses as-is
     return response;
   },
-  (error) => {
+  error => {
     // Handle all failed requests globally
     handleApiError(error);
     return Promise.reject(error);

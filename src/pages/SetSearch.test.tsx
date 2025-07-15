@@ -21,7 +21,7 @@ describe('SetSearch Page Integration Tests', () => {
         year: 1998,
         setUrl: 'https://psacard.com/set/base-set',
         totalCardsInSet: 102,
-        totalPsaPopulation: 50000
+        totalPsaPopulation: 50000,
       },
       {
         _id: 'set-2',
@@ -29,7 +29,7 @@ describe('SetSearch Page Integration Tests', () => {
         year: 1999,
         setUrl: 'https://psacard.com/set/jungle',
         totalCardsInSet: 64,
-        totalPsaPopulation: 30000
+        totalPsaPopulation: 30000,
       },
       {
         _id: 'set-3',
@@ -37,14 +37,14 @@ describe('SetSearch Page Integration Tests', () => {
         year: 1999,
         setUrl: 'https://psacard.com/set/fossil',
         totalCardsInSet: 62,
-        totalPsaPopulation: 25000
-      }
+        totalPsaPopulation: 25000,
+      },
     ],
     total: 3,
     currentPage: 1,
     totalPages: 1,
     hasNextPage: false,
-    hasPrevPage: false
+    hasPrevPage: false,
   };
 
   beforeEach(() => {
@@ -105,7 +105,7 @@ describe('SetSearch Page Integration Tests', () => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 1,
           limit: 12,
-          search: 'Base'
+          search: 'Base',
         });
       });
     });
@@ -123,7 +123,7 @@ describe('SetSearch Page Integration Tests', () => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 1,
           limit: 12,
-          year: 1998
+          year: 1998,
         });
       });
     });
@@ -145,7 +145,7 @@ describe('SetSearch Page Integration Tests', () => {
           page: 1,
           limit: 12,
           search: 'Base',
-          year: 1998
+          year: 1998,
         });
       });
     });
@@ -161,7 +161,7 @@ describe('SetSearch Page Integration Tests', () => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 1,
           limit: 12,
-          search: 'Jungle'
+          search: 'Jungle',
         });
       });
     });
@@ -177,7 +177,7 @@ describe('SetSearch Page Integration Tests', () => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 1,
           limit: 12,
-          year: 1999
+          year: 1999,
         });
       });
     });
@@ -206,7 +206,7 @@ describe('SetSearch Page Integration Tests', () => {
       await waitFor(() => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 1,
-          limit: 12
+          limit: 12,
         });
       });
     });
@@ -261,7 +261,7 @@ describe('SetSearch Page Integration Tests', () => {
         total: 25,
         totalPages: 3,
         hasNextPage: true,
-        hasPrevPage: false
+        hasPrevPage: false,
       };
 
       mockSetsApi.getPaginatedSets.mockResolvedValue(multiPageResponse);
@@ -282,7 +282,7 @@ describe('SetSearch Page Integration Tests', () => {
         totalPages: 3,
         currentPage: 1,
         hasNextPage: true,
-        hasPrevPage: false
+        hasPrevPage: false,
       };
 
       mockSetsApi.getPaginatedSets.mockResolvedValue(multiPageResponse);
@@ -300,7 +300,7 @@ describe('SetSearch Page Integration Tests', () => {
       await waitFor(() => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 2,
-          limit: 12
+          limit: 12,
         });
       });
     });
@@ -354,7 +354,7 @@ describe('SetSearch Page Integration Tests', () => {
         currentPage: 1,
         totalPages: 0,
         hasNextPage: false,
-        hasPrevPage: false
+        hasPrevPage: false,
       };
 
       mockSetsApi.getPaginatedSets.mockResolvedValue(emptyResponse);
@@ -363,7 +363,9 @@ describe('SetSearch Page Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('No Sets Found')).toBeInTheDocument();
-        expect(screen.getByText('Try adjusting your search criteria to find more sets.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Try adjusting your search criteria to find more sets.')
+        ).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Clear Filters' })).toBeInTheDocument();
       });
     });
@@ -375,7 +377,7 @@ describe('SetSearch Page Integration Tests', () => {
 
       expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
         page: 1,
-        limit: 12
+        limit: 12,
       });
     });
 
@@ -384,7 +386,7 @@ describe('SetSearch Page Integration Tests', () => {
         ...mockSetsResponse,
         total: 25,
         totalPages: 3,
-        hasNextPage: true
+        hasNextPage: true,
       };
 
       mockSetsApi.getPaginatedSets.mockResolvedValue(multiPageResponse);
@@ -410,7 +412,7 @@ describe('SetSearch Page Integration Tests', () => {
         expect(mockSetsApi.getPaginatedSets).toHaveBeenCalledWith({
           page: 2,
           limit: 12,
-          search: 'Base'
+          search: 'Base',
         });
       });
     });

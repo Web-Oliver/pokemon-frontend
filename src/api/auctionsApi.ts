@@ -52,10 +52,7 @@ export const createAuction = async (data: Partial<IAuction>): Promise<IAuction> 
  * @param data - Updated auction data
  * @returns Promise<IAuction> - Updated auction
  */
-export const updateAuction = async (
-  id: string,
-  data: Partial<IAuction>
-): Promise<IAuction> => {
+export const updateAuction = async (id: string, data: Partial<IAuction>): Promise<IAuction> => {
   const response = await apiClient.put(`/auctions/${id}`, data);
   return response.data.data || response.data;
 };
@@ -89,12 +86,9 @@ export const addItemToAuction = async (
  * @param itemId - Item ID to remove
  * @returns Promise<IAuction> - Updated auction
  */
-export const removeItemFromAuction = async (
-  id: string,
-  itemId: string
-): Promise<IAuction> => {
+export const removeItemFromAuction = async (id: string, itemId: string): Promise<IAuction> => {
   const response = await apiClient.delete(`/auctions/${id}/items`, {
-    data: { itemId }
+    data: { itemId },
   });
   return response.data.data || response.data;
 };

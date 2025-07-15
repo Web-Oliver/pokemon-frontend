@@ -48,7 +48,7 @@ export const searchCardMarketRefProducts = async (
   params?: { limit?: number; category?: string }
 ): Promise<ICardMarketReferenceProduct[]> => {
   const response = await apiClient.get('/cardmarket-ref-products/search', {
-    params: { q: query, ...params }
+    params: { q: query, ...params },
   });
   return response.data.data || response.data;
 };

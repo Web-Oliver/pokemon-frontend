@@ -6,7 +6,7 @@ export interface SearchResult {
   query: string;
   setContext?: string;
   categoryContext?: string;
-  results: any[];
+  results: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
   count: number;
 }
 
@@ -63,28 +63,28 @@ export const searchApi = {
     limit?: number;
   }): Promise<SearchResult> {
     const { type, q, setContext, categoryContext, limit = 10 } = params;
-    
+
     console.log(`[SEARCH API DEBUG] search() called with params:`, params);
-    
+
     const queryParams = new URLSearchParams({
       type,
       q,
       limit: limit.toString(),
     });
-    
+
     if (setContext) {
       queryParams.append('setContext', setContext);
       console.log(`[SEARCH API DEBUG] Added setContext: ${setContext}`);
     }
-    
+
     if (categoryContext) {
       queryParams.append('categoryContext', categoryContext);
       console.log(`[SEARCH API DEBUG] Added categoryContext: ${categoryContext}`);
     }
-    
+
     const url = `/search?${queryParams.toString()}`;
     console.log(`[SEARCH API DEBUG] Making request to: ${url}`);
-    
+
     try {
       const response = await apiClient.get(url);
       console.log(`[SEARCH API DEBUG] API response:`, response.data);
@@ -112,8 +112,18 @@ export const searchApi = {
   /**
    * Search for cards (optionally filtered by set)
    */
-  async searchCards(query: string, setContext?: string, categoryContext?: string, limit: number = 10): Promise<CardResult[]> {
-    console.log(`[SEARCH API DEBUG] searchCards() called:`, { query, setContext, categoryContext, limit });
+  async searchCards(
+    query: string,
+    setContext?: string,
+    categoryContext?: string,
+    limit: number = 10
+  ): Promise<CardResult[]> {
+    console.log(`[SEARCH API DEBUG] searchCards() called:`, {
+      query,
+      setContext,
+      categoryContext,
+      limit,
+    });
     const result = await this.search({
       type: 'cards',
       q: query,
@@ -128,8 +138,18 @@ export const searchApi = {
   /**
    * Search for products (optionally filtered by set and/or category)
    */
-  async searchProducts(query: string, setContext?: string, categoryContext?: string, limit: number = 10): Promise<ProductResult[]> {
-    console.log(`[SEARCH API DEBUG] searchProducts() called:`, { query, setContext, categoryContext, limit });
+  async searchProducts(
+    query: string,
+    setContext?: string,
+    categoryContext?: string,
+    limit: number = 10
+  ): Promise<ProductResult[]> {
+    console.log(`[SEARCH API DEBUG] searchProducts() called:`, {
+      query,
+      setContext,
+      categoryContext,
+      limit,
+    });
     const result = await this.search({
       type: 'products',
       q: query,
