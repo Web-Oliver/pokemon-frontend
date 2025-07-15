@@ -532,21 +532,21 @@ Verification:
 Verification:
 [x] Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 [x] Write integration tests for Collection page to verify mark as sold functionality.
-Phase 8: Search & Discovery
+Phase 8: Search & Discovery 🔄
 
 8.1. Implement Global Search Bar & Results Page
 
- Action: Implement the global search bar and its corresponding results page.
- Sub-action: Open src/components/layouts/MainLayout.tsx.
- Add a global search input field.
- Integrate useSearch hook's searchTerm and handleSearch.
- Display useSearch.suggestions in an autocomplete dropdown.
- Sub-action: Create src/pages/Search.tsx.
- Parse the search query from the URL (e.g., ?q=charizard).
- Call useSearch.searchCards with the query and any other parameters.
- Display useSearch.searchResults in a paginated list, including score, psaPopularity, and exactMatch.
- Add basic UI for refinement filters and sorting options.
- Sub-action: Update src/App.tsx to include a route for /search.
+[x] Action: Implement the global search bar and its corresponding results page.
+[x] Sub-action: Open src/components/layouts/MainLayout.tsx.
+[x] Add a global search input field.
+[x] Integrate useSearch hook's searchTerm and handleSearch.
+[x] Display useSearch.suggestions in an autocomplete dropdown.
+[x] Sub-action: Create src/pages/Search.tsx.
+[x] Parse the search query from the URL (e.g., ?q=charizard).
+[x] Call useSearch.searchCards with the query and any other parameters.
+[x] Display useSearch.searchResults in a paginated list, including score, psaPopularity, and exactMatch.
+[x] Add basic UI for refinement filters and sorting options.
+[x] Sub-action: Update src/App.tsx to include a route for /search.
 Verification:
 Ensure the backend (SAFESPACE/pokemon-collection-backend) is running.
 Write integration tests for Search page to verify global search functionality.

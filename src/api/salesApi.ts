@@ -3,7 +3,7 @@
  * Handles sales data, analytics, and financial tracking operations
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
 
 export interface SalesDataParams {

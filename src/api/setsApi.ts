@@ -3,7 +3,7 @@
  * Handles all set-related API operations matching the backend endpoints
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { ISet } from '../domain/models/card';
 
 export interface PaginatedSetsParams {

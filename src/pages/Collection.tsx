@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import useCollection from '../hooks/useCollection';
+import { useCollection } from '../hooks/useCollection';
 
 type TabType = 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
 

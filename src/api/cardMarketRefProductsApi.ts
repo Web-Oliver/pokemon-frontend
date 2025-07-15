@@ -3,7 +3,7 @@
  * Handles CardMarket reference data for sealed products
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 
 export interface CardMarketRefProductsParams {

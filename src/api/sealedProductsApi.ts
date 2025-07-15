@@ -3,7 +3,7 @@
  * Handles sealed product reference data operations
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 
 export interface SealedProductsParams {

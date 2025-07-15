@@ -3,7 +3,7 @@
  * Handles auction management operations
  */
 
-import { apiClient } from './apiClient';
+import apiClient from './apiClient';
 import { IAuction } from '../domain/models/auction';
 
 export interface AuctionsParams {

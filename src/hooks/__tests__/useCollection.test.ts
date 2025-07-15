@@ -29,7 +29,7 @@ const createMockSaleDetails = (): ISaleDetails => ({
 });
 
 const createMockPsaCard = (): Partial<IPsaGradedCard> => ({
-  cardName: 'Bulbasaur-Bulbasaur Quarter Deck', // Real card from backend
+  cardName: 'Charmander', // Real card from backend
   setName: 'Pokemon Battle Academy', // Real set from backend
   grade: '10',
   myPrice: 100,
@@ -39,7 +39,7 @@ const createMockPsaCard = (): Partial<IPsaGradedCard> => ({
 });
 
 const createMockRawCard = (): Partial<IRawCard> => ({
-  cardName: 'Bulbasaur-Bulbasaur Quarter Deck', // Real card from backend
+  cardName: 'Charmander', // Real card from backend
   setName: 'Pokemon Battle Academy', // Real set from backend
   condition: 'Near Mint',
   myPrice: 75,
@@ -49,13 +49,13 @@ const createMockRawCard = (): Partial<IRawCard> => ({
 });
 
 const createMockSealedProduct = (): Partial<ISealedProduct> => ({
-  productId: '67890abcdef123456789012', // Mock ObjectId
-  category: 'Booster Box',
-  setName: 'Base Set',
-  name: 'Base Set Booster Box',
+  productId: '686da80432db32c7cc73d73d', // Real product ID from backend
+  category: 'Blisters', // Real category from backend  
+  setName: 'Destined Rivals',
+  name: 'Destined Rivals: Kangaskhan 3-Pack Blister',
   availability: 10,
-  cardMarketPrice: 500,
-  myPrice: 450,
+  cardMarketPrice: 142,
+  myPrice: 120,
   images: ['test-sealed-1.jpg'],
   dateAdded: new Date().toISOString(),
   sold: false,

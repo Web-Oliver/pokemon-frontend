@@ -21,6 +21,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { useSearch } from '../../hooks/useSearch';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -35,6 +36,16 @@ interface NavigationItem {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const { 
+    cardProductName, 
+    suggestions, 
+    loading: searchLoading,
+    updateCardProductName,
+    handleSuggestionSelect,
+    clearSearch,
+    setActiveField,
+    activeField 
+  } = useSearch();
 
   // Navigation items for the main menu
   const navigation: NavigationItem[] = [
@@ -53,6 +64,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     setSidebarOpen(false);
     // Trigger a custom event to notify App.tsx of navigation changes
     window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (cardProductName.trim()) {
+      // Navigate to search page with query parameter
+      const searchUrl = `/search?q=${encodeURIComponent(cardProductName.trim())}`;
+      handleNavigation(searchUrl);
+    }
+  };
+
+  const handleSearchSelect = (suggestion: string) => {
+    handleSuggestionSelect(suggestion, 'cardProduct');
+    // Navigate to search page with the selected term
+    const searchUrl = `/search?q=${encodeURIComponent(suggestion)}`;
+    handleNavigation(searchUrl);
   };
 
   return (
@@ -149,12 +176,45 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </h1>
             </div>
 
-            {/* Right side - could add user menu, notifications, etc. */}
+            {/* Global Search Bar */}
             <div className="flex items-center space-x-4">
-              <div className="hidden sm:block">
-                <div className="text-sm text-gray-500">
-                  Welcome back!
-                </div>
+              <div className="relative">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search cards, sets..."
+                      value={cardProductName}
+                      onChange={(e) => updateCardProductName(e.target.value)}
+                      onFocus={() => setActiveField('cardProduct')}
+                      className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200"
+                    />
+                    {searchLoading && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      </div>
+                    )}
+                  </div>
+                </form>
+
+                {/* Search Suggestions Dropdown */}
+                {activeField === 'cardProduct' && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    {suggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSearchSelect(suggestion)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex items-center">
+                          <Search className="w-4 h-4 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-900">{suggestion}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
