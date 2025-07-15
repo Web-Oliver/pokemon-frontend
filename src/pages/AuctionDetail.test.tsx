@@ -355,7 +355,7 @@ describe('AuctionDetail Page Integration Tests', () => {
 
     it('should confirm before deleting auction', () => {
       mockUseAuction.currentAuction = mockAuction;
-      (global.confirm as any).mockReturnValue(false);
+      (global.confirm as unknown as { mockReturnValue: (value: boolean) => void }).mockReturnValue(false);
       
       render(<AuctionDetail />);
       
@@ -370,7 +370,7 @@ describe('AuctionDetail Page Integration Tests', () => {
 
     it('should delete auction when confirmed', async () => {
       mockUseAuction.currentAuction = mockAuction;
-      (global.confirm as any).mockReturnValue(true);
+      (global.confirm as unknown as { mockReturnValue: (value: boolean) => void }).mockReturnValue(true);
       mockUseAuction.deleteAuction.mockResolvedValue(undefined);
       
       render(<AuctionDetail />);

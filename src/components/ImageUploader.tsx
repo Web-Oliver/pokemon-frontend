@@ -12,7 +12,7 @@
  */
 
 import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { Upload, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Upload, X, AlertCircle } from 'lucide-react';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[]) => void;
@@ -194,7 +194,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         }
       });
     };
-  }, []);
+  }, [previews]);
 
   return (
     <div className="w-full">

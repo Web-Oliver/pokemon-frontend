@@ -64,8 +64,8 @@ describe('SalesAnalyticsService', () => {
     });
 
     it('should handle null/undefined input', () => {
-      expect(calculateTotalProfit(null as any)).toBe(0);
-      expect(calculateTotalProfit(undefined as any)).toBe(0);
+      expect(calculateTotalProfit(null as unknown as ISale[])).toBe(0);
+      expect(calculateTotalProfit(undefined as unknown as ISale[])).toBe(0);
     });
   });
 
@@ -81,8 +81,8 @@ describe('SalesAnalyticsService', () => {
     });
 
     it('should handle null/undefined input', () => {
-      expect(calculateAverageMargin(null as any)).toBe(0);
-      expect(calculateAverageMargin(undefined as any)).toBe(0);
+      expect(calculateAverageMargin(null as unknown as ISale[])).toBe(0);
+      expect(calculateAverageMargin(undefined as unknown as ISale[])).toBe(0);
     });
   });
 

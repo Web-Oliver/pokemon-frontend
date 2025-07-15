@@ -243,7 +243,6 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'Facebook' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const submitButton = screen.getByRole('button', { name: 'Mark as Sold' });
       const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
         .find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);
@@ -289,7 +288,6 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'DBA' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const submitButton = screen.getByRole('button', { name: 'Mark as Sold' });
       const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
         .find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);
@@ -335,7 +333,6 @@ describe('Collection Page - Mark as Sold Integration', () => {
       fireEvent.change(sourceSelect, { target: { value: 'Facebook' } });
 
       // Get the submit button specifically (should be of type="submit")
-      const submitButton = screen.getByRole('button', { name: 'Mark as Sold' });
       const formSubmitButton = Array.from(screen.getAllByRole('button', { name: 'Mark as Sold' }))
         .find(button => (button as HTMLButtonElement).type === 'submit');
       fireEvent.click(formSubmitButton!);

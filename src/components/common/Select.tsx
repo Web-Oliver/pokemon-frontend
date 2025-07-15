@@ -4,7 +4,7 @@
  * Following Tailwind CSS styling principles and CLAUDE.md guidelines
  */
 
-import React, { SelectHTMLAttributes, forwardRef } from 'react';
+import { SelectHTMLAttributes, forwardRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export interface SelectOption {

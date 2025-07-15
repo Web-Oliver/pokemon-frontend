@@ -21,7 +21,6 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     loading,
     error,
     fetchAuctionById,
-    updateAuction,
     deleteAuction,
     clearError,
     clearCurrentAuction
@@ -145,7 +144,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     return (
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
-          <LoadingSpinner message="Loading auction details..." />
+          <LoadingSpinner text="Loading auction details..." />
         </div>
       </div>
     );

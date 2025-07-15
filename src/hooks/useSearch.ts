@@ -60,7 +60,7 @@ export const useSearch = (): UseSearchReturn => {
     activeField: null,
   });
 
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<number>();
   const suggestionsCacheRef = useRef<Map<string, string[]>>(new Map());
 
   /**
@@ -170,10 +170,6 @@ export const useSearch = (): UseSearchReturn => {
           .slice(0, 10);
       } else if (fieldType === 'cardProduct') {
         // Get card suggestions with hierarchical filtering
-        const searchParams = state.selectedSet 
-          ? { setName: state.selectedSet }
-          : undefined;
-        
         suggestions = await cardsApi.getCardSuggestions(query, 10);
       }
 
@@ -187,7 +183,29 @@ export const useSearch = (): UseSearchReturn => {
       log(`Failed to get suggestions: ${error}`);
       setState(prev => ({ ...prev, suggestions: [] }));
     }
-  }, [state.selectedSet]);
+  }, []);
+
+  /**
+   * Get best match and auto-fill set information
+   */
+  const getBestMatchAndFillSet = useCallback(async (query: string) => {
+    try {
+      const bestMatch = await cardsApi.getBestMatchCard(query);
+      if (bestMatch && bestMatch.setId) {
+        // Fetch set information and auto-fill
+        const set = await setsApi.getSetById(bestMatch.setId);
+        setState(prev => ({
+          ...prev,
+          setName: set.setName,
+          selectedSet: set.setName,
+        }));
+        
+        log(`Auto-filled set: ${set.setName} based on card selection`);
+      }
+    } catch (error) {
+      log(`Failed to auto-fill set information: ${error}`);
+    }
+  }, []);
 
   /**
    * Handle suggestion selection with hierarchical logic
@@ -220,29 +238,7 @@ export const useSearch = (): UseSearchReturn => {
       
       log(`Card/product selected: ${suggestion}`);
     }
-  }, []);
-
-  /**
-   * Get best match and auto-fill set information
-   */
-  const getBestMatchAndFillSet = useCallback(async (query: string) => {
-    try {
-      const bestMatch = await cardsApi.getBestMatchCard(query);
-      if (bestMatch && bestMatch.setId) {
-        // Fetch set information and auto-fill
-        const set = await setsApi.getSetById(bestMatch.setId);
-        setState(prev => ({
-          ...prev,
-          setName: set.setName,
-          selectedSet: set.setName,
-        }));
-        
-        log(`Auto-filled set: ${set.setName} based on card selection`);
-      }
-    } catch (error) {
-      log(`Failed to auto-fill set information: ${error}`);
-    }
-  }, []);
+  }, [getBestMatchAndFillSet]);
 
   /**
    * Get best match for auto-fill functionality
@@ -273,7 +269,7 @@ export const useSearch = (): UseSearchReturn => {
       clearTimeout(debounceRef.current);
     }
 
-    debounceRef.current = setTimeout(() => {
+    debounceRef.current = window.setTimeout(() => {
       getSuggestions(value, 'set');
     }, 300);
   }, [getSuggestions]);
@@ -295,7 +291,7 @@ export const useSearch = (): UseSearchReturn => {
       clearTimeout(debounceRef.current);
     }
 
-    debounceRef.current = setTimeout(() => {
+    debounceRef.current = window.setTimeout(() => {
       getSuggestions(value, 'cardProduct');
     }, 300);
   }, [getSuggestions]);

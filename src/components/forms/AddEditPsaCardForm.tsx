@@ -71,8 +71,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     updateCardProductName, 
     handleSuggestionSelect,
     setActiveField,
-    getBestMatch,
-    clearSelectedSet
+    getBestMatch
   } = useSearch();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);

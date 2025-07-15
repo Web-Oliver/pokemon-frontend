@@ -8,9 +8,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Search as SearchIcon, Filter, Star, Calendar, Hash } from 'lucide-react';
+import { Search as SearchIcon, Filter, Star, Hash } from 'lucide-react';
 import { useSearch } from '../hooks/useSearch';
-import { ICard } from '../domain/models/card';
+import { ICardDocument } from '../domain/models/card';
+
+interface ISearchCard extends ICardDocument {
+  score?: number;
+}
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const Search: React.FC = () => {
@@ -41,7 +45,7 @@ const Search: React.FC = () => {
       updateCardProductName(query);
       handleSearch(query);
     }
-  }, []);
+  }, [cardProductName, handleSearch, updateCardProductName]);
 
   // Handle search form submission
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -196,9 +200,10 @@ const Search: React.FC = () => {
               </div>
             ) : sortedResults.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {sortedResults.map((card) => (
-                  <CardSearchResult key={card._id} card={card} />
-                ))}
+                {sortedResults.map((card) => {
+                  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                  return <CardSearchResult key={card.id || (card as any)._id} card={card as ISearchCard} />;
+                })}
               </div>
             ) : cardProductName ? (
               <div className="text-center py-12">
@@ -227,7 +232,7 @@ const Search: React.FC = () => {
 
 // Card Search Result Component
 interface CardSearchResultProps {
-  card: ICard;
+  card: ISearchCard;
 }
 
 const CardSearchResult: React.FC<CardSearchResultProps> = ({ card }) => {
@@ -266,7 +271,7 @@ const CardSearchResult: React.FC<CardSearchResultProps> = ({ card }) => {
                 .slice(0, 3)
                 .map(([grade, count]) => (
                   <span key={grade} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {grade.replace('psa_', 'PSA ')}: {count}
+                    {grade.replace('psa_', 'PSA ')}: {count || 0}
                   </span>
                 ))}
             </div>
@@ -274,9 +279,9 @@ const CardSearchResult: React.FC<CardSearchResultProps> = ({ card }) => {
         )}
 
         {/* Search Score (if available) */}
-        {(card as any).score && (
+        {(card as ISearchCard).score && (
           <div className="text-xs text-gray-500">
-            Relevance: {((card as any).score * 100 / 25).toFixed(0)}%
+            Relevance: {(((card as ISearchCard).score || 0) * 100 / 25).toFixed(0)}%
           </div>
         )}
       </div>

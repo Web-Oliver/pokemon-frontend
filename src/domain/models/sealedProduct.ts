@@ -5,6 +5,11 @@
 
 import { IPriceHistoryEntry, ISaleDetails } from './common';
 
+// Database document types (with _id from MongoDB)
+export interface ISealedProductDocument extends ISealedProduct {
+  _id: string;
+}
+
 // Category enum matching backend schema
 export enum SealedProductCategory {
   BLISTERS = 'Blisters',

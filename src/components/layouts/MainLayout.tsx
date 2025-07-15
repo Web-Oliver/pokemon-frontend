@@ -30,7 +30,7 @@ interface MainLayoutProps {
 interface NavigationItem {
   name: string;
   href: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   current?: boolean;
 }
 
@@ -42,7 +42,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     loading: searchLoading,
     updateCardProductName,
     handleSuggestionSelect,
-    clearSearch,
     setActiveField,
     activeField 
   } = useSearch();

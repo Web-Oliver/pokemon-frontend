@@ -13,8 +13,6 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, Star, Package, Archive } from 'lucide-react';
-import Button from '../components/common/Button';
-import ImageUploader from '../components/ImageUploader';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
@@ -23,29 +21,17 @@ interface ItemTypeOption {
   id: ItemType;
   name: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
 
 const AddEditItem: React.FC = () => {
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   // Handle navigation back to collection
   const handleBackToCollection = () => {
     window.history.pushState({}, '', '/collection');
     window.dispatchEvent(new PopStateEvent('popstate'));
-  };
-
-  // Handle cancel - same as back to collection for now
-  const handleCancel = () => {
-    handleBackToCollection();
-  };
-
-  // Handle image changes
-  const handleImagesChange = (files: File[]) => {
-    setSelectedImages(files);
-    console.log('Selected images:', files);
   };
 
   // Item type options for selection

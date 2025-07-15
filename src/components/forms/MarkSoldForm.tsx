@@ -33,8 +33,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     control,
     handleSubmit,
     watch,
-    formState: { errors },
-    setValue
+    formState: { errors }
   } = useForm<FormData>({
     defaultValues: {
       paymentMethod: initialData?.paymentMethod || undefined,

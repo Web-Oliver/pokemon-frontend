@@ -41,7 +41,8 @@ const Auctions: React.FC = () => {
   });
 
   // Handle status filter change
-  const handleStatusFilterChange = (value: string) => {
+  const handleStatusFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
     setStatusFilter(value);
     if (value) {
       fetchAuctions({ status: value });
@@ -251,7 +252,7 @@ const Auctions: React.FC = () => {
         {/* Loading State */}
         {loading && (
           <div className="bg-white rounded-lg shadow p-6">
-            <LoadingSpinner message="Loading auctions..." />
+            <LoadingSpinner text="Loading auctions..." />
           </div>
         )}
 

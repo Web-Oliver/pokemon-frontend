@@ -5,6 +5,7 @@
 
 import apiClient from './apiClient';
 import { IAuction } from '../domain/models/auction';
+import { ISaleDetails } from '../domain/models/common';
 
 export interface AuctionsParams {
   status?: string;
@@ -106,7 +107,7 @@ export const removeItemFromAuction = async (
  */
 export const markAuctionItemSold = async (
   id: string,
-  saleData: any
+  saleData: ISaleDetails & { itemId: string }
 ): Promise<IAuction> => {
   const response = await apiClient.patch(`/auctions/${id}/items/sold`, saleData);
   return response.data.data || response.data;

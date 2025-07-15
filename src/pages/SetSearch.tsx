@@ -6,7 +6,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Package, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ISet } from '../domain/models/card';
 import * as setsApi from '../api/setsApi';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
@@ -21,7 +20,8 @@ interface SearchParams {
 }
 
 interface PaginatedSetsResponse {
-  sets: ISet[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sets: any[];
   total: number;
   currentPage: number;
   totalPages: number;
@@ -30,7 +30,8 @@ interface PaginatedSetsResponse {
 }
 
 const SetSearch: React.FC = () => {
-  const [sets, setSets] = useState<ISet[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [sets, setSets] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');

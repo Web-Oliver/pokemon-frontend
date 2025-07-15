@@ -327,12 +327,13 @@ describe('useCollection Integration Tests', () => {
         expect(result.current.loading).toBe(false);
       }, { timeout: 10000 });
 
-      const initialState = {
+      // Store initial state for later comparison if needed
+      console.log('Initial collection state:', {
         psaCount: result.current.psaCards.length,
         rawCount: result.current.rawCards.length,
         sealedCount: result.current.sealedProducts.length,
         soldCount: result.current.soldItems.length,
-      };
+      });
 
       // Perform refresh operation
       await act(async () => {

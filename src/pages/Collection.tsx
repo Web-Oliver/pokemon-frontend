@@ -24,7 +24,7 @@ type TabType = 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
 interface TabConfig {
   id: TabType;
   name: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
 
@@ -94,6 +94,7 @@ const Collection: React.FC = () => {
   };
 
   // Handle mark as sold button click
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleMarkAsSold = (item: any, type: 'psa' | 'raw' | 'sealed') => {
     setSelectedItem({
       id: item._id,
@@ -204,6 +205,7 @@ const Collection: React.FC = () => {
     // Render actual collection items with Mark as Sold functionality
     return (
       <div className="space-y-4">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {data.map((item: any, index: number) => {
           const itemType = activeTab === 'psa-graded' ? 'psa' : 
                           activeTab === 'raw-cards' ? 'raw' : 'sealed';

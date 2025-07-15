@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as auctionsApi from '../api/auctionsApi';
 import { IAuction } from '../domain/models/auction';
+import { ISaleDetails } from '../domain/models/common';
 import { handleApiError } from '../utils/errorHandler';
 
 export interface UseAuctionState {
@@ -23,7 +24,7 @@ export interface UseAuctionActions {
   deleteAuction: (id: string) => Promise<void>;
   addItemToAuction: (id: string, itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
   removeItemFromAuction: (id: string, itemId: string) => Promise<void>;
-  markAuctionItemSold: (id: string, saleData: unknown) => Promise<void>;
+  markAuctionItemSold: (id: string, saleData: ISaleDetails & { itemId: string }) => Promise<void>;
   clearCurrentAuction: () => void;
   clearError: () => void;
 }
@@ -204,7 +205,7 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Mark auction item as sold
    */
-  const markAuctionItemSold = useCallback(async (id: string, saleData: unknown) => {
+  const markAuctionItemSold = useCallback(async (id: string, saleData: ISaleDetails & { itemId: string }) => {
     try {
       setLoading(true);
       setError(null);

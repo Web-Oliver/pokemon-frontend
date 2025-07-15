@@ -202,7 +202,7 @@ describe('PriceHistoryDisplay Component', () => {
       render(<PriceHistoryDisplay {...defaultProps} />);
       
       const input = screen.getByPlaceholderText('Enter new price');
-      const button = screen.getByRole('button', { name: 'Update Price' });
+      screen.getByRole('button', { name: 'Update Price' });
       
       // Force enable button by setting valid value first, then changing to invalid
       fireEvent.change(input, { target: { value: '125.50' } });

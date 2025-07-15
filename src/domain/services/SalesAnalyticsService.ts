@@ -17,7 +17,8 @@ export const calculateTotalProfit = (sales: ISale[]): number => {
   }
 
   return sales.reduce((total, sale) => {
-    return total + sale.calculatedProfit;
+    const profit = sale.actualSoldPrice - sale.myPrice;
+    return total + profit;
   }, 0);
 };
 
@@ -32,7 +33,9 @@ export const calculateAverageMargin = (sales: ISale[]): number => {
   }
 
   const totalMargin = sales.reduce((total, sale) => {
-    return total + sale.profitMargin;
+    const profit = sale.actualSoldPrice - sale.myPrice;
+    const margin = sale.myPrice > 0 ? (profit / sale.myPrice) * 100 : 0;
+    return total + margin;
   }, 0);
 
   return totalMargin / sales.length;
@@ -43,7 +46,14 @@ export const calculateAverageMargin = (sales: ISale[]): number => {
  * @param rawData - Raw time-series data from backend
  * @returns Processed graph data ready for charts
  */
-export const processGraphData = (rawData: any[]): ISalesGraphData[] => {
+interface RawGraphDataPoint {
+  date?: string;
+  _id?: { date?: string };
+  revenue?: number;
+  profit?: number;
+}
+
+export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[] => {
   if (!rawData || rawData.length === 0) {
     return [];
   }
@@ -52,8 +62,6 @@ export const processGraphData = (rawData: any[]): ISalesGraphData[] => {
     date: dataPoint.date || dataPoint._id?.date || '',
     revenue: Number(dataPoint.revenue) || 0,
     profit: Number(dataPoint.profit) || 0,
-    itemsSold: Number(dataPoint.itemsSold) || dataPoint.count || 0,
-    averageMargin: Number(dataPoint.averageMargin) || 0,
   }));
 };
 
@@ -78,11 +86,12 @@ export const aggregateByCategory = (sales: ISale[]) => {
   };
 
   sales.forEach((sale) => {
-    const category = sale.itemCategory;
+    const category = sale.itemCategory as keyof typeof categoryData;
     if (categoryData[category]) {
       categoryData[category].count += 1;
       categoryData[category].revenue += sale.actualSoldPrice;
-      categoryData[category].profit += sale.calculatedProfit;
+      const profit = sale.actualSoldPrice - sale.myPrice;
+      categoryData[category].profit += profit;
     }
   });
 

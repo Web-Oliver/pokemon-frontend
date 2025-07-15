@@ -30,7 +30,7 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
  */
 export const uploadMultipleImages = async (images: File[]): Promise<string[]> => {
   const formData = new FormData();
-  images.forEach((image, index) => {
+  images.forEach((image) => {
     formData.append(`images`, image);
   });
 

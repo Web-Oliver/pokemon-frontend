@@ -5,6 +5,19 @@
 
 import { IPriceHistoryEntry, ISaleDetails } from './common';
 
+// Database document types (with _id from MongoDB)
+export interface IPsaGradedCardDocument extends IPsaGradedCard {
+  _id: string;
+}
+
+export interface IRawCardDocument extends IRawCard {
+  _id: string;
+}
+
+export interface ICardDocument extends ICard {
+  _id: string;
+}
+
 export interface ISet {
   id: string;
   setName: string;
@@ -12,6 +25,10 @@ export interface ISet {
   setUrl?: string;
   totalCardsInSet?: number;
   totalPsaPopulation?: number;
+}
+
+export interface ISetDocument extends ISet {
+  _id: string;
 }
 
 // Updated to match actual backend schema: psa_1 through psa_10

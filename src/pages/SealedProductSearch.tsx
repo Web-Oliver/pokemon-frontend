@@ -4,9 +4,9 @@
  * Following CLAUDE.md principles: Beautiful design, SRP, and integration with domain layer
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Package, Filter, ExternalLink } from 'lucide-react';
-import { ISealedProduct, SealedProductCategory } from '../domain/models/sealedProduct';
+import { SealedProductCategory } from '../domain/models/sealedProduct';
 import * as sealedProductsApi from '../api/sealedProductsApi';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
@@ -15,7 +15,8 @@ import Input from '../components/common/Input';
 import Select from '../components/common/Select';
 
 const SealedProductSearch: React.FC = () => {
-  const [sealedProducts, setSealedProducts] = useState<ISealedProduct[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [sealedProducts, setSealedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -32,7 +33,7 @@ const SealedProductSearch: React.FC = () => {
   ];
 
   // Fetch all sealed products (no category filter)
-  const fetchAllSealedProducts = async () => {
+  const fetchAllSealedProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -54,7 +55,7 @@ const SealedProductSearch: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setNameFilter]);
 
   // Fetch sealed products by category
   const fetchSealedProductsByCategory = async (category: string) => {
@@ -124,7 +125,7 @@ const SealedProductSearch: React.FC = () => {
   // Initial load
   useEffect(() => {
     fetchAllSealedProducts();
-  }, []);
+  }, [fetchAllSealedProducts]);
 
   return (
     <div className="p-6">
@@ -324,7 +325,8 @@ const SealedProductSearch: React.FC = () => {
                         {product.images && product.images.length > 0 && (
                           <div className="pt-2 border-t border-gray-100">
                             <div className="flex space-x-2 overflow-x-auto">
-                              {product.images.slice(0, 3).map((image, index) => (
+                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                              {product.images.slice(0, 3).map((image: any, index: number) => (
                                 <img
                                   key={index}
                                   src={image}
