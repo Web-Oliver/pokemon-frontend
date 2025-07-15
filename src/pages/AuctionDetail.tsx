@@ -5,10 +5,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, DollarSign, Package, Edit, Trash2, Plus, Check, X } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Package, Edit, Trash2, Plus, Check, X, FileText, Download, Copy, Share } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { IAuctionItem } from '../domain/models/auction';
 
 interface AuctionDetailProps {
@@ -22,12 +23,20 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     error,
     fetchAuctionById,
     deleteAuction,
+    addItemToAuction,
+    removeItemFromAuction,
+    generateFacebookPost,
+    downloadAuctionTextFile,
+    downloadAuctionImagesZip,
     clearError,
     clearCurrentAuction
   } = useAuction();
 
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [generatedFacebookPost, setGeneratedFacebookPost] = useState<string>('');
+  const [showFacebookPost, setShowFacebookPost] = useState(false);
 
   useEffect(() => {
     // Extract auction ID from URL
@@ -132,6 +141,79 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       } catch (err) {
         // Error handled by the hook
       }
+    }
+  };
+
+  // Handle add items to auction
+  const handleAddItems = async (items: { itemId: string; itemCategory: string }[]) => {
+    try {
+      for (const item of items) {
+        await addItemToAuction(currentAuctionId, item);
+      }
+    } catch (err) {
+      // Error handled by the hook
+      throw err;
+    }
+  };
+
+  // Handle remove item from auction
+  const handleRemoveItem = async (itemId: string) => {
+    if (window.confirm('Are you sure you want to remove this item from the auction?')) {
+      try {
+        await removeItemFromAuction(currentAuctionId, itemId);
+      } catch (err) {
+        // Error handled by the hook
+      }
+    }
+  };
+
+  // Handle Facebook post generation
+  const handleGenerateFacebookPost = async () => {
+    try {
+      const postText = await generateFacebookPost(currentAuctionId);
+      setGeneratedFacebookPost(postText);
+      setShowFacebookPost(true);
+    } catch (err) {
+      // Error handled by the hook
+    }
+  };
+
+  // Handle copy to clipboard
+  const handleCopyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedFacebookPost);
+      alert('Facebook post copied to clipboard!');
+    } catch (err) {
+      // Fallback for older browsers
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedFacebookPost;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Facebook post copied to clipboard!');
+      } catch (fallbackErr) {
+        alert('Failed to copy to clipboard. Please copy manually.');
+      }
+    }
+  };
+
+  // Handle download text file
+  const handleDownloadTextFile = async () => {
+    try {
+      await downloadAuctionTextFile(currentAuctionId);
+    } catch (err) {
+      // Error handled by the hook
+    }
+  };
+
+  // Handle download images zip
+  const handleDownloadImagesZip = async () => {
+    try {
+      await downloadAuctionImagesZip(currentAuctionId);
+    } catch (err) {
+      // Error handled by the hook
     }
   };
 
@@ -312,6 +394,100 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </div>
         </div>
 
+        {/* Export and Social Media Tools */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Export & Social Media Tools</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Facebook Post Generation */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-gray-700">Facebook Post</h4>
+              <div className="space-y-2">
+                <Button
+                  onClick={handleGenerateFacebookPost}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center"
+                  variant="outline"
+                >
+                  <Share className="w-4 h-4 mr-2" />
+                  Generate Post
+                </Button>
+                {showFacebookPost && generatedFacebookPost && (
+                  <Button
+                    onClick={handleCopyToClipboard}
+                    className="w-full flex items-center justify-center"
+                    variant="outline"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy to Clipboard
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Text File Export */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-gray-700">Text File Export</h4>
+              <Button
+                onClick={handleDownloadTextFile}
+                disabled={loading}
+                className="w-full flex items-center justify-center"
+                variant="outline"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Download Text File
+              </Button>
+            </div>
+
+            {/* Images Zip Export */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-gray-700">Image Export</h4>
+              <Button
+                onClick={handleDownloadImagesZip}
+                disabled={loading}
+                className="w-full flex items-center justify-center"
+                variant="outline"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Images Zip
+              </Button>
+            </div>
+          </div>
+
+          {/* Generated Facebook Post Display */}
+          {showFacebookPost && generatedFacebookPost && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-gray-700">Generated Facebook Post</h4>
+                <Button
+                  onClick={() => setShowFacebookPost(false)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 border">
+                <textarea
+                  className="w-full h-32 p-3 border-0 bg-transparent resize-none focus:outline-none text-sm"
+                  value={generatedFacebookPost}
+                  readOnly
+                />
+                <div className="flex justify-end mt-2">
+                  <Button
+                    onClick={handleCopyToClipboard}
+                    size="sm"
+                    className="flex items-center"
+                  >
+                    <Copy className="w-4 h-4 mr-1" />
+                    Copy
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Auction Items */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -319,6 +495,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               Auction Items ({currentAuction.items.length})
             </h2>
             <Button
+              onClick={() => setIsAddItemModalOpen(true)}
               className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -334,6 +511,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 Add items from your collection to this auction.
               </p>
               <Button
+                onClick={() => setIsAddItemModalOpen(true)}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -382,6 +560,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                         </Button>
                       )}
                       <Button
+                        onClick={() => handleRemoveItem(item.itemId)}
                         variant="outline"
                         size="sm"
                         className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
@@ -436,6 +615,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             )}
           </dl>
         </div>
+
+        {/* Add Item to Auction Modal */}
+        <AddItemToAuctionModal
+          isOpen={isAddItemModalOpen}
+          onClose={() => setIsAddItemModalOpen(false)}
+          onAddItems={handleAddItems}
+        />
       </div>
     </div>
   );

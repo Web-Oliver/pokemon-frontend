@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import * as auctionsApi from '../api/auctionsApi';
+import * as exportApi from '../api/exportApi';
 import { IAuction } from '../domain/models/auction';
 import { ISaleDetails } from '../domain/models/common';
 import { handleApiError } from '../utils/errorHandler';
@@ -25,6 +26,9 @@ export interface UseAuctionActions {
   addItemToAuction: (id: string, itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
   removeItemFromAuction: (id: string, itemId: string) => Promise<void>;
   markAuctionItemSold: (id: string, saleData: ISaleDetails & { itemId: string }) => Promise<void>;
+  generateFacebookPost: (id: string) => Promise<string>;
+  downloadAuctionTextFile: (id: string) => Promise<void>;
+  downloadAuctionImagesZip: (id: string) => Promise<void>;
   clearCurrentAuction: () => void;
   clearError: () => void;
 }
@@ -237,6 +241,69 @@ export const useAuction = (): UseAuctionHook => {
   }, []);
 
   /**
+   * Generate Facebook post for auction
+   */
+  const generateFacebookPost = useCallback(async (id: string): Promise<string> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const postText = await exportApi.generateAuctionFacebookPost(id);
+      
+      // Update the current auction with the generated post
+      if (currentAuction?.id === id) {
+        setCurrentAuction(prev => prev ? { ...prev, generatedFacebookPost: postText } : null);
+      }
+      
+      return postText;
+    } catch (err) {
+      const errorMessage = `Failed to generate Facebook post for auction with ID: ${id}`;
+      setError(errorMessage);
+      handleApiError(err, errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [currentAuction?.id]);
+
+  /**
+   * Download auction text file
+   */
+  const downloadAuctionTextFile = useCallback(async (id: string): Promise<void> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const blob = await exportApi.getAuctionFacebookTextFile(id);
+      const filename = `auction-${id}-facebook-post.txt`;
+      exportApi.downloadBlob(blob, filename);
+    } catch (err) {
+      const errorMessage = `Failed to download text file for auction with ID: ${id}`;
+      setError(errorMessage);
+      handleApiError(err, errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Download auction images zip
+   */
+  const downloadAuctionImagesZip = useCallback(async (id: string): Promise<void> => {
+    try {
+      setLoading(true);
+      setError(null);
+      const blob = await exportApi.zipAuctionImages(id);
+      const filename = `auction-${id}-images.zip`;
+      exportApi.downloadBlob(blob, filename);
+    } catch (err) {
+      const errorMessage = `Failed to download images zip for auction with ID: ${id}`;
+      setError(errorMessage);
+      handleApiError(err, errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
    * Clear error state
    */
   const clearError = useCallback(() => {
@@ -263,6 +330,9 @@ export const useAuction = (): UseAuctionHook => {
     addItemToAuction,
     removeItemFromAuction,
     markAuctionItemSold,
+    generateFacebookPost,
+    downloadAuctionTextFile,
+    downloadAuctionImagesZip,
     clearCurrentAuction,
     clearError
   };
