@@ -28,7 +28,7 @@ export interface PaginatedSetsResponse {
  */
 export const getSets = async (): Promise<ISet[]> => {
   const response = await apiClient.get('/sets');
-  return response.data.data || response.data;
+  return response.data.sets || response.data.data || response.data;
 };
 
 /**

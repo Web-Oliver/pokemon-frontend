@@ -1,19 +1,21 @@
 /**
- * Add/Edit PSA Graded Card Form Component
- * Phase 4.6: Initial PSA card form with API integration
+ * Add/Edit Raw Card Form Component - Context7 Award-Winning Design
  * 
- * Following CLAUDE.md principles:
- * - Beautiful, award-winning design with modern aesthetics
- * - Single Responsibility: PSA card form management
- * - React Hook Form integration for state management
- * - Real backend API integration (no mocking)
- * - Responsive layout for all device sizes
+ * Ultra-premium form for adding/editing raw (ungraded) cards with stunning visual hierarchy.
+ * Features glass-morphism, premium gradients, and award-winning Context7 design patterns.
+ * 
+ * Following CLAUDE.md + Context7 principles:
+ * - Award-winning visual design with micro-interactions
+ * - Glass-morphism and depth with floating elements
+ * - Premium color palettes and gradients
+ * - Context7 design system compliance
+ * - Stunning animations and hover effects
  */
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Calendar, DollarSign, Award, Camera, Search } from 'lucide-react';
-import { IPsaGradedCard } from '../../domain/models/card';
+import { Calendar, DollarSign, Package, Camera, Search, Star } from 'lucide-react';
+import { IRawCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
 import { useSearch } from '../../hooks/useSearch';
 import { uploadMultipleImages } from '../../api/uploadApi';
@@ -25,10 +27,10 @@ import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import SearchDropdown from '../search/SearchDropdown';
 
-interface AddEditPsaCardFormProps {
+interface AddEditRawCardFormProps {
   onCancel: () => void;
   onSuccess: () => void;
-  initialData?: Partial<IPsaGradedCard>;
+  initialData?: Partial<IRawCard>;
   isEditing?: boolean;
 }
 
@@ -38,31 +40,26 @@ interface FormData {
   pokemonNumber: string;
   baseName: string;
   variety: string;
-  grade: string;
+  condition: string;
   myPrice: string;
   dateAdded: string;
 }
 
-const PSA_GRADES = [
-  { value: '1', label: 'PSA 1 - Poor' },
-  { value: '2', label: 'PSA 2 - Good' },
-  { value: '3', label: 'PSA 3 - Very Good' },
-  { value: '4', label: 'PSA 4 - Very Good-Excellent' },
-  { value: '5', label: 'PSA 5 - Excellent' },
-  { value: '6', label: 'PSA 6 - Excellent-Mint' },
-  { value: '7', label: 'PSA 7 - Near Mint' },
-  { value: '8', label: 'PSA 8 - Near Mint-Mint' },
-  { value: '9', label: 'PSA 9 - Mint' },
-  { value: '10', label: 'PSA 10 - Gem Mint' }
+const CARD_CONDITIONS = [
+  { value: 'Near Mint', label: 'Near Mint (NM)' },
+  { value: 'Lightly Played', label: 'Lightly Played (LP)' },
+  { value: 'Moderately Played', label: 'Moderately Played (MP)' },
+  { value: 'Heavily Played', label: 'Heavily Played (HP)' },
+  { value: 'Damaged', label: 'Damaged (DMG)' }
 ];
 
-const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
+const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   onCancel,
   onSuccess,
   initialData,
   isEditing = false
 }) => {
-  const { addPsaCard, updatePsaCard, loading } = useCollection();
+  const { addRawCard, updateRawCard, loading } = useCollection();
   const { 
     setName, 
     cardProductName, 
@@ -93,7 +90,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       pokemonNumber: initialData?.pokemonNumber || '',
       baseName: initialData?.baseName || '',
       variety: initialData?.variety || '',
-      grade: initialData?.grade || '',
+      condition: initialData?.condition || '',
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0]
     }
@@ -117,20 +114,18 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     const handleCardAutoFill = () => {
       // Use selectedCardData from search hook instead of making API call
       if (selectedCardData && activeField === null) {
-        console.log('[PSA FORM AUTOFILL] Using selectedCardData:', selectedCardData);
+        console.log('[FORM AUTOFILL] Using selectedCardData:', selectedCardData);
         
         // Autofill all available card fields
         setValue('pokemonNumber', selectedCardData.pokemonNumber || '');
         setValue('baseName', selectedCardData.baseName || '');
         setValue('variety', selectedCardData.variety || '');
         
-        console.log('[PSA FORM AUTOFILL] Fields updated:', {
+        console.log('[FORM AUTOFILL] Fields updated:', {
           pokemonNumber: selectedCardData.pokemonNumber,
           baseName: selectedCardData.baseName,
           variety: selectedCardData.variety
         });
-        
-        // Note: myPrice and grade remain user-editable as specified
       }
     };
 
@@ -138,7 +133,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   }, [selectedCardData, activeField, setValue]);
 
   // Watch form fields for validation
-  const watchedGrade = watch('grade');
+  const watchedCondition = watch('condition');
   const watchedPrice = watch('myPrice');
 
   // Update current price when form price changes
@@ -156,11 +151,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
-    // Add new price to history
     const newEntry = { price: newPrice, dateUpdated: date };
     setPriceHistory(prev => [...prev, newEntry]);
-    
-    // Update current price and form field
     setCurrentPrice(newPrice);
     setValue('myPrice', newPrice.toString());
   };
@@ -191,7 +183,6 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   };
 
   const handleInputBlur = () => {
-    // Delay hiding suggestions to allow for clicks
     setTimeout(() => {
       setShowSuggestions(false);
       setActiveField(null);
@@ -209,17 +200,16 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       }
 
       // Prepare card data
-      const cardData: Partial<IPsaGradedCard> = {
+      const cardData: Partial<IRawCard> = {
         setName: data.setName.trim(),
         cardName: data.cardName.trim(),
         pokemonNumber: data.pokemonNumber.trim(),
         baseName: data.baseName.trim(),
         variety: data.variety.trim() || undefined,
-        grade: data.grade,
+        condition: data.condition,
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
         images: imageUrls,
-        // Use the updated price history, or create initial entry for new cards
         priceHistory: priceHistory.length > 0 ? priceHistory : [{
           price: parseFloat(data.myPrice),
           dateUpdated: new Date().toISOString()
@@ -227,15 +217,14 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       };
 
       if (isEditing && initialData?.id) {
-        await updatePsaCard(initialData.id, cardData);
+        await updateRawCard(initialData.id, cardData);
       } else {
-        await addPsaCard(cardData);
+        await addRawCard(cardData);
       }
 
       onSuccess();
     } catch (error) {
-      console.error('Failed to save PSA graded card:', error);
-      // Error handling is done by useCollection hook
+      console.error('Failed to save raw card:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -250,48 +239,53 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       
-      {/* Form Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-        <div className="flex items-center">
-          <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Award className="w-6 h-6 text-white" />
+      {/* Context7 Premium Form Header */}
+      <div className="bg-gradient-to-r from-emerald-50/80 to-teal-50/80 backdrop-blur-sm border border-emerald-200/50 rounded-3xl p-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+        
+        <div className="flex items-center relative z-10">
+          <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center">
+            <Package className="w-7 h-7 text-white" />
           </div>
-          <div className="ml-4">
-            <h3 className="text-lg font-semibold text-blue-900">
-              {isEditing ? 'Edit PSA Graded Card' : 'Add PSA Graded Card'}
+          <div className="ml-6">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-800 to-teal-800 bg-clip-text text-transparent mb-2">
+              {isEditing ? 'Edit Raw Card' : 'Add Raw Card'}
             </h3>
-            <p className="text-blue-700 text-sm">
-              {isEditing ? 'Update your PSA graded card information' : 'Add a new PSA graded card to your collection'}
+            <p className="text-emerald-700 font-medium">
+              {isEditing ? 'Update your raw card information' : 'Add a new raw card to your premium collection'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Card Information Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center justify-between">
+      {/* Context7 Premium Card Information Section */}
+      <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50"></div>
+        
+        <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative z-10">
           <div className="flex items-center">
-            <Calendar className="w-5 h-5 mr-2 text-gray-600" />
+            <Calendar className="w-6 h-6 mr-3 text-slate-600" />
             Card Information
           </div>
           {setName && (
-            <div className="flex items-center text-sm text-blue-600">
+            <div className="flex items-center text-sm text-emerald-600 bg-emerald-50/80 px-3 py-1 rounded-full backdrop-blur-sm">
               <Search className="w-4 h-4 mr-1" />
               Filtering by: {setName}
             </div>
           )}
         </h4>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Set Name with Smart Search */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+          {/* Set Name with Context7 Premium Search */}
           <div className="relative">
-            <label htmlFor="setName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="setName" className="block text-sm font-bold text-slate-700 mb-2 tracking-wide">
               Set Name
               <span className="text-red-500 ml-1">*</span>
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 id="setName"
                 type="text"
@@ -302,16 +296,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                 onChange={handleSetNameChange}
                 onFocus={() => handleInputFocus('set')}
                 onBlur={handleInputBlur}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium"
                 placeholder="e.g., Base Set, Jungle, Fossil"
               />
-              <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+              <Search className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors duration-300" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.setName && (
-              <p className="mt-1 text-sm text-red-600">{errors.setName.message}</p>
+              <p className="mt-2 text-sm text-red-600 font-medium">{errors.setName.message}</p>
             )}
             
-            {/* Context7 Award-Winning Set Suggestions Dropdown */}
+            {/* Context7 Premium Set Suggestions Dropdown */}
             <SearchDropdown
               suggestions={suggestions}
               isVisible={showSuggestions && activeField === 'set'}
@@ -325,13 +320,13 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             />
           </div>
           
-          {/* Card Name with Smart Search */}
+          {/* Card Name with Context7 Premium Search */}
           <div className="relative">
-            <label htmlFor="cardName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="cardName" className="block text-sm font-bold text-slate-700 mb-2 tracking-wide">
               Card Name
               <span className="text-red-500 ml-1">*</span>
             </label>
-            <div className="relative">
+            <div className="relative group">
               <input
                 id="cardName"
                 type="text"
@@ -342,16 +337,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                 onChange={handleCardNameChange}
                 onFocus={() => handleInputFocus('cardProduct')}
                 onBlur={handleInputBlur}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium"
                 placeholder="e.g., Charizard, Pikachu"
               />
-              <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+              <Search className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors duration-300" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.cardName && (
-              <p className="mt-1 text-sm text-red-600">{errors.cardName.message}</p>
+              <p className="mt-2 text-sm text-red-600 font-medium">{errors.cardName.message}</p>
             )}
             
-            {/* Context7 Award-Winning Card/Product Suggestions Dropdown */}
+            {/* Context7 Premium Card Suggestions Dropdown */}
             <SearchDropdown
               suggestions={suggestions}
               isVisible={showSuggestions && activeField === 'cardProduct'}
@@ -398,28 +394,33 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         </div>
       </div>
 
-      {/* Grading & Pricing Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
-          Grading & Pricing
+      {/* Context7 Premium Condition & Pricing Section */}
+      <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-emerald-50/50"></div>
+        
+        <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10">
+          <DollarSign className="w-6 h-6 mr-3 text-slate-600" />
+          Condition & Pricing
         </h4>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           <div>
             <Select
-              label="PSA Grade"
-              {...register('grade', { 
-                required: 'PSA grade is required'
+              label="Card Condition"
+              {...register('condition', { 
+                required: 'Card condition is required'
               })}
-              error={errors.grade?.message}
-              options={PSA_GRADES}
+              error={errors.condition?.message}
+              options={CARD_CONDITIONS}
             />
-            {watchedGrade && (
-              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
-                <span className="text-sm text-blue-800 font-medium">
-                  Selected: {PSA_GRADES.find(g => g.value === watchedGrade)?.label}
-                </span>
+            {watchedCondition && (
+              <div className="mt-3 p-3 bg-emerald-50/80 border border-emerald-200/50 rounded-xl backdrop-blur-sm">
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-emerald-600 mr-2" />
+                  <span className="text-sm text-emerald-800 font-bold">
+                    Selected: {CARD_CONDITIONS.find(c => c.value === watchedCondition)?.label}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -442,7 +443,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               placeholder="0.00"
             />
             {watchedPrice && (
-              <div className="mt-2 text-sm text-gray-600">
+              <div className="mt-2 text-sm text-emerald-600 font-semibold">
                 ${parseFloat(watchedPrice || '0').toFixed(2)}
               </div>
             )}
@@ -462,7 +463,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
         {/* Price History Section (for editing existing cards) */}
         {isEditing && priceHistory.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-8 pt-8 border-t border-slate-200/50">
             <PriceHistoryDisplay
               priceHistory={priceHistory}
               currentPrice={currentPrice}
@@ -472,35 +473,42 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         )}
       </div>
 
-      {/* Image Upload Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <Camera className="w-5 h-5 mr-2 text-gray-600" />
+      {/* Context7 Premium Image Upload Section */}
+      <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50"></div>
+        
+        <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10">
+          <Camera className="w-6 h-6 mr-3 text-slate-600" />
           Card Images
         </h4>
         
-        <ImageUploader
-          onImagesChange={handleImagesChange}
-          existingImageUrls={initialData?.images || []}
-          multiple={true}
-          maxFiles={8}
-          maxFileSize={5}
-        />
-        
-        <div className="mt-3 text-sm text-gray-600">
-          <p>• Upload up to 8 images (max 5MB each)</p>
-          <p>• Supported formats: JPG, PNG, WebP</p>
-          <p>• Include front, back, and detail shots for best results</p>
+        <div className="relative z-10">
+          <ImageUploader
+            onImagesChange={handleImagesChange}
+            existingImageUrls={initialData?.images || []}
+            multiple={true}
+            maxFiles={8}
+            maxFileSize={5}
+          />
+          
+          <div className="mt-4 p-4 bg-gradient-to-r from-slate-50/80 to-emerald-50/80 rounded-xl border border-slate-200/50 backdrop-blur-sm">
+            <div className="text-sm text-slate-600 space-y-1">
+              <p className="font-semibold">• Upload up to 8 images (max 5MB each)</p>
+              <p>• Supported formats: JPG, PNG, WebP</p>
+              <p>• Include front, back, and detail shots for best results</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+      {/* Context7 Premium Action Buttons */}
+      <div className="flex justify-end space-x-6 pt-8 border-t border-slate-200/50">
         <Button
           type="button"
           variant="secondary"
           onClick={onCancel}
           disabled={isSubmitting}
+          className="px-8 py-3"
         >
           Cancel
         </Button>
@@ -509,7 +517,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           type="submit"
           variant="primary"
           disabled={isSubmitting}
-          className="min-w-[120px]"
+          className="min-w-[140px] px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
         >
           {isSubmitting ? (
             <div className="flex items-center">
@@ -525,4 +533,4 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   );
 };
 
-export default AddEditPsaCardForm;
+export default AddEditRawCardForm;

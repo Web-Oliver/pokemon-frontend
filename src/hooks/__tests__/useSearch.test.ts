@@ -24,7 +24,9 @@ describe('useSearch Integration Tests', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe(null);
     expect(result.current.selectedSet).toBe(null);
+    expect(result.current.selectedCategory).toBe(null);
     expect(result.current.setName).toBe('');
+    expect(result.current.categoryName).toBe('');
     expect(result.current.cardProductName).toBe('');
     expect(result.current.activeField).toBe(null);
   });
@@ -103,6 +105,62 @@ describe('useSearch Integration Tests', () => {
     }, 15000);
   });
 
+  // Category functionality tests
+  describe('Category Functionality', () => {
+    it('should update category name and trigger suggestions', async () => {
+      const { result } = renderHook(() => useSearch());
+
+      await act(async () => {
+        result.current.updateCategoryName('booster');
+      });
+
+      expect(result.current.categoryName).toBe('booster');
+      expect(result.current.activeField).toBe('category');
+
+      // Wait for debounced suggestions
+      await waitFor(() => {
+        expect(result.current.suggestions.length).toBeGreaterThanOrEqual(0);
+      }, { timeout: 5000 });
+    }, 10000);
+
+    it('should handle category selection and clear card/product field', async () => {
+      const { result } = renderHook(() => useSearch());
+
+      // First set some card/product name
+      await act(async () => {
+        result.current.updateCardProductName('test');
+      });
+
+      // Then select a category
+      await act(async () => {
+        result.current.handleSuggestionSelect({ category: 'Booster Box' }, 'category');
+      });
+
+      expect(result.current.categoryName).toBe('Booster Box');
+      expect(result.current.selectedCategory).toBe('Booster Box');
+      expect(result.current.cardProductName).toBe(''); // Should be cleared
+      expect(result.current.suggestions).toEqual([]);
+      expect(result.current.activeField).toBe(null);
+    });
+
+    it('should clear selected category', async () => {
+      const { result } = renderHook(() => useSearch());
+
+      // First select a category
+      await act(async () => {
+        result.current.handleSuggestionSelect({ category: 'Booster Box' }, 'category');
+      });
+
+      // Then clear it
+      await act(async () => {
+        result.current.clearSelectedCategory();
+      });
+
+      expect(result.current.selectedCategory).toBe(null);
+      expect(result.current.categoryName).toBe('');
+    });
+  });
+
   // Hierarchical search logic tests
   describe('Hierarchical Search Logic', () => {
     it('should update set name and trigger suggestions', async () => {
@@ -147,7 +205,7 @@ describe('useSearch Integration Tests', () => {
 
       // Then select a set
       await act(async () => {
-        result.current.handleSuggestionSelect('Base Set', 'set');
+        result.current.handleSuggestionSelect({ setName: 'Base Set' }, 'set');
       });
 
       expect(result.current.setName).toBe('Base Set');
@@ -160,19 +218,19 @@ describe('useSearch Integration Tests', () => {
     it('should handle card/product selection and auto-fill set', async () => {
       const { result } = renderHook(() => useSearch());
 
+      // Pass suggestion as object with setInfo like real API response
       await act(async () => {
-        result.current.handleSuggestionSelect('Charizard', 'cardProduct');
+        result.current.handleSuggestionSelect({
+          cardName: 'Charizard',
+          setInfo: { setName: 'Base Set' }
+        }, 'cardProduct');
       });
 
       expect(result.current.cardProductName).toBe('Charizard');
       expect(result.current.suggestions).toEqual([]);
       expect(result.current.activeField).toBe(null);
-
-      // Wait for auto-fill logic to complete
-      await waitFor(() => {
-        // Set might be auto-filled based on card selection
-        expect(result.current.setName).toBeDefined();
-      }, { timeout: 10000 });
+      expect(result.current.setName).toBe('Base Set'); // Should be auto-filled
+      expect(result.current.selectedSet).toBe('Base Set');
     }, 15000);
 
     it('should clear selected set', async () => {
@@ -180,7 +238,7 @@ describe('useSearch Integration Tests', () => {
 
       // First select a set
       await act(async () => {
-        result.current.handleSuggestionSelect('Base Set', 'set');
+        result.current.handleSuggestionSelect({ setName: 'Base Set' }, 'set');
       });
 
       // Then clear it
@@ -206,6 +264,12 @@ describe('useSearch Integration Tests', () => {
       });
 
       expect(result.current.activeField).toBe('cardProduct');
+
+      await act(async () => {
+        result.current.setActiveField('category');
+      });
+
+      expect(result.current.activeField).toBe('category');
 
       await act(async () => {
         result.current.setActiveField(null);
@@ -254,7 +318,7 @@ describe('useSearch Integration Tests', () => {
 
       // First select a set
       await act(async () => {
-        result.current.handleSuggestionSelect('Base Set', 'set');
+        result.current.handleSuggestionSelect({ setName: 'Base Set' }, 'set');
       });
 
       // Then search for cards
@@ -298,7 +362,7 @@ describe('useSearch Integration Tests', () => {
       expect(bestMatch === null || typeof bestMatch === 'object').toBe(true);
       
       if (bestMatch) {
-        expect(bestMatch).toHaveProperty('id');
+        expect(bestMatch).toHaveProperty('_id');
         expect(bestMatch).toHaveProperty('cardName');
       }
     }, 10000);
@@ -356,7 +420,7 @@ describe('useSearch Integration Tests', () => {
       });
 
       await act(async () => {
-        result.current.handleSuggestionSelect('Base Set', 'set');
+        result.current.handleSuggestionSelect({ setName: 'Base Set' }, 'set');
       });
 
       await act(async () => {
@@ -377,6 +441,12 @@ describe('useSearch Integration Tests', () => {
       expect(result.current.cardProductName).toBe('charizard');
       expect(result.current.searchTerm).toBe('pikachu');
       expect(Array.isArray(result.current.searchResults)).toBe(true);
+      
+      // Should have searchMeta from the search
+      expect(result.current.searchMeta).toBeDefined();
+      if (result.current.searchMeta) {
+        expect(typeof result.current.searchMeta.queryTime).toBe('number');
+      }
     }, 15000);
   });
 

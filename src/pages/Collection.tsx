@@ -99,8 +99,7 @@ const Collection: React.FC = () => {
   };
 
   // Handle mark as sold button click
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleMarkAsSold = (item: any, type: 'psa' | 'raw' | 'sealed') => {
+  const handleMarkAsSold = (item: { _id: string; cardName?: string; name?: string }, type: 'psa' | 'raw' | 'sealed') => {
     setSelectedItem({
       id: item._id,
       type,
@@ -290,8 +289,18 @@ const Collection: React.FC = () => {
     // Render actual collection items with Mark as Sold functionality
     return (
       <div className="space-y-4">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {data.map((item: any, index: number) => {
+        {data.map((item: {
+          _id: string;
+          cardId?: { cardName?: string; name?: string };
+          cardName?: string;
+          name?: string;
+          grade?: string;
+          condition?: string;
+          category?: string;
+          myPrice?: number;
+          sold?: boolean;
+          saleDetails?: { dateSold?: string; actualSoldPrice?: number };
+        }, index: number) => {
           const itemType = activeTab === 'psa-graded' ? 'psa' : 
                           activeTab === 'raw-cards' ? 'raw' : 'sealed';
           const isUnsoldTab = activeTab !== 'sold-items';
@@ -301,7 +310,7 @@ const Collection: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">
-                    {item.cardName || item.name || `Item ${index + 1}`}
+                    {item.cardId?.cardName || item.cardId?.name || item.cardName || item.name || `Item ${index + 1}`}
                   </h4>
                   <p className="text-sm text-gray-500">
                     {activeTab === 'psa-graded' && `Grade: ${item.grade}`}
@@ -348,139 +357,182 @@ const Collection: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Page Header */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">My Collection</h1>
-              <p className="mt-1 text-gray-600">
-                Manage your Pokémon cards and sealed products
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              {/* Export Buttons */}
-              <div className="flex items-center space-x-2">
-                <button 
-                  onClick={handleExportAllItems}
-                  disabled={isExporting || loading}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isExporting ? (
-                    <LoadingSpinner size="sm" className="mr-2" />
-                  ) : (
-                    <Download className="w-4 h-4 mr-2" />
-                  )}
-                  Export All
-                </button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      {/* Context7 Premium Background Pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="w-full h-full" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}></div>
+      </div>
+
+      <div className="relative z-10 p-8">
+        <div className="max-w-7xl mx-auto space-y-10">
+          
+          {/* Context7 Premium Page Header */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5"></div>
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  My Premium Collection
+                </h1>
+                <p className="text-xl text-slate-600 font-medium leading-relaxed">
+                  Manage your Pokémon cards and sealed products with award-winning style
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                {/* Context7 Premium Export Buttons */}
+                <div className="flex items-center space-x-3">
+                  <button 
+                    onClick={handleExportAllItems}
+                    disabled={isExporting || loading}
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isExporting ? (
+                      <LoadingSpinner size="sm" className="mr-3" />
+                    ) : (
+                      <Download className="w-5 h-5 mr-3" />
+                    )}
+                    Export All
+                  </button>
+                  
+                  <button 
+                    onClick={handleOpenExportModal}
+                    disabled={isExporting || loading}
+                    className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <FileText className="w-5 h-5 mr-3" />
+                    Select & Export
+                  </button>
+                </div>
                 
                 <button 
-                  onClick={handleOpenExportModal}
-                  disabled={isExporting || loading}
-                  className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleAddNewItem}
+                  className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20"
                 >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Select & Export
+                  <Plus className="w-5 h-5 mr-3" />
+                  Add New Item
                 </button>
               </div>
+            </div>
+            {/* Premium shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+          </div>
+
+          {/* Context7 Premium Collection Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-indigo-500/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5"></div>
+              <div className="flex items-center relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                  <Star className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-6">
+                  <p className="text-sm font-bold text-indigo-600 tracking-wide uppercase mb-1">PSA Graded</p>
+                  <p className="text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300">
+                    {loading ? (
+                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+                    ) : counts.psaGraded}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5"></div>
+              <div className="flex items-center relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                  <Package className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-6">
+                  <p className="text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1">Raw Cards</p>
+                  <p className="text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300">
+                    {loading ? (
+                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+                    ) : counts.rawCards}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5"></div>
+              <div className="flex items-center relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                  <Archive className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-6">
+                  <p className="text-sm font-bold text-purple-600 tracking-wide uppercase mb-1">Sealed Products</p>
+                  <p className="text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300">
+                    {loading ? (
+                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+                    ) : counts.sealedProducts}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5"></div>
+              <div className="flex items-center relative z-10">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <div className="ml-6">
+                  <p className="text-sm font-bold text-amber-600 tracking-wide uppercase mb-1">Sold Items</p>
+                  <p className="text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300">
+                    {loading ? (
+                      <div className="w-12 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+                    ) : counts.soldItems}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Context7 Premium Tabbed Collection Content */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-blue-500/3"></div>
+            
+            <div className="relative z-10">
+              <div className="border-b border-slate-200/50 px-8 pt-8">
+                <nav className="-mb-px flex space-x-1">
+                  {tabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${
+                          isActive
+                            ? 'border-indigo-500 text-indigo-700 bg-indigo-50/50 shadow-lg'
+                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 hover:bg-slate-50/50'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                            isActive 
+                              ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110' 
+                              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'
+                          }`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <span className="tracking-wide">{tab.name}</span>
+                        </div>
+                        {isActive && (
+                          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg animate-pulse"></div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
               
-              <button 
-                onClick={handleAddNewItem}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Item
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Collection Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Star className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">PSA Graded</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : counts.psaGraded}
-                </p>
+              <div className="p-10">
+                {renderTabContent()}
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Raw Cards</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : counts.rawCards}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Archive className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Sealed Products</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : counts.sealedProducts}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Sold Items</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {loading ? '...' : counts.soldItems}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabbed Collection Content */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8 px-6">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      isActive
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    {tab.name}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-          
-          <div className="p-6">
-            {renderTabContent()}
           </div>
         </div>
 

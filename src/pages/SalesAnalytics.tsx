@@ -24,8 +24,6 @@ import {
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   PieChart as RechartsPieChart,
   Pie,
   Cell,
@@ -43,7 +41,6 @@ import Button from '../components/common/Button';
 const SalesAnalytics: React.FC = () => {
   const {
     sales,
-    summary,
     graphData,
     loading,
     error,
