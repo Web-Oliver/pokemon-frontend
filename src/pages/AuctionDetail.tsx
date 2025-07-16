@@ -45,6 +45,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     deleteAuction,
     addItemToAuction,
     removeItemFromAuction,
+    markAuctionItemSold,
     generateFacebookPost,
     downloadAuctionTextFile,
     downloadAuctionImagesZip,
@@ -69,6 +70,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     id: string;
     type: 'psa' | 'raw' | 'sealed';
     name: string;
+    itemCategory?: string;
   } | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
@@ -168,11 +170,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
+    const formatted = new Intl.NumberFormat('da-DK', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
+    return `${formatted} kr.`;
   };
 
   // Get status color - Premium design system
@@ -297,6 +299,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       id: itemId,
       type: itemType,
       name: displayData.itemName || 'Unknown Item',
+      itemCategory: itemCategory, // Store category for auction sale tracking
     });
     setIsMarkSoldModalOpen(true);
   };
@@ -313,6 +316,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     }
 
     try {
+      // Step 1: Mark the collection item as sold
       switch (selectedItem.type) {
         case 'psa':
           await markPsaCardSold(selectedItem.id, saleDetails);
@@ -325,12 +329,21 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           break;
       }
 
+      // Step 2: Also mark the auction item as sold to update auction's soldValue
+      if (selectedItem.itemCategory) {
+        await markAuctionItemSold(currentAuctionId, {
+          itemId: selectedItem.id,
+          itemCategory: selectedItem.itemCategory,
+          soldPrice: saleDetails.actualSoldPrice || 0,
+        });
+      }
+
       // Close modal and reset selected item
       setIsMarkSoldModalOpen(false);
       setSelectedItem(null);
       
-      // Refresh the auction to show updated sold status
-      await fetchAuctionById(currentAuctionId);
+      // Refresh the auction to show updated sold status (already handled by markAuctionItemSold)
+      // await fetchAuctionById(currentAuctionId);
     } catch (error) {
       console.error('Error marking item as sold:', error);
       // Error handling is done by the useCollection hook
@@ -922,6 +935,10 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             isOpen={isAddItemModalOpen}
             onClose={() => setIsAddItemModalOpen(false)}
             onAddItems={handleAddItems}
+            currentAuctionItems={currentAuction?.items?.map(item => ({
+              itemId: item.itemId,
+              itemCategory: item.itemCategory
+            })) || []}
           />
 
           {/* Mark as Sold Modal */}

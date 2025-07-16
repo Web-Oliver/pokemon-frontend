@@ -550,6 +550,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             isOpen={isAddItemModalOpen}
             onClose={() => setIsAddItemModalOpen(false)}
             onAddItems={handleAddItems}
+            currentAuctionItems={currentAuction?.items?.map(item => ({
+              itemId: item.itemId,
+              itemCategory: item.itemCategory
+            })) || []}
           />
 
           {/* Remove Item Confirmation Modal */}

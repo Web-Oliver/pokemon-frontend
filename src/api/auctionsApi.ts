@@ -110,7 +110,7 @@ export const removeItemFromAuction = async (
  */
 export const markAuctionItemSold = async (
   id: string,
-  saleData: ISaleDetails & { itemId: string }
+  saleData: { itemId: string; itemCategory: string; soldPrice: number }
 ): Promise<IAuction> => {
   const response = await apiClient.patch(`/auctions/${id}/items/sold`, saleData);
   return response.data.data || response.data;

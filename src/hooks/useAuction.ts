@@ -25,7 +25,7 @@ export interface UseAuctionActions {
   deleteAuction: (_id: string) => Promise<void>;
   addItemToAuction: (_id: string, _itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
   removeItemFromAuction: (_id: string, _itemId: string, _itemCategory?: string) => Promise<void>;
-  markAuctionItemSold: (_id: string, _saleData: ISaleDetails & { itemId: string }) => Promise<void>;
+  markAuctionItemSold: (_id: string, _saleData: { itemId: string; itemCategory: string; soldPrice: number }) => Promise<void>;
   generateFacebookPost: (_id: string) => Promise<string>;
   downloadAuctionTextFile: (_id: string) => Promise<void>;
   downloadAuctionImagesZip: (_id: string) => Promise<void>;
@@ -225,7 +225,7 @@ export const useAuction = (): UseAuctionHook => {
    * Mark auction item as sold
    */
   const markAuctionItemSold = useCallback(
-    async (id: string, saleData: ISaleDetails & { itemId: string }) => {
+    async (id: string, saleData: { itemId: string; itemCategory: string; soldPrice: number }) => {
       try {
         setLoading(true);
         setError(null);

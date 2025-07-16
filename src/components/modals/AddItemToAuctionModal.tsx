@@ -4,7 +4,7 @@
  * Allows browsing and selecting collection items to add to auctions
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Package, Star, Calendar, DollarSign, Check } from 'lucide-react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
@@ -19,6 +19,7 @@ interface AddItemToAuctionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddItems: (items: { itemId: string; itemCategory: string }[]) => Promise<void>;
+  currentAuctionItems?: { itemId: string; itemCategory: string }[];
 }
 
 type CollectionItem = (IPsaGradedCard | IRawCard | ISealedProduct) & {
@@ -32,6 +33,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   isOpen,
   onClose,
   onAddItems,
+  currentAuctionItems = [],
 }) => {
   const { psaCards, rawCards, sealedProducts, loading, error } = useCollection();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -40,35 +42,53 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   const [filteredItems, setFilteredItems] = useState<CollectionItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Helper function to get full image URL
+  const getImageUrl = (imagePath: string | undefined) => {
+    if (!imagePath) return undefined;
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) return imagePath;
+    // If it's a relative path, prepend the backend server URL
+    return `http://localhost:3000${imagePath}`;
+  };
+
+  // Create a set of items already in auction for quick lookup (memoized to prevent infinite loop)
+  const auctionItemsSet = useMemo(() => 
+    new Set(currentAuctionItems.map(item => `${item.itemId}-${item.itemCategory}`)),
+    [currentAuctionItems]
+  );
+
   // Combine all collection items into a unified format
   useEffect(() => {
     const allItems: CollectionItem[] = [
       ...psaCards
         .filter(card => !card.sold)
+        .filter(card => !auctionItemsSet.has(`${card.id || (card as any)._id}-PsaGradedCard`))
         .map(card => ({
           ...card,
           itemType: 'PsaGradedCard' as const,
-          displayName: `${card.cardName || 'Unknown Card'} - Grade ${card.grade}`,
+          displayName: `${(card as any).cardId?.cardName || (card as any).cardName || (card as any).baseName || 'Unknown Card'} - Grade ${card.grade}`,
           displayPrice: card.myPrice,
-          displayImage: card.images?.[0],
+          displayImage: getImageUrl(card.images?.[0]),
         })),
       ...rawCards
         .filter(card => !card.sold)
+        .filter(card => !auctionItemsSet.has(`${card.id || (card as any)._id}-RawCard`))
         .map(card => ({
           ...card,
           itemType: 'RawCard' as const,
-          displayName: `${card.cardName || 'Unknown Card'} - ${card.condition}`,
+          displayName: `${(card as any).cardId?.cardName || (card as any).cardName || (card as any).baseName || 'Unknown Card'} - ${card.condition}`,
           displayPrice: card.myPrice,
-          displayImage: card.images?.[0],
+          displayImage: getImageUrl(card.images?.[0]),
         })),
       ...sealedProducts
         .filter(product => !product.sold)
+        .filter(product => !auctionItemsSet.has(`${product.id || (product as any)._id}-SealedProduct`))
         .map(product => ({
           ...product,
           itemType: 'SealedProduct' as const,
           displayName: `${product.name || 'Unknown Product'} - ${product.setName}`,
           displayPrice: product.myPrice,
-          displayImage: product.images?.[0],
+          displayImage: getImageUrl(product.images?.[0]),
         })),
     ];
 
@@ -94,15 +114,15 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
     filtered.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
     setFilteredItems(filtered);
-  }, [psaCards, rawCards, sealedProducts, searchTerm, filterCategory]);
+  }, [psaCards, rawCards, sealedProducts, searchTerm, filterCategory, auctionItemsSet]);
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
+    const formatted = new Intl.NumberFormat('da-DK', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
+    return `${formatted} kr.`;
   };
 
   // Format date
