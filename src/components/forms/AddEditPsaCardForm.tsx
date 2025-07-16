@@ -16,13 +16,16 @@ import { Award } from 'lucide-react';
 import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
 import { useSearch } from '../../hooks/useSearch';
+import { useCardAutocomplete, AutocompleteField } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
+import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CardInformationSection from './sections/CardInformationSection';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
+import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -74,7 +77,13 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     updateCardProductName,
     handleSuggestionSelect,
     setActiveField,
+    setSearchMode,
   } = useSearch();
+  
+  // Set search mode to 'cards' for PSA card form
+  useEffect(() => {
+    setSearchMode('cards');
+  }, [setSearchMode]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,6 +124,34 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       city: initialData?.saleDetails?.buyerAddress?.city || '',
     },
     mode: 'onChange',
+  });
+
+  // Configure autocomplete fields for reusable search (after useForm hook)
+  const autocompleteFields: AutocompleteField[] = [
+    {
+      id: 'setName',
+      value: watch('setName') || '',
+      placeholder: 'Set Name',
+      type: 'set',
+      required: true
+    },
+    {
+      id: 'cardName',
+      value: watch('cardName') || '',
+      placeholder: 'Card Name',
+      type: 'cardProduct',
+      required: true
+    }
+  ];
+
+  // Initialize enhanced autocomplete for cards
+  const enhancedAutocomplete = useCardAutocomplete(autocompleteFields, {
+    onSelectionChange: (selectedData) => {
+      console.log('[PSA CARD] Hook callback (should not be called):', selectedData);
+    },
+    onError: (error) => {
+      console.error('[PSA CARD] Hook error callback:', error);
+    }
   });
 
   // Update form values when initialData changes (for async data loading)
@@ -425,24 +462,175 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         </div>
       </div>
 
-      {/* Card Information Section - Disabled when editing, hidden for sold items */}
-      <CardInformationSection
-        register={register}
-        errors={errors}
-        setValue={setValue}
-        clearErrors={clearErrors}
-        setName={setName}
-        suggestions={suggestions}
-        showSuggestions={showSuggestions && !(isEditing && initialData?.sold)}
-        activeField={activeField}
-        onSetNameChange={handleSetNameChange}
-        onCardNameChange={handleCardNameChange}
-        onInputFocus={handleInputFocus}
-        onInputBlur={handleInputBlur}
-        onSuggestionClick={handleSuggestionClick}
-        isVisible={!(isEditing && initialData?.sold)}
-        disabled={isEditing}
-      />
+      {/* Card Information Section - Enhanced Autocomplete Integration */}
+      {!(isEditing && initialData?.sold) && (
+        <div className='bg-white border border-gray-200 rounded-lg p-6'>
+          <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
+            <div className='flex items-center'>
+              <Award className='w-5 h-5 mr-2 text-gray-600' />
+              Card Information
+            </div>
+            {watch('setName') && (
+              <div className='flex items-center text-sm text-blue-600'>
+                <Award className='w-4 h-4 mr-1' />
+                Filtering by: {watch('setName')}
+              </div>
+            )}
+          </h4>
+
+          {/* Enhanced Autocomplete for Hierarchical Search */}
+          <div className='mb-6'>
+            <EnhancedAutocomplete
+              config={enhancedAutocomplete.state}
+              fields={autocompleteFields}
+              onSelectionChange={(selectedData) => {
+                console.log('[PSA CARD] ===== ENHANCED AUTOCOMPLETE SELECTION =====');
+                console.log('[PSA CARD] Enhanced autocomplete selection:', selectedData);
+                
+                // Auto-fill form fields based on selection
+                if (selectedData) {
+                  // The selectedData contains the raw card data from the search API
+                  console.log('[PSA CARD] Raw selected data:', selectedData);
+                  
+                  // Auto-fill set name from setInfo or direct setName
+                  const setName = selectedData.setInfo?.setName || selectedData.setName;
+                  if (setName) {
+                    setValue('setName', setName, { shouldValidate: true });
+                    updateSetName(setName); // Sync with legacy useSearch
+                    clearErrors('setName'); // Clear any validation errors
+                  }
+                  
+                  // Auto-fill card name
+                  if (selectedData.cardName) {
+                    setValue('cardName', selectedData.cardName, { shouldValidate: true });
+                    updateCardProductName(selectedData.cardName); // Sync with legacy useSearch
+                    clearErrors('cardName'); // Clear any validation errors
+                  }
+                  
+                  // Auto-fill pokemon number
+                  if (selectedData.pokemonNumber) {
+                    setValue('pokemonNumber', selectedData.pokemonNumber, { shouldValidate: true });
+                    clearErrors('pokemonNumber'); // Clear any validation errors
+                  }
+                  
+                  // Auto-fill base name
+                  if (selectedData.baseName) {
+                    setValue('baseName', selectedData.baseName, { shouldValidate: true });
+                    clearErrors('baseName'); // Clear any validation errors
+                  }
+                  
+                  // Auto-fill variety (always set, even if empty)
+                  const varietyValue = selectedData.variety || '';
+                  console.log('[PSA CARD] Variety value:', { 
+                    raw: selectedData.variety, 
+                    processed: varietyValue, 
+                    type: typeof selectedData.variety 
+                  });
+                  setValue('variety', varietyValue, { shouldValidate: true });
+                  clearErrors('variety'); // Clear any validation errors
+                  
+                  console.log('[PSA CARD] Auto-filled fields:', {
+                    setName,
+                    cardName: selectedData.cardName,
+                    pokemonNumber: selectedData.pokemonNumber,
+                    baseName: selectedData.baseName,
+                    variety: selectedData.variety
+                  });
+                }
+              }}
+              onError={(error) => {
+                console.error('[PSA CARD] Enhanced autocomplete error:', error);
+              }}
+              variant="premium"
+              showMetadata={true}
+              allowClear={true}
+              disabled={isEditing}
+              className="premium-search-integration"
+            />
+          </div>
+
+          {/* Additional Card Fields */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {/* Pokemon Number */}
+            <div>
+              <Input
+                label='Pokémon Number'
+                {...register('pokemonNumber')}
+                error={errors.pokemonNumber?.message}
+                placeholder='e.g., 006, 025, 150'
+                disabled={isEditing}
+                className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              />
+            </div>
+
+            {/* Base Name */}
+            <div>
+              <Input
+                label='Base Name'
+                {...register('baseName', {
+                  required: 'Base name is required',
+                  minLength: { value: 2, message: 'Base name must be at least 2 characters' },
+                })}
+                error={errors.baseName?.message}
+                placeholder='e.g., Charizard, Pikachu, Mew'
+                disabled={isEditing}
+                className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              />
+            </div>
+
+            {/* Variety */}
+            <div className='md:col-span-2'>
+              <Input
+                label='Variety'
+                {...register('variety')}
+                error={errors.variety?.message}
+                placeholder='e.g., Holo, Shadowless, 1st Edition'
+                disabled={isEditing}
+                className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              />
+            </div>
+          </div>
+
+          {/* Form Registration for Enhanced Autocomplete Fields */}
+          <div className='hidden'>
+            {/* Register form fields for validation - Enhanced Autocomplete handles the UI */}
+            <input
+              {...register('setName', {
+                required: 'Set name is required',
+                minLength: { value: 2, message: 'Set name must be at least 2 characters' },
+              })}
+              value={watch('setName') || ''}
+              readOnly
+            />
+            <input
+              {...register('cardName', {
+                required: 'Card name is required',
+                minLength: { value: 2, message: 'Card name must be at least 2 characters' },
+              })}
+              value={watch('cardName') || ''}
+              readOnly
+            />
+            <input
+              {...register('pokemonNumber')}
+              value={watch('pokemonNumber') || ''}
+              readOnly
+            />
+            <input
+              {...register('baseName', {
+                required: 'Base name is required',
+                minLength: { value: 2, message: 'Base name must be at least 2 characters' },
+              })}
+              value={watch('baseName') || ''}
+              readOnly
+            />
+            <input
+              {...register('variety')}
+              value={watch('variety') || ''}
+              readOnly
+            />
+          </div>
+        </div>
+      )}
 
       {/* Grading & Pricing Section - Hidden for sold items */}
       <GradingPricingSection

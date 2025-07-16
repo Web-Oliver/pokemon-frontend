@@ -64,6 +64,9 @@ pids
 ehthumbs.db
 Thumbs.db
 
+# Windows Zone.Identifier files
+*:Zone.Identifier
+
 # Temporary files
 *.tmp
 *.temp

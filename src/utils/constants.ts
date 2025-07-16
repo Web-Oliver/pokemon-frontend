@@ -19,3 +19,15 @@ export enum Source {
   FACEBOOK = 'Facebook',
   DBA = 'DBA',
 }
+
+// Search Configuration
+export const SEARCH_CONFIG = {
+  DEFAULT_MIN_QUERY_LENGTH: 2,
+  SEALED_PRODUCT_MIN_QUERY_LENGTH: 1, // Allow shorter queries for sealed products
+  CARD_MIN_QUERY_LENGTH: 2,
+  SET_MIN_QUERY_LENGTH: 1, // Allow shorter queries for sets
+  DEBOUNCE_MS: 200,
+  MAX_SUGGESTIONS: 15,
+  CACHE_TTL_SETS: 300000, // 5 minutes
+  CACHE_TTL_OTHERS: 180000, // 3 minutes
+} as const;

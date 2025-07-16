@@ -17,7 +17,8 @@ import { useForm } from 'react-hook-form';
 import { Archive, Camera, Search, TrendingUp, Package } from 'lucide-react';
 import { ISealedProduct } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
-import { useSearch } from '../../hooks/useSearch';
+// Removed legacy useSearch - using enhanced autocomplete only
+import { useProductAutocomplete, AutocompleteField } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import { getProductCategories } from '../../api/searchApi';
 import Button from '../common/Button';
@@ -27,6 +28,7 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import SearchDropdown from '../search/SearchDropdown';
+import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -53,24 +55,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   isEditing = false,
 }) => {
   const { addSealedProduct, updateSealedProduct, loading } = useCollection();
-  const {
-    setName,
-    cardProductName: productName,
-    suggestions,
-    activeField,
-    selectedCardData: selectedProductData,
-    updateSetName,
-    updateCardProductName: updateProductName,
-    handleSuggestionSelect,
-    setActiveField,
-    getBestMatch,
-    setSearchMode,
-  } = useSearch();
   
-  // Set search mode to 'products' for sealed product form
-  useEffect(() => {
-    setSearchMode('products');
-  }, [setSearchMode]);
+  // Removed legacy useSearch dependency - using enhanced autocomplete only
+
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -78,6 +65,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
   const [productCategories, setProductCategories] = useState<Array<{value: string, label: string}>>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
+  const [selectedProductData, setSelectedProductData] = useState<any>(null);
 
   const {
     register,
@@ -85,6 +73,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
@@ -97,6 +86,34 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     },
   });
 
+  // Configure autocomplete fields for reusable search (after useForm hook)
+  const autocompleteFields: AutocompleteField[] = [
+    {
+      id: 'setName',
+      value: watch('setName') || '',
+      placeholder: 'Set Name',
+      type: 'set',
+      required: true
+    },
+    {
+      id: 'productName',
+      value: watch('productName') || '',
+      placeholder: 'Product Name',
+      type: 'cardProduct',
+      required: true
+    }
+  ];
+
+  // Initialize enhanced autocomplete for products
+  const enhancedAutocomplete = useProductAutocomplete(autocompleteFields, {
+    onSelectionChange: (selectedData) => {
+      console.log('[SEALED PRODUCT] Hook callback (should not be called):', selectedData);
+    },
+    onError: (error) => {
+      console.error('[SEALED PRODUCT] Hook error callback:', error);
+    }
+  });
+
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
     if (isEditing && initialData) {
@@ -107,58 +124,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       setValue('cardMarketPrice', initialData.cardMarketPrice?.toString() || '');
       setValue('myPrice', initialData.myPrice?.toString() || '');
       setValue('dateAdded', initialData.dateAdded || new Date().toISOString().split('T')[0]);
-      
-      // Update search state to match the loaded data
-      updateSetName(initialData.setName || '');
-      updateProductName(initialData.name || '');
     }
-  }, [isEditing, initialData, setValue, updateSetName, updateProductName]);
+  }, [isEditing, initialData, setValue]);
 
-  // Sync search state with form values
-  useEffect(() => {
-    if (setName && !isEditing) {
-      setValue('setName', setName);
-    }
-  }, [setName, setValue, isEditing]);
-
-  useEffect(() => {
-    if (productName && !isEditing) {
-      setValue('productName', productName);
-    }
-  }, [productName, setValue, isEditing]);
-
-  // Auto-fill logic when product is selected from search suggestions
-  useEffect(() => {
-    // Use selectedProductData from useSearch hook which contains the complete product data
-    if (selectedProductData && productName && activeField === null) {
-      console.log('[SEALED PRODUCT] Auto-filling from selected product:', selectedProductData);
-      
-      // Auto-fill set name if available
-      if (selectedProductData.setName) {
-        setValue('setName', selectedProductData.setName);
-      }
-      
-      // Auto-fill category if available
-      if (selectedProductData.category) {
-        setValue('category', selectedProductData.category);
-      }
-      
-      // Auto-fill availability from CardMarket reference data (actual scraped availability number)
-      if (selectedProductData.available !== undefined) {
-        setValue('availability', Number(selectedProductData.available));
-      }
-      
-      // Auto-fill CardMarket price if available (convert from EUR to DKK)
-      if (selectedProductData.price) {
-        const euroPrice = parseFloat(selectedProductData.price);
-        if (!isNaN(euroPrice)) {
-          // Convert EUR to DKK: 1 EUR = 7.46 DKK, rounded to whole number
-          const dkkPrice = Math.round(euroPrice * 7.46);
-          setValue('cardMarketPrice', dkkPrice.toString());
-        }
-      }
-    }
-  }, [selectedProductData, productName, activeField, setValue]);
+  // Removed legacy search state sync - using enhanced autocomplete only
 
   // Watch form fields for validation
   const watchedCategory = watch('category');
@@ -203,37 +172,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     setValue('myPrice', newPrice.toString());
   };
 
-  // Autocomplete event handlers
-  const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('setName', value);
-    updateSetName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleProductNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('productName', value);
-    updateProductName(value); // This will search for products, not cards
-    setShowSuggestions(true);
-  };
-
-  const handleSuggestionClick = (suggestion: unknown, fieldType: 'set' | 'cardProduct') => {
-    handleSuggestionSelect(suggestion, fieldType);
-    setShowSuggestions(false);
-  };
-
-  const handleInputFocus = (fieldType: 'set' | 'cardProduct') => {
-    setActiveField(fieldType);
-    setShowSuggestions(true);
-  };
-
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setShowSuggestions(false);
-      setActiveField(null);
-    }, 200);
-  };
+  // Removed legacy autocomplete event handlers - using enhanced autocomplete only
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
@@ -336,107 +275,106 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             <Package className='w-6 h-6 mr-3 text-slate-600' />
             Product Information
           </div>
-          {setName && (
+          {watch('setName') && (
             <div className='flex items-center text-sm text-purple-600 bg-purple-50/80 px-3 py-1 rounded-full backdrop-blur-sm'>
               <Search className='w-4 h-4 mr-1' />
-              Filtering by: {setName}
+              Filtering by: {watch('setName')}
             </div>
           )}
         </h4>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-          {/* Set Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='setName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Set Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='setName'
-                type='text'
-                {...register('setName', {
-                  required: 'Set name is required',
-                  minLength: { value: 2, message: 'Set name must be at least 2 characters' },
-                })}
-                onChange={handleSetNameChange}
-                onFocus={() => handleInputFocus('set')}
-                onBlur={handleInputBlur}
-                disabled={isEditing}
-                className={`w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
-                placeholder='e.g., Sword & Shield, Battle Styles'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.setName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.setName.message}</p>
-            )}
-
-            {/* Context7 Premium Set Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'set'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
+          {/* Enhanced Autocomplete for Hierarchical Search */}
+          <div className='md:col-span-2'>
+            <EnhancedAutocomplete
+              config={{
+                searchMode: 'products',
+                debounceMs: 200,
+                cacheEnabled: true,
+                maxSuggestions: 15,
+                minQueryLength: 1
               }}
-              searchTerm={setName}
-              loading={false}
+              fields={autocompleteFields}
+              onSelectionChange={(selectedData) => {
+                console.log('[SEALED PRODUCT] Enhanced autocomplete selection:', selectedData);
+                
+                // Store selected product data for form submission
+                setSelectedProductData(selectedData);
+                
+                // Auto-fill form fields based on selection
+                if (selectedData) {
+                  // Auto-fill set name
+                  if (selectedData.setName) {
+                    setValue('setName', selectedData.setName, { shouldValidate: true });
+                    clearErrors('setName');
+                  }
+                  
+                  // Auto-fill product name
+                  if (selectedData.name) {
+                    setValue('productName', selectedData.name, { shouldValidate: true });
+                    clearErrors('productName');
+                  }
+                  
+                  // Auto-fill category
+                  if (selectedData.category) {
+                    setValue('category', selectedData.category, { shouldValidate: true });
+                    clearErrors('category');
+                  }
+                  
+                  // Auto-fill availability
+                  if (selectedData.available !== undefined) {
+                    setValue('availability', Number(selectedData.available), { shouldValidate: true });
+                    clearErrors('availability');
+                  }
+                  
+                  // Auto-fill CardMarket price (convert EUR to DKK)
+                  if (selectedData.price) {
+                    const euroPrice = parseFloat(selectedData.price);
+                    if (!isNaN(euroPrice)) {
+                      const dkkPrice = Math.round(euroPrice * 7.46);
+                      setValue('cardMarketPrice', dkkPrice.toString(), { shouldValidate: true });
+                      clearErrors('cardMarketPrice');
+                    }
+                  }
+                  
+                  console.log('[SEALED PRODUCT] Auto-filled fields:', {
+                    setName: selectedData.setName,
+                    productName: selectedData.name,
+                    category: selectedData.category,
+                    availability: selectedData.available,
+                    cardMarketPrice: selectedData.price ? Math.round(parseFloat(selectedData.price) * 7.46) : null
+                  });
+                }
+              }}
+              onError={(error) => {
+                console.error('[SEALED PRODUCT] Enhanced autocomplete error:', error);
+              }}
+              variant="premium"
+              showMetadata={true}
+              allowClear={true}
+              disabled={isEditing}
+              className="premium-search-integration"
             />
           </div>
 
-          {/* Product Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='productName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Product Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='productName'
-                type='text'
-                {...register('productName', {
-                  required: 'Product name is required',
-                  minLength: { value: 2, message: 'Product name must be at least 2 characters' },
-                })}
-                onChange={handleProductNameChange}
-                onFocus={() => handleInputFocus('cardProduct')}
-                onBlur={handleInputBlur}
-                className='w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium'
-                placeholder='e.g., Booster Box, Elite Trainer Box'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.productName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.productName.message}</p>
-            )}
-
-            {/* Context7 Premium Product Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'cardProduct'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={productName}
-              loading={false}
+          {/* Form Registration for Enhanced Autocomplete Fields */}
+          <div className='hidden'>
+            {/* Register form fields for validation - Enhanced Autocomplete handles the UI */}
+            <input
+              {...register('setName', {
+                required: 'Set name is required',
+                minLength: { value: 2, message: 'Set name must be at least 2 characters' },
+              })}
+              value={watch('setName') || ''}
+              readOnly
+            />
+            <input
+              {...register('productName', {
+                required: 'Product name is required',
+                minLength: { value: 2, message: 'Product name must be at least 2 characters' },
+              })}
+              value={watch('productName') || ''}
+              readOnly
             />
           </div>
 

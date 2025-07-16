@@ -8,6 +8,8 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ICard } from '../domain/models/card';
 import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
 import * as cardsApi from '../api/cardsApi';
+import { searchProductsOptimized, getProductSuggestionsOptimized } from '../api/cardMarketRefProductsApi';
+import { searchSetsOptimized, getSetSuggestionsOptimized } from '../api/setsApi';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
@@ -67,7 +69,7 @@ export interface UseSearchReturn extends SearchState {
   setSearchMode: (_mode: 'cards' | 'products') => void;
 }
 
-export const useSearch = (): UseSearchReturn => {
+export const useSearch = (useOptimizedSearch: boolean = true): UseSearchReturn => {
   const [searchMode, setSearchMode] = useState<'cards' | 'products'>('cards');
   const [state, setState] = useState<SearchState>({
     searchTerm: '',
@@ -152,13 +154,41 @@ export const useSearch = (): UseSearchReturn => {
       try {
         log(`Searching for: ${query}`);
 
-        // Use new unified search API with hierarchical filtering
-        const results = await searchApi.searchCards(
-          query,
-          state.selectedSet || undefined, // setContext
-          state.selectedCategory || undefined, // categoryContext
-          50 // limit
-        );
+        let results: CardResult[] = [];
+        
+        if (useOptimizedSearch) {
+          // Use optimized card search API
+          const searchResponse = await cardsApi.searchCardsOptimized({
+            query,
+            setName: state.selectedSet || undefined,
+            limit: 50
+          });
+          results = searchResponse.data.map(card => ({
+            _id: card._id,
+            cardName: card.cardName,
+            baseName: card.baseName,
+            variety: card.variety || '',
+            pokemonNumber: card.pokemonNumber || '',
+            setInfo: {
+              setName: card.setInfo?.setName || '',
+              year: card.setInfo?.year
+            },
+            searchScore: card.relevanceScore || card.searchScore,
+            isExactMatch: card.searchMetadata?.confidence === 'very-high',
+            relevanceScore: card.relevanceScore,
+            fuseScore: card.fuseScore,
+            searchMetadata: card.searchMetadata,
+            highlights: card.highlights
+          }));
+        } else {
+          // Use legacy search API
+          results = await searchApi.searchCards(
+            query,
+            state.selectedSet || undefined, // setContext
+            state.selectedCategory || undefined, // categoryContext
+            50 // limit
+          );
+        }
 
         // Convert CardResult[] to ICard[] for compatibility
         const cardResults: ICard[] = results.map(result => ({

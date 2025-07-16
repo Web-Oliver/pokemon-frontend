@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { searchCardMarketRefProducts } from './cardMarketRefProductsApi';
 
 // Context7 Search Performance Optimization
 const searchCache = new Map<string, {
@@ -40,6 +41,51 @@ export interface SearchResult {
   count: number;
 }
 
+export interface UnifiedSearchResult {
+  success: boolean;
+  query: string;
+  totalCount: number;
+  results: {
+    cards?: {
+      success: boolean;
+      count: number;
+      data: CardResult[];
+    };
+    products?: {
+      success: boolean;
+      count: number;
+      data: ProductResult[];
+    };
+    sets?: {
+      success: boolean;
+      count: number;
+      data: SetResult[];
+    };
+  };
+}
+
+export interface SuggestionsResult {
+  success: boolean;
+  query: string;
+  suggestions: {
+    cards?: {
+      success: boolean;
+      count: number;
+      data: CardResult[];
+    };
+    products?: {
+      success: boolean;
+      count: number;
+      data: ProductResult[];
+    };
+    sets?: {
+      success: boolean;
+      count: number;
+      data: SetResult[];
+    };
+  };
+}
+
 export interface SetResult {
   setName: string;
   year?: number;
@@ -61,6 +107,17 @@ export interface CardResult {
   };
   searchScore?: number; // Context7 enhanced scoring
   isExactMatch?: boolean; // Context7 exact match detection
+  relevanceScore?: number; // New backend relevance score
+  fuseScore?: number; // Fuse.js fuzzy matching score
+  searchMetadata?: {
+    query: string;
+    matchedFields: string[];
+    confidence: string;
+    searchType: string;
+  };
+  highlights?: {
+    [field: string]: string;
+  };
 }
 
 export interface ProductResult {
@@ -78,6 +135,20 @@ export interface ProductResult {
   };
   searchScore?: number; // Context7 enhanced scoring
   isExactMatch?: boolean; // Context7 exact match detection
+  relevanceScore?: number; // New backend relevance score
+  fuseScore?: number; // Fuse.js fuzzy matching score
+  searchMetadata?: {
+    query: string;
+    matchedFields: string[];
+    confidence: string;
+    searchType: string;
+  };
+  highlights?: {
+    [field: string]: string;
+  };
+  priceNumeric?: number; // Backend numeric price
+  displayName?: string; // Backend display name
+  isAvailable?: boolean; // Backend availability flag
 }
 
 export interface CategoryResult {
@@ -89,7 +160,380 @@ export interface CategoryResult {
 
 export const searchApi = {
   /**
-   * Context7 Enhanced Unified Hierarchical Search Endpoint
+   * New Unified Search API - searches across multiple types
+   */
+  async unifiedSearch(params: {
+    query: string;
+    types?: ('cards' | 'products' | 'sets')[];
+    limit?: number;
+    page?: number;
+    filters?: Record<string, any>;
+  }): Promise<UnifiedSearchResult> {
+    const { query, types = ['cards', 'products', 'sets'], limit = 20, page = 1, filters = {} } = params;
+
+    const processedQuery = query.trim();
+    if (!processedQuery) {
+      return {
+        success: true,
+        query,
+        totalCount: 0,
+        results: {},
+      };
+    }
+
+    const cacheKey = createCacheKey({ query: processedQuery, types, limit, page, filters });
+    const cachedEntry = searchCache.get(cacheKey);
+    if (cachedEntry && isValidCacheEntry(cachedEntry)) {
+      return cachedEntry.data;
+    }
+
+    if (pendingRequests.has(cacheKey)) {
+      return await pendingRequests.get(cacheKey)!;
+    }
+
+    const requestPromise = (async () => {
+      const queryParams = new URLSearchParams({
+        query: processedQuery,
+        types: types.join(','),
+        limit: limit.toString(),
+        page: page.toString(),
+      });
+
+      if (Object.keys(filters).length > 0) {
+        queryParams.append('filters', JSON.stringify(filters));
+      }
+
+      try {
+        const response = await apiClient.get(`/search?${queryParams.toString()}`);
+        const data = response.data;
+
+        // Cache the result
+        const ttl = 300000; // 5 minutes
+        searchCache.set(cacheKey, {
+          data,
+          timestamp: Date.now(),
+          ttl,
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Unified search API error:', error);
+        throw error;
+      }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  },
+
+  /**
+   * New Suggestions API - provides search suggestions
+   */
+  async suggest(params: {
+    query: string;
+    types?: ('cards' | 'products' | 'sets')[];
+    limit?: number;
+  }): Promise<SuggestionsResult> {
+    const { query, types = ['cards', 'products', 'sets'], limit = 5 } = params;
+
+    const processedQuery = query.trim();
+    if (!processedQuery) {
+      return {
+        success: true,
+        query,
+        suggestions: {},
+      };
+    }
+
+    const cacheKey = createCacheKey({ query: processedQuery, types, limit, endpoint: 'suggest' });
+    const cachedEntry = searchCache.get(cacheKey);
+    if (cachedEntry && isValidCacheEntry(cachedEntry)) {
+      return cachedEntry.data;
+    }
+
+    if (pendingRequests.has(cacheKey)) {
+      return await pendingRequests.get(cacheKey)!;
+    }
+
+    const requestPromise = (async () => {
+      const queryParams = new URLSearchParams({
+        query: processedQuery,
+        types: types.join(','),
+        limit: limit.toString(),
+      });
+
+      try {
+        const response = await apiClient.get(`/search/suggest?${queryParams.toString()}`);
+        const data = response.data;
+
+        // Cache the result
+        const ttl = 180000; // 3 minutes for suggestions
+        searchCache.set(cacheKey, {
+          data,
+          timestamp: Date.now(),
+          ttl,
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Suggestions API error:', error);
+        throw error;
+      }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  },
+
+  /**
+   * New Optimized Card Search API
+   */
+  async searchCardsOptimized(params: {
+    query: string;
+    setId?: string;
+    setName?: string;
+    year?: number;
+    pokemonNumber?: string;
+    variety?: string;
+    minPsaPopulation?: number;
+    limit?: number;
+    page?: number;
+  }): Promise<{ success: boolean; query: string; count: number; data: CardResult[] }> {
+    const { query, limit = 20, page = 1, ...filters } = params;
+
+    const processedQuery = query.trim();
+    if (!processedQuery) {
+      return {
+        success: true,
+        query,
+        count: 0,
+        data: [],
+      };
+    }
+
+    const cacheKey = createCacheKey({ query: processedQuery, filters, limit, page, endpoint: 'cards' });
+    const cachedEntry = searchCache.get(cacheKey);
+    if (cachedEntry && isValidCacheEntry(cachedEntry)) {
+      return cachedEntry.data;
+    }
+
+    if (pendingRequests.has(cacheKey)) {
+      return await pendingRequests.get(cacheKey)!;
+    }
+
+    const requestPromise = (async () => {
+      const queryParams = new URLSearchParams({
+        query: processedQuery,
+        limit: limit.toString(),
+        page: page.toString(),
+      });
+
+      // Add filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      try {
+        const response = await apiClient.get(`/search/cards?${queryParams.toString()}`);
+        const data = response.data;
+
+        // Cache the result
+        const ttl = 300000; // 5 minutes
+        searchCache.set(cacheKey, {
+          data,
+          timestamp: Date.now(),
+          ttl,
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Card search API error:', error);
+        throw error;
+      }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  },
+
+  /**
+   * New Optimized Product Search API
+   */
+  async searchProductsOptimized(params: {
+    query: string;
+    category?: string;
+    setName?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    availableOnly?: boolean;
+    limit?: number;
+    page?: number;
+  }): Promise<{ success: boolean; query: string; count: number; data: ProductResult[] }> {
+    const { query, limit = 20, page = 1, ...filters } = params;
+
+    const processedQuery = query.trim();
+    if (!processedQuery) {
+      return {
+        success: true,
+        query,
+        count: 0,
+        data: [],
+      };
+    }
+
+    const cacheKey = createCacheKey({ query: processedQuery, filters, limit, page, endpoint: 'products' });
+    const cachedEntry = searchCache.get(cacheKey);
+    if (cachedEntry && isValidCacheEntry(cachedEntry)) {
+      return cachedEntry.data;
+    }
+
+    if (pendingRequests.has(cacheKey)) {
+      return await pendingRequests.get(cacheKey)!;
+    }
+
+    const requestPromise = (async () => {
+      const queryParams = new URLSearchParams({
+        query: processedQuery,
+        limit: limit.toString(),
+        page: page.toString(),
+      });
+
+      // Add filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      try {
+        const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
+        const data = response.data;
+
+        // Cache the result
+        const ttl = 300000; // 5 minutes
+        searchCache.set(cacheKey, {
+          data,
+          timestamp: Date.now(),
+          ttl,
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Product search API error:', error);
+        throw error;
+      }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  },
+
+  /**
+   * New Optimized Set Search API
+   */
+  async searchSetsOptimized(params: {
+    query: string;
+    year?: number;
+    minYear?: number;
+    maxYear?: number;
+    minPsaPopulation?: number;
+    minCardCount?: number;
+    limit?: number;
+    page?: number;
+  }): Promise<{ success: boolean; query: string; count: number; data: SetResult[] }> {
+    const { query, limit = 20, page = 1, ...filters } = params;
+
+    const processedQuery = query.trim();
+    if (!processedQuery) {
+      return {
+        success: true,
+        query,
+        count: 0,
+        data: [],
+      };
+    }
+
+    const cacheKey = createCacheKey({ query: processedQuery, filters, limit, page, endpoint: 'sets' });
+    const cachedEntry = searchCache.get(cacheKey);
+    if (cachedEntry && isValidCacheEntry(cachedEntry)) {
+      return cachedEntry.data;
+    }
+
+    if (pendingRequests.has(cacheKey)) {
+      return await pendingRequests.get(cacheKey)!;
+    }
+
+    const requestPromise = (async () => {
+      const queryParams = new URLSearchParams({
+        query: processedQuery,
+        limit: limit.toString(),
+        page: page.toString(),
+      });
+
+      // Add filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      try {
+        const response = await apiClient.get(`/search/sets?${queryParams.toString()}`);
+        const data = response.data;
+
+        // Cache the result
+        const ttl = 600000; // 10 minutes for sets
+        searchCache.set(cacheKey, {
+          data,
+          timestamp: Date.now(),
+          ttl,
+        });
+
+        return data;
+      } catch (error) {
+        console.error('Set search API error:', error);
+        throw error;
+      }
+    })();
+
+    pendingRequests.set(cacheKey, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  },
+
+  /**
+   * Context7 Enhanced Unified Hierarchical Search Endpoint (Legacy)
    */
   async search(params: {
     type: 'sets' | 'cards' | 'products' | 'categories' | 'productSets';
@@ -291,17 +735,39 @@ export const searchApi = {
 
   /**
    * Context7 Enhanced Product Set Search (for sealed products)
+   * Uses dedicated CardMarket Reference Products API for sealed products
    */
   async searchProductSets(query: string, limit: number = 15): Promise<SetResult[]> {
     console.log(`[SEARCH API DEBUG] searchProductSets() called:`, { query, limit });
-    const result = await this.search({
-      type: 'productSets',
-      q: query,
-      limit,
+    
+    // Use the dedicated CardMarket Reference Products API
+    const products = await searchCardMarketRefProducts(query, { limit });
+    
+    // Group by setName to get unique sets and count products in each
+    const setMap = new Map<string, SetResult & { counts: { products: number } }>();
+    
+    products.forEach(product => {
+      if (product.setName) {
+        if (setMap.has(product.setName)) {
+          // Increment count for existing set
+          const existingSet = setMap.get(product.setName)!;
+          existingSet.counts.products++;
+        } else {
+          // Create new set entry
+          setMap.set(product.setName, {
+            setName: product.setName,
+            score: this.calculateSearchScore(product, query, 'sets'),
+            source: 'products',
+            isExactMatch: this.isExactMatch(product, query, 'sets'),
+            searchScore: this.calculateSearchScore(product, query, 'sets'),
+            counts: { products: 1 }
+          });
+        }
+      }
     });
     
     // Context7 Product Set-Specific Result Enhancement
-    const enhancedResults = (result.results as SetResult[])
+    const enhancedResults = Array.from(setMap.values())
       .sort((a, b) => {
         // Prioritize exact matches
         if (a.isExactMatch && !b.isExactMatch) return -1;
@@ -310,7 +776,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 15); // Context7 optimal limit
+      .slice(0, limit); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchProductSets() returning:`, enhancedResults);
     return enhancedResults;
@@ -365,6 +831,7 @@ export const searchApi = {
 
   /**
    * Context7 Enhanced Product Search (optionally filtered by set and/or category)
+   * Uses dedicated CardMarket Reference Products API for sealed products
    */
   async searchProducts(
     query: string,
@@ -378,16 +845,32 @@ export const searchApi = {
       categoryContext,
       limit,
     });
-    const result = await this.search({
-      type: 'products',
-      q: query,
-      setContext,
-      categoryContext,
-      limit,
-    });
+    
+    // Use the dedicated CardMarket Reference Products API for sealed products
+    const params: any = { limit };
+    if (categoryContext) {
+      params.category = categoryContext;
+    }
+    if (setContext) {
+      params.setName = setContext;
+    }
+    
+    const products = await searchCardMarketRefProducts(query, params);
+    
+    // Transform CardMarket products to ProductResult format
+    const productResults: ProductResult[] = products.map(product => ({
+      _id: product._id,
+      name: product.name,
+      setName: product.setName,
+      category: product.category,
+      available: product.available > 0,
+      price: parseFloat(product.price?.replace(/[^0-9.,]/g, '').replace(',', '.') || '0'),
+      searchScore: this.calculateSearchScore(product, query, 'products'),
+      isExactMatch: this.isExactMatch(product, query, 'products')
+    }));
     
     // Context7 Product-Specific Result Enhancement
-    const enhancedResults = (result.results as ProductResult[])
+    const enhancedResults = productResults
       .sort((a, b) => {
         // Prioritize exact matches
         if (a.isExactMatch && !b.isExactMatch) return -1;
@@ -415,7 +898,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 15); // Context7 optimal limit
+      .slice(0, limit); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchProducts() returning:`, enhancedResults);
     return enhancedResults;
