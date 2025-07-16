@@ -19,12 +19,14 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
+  Download,
 } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import * as collectionApi from '../api/collectionApi';
+import * as exportApi from '../api/exportApi';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
@@ -36,6 +38,51 @@ const CollectionItemDetail: React.FC = () => {
   const [item, setItem] = useState<CollectionItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingZip, setDownloadingZip] = useState(false);
+
+  // ZIP download handler
+  const handleDownloadImages = async () => {
+    if (!item) return;
+
+    const { type, id } = getUrlParams();
+    if (!type || !id) return;
+
+    try {
+      setDownloadingZip(true);
+      
+      let zipBlob: Blob;
+      let filename: string;
+      const timestamp = new Date().toISOString().split('T')[0];
+      
+      switch (type) {
+        case 'psa':
+          zipBlob = await exportApi.zipPsaCardImages([id]);
+          filename = `psa-card-${getItemTitle().replace(/[^a-zA-Z0-9]/g, '-')}-${timestamp}.zip`;
+          break;
+        case 'raw':
+          zipBlob = await exportApi.zipRawCardImages([id]);
+          filename = `raw-card-${getItemTitle().replace(/[^a-zA-Z0-9]/g, '-')}-${timestamp}.zip`;
+          break;
+        case 'sealed':
+          zipBlob = await exportApi.zipSealedProductImages([id]);
+          filename = `sealed-product-${getItemTitle().replace(/[^a-zA-Z0-9]/g, '-')}-${timestamp}.zip`;
+          break;
+        default:
+          throw new Error('Unknown item type');
+      }
+      
+      exportApi.downloadBlob(zipBlob, filename);
+      showSuccessToast('Images downloaded successfully!');
+      log('[CollectionItemDetail] Images zip downloaded successfully', { itemId: id, type });
+      
+    } catch (err: any) {
+      const errorMessage = 'Failed to download images';
+      setError(errorMessage);
+      handleApiError(err, errorMessage);
+    } finally {
+      setDownloadingZip(false);
+    }
+  };
 
   // Price update handler
   const handlePriceUpdate = async (newPrice: number, date: string) => {
@@ -498,10 +545,30 @@ const CollectionItemDetail: React.FC = () => {
           {/* Left Column - Images */}
           <div className="lg:col-span-1">
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center">
-                <ImageIcon className="w-5 h-5 mr-2" />
-                Images
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-slate-900 flex items-center">
+                  <ImageIcon className="w-5 h-5 mr-2" />
+                  Images
+                </h2>
+                
+                {/* ZIP Download Button */}
+                {item.images && item.images.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownloadImages}
+                    disabled={downloadingZip}
+                    className="flex items-center space-x-2"
+                  >
+                    {downloadingZip ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
+                  </Button>
+                )}
+              </div>
               
               <ImageSlideshow
                 images={item.images || []}

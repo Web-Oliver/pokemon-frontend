@@ -9,6 +9,7 @@ import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import * as collectionApi from '../api/collectionApi';
+import * as exportApi from '../api/exportApi';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
@@ -39,6 +40,11 @@ export interface UseCollectionReturn extends CollectionState {
   updateSealedProduct: (_id: string, _productData: Partial<ISealedProduct>) => Promise<void>;
   deleteSealedProduct: (_id: string) => Promise<void>;
   markSealedProductSold: (_id: string, _saleDetails: ISaleDetails) => Promise<void>;
+
+  // Export operations
+  downloadPsaCardImagesZip: (_cardIds?: string[]) => Promise<void>;
+  downloadRawCardImagesZip: (_cardIds?: string[]) => Promise<void>;
+  downloadSealedProductImagesZip: (_productIds?: string[]) => Promise<void>;
 
   // General operations
   refreshCollection: () => Promise<void>;
@@ -482,6 +488,99 @@ export const useCollection = (): UseCollectionReturn => {
     [setLoading, setError]
   );
 
+  /**
+   * Download PSA Card images as ZIP
+   */
+  const downloadPsaCardImagesZip = useCallback(
+    async (cardIds?: string[]) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        log('Downloading PSA card images zip...');
+        const zipBlob = await exportApi.zipPsaCardImages(cardIds);
+        
+        // Generate filename
+        const timestamp = new Date().toISOString().split('T')[0];
+        const filename = cardIds && cardIds.length > 0 
+          ? `psa-cards-selected-${timestamp}.zip`
+          : `psa-cards-all-${timestamp}.zip`;
+        
+        exportApi.downloadBlob(zipBlob, filename);
+        showSuccessToast('PSA card images downloaded successfully');
+        log('PSA card images zip downloaded successfully');
+      } catch (error) {
+        handleApiError(error, 'Failed to download PSA card images');
+        setError('Failed to download PSA card images');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  /**
+   * Download Raw Card images as ZIP
+   */
+  const downloadRawCardImagesZip = useCallback(
+    async (cardIds?: string[]) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        log('Downloading raw card images zip...');
+        const zipBlob = await exportApi.zipRawCardImages(cardIds);
+        
+        // Generate filename
+        const timestamp = new Date().toISOString().split('T')[0];
+        const filename = cardIds && cardIds.length > 0 
+          ? `raw-cards-selected-${timestamp}.zip`
+          : `raw-cards-all-${timestamp}.zip`;
+        
+        exportApi.downloadBlob(zipBlob, filename);
+        showSuccessToast('Raw card images downloaded successfully');
+        log('Raw card images zip downloaded successfully');
+      } catch (error) {
+        handleApiError(error, 'Failed to download raw card images');
+        setError('Failed to download raw card images');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
+  /**
+   * Download Sealed Product images as ZIP
+   */
+  const downloadSealedProductImagesZip = useCallback(
+    async (productIds?: string[]) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        log('Downloading sealed product images zip...');
+        const zipBlob = await exportApi.zipSealedProductImages(productIds);
+        
+        // Generate filename
+        const timestamp = new Date().toISOString().split('T')[0];
+        const filename = productIds && productIds.length > 0 
+          ? `sealed-products-selected-${timestamp}.zip`
+          : `sealed-products-all-${timestamp}.zip`;
+        
+        exportApi.downloadBlob(zipBlob, filename);
+        showSuccessToast('Sealed product images downloaded successfully');
+        log('Sealed product images zip downloaded successfully');
+      } catch (error) {
+        handleApiError(error, 'Failed to download sealed product images');
+        setError('Failed to download sealed product images');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setLoading, setError]
+  );
+
   // Load collection data on hook initialization
   useEffect(() => {
     fetchAllCollectionData();
@@ -534,6 +633,11 @@ export const useCollection = (): UseCollectionReturn => {
     updateSealedProduct,
     deleteSealedProduct,
     markSealedProductSold,
+
+    // Export operations
+    downloadPsaCardImagesZip,
+    downloadRawCardImagesZip,
+    downloadSealedProductImagesZip,
 
     // General operations
     refreshCollection,

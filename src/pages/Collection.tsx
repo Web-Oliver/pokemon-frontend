@@ -168,6 +168,7 @@ const Collection: React.FC = () => {
   };
 
 
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
       {/* Context7 Premium Background Pattern */}
@@ -218,6 +219,7 @@ const Collection: React.FC = () => {
                     <FileText className='w-5 h-5 mr-3' />
                     Select & Export
                   </button>
+
                 </div>
 
                 <button
