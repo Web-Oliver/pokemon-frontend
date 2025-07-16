@@ -389,6 +389,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 setActiveField(null);
               }}
               searchTerm={setName}
+              loading={false}
             />
           </div>
 
@@ -435,6 +436,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 setActiveField(null);
               }}
               searchTerm={productName}
+              loading={false}
             />
           </div>
 

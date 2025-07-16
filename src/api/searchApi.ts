@@ -283,7 +283,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 10); // Context7 optimal limit
+      .slice(0, 15); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchSets() returning:`, enhancedResults);
     return enhancedResults;
@@ -330,7 +330,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 10); // Context7 optimal limit
+      .slice(0, 15); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchCards() returning:`, enhancedResults);
     return enhancedResults;
@@ -388,7 +388,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 10); // Context7 optimal limit
+      .slice(0, 15); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchProducts() returning:`, enhancedResults);
     return enhancedResults;
@@ -420,7 +420,7 @@ export const searchApi = {
         // Then sort by search score
         return (b.searchScore || 0) - (a.searchScore || 0);
       })
-      .slice(0, 8); // Context7 optimal limit for categories
+      .slice(0, 15); // Context7 optimal limit for categories
       
     console.log(`[SEARCH API DEBUG] searchCategories() returning:`, enhancedResults);
     return enhancedResults;

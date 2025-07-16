@@ -12,7 +12,6 @@
  */
 
 import React, { useRef, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
 
 interface SearchSuggestion {
@@ -49,6 +48,7 @@ interface SearchDropdownProps {
   ) => void;
   onClose: () => void;
   searchTerm: string;
+  loading?: boolean;
 }
 
 const SearchDropdown: React.FC<SearchDropdownProps> = ({
@@ -58,25 +58,56 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   onSuggestionSelect,
   onClose,
   searchTerm,
+  loading = false,
 }) => {
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
-  const triggerRef = useRef<HTMLElement | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
-      // Find the input element that triggered this dropdown
-      const activeInput = document.activeElement as HTMLInputElement;
-      if (activeInput && activeInput.tagName === 'INPUT') {
-        const rect = activeInput.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY + 12, // 12px gap
-          left: rect.left + window.scrollX,
-          width: rect.width
-        });
-        triggerRef.current = activeInput;
-      }
+      setIsAnimating(true);
+      setSelectedIndex(0);
+      
+      // Add animation timeout
+      setTimeout(() => setIsAnimating(false), 300);
     }
   }, [isVisible, activeField]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isVisible || suggestions.length === 0) return;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex(prev => (prev + 1) % suggestions.length);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (selectedIndex >= 0 && selectedIndex < suggestions.length && activeField) {
+            onSuggestionSelect(suggestions[selectedIndex], activeField);
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          onClose();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isVisible, suggestions, selectedIndex, activeField, onSuggestionSelect, onClose]);
+
+  // Reset selected index when suggestions change
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [suggestions]);
   console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
     isVisible,
     activeField,
@@ -90,32 +121,33 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     })),
   });
 
-  if (!isVisible || !activeField || suggestions.length === 0) {
+  if (!isVisible || !activeField || (!loading && suggestions.length === 0)) {
     console.log(`[SEARCH DROPDOWN DEBUG] Not rendering dropdown:`, {
       isVisible,
       activeField,
       suggestionsLength: suggestions.length,
+      loading,
     });
     return null;
   }
 
   // Context7 Award-Winning Design: Premium suggestion categorization
-  const renderSuggestionIcon = () => {
+  const renderSuggestionIcon = (suggestion?: SearchSuggestion) => {
     if (activeField === 'set') {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg'>
+        <div className='w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
           <Package className='w-5 h-5 text-white' />
         </div>
       );
     } else if (activeField === 'category') {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg'>
+        <div className='w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
           <Hash className='w-5 h-5 text-white' />
         </div>
       );
     } else {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg'>
+        <div className='w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
           <Search className='w-5 h-5 text-white' />
         </div>
       );
@@ -218,20 +250,32 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     );
   };
 
-  // Context7 Award-Winning Design: Highlight search term in results
+  // Context7 Optimized: Advanced search term highlighting with fuzzy matching
   const highlightSearchTerm = (text: string, term: string) => {
     if (!term.trim()) {
       return text;
     }
 
-    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    // Create a more flexible regex that allows for partial matches
+    const searchWords = term.toLowerCase().split(/\s+/).filter(word => word.length > 0);
+    
+    if (searchWords.length === 0) {
+      return text;
+    }
+
+    // Build a regex that matches any of the search words
+    const regexPattern = searchWords.map(word => 
+      word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    ).join('|');
+    
+    const regex = new RegExp(`(${regexPattern})`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) =>
       regex.test(part) ? (
         <span
           key={index}
-          className='bg-gradient-to-r from-yellow-200 to-yellow-300 text-yellow-900 px-1 rounded font-bold'
+          className='bg-blue-100 text-blue-800 px-1 rounded font-medium'
         >
           {part}
         </span>
@@ -242,131 +286,128 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   };
 
   return (
-    <>
-      {/* Context7 Premium: Ultra-modern glass backdrop */}
+    <div className='absolute top-full left-0 right-0 z-[9999] mt-2'>
+      {/* Context7 Clean Overlay */}
       <div
-        className='fixed inset-0 z-40 bg-gradient-to-br from-slate-900/20 via-indigo-900/10 to-purple-900/20 backdrop-blur-md animate-fade-in'
+        className='fixed inset-0 z-40 bg-black/20'
         onClick={onClose}
       />
 
-      {/* Context7 Premium: Award-winning dropdown container */}
-      <div className='absolute z-[9999] w-full mt-3 animate-slide-down'>
-        <div className='relative bg-white/95 backdrop-blur-2xl border border-white/30 rounded-3xl shadow-premium max-h-96 group'>
-          {/* Premium animated gradient border */}
-          <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-purple-500/30 to-blue-500/30 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
-          <div className='absolute inset-[1px] bg-white/98 backdrop-blur-2xl rounded-3xl'></div>
-
-          {/* Premium floating particles */}
-          <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-            <div className='absolute top-1/4 left-1/6 w-1 h-1 bg-indigo-300/40 rounded-full animate-float'></div>
-            <div className='absolute top-3/4 right-1/4 w-0.5 h-0.5 bg-purple-300/30 rounded-full animate-bounce delay-200'></div>
-            <div className='absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-blue-300/25 rounded-full animate-pulse delay-300'></div>
-          </div>
-
-          {/* Context7 Premium Header */}
-          <div className='relative p-6 border-b border-slate-200/50 bg-gradient-to-r from-indigo-50/50 via-purple-50/50 to-blue-50/50'>
-            <div className='flex items-center justify-between relative z-10'>
-              <div className='flex items-center space-x-4'>
-                <div className='relative'>
-                  {renderSuggestionIcon({ cardName: 'context' })}
-                  <div className='absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse'></div>
+      {/* Context7 Clean Dropdown Container */}
+      <div className='relative z-[9999]'>
+        <div className='bg-white border border-gray-200 rounded-lg shadow-xl max-h-[480px] overflow-hidden'>
+          {/* Context7 Header */}
+          <div className='p-4 border-b border-gray-100 bg-gray-50'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center space-x-3'>
+                <div className='w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center'>
+                  {activeField === 'set' && <Package className='w-4 h-4 text-white' />}
+                  {activeField === 'category' && <Hash className='w-4 h-4 text-white' />}
+                  {activeField === 'cardProduct' && <Search className='w-4 h-4 text-white' />}
                 </div>
                 <div>
-                  <h3 className='text-lg font-bold text-slate-900 tracking-wide bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
-                    {activeField === 'set' && '🎴 Pokémon Sets'}
-                    {activeField === 'category' && '📦 Product Categories'}
-                    {activeField === 'cardProduct' && '⭐ Cards & Products'}
+                  <h3 className='text-sm font-semibold text-gray-900'>
+                    {activeField === 'set' && 'Pokémon Sets'}
+                    {activeField === 'category' && 'Product Categories'}
+                    {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
-                  <p className='text-sm text-slate-600 font-medium'>
-                    <span className='inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold mr-2'>
-                      {suggestions.length}
-                    </span>
-                    premium suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm}"
+                  <p className='text-xs text-gray-500'>
+                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm}"
                   </p>
                 </div>
               </div>
 
-              {/* Context7 Premium Close Button */}
+              {/* Context7 Close Button */}
               <button
                 onClick={onClose}
-                className='w-10 h-10 bg-white/80 hover:bg-white backdrop-blur-sm rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-90 shadow-lg hover:shadow-xl border border-white/30'
+                className='w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors'
               >
-                <span className='text-slate-500 text-lg font-bold'>×</span>
+                <span className='text-gray-400 text-sm'>×</span>
               </button>
             </div>
-
-            {/* Premium shimmer effect */}
-            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
           </div>
 
-          {/* Context7 Premium Suggestions List */}
-          <div className='relative max-h-80 overflow-y-auto'>
-            {suggestions.map((suggestion, index) => {
-              const displayName = getDisplayName(suggestion);
-              const metadata = renderSuggestionMetadata(suggestion);
+          {/* Context7 Optimized Suggestions List */}
+          <div className='max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
+            {loading ? (
+              <div className='p-6 text-center'>
+                <div className='w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3'></div>
+                <p className='text-gray-600 text-sm'>Searching collection...</p>
+              </div>
+            ) : suggestions.length === 0 ? (
+              <div className='p-6 text-center'>
+                <div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                  <Search className='w-6 h-6 text-gray-400' />
+                </div>
+                <p className='text-gray-600 text-sm mb-1'>No results found</p>
+                <p className='text-gray-500 text-xs'>Try searching with fewer characters</p>
+              </div>
+            ) : (
+              <div className='divide-y divide-gray-100'>
+                {suggestions.map((suggestion, index) => {
+                  const displayName = getDisplayName(suggestion);
+                  const metadata = renderSuggestionMetadata(suggestion);
+                  const isSelected = selectedIndex === index;
 
-              return (
-                <button
-                  key={suggestion._id || suggestion.id || `${activeField}-${index}`}
-                  onClick={() => {
-                    console.log(`[SEARCH DROPDOWN DEBUG] Suggestion clicked:`, {
-                      suggestion,
-                      activeField,
-                      displayName: getDisplayName(suggestion),
-                    });
-                    onSuggestionSelect(suggestion, activeField);
-                  }}
-                  className='w-full group relative p-5 hover:bg-gradient-to-r hover:from-indigo-50/70 hover:via-purple-50/70 hover:to-blue-50/70 focus:bg-gradient-to-r focus:from-indigo-50 focus:via-purple-50 focus:to-blue-50 focus:outline-none transition-all duration-300 border-b border-slate-200/30 last:border-b-0 hover:scale-102 hover:shadow-lg'
-                >
-                  {/* Context7 Premium Hover Effects */}
-                  <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-blue-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-blue-500/5 transition-all duration-300 rounded-2xl'></div>
+                  return (
+                    <button
+                      key={suggestion._id || suggestion.id || `${activeField}-${index}`}
+                      onClick={() => {
+                        console.log(`[SEARCH DROPDOWN DEBUG] Suggestion clicked:`, {
+                          suggestion,
+                          activeField,
+                          displayName: getDisplayName(suggestion),
+                        });
+                        onSuggestionSelect(suggestion, activeField);
+                      }}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      className={`w-full text-left p-3 transition-colors duration-150 focus:outline-none ${
+                        isSelected
+                          ? 'bg-blue-50 border-l-4 border-blue-500'
+                          : 'hover:bg-gray-50 border-l-4 border-transparent'
+                      }`}
+                    >
+                      <div className='flex items-center space-x-3'>
+                        <div className='w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center flex-shrink-0'>
+                          {activeField === 'set' && <Package className='w-3 h-3 text-white' />}
+                          {activeField === 'category' && <Hash className='w-3 h-3 text-white' />}
+                          {activeField === 'cardProduct' && <Search className='w-3 h-3 text-white' />}
+                        </div>
 
-                  {/* Premium floating indicator */}
-                  <div className='absolute left-2 top-1/2 transform -translate-y-1/2 w-1 h-0 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full group-hover:h-8 transition-all duration-300'></div>
+                        <div className='flex-1 min-w-0'>
+                          <h4 className={`text-sm font-medium ${
+                            isSelected ? 'text-blue-900' : 'text-gray-900'
+                          }`}>
+                            {highlightSearchTerm(displayName, searchTerm)}
+                          </h4>
 
-                  <div className='relative flex items-center justify-between'>
-                    <div className='flex items-center space-x-4 flex-1 min-w-0'>
-                      <div className='relative'>
-                        {renderSuggestionIcon(suggestion)}
-                        {/* Premium pulse effect */}
-                        <div className='absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 rounded-xl opacity-0 group-hover:opacity-100 animate-pulse'></div>
-                      </div>
+                          {/* Context7 Metadata */}
+                          {metadata.length > 0 && (
+                            <div className='flex flex-wrap items-center gap-1 mt-1'>
+                              {metadata}
+                            </div>
+                          )}
 
-                      <div className='flex-1 min-w-0 text-left'>
-                        {/* Context7 Premium Main Text */}
-                        <h4 className='text-base font-bold text-slate-900 truncate mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
-                          {highlightSearchTerm(displayName, searchTerm)}
-                        </h4>
-
-                        {/* Context7 Premium Metadata Badges */}
-                        {metadata.length > 0 && (
-                          <div className='flex flex-wrap items-center gap-2 mb-2'>{metadata}</div>
-                        )}
-
-                        {/* Context7 Premium Additional Context */}
-                        {activeField === 'cardProduct' && suggestion.pokemonNumber && (
-                          <p className='text-xs text-slate-500 font-medium'>
-                            <span className='inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 rounded-full'>
+                          {/* Additional Context */}
+                          {activeField === 'cardProduct' && suggestion.pokemonNumber && (
+                            <p className='text-xs text-gray-500 mt-1'>
                               Pokémon #{suggestion.pokemonNumber}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                            </p>
+                          )}
+                        </div>
 
-                    {/* Context7 Premium Action Indicator */}
-                    <div className='flex items-center space-x-2'>
-                      <div className='w-6 h-6 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center group-hover:from-indigo-200 group-hover:to-purple-200 transition-all duration-300'>
-                        <div className='w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full'></div>
+                        {/* Selection indicator */}
+                        <div className='flex items-center'>
+                          <div className={`w-2 h-2 rounded-full transition-colors ${
+                            isSelected ? 'bg-blue-500' : 'bg-gray-300'
+                          }`}></div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Premium selection shimmer */}
-                  <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-out'></div>
-                </button>
-              );
-            })}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Premium footer with keyboard shortcuts */}
@@ -391,7 +432,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
         </div>
       </div>
 
-      {/* Custom scrollbar styles */}
+      {/* Custom scrollbar styles and animations */}
       <style jsx='true'>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -407,8 +448,53 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(to bottom, #2563eb, #7c3aed);
         }
+        
+        @keyframes slide-down {
+          0% {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fade-in {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-4px); }
+        }
+        
+        .animate-slide-down {
+          animation: slide-down 0.3s ease-out;
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out;
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        .shadow-premium {
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+        
+        .hover\\:scale-102:hover {
+          transform: scale(1.02);
+        }
+        
+        .scale-102 {
+          transform: scale(1.02);
+        }
       `}</style>
-    </>
+    </div>
   );
 };
 

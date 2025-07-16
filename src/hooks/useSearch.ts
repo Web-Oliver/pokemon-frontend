@@ -304,7 +304,7 @@ export const useSearch = (): UseSearchReturn => {
               relevanceScore: calculateRelevanceScore(suggestion, processedQuery, fieldType)
             }))
             .sort((a, b) => b.relevanceScore - a.relevanceScore)
-            .slice(0, 10); // Context7 optimal result limit
+            .slice(0, 15); // Context7 optimal result limit
 
           // Context7 Advanced Caching with TTL
           const cacheEntry = {
