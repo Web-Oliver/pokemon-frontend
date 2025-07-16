@@ -10,6 +10,7 @@ import { useAuction } from '../hooks/useAuction';
 import { useCollection } from '../hooks/useCollection';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { log } from '../utils/logger';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
@@ -22,6 +23,7 @@ interface UnifiedCollectionItem {
   displayName: string;
   displayPrice: number;
   displayImage?: string;
+  images?: string[];
   setName?: string;
   grade?: string;
   condition?: string;
@@ -61,6 +63,7 @@ const CreateAuction: React.FC = () => {
         displayName: `${card.cardName || 'Unknown Card'} - Grade ${card.grade}`,
         displayPrice: card.myPrice,
         displayImage: card.images?.[0],
+        images: card.images || [],
         setName: card.setName,
         grade: card.grade,
         originalItem: card,
@@ -75,6 +78,7 @@ const CreateAuction: React.FC = () => {
         displayName: `${card.cardName || 'Unknown Card'} - ${card.condition}`,
         displayPrice: card.myPrice,
         displayImage: card.images?.[0],
+        images: card.images || [],
         setName: card.setName,
         condition: card.condition,
         originalItem: card,
@@ -89,6 +93,7 @@ const CreateAuction: React.FC = () => {
         displayName: `${product.name || 'Unknown Product'} - ${product.setName}`,
         displayPrice: product.myPrice,
         displayImage: product.images?.[0],
+        images: product.images || [],
         setName: product.setName,
         category: product.category,
         originalItem: product,
@@ -539,7 +544,7 @@ const CreateAuction: React.FC = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto rounded-2xl bg-slate-50/50 p-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-2xl bg-slate-50/50 p-4'>
                       {filteredItems.map((item) => {
                         const isSelected = selectedItemIds.has(item.id);
                         return (
@@ -561,16 +566,17 @@ const CreateAuction: React.FC = () => {
                               )}
                             </div>
 
-                            {/* Item Image */}
-                            {item.displayImage && (
-                              <div className='w-full h-24 mb-3 rounded-xl overflow-hidden bg-slate-100'>
-                                <img
-                                  src={item.displayImage}
-                                  alt={item.displayName}
-                                  className='w-full h-full object-cover'
-                                />
-                              </div>
-                            )}
+                            {/* Item Image Slideshow */}
+                            <div className='w-full mb-3'>
+                              <ImageSlideshow
+                                images={item.images || []}
+                                fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
+                                autoplay={false}
+                                autoplayDelay={3000}
+                                className="h-96"
+                                showThumbnails={false}
+                              />
+                            </div>
 
                             {/* Item Details */}
                             <div className='space-y-2'>

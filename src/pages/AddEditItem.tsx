@@ -128,9 +128,30 @@ const AddEditItem: React.FC = () => {
 
   // Handle successful form submission
   const handleFormSuccess = () => {
-    // Dispatch custom event to notify collection page of updates
+    // Set a flag in sessionStorage to indicate collection needs refresh
+    sessionStorage.setItem('collectionNeedsRefresh', 'true');
+    
+    // Also dispatch event for any already-mounted collection pages
     window.dispatchEvent(new CustomEvent('collectionUpdated'));
-    handleBackToCollection();
+    
+    if (isEditing && itemData) {
+      // For editing, redirect back to the item detail page
+      const currentPath = window.location.pathname;
+      const pathParts = currentPath.split('/');
+      if (pathParts.length === 5) {
+        const [, , , type, id] = pathParts;
+        const itemViewPath = `/collection/${type}/${id}`;
+        console.log('[EDIT SUCCESS] Redirecting to item view:', itemViewPath);
+        window.history.pushState({}, '', itemViewPath);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      } else {
+        // Fallback to collection if path parsing fails
+        handleBackToCollection();
+      }
+    } else {
+      // For new items, navigate back to collection
+      handleBackToCollection();
+    }
   };
 
   // Handle form cancellation
@@ -178,7 +199,7 @@ const AddEditItem: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative'>
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -192,7 +213,7 @@ const AddEditItem: React.FC = () => {
       <div className='relative z-10 p-8'>
         <div className='max-w-5xl mx-auto space-y-8'>
           {/* Context7 Premium Page Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative'>
             <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5'></div>
             <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500'></div>
 
@@ -255,7 +276,7 @@ const AddEditItem: React.FC = () => {
 
           {/* Context7 Premium Item Type Selection */}
           {!loading && !error && !selectedItemType && (
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative'>
               <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-indigo-50/50'></div>
 
               <div className='mb-8 relative z-10'>
@@ -325,7 +346,7 @@ const AddEditItem: React.FC = () => {
 
           {/* Context7 Premium Selected Form */}
           {!loading && !error && selectedItemType && (
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative'>
               <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
 
               <div className='flex items-center justify-between mb-8 relative z-10'>

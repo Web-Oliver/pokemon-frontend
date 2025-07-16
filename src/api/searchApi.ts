@@ -175,3 +175,58 @@ export const searchApi = {
     return result.results;
   },
 };
+
+/**
+ * Get all available product categories from the backend (actual enum values)
+ */
+export const getProductCategories = async (): Promise<Array<{value: string, label: string}>> => {
+  try {
+    // Use the actual backend enum categories from SealedProduct model
+    return [
+      { value: 'Blisters', label: 'Blisters' },
+      { value: 'Booster-Boxes', label: 'Booster Boxes' },
+      { value: 'Boosters', label: 'Booster Packs' },
+      { value: 'Box-Sets', label: 'Box Sets' },
+      { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
+      { value: 'Theme-Decks', label: 'Theme Decks' },
+      { value: 'Tins', label: 'Tins' },
+      { value: 'Trainer-Kits', label: 'Trainer Kits' },
+    ];
+  } catch (error) {
+    console.error('Failed to fetch product categories:', error);
+    // Fallback to the same categories if API fails
+    return [
+      { value: 'Blisters', label: 'Blisters' },
+      { value: 'Booster-Boxes', label: 'Booster Boxes' },
+      { value: 'Boosters', label: 'Booster Packs' },
+      { value: 'Box-Sets', label: 'Box Sets' },
+      { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
+      { value: 'Theme-Decks', label: 'Theme Decks' },
+      { value: 'Tins', label: 'Tins' },
+      { value: 'Trainer-Kits', label: 'Trainer Kits' },
+    ];
+  }
+};
+
+/**
+ * Get all available availability options (availability is a NUMBER in backend)
+ */
+export const getAvailabilityOptions = async (): Promise<Array<{value: number, label: string}>> => {
+  try {
+    // Availability is stored as a number in the backend
+    return [
+      { value: 0, label: 'Out of Stock' },
+      { value: 1, label: 'Low Stock (1)' },
+      { value: 5, label: 'Medium Stock (5)' },
+      { value: 10, label: 'High Stock (10+)' },
+    ];
+  } catch (error) {
+    console.error('Failed to fetch availability options:', error);
+    return [
+      { value: 0, label: 'Out of Stock' },
+      { value: 1, label: 'Low Stock (1)' },
+      { value: 5, label: 'Medium Stock (5)' },
+      { value: 10, label: 'High Stock (10+)' },
+    ];
+  }
+};

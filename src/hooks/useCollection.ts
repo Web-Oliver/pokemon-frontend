@@ -157,19 +157,46 @@ export const useCollection = (): UseCollectionReturn => {
       setError(null);
 
       try {
-        log(`Updating PSA graded card ${id}...`);
+        log(`[useCollection] Updating PSA graded card ${id}...`);
+        log(`[useCollection] Update data:`, cardData);
         const updatedCard = await collectionApi.updatePsaGradedCard(id, cardData);
+        log(`[useCollection] API response:`, updatedCard);
 
-        // Optimistic update
-        setState(prev => ({
-          ...prev,
-          psaCards: prev.psaCards.map(card => (card.id === id ? updatedCard : card)),
-          loading: false,
-        }));
+        // Ensure the updated card has the proper ID
+        const cardWithId = {
+          ...updatedCard,
+          id: updatedCard.id || (updatedCard as any)._id || id
+        };
 
-        log('PSA graded card updated successfully');
+        log(`[useCollection] Card with ensured ID:`, cardWithId);
+
+        // Debug the current state and the comparison
+        setState(prev => {
+          const cardToUpdate = prev.psaCards.find(card => card.id === id);
+          log(`[useCollection] Looking for card with ID: ${id}`);
+          log(`[useCollection] Found card:`, cardToUpdate);
+          log(`[useCollection] Current psaCards IDs:`, prev.psaCards.map(c => ({ id: c.id, _id: (c as any)._id })));
+          
+          const updatedCards = prev.psaCards.map(card => {
+            const matches = card.id === id;
+            log(`[useCollection] Card ${card.id} matches ${id}? ${matches}`);
+            return matches ? cardWithId : card;
+          });
+
+          log(`[useCollection] Updated cards count: ${updatedCards.length}`);
+          log(`[useCollection] Updated card at position:`, updatedCards.findIndex(c => c.id === id));
+
+          return {
+            ...prev,
+            psaCards: updatedCards,
+            loading: false,
+          };
+        });
+
+        log('[useCollection] PSA graded card updated successfully - state updated');
         showSuccessToast('PSA graded card updated successfully!');
       } catch (error) {
+        console.error('[useCollection] PSA update failed:', error);
         handleApiError(error, 'Failed to update PSA graded card');
         setError('Failed to update PSA graded card');
         setLoading(false);
@@ -263,17 +290,37 @@ export const useCollection = (): UseCollectionReturn => {
       setError(null);
 
       try {
-        log(`Updating raw card ${id}...`);
+        log(`[useCollection] Updating raw card ${id}...`);
+        log(`[useCollection] Update data:`, cardData);
         const updatedCard = await collectionApi.updateRawCard(id, cardData);
+        log(`[useCollection] API response:`, updatedCard);
 
-        setState(prev => ({
-          ...prev,
-          rawCards: prev.rawCards.map(card => (card.id === id ? updatedCard : card)),
-          loading: false,
-        }));
+        // Ensure the updated card has the proper ID
+        const cardWithId = {
+          ...updatedCard,
+          id: updatedCard.id || (updatedCard as any)._id || id
+        };
 
-        log('Raw card updated successfully');
+        log(`[useCollection] Raw card with ensured ID:`, cardWithId);
+
+        setState(prev => {
+          const updatedCards = prev.rawCards.map(card => {
+            const matches = card.id === id;
+            log(`[useCollection] Raw card ${card.id} matches ${id}? ${matches}`);
+            return matches ? cardWithId : card;
+          });
+
+          return {
+            ...prev,
+            rawCards: updatedCards,
+            loading: false,
+          };
+        });
+
+        log('[useCollection] Raw card updated successfully - state updated');
+        showSuccessToast('Raw card updated successfully!');
       } catch (error) {
+        console.error('[useCollection] Raw card update failed:', error);
         handleApiError(error, 'Failed to update raw card');
         setError('Failed to update raw card');
         setLoading(false);
@@ -438,6 +485,17 @@ export const useCollection = (): UseCollectionReturn => {
   // Load collection data on hook initialization
   useEffect(() => {
     fetchAllCollectionData();
+    
+    // Check if collection needs refresh after returning from add-item page
+    const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
+    if (needsRefresh === 'true') {
+      sessionStorage.removeItem('collectionNeedsRefresh');
+      log('Collection refresh requested via sessionStorage, fetching fresh data...');
+      // Small delay to ensure any pending operations complete
+      setTimeout(() => {
+        fetchAllCollectionData();
+      }, 200);
+    }
   }, [fetchAllCollectionData]);
 
   // Listen for collection update events (triggered when items are added from other pages)

@@ -62,9 +62,13 @@ export interface UseSearchReturn extends SearchState {
   // General operations
   clearSearch: () => void;
   clearError: () => void;
+  
+  // Configuration
+  setSearchMode: (_mode: 'cards' | 'products') => void;
 }
 
 export const useSearch = (): UseSearchReturn => {
+  const [searchMode, setSearchMode] = useState<'cards' | 'products'>('cards');
   const [state, setState] = useState<SearchState>({
     searchTerm: '',
     searchResults: [],
@@ -225,14 +229,26 @@ export const useSearch = (): UseSearchReturn => {
             categoryContext: state.selectedCategory || undefined,
             limit: 10,
           };
-          console.log(`[SEARCH DEBUG] Calling searchApi.searchCards with params:`, searchParams);
-          suggestions = await searchApi.searchCards(
-            query,
-            state.selectedSet || undefined, // Apply set context if available
-            state.selectedCategory || undefined, // Apply category context if available
-            10
-          );
-          console.log(`[SEARCH DEBUG] searchCards returned:`, suggestions);
+          
+          if (searchMode === 'products') {
+            console.log(`[SEARCH DEBUG] Calling searchApi.searchProducts with params:`, searchParams);
+            suggestions = await searchApi.searchProducts(
+              query,
+              state.selectedSet || undefined, // Apply set context if available
+              state.selectedCategory || undefined, // Apply category context if available
+              10
+            );
+            console.log(`[SEARCH DEBUG] searchProducts returned:`, suggestions);
+          } else {
+            console.log(`[SEARCH DEBUG] Calling searchApi.searchCards with params:`, searchParams);
+            suggestions = await searchApi.searchCards(
+              query,
+              state.selectedSet || undefined, // Apply set context if available
+              state.selectedCategory || undefined, // Apply category context if available
+              10
+            );
+            console.log(`[SEARCH DEBUG] searchCards returned:`, suggestions);
+          }
         }
 
         // Cache suggestions
@@ -250,7 +266,7 @@ export const useSearch = (): UseSearchReturn => {
         setState(prev => ({ ...prev, suggestions: [] }));
       }
     },
-    [state.selectedSet, state.selectedCategory]
+    [state.selectedSet, state.selectedCategory, searchMode]
   );
 
   /**
@@ -299,29 +315,43 @@ export const useSearch = (): UseSearchReturn => {
         );
       } else if (fieldType === 'cardProduct') {
         // Context7 pattern: Card/product selection autofills hierarchical context
-        const cardName = suggestion.cardName || suggestion.name || suggestion;
+        const itemName = suggestion.cardName || suggestion.name || suggestion;
 
-        // Store complete card data for autofill
-        const cardData = {
-          cardName,
+        // Store complete data for autofill (supports both cards and products)
+        const itemData = {
+          _id: suggestion._id, // CRITICAL: Include _id for productId reference
+          cardName: itemName,
+          name: itemName,
           pokemonNumber: suggestion.pokemonNumber || '',
-          baseName: suggestion.baseName || cardName,
+          baseName: suggestion.baseName || itemName,
           variety: suggestion.variety || '',
           setInfo: suggestion.setInfo,
           categoryInfo: suggestion.categoryInfo,
+          // Product-specific fields for sealed products
+          category: suggestion.category,
+          available: suggestion.available,
+          price: suggestion.price,
+          setName: suggestion.setName,
         };
 
         setState(prev => ({
           ...prev,
-          cardProductName: cardName,
+          cardProductName: itemName,
           suggestions: [],
           activeField: null,
-          // Store complete card data for form autofill
-          selectedCardData: cardData,
+          // Store complete item data for form autofill
+          selectedCardData: itemData,
         }));
 
-        // Auto-fill set information if available (ReactiveSearch TreeList pattern)
-        if (suggestion.setInfo && suggestion.setInfo.setName) {
+        // Auto-fill set information from product data (for sealed products)
+        if (suggestion.setName) {
+          setState(prev => ({
+            ...prev,
+            setName: suggestion.setName,
+            selectedSet: suggestion.setName,
+          }));
+          log(`Auto-filled set: ${suggestion.setName} from product selection`);
+        } else if (suggestion.setInfo && suggestion.setInfo.setName) {
           setState(prev => ({
             ...prev,
             setName: suggestion.setInfo.setName,
@@ -331,7 +361,14 @@ export const useSearch = (): UseSearchReturn => {
         }
 
         // Auto-fill category information if available
-        if (suggestion.categoryInfo && suggestion.categoryInfo.category) {
+        if (suggestion.category) {
+          setState(prev => ({
+            ...prev,
+            categoryName: suggestion.category,
+            selectedCategory: suggestion.category,
+          }));
+          log(`Auto-filled category: ${suggestion.category} from product selection`);
+        } else if (suggestion.categoryInfo && suggestion.categoryInfo.category) {
           setState(prev => ({
             ...prev,
             categoryName: suggestion.categoryInfo.category,
@@ -340,8 +377,8 @@ export const useSearch = (): UseSearchReturn => {
           log(`Auto-filled category: ${suggestion.categoryInfo.category} from product selection`);
         }
 
-        console.log(`[SEARCH DEBUG] Card data stored for autofill:`, cardData);
-        log(`Card/product selected: ${cardName} with complete data for autofill`);
+        console.log(`[SEARCH DEBUG] Item data stored for autofill:`, itemData);
+        log(`Card/product selected: ${itemName} with complete data for autofill`);
       }
     },
     []
@@ -504,5 +541,8 @@ export const useSearch = (): UseSearchReturn => {
     // General operations
     clearSearch,
     clearError,
+    
+    // Configuration
+    setSearchMode,
   };
 };

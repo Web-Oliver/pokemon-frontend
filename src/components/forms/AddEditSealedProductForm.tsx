@@ -19,6 +19,7 @@ import { ISealedProduct } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
 import { useSearch } from '../../hooks/useSearch';
 import { uploadMultipleImages } from '../../api/uploadApi';
+import { getProductCategories } from '../../api/searchApi';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -38,30 +39,12 @@ interface FormData {
   setName: string;
   productName: string;
   category: string;
-  availability: string;
+  availability: number;
   cardMarketPrice: string;
   myPrice: string;
   dateAdded: string;
 }
 
-const PRODUCT_CATEGORIES = [
-  { value: 'Booster Box', label: 'Booster Box' },
-  { value: 'Elite Trainer Box', label: 'Elite Trainer Box (ETB)' },
-  { value: 'Booster Pack', label: 'Booster Pack' },
-  { value: 'Theme Deck', label: 'Theme Deck' },
-  { value: 'Starter Deck', label: 'Starter Deck' },
-  { value: 'Tin', label: 'Tin' },
-  { value: 'Collection Box', label: 'Collection Box' },
-  { value: 'Premium Collection', label: 'Premium Collection' },
-  { value: 'Other', label: 'Other' },
-];
-
-const AVAILABILITY_OPTIONS = [
-  { value: 'In Stock', label: 'In Stock' },
-  { value: 'Out of Stock', label: 'Out of Stock' },
-  { value: 'Pre-Order', label: 'Pre-Order' },
-  { value: 'Discontinued', label: 'Discontinued' },
-];
 
 const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   onCancel,
@@ -72,20 +55,29 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const { addSealedProduct, updateSealedProduct, loading } = useCollection();
   const {
     setName,
-    cardProductName,
+    cardProductName: productName,
     suggestions,
     activeField,
+    selectedCardData: selectedProductData,
     updateSetName,
-    updateCardProductName,
+    updateCardProductName: updateProductName,
     handleSuggestionSelect,
     setActiveField,
     getBestMatch,
+    setSearchMode,
   } = useSearch();
+  
+  // Set search mode to 'products' for sealed product form
+  useEffect(() => {
+    setSearchMode('products');
+  }, [setSearchMode]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
+  const [productCategories, setProductCategories] = useState<Array<{value: string, label: string}>>([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
 
   const {
     register,
@@ -98,52 +90,97 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       setName: initialData?.setName || '',
       productName: initialData?.name || '',
       category: initialData?.category || '',
-      availability: initialData?.availability || '',
+      availability: initialData?.availability || 0,
       cardMarketPrice: initialData?.cardMarketPrice?.toString() || '',
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
     },
   });
 
+  // Update form values when initialData changes (for async data loading)
+  useEffect(() => {
+    if (isEditing && initialData) {
+      setValue('setName', initialData.setName || '');
+      setValue('productName', initialData.name || '');
+      setValue('category', initialData.category || '');
+      setValue('availability', initialData.availability || 0);
+      setValue('cardMarketPrice', initialData.cardMarketPrice?.toString() || '');
+      setValue('myPrice', initialData.myPrice?.toString() || '');
+      setValue('dateAdded', initialData.dateAdded || new Date().toISOString().split('T')[0]);
+      
+      // Update search state to match the loaded data
+      updateSetName(initialData.setName || '');
+      updateProductName(initialData.name || '');
+    }
+  }, [isEditing, initialData, setValue, updateSetName, updateProductName]);
+
   // Sync search state with form values
   useEffect(() => {
-    if (setName) {
+    if (setName && !isEditing) {
       setValue('setName', setName);
     }
-  }, [setName, setValue]);
+  }, [setName, setValue, isEditing]);
 
   useEffect(() => {
-    if (cardProductName) {
-      setValue('productName', cardProductName);
+    if (productName && !isEditing) {
+      setValue('productName', productName);
     }
-  }, [cardProductName, setValue]);
+  }, [productName, setValue, isEditing]);
 
-  // Auto-fill logic when product is selected
+  // Auto-fill logic when product is selected from search suggestions
   useEffect(() => {
-    const handleProductAutoFill = async () => {
-      if (cardProductName && activeField === null) {
-        try {
-          const bestMatch = await getBestMatch(cardProductName);
-          if (bestMatch) {
-            setValue('setName', bestMatch.setName || '');
-            setValue('category', bestMatch.category || '');
-            if (bestMatch.cardMarketPrice) {
-              setValue('cardMarketPrice', bestMatch.cardMarketPrice.toString());
-            }
-          }
-        } catch (error) {
-          console.error('Failed to auto-fill product information:', error);
+    // Use selectedProductData from useSearch hook which contains the complete product data
+    if (selectedProductData && productName && activeField === null) {
+      console.log('[SEALED PRODUCT] Auto-filling from selected product:', selectedProductData);
+      
+      // Auto-fill set name if available
+      if (selectedProductData.setName) {
+        setValue('setName', selectedProductData.setName);
+      }
+      
+      // Auto-fill category if available
+      if (selectedProductData.category) {
+        setValue('category', selectedProductData.category);
+      }
+      
+      // Auto-fill availability from CardMarket reference data (actual scraped availability number)
+      if (selectedProductData.available !== undefined) {
+        setValue('availability', Number(selectedProductData.available));
+      }
+      
+      // Auto-fill CardMarket price if available (convert from EUR to DKK)
+      if (selectedProductData.price) {
+        const euroPrice = parseFloat(selectedProductData.price);
+        if (!isNaN(euroPrice)) {
+          // Convert EUR to DKK: 1 EUR = 7.46 DKK, rounded to whole number
+          const dkkPrice = Math.round(euroPrice * 7.46);
+          setValue('cardMarketPrice', dkkPrice.toString());
         }
       }
-    };
-
-    handleProductAutoFill();
-  }, [cardProductName, activeField, getBestMatch, setValue]);
+    }
+  }, [selectedProductData, productName, activeField, setValue]);
 
   // Watch form fields for validation
   const watchedCategory = watch('category');
   const watchedPrice = watch('myPrice');
   const watchedCardMarketPrice = watch('cardMarketPrice');
+
+  // Load dynamic options from backend
+  useEffect(() => {
+    const loadOptions = async () => {
+      setLoadingOptions(true);
+      try {
+        const categories = await getProductCategories();
+        setProductCategories(categories);
+      } catch (error) {
+        console.error('Failed to load form options:', error);
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    
+    loadOptions();
+  }, []);
 
   // Update current price when form price changes
   useEffect(() => {
@@ -177,7 +214,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const handleProductNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setValue('productName', value);
-    updateCardProductName(value);
+    updateProductName(value); // This will search for products, not cards
     setShowSuggestions(true);
   };
 
@@ -202,18 +239,24 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     setIsSubmitting(true);
 
     try {
+      // Ensure a product is selected from CardMarket reference data
+      if (!selectedProductData?._id) {
+        throw new Error('Please select a product from the suggestions to ensure reference data link');
+      }
+
       // Upload images first if any are selected
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
         imageUrls = await uploadMultipleImages(selectedImages);
       }
 
-      // Prepare product data
+      // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
+        productId: selectedProductData?._id, // Required: Reference to CardMarketReferenceProduct
         setName: data.setName.trim(),
         name: data.productName.trim(),
         category: data.category,
-        availability: data.availability,
+        availability: Number(data.availability), // Convert to number as required by backend
         cardMarketPrice: data.cardMarketPrice ? parseFloat(data.cardMarketPrice) : undefined,
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
@@ -265,7 +308,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-8'>
       {/* Context7 Premium Form Header */}
-      <div className='bg-gradient-to-r from-purple-50/80 to-violet-50/80 backdrop-blur-sm border border-purple-200/50 rounded-3xl p-8 relative overflow-hidden'>
+      <div className='bg-gradient-to-r from-purple-50/80 to-violet-50/80 backdrop-blur-sm border border-purple-200/50 rounded-3xl p-8 relative'>
         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-violet-500'></div>
         <div className='absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5'></div>
 
@@ -287,10 +330,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       </div>
 
       {/* Context7 Premium Product Information Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
-
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative z-10'>
+      <div className='bg-white border border-gray-200 rounded-lg p-6'>
+        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between'>
           <div className='flex items-center'>
             <Package className='w-6 h-6 mr-3 text-slate-600' />
             Product Information
@@ -303,7 +344,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           )}
         </h4>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           {/* Set Name with Context7 Premium Search */}
           <div className='relative'>
             <label
@@ -324,7 +365,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 onChange={handleSetNameChange}
                 onFocus={() => handleInputFocus('set')}
                 onBlur={handleInputBlur}
-                className='w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium'
+                disabled={isEditing}
+                className={`w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
                 placeholder='e.g., Sword & Shield, Battle Styles'
               />
               <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors duration-300' />
@@ -392,7 +434,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 setShowSuggestions(false);
                 setActiveField(null);
               }}
-              searchTerm={cardProductName}
+              searchTerm={productName}
             />
           </div>
 
@@ -403,14 +445,15 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 required: 'Product category is required',
               })}
               error={errors.category?.message}
-              options={PRODUCT_CATEGORIES}
+              options={productCategories}
+              disabled={loadingOptions}
             />
             {watchedCategory && (
               <div className='mt-3 p-3 bg-purple-50/80 border border-purple-200/50 rounded-xl backdrop-blur-sm'>
                 <div className='flex items-center'>
                   <Archive className='w-4 h-4 text-purple-600 mr-2' />
                   <span className='text-sm text-purple-800 font-bold'>
-                    Category: {PRODUCT_CATEGORIES.find(c => c.value === watchedCategory)?.label}
+                    Category: {productCategories.find(c => c.value === watchedCategory)?.label}
                   </span>
                 </div>
               </div>
@@ -418,20 +461,29 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           </div>
 
           <div>
-            <Select
-              label='Availability'
+            <Input
+              label='Availability (from CardMarket)'
+              type='number'
+              min='0'
               {...register('availability', {
                 required: 'Availability is required',
+                min: { value: 0, message: 'Availability must be non-negative' },
               })}
               error={errors.availability?.message}
-              options={AVAILABILITY_OPTIONS}
+              placeholder='0'
+              disabled={!!selectedProductData} // Disable if auto-filled from reference data
             />
+            {selectedProductData && (
+              <div className='mt-2 text-sm text-purple-600 font-semibold'>
+                Auto-filled from CardMarket: {selectedProductData.available} available
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Context7 Premium Pricing & Investment Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
         <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-purple-50/50'></div>
 
         <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
@@ -444,21 +496,26 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             <Input
               label='CardMarket Price (kr.)'
               type='number'
-              step='0.01'
+              step='1'
               min='0'
               {...register('cardMarketPrice', {
                 min: { value: 0, message: 'Price must be non-negative' },
                 pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format',
+                  value: /^\d+$/,
+                  message: 'Price must be a whole number',
                 },
               })}
               error={errors.cardMarketPrice?.message}
-              placeholder='0.00'
+              placeholder='0'
             />
             {watchedCardMarketPrice && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
-                Market: ${parseFloat(watchedCardMarketPrice || '0').toFixed(2)}
+                Market: {parseFloat(watchedCardMarketPrice || '0')} kr.
+              </div>
+            )}
+            {selectedProductData && selectedProductData.price && (
+              <div className='mt-2 text-sm text-green-600 font-semibold'>
+                Converted from €{selectedProductData.price} EUR → {Math.round(parseFloat(selectedProductData.price) * 7.46)} kr.
               </div>
             )}
           </div>
@@ -528,7 +585,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       </div>
 
       {/* Context7 Premium Image Upload Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
         <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
 
         <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>

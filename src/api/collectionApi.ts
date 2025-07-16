@@ -25,15 +25,20 @@ const mapItemIds = (item: any): any => {
   if (typeof item === 'object') {
     const newItem = { ...item };
     
-    // Map _id to id for the current object
-    if (newItem._id && !newItem.id) {
+    // Map _id to id for the current object, ensuring we always have an id field
+    if (newItem._id) {
+      newItem.id = newItem._id;
+      // Keep _id for debugging but ensure id is primary
+    } else if (!newItem.id && newItem._id) {
       newItem.id = newItem._id;
     }
 
     // Recursively process nested objects
     Object.keys(newItem).forEach(key => {
-      if (typeof newItem[key] === 'object' && newItem[key] !== null) {
+      if (typeof newItem[key] === 'object' && newItem[key] !== null && !Array.isArray(newItem[key])) {
         newItem[key] = mapItemIds(newItem[key]);
+      } else if (Array.isArray(newItem[key])) {
+        newItem[key] = newItem[key].map((arrayItem: any) => mapItemIds(arrayItem));
       }
     });
 

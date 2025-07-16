@@ -11,7 +11,8 @@
  * Following CLAUDE.md principles for separation of concerns
  */
 
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
 
 interface SearchSuggestion {
@@ -58,6 +59,24 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   onClose,
   searchTerm,
 }) => {
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isVisible) {
+      // Find the input element that triggered this dropdown
+      const activeInput = document.activeElement as HTMLInputElement;
+      if (activeInput && activeInput.tagName === 'INPUT') {
+        const rect = activeInput.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 12, // 12px gap
+          left: rect.left + window.scrollX,
+          width: rect.width
+        });
+        triggerRef.current = activeInput;
+      }
+    }
+  }, [isVisible, activeField]);
   console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
     isVisible,
     activeField,
@@ -231,8 +250,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       />
 
       {/* Context7 Premium: Award-winning dropdown container */}
-      <div className='absolute z-50 w-full mt-3 overflow-hidden animate-slide-down'>
-        <div className='relative bg-white/95 backdrop-blur-2xl border border-white/30 rounded-3xl shadow-premium max-h-96 overflow-hidden group'>
+      <div className='absolute z-[9999] w-full mt-3 animate-slide-down'>
+        <div className='relative bg-white/95 backdrop-blur-2xl border border-white/30 rounded-3xl shadow-premium max-h-96 group'>
           {/* Premium animated gradient border */}
           <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-purple-500/30 to-blue-500/30 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
           <div className='absolute inset-[1px] bg-white/98 backdrop-blur-2xl rounded-3xl'></div>

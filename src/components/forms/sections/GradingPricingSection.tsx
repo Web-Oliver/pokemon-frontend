@@ -26,6 +26,8 @@ interface GradingPricingSectionProps {
   onPriceUpdate?: (newPrice: number, date: string) => void;
   // Disable grade/condition editing when editing existing items
   disableGradeConditionEdit?: boolean;
+  // Visibility control
+  isVisible?: boolean;
 }
 
 const PSA_GRADES = [
@@ -60,7 +62,11 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
   currentPriceNumber = 0,
   onPriceUpdate,
   disableGradeConditionEdit = false,
+  isVisible = true,
 }) => {
+  if (!isVisible) {
+    return null;
+  }
   const isPsaCard = cardType === 'psa';
   const fieldName = isPsaCard ? 'grade' : 'condition';
   const options = isPsaCard ? PSA_GRADES : CARD_CONDITIONS;
@@ -138,11 +144,18 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             })}
             error={errors.myPrice?.message}
             placeholder='0.00'
+            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+            disabled={isEditing}
           />
           {currentPrice && (
-            <div className={`mt-2 text-sm ${colorScheme.accent} font-semibold`}>
-              {parseFloat(currentPrice || '0')} kr.
+            <div className={`mt-2 text-sm ${colorScheme.accent} font-semibold text-center`}>
+              Current: {parseFloat(currentPrice || '0')} kr.
             </div>
+          )}
+          {isEditing && (
+            <p className='mt-1 text-xs text-gray-500 text-center'>
+              Use price history below to update price
+            </p>
           )}
         </div>
 
@@ -152,10 +165,17 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             label='Date Added'
             type='date'
             {...register('dateAdded', {
-              required: 'Date added is required',
+              required: isEditing ? false : 'Date added is required',
             })}
             error={errors.dateAdded?.message}
+            disabled={isEditing}
+            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
           />
+          {isEditing && (
+            <p className='mt-1 text-xs text-gray-500 text-center'>
+              Date cannot be changed after adding
+            </p>
+          )}
         </div>
       </div>
 

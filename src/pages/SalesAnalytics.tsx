@@ -37,6 +37,7 @@ import {
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 
 const SalesAnalytics: React.FC = () => {
   const {
@@ -50,6 +51,7 @@ const SalesAnalytics: React.FC = () => {
     dateRange,
     setDateRange,
     refreshData,
+    exportSalesCSV,
   } = useSalesAnalytics();
 
   const [dateRangeInput, setDateRangeInput] = useState({
@@ -68,6 +70,16 @@ const SalesAnalytics: React.FC = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(Math.round(amount));
+  };
+
+  // Handle CSV export with error handling and user feedback
+  const handleExportCSV = async () => {
+    try {
+      exportSalesCSV();
+      showSuccessToast('Sales data exported successfully!');
+    } catch (error) {
+      handleApiError(error, 'Failed to export sales data');
+    }
   };
 
   // Format percentage
@@ -428,7 +440,12 @@ const SalesAnalytics: React.FC = () => {
               <div className='flex justify-between items-center'>
                 <h2 className='text-lg font-semibold text-gray-900'>Recent Sales</h2>
                 {sales && sales.length > 0 && (
-                  <Button variant='secondary' size='sm'>
+                  <Button 
+                    variant='secondary' 
+                    size='sm'
+                    onClick={handleExportCSV}
+                    disabled={loading}
+                  >
                     <Download className='w-4 h-4 mr-1' />
                     Export CSV
                   </Button>

@@ -15,6 +15,7 @@ import {
   aggregateByCategory,
   calculateTrendAnalysis,
 } from '../domain/services/SalesAnalyticsService';
+import { exportToCSV, commonCSVColumns } from '../utils/csvExport';
 import { log } from '../utils/logger';
 
 export interface DateRange {
@@ -44,6 +45,7 @@ export interface UseSalesAnalyticsResult {
   // Actions
   fetchSalesData: (_params?: DateRange) => Promise<void>;
   refreshData: () => Promise<void>;
+  exportSalesCSV: () => void;
 }
 
 /**
@@ -106,6 +108,42 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   };
 
   /**
+   * Export sales data to CSV file
+   * Following Context7 best practices for file download
+   */
+  const exportSalesCSV = () => {
+    try {
+      // Prepare data with computed values for CSV export
+      const exportData = sales.map(sale => ({
+        ...sale,
+        profit: (sale.actualSoldPrice || 0) - (sale.myPrice || 0),
+        profitMargin: sale.myPrice && sale.myPrice > 0 
+          ? (((sale.actualSoldPrice || 0) - sale.myPrice) / sale.myPrice) * 100 
+          : 0,
+      }));
+
+      // Generate filename with current date and optional date range
+      const dateStr = new Date().toISOString().split('T')[0];
+      const rangeStr = dateRange.startDate && dateRange.endDate 
+        ? `_${dateRange.startDate}_to_${dateRange.endDate}`
+        : '';
+      const filename = `sales_export_${dateStr}${rangeStr}`;
+
+      // Export using Context7 best practices
+      exportToCSV(exportData, {
+        filename,
+        columns: commonCSVColumns.sales,
+        includeHeaders: true,
+      });
+
+      log('CSV export successful', { recordCount: exportData.length, filename });
+    } catch (error) {
+      log('CSV export failed:', error);
+      throw new Error('Failed to export sales data to CSV');
+    }
+  };
+
+  /**
    * Update date range and fetch new data
    */
   const handleDateRangeChange = (range: DateRange) => {
@@ -145,6 +183,7 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
     // Actions
     fetchSalesData,
     refreshData,
+    exportSalesCSV,
   };
 };
 

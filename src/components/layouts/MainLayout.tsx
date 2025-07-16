@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Home, Package, Search, TrendingUp, Gavel, Menu, X, Zap, Sparkles, Plus, FileText, Database, Package2, Settings } from 'lucide-react';
+import { Home, Package, Search, TrendingUp, Gavel, Menu, X, Zap, Sparkles, Plus, FileText, Database, Package2 } from 'lucide-react';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -51,14 +51,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       textColor: 'text-green-600',
     },
     {
-      name: 'Search',
-      href: '/search',
-      icon: Search,
-      color: 'from-purple-400 to-pink-400',
-      bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      textColor: 'text-purple-600',
-    },
-    {
       name: 'Set Search',
       href: '/set-search',
       icon: Database,
@@ -97,14 +89,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       color: 'from-violet-400 to-purple-400',
       bgColor: 'bg-gradient-to-br from-violet-500 to-purple-500',
       textColor: 'text-violet-600',
-    },
-    {
-      name: 'Test Page',
-      href: '/test',
-      icon: Settings,
-      color: 'from-gray-400 to-slate-400',
-      bgColor: 'bg-gradient-to-br from-gray-500 to-slate-500',
-      textColor: 'text-gray-600',
     },
   ];
 

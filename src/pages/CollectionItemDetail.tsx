@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import * as collectionApi from '../api/collectionApi';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
@@ -451,40 +452,14 @@ const CollectionItemDetail: React.FC = () => {
                 Images
               </h2>
               
-              {item.images && item.images.length > 0 ? (
-                <div className="space-y-4">
-                  {item.images.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={`http://localhost:3000${image}`}
-                        alt={`${getItemTitle()} - Image ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-xl shadow-lg"
-                        onLoad={() => {
-                          console.log(`Image loaded successfully: ${image}`);
-                        }}
-                        onError={(e) => {
-                          console.error(`Failed to load image: ${image}`);
-                          console.error(`Full URL: http://localhost:3000${image}`);
-                          // Show a placeholder instead of hiding
-                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDIwMCAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTkyIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA5NkM4NyA5MC40NzcyIDkxLjQ3NzIgODYgOTcgODZDMTAyLjUyMyA4NiAxMDcgOTAuNDc3MiAxMDcgOTZDMTA3IDEwMS41MjMgMTAyLjUyMyAxMDYgOTcgMTA2Qzg3IDEwNiA4NyAxMDEuNTIzIDg3IDk2WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTE5IDEyNkM4MyAxMjYgODMgMTI2IDgzIDEyNlY5NkM4MyA5My4yMzg2IDg1LjIzODYgOTEgODggOTFIMTMyQzEzNC43NjEgOTEgMTM3IDkzLjIzODYgMTM3IDk2VjEyNkgxMTlaIiBmaWxsPSIjOUNBM0FGIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTA2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2QjczODAiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD4KPC9zdmc+';
-                          e.currentTarget.className = "w-full h-48 object-cover rounded-xl shadow-lg border-2 border-dashed border-gray-300";
-                        }}
-                      />
-                      <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                        {image}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">No images available</p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Images: {item.images ? item.images.length : 0}
-                  </p>
-                </div>
-              )}
+              <ImageSlideshow
+                images={item.images || []}
+                fallbackIcon={<ImageIcon className='w-12 h-12 text-gray-400' />}
+                autoplay={true}
+                autoplayDelay={5000}
+                className="h-[32rem]"
+                showThumbnails={true}
+              />
             </div>
           </div>
 

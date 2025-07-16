@@ -24,11 +24,11 @@ export enum SealedProductCategory {
 
 // CardMarketReferenceProduct interface
 export interface ICardMarketReferenceProduct {
-  id: string;
+  _id: string;
   name: string;
   setName: string;
-  available: boolean;
-  price: number; // CardMarket reference price
+  available: number; // Number of available items from CardMarket
+  price: string; // Price as string from CardMarket
   category: string;
   url?: string; // CardMarket URL
   lastUpdated: string; // ISO date string

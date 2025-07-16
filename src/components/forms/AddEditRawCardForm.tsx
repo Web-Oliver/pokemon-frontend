@@ -14,18 +14,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Calendar, DollarSign, Package, Camera, Search, Star } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { IRawCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
 import { useSearch } from '../../hooks/useSearch';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
-import Input from '../common/Input';
-import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
-import ImageUploader from '../ImageUploader';
-import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import SearchDropdown from '../search/SearchDropdown';
+import CardInformationSection from './sections/CardInformationSection';
+import GradingPricingSection from './sections/GradingPricingSection';
+import ImageUploadSection from './sections/ImageUploadSection';
 
 interface AddEditRawCardFormProps {
   onCancel: () => void;
@@ -45,13 +43,6 @@ interface FormData {
   dateAdded: string;
 }
 
-const CARD_CONDITIONS = [
-  { value: 'Near Mint', label: 'Near Mint (NM)' },
-  { value: 'Lightly Played', label: 'Lightly Played (LP)' },
-  { value: 'Moderately Played', label: 'Moderately Played (MP)' },
-  { value: 'Heavily Played', label: 'Heavily Played (HP)' },
-  { value: 'Damaged', label: 'Damaged (DMG)' },
-];
 
 const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   onCancel,
@@ -72,6 +63,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     setActiveField,
   } = useSearch();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
@@ -83,6 +75,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
@@ -96,18 +89,56 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     },
   });
 
+  // Update form values when initialData changes (for async data loading)
+  useEffect(() => {
+    if (isEditing && initialData) {
+      console.log('[RAW FORM] Updating form with initialData:', initialData);
+      
+      // Access card data from nested cardId object (populated by backend API)
+      const cardData = initialData.cardId;
+      const setName = cardData?.setId?.setName || initialData.setName || '';
+      const cardName = cardData?.cardName || initialData.cardName || '';
+      const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
+      const baseName = cardData?.baseName || initialData.baseName || '';
+      const variety = cardData?.variety || initialData.variety || '';
+      
+      setValue('setName', setName);
+      setValue('cardName', cardName);
+      setValue('pokemonNumber', pokemonNumber);
+      setValue('baseName', baseName);
+      setValue('variety', variety);
+      setValue('condition', initialData.condition || '');
+      setValue('myPrice', initialData.myPrice?.toString() || '');
+      setValue('dateAdded', initialData.dateAdded ? new Date(initialData.dateAdded).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+      
+      // Update search state to match the loaded data
+      updateSetName(setName);
+      updateCardProductName(cardName);
+      
+      console.log('[RAW FORM] Form values updated with:', {
+        setName,
+        cardName,
+        pokemonNumber,
+        baseName,
+        variety,
+        condition: initialData.condition,
+        myPrice: initialData.myPrice
+      });
+    }
+  }, [isEditing, initialData, setValue, updateSetName, updateCardProductName]);
+
   // Sync search state with form values
   useEffect(() => {
-    if (setName) {
+    if (setName && !isEditing) {
       setValue('setName', setName);
     }
-  }, [setName, setValue]);
+  }, [setName, setValue, isEditing]);
 
   useEffect(() => {
-    if (cardProductName) {
+    if (cardProductName && !isEditing) {
       setValue('cardName', cardProductName);
     }
-  }, [cardProductName, setValue]);
+  }, [cardProductName, setValue, isEditing]);
 
   // Auto-fill logic when card is selected
   useEffect(() => {
@@ -146,8 +177,11 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     }
   }, [watchedPrice]);
 
-  const handleImagesChange = (files: File[]) => {
+  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
     setSelectedImages(files);
+    if (remainingExistingUrls !== undefined) {
+      setRemainingExistingImages(remainingExistingUrls);
+    }
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
@@ -172,7 +206,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     setShowSuggestions(true);
   };
 
-  const handleSuggestionClick = (suggestion: unknown, fieldType: 'set' | 'cardProduct') => {
+  const handleSuggestionClick = (suggestion: any, fieldType: 'set' | 'cardProduct') => {
     handleSuggestionSelect(suggestion, fieldType);
     setShowSuggestions(false);
   };
@@ -190,48 +224,101 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log('[RAW FORM SUBMIT] ===== SUBMIT STARTED =====');
+    console.log('[RAW FORM SUBMIT] isEditing:', isEditing);
+    console.log('[RAW FORM SUBMIT] Form data received:', data);
+    console.log('[RAW FORM SUBMIT] selectedImages count:', selectedImages.length);
+    console.log('[RAW FORM SUBMIT] priceHistory:', priceHistory);
+    
     setIsSubmitting(true);
 
     try {
       // Upload images first if any are selected
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
+        console.log('[RAW FORM SUBMIT] Uploading images:', selectedImages.length);
         imageUrls = await uploadMultipleImages(selectedImages);
+        console.log('[RAW FORM SUBMIT] Images uploaded successfully:', imageUrls);
+      } else {
+        console.log('[RAW FORM SUBMIT] No new images to upload');
       }
 
       // Prepare card data
-      const cardData: Partial<IRawCard> = {
-        setName: data.setName.trim(),
-        cardName: data.cardName.trim(),
-        pokemonNumber: data.pokemonNumber.trim(),
-        baseName: data.baseName.trim(),
-        variety: data.variety.trim() || undefined,
-        condition: data.condition,
-        myPrice: parseFloat(data.myPrice),
-        dateAdded: data.dateAdded,
-        images: imageUrls,
-        priceHistory:
-          priceHistory.length > 0
-            ? priceHistory
-            : [
-                {
-                  price: parseFloat(data.myPrice),
-                  dateUpdated: new Date().toISOString(),
-                },
-              ],
-      };
+      let cardData: Partial<IRawCard>;
 
-      if (isEditing && initialData?.id) {
-        await updateRawCard(initialData.id, cardData);
+      if (isEditing) {
+        console.log('[RAW FORM SUBMIT] Processing edit - updating price and images only');
+        // For editing, only update price and images (preserve card info)
+        // Use currentPrice from price history updates, not the disabled form field
+        const priceToUse = currentPrice > 0 ? currentPrice : parseFloat(data.myPrice);
+        // Combine new uploaded images with remaining existing images
+        const finalImages = [...remainingExistingImages, ...imageUrls];
+        cardData = {
+          myPrice: priceToUse,
+          images: finalImages,
+          priceHistory: priceHistory.length > 0 ? priceHistory : initialData?.priceHistory,
+        };
+        console.log('[RAW FORM SUBMIT] Edit data prepared:', {
+          myPrice: priceToUse,
+          originalFormPrice: parseFloat(data.myPrice),
+          currentPriceFromHistory: currentPrice,
+          finalImageCount: finalImages.length,
+          remainingExistingImages: remainingExistingImages.length,
+          newUploadedImages: imageUrls.length,
+          priceHistoryCount: cardData.priceHistory?.length || 0
+        });
       } else {
-        await addRawCard(cardData);
+        console.log('[RAW FORM SUBMIT] Processing new item creation');
+        // For new items, include all card data
+        cardData = {
+          setName: data.setName.trim(),
+          cardName: data.cardName.trim(),
+          pokemonNumber: data.pokemonNumber.trim(),
+          baseName: data.baseName.trim(),
+          variety: data.variety.trim() || undefined,
+          condition: data.condition,
+          myPrice: parseFloat(data.myPrice),
+          dateAdded: data.dateAdded,
+          images: imageUrls,
+          priceHistory:
+            priceHistory.length > 0
+              ? priceHistory
+              : [
+                  {
+                    price: parseFloat(data.myPrice),
+                    dateUpdated: new Date().toISOString(),
+                  },
+                ],
+        };
       }
 
+      console.log('[RAW FORM SUBMIT] Final card data to submit:', cardData);
+      console.log('[RAW FORM SUBMIT] API call parameters:', {
+        isEditing,
+        itemId: initialData?.id,
+        updateFunction: isEditing ? 'updateRawCard' : 'addRawCard'
+      });
+
+      if (isEditing && initialData?.id) {
+        console.log('[RAW FORM SUBMIT] Calling updateRawCard with ID:', initialData.id);
+        const result = await updateRawCard(initialData.id, cardData);
+        console.log('[RAW FORM SUBMIT] Update successful, result:', result);
+      } else {
+        console.log('[RAW FORM SUBMIT] Calling addRawCard');
+        const result = await addRawCard(cardData);
+        console.log('[RAW FORM SUBMIT] Creation successful, result:', result);
+      }
+
+      console.log('[RAW FORM SUBMIT] ===== SUBMIT COMPLETED SUCCESSFULLY =====');
       onSuccess();
     } catch (error) {
-      console.error('Failed to save raw card:', error);
+      console.error('[RAW FORM SUBMIT] ===== SUBMIT FAILED =====');
+      console.error('[RAW FORM SUBMIT] Error details:', error);
+      console.error('[RAW FORM SUBMIT] Error message:', error?.message);
+      console.error('[RAW FORM SUBMIT] Error stack:', error?.stack);
     } finally {
       setIsSubmitting(false);
+      console.log('[RAW FORM SUBMIT] Submit process finished, isSubmitting set to false');
     }
   };
 
@@ -267,253 +354,46 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         </div>
       </div>
 
-      {/* Context7 Premium Card Information Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
+      {/* Card Information Section */}
+      <CardInformationSection
+        register={register}
+        errors={errors}
+        setValue={setValue}
+        clearErrors={clearErrors}
+        setName={setName}
+        suggestions={suggestions}
+        showSuggestions={showSuggestions}
+        activeField={activeField}
+        onSetNameChange={handleSetNameChange}
+        onCardNameChange={handleCardNameChange}
+        onInputFocus={handleInputFocus}
+        onInputBlur={handleInputBlur}
+        onSuggestionClick={handleSuggestionClick}
+        disabled={isEditing}
+      />
 
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative z-10'>
-          <div className='flex items-center'>
-            <Calendar className='w-6 h-6 mr-3 text-slate-600' />
-            Card Information
-          </div>
-          {setName && (
-            <div className='flex items-center text-sm text-emerald-600 bg-emerald-50/80 px-3 py-1 rounded-full backdrop-blur-sm'>
-              <Search className='w-4 h-4 mr-1' />
-              Filtering by: {setName}
-            </div>
-          )}
-        </h4>
+      {/* Condition & Pricing Section */}
+      <GradingPricingSection
+        register={register}
+        errors={errors}
+        cardType="raw"
+        currentGradeOrCondition={watchedCondition}
+        currentPrice={watchedPrice}
+        isEditing={isEditing}
+        priceHistory={priceHistory}
+        currentPriceNumber={currentPrice}
+        onPriceUpdate={handlePriceUpdate}
+        disableGradeConditionEdit={false}
+      />
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10'>
-          {/* Set Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='setName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Set Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='setName'
-                type='text'
-                {...register('setName', {
-                  required: 'Set name is required',
-                  minLength: { value: 2, message: 'Set name must be at least 2 characters' },
-                })}
-                onChange={handleSetNameChange}
-                onFocus={() => handleInputFocus('set')}
-                onBlur={handleInputBlur}
-                className='w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium'
-                placeholder='e.g., Base Set, Jungle, Fossil'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.setName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.setName.message}</p>
-            )}
-
-            {/* Context7 Premium Set Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'set'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={setName}
-            />
-          </div>
-
-          {/* Card Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='cardName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Card Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='cardName'
-                type='text'
-                {...register('cardName', {
-                  required: 'Card name is required',
-                  minLength: { value: 2, message: 'Card name must be at least 2 characters' },
-                })}
-                onChange={handleCardNameChange}
-                onFocus={() => handleInputFocus('cardProduct')}
-                onBlur={handleInputBlur}
-                className='w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium'
-                placeholder='e.g., Charizard, Pikachu'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.cardName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.cardName.message}</p>
-            )}
-
-            {/* Context7 Premium Card Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'cardProduct'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={cardProductName}
-            />
-          </div>
-
-          <div>
-            <Input
-              label='Card Number (Optional)'
-              {...register('pokemonNumber')}
-              error={errors.pokemonNumber?.message}
-              placeholder='e.g., 4, BW29, SL1, 50a, or leave empty'
-            />
-          </div>
-
-          <div>
-            <Input
-              label='Base Name'
-              {...register('baseName', {
-                required: 'Base name is required',
-              })}
-              error={errors.baseName?.message}
-              placeholder='e.g., Charizard, Pikachu'
-            />
-          </div>
-
-          <div className='md:col-span-2'>
-            <Input
-              label='Variety (Optional)'
-              {...register('variety')}
-              error={errors.variety?.message}
-              placeholder='e.g., Holo, Shadowless, 1st Edition'
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Context7 Premium Condition & Pricing Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-emerald-50/50'></div>
-
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-          <DollarSign className='w-6 h-6 mr-3 text-slate-600' />
-          Condition & Pricing
-        </h4>
-
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
-          <div>
-            <Select
-              label='Card Condition'
-              {...register('condition', {
-                required: 'Card condition is required',
-              })}
-              error={errors.condition?.message}
-              options={CARD_CONDITIONS}
-            />
-            {watchedCondition && (
-              <div className='mt-3 p-3 bg-emerald-50/80 border border-emerald-200/50 rounded-xl backdrop-blur-sm'>
-                <div className='flex items-center'>
-                  <Star className='w-4 h-4 text-emerald-600 mr-2' />
-                  <span className='text-sm text-emerald-800 font-bold'>
-                    Selected: {CARD_CONDITIONS.find(c => c.value === watchedCondition)?.label}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Input
-              label='My Price (kr.)'
-              type='number'
-              step='0.01'
-              min='0'
-              {...register('myPrice', {
-                required: 'Price is required',
-                min: { value: 0, message: 'Price must be non-negative' },
-                pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format',
-                },
-              })}
-              error={errors.myPrice?.message}
-              placeholder='0.00'
-            />
-            {watchedPrice && (
-              <div className='mt-2 text-sm text-emerald-600 font-semibold'>
-                {parseFloat(watchedPrice || '0')} kr.
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Input
-              label='Date Added'
-              type='date'
-              {...register('dateAdded', {
-                required: 'Date added is required',
-              })}
-              error={errors.dateAdded?.message}
-            />
-          </div>
-        </div>
-
-        {/* Price History Section (for editing existing cards) */}
-        {isEditing && priceHistory.length > 0 && (
-          <div className='mt-8 pt-8 border-t border-slate-200/50'>
-            <PriceHistoryDisplay
-              priceHistory={priceHistory}
-              currentPrice={currentPrice}
-              onPriceUpdate={handlePriceUpdate}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Context7 Premium Image Upload Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
-
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-          <Camera className='w-6 h-6 mr-3 text-slate-600' />
-          Card Images
-        </h4>
-
-        <div className='relative z-10'>
-          <ImageUploader
-            onImagesChange={handleImagesChange}
-            existingImageUrls={initialData?.images || []}
-            multiple={true}
-            maxFiles={8}
-            maxFileSize={5}
-          />
-
-          <div className='mt-4 p-4 bg-gradient-to-r from-slate-50/80 to-emerald-50/80 rounded-xl border border-slate-200/50 backdrop-blur-sm'>
-            <div className='text-sm text-slate-600 space-y-1'>
-              <p className='font-semibold'>• Upload up to 8 images (max 5MB each)</p>
-              <p>• Supported formats: JPG, PNG, WebP</p>
-              <p>• Include front, back, and detail shots for best results</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Image Upload Section */}
+      <ImageUploadSection
+        onImagesChange={handleImagesChange}
+        existingImageUrls={initialData?.images || []}
+        maxFiles={8}
+        maxFileSize={5}
+        title="Card Images"
+      />
 
       {/* Context7 Premium Action Buttons */}
       <div className='flex justify-end space-x-6 pt-8 border-t border-slate-200/50'>

@@ -24,7 +24,11 @@ interface CardInformationSectionProps {
   onCardNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onInputFocus: (fieldType: 'set' | 'cardProduct') => void;
   onInputBlur: () => void;
-  onSuggestionClick: (suggestion: unknown, fieldType: 'set' | 'cardProduct') => void;
+  onSuggestionClick: (suggestion: any, fieldType: 'set' | 'cardProduct') => void;
+  // Visibility control
+  isVisible?: boolean;
+  // Disable fields when editing
+  disabled?: boolean;
 }
 
 const CardInformationSection: React.FC<CardInformationSectionProps> = ({
@@ -41,7 +45,13 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
   onInputFocus,
   onInputBlur,
   onSuggestionClick,
+  isVisible = true,
+  disabled = false,
 }) => {
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <div className='bg-white border border-gray-200 rounded-lg p-6'>
       <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
@@ -75,7 +85,8 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
               onChange={onSetNameChange}
               onFocus={() => onInputFocus('set')}
               onBlur={onInputBlur}
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              disabled={disabled}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
               placeholder='e.g., Base Set, Jungle, Fossil'
             />
             <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
@@ -113,7 +124,8 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
               onChange={onCardNameChange}
               onFocus={() => onInputFocus('cardProduct')}
               onBlur={onInputBlur}
-              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              disabled={disabled}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
               placeholder='e.g., Charizard, Pikachu, Blastoise'
             />
             <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
@@ -141,6 +153,8 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
             {...register('pokemonNumber')}
             error={errors.pokemonNumber?.message}
             placeholder='e.g., 006, 025, 150'
+            disabled={disabled}
+            className={`text-center ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
           />
         </div>
 
@@ -154,6 +168,8 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
             })}
             error={errors.baseName?.message}
             placeholder='e.g., Charizard, Pikachu, Mew'
+            disabled={disabled}
+            className={`text-center ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
           />
         </div>
 
@@ -164,6 +180,8 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
             {...register('variety')}
             error={errors.variety?.message}
             placeholder='e.g., Holo, Shadowless, 1st Edition'
+            disabled={disabled}
+            className={`text-center ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
           />
         </div>
       </div>

@@ -9,7 +9,6 @@
 
 import { useState, useEffect } from 'react';
 import { log } from './utils/logger';
-import apiClient from './api/apiClient';
 import { Toaster } from 'react-hot-toast';
 
 // Layout and Pages
@@ -17,15 +16,14 @@ import MainLayout from './components/layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Collection from './pages/Collection';
 import CollectionItemDetail from './pages/CollectionItemDetail';
-import Search from './pages/Search';
 import SetSearch from './pages/SetSearch';
 import SealedProductSearch from './pages/SealedProductSearch';
 import Auctions from './pages/Auctions';
 import AuctionDetail from './pages/AuctionDetail';
 import CreateAuction from './pages/CreateAuction';
+import AuctionEdit from './pages/AuctionEdit';
 import SalesAnalytics from './pages/SalesAnalytics';
 import AddEditItem from './pages/AddEditItem';
-import TestPage from './pages/TestPage';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -55,6 +53,11 @@ function App() {
       const routePart = currentPath.split('/auctions/')[1];
       if (routePart === 'create') {
         return <CreateAuction />;
+      }
+      // Handle edit routes: /auctions/{id}/edit
+      if (routePart && routePart.includes('/edit')) {
+        const auctionId = routePart.split('/edit')[0];
+        return <AuctionEdit auctionId={auctionId} />;
       }
       if (routePart && !routePart.includes('/')) {
         return <AuctionDetail auctionId={routePart} />;
@@ -92,8 +95,6 @@ function App() {
         return <AddEditItem />;
       case '/add-item':
         return <AddEditItem />;
-      case '/search':
-        return <Search />;
       case '/sets':
         return <SetSearch />;
       case '/set-search':
@@ -104,8 +105,6 @@ function App() {
         return <Auctions />;
       case '/sales-analytics':
         return <SalesAnalytics />;
-      case '/test':
-        return <TestPage />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

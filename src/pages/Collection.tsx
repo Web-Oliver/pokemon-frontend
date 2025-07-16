@@ -11,7 +11,7 @@
  * - Loading and error state handling
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Package,
   Star,
@@ -25,9 +25,12 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
+import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { useCollection } from '../hooks/useCollection';
 import { ISaleDetails } from '../domain/models/common';
+import { IPsaGradedCard, IRawCard } from '../domain/models/card';
+import { ISealedProduct } from '../domain/models/sealedProduct';
 import { getCollectionFacebookTextFile, downloadBlob } from '../api/exportApi';
 import { showSuccessToast, showWarningToast, handleApiError } from '../utils/errorHandler';
 
@@ -62,7 +65,18 @@ const Collection: React.FC = () => {
     markPsaCardSold,
     markRawCardSold,
     markSealedProductSold,
+    refreshCollection,
   } = useCollection();
+
+  // Additional check for refresh flag when component mounts
+  useEffect(() => {
+    const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
+    if (needsRefresh === 'true') {
+      sessionStorage.removeItem('collectionNeedsRefresh');
+      console.log('[Collection] Refresh requested, fetching fresh data...');
+      refreshCollection();
+    }
+  }, [refreshCollection]);
 
   // Tab configuration for clean, maintainable tab management
   const tabs: TabConfig[] = [
@@ -125,7 +139,10 @@ const Collection: React.FC = () => {
     setSelectedItem({
       id: item.id,
       type,
-      name: item.cardName || item.name || 'Unknown Item',
+      name: (item as any).cardId?.cardName || 
+            item.cardName || 
+            item.name || 
+            'Unknown Item',
     });
     setIsMarkSoldModalOpen(true);
   };
@@ -316,20 +333,17 @@ const Collection: React.FC = () => {
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
         {data.map(
           (
-            item: {
-              _id: string;
-              cardId?: { cardName?: string; name?: string };
-              cardName?: string;
-              name?: string;
-              grade?: string;
-              condition?: string;
-              category?: string;
-              myPrice?: number;
-              sold?: boolean;
-              saleDetails?: { dateSold?: string; actualSoldPrice?: number };
-            },
+            item: IPsaGradedCard | IRawCard | ISealedProduct,
             index: number
           ) => {
+            // Ensure we have a consistent ID for the item
+            const itemId = item.id || (item as any)._id || `fallback-${index}`;
+            console.log(`[Collection] Rendering item with ID: ${itemId}`, { 
+              hasId: !!item.id, 
+              has_id: !!(item as any)._id, 
+              imageCount: item.images?.length || 0,
+              fallbackUsed: !item.id && !(item as any)._id
+            });
             // Determine item type based on item properties, especially important for sold items
             const getItemType = (item: any, activeTab: string) => {
               if (activeTab === 'psa-graded') return 'psa';
@@ -355,32 +369,32 @@ const Collection: React.FC = () => {
 
             return (
               <div
-                key={item.id || index}
+                key={itemId}
                 className='group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 hover:scale-105 hover:border-indigo-200/50 overflow-hidden'
               >
                 {/* Card Background Pattern */}
                 <div className='absolute inset-0 bg-gradient-to-br from-slate-50/50 to-indigo-50/30 opacity-60'></div>
                 
-                {/* Card Image Placeholder */}
+                {/* Card Image Slideshow */}
                 <div className='relative z-10 mb-6'>
-                  <div className='w-full h-48 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner'>
-                    <div className='w-32 h-44 bg-gradient-to-br from-indigo-300 to-purple-300 rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300'>
-                      <div className='w-24 h-32 bg-gradient-to-br from-white/80 to-indigo-50/80 rounded-lg flex items-center justify-center'>
-                        <Package className='w-8 h-8 text-indigo-600' />
-                      </div>
-                    </div>
-                  </div>
+                  <ImageSlideshow
+                    images={item.images || []}
+                    fallbackIcon={<Package className='w-8 h-8 text-indigo-600' />}
+                    autoplay={false}
+                    autoplayDelay={4000}
+                    className="h-80 group-hover:scale-105 transition-transform duration-300"
+                    showThumbnails={false}
+                  />
                 </div>
 
                 {/* Card Content */}
                 <div className='relative z-10 space-y-4'>
                   <div className='text-center'>
                     <h4 className='text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
-                      {item.cardId?.cardName ||
-                        item.cardId?.name ||
-                        item.cardName ||
-                        item.name ||
-                        'Unknown'}
+                      {(item as any).cardId?.cardName || 
+                        (item as any).cardName ||
+                        (item as any).name ||
+                        'Unknown Item'}
                     </h4>
                     
                     {/* Grade/Condition Badge */}
@@ -388,25 +402,25 @@ const Collection: React.FC = () => {
                       {activeTab === 'psa-graded' && (
                         <>
                           <Star className='w-4 h-4 mr-1 text-yellow-500' />
-                          Grade {item.grade}
+                          Grade {(item as any).grade || 'N/A'}
                         </>
                       )}
                       {activeTab === 'raw-cards' && (
                         <>
                           <Package className='w-4 h-4 mr-1 text-emerald-500' />
-                          {item.condition}
+                          {(item as any).condition || 'N/A'}
                         </>
                       )}
                       {activeTab === 'sealed-products' && (
                         <>
                           <Archive className='w-4 h-4 mr-1 text-purple-500' />
-                          {item.category}
+                          {(item as any).category || 'N/A'}
                         </>
                       )}
                       {activeTab === 'sold-items' && (
                         <>
                           <CheckCircle className='w-4 h-4 mr-1 text-green-500' />
-                          {item.saleDetails?.dateSold ? new Date(item.saleDetails.dateSold).toLocaleDateString() : 'N/A'}
+                          {(item as any).saleDetails?.dateSold ? new Date((item as any).saleDetails.dateSold).toLocaleDateString() : 'N/A'}
                         </>
                       )}
                     </div>
@@ -425,9 +439,9 @@ const Collection: React.FC = () => {
                       </div>
                     )}
                     
-                    {activeTab === 'sold-items' && item.saleDetails?.actualSoldPrice && (
+                    {activeTab === 'sold-items' && (item as any).saleDetails?.actualSoldPrice && (
                       <p className='text-sm font-medium text-green-600'>
-                        Sold: {item.saleDetails.actualSoldPrice} kr.
+                        Sold: {(item as any).saleDetails.actualSoldPrice} kr.
                       </p>
                     )}
                   </div>
@@ -436,7 +450,7 @@ const Collection: React.FC = () => {
                   <div className='flex flex-col gap-3 pt-4'>
                     {/* View Details Button - Always visible */}
                     <button
-                      onClick={() => handleViewItemDetail(item, itemType)}
+                      onClick={() => handleViewItemDetail({ ...item, id: itemId }, itemType)}
                       className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
                     >
                       <Eye className='w-5 h-5 mr-2' />
@@ -448,7 +462,7 @@ const Collection: React.FC = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleMarkAsSold(item, itemType);
+                          handleMarkAsSold({ ...item, id: itemId }, itemType);
                         }}
                         className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
                       >
@@ -546,13 +560,13 @@ const Collection: React.FC = () => {
                   <p className='text-sm font-bold text-indigo-600 tracking-wide uppercase mb-1'>
                     PSA Graded
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
+                  <div className='text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
                     {loading ? (
                       <div className='w-12 h-8 bg-slate-200 rounded-lg animate-pulse'></div>
                     ) : (
                       counts.psaGraded
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -672,7 +686,7 @@ const Collection: React.FC = () => {
           isOpen={isExportModalOpen}
           onClose={() => setIsExportModalOpen(false)}
           title='Select Items to Export'
-          maxWidth='4xl'
+          maxWidth='2xl'
         >
           <div className='space-y-6'>
             <div className='flex items-center justify-between'>
@@ -708,9 +722,9 @@ const Collection: React.FC = () => {
               {getAllCollectionItems().map(item => {
                 const itemId = item.id;
                 const isSelected = selectedItemsForExport.includes(itemId);
-                const itemType = item.grade
+                const itemType = (item as any).grade
                   ? 'PSA Graded'
-                  : item.condition
+                  : (item as any).condition
                     ? 'Raw Card'
                     : 'Sealed Product';
 
@@ -734,7 +748,10 @@ const Collection: React.FC = () => {
                         />
                         <div>
                           <h4 className='font-medium text-gray-900'>
-                            {item.cardName || item.name || 'Unknown Item'}
+                            {(item as any).cardId?.cardName || 
+                              (item as any).cardName || 
+                              (item as any).name || 
+                              'Unknown Item'}
                           </h4>
                           <p className='text-sm text-gray-500'>
                             {itemType} • {item.myPrice || '0'} kr.

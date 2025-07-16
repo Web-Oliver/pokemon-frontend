@@ -16,7 +16,7 @@ import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
 
 interface ImageUploaderProps {
-  onImagesChange: (files: File[]) => void;
+  onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
   existingImageUrls?: string[];
   multiple?: boolean;
   maxFiles?: number;
@@ -43,11 +43,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
   const [previews, setPreviews] = useState<ImagePreview[]>(() => {
     // Initialize with existing images
-    return existingImageUrls.map((url, index) => ({
-      id: `existing-${index}`,
-      url,
-      isExisting: true,
-    }));
+    return existingImageUrls.map((url, index) => {
+      // Convert relative URLs to full URLs
+      const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+      return {
+        id: `existing-${index}`,
+        url: fullUrl,
+        isExisting: true,
+      };
+    });
   });
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,12 +117,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     // Update previews
     setPreviews(prev => [...prev, ...newPreviews]);
 
-    // Update parent component with all current files
+    // Update parent component with all current files and remaining existing URLs
     const allFiles = [
       ...previews.filter(p => !p.isExisting && p.file).map(p => p.file!),
       ...newFiles,
     ];
-    onImagesChange(allFiles);
+    const remainingExistingUrls = previews
+      .filter(p => p.isExisting)
+      .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+    onImagesChange(allFiles, remainingExistingUrls);
   };
 
   // Handle file input change
@@ -174,9 +181,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const updatedPreviews = previews.filter(p => p.id !== id);
     setPreviews(updatedPreviews);
 
-    // Update parent component with remaining files
+    // Update parent component with remaining files and existing URLs
     const remainingFiles = updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!);
-    onImagesChange(remainingFiles);
+    const remainingExistingUrls = updatedPreviews
+      .filter(p => p.isExisting)
+      .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+    onImagesChange(remainingFiles, remainingExistingUrls);
   };
 
   // Open file dialog
@@ -331,11 +341,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             </div>
           </div>
 
-          <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
             {previews.map(preview => (
               <div key={preview.id} className='relative group'>
                 {/* Context7 Premium Image Container */}
-                <div className='aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative'>
+                <div className='aspect-[3/5] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative'>
                   <img
                     src={preview.url}
                     alt='Preview'

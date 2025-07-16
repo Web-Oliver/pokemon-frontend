@@ -51,11 +51,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const paddingWithIcons =
       startIcon && endIcon
-        ? 'pl-12 pr-12'
+        ? 'pl-20 pr-20'
         : startIcon
-          ? 'pl-12 pr-4'
+          ? 'pl-20 pr-4'
           : endIcon
-            ? 'pl-4 pr-12'
+            ? 'pl-4 pr-20'
             : 'px-4';
 
     const finalInputClassName = [

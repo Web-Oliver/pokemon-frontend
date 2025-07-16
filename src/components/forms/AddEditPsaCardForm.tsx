@@ -12,18 +12,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Calendar, DollarSign, Award, Camera, Search } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
 import { useSearch } from '../../hooks/useSearch';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
-import Input from '../common/Input';
-import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
-import ImageUploader from '../ImageUploader';
-import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import SearchDropdown from '../search/SearchDropdown';
+import CardInformationSection from './sections/CardInformationSection';
+import GradingPricingSection from './sections/GradingPricingSection';
+import ImageUploadSection from './sections/ImageUploadSection';
+import SaleDetailsSection from './sections/SaleDetailsSection';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -57,18 +56,6 @@ interface FormData {
   city?: string;
 }
 
-const PSA_GRADES = [
-  { value: '1', label: 'PSA 1 - Poor' },
-  { value: '2', label: 'PSA 2 - Good' },
-  { value: '3', label: 'PSA 3 - Very Good' },
-  { value: '4', label: 'PSA 4 - Very Good-Excellent' },
-  { value: '5', label: 'PSA 5 - Excellent' },
-  { value: '6', label: 'PSA 6 - Excellent-Mint' },
-  { value: '7', label: 'PSA 7 - Near Mint' },
-  { value: '8', label: 'PSA 8 - Near Mint-Mint' },
-  { value: '9', label: 'PSA 9 - Mint' },
-  { value: '10', label: 'PSA 10 - Gem Mint' },
-];
 
 const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   onCancel,
@@ -89,6 +76,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     setActiveField,
   } = useSearch();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
@@ -129,20 +117,58 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     mode: 'onChange',
   });
 
+  // Update form values when initialData changes (for async data loading)
+  useEffect(() => {
+    if (isEditing && initialData) {
+      console.log('[PSA FORM] Updating form with initialData:', initialData);
+      
+      // Access card data from nested cardId object (populated by backend API)
+      const cardData = initialData.cardId;
+      const setName = cardData?.setId?.setName || initialData.setName || '';
+      const cardName = cardData?.cardName || initialData.cardName || '';
+      const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
+      const baseName = cardData?.baseName || initialData.baseName || '';
+      const variety = cardData?.variety || initialData.variety || '';
+      
+      setValue('setName', setName);
+      setValue('cardName', cardName);
+      setValue('pokemonNumber', pokemonNumber);
+      setValue('baseName', baseName);
+      setValue('variety', variety);
+      setValue('grade', initialData.grade || '');
+      setValue('myPrice', initialData.myPrice?.toString() || '');
+      setValue('dateAdded', initialData.dateAdded ? new Date(initialData.dateAdded).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+      
+      // Update search state to match the loaded data
+      updateSetName(setName);
+      updateCardProductName(cardName);
+      
+      console.log('[PSA FORM] Form values updated with:', {
+        setName,
+        cardName,
+        pokemonNumber,
+        baseName,
+        variety,
+        grade: initialData.grade,
+        myPrice: initialData.myPrice
+      });
+    }
+  }, [isEditing, initialData, setValue, updateSetName, updateCardProductName]);
+
   // Sync search state with form values
   useEffect(() => {
-    if (setName) {
+    if (setName && !isEditing) {
       setValue('setName', setName, { shouldValidate: true });
       clearErrors('setName');
     }
-  }, [setName, setValue, clearErrors]);
+  }, [setName, setValue, clearErrors, isEditing]);
 
   useEffect(() => {
-    if (cardProductName) {
+    if (cardProductName && !isEditing) {
       setValue('cardName', cardProductName, { shouldValidate: true });
       clearErrors('cardName');
     }
-  }, [cardProductName, setValue, clearErrors]);
+  }, [cardProductName, setValue, clearErrors, isEditing]);
 
   // Auto-fill logic when card is selected
   useEffect(() => {
@@ -176,7 +202,6 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   // Watch form fields for validation
   const watchedGrade = watch('grade');
   const watchedPrice = watch('myPrice');
-  const watchedDeliveryMethod = watch('deliveryMethod');
 
   // Update current price when form price changes
   useEffect(() => {
@@ -188,8 +213,11 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     }
   }, [watchedPrice]);
 
-  const handleImagesChange = (files: File[]) => {
+  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
     setSelectedImages(files);
+    if (remainingExistingUrls !== undefined) {
+      setRemainingExistingImages(remainingExistingUrls);
+    }
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
@@ -217,7 +245,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     setShowSuggestions(true);
   };
 
-  const handleSuggestionClick = (suggestion: unknown, fieldType: 'set' | 'cardProduct') => {
+  const handleSuggestionClick = (suggestion: any, fieldType: 'set' | 'cardProduct') => {
     handleSuggestionSelect(suggestion, fieldType);
     setShowSuggestions(false);
     
@@ -243,23 +271,31 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log('[PSA FORM SUBMIT] ===== SUBMIT STARTED =====');
+    console.log('[PSA FORM SUBMIT] isEditing:', isEditing);
+    console.log('[PSA FORM SUBMIT] initialData?.sold:', initialData?.sold);
+    console.log('[PSA FORM SUBMIT] Form data received:', data);
+    console.log('[PSA FORM SUBMIT] selectedImages count:', selectedImages.length);
+    console.log('[PSA FORM SUBMIT] priceHistory:', priceHistory);
+    
     setIsSubmitting(true);
 
     try {
-      console.log('[PSA FORM SUBMIT] Form data:', data);
-      
       // Upload images first if any are selected
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
         console.log('[PSA FORM SUBMIT] Uploading images:', selectedImages.length);
         imageUrls = await uploadMultipleImages(selectedImages);
-        console.log('[PSA FORM SUBMIT] Images uploaded:', imageUrls);
+        console.log('[PSA FORM SUBMIT] Images uploaded successfully:', imageUrls);
+      } else {
+        console.log('[PSA FORM SUBMIT] No new images to upload');
       }
 
       // Prepare card data based on item status
       let cardData: Partial<IPsaGradedCard>;
       
       if (isEditing && initialData?.sold) {
+        console.log('[PSA FORM SUBMIT] Processing sold item - updating sale details only');
         // For sold items, only update sale details
         cardData = {
           saleDetails: {
@@ -280,8 +316,30 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             },
           },
         };
+      } else if (isEditing) {
+        console.log('[PSA FORM SUBMIT] Processing unsold item edit - updating price and images only');
+        // For editing unsold items, only update price and images (preserve card info)
+        // Use currentPrice from price history updates, not the disabled form field
+        const priceToUse = currentPrice > 0 ? currentPrice : parseFloat(data.myPrice);
+        // Combine new uploaded images with remaining existing images
+        const finalImages = [...remainingExistingImages, ...imageUrls];
+        cardData = {
+          myPrice: priceToUse,
+          images: finalImages,
+          priceHistory: priceHistory.length > 0 ? priceHistory : initialData?.priceHistory,
+        };
+        console.log('[PSA FORM SUBMIT] Edit data prepared:', {
+          myPrice: priceToUse,
+          originalFormPrice: parseFloat(data.myPrice),
+          currentPriceFromHistory: currentPrice,
+          finalImageCount: finalImages.length,
+          remainingExistingImages: remainingExistingImages.length,
+          newUploadedImages: imageUrls.length,
+          priceHistoryCount: cardData.priceHistory?.length || 0
+        });
       } else {
-        // For unsold items or new items, update card data
+        console.log('[PSA FORM SUBMIT] Processing new item creation');
+        // For new items, include all card data
         cardData = {
           setName: data.setName.trim(),
           cardName: data.cardName.trim(),
@@ -291,7 +349,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           grade: data.grade,
           myPrice: parseFloat(data.myPrice),
           dateAdded: new Date(data.dateAdded).toISOString(),
-          images: imageUrls.length > 0 ? imageUrls : initialData?.images,
+          images: imageUrls.length > 0 ? imageUrls : [],
           // Use the updated price history, or create initial entry for new cards
           priceHistory:
             priceHistory.length > 0
@@ -303,31 +361,36 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   },
                 ],
         };
-        
-        // For editing unsold items, preserve existing card info
-        if (isEditing) {
-          cardData = {
-            myPrice: parseFloat(data.myPrice),
-            images: imageUrls.length > 0 ? imageUrls : initialData?.images,
-            priceHistory: priceHistory.length > 0 ? priceHistory : initialData?.priceHistory,
-          };
-        }
       }
 
-      console.log('[PSA FORM SUBMIT] Card data to submit:', cardData);
+      console.log('[PSA FORM SUBMIT] Final card data to submit:', cardData);
+      console.log('[PSA FORM SUBMIT] API call parameters:', {
+        isEditing,
+        itemId: initialData?.id,
+        updateFunction: isEditing ? 'updatePsaCard' : 'addPsaCard'
+      });
 
       if (isEditing && initialData?.id) {
-        await updatePsaCard(initialData.id, cardData);
+        console.log('[PSA FORM SUBMIT] Calling updatePsaCard with ID:', initialData.id);
+        const result = await updatePsaCard(initialData.id, cardData);
+        console.log('[PSA FORM SUBMIT] Update successful, result:', result);
       } else {
-        await addPsaCard(cardData);
+        console.log('[PSA FORM SUBMIT] Calling addPsaCard');
+        const result = await addPsaCard(cardData);
+        console.log('[PSA FORM SUBMIT] Creation successful, result:', result);
       }
 
+      console.log('[PSA FORM SUBMIT] ===== SUBMIT COMPLETED SUCCESSFULLY =====');
       onSuccess();
     } catch (error) {
-      console.error('Failed to save PSA graded card:', error);
+      console.error('[PSA FORM SUBMIT] ===== SUBMIT FAILED =====');
+      console.error('[PSA FORM SUBMIT] Error details:', error);
+      console.error('[PSA FORM SUBMIT] Error message:', error?.message);
+      console.error('[PSA FORM SUBMIT] Error stack:', error?.stack);
       // Error handling is done by useCollection hook
     } finally {
       setIsSubmitting(false);
+      console.log('[PSA FORM SUBMIT] Submit process finished, isSubmitting set to false');
     }
   };
 
@@ -362,428 +425,58 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         </div>
       </div>
 
-      {/* Card Information Section - Hidden for sold items */}
-      {!(isEditing && initialData?.sold) && (
-        <div className='bg-white border border-gray-200 rounded-lg p-6'>
-        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
-          <div className='flex items-center'>
-            <Calendar className='w-5 h-5 mr-2 text-gray-600' />
-            Card Information
-          </div>
-          {setName && (
-            <div className='flex items-center text-sm text-blue-600'>
-              <Search className='w-4 h-4 mr-1' />
-              Filtering by: {setName}
-            </div>
-          )}
-        </h4>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {/* Set Name with Smart Search */}
-          <div className='relative'>
-            <label htmlFor='setName' className='block text-sm font-medium text-gray-700 mb-1'>
-              Set Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative'>
-              <input
-                id='setName'
-                type='text'
-                {...register('setName', {
-                  required: 'Set name is required',
-                  minLength: { value: 2, message: 'Set name must be at least 2 characters' },
-                })}
-                onChange={handleSetNameChange}
-                onFocus={() => handleInputFocus('set')}
-                onBlur={handleInputBlur}
-                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                placeholder='e.g., Base Set, Jungle, Fossil'
-              />
-              <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
-            </div>
-            {errors.setName && (
-              <p className='mt-1 text-sm text-red-600'>{errors.setName.message}</p>
-            )}
-
-            {/* Context7 Award-Winning Set Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'set'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={setName}
-            />
-          </div>
-
-          {/* Card Name with Smart Search */}
-          <div className='relative'>
-            <label htmlFor='cardName' className='block text-sm font-medium text-gray-700 mb-1'>
-              Card Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative'>
-              <input
-                id='cardName'
-                type='text'
-                {...register('cardName', {
-                  required: 'Card name is required',
-                  minLength: { value: 2, message: 'Card name must be at least 2 characters' },
-                })}
-                onChange={handleCardNameChange}
-                onFocus={() => handleInputFocus('cardProduct')}
-                onBlur={handleInputBlur}
-                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                placeholder='e.g., Charizard, Pikachu'
-              />
-              <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
-            </div>
-            {errors.cardName && (
-              <p className='mt-1 text-sm text-red-600'>{errors.cardName.message}</p>
-            )}
-
-            {/* Context7 Award-Winning Card/Product Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'cardProduct'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={cardProductName}
-            />
-          </div>
-
-          <div>
-            <Input
-              label='Card Number (Optional)'
-              {...register('pokemonNumber')}
-              error={errors.pokemonNumber?.message}
-              placeholder='e.g., 4, BW29, SL1, 50a, or leave empty'
-            />
-          </div>
-
-          <div>
-            <Input
-              label='Base Name'
-              {...register('baseName', {
-                required: 'Base name is required',
-              })}
-              error={errors.baseName?.message}
-              placeholder='e.g., Charizard, Pikachu'
-            />
-          </div>
-
-          <div className='md:col-span-2'>
-            <Input
-              label='Variety (Optional)'
-              {...register('variety')}
-              error={errors.variety?.message}
-              placeholder='e.g., Holo, Shadowless, 1st Edition'
-            />
-          </div>
-        </div>
-      </div>
-      )}
+      {/* Card Information Section - Disabled when editing, hidden for sold items */}
+      <CardInformationSection
+        register={register}
+        errors={errors}
+        setValue={setValue}
+        clearErrors={clearErrors}
+        setName={setName}
+        suggestions={suggestions}
+        showSuggestions={showSuggestions && !(isEditing && initialData?.sold)}
+        activeField={activeField}
+        onSetNameChange={handleSetNameChange}
+        onCardNameChange={handleCardNameChange}
+        onInputFocus={handleInputFocus}
+        onInputBlur={handleInputBlur}
+        onSuggestionClick={handleSuggestionClick}
+        isVisible={!(isEditing && initialData?.sold)}
+        disabled={isEditing}
+      />
 
       {/* Grading & Pricing Section - Hidden for sold items */}
-      {!(isEditing && initialData?.sold) && (
-        <div className='bg-white border border-gray-200 rounded-lg p-6'>
-          <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
-            <DollarSign className='w-5 h-5 mr-2 text-gray-600' />
-            {isEditing ? 'Update Price' : 'Grading & Pricing'}
-          </h4>
-
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            {/* PSA Grade - Read-only when editing unsold items */}
-            <div>
-              <Select
-                label='PSA Grade'
-                {...register('grade', {
-                  required: 'PSA grade is required',
-                })}
-                error={errors.grade?.message}
-                options={PSA_GRADES}
-                disabled={isEditing} // Disable grade editing for existing items
-              />
-              {watchedGrade && (
-                <div className='mt-2 p-2 bg-blue-50 border border-blue-200 rounded'>
-                  <span className='text-sm text-blue-800 font-medium'>
-                    Selected: {PSA_GRADES.find(g => g.value === watchedGrade)?.label}
-                  </span>
-                </div>
-              )}
-              {isEditing && (
-                <p className='mt-1 text-xs text-gray-500'>Grade cannot be changed after adding</p>
-              )}
-            </div>
-
-            {/* My Price - Always editable for unsold items */}
-            <div>
-              <Input
-                label='My Price (kr.)'
-                type='number'
-                step='0.01'
-                min='0'
-                {...register('myPrice', {
-                  required: 'Price is required',
-                  min: { value: 0, message: 'Price must be non-negative' },
-                  pattern: {
-                    value: /^\d+(\.\d{1,2})?$/,
-                    message: 'Invalid price format',
-                  },
-                })}
-                error={errors.myPrice?.message}
-                placeholder='0.00'
-              />
-              {watchedPrice && (
-                <div className='mt-2 text-sm text-gray-600'>
-                  {parseFloat(watchedPrice || '0')} kr.
-                </div>
-              )}
-            </div>
-
-          <div>
-            <Input
-              label='Date Added'
-              type='date'
-              {...register('dateAdded', {
-                required: 'Date added is required',
-              })}
-              error={errors.dateAdded?.message}
-            />
-          </div>
-        </div>
-
-        {/* Price History Section (for editing existing cards) */}
-        {isEditing && priceHistory.length > 0 && (
-          <div className='mt-6 pt-6 border-t border-gray-200'>
-            <PriceHistoryDisplay
-              priceHistory={priceHistory}
-              currentPrice={currentPrice}
-              onPriceUpdate={handlePriceUpdate}
-            />
-          </div>
-        )}
-      </div>
-      )}
+      <GradingPricingSection
+        register={register}
+        errors={errors}
+        cardType="psa"
+        currentGradeOrCondition={watchedGrade}
+        currentPrice={watchedPrice}
+        isEditing={isEditing}
+        priceHistory={priceHistory}
+        currentPriceNumber={currentPrice}
+        onPriceUpdate={handlePriceUpdate}
+        disableGradeConditionEdit={isEditing}
+        isVisible={!(isEditing && initialData?.sold)}
+      />
 
       {/* Image Upload Section - Available for unsold items only */}
-      {!(isEditing && initialData?.sold) && (
-        <div className='bg-white border border-gray-200 rounded-lg p-6'>
-        <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center'>
-          <Camera className='w-5 h-5 mr-2 text-gray-600' />
-          Card Images
-        </h4>
-
-        <ImageUploader
-          onImagesChange={handleImagesChange}
-          existingImageUrls={initialData?.images || []}
-          multiple={true}
-          maxFiles={8}
-          maxFileSize={5}
-        />
-
-        <div className='mt-3 text-sm text-gray-600'>
-          <p>• Upload up to 8 images (max 5MB each)</p>
-          <p>• Supported formats: JPG, PNG, WebP</p>
-          <p>• Include front, back, and detail shots for best results</p>
-        </div>
-      </div>
-      )}
+      <ImageUploadSection
+        onImagesChange={handleImagesChange}
+        existingImageUrls={initialData?.images || []}
+        maxFiles={8}
+        maxFileSize={5}
+        title="Card Images"
+        isVisible={!(isEditing && initialData?.sold)}
+      />
 
       {/* Sold Item Edit Section - Only for sold items */}
-      {isEditing && initialData?.sold && (
-        <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-6'>
-          <h4 className='text-lg font-medium text-yellow-900 mb-6 flex items-center'>
-            <DollarSign className='w-5 h-5 mr-2 text-yellow-600' />
-            Update Sale Information
-          </h4>
-          
-          {/* Sale Details */}
-          <div className='mb-6'>
-            <h5 className='text-md font-medium text-yellow-800 mb-4'>Sale Details</h5>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              <div>
-                <Select
-                  label='Payment Method'
-                  {...register('paymentMethod')}
-                  options={[
-                    { value: '', label: 'Select payment method' },
-                    { value: 'CASH', label: 'Cash' },
-                    { value: 'Mobilepay', label: 'Mobilepay' },
-                    { value: 'BankTransfer', label: 'Bank Transfer' },
-                  ]}
-                  className='bg-white'
-                />
-              </div>
-              
-              <div>
-                <Input
-                  label='Actual Sold Price (kr.)'
-                  type='number'
-                  step='0.01'
-                  min='0'
-                  {...register('actualSoldPrice')}
-                  placeholder='0.00'
-                  className='bg-white'
-                />
-              </div>
-              
-              <div>
-                <Select
-                  label='Source'
-                  {...register('source')}
-                  options={[
-                    { value: '', label: 'Select source' },
-                    { value: 'Facebook', label: 'Facebook' },
-                    { value: 'DBA', label: 'DBA' },
-                  ]}
-                  className='bg-white'
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Delivery Method */}
-          <div className='mb-6'>
-            <h5 className='text-md font-medium text-yellow-800 mb-4'>Delivery Method</h5>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <div>
-                <Select
-                  label='Delivery Method'
-                  {...register('deliveryMethod')}
-                  options={[
-                    { value: '', label: 'Select delivery method' },
-                    { value: 'Sent', label: 'Sent (Shipping)' },
-                    { value: 'Local Meetup', label: 'Local Meetup' },
-                  ]}
-                  className='bg-white'
-                />
-              </div>
-              
-              <div>
-                <Input
-                  label='Date Sold'
-                  type='date'
-                  {...register('dateSold')}
-                  className='bg-white'
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Buyer Information */}
-          <div className='mb-6'>
-            <h5 className='text-md font-medium text-yellow-800 mb-4'>Buyer Information</h5>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <div>
-                <Input
-                  label='Buyer Full Name'
-                  type='text'
-                  {...register('buyerFullName')}
-                  placeholder='Enter buyer name'
-                  className='bg-white'
-                />
-              </div>
-              
-              <div>
-                <Input
-                  label='Buyer Phone'
-                  type='text'
-                  {...register('buyerPhoneNumber')}
-                  placeholder='Enter buyer phone'
-                  className='bg-white'
-                />
-              </div>
-              
-              <div className='md:col-span-2'>
-                <Input
-                  label='Buyer Email'
-                  type='email'
-                  {...register('buyerEmail')}
-                  placeholder='Enter buyer email'
-                  className='bg-white'
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Conditional Address/Tracking Section */}
-          {watchedDeliveryMethod === 'Sent' && (
-            <div className='mb-6'>
-              <h5 className='text-md font-medium text-yellow-800 mb-4'>Shipping Information</h5>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div className='md:col-span-2'>
-                  <Input
-                    label='Street Address'
-                    type='text'
-                    {...register('streetName')}
-                    placeholder='Enter street address'
-                    className='bg-white'
-                  />
-                </div>
-                
-                <div>
-                  <Input
-                    label='Postal Code'
-                    type='text'
-                    {...register('postnr')}
-                    placeholder='Enter postal code'
-                    className='bg-white'
-                  />
-                </div>
-                
-                <div>
-                  <Input
-                    label='City'
-                    type='text'
-                    {...register('city')}
-                    placeholder='Enter city'
-                    className='bg-white'
-                  />
-                </div>
-                
-                <div className='md:col-span-2'>
-                  <Input
-                    label='Tracking Number'
-                    type='text'
-                    {...register('trackingNumber')}
-                    placeholder='Enter tracking number'
-                    className='bg-white'
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {watchedDeliveryMethod === 'Local Meetup' && (
-            <div className='mb-6'>
-              <h5 className='text-md font-medium text-yellow-800 mb-4'>Local Meetup Information</h5>
-              <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-                <p className='text-sm text-blue-800'>
-                  <strong>Local Meetup:</strong> No shipping address or tracking required for local meetup deliveries.
-                </p>
-              </div>
-            </div>
-          )}
-          
-          <div className='p-3 bg-yellow-100 rounded border border-yellow-300'>
-            <p className='text-sm text-yellow-800'>
-              <strong>Note:</strong> This item is sold. You can only update sale information, buyer details, and delivery information.
-            </p>
-          </div>
-        </div>
-      )}
+      <SaleDetailsSection
+        register={register}
+        errors={errors}
+        watch={watch}
+        isVisible={isEditing && initialData?.sold}
+        itemName="card"
+      />
 
       {/* Action Buttons */}
       <div className='flex justify-end space-x-4 pt-6 border-t border-gray-200'>

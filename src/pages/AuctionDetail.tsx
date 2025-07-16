@@ -69,6 +69,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     type: 'psa' | 'raw' | 'sealed';
     name: string;
   } | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     // Extract auction ID from URL
@@ -216,26 +219,20 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   // Handle delete auction
-  const handleDeleteAuction = async () => {
-    // Show confirmation toast with custom action
-    showWarningToast(
-      'Are you sure you want to delete this auction? This action cannot be undone.',
-      {
-        duration: 0, // Keep until user interacts
-        action: {
-          label: 'Delete',
-          onClick: async () => {
-            try {
-              await deleteAuction(currentAuctionId);
-              showSuccessToast('Auction deleted successfully');
-              navigateToAuctions();
-            } catch (err) {
-              // Error handled by the hook
-            }
-          },
-        },
-      }
-    );
+  const handleDeleteAuction = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDeleteAuction = async () => {
+    try {
+      await deleteAuction(currentAuctionId);
+      showSuccessToast('Auction deleted successfully');
+      navigateToAuctions();
+    } catch (err) {
+      // Error handled by the hook
+    } finally {
+      setShowDeleteConfirmation(false);
+    }
   };
 
   // Handle add items to auction
@@ -246,25 +243,32 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   // Handle remove item from auction
-  const handleRemoveItem = async (itemId: string) => {
-    showWarningToast('Are you sure you want to remove this item from the auction?', {
-      duration: 0,
-      action: {
-        label: 'Remove',
-        onClick: async () => {
-          try {
-            await removeItemFromAuction(currentAuctionId, itemId);
-            showSuccessToast('Item removed from auction');
-          } catch (err) {
-            // Error handled by the hook
-          }
-        },
-      },
-    });
+  const handleRemoveItem = (itemId: string, itemName: string) => {
+    setItemToRemove({ id: itemId, name: itemName });
+    setShowRemoveItemConfirmation(true);
+  };
+
+  const confirmRemoveItem = async () => {
+    if (!itemToRemove) return;
+    
+    try {
+      await removeItemFromAuction(currentAuctionId, itemToRemove.id);
+      showSuccessToast('Item removed from auction');
+    } catch (err) {
+      // Error handled by the hook
+    } finally {
+      setShowRemoveItemConfirmation(false);
+      setItemToRemove(null);
+    }
   };
 
   // Handle mark item as sold - open modal with item details
   const handleMarkSold = (item: any) => {
+    // Don't allow marking already sold items as sold
+    if (item.sold || (item.itemData && item.itemData.sold)) {
+      return;
+    }
+
     const itemId = item.itemId || item.itemData?._id;
     const itemCategory = item.itemCategory;
     const displayData = getItemDisplayData(item);
@@ -292,6 +296,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       name: displayData.itemName || 'Unknown Item',
     });
     setIsMarkSoldModalOpen(true);
+  };
+
+  // Check if item is sold
+  const isItemSold = (item: any) => {
+    return item.sold || (item.itemData && item.itemData.sold);
   };
 
   // Handle mark sold form submission
@@ -382,7 +391,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   // Calculate progress
-  const soldItems = currentAuction?.items.filter(item => item.sold).length || 0;
+  const soldItems = currentAuction?.items.filter(item => isItemSold(item)).length || 0;
   const totalItems = currentAuction?.items.length || 0;
   const progress = totalItems > 0 ? (soldItems / totalItems) * 100 : 0;
 
@@ -778,7 +787,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                 >
                                   {formatItemCategory(item.itemCategory)}
                                 </span>
-                                {item.sold && (
+                                {isItemSold(item) && (
                                   <span className='inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200'>
                                     <Check className='w-3 h-3 mr-1' />
                                     Sold
@@ -787,7 +796,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                               </div>
 
                               <div className='flex items-center space-x-2'>
-                                {!item.sold && (
+                                {!isItemSold(item) && (
                                   <Button
                                     onClick={() => handleMarkSold(item)}
                                     variant='outline'
@@ -798,7 +807,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                   </Button>
                                 )}
                                 <Button
-                                  onClick={() => handleRemoveItem(item.itemId || item.itemData?._id)}
+                                  onClick={() => handleRemoveItem(item.itemId || item.itemData?._id, displayData.itemName)}
                                   variant='outline'
                                   size='sm'
                                   className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
@@ -920,6 +929,80 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               onCancel={handleModalClose}
               isLoading={collectionLoading}
             />
+          </Modal>
+
+          {/* Delete Auction Confirmation Modal */}
+          <Modal
+            isOpen={showDeleteConfirmation}
+            onClose={() => setShowDeleteConfirmation(false)}
+            title="Delete Auction"
+            maxWidth='md'
+          >
+            <div className='p-6'>
+              <div className='flex items-center mb-4'>
+                <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4'>
+                  <AlertCircle className='w-6 h-6 text-red-600' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold text-gray-900'>Are you sure?</h3>
+                  <p className='text-sm text-gray-600'>
+                    This will permanently delete the auction "{currentAuction?.topText}". This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className='flex justify-end space-x-3'>
+                <Button
+                  variant='outline'
+                  onClick={() => setShowDeleteConfirmation(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmDeleteAuction}
+                  className='bg-red-600 hover:bg-red-700 text-white'
+                  disabled={loading}
+                >
+                  {loading ? 'Deleting...' : 'Delete Auction'}
+                </Button>
+              </div>
+            </div>
+          </Modal>
+
+          {/* Remove Item Confirmation Modal */}
+          <Modal
+            isOpen={showRemoveItemConfirmation}
+            onClose={() => setShowRemoveItemConfirmation(false)}
+            title="Remove Item"
+            maxWidth='md'
+          >
+            <div className='p-6'>
+              <div className='flex items-center mb-4'>
+                <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mr-4'>
+                  <AlertCircle className='w-6 h-6 text-amber-600' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold text-gray-900'>Remove Item</h3>
+                  <p className='text-sm text-gray-600'>
+                    Are you sure you want to remove "{itemToRemove?.name}" from this auction?
+                  </p>
+                </div>
+              </div>
+              <div className='flex justify-end space-x-3'>
+                <Button
+                  variant='outline'
+                  onClick={() => setShowRemoveItemConfirmation(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmRemoveItem}
+                  className='bg-red-600 hover:bg-red-700 text-white'
+                  disabled={loading}
+                >
+                  {loading ? 'Removing...' : 'Remove Item'}
+                </Button>
+              </div>
+            </div>
           </Modal>
         </div>
       </div>

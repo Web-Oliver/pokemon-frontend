@@ -9,7 +9,7 @@ import { Camera } from 'lucide-react';
 import ImageUploader from '../../ImageUploader';
 
 interface ImageUploadSectionProps {
-  onImagesChange: (files: File[]) => void;
+  onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
   existingImageUrls?: string[];
   // Customization props
   maxFiles?: number;

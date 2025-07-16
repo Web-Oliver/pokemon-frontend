@@ -94,3 +94,19 @@ export interface IRawCard {
   baseName?: string; // Populated from Card reference
   variety?: string; // Populated from Card reference
 }
+
+export interface ISealedProduct {
+  id: string;
+  productId: string; // References CardMarketReferenceProduct model (required by backend)
+  category: string; // Must match backend enum
+  setName: string; // Required
+  name: string; // Required
+  availability: number; // Required - from CardMarket reference data
+  cardMarketPrice: number; // Decimal128 in backend, number in frontend
+  myPrice: number; // Required - Decimal128 in backend, number in frontend
+  priceHistory: IPriceHistoryEntry[];
+  images: string[]; // Array of image URLs/paths
+  dateAdded: string; // ISO date string
+  sold: boolean;
+  saleDetails?: ISaleDetails;
+}
