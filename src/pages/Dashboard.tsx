@@ -12,13 +12,70 @@
  */
 
 import React from 'react';
-import { Package, TrendingUp, DollarSign, Eye, Plus, BarChart3, Grid3X3 } from 'lucide-react';
+import { Package, TrendingUp, DollarSign, Eye, Plus, BarChart3, Grid3X3, Edit, Trash2, Minus, CheckCircle, Award, Settings, Info } from 'lucide-react';
+import { useRecentActivities } from '../hooks/useActivity';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const Dashboard: React.FC = () => {
+  // Context7 Recent Activities Hook
+  const { activities: recentActivities, loading: activitiesLoading } = useRecentActivities(5);
+
   // Handle navigation to different sections
   const handleNavigation = (path: string) => {
     window.history.pushState({}, '', path);
     window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  // Context7 Activity Icon Mapping
+  const getActivityIcon = (type: string) => {
+    const iconMap: Record<string, any> = {
+      card_added: Plus,
+      card_updated: Edit,
+      card_deleted: Trash2,
+      price_update: TrendingUp,
+      auction_created: DollarSign,
+      auction_updated: Edit,
+      auction_deleted: Trash2,
+      auction_item_added: Plus,
+      auction_item_removed: Minus,
+      sale_completed: CheckCircle,
+      sale_updated: Edit,
+      milestone: Award,
+      collection_stats: BarChart3,
+      system: Settings
+    };
+    return iconMap[type] || Info;
+  };
+
+  const getColorClasses = (color: string) => {
+    const colorMap = {
+      emerald: {
+        bg: 'from-emerald-500 to-teal-600',
+        badge: 'bg-emerald-100 text-emerald-800',
+        dot: 'bg-emerald-400'
+      },
+      amber: {
+        bg: 'from-amber-500 to-orange-600',
+        badge: 'bg-amber-100 text-amber-800',
+        dot: 'bg-amber-400'
+      },
+      purple: {
+        bg: 'from-purple-500 to-violet-600',
+        badge: 'bg-purple-100 text-purple-800',
+        dot: 'bg-purple-400'
+      },
+      indigo: {
+        bg: 'from-indigo-500 to-blue-600',
+        badge: 'bg-indigo-100 text-indigo-800',
+        dot: 'bg-indigo-400'
+      },
+      red: {
+        bg: 'from-red-500 to-rose-600',
+        badge: 'bg-red-100 text-red-800',
+        dot: 'bg-red-400'
+      }
+    };
+    return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
   };
 
   return (
@@ -126,18 +183,101 @@ const Dashboard: React.FC = () => {
           {/* Context7 Premium Recent Activity */}
           <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
+            
+            {/* Header */}
             <div className='p-8 border-b border-slate-200/50 relative z-10'>
-              <h2 className='text-2xl font-bold text-slate-900 tracking-wide'>Recent Activity</h2>
-            </div>
-            <div className='p-8 relative z-10'>
-              <div className='text-center py-16'>
-                <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                  <Package className='w-10 h-10 text-slate-500' />
+              <div className='flex items-center justify-between'>
+                <h2 className='text-2xl font-bold text-slate-900 tracking-wide flex items-center'>
+                  <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center mr-4'>
+                    <BarChart3 className='w-6 h-6 text-white' />
+                  </div>
+                  Recent Activity
+                </h2>
+                <div className='flex items-center space-x-2'>
+                  <div className='w-3 h-3 bg-emerald-500 rounded-full animate-pulse'></div>
+                  <span className='text-sm font-medium text-slate-600'>Live</span>
                 </div>
-                <h3 className='text-xl font-bold text-slate-900 mb-3'>No recent activity</h3>
-                <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed'>
-                  Start adding items to your collection to see activity here.
-                </p>
+              </div>
+            </div>
+
+            {/* Context7 Premium Timeline Activity Feed */}
+            <div className='p-8 relative z-10'>
+              {activitiesLoading ? (
+                <div className='flex justify-center py-8'>
+                  <LoadingSpinner size='md' text='Loading recent activities...' />
+                </div>
+              ) : recentActivities.length > 0 ? (
+                <div className='space-y-6'>
+                  {recentActivities.map((activity) => {
+                    const IconComponent = getActivityIcon(activity.type);
+                    const colors = getColorClasses(activity.metadata?.color || 'indigo');
+                    
+                    return (
+                      <div key={activity._id} className='flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/50 rounded-2xl p-4 transition-all duration-300'>
+                        <div className='flex-shrink-0'>
+                          <div className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className='w-6 h-6 text-white' />
+                          </div>
+                        </div>
+                        <div className='flex-1 min-w-0'>
+                          <div className='flex items-center justify-between'>
+                            <p className='text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
+                              {activity.title}
+                            </p>
+                            <span className='text-xs text-slate-500 font-medium'>
+                              {activity.relativeTime || new Date(activity.timestamp).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className='text-sm text-slate-600 mt-1'>
+                            {activity.description}
+                          </p>
+                          <div className='flex items-center mt-2 space-x-3'>
+                            {activity.metadata?.badges?.map((badge, index) => (
+                              <span key={index} className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}>
+                                {badge}
+                              </span>
+                            ))}
+                            {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
+                              <span className='text-xs text-slate-500'>
+                                {activity.metadata.newPrice && `${activity.metadata.newPrice} kr.`}
+                                {activity.metadata.salePrice && `${activity.metadata.salePrice} kr.`}
+                                {activity.metadata.estimatedValue && `Est. ${activity.metadata.estimatedValue} kr.`}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className='text-center py-16'>
+                  <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
+                    <Package className='w-10 h-10 text-slate-500' />
+                  </div>
+                  <h3 className='text-xl font-bold text-slate-900 mb-3'>No recent activity</h3>
+                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed'>
+                    Start adding items to your collection to see activity here.
+                  </p>
+                </div>
+              )}
+
+              {/* Context7 Premium Show More Section */}
+              <div className='mt-8 pt-6 border-t border-slate-200/50'>
+                <button 
+                  onClick={() => handleNavigation('/activity')}
+                  className='w-full group bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-2 border-indigo-200/50 hover:border-indigo-400 rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20'
+                >
+                  <div className='flex items-center justify-center space-x-3'>
+                    <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300'>
+                      <BarChart3 className='w-4 h-4 text-white' />
+                    </div>
+                    <span className='text-sm font-bold text-slate-700 group-hover:text-indigo-700 transition-colors duration-300'>
+                      View All Activity & Analytics
+                    </span>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
