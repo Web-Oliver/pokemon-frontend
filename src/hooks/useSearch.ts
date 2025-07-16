@@ -261,9 +261,15 @@ export const useSearch = (): UseSearchReturn => {
           let suggestions: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[] = [];
           
           if (fieldType === 'set') {
-            console.log(`[SEARCH DEBUG] Calling searchApi.searchSets with query: "${processedQuery}"`);
-            suggestions = await searchApi.searchSets(processedQuery, 15); // Increased limit for better results
-            console.log(`[SEARCH DEBUG] searchSets returned:`, suggestions);
+            if (searchMode === 'products') {
+              console.log(`[SEARCH DEBUG] Calling searchApi.searchProductSets with query: "${processedQuery}"`);
+              suggestions = await searchApi.searchProductSets(processedQuery, 15); // Product sets for sealed products
+              console.log(`[SEARCH DEBUG] searchProductSets returned:`, suggestions);
+            } else {
+              console.log(`[SEARCH DEBUG] Calling searchApi.searchSets with query: "${processedQuery}"`);
+              suggestions = await searchApi.searchSets(processedQuery, 15); // Card sets for PSA/Raw cards
+              console.log(`[SEARCH DEBUG] searchSets returned:`, suggestions);
+            }
           } else if (fieldType === 'category') {
             console.log(`[SEARCH DEBUG] Calling searchApi.searchCategories with query: "${processedQuery}"`);
             suggestions = await searchApi.searchCategories(processedQuery, 15);

@@ -32,7 +32,7 @@ setInterval(cleanupCache, 120000); // Every 2 minutes
 
 export interface SearchResult {
   success: boolean;
-  type: 'sets' | 'cards' | 'products' | 'categories';
+  type: 'sets' | 'cards' | 'products' | 'categories' | 'productSets';
   query: string;
   setContext?: string;
   categoryContext?: string;
@@ -92,7 +92,7 @@ export const searchApi = {
    * Context7 Enhanced Unified Hierarchical Search Endpoint
    */
   async search(params: {
-    type: 'sets' | 'cards' | 'products' | 'categories';
+    type: 'sets' | 'cards' | 'products' | 'categories' | 'productSets';
     q: string;
     setContext?: string;
     categoryContext?: string;
@@ -286,6 +286,33 @@ export const searchApi = {
       .slice(0, 15); // Context7 optimal limit
       
     console.log(`[SEARCH API DEBUG] searchSets() returning:`, enhancedResults);
+    return enhancedResults;
+  },
+
+  /**
+   * Context7 Enhanced Product Set Search (for sealed products)
+   */
+  async searchProductSets(query: string, limit: number = 15): Promise<SetResult[]> {
+    console.log(`[SEARCH API DEBUG] searchProductSets() called:`, { query, limit });
+    const result = await this.search({
+      type: 'productSets',
+      q: query,
+      limit,
+    });
+    
+    // Context7 Product Set-Specific Result Enhancement
+    const enhancedResults = (result.results as SetResult[])
+      .sort((a, b) => {
+        // Prioritize exact matches
+        if (a.isExactMatch && !b.isExactMatch) return -1;
+        if (!a.isExactMatch && b.isExactMatch) return 1;
+        
+        // Then sort by search score
+        return (b.searchScore || 0) - (a.searchScore || 0);
+      })
+      .slice(0, 15); // Context7 optimal limit
+      
+    console.log(`[SEARCH API DEBUG] searchProductSets() returning:`, enhancedResults);
     return enhancedResults;
   },
 
