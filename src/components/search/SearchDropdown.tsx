@@ -154,7 +154,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
   };
 
-  // Context7 Award-Winning Design: Premium suggestion metadata
+  // Context7 Optimized: Clean metadata rendering for better readability
   const renderSuggestionMetadata = (suggestion: SearchSuggestion) => {
     const metadata = [];
 
@@ -162,12 +162,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='set'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-100 to-green-100 border border-emerald-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-green-50 border border-green-200 rounded text-xs text-green-700 font-medium'
         >
-          <Package className='w-3 h-3 text-emerald-600 mr-1' />
-          <span className='text-xs font-semibold text-emerald-800'>
-            {suggestion.setInfo.setName}
-          </span>
+          <Package className='w-3 h-3 mr-1' />
+          {suggestion.setInfo.setName}
         </div>
       );
     }
@@ -176,12 +174,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='category'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium'
         >
-          <Hash className='w-3 h-3 text-purple-600 mr-1' />
-          <span className='text-xs font-semibold text-purple-800'>
-            {suggestion.categoryInfo.category}
-          </span>
+          <Hash className='w-3 h-3 mr-1' />
+          {suggestion.categoryInfo.category}
         </div>
       );
     }
@@ -190,10 +186,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='variety'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-yellow-100 to-orange-100 border border-yellow-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700 font-medium'
         >
-          <Star className='w-3 h-3 text-yellow-600 mr-1' />
-          <span className='text-xs font-semibold text-yellow-800'>{suggestion.variety}</span>
+          <Star className='w-3 h-3 mr-1' />
+          {suggestion.variety}
         </div>
       );
     }
@@ -202,9 +198,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='year'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-gray-100 to-slate-100 border border-gray-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 font-medium'
         >
-          <span className='text-xs font-semibold text-gray-800'>({suggestion.year})</span>
+          {suggestion.year}
         </div>
       );
     }
@@ -214,10 +210,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='counts'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 border border-blue-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 font-medium'
         >
-          <TrendingUp className='w-3 h-3 text-blue-600 mr-1' />
-          <span className='text-xs font-semibold text-blue-800'>{totalItems} items</span>
+          <TrendingUp className='w-3 h-3 mr-1' />
+          {totalItems} items
         </div>
       );
     }
@@ -226,12 +222,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       metadata.push(
         <div
           key='psa'
-          className='inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 rounded-full'
+          className='inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium'
         >
-          <TrendingUp className='w-3 h-3 text-purple-600 mr-1' />
-          <span className='text-xs font-semibold text-purple-800'>
-            {suggestion.psaTotalGradedForCard.toLocaleString()} PSA
-          </span>
+          <TrendingUp className='w-3 h-3 mr-1' />
+          {suggestion.psaTotalGradedForCard.toLocaleString()} PSA
         </div>
       );
     }
@@ -444,7 +438,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                   <Search className='w-6 h-6 text-gray-400' />
                 </div>
                 <p className='text-gray-600 text-sm mb-1'>No results found</p>
-                <p className='text-gray-500 text-xs'>Try searching with fewer characters</p>
+                <p className='text-gray-500 text-xs'>Try different keywords or check spelling</p>
               </div>
             ) : (
               <div className='divide-y divide-gray-100'>
