@@ -23,6 +23,8 @@ import AuctionDetail from './pages/AuctionDetail';
 import CreateAuction from './pages/CreateAuction';
 import AuctionEdit from './pages/AuctionEdit';
 import SalesAnalytics from './pages/SalesAnalytics';
+import Analytics from './pages/Analytics';
+import Activity from './pages/Activity';
 import AddEditItem from './pages/AddEditItem';
 
 function App() {
@@ -105,6 +107,10 @@ function App() {
         return <Auctions />;
       case '/sales-analytics':
         return <SalesAnalytics />;
+      case '/analytics':
+        return <Analytics />;
+      case '/activity':
+        return <Activity />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

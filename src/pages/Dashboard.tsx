@@ -12,13 +12,25 @@
  */
 
 import React from 'react';
-import { Package, TrendingUp, DollarSign, Eye, Plus, BarChart3, Grid3X3, Edit, Trash2, Minus, CheckCircle, Award, Settings, Info } from 'lucide-react';
+import { Package, TrendingUp, DollarSign, Star, Plus, BarChart3, Grid3X3, Edit, Trash2, Minus, CheckCircle, Award, Settings, Info } from 'lucide-react';
 import { useRecentActivities } from '../hooks/useActivity';
+import { useCollectionStats } from '../hooks/useCollectionStats';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { displayPrice } from '../utils/priceUtils';
+import { getRelativeTime } from '../utils/timeUtils';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
   const { activities: recentActivities, loading: activitiesLoading } = useRecentActivities(5);
+  
+  // Context7 Collection Statistics Hook
+  const { 
+    totalItems, 
+    totalValueFormatted, 
+    totalSales, 
+    topGradedCards,
+    loading: statsLoading 
+  } = useCollectionStats();
 
   // Handle navigation to different sections
   const handleNavigation = (path: string) => {
@@ -124,7 +136,7 @@ const Dashboard: React.FC = () => {
                     Total Items
                   </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
-                    --
+                    {statsLoading ? '--' : totalItems.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -141,7 +153,7 @@ const Dashboard: React.FC = () => {
                     Total Value
                   </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                    --
+                    {statsLoading ? '--' : totalValueFormatted}
                   </p>
                 </div>
               </div>
@@ -156,7 +168,7 @@ const Dashboard: React.FC = () => {
                 <div className='ml-6'>
                   <p className='text-sm font-bold text-slate-600 tracking-wide uppercase'>Sales</p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
-                    --
+                    {statsLoading ? '--' : totalSales.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -166,14 +178,14 @@ const Dashboard: React.FC = () => {
               <div className='absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                  <Eye className='w-8 h-8 text-white' />
+                  <Star className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
                   <p className='text-sm font-bold text-slate-600 tracking-wide uppercase'>
-                    Watching
+                    Top Graded
                   </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300'>
-                    --
+                    {statsLoading ? '--' : topGradedCards.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -225,7 +237,7 @@ const Dashboard: React.FC = () => {
                               {activity.title}
                             </p>
                             <span className='text-xs text-slate-500 font-medium'>
-                              {activity.relativeTime || new Date(activity.timestamp).toLocaleDateString()}
+                              {getRelativeTime(activity.timestamp)}
                             </span>
                           </div>
                           <p className='text-sm text-slate-600 mt-1'>
@@ -239,9 +251,9 @@ const Dashboard: React.FC = () => {
                             ))}
                             {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
                               <span className='text-xs text-slate-500'>
-                                {activity.metadata.newPrice && `${activity.metadata.newPrice} kr.`}
-                                {activity.metadata.salePrice && `${activity.metadata.salePrice} kr.`}
-                                {activity.metadata.estimatedValue && `Est. ${activity.metadata.estimatedValue} kr.`}
+                                {activity.metadata.newPrice && displayPrice(activity.metadata.newPrice)}
+                                {activity.metadata.salePrice && displayPrice(activity.metadata.salePrice)}
+                                {activity.metadata.estimatedValue && `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
                               </span>
                             )}
                           </div>
@@ -266,7 +278,7 @@ const Dashboard: React.FC = () => {
               {/* Context7 Premium Show More Section */}
               <div className='mt-8 pt-6 border-t border-slate-200/50'>
                 <button 
-                  onClick={() => handleNavigation('/activity')}
+                  onClick={() => handleNavigation('/analytics')}
                   className='w-full group bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-2 border-indigo-200/50 hover:border-indigo-400 rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20'
                 >
                   <div className='flex items-center justify-center space-x-3'>

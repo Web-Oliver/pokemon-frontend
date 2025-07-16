@@ -137,7 +137,7 @@ export interface ActivityTypesResponse {
 
 // Context7 Activity API Client
 class ActivityApiClient {
-  private readonly baseUrl = '/api/activities';
+  private readonly baseUrl = '/activities';
 
   /**
    * Get activities with advanced filtering and pagination

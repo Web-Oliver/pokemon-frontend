@@ -42,6 +42,8 @@ import {
 } from 'lucide-react';
 import { useActivity, ACTIVITY_TYPES, ACTIVITY_PRIORITIES } from '../hooks/useActivity';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { displayPrice } from '../utils/priceUtils';
+import { getRelativeTime } from '../utils/timeUtils';
 
 const Activity: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
@@ -372,13 +374,13 @@ const Activity: React.FC = () => {
                               </div>
                               <div className='text-right ml-4'>
                                 <span className='text-xs text-slate-500 font-medium block mb-2'>
-                                  {activity.relativeTime || new Date(activity.timestamp).toLocaleDateString()}
+                                  {getRelativeTime(activity.timestamp)}
                                 </span>
                                 {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
                                   <span className='text-sm font-bold text-slate-900'>
-                                    {activity.metadata.newPrice && `${activity.metadata.newPrice} kr.`}
-                                    {activity.metadata.salePrice && `${activity.metadata.salePrice} kr.`}
-                                    {activity.metadata.estimatedValue && `Est. ${activity.metadata.estimatedValue} kr.`}
+                                    {activity.metadata.newPrice && displayPrice(activity.metadata.newPrice)}
+                                    {activity.metadata.salePrice && displayPrice(activity.metadata.salePrice)}
+                                    {activity.metadata.estimatedValue && `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
                                   </span>
                                 )}
                               </div>
