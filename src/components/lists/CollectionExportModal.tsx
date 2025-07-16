@@ -1,6 +1,6 @@
 /**
  * Collection Export Modal Component
- * 
+ *
  * Modal for selecting and exporting collection items
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles export modal UI and interactions
@@ -40,26 +40,27 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
 }) => {
   // Get item type for display
   const getItemType = (item: CollectionItem): string => {
-    if ((item as any).grade !== undefined) return 'PSA Graded';
-    if ((item as any).condition !== undefined) return 'Raw Card';
+    if ((item as any).grade !== undefined) {
+      return 'PSA Graded';
+    }
+    if ((item as any).condition !== undefined) {
+      return 'Raw Card';
+    }
     return 'Sealed Product';
   };
 
   // Get item name for display
   const getItemName = (item: CollectionItem): string => {
-    return (item as any).cardId?.cardName || 
-           (item as any).cardName ||
-           (item as any).name ||
-           'Unknown Item';
+    return (
+      (item as any).cardId?.cardName ||
+      (item as any).cardName ||
+      (item as any).name ||
+      'Unknown Item'
+    );
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title='Select Items to Export'
-      maxWidth='2xl'
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title='Select Items to Export' maxWidth='2xl'>
       <div className='space-y-6'>
         <div className='flex items-center justify-between'>
           <p className='text-gray-600'>
@@ -116,9 +117,7 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
                       className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-3'
                     />
                     <div>
-                      <h4 className='font-medium text-gray-900'>
-                        {itemName}
-                      </h4>
+                      <h4 className='font-medium text-gray-900'>{itemName}</h4>
                       <p className='text-sm text-gray-500'>
                         {itemType} • {item.myPrice || '0'} kr.
                       </p>

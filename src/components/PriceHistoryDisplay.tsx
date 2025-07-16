@@ -33,8 +33,10 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
   const [newPrice, setNewPrice] = useState<string>('');
 
   const handlePriceUpdate = () => {
-    if (!onPriceUpdate) return;
-    
+    if (!onPriceUpdate) {
+      return;
+    }
+
     const price = parseFloat(newPrice);
 
     if (isNaN(price) || price <= 0) {
@@ -201,46 +203,46 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
 
         {/* Context7 Premium Update Price Section */}
         {onPriceUpdate && (
-        <div className='border-t border-slate-200/50 pt-8'>
-          <div className='flex items-center mb-6'>
-            <div className='w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-lg flex items-center justify-center mr-3'>
-              <Plus className='w-5 h-5 text-white' />
+          <div className='border-t border-slate-200/50 pt-8'>
+            <div className='flex items-center mb-6'>
+              <div className='w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-lg flex items-center justify-center mr-3'>
+                <Plus className='w-5 h-5 text-white' />
+              </div>
+              <div className='text-lg font-bold text-slate-700 tracking-wide'>
+                Update Market Price
+              </div>
             </div>
-            <div className='text-lg font-bold text-slate-700 tracking-wide'>
-              Update Market Price
-            </div>
-          </div>
 
-          <div className='flex gap-4'>
-            <div className='flex-1'>
-              <Input
-                type='text'
-                placeholder='Enter new price (e.g., 150.00)'
-                value={newPrice}
-                onChange={handleInputChange}
-                className='w-full'
-                startIcon={<DollarSign className='w-4 h-4' />}
-              />
+            <div className='flex gap-4'>
+              <div className='flex-1'>
+                <Input
+                  type='text'
+                  placeholder='Enter new price (e.g., 150.00)'
+                  value={newPrice}
+                  onChange={handleInputChange}
+                  className='w-full'
+                  startIcon={<DollarSign className='w-4 h-4' />}
+                />
+              </div>
+              <Button
+                onClick={handlePriceUpdate}
+                disabled={
+                  !newPrice.trim() || isNaN(parseFloat(newPrice)) || parseFloat(newPrice) <= 0
+                }
+                className='whitespace-nowrap px-8'
+                variant='primary'
+              >
+                Update Price
+              </Button>
             </div>
-            <Button
-              onClick={handlePriceUpdate}
-              disabled={
-                !newPrice.trim() || isNaN(parseFloat(newPrice)) || parseFloat(newPrice) <= 0
-              }
-              className='whitespace-nowrap px-8'
-              variant='primary'
-            >
-              Update Price
-            </Button>
-          </div>
 
-          <div className='mt-4 p-4 bg-gradient-to-r from-slate-50 to-white rounded-2xl border border-slate-200/50 shadow-sm'>
-            <div className='text-xs text-slate-600 font-medium'>
-              💡 <span className='font-bold'>Pro Tip:</span> Regular price updates help track your
-              collection's market value over time
+            <div className='mt-4 p-4 bg-gradient-to-r from-slate-50 to-white rounded-2xl border border-slate-200/50 shadow-sm'>
+              <div className='text-xs text-slate-600 font-medium'>
+                💡 <span className='font-bold'>Pro Tip:</span> Regular price updates help track your
+                collection's market value over time
+              </div>
             </div>
           </div>
-        </div>
         )}
       </div>
     </div>

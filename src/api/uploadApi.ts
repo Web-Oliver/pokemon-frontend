@@ -21,7 +21,7 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
   });
 
   const uploadedFile = response.data.data || response.data;
-  
+
   // Extract only the path from the uploaded file
   return uploadedFile.path;
 };
@@ -44,7 +44,7 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
   });
 
   const uploadedFiles = response.data.data || response.data;
-  
+
   // Extract only the path from each uploaded file
   return uploadedFiles.map((file: any) => file.path);
 };

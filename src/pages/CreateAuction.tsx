@@ -5,7 +5,20 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Calendar, FileText, Save, ArrowLeft, Gavel, Sparkles, Package, CheckCircle, Circle, Search, Filter, X } from 'lucide-react';
+import {
+  Calendar,
+  FileText,
+  Save,
+  ArrowLeft,
+  Gavel,
+  Sparkles,
+  Package,
+  CheckCircle,
+  Circle,
+  Search,
+  Filter,
+  X,
+} from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
 import { useCollection } from '../hooks/useCollection';
 import Button from '../components/common/Button';
@@ -33,72 +46,86 @@ interface UnifiedCollectionItem {
 
 const CreateAuction: React.FC = () => {
   const { createAuction, loading: auctionLoading, error, clearError } = useAuction();
-  const { psaCards, rawCards, sealedProducts, loading: collectionLoading, error: collectionError } = useCollection();
-  
+  const {
+    psaCards,
+    rawCards,
+    sealedProducts,
+    loading: collectionLoading,
+    error: collectionError,
+  } = useCollection();
+
   // Form state
   const [formData, setFormData] = useState({
     topText: '',
     bottomText: '',
     auctionDate: '',
-    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired'
+    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
   });
 
   // Form validation state
-  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
   // Item selection state
   const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'>('all');
+  const [filterType, setFilterType] = useState<
+    'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'
+  >('all');
 
   // Combine all collection items into unified format
   const allCollectionItems = useMemo((): UnifiedCollectionItem[] => {
     const items: UnifiedCollectionItem[] = [];
 
     // Add PSA Graded Cards
-    psaCards.filter(card => !card.sold).forEach(card => {
-      items.push({
-        id: card.id,
-        itemType: 'PsaGradedCard',
-        displayName: `${card.cardName || 'Unknown Card'} - Grade ${card.grade}`,
-        displayPrice: card.myPrice,
-        displayImage: card.images?.[0],
-        images: card.images || [],
-        setName: card.setName,
-        grade: card.grade,
-        originalItem: card,
+    psaCards
+      .filter(card => !card.sold)
+      .forEach(card => {
+        items.push({
+          id: card.id,
+          itemType: 'PsaGradedCard',
+          displayName: `${card.cardName || 'Unknown Card'} - Grade ${card.grade}`,
+          displayPrice: card.myPrice,
+          displayImage: card.images?.[0],
+          images: card.images || [],
+          setName: card.setName,
+          grade: card.grade,
+          originalItem: card,
+        });
       });
-    });
 
     // Add Raw Cards
-    rawCards.filter(card => !card.sold).forEach(card => {
-      items.push({
-        id: card.id,
-        itemType: 'RawCard',
-        displayName: `${card.cardName || 'Unknown Card'} - ${card.condition}`,
-        displayPrice: card.myPrice,
-        displayImage: card.images?.[0],
-        images: card.images || [],
-        setName: card.setName,
-        condition: card.condition,
-        originalItem: card,
+    rawCards
+      .filter(card => !card.sold)
+      .forEach(card => {
+        items.push({
+          id: card.id,
+          itemType: 'RawCard',
+          displayName: `${card.cardName || 'Unknown Card'} - ${card.condition}`,
+          displayPrice: card.myPrice,
+          displayImage: card.images?.[0],
+          images: card.images || [],
+          setName: card.setName,
+          condition: card.condition,
+          originalItem: card,
+        });
       });
-    });
 
     // Add Sealed Products
-    sealedProducts.filter(product => !product.sold).forEach(product => {
-      items.push({
-        id: product.id,
-        itemType: 'SealedProduct',
-        displayName: `${product.name || 'Unknown Product'} - ${product.setName}`,
-        displayPrice: product.myPrice,
-        displayImage: product.images?.[0],
-        images: product.images || [],
-        setName: product.setName,
-        category: product.category,
-        originalItem: product,
+    sealedProducts
+      .filter(product => !product.sold)
+      .forEach(product => {
+        items.push({
+          id: product.id,
+          itemType: 'SealedProduct',
+          displayName: `${product.name || 'Unknown Product'} - ${product.setName}`,
+          displayPrice: product.myPrice,
+          displayImage: product.images?.[0],
+          images: product.images || [],
+          setName: product.setName,
+          category: product.category,
+          originalItem: product,
+        });
       });
-    });
 
     return items;
   }, [psaCards, rawCards, sealedProducts]);
@@ -115,9 +142,10 @@ const CreateAuction: React.FC = () => {
     // Filter by search term
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      items = items.filter(item =>
-        item.displayName.toLowerCase().includes(search) ||
-        item.setName?.toLowerCase().includes(search)
+      items = items.filter(
+        item =>
+          item.displayName.toLowerCase().includes(search) ||
+          item.setName?.toLowerCase().includes(search)
       );
     }
 
@@ -164,11 +192,13 @@ const CreateAuction: React.FC = () => {
   };
 
   // Handle form field changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Clear validation error for this field
@@ -183,7 +213,7 @@ const CreateAuction: React.FC = () => {
 
   // Validate form
   const validateForm = (): boolean => {
-    const errors: {[key: string]: string} = {};
+    const errors: { [key: string]: string } = {};
 
     if (!formData.topText.trim()) {
       errors.topText = 'Top text is required';
@@ -204,7 +234,7 @@ const CreateAuction: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -220,7 +250,7 @@ const CreateAuction: React.FC = () => {
         if (!item) {
           throw new Error(`Item with ID ${itemId} not found`);
         }
-        
+
         return {
           itemId: item.id,
           itemCategory: item.itemType,
@@ -235,7 +265,7 @@ const CreateAuction: React.FC = () => {
         status: formData.status,
         items: auctionItems,
         totalValue: selectedItemsValue,
-        ...(formData.auctionDate && { auctionDate: formData.auctionDate })
+        ...(formData.auctionDate && { auctionDate: formData.auctionDate }),
       };
 
       const createdAuction = await createAuction(auctionData);
@@ -297,7 +327,7 @@ const CreateAuction: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              
+
               <div className='flex items-center space-x-4 mb-4'>
                 <div className='w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-3xl shadow-xl flex items-center justify-center'>
                   <Gavel className='w-8 h-8 text-white' />
@@ -360,14 +390,16 @@ const CreateAuction: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder='Enter the main auction title/description (e.g., "Pokemon Card Auction #1")'
                     className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                      validationErrors.topText 
-                        ? 'border-red-300 bg-red-50/50' 
+                      validationErrors.topText
+                        ? 'border-red-300 bg-red-50/50'
                         : 'border-slate-300 hover:border-slate-400'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
                   {validationErrors.topText && (
-                    <p className='mt-2 text-sm text-red-600 font-medium'>{validationErrors.topText}</p>
+                    <p className='mt-2 text-sm text-red-600 font-medium'>
+                      {validationErrors.topText}
+                    </p>
                   )}
                 </div>
 
@@ -386,14 +418,16 @@ const CreateAuction: React.FC = () => {
                     placeholder='Enter the auction footer/closing text (e.g., "Happy bidding! Payment due within 48 hours.")'
                     rows={4}
                     className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 resize-none ${
-                      validationErrors.bottomText 
-                        ? 'border-red-300 bg-red-50/50' 
+                      validationErrors.bottomText
+                        ? 'border-red-300 bg-red-50/50'
                         : 'border-slate-300 hover:border-slate-400'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
                   {validationErrors.bottomText && (
-                    <p className='mt-2 text-sm text-red-600 font-medium'>{validationErrors.bottomText}</p>
+                    <p className='mt-2 text-sm text-red-600 font-medium'>
+                      {validationErrors.bottomText}
+                    </p>
                   )}
                 </div>
 
@@ -412,17 +446,20 @@ const CreateAuction: React.FC = () => {
                     onChange={handleInputChange}
                     min={getCurrentDate()}
                     className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      validationErrors.auctionDate 
-                        ? 'border-red-300 bg-red-50/50' 
+                      validationErrors.auctionDate
+                        ? 'border-red-300 bg-red-50/50'
                         : 'border-slate-300 hover:border-slate-400'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
                   {validationErrors.auctionDate && (
-                    <p className='mt-2 text-sm text-red-600 font-medium'>{validationErrors.auctionDate}</p>
+                    <p className='mt-2 text-sm text-red-600 font-medium'>
+                      {validationErrors.auctionDate}
+                    </p>
                   )}
                   <p className='mt-2 text-sm text-slate-500 font-medium'>
-                    Leave empty to set the date later. You can add items to the auction after creation.
+                    Leave empty to set the date later. You can add items to the auction after
+                    creation.
                   </p>
                 </div>
 
@@ -476,7 +513,7 @@ const CreateAuction: React.FC = () => {
                         type='text'
                         placeholder='Search items...'
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={e => setSearchTerm(e.target.value)}
                         className='w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200'
                       />
                     </div>
@@ -484,7 +521,7 @@ const CreateAuction: React.FC = () => {
                       <Filter className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400' />
                       <select
                         value={filterType}
-                        onChange={(e) => setFilterType(e.target.value as any)}
+                        onChange={e => setFilterType(e.target.value as any)}
                         className='w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200'
                       >
                         <option value='all'>All Items</option>
@@ -538,14 +575,14 @@ const CreateAuction: React.FC = () => {
                       </div>
                       <h4 className='text-lg font-bold text-slate-900 mb-2'>No items found</h4>
                       <p className='text-slate-600 font-medium'>
-                        {searchTerm || filterType !== 'all' 
-                          ? 'Try adjusting your search or filter.' 
+                        {searchTerm || filterType !== 'all'
+                          ? 'Try adjusting your search or filter.'
                           : 'Add items to your collection first.'}
                       </p>
                     </div>
                   ) : (
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-2xl bg-slate-50/50 p-4'>
-                      {filteredItems.map((item) => {
+                      {filteredItems.map(item => {
                         const isSelected = selectedItemIds.has(item.id);
                         return (
                           <div
@@ -573,7 +610,7 @@ const CreateAuction: React.FC = () => {
                                 fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
                                 autoplay={false}
                                 autoplayDelay={3000}
-                                className="h-96"
+                                className='h-96'
                                 showThumbnails={false}
                               />
                             </div>
@@ -585,8 +622,11 @@ const CreateAuction: React.FC = () => {
                               </h5>
                               <div className='flex items-center justify-between'>
                                 <span className='text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded-lg'>
-                                  {item.itemType === 'PsaGradedCard' ? 'PSA' : 
-                                   item.itemType === 'RawCard' ? 'Raw' : 'Sealed'}
+                                  {item.itemType === 'PsaGradedCard'
+                                    ? 'PSA'
+                                    : item.itemType === 'RawCard'
+                                      ? 'Raw'
+                                      : 'Sealed'}
                                 </span>
                                 <span className='font-bold text-emerald-600'>
                                   ${item.displayPrice.toFixed(2)}

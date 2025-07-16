@@ -74,7 +74,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   } | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
-  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string; category: string } | null>(null);
+  const [itemToRemove, setItemToRemove] = useState<{
+    id: string;
+    name: string;
+    category: string;
+  } | null>(null);
 
   useEffect(() => {
     // Extract auction ID from URL
@@ -125,7 +129,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       setName: undefined,
       grade: undefined,
       condition: undefined,
-      price: undefined
+      price: undefined,
     };
 
     if (!item.itemData) {
@@ -136,9 +140,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
     // Helper function to get full image URL
     const getImageUrl = (imagePath: string | undefined) => {
-      if (!imagePath) return undefined;
+      if (!imagePath) {
+        return undefined;
+      }
       // If it's already a full URL, return as is
-      if (imagePath.startsWith('http')) return imagePath;
+      if (imagePath.startsWith('http')) {
+        return imagePath;
+      }
       // If it's a relative path, prepend the backend server URL
       return `http://localhost:3000${imagePath}`;
     };
@@ -152,7 +160,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           setName: itemData.cardId?.setId?.setName,
           grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
           condition: itemCategory === 'RawCard' ? itemData.condition : undefined,
-          price: itemData.myPrice
+          price: itemData.myPrice,
         };
       case 'SealedProduct':
         return {
@@ -161,7 +169,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           setName: itemData.setName,
           grade: undefined,
           condition: undefined,
-          price: itemData.myPrice
+          price: itemData.myPrice,
         };
       default:
         return defaultData;
@@ -254,8 +262,10 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   const confirmRemoveItem = async () => {
-    if (!itemToRemove) return;
-    
+    if (!itemToRemove) {
+      return;
+    }
+
     try {
       await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
       showSuccessToast('Item removed from auction');
@@ -277,7 +287,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     const itemId = item.itemId || item.itemData?._id;
     const itemCategory = item.itemCategory;
     const displayData = getItemDisplayData(item);
-    
+
     // Determine item type based on category
     let itemType: 'psa' | 'raw' | 'sealed';
     switch (itemCategory) {
@@ -294,12 +304,12 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         console.error('Unknown item category:', itemCategory);
         return;
     }
-    
+
     setSelectedItem({
       id: itemId,
       type: itemType,
       name: displayData.itemName || 'Unknown Item',
-      itemCategory: itemCategory, // Store category for auction sale tracking
+      itemCategory, // Store category for auction sale tracking
     });
     setIsMarkSoldModalOpen(true);
   };
@@ -341,7 +351,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       // Close modal and reset selected item
       setIsMarkSoldModalOpen(false);
       setSelectedItem(null);
-      
+
       // Refresh the auction to show updated sold status (already handled by markAuctionItemSold)
       // await fetchAuctionById(currentAuctionId);
     } catch (error) {
@@ -525,7 +535,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     <span
                       className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
                     >
-                      {currentAuction.status.charAt(0).toUpperCase() + currentAuction.status.slice(1)}
+                      {currentAuction.status.charAt(0).toUpperCase() +
+                        currentAuction.status.slice(1)}
                     </span>
                   </div>
 
@@ -554,7 +565,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       <div className='w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3'>
                         <DollarSign className='w-4 h-4 text-white' />
                       </div>
-                      <span className='font-medium'>Total Value: {formatCurrency(currentAuction.totalValue)}</span>
+                      <span className='font-medium'>
+                        Total Value: {formatCurrency(currentAuction.totalValue)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -594,7 +607,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5'></div>
               <div className='relative z-10'>
                 <div className='flex items-center justify-between mb-4'>
-                  <h3 className='text-sm font-bold text-indigo-600 tracking-wide uppercase'>Sales Progress</h3>
+                  <h3 className='text-sm font-bold text-indigo-600 tracking-wide uppercase'>
+                    Sales Progress
+                  </h3>
                   <span className='text-sm font-bold text-slate-900'>
                     {soldItems}/{totalItems}
                   </span>
@@ -605,7 +620,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <p className='text-xs text-slate-500 font-medium'>{progress.toFixed(1)}% of items sold</p>
+                <p className='text-xs text-slate-500 font-medium'>
+                  {progress.toFixed(1)}% of items sold
+                </p>
               </div>
             </div>
 
@@ -616,7 +633,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <DollarSign className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
-                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>Sold Value</p>
+                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
+                    Sold Value
+                  </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
                     {formatCurrency(currentAuction.soldValue || 0)}
                   </p>
@@ -631,9 +650,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <DollarSign className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
-                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>Remaining Value</p>
+                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
+                    Remaining Value
+                  </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
-                    {formatCurrency((currentAuction.totalValue || 0) - (currentAuction.soldValue || 0))}
+                    {formatCurrency(
+                      (currentAuction.totalValue || 0) - (currentAuction.soldValue || 0)
+                    )}
                   </p>
                 </div>
               </div>
@@ -644,12 +667,16 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-violet-500/3 via-purple-500/3 to-indigo-500/3'></div>
             <div className='relative z-10'>
-              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>Export & Social Media Tools</h3>
+              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>
+                Export & Social Media Tools
+              </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                 {/* Facebook Post Generation */}
                 <div className='space-y-4'>
-                  <h4 className='text-sm font-bold text-violet-600 tracking-wide uppercase'>Facebook Post</h4>
+                  <h4 className='text-sm font-bold text-violet-600 tracking-wide uppercase'>
+                    Facebook Post
+                  </h4>
                   <div className='space-y-3'>
                     <Button
                       onClick={handleGenerateFacebookPost}
@@ -675,7 +702,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
                 {/* Text File Export */}
                 <div className='space-y-4'>
-                  <h4 className='text-sm font-bold text-emerald-600 tracking-wide uppercase'>Text File Export</h4>
+                  <h4 className='text-sm font-bold text-emerald-600 tracking-wide uppercase'>
+                    Text File Export
+                  </h4>
                   <Button
                     onClick={handleDownloadTextFile}
                     disabled={loading}
@@ -689,7 +718,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
                 {/* Images Zip Export */}
                 <div className='space-y-4'>
-                  <h4 className='text-sm font-bold text-amber-600 tracking-wide uppercase'>Image Export</h4>
+                  <h4 className='text-sm font-bold text-amber-600 tracking-wide uppercase'>
+                    Image Export
+                  </h4>
                   <Button
                     onClick={handleDownloadImagesZip}
                     disabled={loading}
@@ -706,7 +737,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               {showFacebookPost && generatedFacebookPost && (
                 <div className='mt-8'>
                   <div className='flex items-center justify-between mb-4'>
-                    <h4 className='text-sm font-bold text-slate-700 tracking-wide uppercase'>Generated Facebook Post</h4>
+                    <h4 className='text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                      Generated Facebook Post
+                    </h4>
                     <Button onClick={() => setShowFacebookPost(false)} variant='outline' size='sm'>
                       <X className='w-4 h-4' />
                     </Button>
@@ -718,7 +751,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       readOnly
                     />
                     <div className='flex justify-end mt-3'>
-                      <Button onClick={handleCopyToClipboard} size='sm' className='flex items-center'>
+                      <Button
+                        onClick={handleCopyToClipboard}
+                        size='sm'
+                        className='flex items-center'
+                      >
                         <Copy className='w-4 h-4 mr-1' />
                         Copy
                       </Button>
@@ -752,7 +789,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     <Package className='w-10 h-10 text-slate-500' />
                   </div>
                   <h3 className='text-xl font-bold text-slate-900 mb-3'>No items in auction</h3>
-                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>Add items from your collection to this auction.</p>
+                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
+                    Add items from your collection to this auction.
+                  </p>
                   <Button
                     onClick={() => setIsAddItemModalOpen(true)}
                     className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
@@ -766,129 +805,155 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   {currentAuction.items.map((item: any, index: number) => {
                     const displayData = getItemDisplayData(item);
                     return (
-                    <div key={`${item.itemId || item.itemData?._id}-${index}`} className='group bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 p-6 hover:bg-white/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden'>
-                      <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                      <div className='relative z-10'>
-                        <div className='flex items-start space-x-6'>
-                          
-                          {/* Card Image */}
-                          <div className='flex-shrink-0'>
-                            {displayData.itemImage ? (
-                              <div className='w-32 h-44 rounded-xl overflow-hidden shadow-lg bg-slate-100 group-hover:shadow-2xl transition-shadow duration-300'>
-                                <img
-                                  src={displayData.itemImage}
-                                  alt={displayData.itemName || 'Card image'}
-                                  className='w-full h-full object-cover'
-                                  onError={(e) => {
-                                    e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjE3NiIgdmlld0JveD0iMCAwIDEyOCAxNzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTc2IiBmaWxsPSIjRjFGNUY5Ii8+CjxwYXRoIGQ9Ik00NCA2NEg4NFY4MEg0NFY2NFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHN2Zz4K';
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <div className='w-32 h-44 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-lg'>
-                                <Package className='w-12 h-12 text-slate-400' />
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Card Details */}
-                          <div className='flex-1 min-w-0'>
-                            <div className='flex items-center justify-between mb-4'>
-                              <div className='flex items-center space-x-3'>
-                                <h3 className='text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                                  {displayData.itemName}
-                                </h3>
-                                <span
-                                  className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide ${getItemCategoryColor(item.itemCategory)}`}
-                                >
-                                  {formatItemCategory(item.itemCategory)}
-                                </span>
-                                {isItemSold(item) && (
-                                  <span className='inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200'>
-                                    <Check className='w-3 h-3 mr-1' />
-                                    Sold
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className='flex items-center space-x-2'>
-                                {!isItemSold(item) && (
-                                  <Button
-                                    onClick={() => handleMarkSold(item)}
-                                    variant='outline'
-                                    size='sm'
-                                    className='text-emerald-600 hover:text-emerald-700 border-emerald-200 hover:border-emerald-300'
-                                  >
-                                    Mark Sold
-                                  </Button>
-                                )}
-                                <Button
-                                  onClick={() => handleRemoveItem(
-                                    item.itemId || item.itemData?._id, 
-                                    displayData.itemName,
-                                    item.itemCategory
-                                  )}
-                                  variant='outline'
-                                  size='sm'
-                                  className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
-                                >
-                                  Remove
-                                </Button>
-                              </div>
+                      <div
+                        key={`${item.itemId || item.itemData?._id}-${index}`}
+                        className='group bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 p-6 hover:bg-white/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden'
+                      >
+                        <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+                        <div className='relative z-10'>
+                          <div className='flex items-start space-x-6'>
+                            {/* Card Image */}
+                            <div className='flex-shrink-0'>
+                              {displayData.itemImage ? (
+                                <div className='w-32 h-44 rounded-xl overflow-hidden shadow-lg bg-slate-100 group-hover:shadow-2xl transition-shadow duration-300'>
+                                  <img
+                                    src={displayData.itemImage}
+                                    alt={displayData.itemName || 'Card image'}
+                                    className='w-full h-full object-cover'
+                                    onError={e => {
+                                      e.currentTarget.src =
+                                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjE3NiIgdmlld0JveD0iMCAwIDEyOCAxNzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTc2IiBmaWxsPSIjRjFGNUY5Ii8+CjxwYXRoIGQ9Ik00NCA2NEg4NFY4MEg0NFY2NFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHN2Zz4K';
+                                    }}
+                                  />
+                                </div>
+                              ) : (
+                                <div className='w-32 h-44 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-lg'>
+                                  <Package className='w-12 h-12 text-slate-400' />
+                                </div>
+                              )}
                             </div>
 
-                            {/* Card Information Grid */}
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                              <div className='space-y-2'>
-                                <div className='flex items-center space-x-2 text-sm'>
-                                  <span className='font-medium text-slate-600'>Item ID:</span>
-                                  <span className='text-slate-800 font-mono text-xs'>{item.itemId || item.itemData?._id}</span>
+                            {/* Card Details */}
+                            <div className='flex-1 min-w-0'>
+                              <div className='flex items-center justify-between mb-4'>
+                                <div className='flex items-center space-x-3'>
+                                  <h3 className='text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                                    {displayData.itemName}
+                                  </h3>
+                                  <span
+                                    className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide ${getItemCategoryColor(item.itemCategory)}`}
+                                  >
+                                    {formatItemCategory(item.itemCategory)}
+                                  </span>
+                                  {isItemSold(item) && (
+                                    <span className='inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200'>
+                                      <Check className='w-3 h-3 mr-1' />
+                                      Sold
+                                    </span>
+                                  )}
                                 </div>
-                                {displayData.itemName && displayData.itemName !== 'Unknown Item' && (
-                                  <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Card Name:</span>
-                                    <span className='text-slate-800 font-medium'>{displayData.itemName}</span>
-                                  </div>
-                                )}
-                                {item.itemCategory === 'PsaGradedCard' && displayData.grade && (
-                                  <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>PSA Grade:</span>
-                                    <span className='text-slate-800 font-bold text-blue-600'>Grade {displayData.grade}</span>
-                                  </div>
-                                )}
-                                {item.itemCategory === 'RawCard' && displayData.condition && (
-                                  <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Condition:</span>
-                                    <span className='text-slate-800 font-medium'>{displayData.condition}</span>
-                                  </div>
-                                )}
+
+                                <div className='flex items-center space-x-2'>
+                                  {!isItemSold(item) && (
+                                    <Button
+                                      onClick={() => handleMarkSold(item)}
+                                      variant='outline'
+                                      size='sm'
+                                      className='text-emerald-600 hover:text-emerald-700 border-emerald-200 hover:border-emerald-300'
+                                    >
+                                      Mark Sold
+                                    </Button>
+                                  )}
+                                  <Button
+                                    onClick={() =>
+                                      handleRemoveItem(
+                                        item.itemId || item.itemData?._id,
+                                        displayData.itemName,
+                                        item.itemCategory
+                                      )
+                                    }
+                                    variant='outline'
+                                    size='sm'
+                                    className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
                               </div>
-                              
-                              <div className='space-y-2'>
-                                {displayData.setName && (
+
+                              {/* Card Information Grid */}
+                              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+                                <div className='space-y-2'>
                                   <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Set:</span>
-                                    <span className='text-slate-800 font-medium'>{displayData.setName}</span>
+                                    <span className='font-medium text-slate-600'>Item ID:</span>
+                                    <span className='text-slate-800 font-mono text-xs'>
+                                      {item.itemId || item.itemData?._id}
+                                    </span>
                                   </div>
-                                )}
-                                {displayData.price && (
-                                  <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Listed Price:</span>
-                                    <span className='text-slate-800 font-bold text-green-600'>{formatCurrency(displayData.price)}</span>
-                                  </div>
-                                )}
-                                {item.salePrice && (
-                                  <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Sale Price:</span>
-                                    <span className='text-emerald-600 font-bold'>{formatCurrency(item.salePrice)}</span>
-                                  </div>
-                                )}
+                                  {displayData.itemName &&
+                                    displayData.itemName !== 'Unknown Item' && (
+                                      <div className='flex items-center space-x-2 text-sm'>
+                                        <span className='font-medium text-slate-600'>
+                                          Card Name:
+                                        </span>
+                                        <span className='text-slate-800 font-medium'>
+                                          {displayData.itemName}
+                                        </span>
+                                      </div>
+                                    )}
+                                  {item.itemCategory === 'PsaGradedCard' && displayData.grade && (
+                                    <div className='flex items-center space-x-2 text-sm'>
+                                      <span className='font-medium text-slate-600'>PSA Grade:</span>
+                                      <span className='text-slate-800 font-bold text-blue-600'>
+                                        Grade {displayData.grade}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {item.itemCategory === 'RawCard' && displayData.condition && (
+                                    <div className='flex items-center space-x-2 text-sm'>
+                                      <span className='font-medium text-slate-600'>Condition:</span>
+                                      <span className='text-slate-800 font-medium'>
+                                        {displayData.condition}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className='space-y-2'>
+                                  {displayData.setName && (
+                                    <div className='flex items-center space-x-2 text-sm'>
+                                      <span className='font-medium text-slate-600'>Set:</span>
+                                      <span className='text-slate-800 font-medium'>
+                                        {displayData.setName}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {displayData.price && (
+                                    <div className='flex items-center space-x-2 text-sm'>
+                                      <span className='font-medium text-slate-600'>
+                                        Listed Price:
+                                      </span>
+                                      <span className='text-slate-800 font-bold text-green-600'>
+                                        {formatCurrency(displayData.price)}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {item.salePrice && (
+                                    <div className='flex items-center space-x-2 text-sm'>
+                                      <span className='font-medium text-slate-600'>
+                                        Sale Price:
+                                      </span>
+                                      <span className='text-emerald-600 font-bold'>
+                                        {formatCurrency(item.salePrice)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
                     );
                   })}
                 </div>
@@ -900,23 +965,37 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-slate-500/3 via-gray-500/3 to-slate-500/3'></div>
             <div className='relative z-10'>
-              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>Auction Details</h3>
+              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>
+                Auction Details
+              </h3>
               <dl className='grid grid-cols-1 md:grid-cols-2 gap-6 text-sm'>
                 <div>
                   <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>Created</dt>
-                  <dd className='text-slate-900 font-medium'>{formatDate(currentAuction.createdAt)}</dd>
+                  <dd className='text-slate-900 font-medium'>
+                    {formatDate(currentAuction.createdAt)}
+                  </dd>
                 </div>
                 <div>
-                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>Last Updated</dt>
-                  <dd className='text-slate-900 font-medium'>{formatDate(currentAuction.updatedAt)}</dd>
+                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                    Last Updated
+                  </dt>
+                  <dd className='text-slate-900 font-medium'>
+                    {formatDate(currentAuction.updatedAt)}
+                  </dd>
                 </div>
                 <div>
-                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>Active Status</dt>
-                  <dd className='text-slate-900 font-medium'>{currentAuction.isActive ? 'Yes' : 'No'}</dd>
+                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                    Active Status
+                  </dt>
+                  <dd className='text-slate-900 font-medium'>
+                    {currentAuction.isActive ? 'Yes' : 'No'}
+                  </dd>
                 </div>
                 {currentAuction.generatedFacebookPost && (
                   <div className='md:col-span-2'>
-                    <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>Generated Facebook Post</dt>
+                    <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                      Generated Facebook Post
+                    </dt>
                     <dd className='text-slate-900 mt-1'>
                       <div className='bg-slate-50/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200'>
                         <p className='whitespace-pre-wrap text-sm font-medium'>
@@ -935,10 +1014,12 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             isOpen={isAddItemModalOpen}
             onClose={() => setIsAddItemModalOpen(false)}
             onAddItems={handleAddItems}
-            currentAuctionItems={currentAuction?.items?.map(item => ({
-              itemId: item.itemId,
-              itemCategory: item.itemCategory
-            })) || []}
+            currentAuctionItems={
+              currentAuction?.items?.map(item => ({
+                itemId: item.itemId,
+                itemCategory: item.itemCategory,
+              })) || []
+            }
           />
 
           {/* Mark as Sold Modal */}
@@ -959,7 +1040,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <Modal
             isOpen={showDeleteConfirmation}
             onClose={() => setShowDeleteConfirmation(false)}
-            title="Delete Auction"
+            title='Delete Auction'
             maxWidth='md'
           >
             <div className='p-6'>
@@ -970,15 +1051,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 <div>
                   <h3 className='text-lg font-semibold text-gray-900'>Are you sure?</h3>
                   <p className='text-sm text-gray-600'>
-                    This will permanently delete the auction "{currentAuction?.topText}". This action cannot be undone.
+                    This will permanently delete the auction "{currentAuction?.topText}". This
+                    action cannot be undone.
                   </p>
                 </div>
               </div>
               <div className='flex justify-end space-x-3'>
-                <Button
-                  variant='outline'
-                  onClick={() => setShowDeleteConfirmation(false)}
-                >
+                <Button variant='outline' onClick={() => setShowDeleteConfirmation(false)}>
                   Cancel
                 </Button>
                 <Button
@@ -996,7 +1075,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <Modal
             isOpen={showRemoveItemConfirmation}
             onClose={() => setShowRemoveItemConfirmation(false)}
-            title="Remove Item"
+            title='Remove Item'
             maxWidth='md'
           >
             <div className='p-6'>
@@ -1012,10 +1091,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 </div>
               </div>
               <div className='flex justify-end space-x-3'>
-                <Button
-                  variant='outline'
-                  onClick={() => setShowRemoveItemConfirmation(false)}
-                >
+                <Button variant='outline' onClick={() => setShowRemoveItemConfirmation(false)}>
                   Cancel
                 </Button>
                 <Button

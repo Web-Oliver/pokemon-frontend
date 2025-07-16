@@ -25,33 +25,27 @@ export const exportToCSV = <T extends Record<string, any>>(
   data: T[],
   options: CSVExportOptions
 ): void => {
-  const {
-    filename = 'export.csv',
-    columns,
-    delimiter = ',',
-    includeHeaders = true,
-  } = options;
+  const { filename = 'export.csv', columns, delimiter = ',', includeHeaders = true } = options;
 
   try {
     // Generate CSV content
     const csvContent = generateCSVContent(data, columns, delimiter, includeHeaders);
-    
+
     // Create Blob with proper MIME type for CSV
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    
+
     // Use Context7 best practice: URL.createObjectURL for download
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename.endsWith('.csv') ? filename : `${filename}.csv`;
-    
+
     // Trigger download
     document.body.appendChild(link);
     link.click();
-    
+
     // Cleanup: remove link and revoke URL to free memory
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
-    
   } catch (error) {
     console.error('CSV Export Error:', error);
     throw new Error('Failed to export CSV file');
@@ -108,14 +102,36 @@ export const commonCSVColumns = {
   sales: [
     { key: 'itemName', header: 'Item Name' },
     { key: 'itemCategory', header: 'Category' },
-    { key: 'myPrice', header: 'Original Price (DKK)', formatter: (value: number) => value?.toFixed(2) || '0.00' },
-    { key: 'actualSoldPrice', header: 'Sold Price (DKK)', formatter: (value: number) => value?.toFixed(2) || '0.00' },
-    { key: 'profit', header: 'Profit (DKK)', formatter: (value: number) => value?.toFixed(2) || '0.00' },
-    { key: 'profitMargin', header: 'Profit Margin (%)', formatter: (value: number) => value?.toFixed(1) || '0.0' },
-    { key: 'dateSold', header: 'Date Sold', formatter: (value: string) => {
-      if (!value) return '';
-      return new Date(value).toLocaleDateString('da-DK');
-    }},
+    {
+      key: 'myPrice',
+      header: 'Original Price (DKK)',
+      formatter: (value: number) => value?.toFixed(2) || '0.00',
+    },
+    {
+      key: 'actualSoldPrice',
+      header: 'Sold Price (DKK)',
+      formatter: (value: number) => value?.toFixed(2) || '0.00',
+    },
+    {
+      key: 'profit',
+      header: 'Profit (DKK)',
+      formatter: (value: number) => value?.toFixed(2) || '0.00',
+    },
+    {
+      key: 'profitMargin',
+      header: 'Profit Margin (%)',
+      formatter: (value: number) => value?.toFixed(1) || '0.0',
+    },
+    {
+      key: 'dateSold',
+      header: 'Date Sold',
+      formatter: (value: string) => {
+        if (!value) {
+          return '';
+        }
+        return new Date(value).toLocaleDateString('da-DK');
+      },
+    },
     { key: 'source', header: 'Sales Source' },
   ] as CSVColumn[],
 };

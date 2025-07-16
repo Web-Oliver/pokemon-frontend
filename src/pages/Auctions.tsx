@@ -130,9 +130,9 @@ const Auctions: React.FC = () => {
         fetchAuctions();
       }
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -141,11 +141,14 @@ const Auctions: React.FC = () => {
   // Debug current auctions state
   useEffect(() => {
     console.log('[Auctions] Current auctions count:', auctions.length);
-    console.log('[Auctions] Current auctions:', auctions.map(a => ({ 
-      id: a.id || a._id, 
-      topText: a.topText,
-      status: a.status 
-    })));
+    console.log(
+      '[Auctions] Current auctions:',
+      auctions.map(a => ({
+        id: a.id || a._id,
+        topText: a.topText,
+        status: a.status,
+      }))
+    );
   }, [auctions]);
 
   useEffect(() => {
@@ -174,8 +177,12 @@ const Auctions: React.FC = () => {
             <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
             <div className='relative z-10 flex items-center justify-between'>
               <div>
-                <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>Auction Management</h1>
-                <p className='text-xl text-slate-600 font-medium leading-relaxed'>Manage your Pokémon card auctions with award-winning style</p>
+                <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>
+                  Auction Management
+                </h1>
+                <p className='text-xl text-slate-600 font-medium leading-relaxed'>
+                  Manage your Pokémon card auctions with award-winning style
+                </p>
               </div>
               <div className='flex items-center space-x-3'>
                 <Button
@@ -210,8 +217,12 @@ const Auctions: React.FC = () => {
                   <Package className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
-                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>Active Auctions</p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>{activeAuctions}</p>
+                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
+                    Active Auctions
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
+                    {activeAuctions}
+                  </p>
                 </div>
               </div>
             </div>
@@ -223,8 +234,12 @@ const Auctions: React.FC = () => {
                   <Calendar className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
-                  <p className='text-sm font-bold text-slate-600 tracking-wide uppercase mb-1'>Draft Auctions</p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-slate-700 transition-colors duration-300'>{draftAuctions}</p>
+                  <p className='text-sm font-bold text-slate-600 tracking-wide uppercase mb-1'>
+                    Draft Auctions
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-slate-700 transition-colors duration-300'>
+                    {draftAuctions}
+                  </p>
                 </div>
               </div>
             </div>
@@ -236,8 +251,12 @@ const Auctions: React.FC = () => {
                   <DollarSign className='w-8 h-8 text-white' />
                 </div>
                 <div className='ml-6'>
-                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>Completed</p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>{completedAuctions}</p>
+                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
+                    Completed
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                    {completedAuctions}
+                  </p>
                 </div>
               </div>
             </div>
@@ -269,7 +288,9 @@ const Auctions: React.FC = () => {
 
               <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>Status</label>
+                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+                    Status
+                  </label>
                   <Select
                     value={statusFilter}
                     onChange={handleStatusFilterChange}
@@ -383,7 +404,9 @@ const Auctions: React.FC = () => {
                                   <div className='w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3'>
                                     <Calendar className='w-3 h-3 text-white' />
                                   </div>
-                                  <span className='font-medium'>{formatDate(auction.auctionDate)}</span>
+                                  <span className='font-medium'>
+                                    {formatDate(auction.auctionDate)}
+                                  </span>
                                 </div>
 
                                 <div className='flex items-center text-slate-600'>
@@ -391,7 +414,8 @@ const Auctions: React.FC = () => {
                                     <Package className='w-3 h-3 text-white' />
                                   </div>
                                   <span className='font-medium'>
-                                    {auction.items.length} item{auction.items.length !== 1 ? 's' : ''}
+                                    {auction.items.length} item
+                                    {auction.items.length !== 1 ? 's' : ''}
                                   </span>
                                 </div>
 
@@ -399,7 +423,9 @@ const Auctions: React.FC = () => {
                                   <div className='w-6 h-6 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center mr-3'>
                                     <DollarSign className='w-3 h-3 text-white' />
                                   </div>
-                                  <span className='font-medium'>Total: {formatCurrency(auction.totalValue)}</span>
+                                  <span className='font-medium'>
+                                    Total: {formatCurrency(auction.totalValue)}
+                                  </span>
                                 </div>
 
                                 {auction.soldValue > 0 && (
@@ -407,7 +433,9 @@ const Auctions: React.FC = () => {
                                     <div className='w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3'>
                                       <DollarSign className='w-3 h-3 text-white' />
                                     </div>
-                                    <span className='font-bold'>Sold: {formatCurrency(auction.soldValue)}</span>
+                                    <span className='font-bold'>
+                                      Sold: {formatCurrency(auction.soldValue)}
+                                    </span>
                                   </div>
                                 )}
                               </div>

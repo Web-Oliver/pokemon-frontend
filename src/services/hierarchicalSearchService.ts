@@ -1,7 +1,7 @@
 /**
  * Context7 Hierarchical Search Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Following CLAUDE.md DRY and SOLID principles:
  * - Single Responsibility: Only handles hierarchical search logic
  * - Open/Closed: Extensible for new search types
@@ -10,8 +10,16 @@
  */
 
 import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
-import { searchCardsOptimized, searchCardsInSet, getCardSuggestionsOptimized } from '../api/cardsApi';
-import { searchProductsOptimized, searchProductsInSet, getProductSuggestionsOptimized } from '../api/cardMarketRefProductsApi';
+import {
+  searchCardsOptimized,
+  searchCardsInSet,
+  getCardSuggestionsOptimized,
+} from '../api/cardsApi';
+import {
+  searchProductsOptimized,
+  searchProductsInSet,
+  getProductSuggestionsOptimized,
+} from '../api/cardMarketRefProductsApi';
 import { searchSetsOptimized, getSetSuggestionsOptimized } from '../api/setsApi';
 import { SEARCH_CONFIG } from '../utils/constants';
 
@@ -55,7 +63,8 @@ export interface SearchSuggestion {
 export class HierarchicalSearchService {
   private config: HierarchicalSearchConfig;
   private state: HierarchicalSearchState;
-  private cache: Map<string, { data: SearchSuggestion[]; timestamp: number; ttl: number }> = new Map();
+  private cache: Map<string, { data: SearchSuggestion[]; timestamp: number; ttl: number }> =
+    new Map();
   private pendingRequests: Map<string, Promise<SearchSuggestion[]>> = new Map();
 
   constructor(config: HierarchicalSearchConfig) {
@@ -63,21 +72,22 @@ export class HierarchicalSearchService {
       debounceMs: SEARCH_CONFIG.DEBOUNCE_MS,
       cacheEnabled: true,
       maxSuggestions: SEARCH_CONFIG.MAX_SUGGESTIONS,
-      minQueryLength: config.searchMode === 'products' 
-        ? SEARCH_CONFIG.SEALED_PRODUCT_MIN_QUERY_LENGTH 
-        : SEARCH_CONFIG.CARD_MIN_QUERY_LENGTH,
+      minQueryLength:
+        config.searchMode === 'products'
+          ? SEARCH_CONFIG.SEALED_PRODUCT_MIN_QUERY_LENGTH
+          : SEARCH_CONFIG.CARD_MIN_QUERY_LENGTH,
       useOptimizedSearch: true, // Default to using optimized endpoints
       enableFuzzyMatching: true, // Enable Fuse.js fuzzy matching by default
       enableAdvancedFilters: true, // Enable advanced filtering by default
-      ...config
+      ...config,
     };
-    
+
     this.state = {
       selectedSet: null,
       selectedCategory: null,
       activeField: null,
       isLoading: false,
-      error: null
+      error: null,
     };
   }
 
@@ -89,20 +99,23 @@ export class HierarchicalSearchService {
     query: string,
     fieldType: 'set' | 'category' | 'cardProduct'
   ): Promise<SearchSuggestion[]> {
-    const minLength = fieldType === 'set' 
-      ? SEARCH_CONFIG.SET_MIN_QUERY_LENGTH 
-      : this.config.minQueryLength || SEARCH_CONFIG.DEFAULT_MIN_QUERY_LENGTH;
-      
+    const minLength =
+      fieldType === 'set'
+        ? SEARCH_CONFIG.SET_MIN_QUERY_LENGTH
+        : this.config.minQueryLength || SEARCH_CONFIG.DEFAULT_MIN_QUERY_LENGTH;
+
     if (!query.trim() || query.length < minLength) {
       return [];
     }
 
     const cacheKey = this.generateCacheKey(query, fieldType);
-    
+
     // Check cache first (if enabled)
     if (this.config.cacheEnabled) {
       const cached = this.getCachedSuggestions(cacheKey);
-      if (cached) return cached;
+      if (cached) {
+        return cached;
+      }
     }
 
     // Check for pending request
@@ -116,12 +129,12 @@ export class HierarchicalSearchService {
 
     try {
       const suggestions = await requestPromise;
-      
+
       // Cache results
       if (this.config.cacheEnabled) {
         this.cacheResults(cacheKey, suggestions, fieldType);
       }
-      
+
       return suggestions;
     } finally {
       this.pendingRequests.delete(cacheKey);
@@ -137,19 +150,19 @@ export class HierarchicalSearchService {
     fieldType: 'set' | 'category' | 'cardProduct'
   ): Promise<SearchSuggestion[]> {
     const processedQuery = query.trim().toLowerCase();
-    
+
     // Use optimized search if enabled
     if (this.config.useOptimizedSearch) {
       switch (fieldType) {
         case 'set':
           return this.searchSetsOptimized(processedQuery);
-        
+
         case 'category':
-          return this.searchCategories(processedQuery); // Legacy for now
-        
+          return this.searchCategories(processedQuery);
+
         case 'cardProduct':
           return this.searchCardProductsOptimized(processedQuery);
-        
+
         default:
           return [];
       }
@@ -158,13 +171,13 @@ export class HierarchicalSearchService {
       switch (fieldType) {
         case 'set':
           return this.searchSets(processedQuery);
-        
+
         case 'category':
           return this.searchCategories(processedQuery);
-        
+
         case 'cardProduct':
           return this.searchCardProducts(processedQuery);
-        
+
         default:
           return [];
       }
@@ -178,12 +191,15 @@ export class HierarchicalSearchService {
     console.log('[HIERARCHICAL SEARCH] searchSets called with config:', {
       searchMode: this.config.searchMode,
       query,
-      maxSuggestions: this.config.maxSuggestions
+      maxSuggestions: this.config.maxSuggestions,
     });
-    
-    const results = this.config.searchMode === 'products' 
-      ? await searchApi.searchProductSets(query, this.config.maxSuggestions!)
-      : await searchApi.searchSets(query, this.config.maxSuggestions!);
+
+    // Use optimized search endpoints
+    const response = await searchSetsOptimized({
+      query,
+      limit: this.config.maxSuggestions!,
+    });
+    const results = response.data;
 
     console.log('[HIERARCHICAL SEARCH] searchSets results:', results);
     return results.map(this.mapSetResultToSuggestion);
@@ -193,31 +209,47 @@ export class HierarchicalSearchService {
    * Search for categories
    */
   private async searchCategories(query: string): Promise<SearchSuggestion[]> {
-    const results = await searchApi.searchCategories(query, this.config.maxSuggestions!);
-    return results.map(this.mapCategoryResultToSuggestion);
+    // Use predefined categories since searchCategories was removed
+    const allCategories = [
+      { category: 'Blisters', productCount: 100, isExactMatch: false, searchScore: 0 },
+      { category: 'Booster-Boxes', productCount: 200, isExactMatch: false, searchScore: 0 },
+      { category: 'Boosters', productCount: 150, isExactMatch: false, searchScore: 0 },
+      { category: 'Box-Sets', productCount: 50, isExactMatch: false, searchScore: 0 },
+      { category: 'Elite-Trainer-Boxes', productCount: 75, isExactMatch: false, searchScore: 0 },
+      { category: 'Theme-Decks', productCount: 120, isExactMatch: false, searchScore: 0 },
+      { category: 'Tins', productCount: 80, isExactMatch: false, searchScore: 0 },
+      { category: 'Trainer-Kits', productCount: 30, isExactMatch: false, searchScore: 0 },
+    ];
+
+    const filteredCategories = allCategories
+      .filter(cat => cat.category.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, this.config.maxSuggestions!);
+
+    return filteredCategories.map(this.mapCategoryResultToSuggestion);
   }
 
   /**
    * Search for cards/products with hierarchical filtering
    */
   private async searchCardProducts(query: string): Promise<SearchSuggestion[]> {
-    const results = this.config.searchMode === 'products'
-      ? await searchApi.searchProducts(
-          query,
-          this.state.selectedSet || undefined,
-          this.state.selectedCategory || undefined,
-          this.config.maxSuggestions!
-        )
-      : await searchApi.searchCards(
-          query,
-          this.state.selectedSet || undefined,
-          this.state.selectedCategory || undefined,
-          this.config.maxSuggestions!
-        );
+    const results =
+      this.config.searchMode === 'products'
+        ? await searchProductsOptimized({
+            query,
+            setName: this.state.selectedSet || undefined,
+            category: this.state.selectedCategory || undefined,
+            limit: this.config.maxSuggestions!,
+          }).then(response => response.data)
+        : await searchCardsOptimized({
+            query,
+            setName: this.state.selectedSet || undefined,
+            limit: this.config.maxSuggestions!,
+          }).then(response => response.data);
 
-    return results.map(this.config.searchMode === 'products' 
-      ? this.mapProductResultToSuggestion 
-      : this.mapCardResultToSuggestion
+    return results.map(
+      this.config.searchMode === 'products'
+        ? this.mapProductResultToSuggestion
+        : this.mapCardResultToSuggestion
     );
   }
 
@@ -228,13 +260,13 @@ export class HierarchicalSearchService {
     console.log('[HIERARCHICAL SEARCH] searchSetsOptimized called with:', {
       searchMode: this.config.searchMode,
       query,
-      maxSuggestions: this.config.maxSuggestions
+      maxSuggestions: this.config.maxSuggestions,
     });
-    
+
     try {
       const results = await searchSetsOptimized({
         query,
-        limit: this.config.maxSuggestions!
+        limit: this.config.maxSuggestions!,
       });
 
       console.log('[HIERARCHICAL SEARCH] searchSetsOptimized results:', results);
@@ -255,32 +287,48 @@ export class HierarchicalSearchService {
       query,
       selectedSet: this.state.selectedSet,
       selectedCategory: this.state.selectedCategory,
-      maxSuggestions: this.config.maxSuggestions
+      maxSuggestions: this.config.maxSuggestions,
     });
 
     try {
       if (this.config.searchMode === 'products') {
         // Use optimized product search
-        const results = this.state.selectedSet 
+        const results = this.state.selectedSet
           ? await searchProductsInSet(query, this.state.selectedSet, this.config.maxSuggestions!)
           : await searchProductsOptimized({
               query,
               category: this.state.selectedCategory || undefined,
-              limit: this.config.maxSuggestions!
+              limit: this.config.maxSuggestions!,
             });
 
-        return (Array.isArray(results) ? results : results.data).map(this.mapProductResultToSuggestion);
+        return (Array.isArray(results) ? results : results.data).map(
+          this.mapProductResultToSuggestion
+        );
       } else {
         // Use optimized card search
-        const results = this.state.selectedSet 
+        console.log('[HIERARCHICAL SEARCH] About to search cards with:', {
+          query,
+          selectedSet: this.state.selectedSet,
+          useSelectedSetSearch: !!this.state.selectedSet,
+        });
+
+        const results = this.state.selectedSet
           ? await searchCardsInSet(query, this.state.selectedSet, this.config.maxSuggestions!)
           : await searchCardsOptimized({
               query,
               setName: this.state.selectedSet || undefined,
-              limit: this.config.maxSuggestions!
+              limit: this.config.maxSuggestions!,
             });
 
-        return (Array.isArray(results) ? results : results.data).map(this.mapCardResultToSuggestion);
+        console.log('[HIERARCHICAL SEARCH] Card search results:', {
+          resultsType: Array.isArray(results) ? 'array' : 'object',
+          resultsLength: Array.isArray(results) ? results.length : results.data?.length,
+          results: Array.isArray(results) ? results : results.data,
+        });
+
+        return (Array.isArray(results) ? results : results.data).map(
+          this.mapCardResultToSuggestion
+        );
       }
     } catch (error) {
       console.error('[HIERARCHICAL SEARCH] searchCardProductsOptimized error:', error);
@@ -296,10 +344,11 @@ export class HierarchicalSearchService {
     query: string,
     fieldType: 'set' | 'category' | 'cardProduct'
   ): Promise<SearchSuggestion[]> {
-    const minLength = fieldType === 'set' 
-      ? SEARCH_CONFIG.SET_MIN_QUERY_LENGTH 
-      : this.config.minQueryLength || SEARCH_CONFIG.DEFAULT_MIN_QUERY_LENGTH;
-      
+    const minLength =
+      fieldType === 'set'
+        ? SEARCH_CONFIG.SET_MIN_QUERY_LENGTH
+        : this.config.minQueryLength || SEARCH_CONFIG.DEFAULT_MIN_QUERY_LENGTH;
+
     if (!query.trim() || query.length < minLength) {
       return [];
     }
@@ -307,22 +356,30 @@ export class HierarchicalSearchService {
     try {
       switch (fieldType) {
         case 'set':
-          const setSuggestions = await getSetSuggestionsOptimized(query, this.config.maxSuggestions!);
+          const setSuggestions = await getSetSuggestionsOptimized(
+            query,
+            this.config.maxSuggestions!
+          );
           return setSuggestions.map(this.mapSetResultToSuggestionOptimized);
-        
+
         case 'category':
-          // For now, use legacy category search
           return this.searchCategories(query);
-        
+
         case 'cardProduct':
           if (this.config.searchMode === 'products') {
-            const productSuggestions = await getProductSuggestionsOptimized(query, this.config.maxSuggestions!);
+            const productSuggestions = await getProductSuggestionsOptimized(
+              query,
+              this.config.maxSuggestions!
+            );
             return productSuggestions.map(this.mapProductResultToSuggestion);
           } else {
-            const cardSuggestions = await getCardSuggestionsOptimized(query, this.config.maxSuggestions!);
+            const cardSuggestions = await getCardSuggestionsOptimized(
+              query,
+              this.config.maxSuggestions!
+            );
             return cardSuggestions.map(this.mapCardResultToSuggestion);
           }
-        
+
         default:
           return [];
       }
@@ -348,12 +405,12 @@ export class HierarchicalSearchService {
         newState.selectedSet = suggestion.metadata.setName || suggestion.displayName;
         newState.activeField = null;
         break;
-      
+
       case 'category':
         newState.selectedCategory = suggestion.metadata.category || suggestion.displayName;
         newState.activeField = null;
         break;
-      
+
       case 'cardProduct':
         newState.activeField = null;
         // Auto-fill hierarchical context from selection
@@ -383,7 +440,7 @@ export class HierarchicalSearchService {
    */
   clearContext(type: 'set' | 'category' | 'all'): HierarchicalSearchState {
     const newState = { ...this.state };
-    
+
     switch (type) {
       case 'set':
         newState.selectedSet = null;
@@ -397,7 +454,7 @@ export class HierarchicalSearchService {
         newState.activeField = null;
         break;
     }
-    
+
     this.state = newState;
     return newState;
   }
@@ -423,9 +480,9 @@ export class HierarchicalSearchService {
     metadata: {
       setName: result.setName,
       count: result.counts?.cards || result.counts?.products || 0,
-      source: result.source
+      source: result.source,
     },
-    data: result
+    data: result,
   });
 
   private mapSetResultToSuggestionOptimized = (result: any): SearchSuggestion => ({
@@ -434,9 +491,9 @@ export class HierarchicalSearchService {
     metadata: {
       setName: result.setName,
       count: result.totalCardsInSet || result.totalPsaPopulation || 0,
-      source: 'optimized'
+      source: 'optimized',
     },
-    data: result
+    data: result,
   });
 
   private mapCategoryResultToSuggestion = (result: CategoryResult): SearchSuggestion => ({
@@ -444,9 +501,9 @@ export class HierarchicalSearchService {
     displayName: result.category,
     metadata: {
       category: result.category,
-      count: result.productCount
+      count: result.productCount,
     },
-    data: result
+    data: result,
   });
 
   private mapCardResultToSuggestion = (result: CardResult): SearchSuggestion => ({
@@ -454,9 +511,9 @@ export class HierarchicalSearchService {
     displayName: result.cardName,
     metadata: {
       setName: result.setInfo?.setName,
-      category: undefined
+      category: undefined,
     },
-    data: result
+    data: result,
   });
 
   private mapProductResultToSuggestion = (result: ProductResult): SearchSuggestion => ({
@@ -464,9 +521,9 @@ export class HierarchicalSearchService {
     displayName: result.name,
     metadata: {
       setName: result.setName,
-      category: result.category
+      category: result.category,
     },
-    data: result
+    data: result,
   });
 
   // Cache management methods
@@ -476,7 +533,7 @@ export class HierarchicalSearchService {
 
   private getCachedSuggestions(cacheKey: string): SearchSuggestion[] | null {
     const cached = this.cache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < cached.ttl) {
+    if (cached && Date.now() - cached.timestamp < cached.ttl) {
       return cached.data;
     }
     if (cached) {
@@ -490,7 +547,7 @@ export class HierarchicalSearchService {
     this.cache.set(cacheKey, {
       data: suggestions,
       timestamp: Date.now(),
-      ttl
+      ttl,
     });
   }
 
@@ -507,7 +564,9 @@ export class HierarchicalSearchService {
  * Factory function to create hierarchical search service instances
  * Following SOLID principles for dependency injection
  */
-export function createHierarchicalSearchService(config: HierarchicalSearchConfig): HierarchicalSearchService {
+export function createHierarchicalSearchService(
+  config: HierarchicalSearchConfig
+): HierarchicalSearchService {
   // Safeguard: detect if state object is passed instead of config
   if (config && typeof config === 'object' && 'fields' in config && 'suggestions' in config) {
     console.error('[HIERARCHICAL SEARCH] ERROR: State object passed as config:', config);
@@ -520,12 +579,12 @@ export function createHierarchicalSearchService(config: HierarchicalSearchConfig
       minQueryLength: SEARCH_CONFIG.SEALED_PRODUCT_MIN_QUERY_LENGTH,
       useOptimizedSearch: true,
       enableFuzzyMatching: true,
-      enableAdvancedFilters: true
+      enableAdvancedFilters: true,
     };
     console.log('[HIERARCHICAL SEARCH] Using default config:', defaultConfig);
     return new HierarchicalSearchService(defaultConfig);
   }
-  
+
   console.log('[HIERARCHICAL SEARCH] Creating service with config:', config);
   return new HierarchicalSearchService(config);
 }

@@ -35,12 +35,12 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
   return (
     <div className='bg-yellow-50/80 backdrop-blur-xl border border-yellow-200/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
       <div className='absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50'></div>
-      
+
       <h4 className='text-xl font-bold text-yellow-900 mb-8 flex items-center relative z-10'>
         <DollarSign className='w-6 h-6 mr-3 text-yellow-600' />
         Update Sale Information
       </h4>
-      
+
       <div className='relative z-10 space-y-8'>
         {/* Sale Details */}
         <div>
@@ -59,7 +59,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 className='bg-white'
               />
             </div>
-            
+
             <div>
               <Input
                 label='Actual Sold Price (kr.)'
@@ -71,7 +71,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 className='bg-white'
               />
             </div>
-            
+
             <div>
               <Select
                 label='Source'
@@ -86,7 +86,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Delivery Method */}
         <div>
           <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Delivery Method</h5>
@@ -103,18 +103,13 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 className='bg-white'
               />
             </div>
-            
+
             <div>
-              <Input
-                label='Date Sold'
-                type='date'
-                {...register('dateSold')}
-                className='bg-white'
-              />
+              <Input label='Date Sold' type='date' {...register('dateSold')} className='bg-white' />
             </div>
           </div>
         </div>
-        
+
         {/* Buyer Information */}
         <div>
           <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Buyer Information</h5>
@@ -128,7 +123,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 className='bg-white'
               />
             </div>
-            
+
             <div>
               <Input
                 label='Buyer Phone'
@@ -138,7 +133,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 className='bg-white'
               />
             </div>
-            
+
             <div className='md:col-span-2'>
               <Input
                 label='Buyer Email'
@@ -150,7 +145,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Conditional Address/Tracking Section */}
         {watchedDeliveryMethod === 'Sent' && (
           <div>
@@ -165,7 +160,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   className='bg-white'
                 />
               </div>
-              
+
               <div>
                 <Input
                   label='Postal Code'
@@ -175,7 +170,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   className='bg-white'
                 />
               </div>
-              
+
               <div>
                 <Input
                   label='City'
@@ -185,7 +180,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   className='bg-white'
                 />
               </div>
-              
+
               <div className='md:col-span-2'>
                 <Input
                   label='Tracking Number'
@@ -198,21 +193,23 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
           </div>
         )}
-        
+
         {watchedDeliveryMethod === 'Local Meetup' && (
           <div>
             <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Local Meetup Information</h5>
             <div className='p-4 bg-blue-50/80 border border-blue-200/50 rounded-xl backdrop-blur-sm'>
               <p className='text-sm text-blue-800'>
-                <strong>Local Meetup:</strong> No shipping address or tracking required for local meetup deliveries.
+                <strong>Local Meetup:</strong> No shipping address or tracking required for local
+                meetup deliveries.
               </p>
             </div>
           </div>
         )}
-        
+
         <div className='p-4 bg-yellow-100/80 rounded-xl border border-yellow-300/50 backdrop-blur-sm'>
           <p className='text-sm text-yellow-800'>
-            <strong>Note:</strong> This {itemName} is sold. You can only update sale information, buyer details, and delivery information.
+            <strong>Note:</strong> This {itemName} is sold. You can only update sale information,
+            buyer details, and delivery information.
           </p>
         </div>
       </div>

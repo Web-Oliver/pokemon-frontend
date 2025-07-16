@@ -17,8 +17,7 @@ import { useForm } from 'react-hook-form';
 import { Package, Calendar, Search } from 'lucide-react';
 import { IRawCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
-import { useSearch } from '../../hooks/useSearch';
-import { useCardAutocomplete, AutocompleteField } from '../../hooks/useEnhancedAutocomplete';
+import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -46,7 +45,6 @@ interface FormData {
   dateAdded: string;
 }
 
-
 const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   onCancel,
   onSuccess,
@@ -54,27 +52,13 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   isEditing = false,
 }) => {
   const { addRawCard, updateRawCard, loading } = useCollection();
-  const {
-    setName,
-    cardProductName,
-    suggestions,
-    activeField,
-    selectedCardData,
-    updateSetName,
-    updateCardProductName,
-    handleSuggestionSelect,
-    setActiveField,
-    setSearchMode,
-  } = useSearch();
-  
-  // Set search mode to 'cards' for raw card form
-  useEffect(() => {
-    setSearchMode('cards');
-  }, [setSearchMode]);
+  // Legacy useSearch removed - using EnhancedAutocomplete instead
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(
+    initialData?.images || []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // Legacy showSuggestions state removed - EnhancedAutocomplete handles UI state
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
 
@@ -105,32 +89,26 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       value: watch('setName') || '',
       placeholder: 'Set Name',
       type: 'set',
-      required: true
+      required: true,
     },
     {
       id: 'cardName',
       value: watch('cardName') || '',
       placeholder: 'Card Name',
       type: 'cardProduct',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   // Initialize enhanced autocomplete for cards
-  const enhancedAutocomplete = useCardAutocomplete(autocompleteFields, {
-    onSelectionChange: (selectedData) => {
-      console.log('[RAW CARD] Hook callback (should not be called):', selectedData);
-    },
-    onError: (error) => {
-      console.error('[RAW CARD] Hook error callback:', error);
-    }
-  });
+  // Create config for enhanced autocomplete
+  const autocompleteConfig = createAutocompleteConfig('cards');
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
     if (isEditing && initialData) {
       console.log('[RAW FORM] Updating form with initialData:', initialData);
-      
+
       // Access card data from nested cardId object (populated by backend API)
       const cardData = initialData.cardId;
       const setName = cardData?.setId?.setName || initialData.setName || '';
@@ -138,7 +116,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
       const baseName = cardData?.baseName || initialData.baseName || '';
       const variety = cardData?.variety || initialData.variety || '';
-      
+
       setValue('setName', setName);
       setValue('cardName', cardName);
       setValue('pokemonNumber', pokemonNumber);
@@ -146,12 +124,15 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       setValue('variety', variety);
       setValue('condition', initialData.condition || '');
       setValue('myPrice', initialData.myPrice?.toString() || '');
-      setValue('dateAdded', initialData.dateAdded ? new Date(initialData.dateAdded).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
-      
-      // Update search state to match the loaded data
-      updateSetName(setName);
-      updateCardProductName(cardName);
-      
+      setValue(
+        'dateAdded',
+        initialData.dateAdded
+          ? new Date(initialData.dateAdded).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
+      );
+
+      // Legacy search functions removed - form values are sufficient
+
       console.log('[RAW FORM] Form values updated with:', {
         setName,
         cardName,
@@ -159,46 +140,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         baseName,
         variety,
         condition: initialData.condition,
-        myPrice: initialData.myPrice
+        myPrice: initialData.myPrice,
       });
     }
-  }, [isEditing, initialData, setValue, updateSetName, updateCardProductName]);
+  }, [isEditing, initialData, setValue]);
 
-  // Sync search state with form values
-  useEffect(() => {
-    if (setName && !isEditing) {
-      setValue('setName', setName);
-    }
-  }, [setName, setValue, isEditing]);
+  // Legacy search sync removed - EnhancedAutocomplete handles all search state
 
-  useEffect(() => {
-    if (cardProductName && !isEditing) {
-      setValue('cardName', cardProductName);
-    }
-  }, [cardProductName, setValue, isEditing]);
-
-  // Auto-fill logic when card is selected
-  useEffect(() => {
-    const handleCardAutoFill = () => {
-      // Use selectedCardData from search hook instead of making API call
-      if (selectedCardData && activeField === null) {
-        console.log('[FORM AUTOFILL] Using selectedCardData:', selectedCardData);
-
-        // Autofill all available card fields
-        setValue('pokemonNumber', selectedCardData.pokemonNumber || '');
-        setValue('baseName', selectedCardData.baseName || '');
-        setValue('variety', selectedCardData.variety || '');
-
-        console.log('[FORM AUTOFILL] Fields updated:', {
-          pokemonNumber: selectedCardData.pokemonNumber,
-          baseName: selectedCardData.baseName,
-          variety: selectedCardData.variety,
-        });
-      }
-    };
-
-    handleCardAutoFill();
-  }, [selectedCardData, activeField, setValue]);
+  // Auto-fill functionality moved to EnhancedAutocomplete onSelectionChange
 
   // Watch form fields for validation
   const watchedCondition = watch('condition');
@@ -228,37 +177,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     setValue('myPrice', newPrice.toString());
   };
 
-  // Autocomplete event handlers
-  const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('setName', value);
-    updateSetName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleCardNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('cardName', value);
-    updateCardProductName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleSuggestionClick = (suggestion: any, fieldType: 'set' | 'cardProduct') => {
-    handleSuggestionSelect(suggestion, fieldType);
-    setShowSuggestions(false);
-  };
-
-  const handleInputFocus = (fieldType: 'set' | 'cardProduct') => {
-    setActiveField(fieldType);
-    setShowSuggestions(true);
-  };
-
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setShowSuggestions(false);
-      setActiveField(null);
-    }, 200);
-  };
+  // Event handlers removed - EnhancedAutocomplete handles all interactions
 
   const onSubmit = async (data: FormData) => {
     console.log('[RAW FORM SUBMIT] ===== SUBMIT STARTED =====');
@@ -266,7 +185,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     console.log('[RAW FORM SUBMIT] Form data received:', data);
     console.log('[RAW FORM SUBMIT] selectedImages count:', selectedImages.length);
     console.log('[RAW FORM SUBMIT] priceHistory:', priceHistory);
-    
+
     setIsSubmitting(true);
 
     try {
@@ -302,7 +221,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           finalImageCount: finalImages.length,
           remainingExistingImages: remainingExistingImages.length,
           newUploadedImages: imageUrls.length,
-          priceHistoryCount: cardData.priceHistory?.length || 0
+          priceHistoryCount: cardData.priceHistory?.length || 0,
         });
       } else {
         console.log('[RAW FORM SUBMIT] Processing new item creation');
@@ -333,7 +252,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       console.log('[RAW FORM SUBMIT] API call parameters:', {
         isEditing,
         itemId: initialData?.id,
-        updateFunction: isEditing ? 'updateRawCard' : 'addRawCard'
+        updateFunction: isEditing ? 'updateRawCard' : 'addRawCard',
       });
 
       if (isEditing && initialData?.id) {
@@ -394,7 +313,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       {/* Card Information Section - Enhanced Autocomplete Integration */}
       <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
         <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-emerald-50/50'></div>
-        
+
         <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative z-10'>
           <div className='flex items-center'>
             <Calendar className='w-6 h-6 mr-3 text-slate-600' />
@@ -411,70 +330,70 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         {/* Enhanced Autocomplete for Hierarchical Search */}
         <div className='mb-6 relative z-10'>
           <EnhancedAutocomplete
-            config={enhancedAutocomplete.state}
+            config={autocompleteConfig}
             fields={autocompleteFields}
-            onSelectionChange={(selectedData) => {
+            onSelectionChange={selectedData => {
               console.log('[RAW CARD] Enhanced autocomplete selection:', selectedData);
-              
+
               // Auto-fill form fields based on selection
               if (selectedData) {
                 // The selectedData contains the raw card data from the search API
                 console.log('[RAW CARD] Raw selected data:', selectedData);
-                
+
                 // Auto-fill set name from setInfo or direct setName
                 const setName = selectedData.setInfo?.setName || selectedData.setName;
                 if (setName) {
                   setValue('setName', setName, { shouldValidate: true });
-                  updateSetName(setName); // Sync with legacy useSearch
+                  // Legacy sync removed
                   clearErrors('setName'); // Clear any validation errors
                 }
-                
+
                 // Auto-fill card name
                 if (selectedData.cardName) {
                   setValue('cardName', selectedData.cardName, { shouldValidate: true });
-                  updateCardProductName(selectedData.cardName); // Sync with legacy useSearch
+                  // Legacy sync removed
                   clearErrors('cardName'); // Clear any validation errors
                 }
-                
+
                 // Auto-fill pokemon number
                 if (selectedData.pokemonNumber) {
                   setValue('pokemonNumber', selectedData.pokemonNumber, { shouldValidate: true });
                   clearErrors('pokemonNumber'); // Clear any validation errors
                 }
-                
+
                 // Auto-fill base name
                 if (selectedData.baseName) {
                   setValue('baseName', selectedData.baseName, { shouldValidate: true });
                   clearErrors('baseName'); // Clear any validation errors
                 }
-                
+
                 // Auto-fill variety (always set, even if empty)
                 const varietyValue = selectedData.variety || '';
-                console.log('[RAW CARD] Variety value:', { 
-                  raw: selectedData.variety, 
-                  processed: varietyValue, 
-                  type: typeof selectedData.variety 
+                console.log('[RAW CARD] Variety value:', {
+                  raw: selectedData.variety,
+                  processed: varietyValue,
+                  type: typeof selectedData.variety,
                 });
                 setValue('variety', varietyValue, { shouldValidate: true });
                 clearErrors('variety'); // Clear any validation errors
-                
+
                 console.log('[RAW CARD] Auto-filled fields:', {
                   setName,
                   cardName: selectedData.cardName,
                   pokemonNumber: selectedData.pokemonNumber,
                   baseName: selectedData.baseName,
-                  variety: selectedData.variety
+                  variety: selectedData.variety,
                 });
               }
             }}
-            onError={(error) => {
+            onError={error => {
               console.error('[RAW CARD] Enhanced autocomplete error:', error);
             }}
-            variant="premium"
+            variant='premium'
             showMetadata={true}
             allowClear={true}
             disabled={isEditing}
-            className="premium-search-integration"
+            className='premium-search-integration'
           />
         </div>
 
@@ -539,11 +458,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             value={watch('cardName') || ''}
             readOnly
           />
-          <input
-            {...register('pokemonNumber')}
-            value={watch('pokemonNumber') || ''}
-            readOnly
-          />
+          <input {...register('pokemonNumber')} value={watch('pokemonNumber') || ''} readOnly />
           <input
             {...register('baseName', {
               required: 'Base name is required',
@@ -552,11 +467,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             value={watch('baseName') || ''}
             readOnly
           />
-          <input
-            {...register('variety')}
-            value={watch('variety') || ''}
-            readOnly
-          />
+          <input {...register('variety')} value={watch('variety') || ''} readOnly />
         </div>
       </div>
 
@@ -564,7 +475,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       <GradingPricingSection
         register={register}
         errors={errors}
-        cardType="raw"
+        cardType='raw'
         currentGradeOrCondition={watchedCondition}
         currentPrice={watchedPrice}
         isEditing={isEditing}
@@ -580,7 +491,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         existingImageUrls={initialData?.images || []}
         maxFiles={8}
         maxFileSize={5}
-        title="Card Images"
+        title='Card Images'
       />
 
       {/* Context7 Premium Action Buttons */}

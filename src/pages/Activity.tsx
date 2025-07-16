@@ -47,7 +47,7 @@ import { getRelativeTime } from '../utils/timeUtils';
 
 const Activity: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
-  
+
   // Context7 Activity Hook Integration
   const {
     activities,
@@ -64,7 +64,7 @@ const Activity: React.FC = () => {
     loadMore,
     refresh,
     markAsRead,
-    archiveActivity
+    archiveActivity,
   } = useActivity();
 
   // Handle navigation
@@ -89,7 +89,7 @@ const Activity: React.FC = () => {
       [ACTIVITY_TYPES.SALE_UPDATED]: Edit,
       [ACTIVITY_TYPES.MILESTONE]: Award,
       [ACTIVITY_TYPES.COLLECTION_STATS]: BarChart3,
-      [ACTIVITY_TYPES.SYSTEM]: Settings
+      [ACTIVITY_TYPES.SYSTEM]: Settings,
     };
     return iconMap[type] || Info;
   };
@@ -143,28 +143,28 @@ const Activity: React.FC = () => {
       emerald: {
         bg: 'from-emerald-500 to-teal-600',
         badge: 'bg-emerald-100 text-emerald-800',
-        dot: 'bg-emerald-400'
+        dot: 'bg-emerald-400',
       },
       amber: {
         bg: 'from-amber-500 to-orange-600',
         badge: 'bg-amber-100 text-amber-800',
-        dot: 'bg-amber-400'
+        dot: 'bg-amber-400',
       },
       purple: {
         bg: 'from-purple-500 to-violet-600',
         badge: 'bg-purple-100 text-purple-800',
-        dot: 'bg-purple-400'
+        dot: 'bg-purple-400',
       },
       indigo: {
         bg: 'from-indigo-500 to-blue-600',
         badge: 'bg-indigo-100 text-indigo-800',
-        dot: 'bg-indigo-400'
+        dot: 'bg-indigo-400',
       },
       red: {
         bg: 'from-red-500 to-rose-600',
         badge: 'bg-red-100 text-red-800',
-        dot: 'bg-red-400'
-      }
+        dot: 'bg-red-400',
+      },
     };
     return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
   };
@@ -230,10 +230,9 @@ const Activity: React.FC = () => {
                     <div>
                       <p className='text-sm text-indigo-100'>Recent Activity</p>
                       <p className='text-xl font-bold text-white'>
-                        {stats?.lastActivity 
+                        {stats?.lastActivity
                           ? new Date(stats.lastActivity).toLocaleDateString()
-                          : 'No activity'
-                        }
+                          : 'No activity'}
                       </p>
                     </div>
                   </div>
@@ -270,12 +269,12 @@ const Activity: React.FC = () => {
                       type='text'
                       placeholder='Search activities...'
                       value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
+                      onChange={e => setSearchInput(e.target.value)}
                       className='w-full pl-12 pr-4 py-3 bg-white/60 border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300'
                     />
                     {searchTerm && (
                       <button
-                        type="button"
+                        type='button'
                         onClick={() => {
                           setSearchInput('');
                           clearSearch();
@@ -290,9 +289,10 @@ const Activity: React.FC = () => {
 
                 {/* Filter Pills */}
                 <div className='flex flex-wrap gap-3'>
-                  {filterOptions.map((option) => {
+                  {filterOptions.map(option => {
                     const IconComponent = option.icon;
-                    const isActive = (option.value === 'all' && !filters.type) || filters.type === option.value;
+                    const isActive =
+                      (option.value === 'all' && !filters.type) || filters.type === option.value;
                     return (
                       <button
                         key={option.value}
@@ -315,10 +315,10 @@ const Activity: React.FC = () => {
                   <Calendar className='w-5 h-5 text-slate-500' />
                   <select
                     value={filters.dateRange || 'all'}
-                    onChange={(e) => handleDateRangeChange(e.target.value)}
+                    onChange={e => handleDateRangeChange(e.target.value)}
                     className='bg-white/60 border border-slate-200/50 rounded-xl px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500'
                   >
-                    {dateRangeOptions.map((option) => (
+                    {dateRangeOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -340,10 +340,10 @@ const Activity: React.FC = () => {
               ) : (
                 <div className='space-y-6'>
                   {activities.length > 0 ? (
-                    activities.map((activity) => {
+                    activities.map(activity => {
                       const IconComponent = getActivityIcon(activity.type);
                       const colors = getColorClasses(activity.metadata?.color || 'indigo');
-                      
+
                       return (
                         <div
                           key={activity._id}
@@ -351,7 +351,9 @@ const Activity: React.FC = () => {
                         >
                           {/* Icon */}
                           <div className='flex-shrink-0'>
-                            <div className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-3xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                            <div
+                              className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-3xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}
+                            >
                               <IconComponent className='w-7 h-7 text-white' />
                             </div>
                           </div>
@@ -376,11 +378,16 @@ const Activity: React.FC = () => {
                                 <span className='text-xs text-slate-500 font-medium block mb-2'>
                                   {getRelativeTime(activity.timestamp)}
                                 </span>
-                                {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
+                                {(activity.metadata?.newPrice ||
+                                  activity.metadata?.salePrice ||
+                                  activity.metadata?.estimatedValue) && (
                                   <span className='text-sm font-bold text-slate-900'>
-                                    {activity.metadata.newPrice && displayPrice(activity.metadata.newPrice)}
-                                    {activity.metadata.salePrice && displayPrice(activity.metadata.salePrice)}
-                                    {activity.metadata.estimatedValue && `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
+                                    {activity.metadata.newPrice &&
+                                      displayPrice(activity.metadata.newPrice)}
+                                    {activity.metadata.salePrice &&
+                                      displayPrice(activity.metadata.salePrice)}
+                                    {activity.metadata.estimatedValue &&
+                                      `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
                                   </span>
                                 )}
                               </div>
@@ -400,7 +407,9 @@ const Activity: React.FC = () => {
                           </div>
 
                           {/* Hover Indicator */}
-                          <div className={`w-3 h-3 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 mt-2`}></div>
+                          <div
+                            className={`w-3 h-3 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 mt-2`}
+                          ></div>
                         </div>
                       );
                     })
@@ -411,18 +420,20 @@ const Activity: React.FC = () => {
                       </div>
                       <h3 className='text-xl font-bold text-slate-900 mb-3'>No activities found</h3>
                       <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed'>
-                        {error ? error : 'Try adjusting your search term or filters to see more results.'}
+                        {error
+                          ? error
+                          : 'Try adjusting your search term or filters to see more results.'}
                       </p>
                     </div>
                   )}
                 </div>
               )}
-              
+
               {/* Load More Section */}
               {hasMore && (
                 <div className='mt-12 pt-8 border-t border-slate-200/50'>
                   <div className='text-center'>
-                    <button 
+                    <button
                       onClick={loadMore}
                       disabled={loading}
                       className='group bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-2 border-indigo-200/50 hover:border-indigo-400 rounded-2xl px-8 py-4 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20 disabled:opacity-50'
@@ -439,7 +450,6 @@ const Activity: React.FC = () => {
                   </div>
                 </div>
               )}
-
             </div>
           </div>
         </div>

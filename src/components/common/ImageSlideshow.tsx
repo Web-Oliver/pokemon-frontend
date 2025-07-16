@@ -32,38 +32,50 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
 
   const onThumbClick = useCallback(
     (index: number) => {
-      if (!emblaMainApi || !emblaThumbsApi) return;
+      if (!emblaMainApi || !emblaThumbsApi) {
+        return;
+      }
       emblaMainApi.scrollTo(index);
     },
     [emblaMainApi, emblaThumbsApi]
   );
 
   const onSelect = useCallback(() => {
-    if (!emblaMainApi || !emblaThumbsApi) return;
+    if (!emblaMainApi || !emblaThumbsApi) {
+      return;
+    }
     setSelectedIndex(emblaMainApi.selectedScrollSnap());
     emblaThumbsApi.scrollTo(emblaMainApi.selectedScrollSnap());
   }, [emblaMainApi, emblaThumbsApi, setSelectedIndex]);
 
   useEffect(() => {
-    if (!emblaMainApi) return;
+    if (!emblaMainApi) {
+      return;
+    }
     onSelect();
     emblaMainApi.on('select', onSelect);
     emblaMainApi.on('reInit', onSelect);
   }, [emblaMainApi, onSelect]);
 
   const scrollPrev = useCallback(() => {
-    if (emblaMainApi) emblaMainApi.scrollPrev();
+    if (emblaMainApi) {
+      emblaMainApi.scrollPrev();
+    }
   }, [emblaMainApi]);
 
   const scrollNext = useCallback(() => {
-    if (emblaMainApi) emblaMainApi.scrollNext();
+    if (emblaMainApi) {
+      emblaMainApi.scrollNext();
+    }
   }, [emblaMainApi]);
 
   const hasImages = images && images.length > 0;
 
   if (!hasImages) {
     return (
-      <div className={`w-full ${className.includes('h-') ? '' : 'h-48'} bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner ${className}`}>
+      <div
+        className={`w-full ${className.includes('h-') ? '' : 'h-48'} bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner ${className}`}
+      >
         <div className='w-32 h-44 bg-gradient-to-br from-indigo-300 to-purple-300 rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300'>
           <div className='w-24 h-32 bg-gradient-to-br from-white/80 to-indigo-50/80 rounded-lg flex items-center justify-center'>
             {fallbackIcon}
@@ -77,18 +89,20 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
   const imageHeightClass = className.includes('h-') ? 'h-full' : 'h-48';
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* Main Slideshow */}
-      <div className={`relative w-full ${heightClass} overflow-hidden rounded-2xl shadow-inner ${className}`}>
-        <div className="embla h-full" ref={emblaMainRef}>
-          <div className="embla__container flex h-full">
+      <div
+        className={`relative w-full ${heightClass} overflow-hidden rounded-2xl shadow-inner ${className}`}
+      >
+        <div className='embla h-full' ref={emblaMainRef}>
+          <div className='embla__container flex h-full'>
             {images.map((image, index) => (
-              <div className="embla__slide flex-[0_0_100%] min-w-0 h-full" key={index}>
+              <div className='embla__slide flex-[0_0_100%] min-w-0 h-full' key={index}>
                 <img
                   src={`http://localhost:3000${image}`}
                   alt={`Item image ${index + 1}`}
                   className={`w-full ${imageHeightClass} object-cover object-center`}
-                  onError={(e) => {
+                  onError={e => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                   }}
@@ -102,25 +116,25 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
         {images.length > 1 && (
           <>
             <button
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
+              className='absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10'
               onClick={scrollPrev}
-              aria-label="Previous image"
+              aria-label='Previous image'
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className='w-4 h-4' />
             </button>
             <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
+              className='absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10'
               onClick={scrollNext}
-              aria-label="Next image"
+              aria-label='Next image'
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className='w-4 h-4' />
             </button>
           </>
         )}
 
         {/* Dots Indicator - Only show if multiple images and no thumbnails */}
         {images.length > 1 && !showThumbnails && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1 z-10">
+          <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1 z-10'>
             {images.map((_, index) => (
               <div
                 key={index}
@@ -135,14 +149,11 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
 
       {/* Thumbnail Navigation - Only show if showThumbnails is true and multiple images */}
       {showThumbnails && images.length > 1 && (
-        <div className="embla-thumbs">
-          <div className="embla-thumbs__viewport overflow-hidden" ref={emblaThumbsRef}>
-            <div className="embla-thumbs__container flex gap-2">
+        <div className='embla-thumbs'>
+          <div className='embla-thumbs__viewport overflow-hidden' ref={emblaThumbsRef}>
+            <div className='embla-thumbs__container flex gap-2'>
               {images.map((image, index) => (
-                <div
-                  className="embla-thumbs__slide flex-[0_0_20%] min-w-0"
-                  key={index}
-                >
+                <div className='embla-thumbs__slide flex-[0_0_20%] min-w-0' key={index}>
                   <button
                     onClick={() => onThumbClick(index)}
                     className={`w-full h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
@@ -150,14 +161,14 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                         ? 'border-indigo-500 ring-2 ring-indigo-200 shadow-lg'
                         : 'border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md'
                     }`}
-                    type="button"
+                    type='button'
                     aria-label={`Go to image ${index + 1}`}
                   >
                     <img
                       src={`http://localhost:3000${image}`}
                       alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover object-center"
-                      onError={(e) => {
+                      className='w-full h-full object-cover object-center'
+                      onError={e => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         target.parentElement!.style.backgroundColor = '#f3f4f6';

@@ -15,13 +15,11 @@ import { useForm } from 'react-hook-form';
 import { Award } from 'lucide-react';
 import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollection } from '../../hooks/useCollection';
-import { useSearch } from '../../hooks/useSearch';
-import { useCardAutocomplete, AutocompleteField } from '../../hooks/useEnhancedAutocomplete';
+import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
-import CardInformationSection from './sections/CardInformationSection';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
@@ -59,7 +57,6 @@ interface FormData {
   city?: string;
 }
 
-
 const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   onCancel,
   onSuccess,
@@ -67,27 +64,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   isEditing = false,
 }) => {
   const { addPsaCard, updatePsaCard, loading } = useCollection();
-  const {
-    setName,
-    cardProductName,
-    suggestions,
-    activeField,
-    selectedCardData,
-    updateSetName,
-    updateCardProductName,
-    handleSuggestionSelect,
-    setActiveField,
-    setSearchMode,
-  } = useSearch();
-  
-  // Set search mode to 'cards' for PSA card form
-  useEffect(() => {
-    setSearchMode('cards');
-  }, [setSearchMode]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(
+    initialData?.images || []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // Legacy showSuggestions state removed - EnhancedAutocomplete handles UI state
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
 
@@ -133,32 +115,25 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       value: watch('setName') || '',
       placeholder: 'Set Name',
       type: 'set',
-      required: true
+      required: true,
     },
     {
       id: 'cardName',
       value: watch('cardName') || '',
       placeholder: 'Card Name',
       type: 'cardProduct',
-      required: true
-    }
+      required: true,
+    },
   ];
 
-  // Initialize enhanced autocomplete for cards
-  const enhancedAutocomplete = useCardAutocomplete(autocompleteFields, {
-    onSelectionChange: (selectedData) => {
-      console.log('[PSA CARD] Hook callback (should not be called):', selectedData);
-    },
-    onError: (error) => {
-      console.error('[PSA CARD] Hook error callback:', error);
-    }
-  });
+  // Create config for enhanced autocomplete
+  const autocompleteConfig = createAutocompleteConfig('cards');
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
     if (isEditing && initialData) {
       console.log('[PSA FORM] Updating form with initialData:', initialData);
-      
+
       // Access card data from nested cardId object (populated by backend API)
       const cardData = initialData.cardId;
       const setName = cardData?.setId?.setName || initialData.setName || '';
@@ -166,7 +141,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
       const baseName = cardData?.baseName || initialData.baseName || '';
       const variety = cardData?.variety || initialData.variety || '';
-      
+
       setValue('setName', setName);
       setValue('cardName', cardName);
       setValue('pokemonNumber', pokemonNumber);
@@ -174,12 +149,15 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       setValue('variety', variety);
       setValue('grade', initialData.grade || '');
       setValue('myPrice', initialData.myPrice?.toString() || '');
-      setValue('dateAdded', initialData.dateAdded ? new Date(initialData.dateAdded).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
-      
-      // Update search state to match the loaded data
-      updateSetName(setName);
-      updateCardProductName(cardName);
-      
+      setValue(
+        'dateAdded',
+        initialData.dateAdded
+          ? new Date(initialData.dateAdded).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
+      );
+
+      // Data has been updated in form values above
+
       console.log('[PSA FORM] Form values updated with:', {
         setName,
         cardName,
@@ -187,54 +165,14 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         baseName,
         variety,
         grade: initialData.grade,
-        myPrice: initialData.myPrice
+        myPrice: initialData.myPrice,
       });
     }
-  }, [isEditing, initialData, setValue, updateSetName, updateCardProductName]);
+  }, [isEditing, initialData, setValue]);
 
-  // Sync search state with form values
-  useEffect(() => {
-    if (setName && !isEditing) {
-      setValue('setName', setName, { shouldValidate: true });
-      clearErrors('setName');
-    }
-  }, [setName, setValue, clearErrors, isEditing]);
+  // Form values are managed by the Enhanced Autocomplete component
 
-  useEffect(() => {
-    if (cardProductName && !isEditing) {
-      setValue('cardName', cardProductName, { shouldValidate: true });
-      clearErrors('cardName');
-    }
-  }, [cardProductName, setValue, clearErrors, isEditing]);
-
-  // Auto-fill logic when card is selected
-  useEffect(() => {
-    const handleCardAutoFill = () => {
-      // Use selectedCardData from search hook instead of making API call
-      if (selectedCardData && activeField === null) {
-        console.log('[PSA FORM AUTOFILL] Using selectedCardData:', selectedCardData);
-
-        // Autofill all available card fields
-        setValue('pokemonNumber', selectedCardData.pokemonNumber || '', { shouldValidate: true });
-        setValue('baseName', selectedCardData.baseName || '', { shouldValidate: true });
-        setValue('variety', selectedCardData.variety || '', { shouldValidate: true });
-        
-        // Clear any validation errors for autofilled fields
-        clearErrors('pokemonNumber');
-        clearErrors('baseName');
-
-        console.log('[PSA FORM AUTOFILL] Fields updated:', {
-          pokemonNumber: selectedCardData.pokemonNumber,
-          baseName: selectedCardData.baseName,
-          variety: selectedCardData.variety,
-        });
-
-        // Note: myPrice and grade remain user-editable as specified
-      }
-    };
-
-    handleCardAutoFill();
-  }, [selectedCardData, activeField, setValue]);
+  // Auto-fill logic is now handled by Enhanced Autocomplete component
 
   // Watch form fields for validation
   const watchedGrade = watch('grade');
@@ -267,45 +205,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     setValue('myPrice', newPrice.toString());
   };
 
-  // Autocomplete event handlers
-  const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('setName', value, { shouldValidate: true });
-    updateSetName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleCardNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('cardName', value, { shouldValidate: true });
-    updateCardProductName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleSuggestionClick = (suggestion: any, fieldType: 'set' | 'cardProduct') => {
-    handleSuggestionSelect(suggestion, fieldType);
-    setShowSuggestions(false);
-    
-    // Clear validation errors when suggestion is selected
-    if (fieldType === 'set') {
-      clearErrors('setName');
-    } else if (fieldType === 'cardProduct') {
-      clearErrors('cardName');
-    }
-  };
-
-  const handleInputFocus = (fieldType: 'set' | 'cardProduct') => {
-    setActiveField(fieldType);
-    setShowSuggestions(true);
-  };
-
-  const handleInputBlur = () => {
-    // Delay hiding suggestions to allow for clicks
-    setTimeout(() => {
-      setShowSuggestions(false);
-      setActiveField(null);
-    }, 200);
-  };
+  // Note: Event handlers removed - EnhancedAutocomplete component handles all autocomplete functionality
 
   const onSubmit = async (data: FormData) => {
     console.log('[PSA FORM SUBMIT] ===== SUBMIT STARTED =====');
@@ -314,7 +214,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     console.log('[PSA FORM SUBMIT] Form data received:', data);
     console.log('[PSA FORM SUBMIT] selectedImages count:', selectedImages.length);
     console.log('[PSA FORM SUBMIT] priceHistory:', priceHistory);
-    
+
     setIsSubmitting(true);
 
     try {
@@ -330,7 +230,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       // Prepare card data based on item status
       let cardData: Partial<IPsaGradedCard>;
-      
+
       if (isEditing && initialData?.sold) {
         console.log('[PSA FORM SUBMIT] Processing sold item - updating sale details only');
         // For sold items, only update sale details
@@ -354,7 +254,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           },
         };
       } else if (isEditing) {
-        console.log('[PSA FORM SUBMIT] Processing unsold item edit - updating price and images only');
+        console.log(
+          '[PSA FORM SUBMIT] Processing unsold item edit - updating price and images only'
+        );
         // For editing unsold items, only update price and images (preserve card info)
         // Use currentPrice from price history updates, not the disabled form field
         const priceToUse = currentPrice > 0 ? currentPrice : parseFloat(data.myPrice);
@@ -372,7 +274,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           finalImageCount: finalImages.length,
           remainingExistingImages: remainingExistingImages.length,
           newUploadedImages: imageUrls.length,
-          priceHistoryCount: cardData.priceHistory?.length || 0
+          priceHistoryCount: cardData.priceHistory?.length || 0,
         });
       } else {
         console.log('[PSA FORM SUBMIT] Processing new item creation');
@@ -404,7 +306,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       console.log('[PSA FORM SUBMIT] API call parameters:', {
         isEditing,
         itemId: initialData?.id,
-        updateFunction: isEditing ? 'updatePsaCard' : 'addPsaCard'
+        updateFunction: isEditing ? 'updatePsaCard' : 'addPsaCard',
       });
 
       if (isEditing && initialData?.id) {
@@ -453,7 +355,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             </h3>
             <p className='text-blue-700 text-sm'>
               {isEditing
-                ? initialData?.sold 
+                ? initialData?.sold
                   ? 'Update buyer information and tracking details'
                   : 'Update price and images (card info is locked after adding)'
                 : 'Add a new PSA graded card to your collection'}
@@ -481,71 +383,69 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           {/* Enhanced Autocomplete for Hierarchical Search */}
           <div className='mb-6'>
             <EnhancedAutocomplete
-              config={enhancedAutocomplete.state}
+              config={autocompleteConfig}
               fields={autocompleteFields}
-              onSelectionChange={(selectedData) => {
+              onSelectionChange={selectedData => {
                 console.log('[PSA CARD] ===== ENHANCED AUTOCOMPLETE SELECTION =====');
                 console.log('[PSA CARD] Enhanced autocomplete selection:', selectedData);
-                
+
                 // Auto-fill form fields based on selection
                 if (selectedData) {
                   // The selectedData contains the raw card data from the search API
                   console.log('[PSA CARD] Raw selected data:', selectedData);
-                  
+
                   // Auto-fill set name from setInfo or direct setName
                   const setName = selectedData.setInfo?.setName || selectedData.setName;
                   if (setName) {
                     setValue('setName', setName, { shouldValidate: true });
-                    updateSetName(setName); // Sync with legacy useSearch
                     clearErrors('setName'); // Clear any validation errors
                   }
-                  
+
                   // Auto-fill card name
                   if (selectedData.cardName) {
                     setValue('cardName', selectedData.cardName, { shouldValidate: true });
-                    updateCardProductName(selectedData.cardName); // Sync with legacy useSearch
                     clearErrors('cardName'); // Clear any validation errors
                   }
-                  
+
                   // Auto-fill pokemon number
                   if (selectedData.pokemonNumber) {
                     setValue('pokemonNumber', selectedData.pokemonNumber, { shouldValidate: true });
                     clearErrors('pokemonNumber'); // Clear any validation errors
                   }
-                  
+
                   // Auto-fill base name
                   if (selectedData.baseName) {
                     setValue('baseName', selectedData.baseName, { shouldValidate: true });
                     clearErrors('baseName'); // Clear any validation errors
                   }
-                  
+
                   // Auto-fill variety (always set, even if empty)
                   const varietyValue = selectedData.variety || '';
-                  console.log('[PSA CARD] Variety value:', { 
-                    raw: selectedData.variety, 
-                    processed: varietyValue, 
-                    type: typeof selectedData.variety 
+                  console.log('[PSA CARD] Variety value:', {
+                    raw: selectedData.variety,
+                    processed: varietyValue,
+                    type: typeof selectedData.variety,
                   });
                   setValue('variety', varietyValue, { shouldValidate: true });
                   clearErrors('variety'); // Clear any validation errors
-                  
+
                   console.log('[PSA CARD] Auto-filled fields:', {
-                    setName,
+                    setName: selectedData.setInfo?.setName || selectedData.setName,
                     cardName: selectedData.cardName,
                     pokemonNumber: selectedData.pokemonNumber,
                     baseName: selectedData.baseName,
-                    variety: selectedData.variety
+                    variety: selectedData.variety,
                   });
                 }
               }}
-              onError={(error) => {
+              onError={error => {
                 console.error('[PSA CARD] Enhanced autocomplete error:', error);
               }}
-              variant="premium"
+              variant='premium'
               showMetadata={true}
               allowClear={true}
               disabled={isEditing}
-              className="premium-search-integration"
+              className='premium-search-integration'
             />
           </div>
 
@@ -610,11 +510,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               value={watch('cardName') || ''}
               readOnly
             />
-            <input
-              {...register('pokemonNumber')}
-              value={watch('pokemonNumber') || ''}
-              readOnly
-            />
+            <input {...register('pokemonNumber')} value={watch('pokemonNumber') || ''} readOnly />
             <input
               {...register('baseName', {
                 required: 'Base name is required',
@@ -623,11 +519,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               value={watch('baseName') || ''}
               readOnly
             />
-            <input
-              {...register('variety')}
-              value={watch('variety') || ''}
-              readOnly
-            />
+            <input {...register('variety')} value={watch('variety') || ''} readOnly />
           </div>
         </div>
       )}
@@ -636,7 +528,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       <GradingPricingSection
         register={register}
         errors={errors}
-        cardType="psa"
+        cardType='psa'
         currentGradeOrCondition={watchedGrade}
         currentPrice={watchedPrice}
         isEditing={isEditing}
@@ -653,7 +545,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         existingImageUrls={initialData?.images || []}
         maxFiles={8}
         maxFileSize={5}
-        title="Card Images"
+        title='Card Images'
         isVisible={!(isEditing && initialData?.sold)}
       />
 
@@ -663,7 +555,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         errors={errors}
         watch={watch}
         isVisible={isEditing && initialData?.sold}
-        itemName="card"
+        itemName='card'
       />
 
       {/* Action Buttons */}

@@ -69,7 +69,8 @@ function App() {
     // Handle edit routes: /collection/edit/{type}/{id}
     if (currentPath.startsWith('/collection/edit/')) {
       const pathParts = currentPath.split('/');
-      if (pathParts.length === 5) { // /collection/edit/{type}/{id}
+      if (pathParts.length === 5) {
+        // /collection/edit/{type}/{id}
         const [, , , type, id] = pathParts;
         if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
           return <AddEditItem />;
@@ -78,9 +79,14 @@ function App() {
     }
 
     // Handle dynamic collection item detail routes
-    if (currentPath.startsWith('/collection/') && currentPath !== '/collection' && currentPath !== '/collection/add') {
+    if (
+      currentPath.startsWith('/collection/') &&
+      currentPath !== '/collection' &&
+      currentPath !== '/collection/add'
+    ) {
       const pathParts = currentPath.split('/');
-      if (pathParts.length === 4) { // /collection/{type}/{id}
+      if (pathParts.length === 4) {
+        // /collection/{type}/{id}
         const [, , type, id] = pathParts;
         if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
           return <CollectionItemDetail />;

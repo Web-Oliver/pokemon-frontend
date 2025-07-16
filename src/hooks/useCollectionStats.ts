@@ -34,14 +34,15 @@ export const useCollectionStats = (): CollectionStats & { loading: boolean } => 
     const totalValue = [
       ...psaCards.map(card => card.myPrice || 0),
       ...rawCards.map(card => card.myPrice || 0),
-      ...sealedProducts.map(product => product.myPrice || 0)
+      ...sealedProducts.map(product => product.myPrice || 0),
     ].reduce((sum, price) => {
       // Handle both number and Decimal128 formats
-      const numericPrice = typeof price === 'number' ? 
-        price : 
-        (price as any)?.$numberDecimal ? 
-          parseFloat((price as any).$numberDecimal) : 
-          parseFloat(price?.toString() || '0');
+      const numericPrice =
+        typeof price === 'number'
+          ? price
+          : (price as any)?.$numberDecimal
+            ? parseFloat((price as any).$numberDecimal)
+            : parseFloat(price?.toString() || '0');
       return sum + (isNaN(numericPrice) ? 0 : numericPrice);
     }, 0);
 
@@ -49,13 +50,12 @@ export const useCollectionStats = (): CollectionStats & { loading: boolean } => 
     const totalSales = soldItems.length;
 
     // Calculate average PSA grade
-    const psaGrades = psaCards
-      .map(card => parseFloat(card.grade))
-      .filter(grade => !isNaN(grade));
-    
-    const averageGrade = psaGrades.length > 0 ? 
-      (psaGrades.reduce((sum, grade) => sum + grade, 0) / psaGrades.length).toFixed(1) : 
-      null;
+    const psaGrades = psaCards.map(card => parseFloat(card.grade)).filter(grade => !isNaN(grade));
+
+    const averageGrade =
+      psaGrades.length > 0
+        ? (psaGrades.reduce((sum, grade) => sum + grade, 0) / psaGrades.length).toFixed(1)
+        : null;
 
     // Count top graded cards (PSA 9+ and 10)
     const topGradedCards = psaCards.filter(card => {
@@ -68,7 +68,7 @@ export const useCollectionStats = (): CollectionStats & { loading: boolean } => 
     const recentlyAdded = [
       ...psaCards.filter(card => new Date(card.dateAdded) >= sevenDaysAgo),
       ...rawCards.filter(card => new Date(card.dateAdded) >= sevenDaysAgo),
-      ...sealedProducts.filter(product => new Date(product.dateAdded) >= sevenDaysAgo)
+      ...sealedProducts.filter(product => new Date(product.dateAdded) >= sevenDaysAgo),
     ].length;
 
     return {
@@ -82,8 +82,8 @@ export const useCollectionStats = (): CollectionStats & { loading: boolean } => 
       itemsByType: {
         psaCards: psaCards.length,
         rawCards: rawCards.length,
-        sealedProducts: sealedProducts.length
-      }
+        sealedProducts: sealedProducts.length,
+      },
     };
   }, [psaCards, rawCards, sealedProducts, soldItems]);
 

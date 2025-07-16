@@ -105,7 +105,7 @@ class SearchPerformanceMonitor {
 
     for (const test of tests) {
       const startTime = performance.now();
-      
+
       try {
         // Simulate search API call
         const mockResults = await this.simulateSearchCall(test);
@@ -113,7 +113,7 @@ class SearchPerformanceMonitor {
         const responseTime = endTime - startTime;
 
         const passed = mockResults.length >= test.expectedResultsCount;
-        
+
         this.testResults.push({
           test,
           passed,
@@ -166,25 +166,34 @@ class SearchPerformanceMonitor {
   }> {
     const testQuery = 'pikachu';
     const iterations = 10;
-    
+
     let cacheHits = 0;
     let totalCacheTime = 0;
     let totalDirectTime = 0;
 
     // First call (direct)
     const directStartTime = performance.now();
-    await this.simulateSearchCall({ query: testQuery, expectedResultsCount: 1, fieldType: 'cardProduct' });
+    await this.simulateSearchCall({
+      query: testQuery,
+      expectedResultsCount: 1,
+      fieldType: 'cardProduct',
+    });
     const directEndTime = performance.now();
     totalDirectTime = directEndTime - directStartTime;
 
     // Subsequent calls (should hit cache)
     for (let i = 0; i < iterations; i++) {
       const cacheStartTime = performance.now();
-      await this.simulateSearchCall({ query: testQuery, expectedResultsCount: 1, fieldType: 'cardProduct' });
+      await this.simulateSearchCall({
+        query: testQuery,
+        expectedResultsCount: 1,
+        fieldType: 'cardProduct',
+      });
       const cacheEndTime = performance.now();
-      
+
       const responseTime = cacheEndTime - cacheStartTime;
-      if (responseTime < totalDirectTime * 0.5) { // Assume cache if significantly faster
+      if (responseTime < totalDirectTime * 0.5) {
+        // Assume cache if significantly faster
         cacheHits++;
         totalCacheTime += responseTime;
       }
@@ -195,7 +204,7 @@ class SearchPerformanceMonitor {
     const improvement = ((totalDirectTime - avgCacheResponseTime) / totalDirectTime) * 100;
 
     this.metrics.cacheHitRate = cacheHitRate;
-    
+
     return {
       cacheHitRate,
       avgCacheResponseTime,
@@ -213,20 +222,21 @@ class SearchPerformanceMonitor {
   }> {
     const rapidQueries = ['p', 'pi', 'pik', 'pika', 'pikach', 'pikachu'];
     let actualRequests = 0;
-    let expectedRequests = rapidQueries.length;
+    const expectedRequests = rapidQueries.length;
 
     // Simulate rapid typing
     for (let i = 0; i < rapidQueries.length; i++) {
       const query = rapidQueries[i];
-      
+
       // Simulate debounced behavior
       setTimeout(async () => {
-        if (i === rapidQueries.length - 1) { // Only last query should execute
+        if (i === rapidQueries.length - 1) {
+          // Only last query should execute
           actualRequests++;
-          await this.simulateSearchCall({ 
-            query, 
-            expectedResultsCount: 1, 
-            fieldType: 'cardProduct' 
+          await this.simulateSearchCall({
+            query,
+            expectedResultsCount: 1,
+            fieldType: 'cardProduct',
           });
         }
       }, 250 * i);
@@ -257,7 +267,7 @@ class SearchPerformanceMonitor {
       mockResults.push({
         id: `mock-${i}`,
         name: `Mock ${test.query} Result ${i}`,
-        relevanceScore: 100 - (i * 10),
+        relevanceScore: 100 - i * 10,
       });
     }
 
@@ -300,11 +310,11 @@ export const searchPerformanceMonitor = new SearchPerformanceMonitor();
 // Context7 Performance Testing Utility Functions
 export const runSearchPerformanceTests = async () => {
   console.log('🚀 Starting Context7 Search Performance Tests...');
-  
+
   const performanceResults = await searchPerformanceMonitor.runPerformanceTests();
   const cacheResults = await searchPerformanceMonitor.testCachePerformance();
   const debounceResults = await searchPerformanceMonitor.testDebouncePerformance();
-  
+
   console.log('📊 Performance Test Results:');
   console.log(`✅ Tests Passed: ${performanceResults.passed}`);
   console.log(`📈 Results Accuracy: ${performanceResults.metrics.resultsAccuracy.toFixed(1)}%`);
@@ -312,11 +322,11 @@ export const runSearchPerformanceTests = async () => {
   console.log(`🎯 Cache Hit Rate: ${cacheResults.cacheHitRate.toFixed(1)}%`);
   console.log(`💾 Cache Performance Improvement: ${cacheResults.improvement.toFixed(1)}%`);
   console.log(`🔄 Debounce Efficiency: ${debounceResults.efficiency.toFixed(1)}%`);
-  
+
   if (performanceResults.failedTests.length > 0) {
     console.log('❌ Failed Tests:', performanceResults.failedTests);
   }
-  
+
   return {
     performanceResults,
     cacheResults,

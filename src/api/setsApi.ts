@@ -41,45 +41,71 @@ export interface OptimizedSetSearchResponse {
 }
 
 /**
- * Get all sets
+ * Get all sets - USES NEW UNIFIED SEARCH API
  * @returns Promise<ISet[]> - Complete sets array
  */
 export const getSets = async (): Promise<ISet[]> => {
-  const response = await apiClient.get('/sets');
-  return response.data.sets || response.data.data || response.data;
+  // Use new unified search API with wildcard to get all sets
+  const response = await searchSetsOptimized({
+    query: '*',
+    limit: 1000, // Large limit to get all sets
+  });
+  return response.data;
 };
 
 /**
- * Get paginated sets with optional filters
+ * Get paginated sets with optional filters - USES NEW UNIFIED SEARCH API
  * @param params - Optional pagination and filter parameters
  * @returns Promise<PaginatedSetsResponse> - Paginated sets response
  */
 export const getPaginatedSets = async (
   params?: PaginatedSetsParams
 ): Promise<PaginatedSetsResponse> => {
-  // Convert 'search' to 'q' to match backend parameter
-  const backendParams = {
-    ...params,
-    ...(params?.search && { q: params.search }),
-  };
-  // Remove the 'search' param since backend uses 'q'
-  if (backendParams.search) {
-    delete backendParams.search;
+  const { page = 1, limit = 20, year, search } = params || {};
+
+  if (search && search.trim()) {
+    // Use optimized search when there's a search term
+    const optimizedParams: OptimizedSetSearchParams = {
+      query: search.trim(),
+      page,
+      limit,
+      ...(year && { year }),
+    };
+
+    const response = await searchSetsOptimized(optimizedParams);
+
+    // Calculate pagination for optimized search
+    const totalPages = Math.ceil(response.count / limit);
+    return {
+      sets: response.data,
+      total: response.count,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+  } else {
+    // Use optimized search with wildcard for browsing/filtering
+    const optimizedParams: OptimizedSetSearchParams = {
+      query: '*',
+      page,
+      limit,
+      ...(year && { year }),
+    };
+
+    const response = await searchSetsOptimized(optimizedParams);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(response.count / limit);
+    return {
+      sets: response.data,
+      total: response.count,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
   }
-  
-  const response = await apiClient.get('/sets', { params: backendParams });
-  
-  // Backend returns: { sets, currentPage, totalPages, totalSets, hasNextPage, hasPrevPage }
-  // Transform to match frontend interface
-  const backendData = response.data;
-  return {
-    sets: backendData.sets || [],
-    total: backendData.totalSets || 0,
-    currentPage: backendData.currentPage || 1,
-    totalPages: backendData.totalPages || 1,
-    hasNextPage: backendData.hasNextPage || false,
-    hasPrevPage: backendData.hasPrevPage || false,
-  };
 };
 
 /**
@@ -97,9 +123,11 @@ export const getSetById = async (id: string): Promise<ISet> => {
  * @param params - Search parameters with enhanced filtering
  * @returns Promise<OptimizedSetSearchResponse> - Enhanced search results with fuzzy matching
  */
-export const searchSetsOptimized = async (params: OptimizedSetSearchParams): Promise<OptimizedSetSearchResponse> => {
+export const searchSetsOptimized = async (
+  params: OptimizedSetSearchParams
+): Promise<OptimizedSetSearchResponse> => {
   const { query, limit = 20, page = 1, ...filters } = params;
-  
+
   if (!query.trim()) {
     return {
       success: true,
@@ -122,7 +150,7 @@ export const searchSetsOptimized = async (params: OptimizedSetSearchParams): Pro
     }
   });
 
-  const response = await apiClient.get(`/search/sets?${queryParams.toString()}`);
+  const response = await apiClient.get(`/api/search/sets?${queryParams.toString()}`);
   const data = response.data;
 
   return {
@@ -139,7 +167,10 @@ export const searchSetsOptimized = async (params: OptimizedSetSearchParams): Pro
  * @param limit - Maximum number of suggestions
  * @returns Promise<ISet[]> - Array of suggestion sets with relevance scoring
  */
-export const getSetSuggestionsOptimized = async (query: string, limit: number = 10): Promise<ISet[]> => {
+export const getSetSuggestionsOptimized = async (
+  query: string,
+  limit: number = 10
+): Promise<ISet[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -175,7 +206,7 @@ export const getBestMatchSetOptimized = async (query: string): Promise<ISet | nu
   };
 
   const response = await searchSetsOptimized(params);
-  
+
   return response.data.length > 0 ? response.data[0] : null;
 };
 

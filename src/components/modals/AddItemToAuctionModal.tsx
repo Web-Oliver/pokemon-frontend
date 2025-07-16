@@ -44,16 +44,20 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
 
   // Helper function to get full image URL
   const getImageUrl = (imagePath: string | undefined) => {
-    if (!imagePath) return undefined;
+    if (!imagePath) {
+      return undefined;
+    }
     // If it's already a full URL, return as is
-    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
     // If it's a relative path, prepend the backend server URL
     return `http://localhost:3000${imagePath}`;
   };
 
   // Create a set of items already in auction for quick lookup (memoized to prevent infinite loop)
-  const auctionItemsSet = useMemo(() => 
-    new Set(currentAuctionItems.map(item => `${item.itemId}-${item.itemCategory}`)),
+  const auctionItemsSet = useMemo(
+    () => new Set(currentAuctionItems.map(item => `${item.itemId}-${item.itemCategory}`)),
     [currentAuctionItems]
   );
 
@@ -82,7 +86,9 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
         })),
       ...sealedProducts
         .filter(product => !product.sold)
-        .filter(product => !auctionItemsSet.has(`${product.id || (product as any)._id}-SealedProduct`))
+        .filter(
+          product => !auctionItemsSet.has(`${product.id || (product as any)._id}-SealedProduct`)
+        )
         .map(product => ({
           ...product,
           itemType: 'SealedProduct' as const,

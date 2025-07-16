@@ -10,10 +10,9 @@ import { searchApi } from '../../api/searchApi';
 // Mock the search API
 jest.mock('../../api/searchApi', () => ({
   searchApi: {
-    searchSets: jest.fn(),
-    searchCards: jest.fn(),
-    searchProducts: jest.fn(),
-    searchCategories: jest.fn(),
+    searchSetsOptimized: jest.fn(),
+    searchCardsOptimized: jest.fn(),
+    searchProductsOptimized: jest.fn(),
   },
 }));
 

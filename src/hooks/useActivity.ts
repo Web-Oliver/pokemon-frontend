@@ -1,9 +1,9 @@
 /**
  * useActivity Hook - Context7 Premium Activity Management
- * 
+ *
  * React hook for managing activities following Context7 patterns.
  * Provides state management, caching, and real-time updates.
- * 
+ *
  * Features:
  * - Real-time activity updates
  * - Advanced filtering and search
@@ -13,12 +13,12 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import activityApi, { 
-  Activity, 
-  ActivityFilters, 
+import activityApi, {
+  Activity,
+  ActivityFilters,
   ActivityStats,
   ACTIVITY_TYPES,
-  ACTIVITY_PRIORITIES 
+  ACTIVITY_PRIORITIES,
 } from '../api/activityApi';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
@@ -48,7 +48,7 @@ interface UseActivityReturn {
   total: number;
   page: number;
   searchTerm: string;
-  
+
   // Actions
   fetchActivities: (newFilters?: Partial<ActivityFilters>) => Promise<void>;
   fetchRecentActivities: (limit?: number) => Promise<Activity[]>;
@@ -60,7 +60,7 @@ interface UseActivityReturn {
   clearSearch: () => void;
   markAsRead: (id: string) => Promise<void>;
   archiveActivity: (id: string) => Promise<void>;
-  
+
   // Utilities
   getActivitiesForEntity: (entityType: string, entityId: string) => Promise<Activity[]>;
   getActivityById: (id: string) => Promise<Activity | null>;
@@ -78,7 +78,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
     hasMore: false,
     total: 0,
     page: 1,
-    searchTerm: ''
+    searchTerm: '',
   });
 
   // Context7 Refs for Performance
@@ -86,68 +86,68 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const lastFetchRef = useRef<string>('');
 
   // Context7 Fetch Activities with Caching
-  const fetchActivities = useCallback(async (newFilters?: Partial<ActivityFilters>) => {
-    try {
-      // Cancel previous request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      abortControllerRef.current = new AbortController();
+  const fetchActivities = useCallback(
+    async (newFilters?: Partial<ActivityFilters>) => {
+      try {
+        // Cancel previous request
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
 
-      const filters = { ...state.filters, ...newFilters };
-      const filterKey = JSON.stringify(filters);
-      
-      // Prevent duplicate requests
-      if (lastFetchRef.current === filterKey && !newFilters) {
-        return;
-      }
-      lastFetchRef.current = filterKey;
+        const filters = { ...state.filters, ...newFilters };
+        const filterKey = JSON.stringify(filters);
 
-      setState(prev => ({ 
-        ...prev, 
-        loading: true, 
-        error: null,
-        filters,
-        ...(newFilters?.offset === 0 && { activities: [] }) // Reset activities if starting fresh
-      }));
+        // Prevent duplicate requests
+        if (lastFetchRef.current === filterKey && !newFilters) {
+          return;
+        }
+        lastFetchRef.current = filterKey;
 
-      log('[USE ACTIVITY] Fetching activities with filters:', filters);
-
-      const response = await activityApi.getActivities(filters);
-
-      setState(prev => ({
-        ...prev,
-        activities: newFilters?.offset === 0 
-          ? response.data 
-          : [...prev.activities, ...response.data],
-        hasMore: response.meta.hasMore,
-        total: response.meta.total,
-        page: response.meta.page,
-        loading: false
-      }));
-
-      log('[USE ACTIVITY] Activities fetched successfully:', response.meta);
-
-    } catch (error: any) {
-      if (error.name !== 'AbortError') {
-        setState(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: 'Failed to fetch activities' 
+        setState(prev => ({
+          ...prev,
+          loading: true,
+          error: null,
+          filters,
+          ...(newFilters?.offset === 0 && { activities: [] }), // Reset activities if starting fresh
         }));
-        handleApiError(error, 'Failed to fetch activities');
+
+        log('[USE ACTIVITY] Fetching activities with filters:', filters);
+
+        const response = await activityApi.getActivities(filters);
+
+        setState(prev => ({
+          ...prev,
+          activities:
+            newFilters?.offset === 0 ? response.data : [...prev.activities, ...response.data],
+          hasMore: response.meta.hasMore,
+          total: response.meta.total,
+          page: response.meta.page,
+          loading: false,
+        }));
+
+        log('[USE ACTIVITY] Activities fetched successfully:', response.meta);
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          setState(prev => ({
+            ...prev,
+            loading: false,
+            error: 'Failed to fetch activities',
+          }));
+          handleApiError(error, 'Failed to fetch activities');
+        }
       }
-    }
-  }, [state.filters]);
+    },
+    [state.filters]
+  );
 
   // Context7 Recent Activities Fetch
   const fetchRecentActivities = useCallback(async (limit: number = 10): Promise<Activity[]> => {
     try {
       log('[USE ACTIVITY] Fetching recent activities, limit:', limit);
-      
+
       const response = await activityApi.getRecentActivities(limit);
       return response.data;
-
     } catch (error) {
       handleApiError(error, 'Failed to fetch recent activities');
       return [];
@@ -158,65 +158,68 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const fetchActivityStats = useCallback(async () => {
     try {
       log('[USE ACTIVITY] Fetching activity statistics');
-      
-      const response = await activityApi.getActivityStats();
-      
-      setState(prev => ({ 
-        ...prev, 
-        stats: response.data 
-      }));
 
+      const response = await activityApi.getActivityStats();
+
+      setState(prev => ({
+        ...prev,
+        stats: response.data,
+      }));
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity statistics');
     }
   }, []);
 
   // Context7 Search Activities
-  const searchActivities = useCallback(async (term: string) => {
-    try {
-      setState(prev => ({ 
-        ...prev, 
-        loading: true, 
-        error: null,
-        searchTerm: term,
-        activities: []
-      }));
+  const searchActivities = useCallback(
+    async (term: string) => {
+      try {
+        setState(prev => ({
+          ...prev,
+          loading: true,
+          error: null,
+          searchTerm: term,
+          activities: [],
+        }));
 
-      if (!term.trim()) {
-        // If search term is empty, fetch regular activities
-        await fetchActivities({ offset: 0 });
-        return;
+        if (!term.trim()) {
+          // If search term is empty, fetch regular activities
+          await fetchActivities({ offset: 0 });
+          return;
+        }
+
+        log('[USE ACTIVITY] Searching activities:', term);
+
+        const response = await activityApi.searchActivities(term, {
+          type: state.filters.type,
+          priority: state.filters.priority,
+          entityType: state.filters.entityType,
+        });
+
+        setState(prev => ({
+          ...prev,
+          activities: response.data,
+          hasMore: false, // Search results don't support pagination
+          total: response.data.length,
+          loading: false,
+        }));
+      } catch (error) {
+        setState(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to search activities',
+        }));
+        handleApiError(error, 'Failed to search activities');
       }
-
-      log('[USE ACTIVITY] Searching activities:', term);
-
-      const response = await activityApi.searchActivities(term, {
-        type: state.filters.type,
-        priority: state.filters.priority,
-        entityType: state.filters.entityType
-      });
-
-      setState(prev => ({
-        ...prev,
-        activities: response.data,
-        hasMore: false, // Search results don't support pagination
-        total: response.data.length,
-        loading: false
-      }));
-
-    } catch (error) {
-      setState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: 'Failed to search activities' 
-      }));
-      handleApiError(error, 'Failed to search activities');
-    }
-  }, [state.filters, fetchActivities]);
+    },
+    [state.filters, fetchActivities]
+  );
 
   // Context7 Load More (Pagination)
   const loadMore = useCallback(async () => {
-    if (!state.hasMore || state.loading) return;
+    if (!state.hasMore || state.loading) {
+      return;
+    }
 
     const nextOffset = state.filters.offset! + state.filters.limit!;
     await fetchActivities({ offset: nextOffset });
@@ -233,7 +236,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
     setState(prev => ({
       ...prev,
       filters: { ...prev.filters, ...newFilters, offset: 0 }, // Reset offset
-      searchTerm: '' // Clear search when filtering
+      searchTerm: '', // Clear search when filtering
     }));
   }, []);
 
@@ -247,7 +250,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const markAsRead = useCallback(async (id: string) => {
     try {
       await activityApi.markActivityAsRead(id);
-      
+
       // Optimistic update
       setState(prev => ({
         ...prev,
@@ -255,11 +258,10 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
           activity._id === id
             ? { ...activity, isRead: true, readAt: new Date().toISOString() }
             : activity
-        )
+        ),
       }));
 
       showSuccessToast('Activity marked as read');
-
     } catch (error) {
       handleApiError(error, 'Failed to mark activity as read');
     }
@@ -269,31 +271,33 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const archiveActivity = useCallback(async (id: string) => {
     try {
       await activityApi.archiveActivity(id);
-      
+
       // Remove from list
       setState(prev => ({
         ...prev,
         activities: prev.activities.filter(activity => activity._id !== id),
-        total: prev.total - 1
+        total: prev.total - 1,
       }));
 
       showSuccessToast('Activity archived');
-
     } catch (error) {
       handleApiError(error, 'Failed to archive activity');
     }
   }, []);
 
   // Context7 Entity Activities
-  const getActivitiesForEntity = useCallback(async (entityType: string, entityId: string): Promise<Activity[]> => {
-    try {
-      const response = await activityApi.getActivitiesForEntity(entityType, entityId);
-      return response.data;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch entity activities');
-      return [];
-    }
-  }, []);
+  const getActivitiesForEntity = useCallback(
+    async (entityType: string, entityId: string): Promise<Activity[]> => {
+      try {
+        const response = await activityApi.getActivitiesForEntity(entityType, entityId);
+        return response.data;
+      } catch (error) {
+        handleApiError(error, 'Failed to fetch entity activities');
+        return [];
+      }
+    },
+    []
+  );
 
   // Context7 Get Activity by ID
   const getActivityById = useCallback(async (id: string): Promise<Activity | null> => {
@@ -310,7 +314,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   useEffect(() => {
     fetchActivities();
     fetchActivityStats();
-    
+
     // Cleanup on unmount
     return () => {
       if (abortControllerRef.current) {
@@ -339,7 +343,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
     total: state.total,
     page: state.page,
     searchTerm: state.searchTerm,
-    
+
     // Actions
     fetchActivities,
     fetchRecentActivities,
@@ -351,10 +355,10 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
     clearSearch,
     markAsRead,
     archiveActivity,
-    
+
     // Utilities
     getActivitiesForEntity,
-    getActivityById
+    getActivityById,
   };
 };
 

@@ -43,50 +43,88 @@ export interface OptimizedProductSearchResponse {
 }
 
 /**
- * Get CardMarket reference products (non-paginated)
+ * Get CardMarket reference products (non-paginated) - USES NEW UNIFIED SEARCH API
  * @param params - Optional filter parameters
  * @returns Promise<ICardMarketReferenceProduct[]> - Array of reference products
  */
 export const getCardMarketRefProducts = async (
   params?: CardMarketRefProductsParams
 ): Promise<ICardMarketReferenceProduct[]> => {
-  const response = await apiClient.get('/cardmarket-ref-products', { params });
-  return response.data.data || response.data;
+  // Use new unified search API with wildcard to get products
+  const optimizedParams: OptimizedProductSearchParams = {
+    query: params?.search || '*',
+    category: params?.category,
+    setName: params?.setName,
+    availableOnly: params?.available,
+    limit: params?.limit || 100,
+    page: params?.page || 1,
+  };
+
+  const response = await searchProductsOptimized(optimizedParams);
+  return response.data;
 };
 
 /**
- * Get paginated CardMarket reference products
+ * Get paginated CardMarket reference products - USES NEW UNIFIED SEARCH API
  * @param params - Optional pagination and filter parameters
  * @returns Promise<PaginatedCardMarketRefProductsResponse> - Paginated products response
  */
 export const getPaginatedCardMarketRefProducts = async (
   params?: CardMarketRefProductsParams
 ): Promise<PaginatedCardMarketRefProductsResponse> => {
-  // Convert 'search' to 'q' to match backend parameter and clean up params
-  const backendParams: any = { ...params };
-  
-  if (params?.search) {
-    backendParams.q = params.search;
-    delete backendParams.search;
+  const { page = 1, limit = 20, category, setName, available, search } = params || {};
+
+  if (search && search.trim()) {
+    // Use optimized search when there's a search term
+    const optimizedParams: OptimizedProductSearchParams = {
+      query: search.trim(),
+      page,
+      limit,
+      category,
+      setName,
+      availableOnly: available,
+    };
+
+    const response = await searchProductsOptimized(optimizedParams);
+
+    // Calculate pagination for optimized search
+    const totalPages = Math.ceil(response.count / limit);
+    return {
+      products: response.data,
+      total: response.count,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+  } else {
+    // Use optimized search with wildcard for browsing/filtering
+    const optimizedParams: OptimizedProductSearchParams = {
+      query: '*',
+      page,
+      limit,
+      category,
+      setName,
+      availableOnly: available,
+    };
+
+    const response = await searchProductsOptimized(optimizedParams);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(response.count / limit);
+    return {
+      products: response.data,
+      total: response.count,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
   }
-  
-  const response = await apiClient.get('/cardmarket-ref-products', { params: backendParams });
-  
-  // Backend returns: { products, currentPage, totalPages, total, hasNextPage, hasPrevPage }
-  // Transform to match frontend interface
-  const backendData = response.data;
-  return {
-    products: backendData.products || [],
-    total: backendData.total || 0,
-    currentPage: backendData.currentPage || 1,
-    totalPages: backendData.totalPages || 1,
-    hasNextPage: backendData.hasNextPage || false,
-    hasPrevPage: backendData.hasPrevPage || false,
-  };
 };
 
 /**
- * Get CardMarket reference product by ID
+ * Get CardMarket reference product by ID - KEEPS LEGACY ENDPOINT (ID lookup)
  * @param id - Product ID
  * @returns Promise<ICardMarketReferenceProduct> - Single reference product
  */
@@ -98,50 +136,15 @@ export const getCardMarketRefProductById = async (
 };
 
 /**
- * Search CardMarket reference products
- * @param query - Search query string
- * @param params - Optional search parameters
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of matching products
- */
-export const searchCardMarketRefProducts = async (
-  query: string,
-  params?: { limit?: number; category?: string; setName?: string }
-): Promise<ICardMarketReferenceProduct[]> => {
-  const response = await apiClient.get('/cardmarket-ref-products', {
-    params: { q: query, ...params },
-  });
-  
-  // Handle different response formats from the improved backend
-  const data = response.data;
-  
-  // Check if it's a paginated response
-  if (data.products && Array.isArray(data.products)) {
-    return data.products;
-  }
-  
-  // Check if it's a direct array
-  if (Array.isArray(data)) {
-    return data;
-  }
-  
-  // Check if it's wrapped in a data property
-  if (data.data && Array.isArray(data.data)) {
-    return data.data;
-  }
-  
-  // Fallback to empty array if structure is unexpected
-  console.warn('Unexpected response format from cardmarket-ref-products:', data);
-  return [];
-};
-
-/**
  * New Optimized Product Search using unified search endpoints
  * @param params - Search parameters with enhanced filtering
  * @returns Promise<OptimizedProductSearchResponse> - Enhanced search results with fuzzy matching
  */
-export const searchProductsOptimized = async (params: OptimizedProductSearchParams): Promise<OptimizedProductSearchResponse> => {
+export const searchProductsOptimized = async (
+  params: OptimizedProductSearchParams
+): Promise<OptimizedProductSearchResponse> => {
   const { query, limit = 20, page = 1, ...filters } = params;
-  
+
   if (!query.trim()) {
     return {
       success: true,
@@ -164,7 +167,7 @@ export const searchProductsOptimized = async (params: OptimizedProductSearchPara
     }
   });
 
-  const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
+  const response = await apiClient.get(`/api/search/products?${queryParams.toString()}`);
   const data = response.data;
 
   return {
@@ -181,7 +184,10 @@ export const searchProductsOptimized = async (params: OptimizedProductSearchPara
  * @param limit - Maximum number of suggestions
  * @returns Promise<ICardMarketReferenceProduct[]> - Array of suggestion products with relevance scoring
  */
-export const getProductSuggestionsOptimized = async (query: string, limit: number = 10): Promise<ICardMarketReferenceProduct[]> => {
+export const getProductSuggestionsOptimized = async (
+  query: string,
+  limit: number = 10
+): Promise<ICardMarketReferenceProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -231,7 +237,7 @@ export const getBestMatchProductOptimized = async (
   }
 
   const response = await searchProductsOptimized(params);
-  
+
   return response.data.length > 0 ? response.data[0] : null;
 };
 

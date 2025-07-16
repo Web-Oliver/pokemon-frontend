@@ -30,11 +30,11 @@ export interface SalesGraphDataParams {
 export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
   const response = await apiClient.get('/sales', { params });
   const rawData = response.data.data || response.data;
-  
+
   // Transform backend data to match ISale interface
   return rawData.map((item: any) => {
     let itemName = 'Unknown Item';
-    
+
     // Extract item name based on item type
     if (item.itemType === 'sealedProduct') {
       itemName = item.name || 'Unknown Sealed Product';
@@ -51,7 +51,7 @@ export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> =
         }
       }
     }
-    
+
     // Handle Decimal128 conversion for myPrice
     let myPrice = 0;
     if (item.myPrice) {
@@ -61,17 +61,20 @@ export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> =
         myPrice = Number(item.myPrice);
       }
     }
-    
+
     // Handle Decimal128 conversion for actualSoldPrice
     let actualSoldPrice = 0;
     if (item.saleDetails?.actualSoldPrice) {
-      if (typeof item.saleDetails.actualSoldPrice === 'object' && item.saleDetails.actualSoldPrice.$numberDecimal) {
+      if (
+        typeof item.saleDetails.actualSoldPrice === 'object' &&
+        item.saleDetails.actualSoldPrice.$numberDecimal
+      ) {
         actualSoldPrice = parseFloat(item.saleDetails.actualSoldPrice.$numberDecimal);
       } else {
         actualSoldPrice = Number(item.saleDetails.actualSoldPrice);
       }
     }
-    
+
     return {
       id: item._id || item.id,
       itemCategory: item.category || 'Unknown',

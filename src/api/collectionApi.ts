@@ -24,7 +24,7 @@ const mapItemIds = (item: any): any => {
 
   if (typeof item === 'object') {
     const newItem = { ...item };
-    
+
     // Map _id to id for the current object, ensuring we always have an id field
     if (newItem._id) {
       newItem.id = newItem._id;
@@ -35,7 +35,11 @@ const mapItemIds = (item: any): any => {
 
     // Recursively process nested objects
     Object.keys(newItem).forEach(key => {
-      if (typeof newItem[key] === 'object' && newItem[key] !== null && !Array.isArray(newItem[key])) {
+      if (
+        typeof newItem[key] === 'object' &&
+        newItem[key] !== null &&
+        !Array.isArray(newItem[key])
+      ) {
         newItem[key] = mapItemIds(newItem[key]);
       } else if (Array.isArray(newItem[key])) {
         newItem[key] = newItem[key].map((arrayItem: any) => mapItemIds(arrayItem));
@@ -211,6 +215,7 @@ export interface SealedProductCollectionParams {
   category?: string;
   setName?: string;
   sold?: boolean;
+  search?: string;
 }
 
 /**

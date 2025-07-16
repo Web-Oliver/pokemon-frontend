@@ -15,10 +15,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Archive, Camera, Search, TrendingUp, Package } from 'lucide-react';
-import { ISealedProduct } from '../../domain/models/card';
+import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollection } from '../../hooks/useCollection';
 // Removed legacy useSearch - using enhanced autocomplete only
-import { useProductAutocomplete, AutocompleteField } from '../../hooks/useEnhancedAutocomplete';
+import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import { getProductCategories } from '../../api/searchApi';
 import Button from '../common/Button';
@@ -47,7 +47,6 @@ interface FormData {
   dateAdded: string;
 }
 
-
 const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   onCancel,
   onSuccess,
@@ -55,7 +54,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   isEditing = false,
 }) => {
   const { addSealedProduct, updateSealedProduct, loading } = useCollection();
-  
+
   // Removed legacy useSearch dependency - using enhanced autocomplete only
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -63,7 +62,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
-  const [productCategories, setProductCategories] = useState<Array<{value: string, label: string}>>([]);
+  const [productCategories, setProductCategories] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [selectedProductData, setSelectedProductData] = useState<any>(null);
 
@@ -93,26 +94,19 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       value: watch('setName') || '',
       placeholder: 'Set Name',
       type: 'set',
-      required: true
+      required: true,
     },
     {
       id: 'productName',
       value: watch('productName') || '',
       placeholder: 'Product Name',
       type: 'cardProduct',
-      required: true
-    }
+      required: true,
+    },
   ];
 
-  // Initialize enhanced autocomplete for products
-  const enhancedAutocomplete = useProductAutocomplete(autocompleteFields, {
-    onSelectionChange: (selectedData) => {
-      console.log('[SEALED PRODUCT] Hook callback (should not be called):', selectedData);
-    },
-    onError: (error) => {
-      console.error('[SEALED PRODUCT] Hook error callback:', error);
-    }
-  });
+  // Create config for enhanced autocomplete
+  const autocompleteConfig = createAutocompleteConfig('products');
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
@@ -147,7 +141,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         setLoadingOptions(false);
       }
     };
-    
+
     loadOptions();
   }, []);
 
@@ -180,7 +174,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     try {
       // Ensure a product is selected from CardMarket reference data
       if (!selectedProductData?._id) {
-        throw new Error('Please select a product from the suggestions to ensure reference data link');
+        throw new Error(
+          'Please select a product from the suggestions to ensure reference data link'
+        );
       }
 
       // Upload images first if any are selected
@@ -287,20 +283,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           {/* Enhanced Autocomplete for Hierarchical Search */}
           <div className='md:col-span-2'>
             <EnhancedAutocomplete
-              config={{
-                searchMode: 'products',
-                debounceMs: 200,
-                cacheEnabled: true,
-                maxSuggestions: 15,
-                minQueryLength: 1
-              }}
+              config={autocompleteConfig}
               fields={autocompleteFields}
-              onSelectionChange={(selectedData) => {
+              onSelectionChange={selectedData => {
                 console.log('[SEALED PRODUCT] Enhanced autocomplete selection:', selectedData);
-                
+
                 // Store selected product data for form submission
                 setSelectedProductData(selectedData);
-                
+
                 // Auto-fill form fields based on selection
                 if (selectedData) {
                   // Auto-fill set name
@@ -308,25 +298,27 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                     setValue('setName', selectedData.setName, { shouldValidate: true });
                     clearErrors('setName');
                   }
-                  
+
                   // Auto-fill product name
                   if (selectedData.name) {
                     setValue('productName', selectedData.name, { shouldValidate: true });
                     clearErrors('productName');
                   }
-                  
+
                   // Auto-fill category
                   if (selectedData.category) {
                     setValue('category', selectedData.category, { shouldValidate: true });
                     clearErrors('category');
                   }
-                  
+
                   // Auto-fill availability
                   if (selectedData.available !== undefined) {
-                    setValue('availability', Number(selectedData.available), { shouldValidate: true });
+                    setValue('availability', Number(selectedData.available), {
+                      shouldValidate: true,
+                    });
                     clearErrors('availability');
                   }
-                  
+
                   // Auto-fill CardMarket price (convert EUR to DKK)
                   if (selectedData.price) {
                     const euroPrice = parseFloat(selectedData.price);
@@ -336,24 +328,26 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                       clearErrors('cardMarketPrice');
                     }
                   }
-                  
+
                   console.log('[SEALED PRODUCT] Auto-filled fields:', {
                     setName: selectedData.setName,
                     productName: selectedData.name,
                     category: selectedData.category,
                     availability: selectedData.available,
-                    cardMarketPrice: selectedData.price ? Math.round(parseFloat(selectedData.price) * 7.46) : null
+                    cardMarketPrice: selectedData.price
+                      ? Math.round(parseFloat(selectedData.price) * 7.46)
+                      : null,
                   });
                 }
               }}
-              onError={(error) => {
+              onError={error => {
                 console.error('[SEALED PRODUCT] Enhanced autocomplete error:', error);
               }}
-              variant="premium"
+              variant='premium'
               showMetadata={true}
               allowClear={true}
               disabled={isEditing}
-              className="premium-search-integration"
+              className='premium-search-integration'
             />
           </div>
 
@@ -455,7 +449,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             )}
             {selectedProductData && selectedProductData.price && (
               <div className='mt-2 text-sm text-green-600 font-semibold'>
-                Converted from €{selectedProductData.price} EUR → {Math.round(parseFloat(selectedProductData.price) * 7.46)} kr.
+                Converted from €{selectedProductData.price} EUR →{' '}
+                {Math.round(parseFloat(selectedProductData.price) * 7.46)} kr.
               </div>
             )}
           </div>

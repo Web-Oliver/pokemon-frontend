@@ -91,18 +91,14 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
             />
             <Search className='absolute right-3 top-2.5 w-4 h-4 text-gray-400' />
           </div>
-          {errors.setName && (
-            <p className='mt-1 text-sm text-red-600'>{errors.setName.message}</p>
-          )}
+          {errors.setName && <p className='mt-1 text-sm text-red-600'>{errors.setName.message}</p>}
 
           {/* Context7 Award-Winning Set Suggestions Dropdown */}
           <SearchDropdown
             suggestions={suggestions}
             isVisible={showSuggestions && activeField === 'set'}
             activeField={activeField}
-            onSuggestionSelect={(suggestion, fieldType) =>
-              onSuggestionClick(suggestion, fieldType)
-            }
+            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion, fieldType)}
             searchTerm={setName}
           />
         </div>
@@ -139,9 +135,7 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
             suggestions={suggestions}
             isVisible={showSuggestions && activeField === 'cardProduct'}
             activeField={activeField}
-            onSuggestionSelect={(suggestion, fieldType) =>
-              onSuggestionClick(suggestion, fieldType)
-            }
+            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion, fieldType)}
             searchTerm={setName}
           />
         </div>

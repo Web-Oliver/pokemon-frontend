@@ -20,8 +20,8 @@ const mapCardIds = (card: unknown): unknown => {
     return card.map(mapCardIds);
   }
 
-  if (card._id && !card.id) {
-    card.id = card._id;
+  if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
+    (card as any).id = (card as any)._id;
   }
 
   return card;
@@ -62,67 +62,20 @@ export interface OptimizedSearchResponse {
 }
 
 /**
- * Get cards with optional filtering parameters
+ * Get cards with optional filtering parameters - USES NEW UNIFIED SEARCH API
  * @param params - Optional filter parameters
  * @returns Promise<ICard[]> - Array of cards
  */
 export const getCards = async (params?: CardsSearchParams): Promise<ICard[]> => {
-  const response = await apiClient.get('/cards', { params });
-  const data = response.data.data || response.data;
-  return mapCardIds(data);
-};
+  // Use new unified search API instead of legacy endpoint
+  const searchParams: OptimizedSearchParams = {
+    query: params?.cardName || params?.baseName || '*', // Use wildcard if no specific search
+    setId: params?.setId,
+    limit: 50,
+  };
 
-/**
- * Search cards with query and optional parameters
- * @param query - Search query string
- * @param params - Optional search parameters
- * @returns Promise<ICard[]> - Array of search results with scoring
- */
-export const searchCards = async (
-  query: string,
-  params?: { limit?: number; setName?: string }
-): Promise<ICard[]> => {
-  const response = await apiClient.get('/cards/search', {
-    params: { q: query, ...params },
-  });
-  const data = response.data.data || response.data;
-  return mapCardIds(data);
-};
-
-/**
- * Get card suggestions for autocomplete
- * @param query - Search query string
- * @param limit - Maximum number of suggestions (default: 10)
- * @returns Promise<string[]> - Array of suggestion strings
- */
-export const getCardSuggestions = async (query: string, limit: number = 10): Promise<string[]> => {
-  const response = await apiClient.get('/cards/suggestions', {
-    params: { q: query, limit },
-  });
-  return response.data.data || response.data;
-};
-
-/**
- * Get best match card for auto-fill functionality
- * @param query - Search query string
- * @returns Promise<ICard | null> - Best matching card or null
- */
-export const getBestMatchCard = async (query: string): Promise<ICard | null> => {
-  const response = await apiClient.get('/cards/search-best-match', {
-    params: { q: query },
-  });
-
-  const data = response.data.data || response.data;
-
-  // If backend returns an array, return the first item or null if empty
-  let card = null;
-  if (Array.isArray(data)) {
-    card = data.length > 0 ? data[0] : null;
-  } else {
-    card = data || null;
-  }
-
-  return mapCardIds(card);
+  const response = await searchCardsOptimized(searchParams);
+  return response.data;
 };
 
 /**
@@ -133,7 +86,7 @@ export const getBestMatchCard = async (query: string): Promise<ICard | null> => 
 export const getCardById = async (id: string): Promise<ICard> => {
   const response = await apiClient.get(`/cards/${id}`);
   const data = response.data.data || response.data;
-  return mapCardIds(data);
+  return mapCardIds(data) as ICard;
 };
 
 /**
@@ -141,9 +94,11 @@ export const getCardById = async (id: string): Promise<ICard> => {
  * @param params - Search parameters with enhanced filtering
  * @returns Promise<OptimizedSearchResponse> - Enhanced search results with fuzzy matching
  */
-export const searchCardsOptimized = async (params: OptimizedSearchParams): Promise<OptimizedSearchResponse> => {
+export const searchCardsOptimized = async (
+  params: OptimizedSearchParams
+): Promise<OptimizedSearchResponse> => {
   const { query, limit = 20, page = 1, ...filters } = params;
-  
+
   if (!query.trim()) {
     return {
       success: true,
@@ -166,7 +121,7 @@ export const searchCardsOptimized = async (params: OptimizedSearchParams): Promi
     }
   });
 
-  const response = await apiClient.get(`/search/cards?${queryParams.toString()}`);
+  const response = await apiClient.get(`/api/search/cards?${queryParams.toString()}`);
   const data = response.data;
 
   // Map the response data
@@ -184,7 +139,10 @@ export const searchCardsOptimized = async (params: OptimizedSearchParams): Promi
  * @param limit - Maximum number of suggestions
  * @returns Promise<ICard[]> - Array of suggestion cards with relevance scoring
  */
-export const getCardSuggestionsOptimized = async (query: string, limit: number = 10): Promise<ICard[]> => {
+export const getCardSuggestionsOptimized = async (
+  query: string,
+  limit: number = 10
+): Promise<ICard[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -209,7 +167,10 @@ export const getCardSuggestionsOptimized = async (query: string, limit: number =
  * @param setContext - Optional set context for better matching
  * @returns Promise<ICard | null> - Best matching card or null
  */
-export const getBestMatchCardOptimized = async (query: string, setContext?: string): Promise<ICard | null> => {
+export const getBestMatchCardOptimized = async (
+  query: string,
+  setContext?: string
+): Promise<ICard | null> => {
   if (!query.trim()) {
     return null;
   }
@@ -225,7 +186,7 @@ export const getBestMatchCardOptimized = async (query: string, setContext?: stri
   }
 
   const response = await searchCardsOptimized(params);
-  
+
   return response.data.length > 0 ? response.data[0] : null;
 };
 
@@ -236,10 +197,16 @@ export const getBestMatchCardOptimized = async (query: string, setContext?: stri
  * @param limit - Maximum number of results
  * @returns Promise<ICard[]> - Array of cards from the specified set
  */
-export const searchCardsInSet = async (query: string, setName: string, limit: number = 15): Promise<ICard[]> => {
+export const searchCardsInSet = async (
+  query: string,
+  setName: string,
+  limit: number = 15
+): Promise<ICard[]> => {
   if (!query.trim()) {
     return [];
   }
+
+  console.log('[CARDS API] searchCardsInSet called with:', { query, setName, limit });
 
   const params: OptimizedSearchParams = {
     query: query.trim(),
@@ -248,7 +215,17 @@ export const searchCardsInSet = async (query: string, setName: string, limit: nu
     page: 1,
   };
 
+  console.log('[CARDS API] searchCardsInSet params:', params);
+
   const response = await searchCardsOptimized(params);
+
+  console.log('[CARDS API] searchCardsInSet response:', {
+    success: response.success,
+    count: response.count,
+    dataLength: response.data.length,
+    firstResult: response.data[0] || null,
+  });
+
   return response.data;
 };
 

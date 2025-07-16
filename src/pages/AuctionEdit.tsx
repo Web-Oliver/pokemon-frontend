@@ -47,7 +47,11 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
-  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string; category: string } | null>(null);
+  const [itemToRemove, setItemToRemove] = useState<{
+    id: string;
+    name: string;
+    category: string;
+  } | null>(null);
 
   // Form state for editing auction details
   const [formData, setFormData] = useState({
@@ -96,14 +100,18 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   };
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   // Handle save auction changes
   const handleSaveChanges = async () => {
-    if (!currentAuctionId) return;
+    if (!currentAuctionId) {
+      return;
+    }
 
     try {
       setIsEditing(true);
@@ -137,7 +145,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
   // Confirm remove item from auction
   const confirmRemoveItem = async () => {
-    if (!itemToRemove) return;
+    if (!itemToRemove) {
+      return;
+    }
 
     try {
       await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
@@ -152,7 +162,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   // Convert auction item to CollectionItem format
   const convertAuctionItemToCollectionItem = (auctionItem: any): CollectionItem => {
     const { itemData, itemCategory } = auctionItem;
-    
+
     // Create a normalized item that matches CollectionItem interface
     const normalizedItem: CollectionItem = {
       id: auctionItem.itemId || itemData?._id || itemData?.id,
@@ -206,7 +216,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   const handleMarkAsSold = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
     // For auction edit, we'll provide an option to remove from auction instead
     const itemName = (item as any).cardName || (item as any).name || 'Unknown Item';
-    const itemCategory = type === 'psa' ? 'PsaGradedCard' : type === 'raw' ? 'RawCard' : 'SealedProduct';
+    const itemCategory =
+      type === 'psa' ? 'PsaGradedCard' : type === 'raw' ? 'RawCard' : 'SealedProduct';
     handleRemoveItem(item.id, itemName, itemCategory);
   };
 
@@ -336,7 +347,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                     <span
                       className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
                     >
-                      {currentAuction.status.charAt(0).toUpperCase() + currentAuction.status.slice(1)}
+                      {currentAuction.status.charAt(0).toUpperCase() +
+                        currentAuction.status.slice(1)}
                     </span>
                   </div>
 
@@ -386,7 +398,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
               <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
                 {/* Top Text */}
                 <div className='space-y-2'>
-                  <label htmlFor='topText' className='block text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                  <label
+                    htmlFor='topText'
+                    className='block text-sm font-bold text-slate-700 tracking-wide uppercase'
+                  >
                     Auction Title
                   </label>
                   <input
@@ -402,7 +417,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
                 {/* Auction Date */}
                 <div className='space-y-2'>
-                  <label htmlFor='auctionDate' className='block text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                  <label
+                    htmlFor='auctionDate'
+                    className='block text-sm font-bold text-slate-700 tracking-wide uppercase'
+                  >
                     Auction Date
                   </label>
                   <div className='relative'>
@@ -420,7 +438,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
                 {/* Status */}
                 <div className='space-y-2'>
-                  <label htmlFor='status' className='block text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                  <label
+                    htmlFor='status'
+                    className='block text-sm font-bold text-slate-700 tracking-wide uppercase'
+                  >
                     Status
                   </label>
                   <select
@@ -439,7 +460,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
                 {/* Bottom Text - Full Width */}
                 <div className='md:col-span-2 space-y-2'>
-                  <label htmlFor='bottomText' className='block text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                  <label
+                    htmlFor='bottomText'
+                    className='block text-sm font-bold text-slate-700 tracking-wide uppercase'
+                  >
                     Description
                   </label>
                   <textarea
@@ -479,7 +503,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                     <Package className='w-10 h-10 text-slate-500' />
                   </div>
                   <h3 className='text-xl font-bold text-slate-900 mb-3'>No items in auction</h3>
-                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>Add items from your collection to this auction.</p>
+                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
+                    Add items from your collection to this auction.
+                  </p>
                   <Button
                     onClick={() => setIsAddItemModalOpen(true)}
                     className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
@@ -493,9 +519,12 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                   {currentAuction.items.map((auctionItem: any, index: number) => {
                     const collectionItem = convertAuctionItemToCollectionItem(auctionItem);
                     const itemType = getItemTypeFromCategory(auctionItem.itemCategory);
-                    
+
                     return (
-                      <div key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`} className='relative'>
+                      <div
+                        key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
+                        className='relative'
+                      >
                         <CollectionItemCard
                           item={collectionItem}
                           itemType={itemType}
@@ -504,18 +533,19 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                           onViewDetails={handleViewItemDetail}
                           onMarkAsSold={handleMarkAsSold}
                         />
-                        
+
                         {/* Remove from Auction Button - Overlay */}
                         <div className='absolute top-4 right-4 z-20'>
                           <Button
                             onClick={() => {
-                              const itemName = auctionItem.itemData?.cardId?.cardName || 
-                                              auctionItem.itemData?.cardName || 
-                                              auctionItem.itemData?.name || 
-                                              'Unknown Item';
+                              const itemName =
+                                auctionItem.itemData?.cardId?.cardName ||
+                                auctionItem.itemData?.cardName ||
+                                auctionItem.itemData?.name ||
+                                'Unknown Item';
                               handleRemoveItem(
-                                auctionItem.itemId || auctionItem.itemData?._id, 
-                                itemName, 
+                                auctionItem.itemId || auctionItem.itemData?._id,
+                                itemName,
                                 auctionItem.itemCategory
                               );
                             }}
@@ -527,7 +557,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                             Remove
                           </Button>
                         </div>
-                        
+
                         {/* Auction Specific Badge */}
                         {auctionItem.sold && (
                           <div className='absolute top-4 left-4 z-20'>
@@ -550,17 +580,19 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             isOpen={isAddItemModalOpen}
             onClose={() => setIsAddItemModalOpen(false)}
             onAddItems={handleAddItems}
-            currentAuctionItems={currentAuction?.items?.map(item => ({
-              itemId: item.itemId,
-              itemCategory: item.itemCategory
-            })) || []}
+            currentAuctionItems={
+              currentAuction?.items?.map(item => ({
+                itemId: item.itemId,
+                itemCategory: item.itemCategory,
+              })) || []
+            }
           />
 
           {/* Remove Item Confirmation Modal */}
           <Modal
             isOpen={showRemoveItemConfirmation}
             onClose={() => setShowRemoveItemConfirmation(false)}
-            title="Remove Item from Auction"
+            title='Remove Item from Auction'
             maxWidth='md'
           >
             <div className='p-6'>
@@ -571,7 +603,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <div>
                   <h3 className='text-lg font-semibold text-gray-900'>Remove Item from Auction</h3>
                   <p className='text-sm text-gray-600'>
-                    Are you sure you want to remove "{itemToRemove?.name}" from this auction? This action cannot be undone.
+                    Are you sure you want to remove "{itemToRemove?.name}" from this auction? This
+                    action cannot be undone.
                   </p>
                 </div>
               </div>

@@ -5,7 +5,7 @@
 
 import apiClient from './apiClient';
 import { IAuction } from '../domain/models/auction';
-import { ISaleDetails } from '../domain/models/common';
+// ISaleDetails import removed as it's not used in this file
 
 export interface AuctionsParams {
   status?: string;
@@ -87,17 +87,16 @@ export const addItemToAuction = async (
  * @returns Promise<IAuction> - Updated auction
  */
 export const removeItemFromAuction = async (
-  id: string, 
-  itemId: string, 
+  id: string,
+  itemId: string,
   itemCategory?: string
 ): Promise<IAuction> => {
   const url = `/auctions/${id}/remove-item`;
-  const payload = { 
+  const payload = {
     itemId,
-    itemCategory: itemCategory || 'PsaGradedCard' // Default fallback
+    itemCategory: itemCategory || 'PsaGradedCard', // Default fallback
   };
-  
-  
+
   const response = await apiClient.delete(url, { data: payload });
   return response.data.data || response.data;
 };

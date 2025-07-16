@@ -6,7 +6,21 @@
  */
 
 import React from 'react';
-import { Home, Package, Search, TrendingUp, Gavel, Menu, X, Zap, Sparkles, Plus, FileText, Database, Package2 } from 'lucide-react';
+import {
+  Home,
+  Package,
+  Search,
+  TrendingUp,
+  Gavel,
+  Menu,
+  X,
+  Zap,
+  Sparkles,
+  Plus,
+  FileText,
+  Database,
+  Package2,
+} from 'lucide-react';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -106,7 +120,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <header className='bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200 sticky top-0 z-50'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between h-16'>
-            
             {/* Brand Logo */}
             <div className='flex items-center space-x-3'>
               <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center shadow-lg'>
@@ -138,14 +151,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   >
                     <Icon className={`w-4 h-4 mr-2 ${isActive ? 'text-white' : 'text-gray-500'}`} />
                     <span className='text-xs'>{item.name}</span>
-                    {isActive && (
-                      <Zap className='w-3 h-3 ml-1 text-white/80' />
-                    )}
+                    {isActive && <Zap className='w-3 h-3 ml-1 text-white/80' />}
                   </button>
                 );
               })}
             </nav>
-
 
             {/* Mobile Menu Button */}
             <button
@@ -180,16 +190,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                       aria-label={`Navigate to ${item.name}`}
                       aria-current={isActive ? 'page' : undefined}
                     >
-                      <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                      <Icon
+                        className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-gray-500'}`}
+                      />
                       <span>{item.name}</span>
-                      {isActive && (
-                        <Zap className='w-4 h-4 ml-auto text-white/80' />
-                      )}
+                      {isActive && <Zap className='w-4 h-4 ml-auto text-white/80' />}
                     </button>
                   );
                 })}
               </nav>
-              
+
               {/* Version Info */}
               <div className='mt-4 px-4 pt-4 border-t border-gray-200'>
                 <div className='flex items-center justify-center space-x-2 text-sm text-gray-600'>
@@ -203,9 +213,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content - Full Width */}
-      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        {children}
-      </main>
+      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>{children}</main>
     </div>
   );
 };

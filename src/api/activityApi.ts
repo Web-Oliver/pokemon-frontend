@@ -1,9 +1,9 @@
 /**
  * Activity API Client - Context7 Premium Activity Management
- * 
+ *
  * Frontend API client for activity management following Context7 patterns.
  * Provides comprehensive activity fetching, filtering, and search capabilities.
- * 
+ *
  * Features:
  * - Type-safe API calls
  * - Advanced filtering and pagination
@@ -31,14 +31,14 @@ export const ACTIVITY_TYPES = {
   SALE_UPDATED: 'sale_updated',
   MILESTONE: 'milestone',
   COLLECTION_STATS: 'collection_stats',
-  SYSTEM: 'system'
+  SYSTEM: 'system',
 } as const;
 
 export const ACTIVITY_PRIORITIES = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 } as const;
 
 // Context7 Activity Interfaces
@@ -145,24 +145,39 @@ class ActivityApiClient {
   async getActivities(filters: ActivityFilters = {}): Promise<ActivityResponse> {
     try {
       log('[ACTIVITY API] Fetching activities with filters:', filters);
-      
+
       const params = new URLSearchParams();
-      
+
       // Add filter parameters
-      if (filters.limit) params.append('limit', filters.limit.toString());
-      if (filters.offset) params.append('offset', filters.offset.toString());
-      if (filters.type) params.append('type', filters.type);
-      if (filters.entityType) params.append('entityType', filters.entityType);
-      if (filters.entityId) params.append('entityId', filters.entityId);
-      if (filters.priority) params.append('priority', filters.priority);
-      if (filters.dateRange) params.append('dateRange', filters.dateRange);
-      if (filters.search) params.append('search', filters.search);
-      
+      if (filters.limit) {
+        params.append('limit', filters.limit.toString());
+      }
+      if (filters.offset) {
+        params.append('offset', filters.offset.toString());
+      }
+      if (filters.type) {
+        params.append('type', filters.type);
+      }
+      if (filters.entityType) {
+        params.append('entityType', filters.entityType);
+      }
+      if (filters.entityId) {
+        params.append('entityId', filters.entityId);
+      }
+      if (filters.priority) {
+        params.append('priority', filters.priority);
+      }
+      if (filters.dateRange) {
+        params.append('dateRange', filters.dateRange);
+      }
+      if (filters.search) {
+        params.append('search', filters.search);
+      }
+
       const response = await apiClient.get(`${this.baseUrl}?${params.toString()}`);
-      
+
       log('[ACTIVITY API] Activities fetched successfully:', response.data.meta);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch activities');
       throw error;
@@ -175,12 +190,11 @@ class ActivityApiClient {
   async getRecentActivities(limit: number = 10): Promise<{ success: boolean; data: Activity[] }> {
     try {
       log('[ACTIVITY API] Fetching recent activities, limit:', limit);
-      
+
       const response = await apiClient.get(`${this.baseUrl}/recent?limit=${limit}`);
-      
+
       log('[ACTIVITY API] Recent activities fetched:', response.data.data.length);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch recent activities');
       throw error;
@@ -193,12 +207,11 @@ class ActivityApiClient {
   async getActivityStats(): Promise<ActivityStatsResponse> {
     try {
       log('[ACTIVITY API] Fetching activity statistics');
-      
+
       const response = await apiClient.get(`${this.baseUrl}/stats`);
-      
+
       log('[ACTIVITY API] Activity stats fetched:', response.data.data);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity statistics');
       throw error;
@@ -211,11 +224,10 @@ class ActivityApiClient {
   async getActivityTypes(): Promise<ActivityTypesResponse> {
     try {
       log('[ACTIVITY API] Fetching activity types');
-      
+
       const response = await apiClient.get(`${this.baseUrl}/types`);
-      
+
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity types');
       throw error;
@@ -228,23 +240,32 @@ class ActivityApiClient {
   async searchActivities(
     searchTerm: string,
     filters: Omit<ActivityFilters, 'search'> = {}
-  ): Promise<{ success: boolean; data: Activity[]; meta: { searchTerm: string; resultCount: number } }> {
+  ): Promise<{
+    success: boolean;
+    data: Activity[];
+    meta: { searchTerm: string; resultCount: number };
+  }> {
     try {
       log('[ACTIVITY API] Searching activities:', searchTerm);
-      
+
       const params = new URLSearchParams();
       params.append('q', searchTerm);
-      
+
       // Add additional filters
-      if (filters.type) params.append('type', filters.type);
-      if (filters.priority) params.append('priority', filters.priority);
-      if (filters.entityType) params.append('entityType', filters.entityType);
-      
+      if (filters.type) {
+        params.append('type', filters.type);
+      }
+      if (filters.priority) {
+        params.append('priority', filters.priority);
+      }
+      if (filters.entityType) {
+        params.append('entityType', filters.entityType);
+      }
+
       const response = await apiClient.get(`${this.baseUrl}/search?${params.toString()}`);
-      
+
       log('[ACTIVITY API] Search results:', response.data.meta.resultCount);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to search activities');
       throw error;
@@ -260,12 +281,11 @@ class ActivityApiClient {
   ): Promise<{ success: boolean; data: Activity[] }> {
     try {
       log('[ACTIVITY API] Fetching activities for entity:', entityType, entityId);
-      
+
       const response = await apiClient.get(`${this.baseUrl}/entity/${entityType}/${entityId}`);
-      
+
       log('[ACTIVITY API] Entity activities fetched:', response.data.data.length);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch entity activities');
       throw error;
@@ -278,11 +298,10 @@ class ActivityApiClient {
   async getActivityById(id: string): Promise<{ success: boolean; data: Activity }> {
     try {
       log('[ACTIVITY API] Fetching activity by ID:', id);
-      
+
       const response = await apiClient.get(`${this.baseUrl}/${id}`);
-      
+
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity');
       throw error;
@@ -295,12 +314,11 @@ class ActivityApiClient {
   async markActivityAsRead(id: string): Promise<{ success: boolean; data: Activity }> {
     try {
       log('[ACTIVITY API] Marking activity as read:', id);
-      
+
       const response = await apiClient.patch(`${this.baseUrl}/${id}/read`);
-      
+
       log('[ACTIVITY API] Activity marked as read');
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to mark activity as read');
       throw error;
@@ -313,12 +331,11 @@ class ActivityApiClient {
   async archiveActivity(id: string): Promise<{ success: boolean; message: string }> {
     try {
       log('[ACTIVITY API] Archiving activity:', id);
-      
+
       const response = await apiClient.delete(`${this.baseUrl}/${id}`);
-      
+
       log('[ACTIVITY API] Activity archived');
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to archive activity');
       throw error;
@@ -328,15 +345,16 @@ class ActivityApiClient {
   /**
    * Create a manual activity (admin/system use)
    */
-  async createActivity(activityData: Partial<Activity>): Promise<{ success: boolean; data: Activity }> {
+  async createActivity(
+    activityData: Partial<Activity>
+  ): Promise<{ success: boolean; data: Activity }> {
     try {
       log('[ACTIVITY API] Creating manual activity:', activityData.type);
-      
+
       const response = await apiClient.post(this.baseUrl, activityData);
-      
+
       log('[ACTIVITY API] Activity created:', response.data.data._id);
       return response.data;
-      
     } catch (error) {
       handleApiError(error, 'Failed to create activity');
       throw error;
@@ -359,5 +377,5 @@ export const {
   getActivityById,
   markActivityAsRead,
   archiveActivity,
-  createActivity
+  createActivity,
 } = activityApi;

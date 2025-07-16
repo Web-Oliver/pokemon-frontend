@@ -46,7 +46,7 @@ const AddEditItem: React.FC = () => {
   // Parse URL to determine if in edit mode and get item details
   useEffect(() => {
     const currentPath = window.location.pathname;
-    
+
     if (currentPath.startsWith('/collection/edit/')) {
       const pathParts = currentPath.split('/');
       if (pathParts.length === 5) {
@@ -130,10 +130,10 @@ const AddEditItem: React.FC = () => {
   const handleFormSuccess = () => {
     // Set a flag in sessionStorage to indicate collection needs refresh
     sessionStorage.setItem('collectionNeedsRefresh', 'true');
-    
+
     // Also dispatch event for any already-mounted collection pages
     window.dispatchEvent(new CustomEvent('collectionUpdated'));
-    
+
     if (isEditing && itemData) {
       // For editing, redirect back to the item detail page
       const currentPath = window.location.pathname;
@@ -172,7 +172,7 @@ const AddEditItem: React.FC = () => {
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
             isEditing={isEditing}
-            initialData={isEditing ? itemData as IPsaGradedCard : undefined}
+            initialData={isEditing ? (itemData as IPsaGradedCard) : undefined}
           />
         );
       case 'raw-card':
@@ -181,7 +181,7 @@ const AddEditItem: React.FC = () => {
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
             isEditing={isEditing}
-            initialData={isEditing ? itemData as IRawCard : undefined}
+            initialData={isEditing ? (itemData as IRawCard) : undefined}
           />
         );
       case 'sealed-product':
@@ -190,7 +190,7 @@ const AddEditItem: React.FC = () => {
             onCancel={handleFormCancel}
             onSuccess={handleFormSuccess}
             isEditing={isEditing}
-            initialData={isEditing ? itemData as ISealedProduct : undefined}
+            initialData={isEditing ? (itemData as ISealedProduct) : undefined}
           />
         );
       default:
@@ -231,10 +231,9 @@ const AddEditItem: React.FC = () => {
                     {isEditing ? 'Edit Item' : 'Add New Item'}
                   </h1>
                   <p className='text-slate-600 text-sm'>
-                    {isEditing 
-                      ? 'Update your collection item details' 
-                      : 'Add a new item to your collection'
-                    }
+                    {isEditing
+                      ? 'Update your collection item details'
+                      : 'Add a new item to your collection'}
                   </p>
                 </div>
               </div>
@@ -280,9 +279,7 @@ const AddEditItem: React.FC = () => {
               <div className='absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-2xl'></div>
 
               <div className='mb-8 relative z-10'>
-                <h2 className='text-xl font-bold text-slate-900 mb-2'>
-                  Select Item Type
-                </h2>
+                <h2 className='text-xl font-bold text-slate-900 mb-2'>Select Item Type</h2>
                 <p className='text-slate-600 text-sm'>
                   Choose the type of item you want to add to your collection
                 </p>

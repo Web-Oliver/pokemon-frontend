@@ -1,6 +1,6 @@
 /**
  * Collection Export Hook
- * 
+ *
  * Business logic for collection export functionality
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles export-related logic
@@ -21,11 +21,11 @@ export interface UseCollectionExportReturn {
   // State
   isExporting: boolean;
   selectedItemsForExport: string[];
-  
+
   // Export functions
   exportAllItems: (items: CollectionItem[]) => Promise<void>;
   exportSelectedItems: (selectedIds: string[]) => Promise<void>;
-  
+
   // Selection management
   toggleItemSelection: (itemId: string) => void;
   selectAllItems: (items: CollectionItem[]) => void;
@@ -70,7 +70,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
       const filename = `collection-selected-export-${new Date().toISOString().split('T')[0]}.txt`;
       downloadBlob(blob, filename);
       showSuccessToast(`Successfully exported ${selectedIds.length} selected items!`);
-      
+
       // Clear selection after successful export
       setSelectedItemsForExport([]);
     } catch (error) {
@@ -102,11 +102,11 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
     // State
     isExporting,
     selectedItemsForExport,
-    
+
     // Export functions
     exportAllItems,
     exportSelectedItems,
-    
+
     // Selection management
     toggleItemSelection,
     selectAllItems,
