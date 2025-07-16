@@ -244,7 +244,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     );
   };
 
-  // Context7 Advanced: Ultra-optimized search with fuzzy matching and intelligent scoring
+  // Context7 Optimized: Order-independent word matching with intelligent highlighting
   const highlightSearchTerm = (text: string, term: string) => {
     if (!term.trim()) {
       return text;
@@ -253,126 +253,71 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     const searchTerm = term.toLowerCase();
     const textLower = text.toLowerCase();
 
-    // Advanced Context7 matching strategies
-    const strategies = [
-      // Exact match
-      () => {
-        const index = textLower.indexOf(searchTerm);
-        if (index !== -1) {
-          return [{
-            start: index,
-            end: index + searchTerm.length,
-            score: 100
-          }];
-        }
-        return [];
-      },
-      
-      // Word boundary matches
-      () => {
-        const matches = [];
-        const words = searchTerm.split(/\s+/).filter(w => w.length > 0);
-        
-        words.forEach(word => {
-          const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi');
-          let match;
-          while ((match = wordRegex.exec(text)) !== null) {
-            matches.push({
-              start: match.index,
-              end: match.index + match[0].length,
-              score: 80
-            });
-          }
-        });
-        return matches;
-      },
-      
-      // Substring matches
-      () => {
-        const matches = [];
-        const words = searchTerm.split(/\s+/).filter(w => w.length > 1);
-        
-        words.forEach(word => {
-          let startIndex = 0;
-          let index;
-          while ((index = textLower.indexOf(word, startIndex)) !== -1) {
-            matches.push({
-              start: index,
-              end: index + word.length,
-              score: 60
-            });
-            startIndex = index + 1;
-          }
-        });
-        return matches;
-      },
-      
-      // Character sequence matching for very long terms
-      () => {
-        if (searchTerm.length < 3) return [];
-        
-        const matches = [];
-        for (let i = 0; i < searchTerm.length - 2; i++) {
-          const seq = searchTerm.substr(i, 3);
-          let startIndex = 0;
-          let index;
-          while ((index = textLower.indexOf(seq, startIndex)) !== -1) {
-            matches.push({
-              start: index,
-              end: index + seq.length,
-              score: 40
-            });
-            startIndex = index + 1;
-          }
-        }
-        return matches;
-      }
-    ];
-
-    // Apply all strategies and merge results
-    let allMatches = [];
-    strategies.forEach(strategy => {
-      allMatches = allMatches.concat(strategy());
-    });
-
-    // Remove duplicates and sort by position
-    const uniqueMatches = [];
-    allMatches.forEach(match => {
-      const exists = uniqueMatches.find(m => 
-        m.start === match.start && m.end === match.end
+    // First try exact match
+    let matchIndex = textLower.indexOf(searchTerm);
+    if (matchIndex !== -1) {
+      return (
+        <>
+          {text.substring(0, matchIndex)}
+          <span className='bg-blue-100 text-blue-800 px-1 rounded font-medium'>
+            {text.substring(matchIndex, matchIndex + searchTerm.length)}
+          </span>
+          {text.substring(matchIndex + searchTerm.length)}
+        </>
       );
-      if (!exists) {
-        uniqueMatches.push(match);
-      }
-    });
+    }
 
-    uniqueMatches.sort((a, b) => a.start - b.start);
-
-    if (uniqueMatches.length === 0) {
+    // Context7 Order-Independent Word Matching
+    const searchWords = searchTerm.split(/\s+/).filter(w => w.length > 1);
+    if (searchWords.length === 0) {
       return text;
     }
+
+    // Find all words that match (regardless of order)
+    const matches = [];
+    searchWords.forEach(word => {
+      const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi');
+      let match;
+      while ((match = wordRegex.exec(text)) !== null) {
+        matches.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          word: match[0]
+        });
+      }
+    });
+
+    if (matches.length === 0) {
+      return text;
+    }
+
+    // Sort matches by position and merge overlapping ones
+    matches.sort((a, b) => a.start - b.start);
 
     // Build highlighted text
     const result = [];
     let lastIndex = 0;
 
-    uniqueMatches.forEach((match, index) => {
-      // Add text before match
-      if (match.start > lastIndex) {
-        result.push(text.substring(lastIndex, match.start));
+    matches.forEach((match, index) => {
+      // Avoid overlapping highlights
+      if (match.start >= lastIndex) {
+        // Add text before match
+        if (match.start > lastIndex) {
+          result.push(text.substring(lastIndex, match.start));
+        }
+
+        // Add highlighted match
+        result.push(
+          <span
+            key={index}
+            className='bg-blue-100 text-blue-800 px-1 rounded font-medium'
+          >
+            {match.word}
+          </span>
+        );
+
+        lastIndex = match.end;
       }
-
-      // Add highlighted match
-      result.push(
-        <span
-          key={index}
-          className='bg-blue-100 text-blue-800 px-1 rounded font-medium'
-        >
-          {text.substring(match.start, match.end)}
-        </span>
-      );
-
-      lastIndex = match.end;
     });
 
     // Add remaining text
@@ -380,7 +325,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       result.push(text.substring(lastIndex));
     }
 
-    return result;
+    return result.length > 0 ? result : text;
   };
 
   return (
