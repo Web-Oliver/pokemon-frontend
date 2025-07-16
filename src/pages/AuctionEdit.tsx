@@ -20,8 +20,9 @@ import {
 import { useAuction } from '../hooks/useAuction';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import Modal from '../components/common/Modal';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
-import { ImageSlideshow } from '../components/common/ImageSlideshow';
+import CollectionItemCard, { CollectionItem } from '../components/lists/CollectionItemCard';
 import { showSuccessToast, showWarningToast } from '../utils/errorHandler';
 
 interface AuctionEditProps {
@@ -45,6 +46,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string; category: string } | null>(null);
 
   // Form state for editing auction details
   const [formData, setFormData] = useState({
@@ -126,83 +129,85 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     showSuccessToast(`Added ${items.length} item(s) to auction`);
   };
 
-  // Handle remove item from auction
-  const handleRemoveItem = async (itemId: string) => {
-    showWarningToast('Are you sure you want to remove this item from the auction?', {
-      duration: 0,
-      action: {
-        label: 'Remove',
-        onClick: async () => {
-          try {
-            await removeItemFromAuction(currentAuctionId, itemId);
-            showSuccessToast('Item removed from auction');
-          } catch (err) {
-            // Error handled by the hook
-          }
-        },
-      },
-    });
+  // Handle remove item from auction - show confirmation modal
+  const handleRemoveItem = (itemId: string, itemName: string, itemCategory: string) => {
+    setItemToRemove({ id: itemId, name: itemName, category: itemCategory });
+    setShowRemoveItemConfirmation(true);
   };
 
-  // Extract item display data from populated structure
-  const getItemDisplayData = (item: any) => {
-    const defaultData = {
-      itemName: 'Unknown Item',
-      itemImage: undefined,
-      setName: undefined,
-      grade: undefined,
-      condition: undefined,
-      price: undefined
+  // Confirm remove item from auction
+  const confirmRemoveItem = async () => {
+    if (!itemToRemove) return;
+
+    try {
+      await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
+      showSuccessToast('Item removed from auction');
+      setShowRemoveItemConfirmation(false);
+      setItemToRemove(null);
+    } catch (err) {
+      // Error handled by the hook
+    }
+  };
+
+  // Convert auction item to CollectionItem format
+  const convertAuctionItemToCollectionItem = (auctionItem: any): CollectionItem => {
+    const { itemData, itemCategory } = auctionItem;
+    
+    // Create a normalized item that matches CollectionItem interface
+    const normalizedItem: CollectionItem = {
+      id: auctionItem.itemId || itemData?._id || itemData?.id,
+      images: itemData?.images || [],
+      myPrice: itemData?.myPrice || 0,
+      sold: auctionItem.sold || itemData?.sold || false,
+      dateAdded: itemData?.dateAdded,
+      priceHistory: itemData?.priceHistory || [],
+      saleDetails: auctionItem.saleDetails || itemData?.saleDetails,
     };
 
-    if (!item.itemData) {
-      return defaultData;
+    // Add category-specific fields
+    if (itemCategory === 'PsaGradedCard') {
+      (normalizedItem as any).grade = itemData?.grade;
+      (normalizedItem as any).cardId = itemData?.cardId;
+      (normalizedItem as any).cardName = itemData?.cardId?.cardName || itemData?.cardName;
+    } else if (itemCategory === 'RawCard') {
+      (normalizedItem as any).condition = itemData?.condition;
+      (normalizedItem as any).cardId = itemData?.cardId;
+      (normalizedItem as any).cardName = itemData?.cardId?.cardName || itemData?.cardName;
+    } else if (itemCategory === 'SealedProduct') {
+      (normalizedItem as any).name = itemData?.name;
+      (normalizedItem as any).category = itemData?.category;
+      (normalizedItem as any).setName = itemData?.setName;
     }
 
-    const { itemData, itemCategory } = item;
+    return normalizedItem;
+  };
 
-    // Helper function to get full image URL
-    const getImageUrl = (imagePath: string | undefined) => {
-      if (!imagePath) return undefined;
-      // If it's already a full URL, return as is
-      if (imagePath.startsWith('http')) return imagePath;
-      // If it's a relative path, prepend the backend server URL
-      return `http://localhost:3000${imagePath}`;
-    };
-
-    switch (itemCategory) {
+  // Get item type from auction item category
+  const getItemTypeFromCategory = (category: string): 'psa' | 'raw' | 'sealed' => {
+    switch (category) {
       case 'PsaGradedCard':
+        return 'psa';
       case 'RawCard':
-        return {
-          itemName: itemData.cardId?.cardName || itemData.cardId?.baseName || 'Unknown Item',
-          itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.cardId?.setId?.setName,
-          grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
-          condition: itemCategory === 'RawCard' ? itemData.condition : undefined,
-          price: itemData.myPrice
-        };
+        return 'raw';
       case 'SealedProduct':
-        return {
-          itemName: itemData.name || 'Unknown Item',
-          itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.setName,
-          grade: undefined,
-          condition: undefined,
-          price: itemData.myPrice
-        };
+        return 'sealed';
       default:
-        return defaultData;
+        return 'sealed';
     }
   };
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('da-DK', {
-      style: 'currency',
-      currency: 'DKK',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+  // Handle viewing item details (navigate to collection detail)
+  const handleViewItemDetail = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
+    window.history.pushState({}, '', `/collection/${type}/${item.id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  // Handle mark item as sold (show remove from auction option)
+  const handleMarkAsSold = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
+    // For auction edit, we'll provide an option to remove from auction instead
+    const itemName = (item as any).cardName || (item as any).name || 'Unknown Item';
+    const itemCategory = type === 'psa' ? 'PsaGradedCard' : type === 'raw' ? 'RawCard' : 'SealedProduct';
+    handleRemoveItem(item.id, itemName, itemCategory);
   };
 
   // Get status color
@@ -218,34 +223,6 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         return 'bg-red-100 text-red-800 border border-red-200';
       default:
         return 'bg-slate-100 text-slate-800 border border-slate-200';
-    }
-  };
-
-  // Get item category color
-  const getItemCategoryColor = (category: string) => {
-    switch (category) {
-      case 'PsaGradedCard':
-        return 'bg-purple-100 text-purple-800 border border-purple-200';
-      case 'RawCard':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'SealedProduct':
-        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-      default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
-    }
-  };
-
-  // Format item category for display
-  const formatItemCategory = (category: string) => {
-    switch (category) {
-      case 'PsaGradedCard':
-        return 'PSA Graded Card';
-      case 'RawCard':
-        return 'Raw Card';
-      case 'SealedProduct':
-        return 'Sealed Product';
-      default:
-        return category;
     }
   };
 
@@ -512,106 +489,54 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                   </Button>
                 </div>
               ) : (
-                <div className='p-8 space-y-6'>
-                  {currentAuction.items.map((item: any, index: number) => {
-                    const displayData = getItemDisplayData(item);
+                <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
+                  {currentAuction.items.map((auctionItem: any, index: number) => {
+                    const collectionItem = convertAuctionItemToCollectionItem(auctionItem);
+                    const itemType = getItemTypeFromCategory(auctionItem.itemCategory);
+                    
                     return (
-                      <div key={`${item.itemId || item.itemData?._id}-${index}`} className='group bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 p-6 hover:bg-white/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden'>
-                        <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                        <div className='relative z-10'>
-                          <div className='flex items-start space-x-6'>
-                            
-                            {/* Item Image */}
-                            <div className='flex-shrink-0'>
-                              {displayData.itemImage ? (
-                                <ImageSlideshow
-                                  images={[displayData.itemImage]}
-                                  fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
-                                  autoplay={false}
-                                  className="w-32 h-44 rounded-xl shadow-lg"
-                                  showThumbnails={false}
-                                />
-                              ) : (
-                                <div className='w-32 h-44 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-lg'>
-                                  <Package className='w-12 h-12 text-slate-400' />
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Item Details */}
-                            <div className='flex-1 min-w-0'>
-                              <div className='flex items-center justify-between mb-4'>
-                                <div className='flex items-center space-x-3'>
-                                  <h3 className='text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                                    {displayData.itemName}
-                                  </h3>
-                                  <span
-                                    className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide ${getItemCategoryColor(item.itemCategory)}`}
-                                  >
-                                    {formatItemCategory(item.itemCategory)}
-                                  </span>
-                                  {item.sold && (
-                                    <span className='inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200'>
-                                      <Check className='w-3 h-3 mr-1' />
-                                      Sold
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className='flex items-center space-x-2'>
-                                  <Button
-                                    onClick={() => handleRemoveItem(item.itemId || item.itemData?._id)}
-                                    variant='outline'
-                                    size='sm'
-                                    className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
-                                  >
-                                    <Trash2 className='w-4 h-4 mr-1' />
-                                    Remove
-                                  </Button>
-                                </div>
-                              </div>
-
-                              {/* Item Information Grid */}
-                              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                                <div className='space-y-2'>
-                                  {displayData.setName && (
-                                    <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Set:</span>
-                                      <span className='text-slate-800 font-medium'>{displayData.setName}</span>
-                                    </div>
-                                  )}
-                                  {item.itemCategory === 'PsaGradedCard' && displayData.grade && (
-                                    <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>PSA Grade:</span>
-                                      <span className='text-slate-800 font-bold text-blue-600'>Grade {displayData.grade}</span>
-                                    </div>
-                                  )}
-                                  {item.itemCategory === 'RawCard' && displayData.condition && (
-                                    <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Condition:</span>
-                                      <span className='text-slate-800 font-medium'>{displayData.condition}</span>
-                                    </div>
-                                  )}
-                                </div>
-                                
-                                <div className='space-y-2'>
-                                  {displayData.price && (
-                                    <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Listed Price:</span>
-                                      <span className='text-slate-800 font-bold text-green-600'>{formatCurrency(displayData.price)}</span>
-                                    </div>
-                                  )}
-                                  {item.salePrice && (
-                                    <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Sale Price:</span>
-                                      <span className='text-emerald-600 font-bold'>{formatCurrency(item.salePrice)}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                      <div key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`} className='relative'>
+                        <CollectionItemCard
+                          item={collectionItem}
+                          itemType={itemType}
+                          activeTab='psa-graded' // Not really used in this context
+                          showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
+                          onViewDetails={handleViewItemDetail}
+                          onMarkAsSold={handleMarkAsSold}
+                        />
+                        
+                        {/* Remove from Auction Button - Overlay */}
+                        <div className='absolute top-4 right-4 z-20'>
+                          <Button
+                            onClick={() => {
+                              const itemName = auctionItem.itemData?.cardId?.cardName || 
+                                              auctionItem.itemData?.cardName || 
+                                              auctionItem.itemData?.name || 
+                                              'Unknown Item';
+                              handleRemoveItem(
+                                auctionItem.itemId || auctionItem.itemData?._id, 
+                                itemName, 
+                                auctionItem.itemCategory
+                              );
+                            }}
+                            variant='outline'
+                            size='sm'
+                            className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 bg-white/90 backdrop-blur-sm shadow-lg'
+                          >
+                            <Trash2 className='w-4 h-4 mr-1' />
+                            Remove
+                          </Button>
                         </div>
+                        
+                        {/* Auction Specific Badge */}
+                        {auctionItem.sold && (
+                          <div className='absolute top-4 left-4 z-20'>
+                            <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200 bg-white/90 backdrop-blur-sm shadow-lg'>
+                              <Check className='w-3 h-3 mr-1' />
+                              Sold in Auction
+                            </span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -626,6 +551,44 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             onClose={() => setIsAddItemModalOpen(false)}
             onAddItems={handleAddItems}
           />
+
+          {/* Remove Item Confirmation Modal */}
+          <Modal
+            isOpen={showRemoveItemConfirmation}
+            onClose={() => setShowRemoveItemConfirmation(false)}
+            title="Remove Item from Auction"
+            maxWidth='md'
+          >
+            <div className='p-6'>
+              <div className='flex items-center mb-4'>
+                <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mr-4'>
+                  <AlertCircle className='w-6 h-6 text-amber-600' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold text-gray-900'>Remove Item from Auction</h3>
+                  <p className='text-sm text-gray-600'>
+                    Are you sure you want to remove "{itemToRemove?.name}" from this auction? This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className='flex justify-end space-x-3'>
+                <Button
+                  onClick={() => setShowRemoveItemConfirmation(false)}
+                  variant='outline'
+                  className='text-gray-700 border-gray-300 hover:border-gray-400'
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmRemoveItem}
+                  className='bg-red-600 hover:bg-red-700 text-white'
+                  disabled={loading}
+                >
+                  {loading ? 'Removing...' : 'Remove Item'}
+                </Button>
+              </div>
+            </div>
+          </Modal>
         </div>
       </div>
     </div>

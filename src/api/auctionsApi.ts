@@ -86,10 +86,19 @@ export const addItemToAuction = async (
  * @param itemId - Item ID to remove
  * @returns Promise<IAuction> - Updated auction
  */
-export const removeItemFromAuction = async (id: string, itemId: string): Promise<IAuction> => {
-  const response = await apiClient.delete(`/auctions/${id}/items`, {
-    data: { itemId },
-  });
+export const removeItemFromAuction = async (
+  id: string, 
+  itemId: string, 
+  itemCategory?: string
+): Promise<IAuction> => {
+  const url = `/auctions/${id}/remove-item`;
+  const payload = { 
+    itemId,
+    itemCategory: itemCategory || 'PsaGradedCard' // Default fallback
+  };
+  
+  
+  const response = await apiClient.delete(url, { data: payload });
   return response.data.data || response.data;
 };
 

@@ -37,6 +37,57 @@ const CollectionItemDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Price update handler
+  const handlePriceUpdate = async (newPrice: number, date: string) => {
+    if (!item) return;
+
+    try {
+      setLoading(true);
+      const { type, id } = getUrlParams();
+      
+      if (!type || !id) {
+        throw new Error('Invalid URL parameters');
+      }
+
+      // Create updated price history with new entry
+      const updatedPriceHistory = [
+        ...(item.priceHistory || []),
+        { price: newPrice, dateUpdated: date }
+      ];
+
+      let updatedItem: CollectionItem;
+
+      // Update item based on type - backend will automatically sync myPrice to latest price
+      if (type === 'psa') {
+        updatedItem = await collectionApi.updatePsaGradedCard(id, { 
+          priceHistory: updatedPriceHistory 
+        });
+      } else if (type === 'raw') {
+        updatedItem = await collectionApi.updateRawCard(id, { 
+          priceHistory: updatedPriceHistory 
+        });
+      } else if (type === 'sealed') {
+        updatedItem = await collectionApi.updateSealedProduct(id, { 
+          priceHistory: updatedPriceHistory 
+        });
+      } else {
+        throw new Error('Unknown item type');
+      }
+
+      // Update local state with fresh data from server
+      setItem(updatedItem);
+      showSuccessToast('Price updated successfully! My Price synced to latest entry.');
+      log('[CollectionItemDetail] Price updated successfully', { newPrice, itemId: id });
+
+    } catch (err: any) {
+      const errorMessage = 'Failed to update price';
+      setError(errorMessage);
+      handleApiError(err, errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Extract type and id from URL path
   const getUrlParams = () => {
     const pathParts = window.location.pathname.split('/');
@@ -520,17 +571,11 @@ const CollectionItemDetail: React.FC = () => {
                 Price History
               </h2>
               
-              {item.priceHistory && item.priceHistory.length > 0 ? (
-                <PriceHistoryDisplay 
-                  priceHistory={item.priceHistory} 
-                  currentPrice={item.myPrice}
-                />
-              ) : (
-                <div className="text-center py-8">
-                  <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500">No price history available</p>
-                </div>
-              )}
+              <PriceHistoryDisplay 
+                priceHistory={item.priceHistory || []} 
+                currentPrice={item.myPrice}
+                onPriceUpdate={handlePriceUpdate}
+              />
             </div>
 
             {/* Sale Information */}

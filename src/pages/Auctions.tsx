@@ -123,6 +123,31 @@ const Auctions: React.FC = () => {
   const draftAuctions = auctions.filter(a => a.status === 'draft').length;
   const completedAuctions = auctions.filter(a => a.status === 'sold').length;
 
+  // Auto-refresh auctions when the page becomes visible (for better UX)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchAuctions();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchAuctions]);
+
+  // Debug current auctions state
+  useEffect(() => {
+    console.log('[Auctions] Current auctions count:', auctions.length);
+    console.log('[Auctions] Current auctions:', auctions.map(a => ({ 
+      id: a.id || a._id, 
+      topText: a.topText,
+      status: a.status 
+    })));
+  }, [auctions]);
+
   useEffect(() => {
     if (error) {
       const timer = setTimeout(clearError, 5000);
@@ -152,13 +177,25 @@ const Auctions: React.FC = () => {
                 <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>Auction Management</h1>
                 <p className='text-xl text-slate-600 font-medium leading-relaxed'>Manage your Pokémon card auctions with award-winning style</p>
               </div>
-              <Button
-                onClick={navigateToCreateAuction}
-                className='bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-700 hover:via-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20'
-              >
-                <Plus className='w-5 h-5 mr-3' />
-                Create Auction
-              </Button>
+              <div className='flex items-center space-x-3'>
+                <Button
+                  onClick={() => {
+                    console.log('[Auctions] Manual refresh triggered');
+                    fetchAuctions();
+                  }}
+                  variant='outline'
+                  className='text-gray-700 border-gray-300 hover:border-gray-400'
+                >
+                  🔄 Refresh
+                </Button>
+                <Button
+                  onClick={navigateToCreateAuction}
+                  className='bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-700 hover:via-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20'
+                >
+                  <Plus className='w-5 h-5 mr-3' />
+                  Create Auction
+                </Button>
+              </div>
             </div>
             {/* Premium shimmer effect */}
             <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>

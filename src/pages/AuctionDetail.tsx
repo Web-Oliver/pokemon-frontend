@@ -19,6 +19,7 @@ import {
   Download,
   Copy,
   Share,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
 import { useCollection } from '../hooks/useCollection';
@@ -71,7 +72,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   } | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
-  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
+  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string; category: string } | null>(null);
 
   useEffect(() => {
     // Extract auction ID from URL
@@ -226,6 +227,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const confirmDeleteAuction = async () => {
     try {
       await deleteAuction(currentAuctionId);
+      // Set a flag in sessionStorage to indicate auctions list needs refresh
+      sessionStorage.setItem('auctionsNeedRefresh', 'true');
       showSuccessToast('Auction deleted successfully');
       navigateToAuctions();
     } catch (err) {
@@ -243,8 +246,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   // Handle remove item from auction
-  const handleRemoveItem = (itemId: string, itemName: string) => {
-    setItemToRemove({ id: itemId, name: itemName });
+  const handleRemoveItem = (itemId: string, itemName: string, itemCategory: string) => {
+    setItemToRemove({ id: itemId, name: itemName, category: itemCategory });
     setShowRemoveItemConfirmation(true);
   };
 
@@ -252,7 +255,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     if (!itemToRemove) return;
     
     try {
-      await removeItemFromAuction(currentAuctionId, itemToRemove.id);
+      await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
       showSuccessToast('Item removed from auction');
     } catch (err) {
       // Error handled by the hook
@@ -807,7 +810,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                   </Button>
                                 )}
                                 <Button
-                                  onClick={() => handleRemoveItem(item.itemId || item.itemData?._id, displayData.itemName)}
+                                  onClick={() => handleRemoveItem(
+                                    item.itemId || item.itemData?._id, 
+                                    displayData.itemName,
+                                    item.itemCategory
+                                  )}
                                   variant='outline'
                                   size='sm'
                                   className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300'
