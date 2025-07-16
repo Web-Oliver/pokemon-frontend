@@ -34,41 +34,40 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
-  // Ensure we have a consistent ID for the item
-  const itemId = item.id || (item as any)._id || `fallback-${Date.now()}`;
-
   // Get item display name
   const getItemName = () => {
+    const itemRecord = item as Record<string, unknown>;
     return (
-      (item as any).cardId?.cardName ||
-      (item as any).cardName ||
-      (item as any).name ||
+      (itemRecord.cardId as Record<string, unknown>)?.cardName ||
+      itemRecord.cardName ||
+      itemRecord.name ||
       'Unknown Item'
     );
   };
 
   // Get item badge content based on type and tab
   const getBadgeContent = () => {
+    const itemRecord = item as Record<string, unknown>;
     switch (activeTab) {
       case 'psa-graded':
         return (
           <>
             <Star className='w-4 h-4 mr-1 text-yellow-500' />
-            Grade {(item as any).grade || 'N/A'}
+            Grade {itemRecord.grade || 'N/A'}
           </>
         );
       case 'raw-cards':
         return (
           <>
             <Package className='w-4 h-4 mr-1 text-emerald-500' />
-            {(item as any).condition || 'N/A'}
+            {itemRecord.condition || 'N/A'}
           </>
         );
       case 'sealed-products':
         return (
           <>
             <Archive className='w-4 h-4 mr-1 text-purple-500' />
-            {(item as any).category || 'N/A'}
+            {itemRecord.category || 'N/A'}
           </>
         );
       case 'sold-items':

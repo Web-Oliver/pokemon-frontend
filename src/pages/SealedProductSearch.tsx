@@ -19,7 +19,6 @@ import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import Input from '../components/common/Input';
 
 const SealedProductSearch: React.FC = () => {
   const [products, setProducts] = useState<ICardMarketReferenceProduct[]>([]);

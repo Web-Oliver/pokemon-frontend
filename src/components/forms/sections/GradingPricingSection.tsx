@@ -12,8 +12,8 @@ import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
 
 interface GradingPricingSectionProps {
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
+  register: UseFormRegister<Record<string, unknown>>;
+  errors: FieldErrors<Record<string, unknown>>;
   // Card type - determines if we show PSA grades or conditions
   cardType: 'psa' | 'raw';
   // Current form values for display

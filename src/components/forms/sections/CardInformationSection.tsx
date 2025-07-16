@@ -11,20 +11,23 @@ import Input from '../../common/Input';
 import SearchDropdown from '../../search/SearchDropdown';
 
 interface CardInformationSectionProps {
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
-  setValue: UseFormSetValue<any>;
-  clearErrors: UseFormClearErrors<any>;
+  register: UseFormRegister<Record<string, unknown>>;
+  errors: FieldErrors<Record<string, unknown>>;
+  setValue: UseFormSetValue<Record<string, unknown>>;
+  clearErrors: UseFormClearErrors<Record<string, unknown>>;
   // Search-related props
   setName: string;
-  suggestions: any[];
+  suggestions: Record<string, unknown>[];
   showSuggestions: boolean;
   activeField: string | null;
   onSetNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCardNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onInputFocus: (fieldType: 'set' | 'cardProduct') => void;
   onInputBlur: () => void;
-  onSuggestionClick: (suggestion: any, fieldType: 'set' | 'cardProduct') => void;
+  onSuggestionClick: (
+    suggestion: Record<string, unknown>,
+    fieldType: 'set' | 'cardProduct'
+  ) => void;
   // Visibility control
   isVisible?: boolean;
   // Disable fields when editing
@@ -34,8 +37,8 @@ interface CardInformationSectionProps {
 const CardInformationSection: React.FC<CardInformationSectionProps> = ({
   register,
   errors,
-  setValue,
-  clearErrors,
+  setValue: _setValue,
+  clearErrors: _clearErrors,
   setName,
   suggestions,
   showSuggestions,

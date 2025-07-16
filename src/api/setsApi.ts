@@ -150,7 +150,7 @@ export const searchSetsOptimized = async (
     }
   });
 
-  const response = await apiClient.get(`/api/search/sets?${queryParams.toString()}`);
+  const response = await apiClient.get(`/search/sets?${queryParams.toString()}`);
   const data = response.data;
 
   return {

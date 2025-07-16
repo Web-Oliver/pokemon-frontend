@@ -11,11 +11,7 @@
 
 import React, { forwardRef } from 'react';
 import { Search, X, ChevronDown, Check } from 'lucide-react';
-import {
-  useEnhancedAutocomplete,
-  AutocompleteField,
-  UseEnhancedAutocompleteProps,
-} from '../../hooks/useEnhancedAutocomplete';
+import { useEnhancedAutocomplete } from '../../hooks/useEnhancedAutocomplete';
 
 export interface EnhancedAutocompleteProps {
   config: any;
@@ -48,7 +44,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
       showMetadata = true,
       allowClear = true,
       maxHeight = 300,
-      ...props
+      ..._props
     },
     ref
   ) => {

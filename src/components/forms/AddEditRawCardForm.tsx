@@ -22,7 +22,6 @@ import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
-import CardInformationSection from './sections/CardInformationSection';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
@@ -61,6 +60,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   // Legacy showSuggestions state removed - EnhancedAutocomplete handles UI state
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(
+    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+  );
 
   const {
     register,
@@ -225,13 +227,15 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         });
       } else {
         console.log('[RAW FORM SUBMIT] Processing new item creation');
-        // For new items, include all card data
+        
+        // Validate that a card has been selected
+        if (!selectedCardId) {
+          throw new Error('Please select a card from the search suggestions');
+        }
+
+        // For new items, use cardId reference (backend schema requirement)
         cardData = {
-          setName: data.setName.trim(),
-          cardName: data.cardName.trim(),
-          pokemonNumber: data.pokemonNumber.trim(),
-          baseName: data.baseName.trim(),
-          variety: data.variety.trim() || undefined,
+          cardId: selectedCardId,
           condition: data.condition,
           myPrice: parseFloat(data.myPrice),
           dateAdded: data.dateAdded,
@@ -293,7 +297,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500'></div>
         <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5'></div>
 
-        <div className='flex items-center relative z-10'>
+        <div className='flex items-center relative'>
           <div className='w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center'>
             <Package className='w-7 h-7 text-white' />
           </div>
@@ -314,7 +318,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
         <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-emerald-50/50'></div>
 
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative z-10'>
+        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between relative'>
           <div className='flex items-center'>
             <Calendar className='w-6 h-6 mr-3 text-slate-600' />
             Card Information
@@ -328,7 +332,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         </h4>
 
         {/* Enhanced Autocomplete for Hierarchical Search */}
-        <div className='mb-6 relative z-10'>
+        <div className='mb-6'>
           <EnhancedAutocomplete
             config={autocompleteConfig}
             fields={autocompleteFields}
@@ -339,6 +343,12 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
               if (selectedData) {
                 // The selectedData contains the raw card data from the search API
                 console.log('[RAW CARD] Raw selected data:', selectedData);
+
+                // Store the selected card ID for backend submission
+                if (selectedData.id) {
+                  setSelectedCardId(selectedData.id);
+                  console.log('[RAW CARD] Selected card ID:', selectedData.id);
+                }
 
                 // Auto-fill set name from setInfo or direct setName
                 const setName = selectedData.setInfo?.setName || selectedData.setName;
@@ -398,7 +408,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         </div>
 
         {/* Additional Card Fields */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6 relative'>
           {/* Pokemon Number */}
           <div>
             <Input

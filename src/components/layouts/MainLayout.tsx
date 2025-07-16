@@ -9,7 +9,6 @@ import React from 'react';
 import {
   Home,
   Package,
-  Search,
   TrendingUp,
   Gavel,
   Menu,
@@ -17,7 +16,6 @@ import {
   Zap,
   Sparkles,
   Plus,
-  FileText,
   Database,
   Package2,
 } from 'lucide-react';

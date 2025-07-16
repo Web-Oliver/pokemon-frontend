@@ -9,40 +9,117 @@ import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 
 /**
+ * Helper function to identify metadata objects that shouldn't be processed for IDs
+ * @param key - The property key
+ * @param value - The property value
+ * @returns true if this is a metadata object that should be skipped
+ */
+const isMetadataObject = (key: string, value: any): boolean => {
+  // Skip known metadata/property objects
+  const metadataKeys = [
+    'saleDetails',
+    'psaGrades', 
+    'psaTotalGradedForCard',
+    'priceHistory',
+    'metadata',
+    'cardInfo',
+    'productInfo',
+    'setInfo'
+  ];
+  
+  if (metadataKeys.includes(key)) {
+    return true;
+  }
+  
+  // Skip objects with known metadata properties
+  if (typeof value === 'object' && value !== null) {
+    const hasMetadataProps = [
+      'paymentMethod',
+      'actualSoldPrice', 
+      'deliveryMethod',
+      'dateSold',
+      'wasNew',
+      'isSaleUpdate',
+      'psa_1', 
+      'psa_2', 
+      'psa_3',
+      'psa_4',
+      'psa_5',
+      'psa_6',
+      'psa_7',
+      'psa_8',
+      'psa_9',
+      'psa_10'
+    ].some(prop => prop in value);
+    
+    if (hasMetadataProps) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
+/**
  * Helper function to map _id to id for MongoDB compatibility
  * @param item - Item object or array of items
  * @returns Item(s) with id field mapped from _id
  */
-const mapItemIds = (item: any): any => {
+const mapItemIds = (item: unknown): unknown => {
   if (!item) {
     return item;
   }
 
   if (Array.isArray(item)) {
-    return item.map(mapItemIds);
+    const mappedArray = item.map(mapItemIds);
+    
+    // Debug: Check for duplicate IDs in arrays (collection items)
+    const ids = mappedArray
+      .filter(item => item && typeof item === 'object')
+      .map(item => (item as any).id)
+      .filter(id => id !== undefined);
+    
+    const uniqueIds = new Set(ids);
+    if (ids.length !== uniqueIds.size) {
+      const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+      console.error('[COLLECTION API] Duplicate IDs detected in array:', duplicates, {
+        totalItems: ids.length,
+        uniqueItems: uniqueIds.size,
+        items: mappedArray
+      });
+    }
+    
+    return mappedArray;
   }
 
   if (typeof item === 'object') {
-    const newItem = { ...item };
+    const newItem = { ...item } as Record<string, unknown>;
 
     // Map _id to id for the current object, ensuring we always have an id field
     if (newItem._id) {
       newItem.id = newItem._id;
       // Keep _id for debugging but ensure id is primary
-    } else if (!newItem.id && newItem._id) {
-      newItem.id = newItem._id;
+    } else if (!newItem.id) {
+      // Log warning for items without any ID - this shouldn't happen with valid MongoDB documents
+      console.warn('[COLLECTION API] Item found without _id or id field:', newItem);
     }
 
-    // Recursively process nested objects
+    // Only recursively process specific nested collection-related objects and arrays
+    // Avoid processing metadata objects like saleDetails, psaGrades, etc.
     Object.keys(newItem).forEach(key => {
-      if (
-        typeof newItem[key] === 'object' &&
-        newItem[key] !== null &&
-        !Array.isArray(newItem[key])
+      const value = newItem[key];
+      
+      if (Array.isArray(value)) {
+        // Process arrays (like images, priceHistory)
+        newItem[key] = value.map((arrayItem: unknown) => mapItemIds(arrayItem));
+      } else if (
+        typeof value === 'object' &&
+        value !== null &&
+        // Only process objects that might contain collection items or nested collections
+        // Skip known metadata/property objects
+        !isMetadataObject(key, value)
       ) {
-        newItem[key] = mapItemIds(newItem[key]);
-      } else if (Array.isArray(newItem[key])) {
-        newItem[key] = newItem[key].map((arrayItem: any) => mapItemIds(arrayItem));
+        newItem[key] = mapItemIds(value);
       }
     });
 

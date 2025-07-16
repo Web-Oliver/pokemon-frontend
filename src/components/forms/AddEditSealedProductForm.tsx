@@ -27,7 +27,6 @@ import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import SearchDropdown from '../search/SearchDropdown';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 
 interface AddEditSealedProductFormProps {
@@ -59,14 +58,15 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
   const [productCategories, setProductCategories] = useState<
     Array<{ value: string; label: string }>
   >([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
-  const [selectedProductData, setSelectedProductData] = useState<any>(null);
+  const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
+    null
+  );
 
   const {
     register,

@@ -72,6 +72,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   // Legacy showSuggestions state removed - EnhancedAutocomplete handles UI state
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(
+    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+  );
 
   const {
     register,
@@ -278,13 +281,15 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         });
       } else {
         console.log('[PSA FORM SUBMIT] Processing new item creation');
-        // For new items, include all card data
+        
+        // Validate that a card has been selected
+        if (!selectedCardId) {
+          throw new Error('Please select a card from the search suggestions');
+        }
+
+        // For new items, use cardId reference (backend schema requirement)
         cardData = {
-          setName: data.setName.trim(),
-          cardName: data.cardName.trim(),
-          pokemonNumber: data.pokemonNumber.trim(),
-          baseName: data.baseName.trim(),
-          variety: data.variety.trim() || '',
+          cardId: selectedCardId,
           grade: data.grade,
           myPrice: parseFloat(data.myPrice),
           dateAdded: new Date(data.dateAdded).toISOString(),
@@ -393,6 +398,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                 if (selectedData) {
                   // The selectedData contains the raw card data from the search API
                   console.log('[PSA CARD] Raw selected data:', selectedData);
+
+                  // Store the selected card ID for backend submission
+                  if (selectedData.id) {
+                    setSelectedCardId(selectedData.id);
+                    console.log('[PSA CARD] Selected card ID:', selectedData.id);
+                  }
 
                   // Auto-fill set name from setInfo or direct setName
                   const setName = selectedData.setInfo?.setName || selectedData.setName;

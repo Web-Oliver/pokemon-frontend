@@ -31,7 +31,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
@@ -47,7 +46,7 @@ const SalesAnalytics: React.FC = () => {
     error,
     kpis,
     categoryBreakdown,
-    trendAnalysis,
+    trendAnalysis: _trendAnalysis,
     dateRange,
     setDateRange,
     refreshData,
@@ -83,7 +82,7 @@ const SalesAnalytics: React.FC = () => {
   };
 
   // Format percentage
-  const formatPercentage = (value: number) => {
+  const _formatPercentage = (value: number) => {
     return `${value.toFixed(1)}%`;
   };
 
@@ -129,7 +128,7 @@ const SalesAnalytics: React.FC = () => {
     : [];
 
   // Get trend icon
-  const getTrendIcon = (trend: string) => {
+  const _getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'up':
         return <ArrowUp className='w-4 h-4 text-green-500' />;

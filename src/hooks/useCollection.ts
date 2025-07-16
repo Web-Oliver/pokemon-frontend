@@ -106,7 +106,15 @@ export const useCollection = (): UseCollectionReturn => {
         collectionApi.getSealedProductCollection({ sold: true }),
       ]);
 
-      const soldItems = [...soldPsaCards, ...soldRawCards, ...soldSealedProducts];
+      // Deduplicate sold items by ID to prevent duplicate keys in React
+      const allSoldItems = [...soldPsaCards, ...soldRawCards, ...soldSealedProducts];
+      const soldItems = allSoldItems.filter((item, index, array) => {
+        const itemId = item.id || (item as any)._id;
+        return array.findIndex(otherItem => {
+          const otherId = otherItem.id || (otherItem as any)._id;
+          return otherId === itemId;
+        }) === index;
+      });
 
       setState(prev => ({
         ...prev,

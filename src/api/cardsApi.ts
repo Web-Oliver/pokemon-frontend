@@ -21,7 +21,7 @@ const mapCardIds = (card: unknown): unknown => {
   }
 
   if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
-    (card as any).id = (card as any)._id;
+    (card as Record<string, unknown>).id = (card as Record<string, unknown>)._id;
   }
 
   return card;
@@ -121,7 +121,7 @@ export const searchCardsOptimized = async (
     }
   });
 
-  const response = await apiClient.get(`/api/search/cards?${queryParams.toString()}`);
+  const response = await apiClient.get(`/search/cards?${queryParams.toString()}`);
   const data = response.data;
 
   // Map the response data

@@ -18,7 +18,7 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
 
   // Prepare the request body for the existing backend endpoint
   const requestData = {
-    items: auction.items.map((item: any) => ({
+    items: auction.items.map((item: Record<string, unknown>) => ({
       itemId: item.itemId || item.itemData?._id,
       itemCategory: item.itemCategory,
     })),
@@ -59,7 +59,7 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  auction.items.forEach((item: any, index: number) => {
+  auction.items.forEach((item: Record<string, unknown>, index: number) => {
     if (item.itemData && item.itemData.images) {
       item.itemData.images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {
@@ -168,12 +168,15 @@ export const zipSealedProductImages = async (productIds?: string[]): Promise<Blo
  * @param itemType - Type of item for filename prefix
  * @returns Promise<Blob> - Zip file blob
  */
-const createImageZip = async (items: any[], itemType: string): Promise<Blob> => {
+const createImageZip = async (
+  items: Record<string, unknown>[],
+  itemType: string
+): Promise<Blob> => {
   // Extract all image URLs from items
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  items.forEach((item: any, index: number) => {
+  items.forEach((item: Record<string, unknown>, index: number) => {
     if (item.images && item.images.length > 0) {
       item.images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {

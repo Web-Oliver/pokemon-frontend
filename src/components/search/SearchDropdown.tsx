@@ -11,7 +11,7 @@
  * Following CLAUDE.md principles for separation of concerns
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
 
 interface SearchSuggestion {
@@ -61,7 +61,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   loading = false,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [_isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isVisible) {

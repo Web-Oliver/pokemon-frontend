@@ -9,7 +9,7 @@
  * - DRY: Reusable across different search contexts
  */
 
-import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
+import { SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
 import {
   searchCardsOptimized,
   searchCardsInSet,
@@ -355,12 +355,13 @@ export class HierarchicalSearchService {
 
     try {
       switch (fieldType) {
-        case 'set':
+        case 'set': {
           const setSuggestions = await getSetSuggestionsOptimized(
             query,
             this.config.maxSuggestions!
           );
           return setSuggestions.map(this.mapSetResultToSuggestionOptimized);
+        }
 
         case 'category':
           return this.searchCategories(query);

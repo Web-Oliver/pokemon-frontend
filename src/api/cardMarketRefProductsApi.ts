@@ -167,7 +167,7 @@ export const searchProductsOptimized = async (
     }
   });
 
-  const response = await apiClient.get(`/api/search/products?${queryParams.toString()}`);
+  const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
   const data = response.data;
 
   return {

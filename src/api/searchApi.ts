@@ -4,20 +4,20 @@ import apiClient from './apiClient';
 const searchCache = new Map<
   string,
   {
-    data: any;
+    data: unknown;
     timestamp: number;
     ttl: number;
   }
 >();
 
-const pendingRequests = new Map<string, Promise<any>>();
+const pendingRequests = new Map<string, Promise<unknown>>();
 
 // Context7 Request Optimization Utilities
-const createCacheKey = (params: any): string => {
+const createCacheKey = (params: Record<string, unknown>): string => {
   return JSON.stringify(params, Object.keys(params).sort());
 };
 
-const isValidCacheEntry = (entry: any): boolean => {
+const isValidCacheEntry = (entry: { data: unknown; timestamp: number; ttl: number }): boolean => {
   return entry && Date.now() - entry.timestamp < entry.ttl;
 };
 
@@ -212,7 +212,7 @@ export const searchApi = {
       }
 
       try {
-        const response = await apiClient.get(`/api/search?${queryParams.toString()}`);
+        const response = await apiClient.get(`/search?${queryParams.toString()}`);
         const data = response.data;
 
         // Cache the result
@@ -277,7 +277,7 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/api/search/suggest?${queryParams.toString()}`);
+        const response = await apiClient.get(`/search/suggest?${queryParams.toString()}`);
         const data = response.data;
 
         // Cache the result
@@ -362,7 +362,7 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/api/search/cards?${queryParams.toString()}`);
+        const response = await apiClient.get(`/search/cards?${queryParams.toString()}`);
         const data = response.data;
 
         // Cache the result
@@ -446,7 +446,7 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/api/search/products?${queryParams.toString()}`);
+        const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
         const data = response.data;
 
         // Cache the result
@@ -530,7 +530,7 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/api/search/sets?${queryParams.toString()}`);
+        const response = await apiClient.get(`/search/sets?${queryParams.toString()}`);
         const data = response.data;
 
         // Cache the result
@@ -561,16 +561,20 @@ export const searchApi = {
   /**
    * Context7 Enhanced Search Scoring Algorithm
    */
-  calculateSearchScore(result: any, query: string, type: string): number {
+  calculateSearchScore(
+    result: SetResult | CardResult | ProductResult | CategoryResult,
+    query: string,
+    type: string
+  ): number {
     let score = 0;
     const queryLower = query.toLowerCase();
 
     // Get primary text field based on type
     const primaryText = (
-      result.cardName ||
-      result.name ||
-      result.setName ||
-      result.category ||
+      ('cardName' in result ? result.cardName : '') ||
+      ('name' in result ? result.name : '') ||
+      ('setName' in result ? result.setName : '') ||
+      ('category' in result ? result.category : '') ||
       ''
     ).toLowerCase();
 
@@ -612,13 +616,17 @@ export const searchApi = {
   /**
    * Context7 Exact Match Detection
    */
-  isExactMatch(result: any, query: string, _type: string): boolean {
+  isExactMatch(
+    result: SetResult | CardResult | ProductResult | CategoryResult,
+    query: string,
+    _type: string
+  ): boolean {
     const queryLower = query.toLowerCase();
     const primaryText = (
-      result.cardName ||
-      result.name ||
-      result.setName ||
-      result.category ||
+      ('cardName' in result ? result.cardName : '') ||
+      ('name' in result ? result.name : '') ||
+      ('setName' in result ? result.setName : '') ||
+      ('category' in result ? result.category : '') ||
       ''
     ).toLowerCase();
 
@@ -633,32 +641,17 @@ export const searchApi = {
  * Get all available product categories from the backend (actual enum values)
  */
 export const getProductCategories = async (): Promise<Array<{ value: string; label: string }>> => {
-  try {
-    // Use the actual backend enum categories from SealedProduct model
-    return [
-      { value: 'Blisters', label: 'Blisters' },
-      { value: 'Booster-Boxes', label: 'Booster Boxes' },
-      { value: 'Boosters', label: 'Booster Packs' },
-      { value: 'Box-Sets', label: 'Box Sets' },
-      { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
-      { value: 'Theme-Decks', label: 'Theme Decks' },
-      { value: 'Tins', label: 'Tins' },
-      { value: 'Trainer-Kits', label: 'Trainer Kits' },
-    ];
-  } catch (error) {
-    console.error('Failed to fetch product categories:', error);
-    // Fallback to the same categories if API fails
-    return [
-      { value: 'Blisters', label: 'Blisters' },
-      { value: 'Booster-Boxes', label: 'Booster Boxes' },
-      { value: 'Boosters', label: 'Booster Packs' },
-      { value: 'Box-Sets', label: 'Box Sets' },
-      { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
-      { value: 'Theme-Decks', label: 'Theme Decks' },
-      { value: 'Tins', label: 'Tins' },
-      { value: 'Trainer-Kits', label: 'Trainer Kits' },
-    ];
-  }
+  // Use the actual backend enum categories from SealedProduct model
+  return [
+    { value: 'Blisters', label: 'Blisters' },
+    { value: 'Booster-Boxes', label: 'Booster Boxes' },
+    { value: 'Boosters', label: 'Booster Packs' },
+    { value: 'Box-Sets', label: 'Box Sets' },
+    { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
+    { value: 'Theme-Decks', label: 'Theme Decks' },
+    { value: 'Tins', label: 'Tins' },
+    { value: 'Trainer-Kits', label: 'Trainer Kits' },
+  ];
 };
 
 /**
@@ -667,21 +660,11 @@ export const getProductCategories = async (): Promise<Array<{ value: string; lab
 export const getAvailabilityOptions = async (): Promise<
   Array<{ value: number; label: string }>
 > => {
-  try {
-    // Availability is stored as a number in the backend
-    return [
-      { value: 0, label: 'Out of Stock' },
-      { value: 1, label: 'Low Stock (1)' },
-      { value: 5, label: 'Medium Stock (5)' },
-      { value: 10, label: 'High Stock (10+)' },
-    ];
-  } catch (error) {
-    console.error('Failed to fetch availability options:', error);
-    return [
-      { value: 0, label: 'Out of Stock' },
-      { value: 1, label: 'Low Stock (1)' },
-      { value: 5, label: 'Medium Stock (5)' },
-      { value: 10, label: 'High Stock (10+)' },
-    ];
-  }
+  // Availability is stored as a number in the backend
+  return [
+    { value: 0, label: 'Out of Stock' },
+    { value: 1, label: 'Low Stock (1)' },
+    { value: 5, label: 'Medium Stock (5)' },
+    { value: 10, label: 'High Stock (10+)' },
+  ];
 };

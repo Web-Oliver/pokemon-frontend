@@ -11,9 +11,9 @@ import Input from '../../common/Input';
 import Select from '../../common/Select';
 
 interface SaleDetailsSectionProps {
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
-  watch: UseFormWatch<any>;
+  register: UseFormRegister<Record<string, unknown>>;
+  errors: FieldErrors<Record<string, unknown>>;
+  watch: UseFormWatch<Record<string, unknown>>;
   // Show section only for sold items in edit mode
   isVisible?: boolean;
   itemName?: string;
@@ -21,7 +21,7 @@ interface SaleDetailsSectionProps {
 
 const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
   register,
-  errors,
+  errors: _errors,
   watch,
   isVisible = true,
   itemName = 'item',

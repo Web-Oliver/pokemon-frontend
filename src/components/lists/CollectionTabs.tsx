@@ -184,15 +184,44 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
       );
     }
 
-    // Render collection items grid
+    // Debug: Check for duplicate IDs
+    const usedKeys = new Set<string>();
+    const duplicateKeys: string[] = [];
+    
+    data.forEach((item: CollectionItem, index: number) => {
+      const key = item.id || (item as any)._id || `fallback-${index}`;
+      if (usedKeys.has(key)) {
+        duplicateKeys.push(key);
+        console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
+          item,
+          index,
+          activeTab,
+          itemId: item.id,
+          itemMongoId: (item as any)._id,
+          cardId: (item as any).cardId,
+          productId: (item as any).productId
+        });
+      }
+      usedKeys.add(key);
+    });
+
+    if (duplicateKeys.length > 0) {
+      console.error(`[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`, duplicateKeys);
+    }
+
+    // Render collection items grid with guaranteed unique keys
     return (
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
         {data.map((item: CollectionItem, index: number) => {
           const itemType = getItemType(item, activeTab);
+          // Ensure absolutely unique key by combining ID with index as fallback
+          const uniqueKey = item.id || (item as any)._id 
+            ? `${item.id || (item as any)._id}-${index}`
+            : `fallback-${activeTab}-${index}`;
 
           return (
             <CollectionItemCard
-              key={item.id || (item as any)._id || `fallback-${index}`}
+              key={uniqueKey}
               item={item}
               itemType={itemType}
               activeTab={activeTab}
