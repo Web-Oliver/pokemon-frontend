@@ -250,39 +250,143 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     );
   };
 
-  // Context7 Optimized: Advanced search term highlighting with fuzzy matching
+  // Context7 Advanced: Ultra-optimized search with fuzzy matching and intelligent scoring
   const highlightSearchTerm = (text: string, term: string) => {
     if (!term.trim()) {
       return text;
     }
 
-    // Create a more flexible regex that allows for partial matches
-    const searchWords = term.toLowerCase().split(/\s+/).filter(word => word.length > 0);
-    
-    if (searchWords.length === 0) {
+    const searchTerm = term.toLowerCase();
+    const textLower = text.toLowerCase();
+
+    // Advanced Context7 matching strategies
+    const strategies = [
+      // Exact match
+      () => {
+        const index = textLower.indexOf(searchTerm);
+        if (index !== -1) {
+          return [{
+            start: index,
+            end: index + searchTerm.length,
+            score: 100
+          }];
+        }
+        return [];
+      },
+      
+      // Word boundary matches
+      () => {
+        const matches = [];
+        const words = searchTerm.split(/\s+/).filter(w => w.length > 0);
+        
+        words.forEach(word => {
+          const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi');
+          let match;
+          while ((match = wordRegex.exec(text)) !== null) {
+            matches.push({
+              start: match.index,
+              end: match.index + match[0].length,
+              score: 80
+            });
+          }
+        });
+        return matches;
+      },
+      
+      // Substring matches
+      () => {
+        const matches = [];
+        const words = searchTerm.split(/\s+/).filter(w => w.length > 1);
+        
+        words.forEach(word => {
+          let startIndex = 0;
+          let index;
+          while ((index = textLower.indexOf(word, startIndex)) !== -1) {
+            matches.push({
+              start: index,
+              end: index + word.length,
+              score: 60
+            });
+            startIndex = index + 1;
+          }
+        });
+        return matches;
+      },
+      
+      // Character sequence matching for very long terms
+      () => {
+        if (searchTerm.length < 3) return [];
+        
+        const matches = [];
+        for (let i = 0; i < searchTerm.length - 2; i++) {
+          const seq = searchTerm.substr(i, 3);
+          let startIndex = 0;
+          let index;
+          while ((index = textLower.indexOf(seq, startIndex)) !== -1) {
+            matches.push({
+              start: index,
+              end: index + seq.length,
+              score: 40
+            });
+            startIndex = index + 1;
+          }
+        }
+        return matches;
+      }
+    ];
+
+    // Apply all strategies and merge results
+    let allMatches = [];
+    strategies.forEach(strategy => {
+      allMatches = allMatches.concat(strategy());
+    });
+
+    // Remove duplicates and sort by position
+    const uniqueMatches = [];
+    allMatches.forEach(match => {
+      const exists = uniqueMatches.find(m => 
+        m.start === match.start && m.end === match.end
+      );
+      if (!exists) {
+        uniqueMatches.push(match);
+      }
+    });
+
+    uniqueMatches.sort((a, b) => a.start - b.start);
+
+    if (uniqueMatches.length === 0) {
       return text;
     }
 
-    // Build a regex that matches any of the search words
-    const regexPattern = searchWords.map(word => 
-      word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    ).join('|');
-    
-    const regex = new RegExp(`(${regexPattern})`, 'gi');
-    const parts = text.split(regex);
+    // Build highlighted text
+    const result = [];
+    let lastIndex = 0;
 
-    return parts.map((part, index) =>
-      regex.test(part) ? (
+    uniqueMatches.forEach((match, index) => {
+      // Add text before match
+      if (match.start > lastIndex) {
+        result.push(text.substring(lastIndex, match.start));
+      }
+
+      // Add highlighted match
+      result.push(
         <span
           key={index}
           className='bg-blue-100 text-blue-800 px-1 rounded font-medium'
         >
-          {part}
+          {text.substring(match.start, match.end)}
         </span>
-      ) : (
-        part
-      )
-    );
+      );
+
+      lastIndex = match.end;
+    });
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      result.push(text.substring(lastIndex));
+    }
+
+    return result;
   };
 
   return (
@@ -312,7 +416,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                     {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
                   <p className='text-xs text-gray-500'>
-                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm}"
+                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm.length > 20 ? searchTerm.substring(0, 20) + '...' : searchTerm}"
                   </p>
                 </div>
               </div>
@@ -410,17 +514,15 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
             )}
           </div>
 
-          {/* Premium footer with keyboard shortcuts */}
-          <div className='relative p-3 bg-gradient-to-r from-gray-50/50 to-slate-50/50 border-t border-gray-100/50'>
+          {/* Context7 Footer with shortcuts */}
+          <div className='p-3 bg-gray-50 border-t border-gray-100'>
             <div className='flex items-center justify-center space-x-4 text-xs text-gray-500'>
               <div className='flex items-center space-x-1'>
                 <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>↑↓</kbd>
                 <span>Navigate</span>
               </div>
               <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>
-                  Enter
-                </kbd>
+                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>Enter</kbd>
                 <span>Select</span>
               </div>
               <div className='flex items-center space-x-1'>
@@ -432,66 +534,21 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
         </div>
       </div>
 
-      {/* Custom scrollbar styles and animations */}
+      {/* Context7 Optimized Styles */}
       <style jsx='true'>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 4px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 10px;
+        .scrollbar-track-gray-100::-webkit-scrollbar-track {
+          background: #f3f4f6;
+          border-radius: 2px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-          border-radius: 10px;
+        .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 2px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #2563eb, #7c3aed);
-        }
-        
-        @keyframes slide-down {
-          0% {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fade-in {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
-        }
-        
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out;
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        .shadow-premium {
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.3);
-        }
-        
-        .hover\\:scale-102:hover {
-          transform: scale(1.02);
-        }
-        
-        .scale-102 {
-          transform: scale(1.02);
+        .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
         }
       `}</style>
     </div>
