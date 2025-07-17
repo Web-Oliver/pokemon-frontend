@@ -448,7 +448,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             </div>
           </div>
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+          <div className={`grid ${getOptimalGridLayout(previews.map(p => p.aspectInfo).filter(Boolean) as ImageAspectInfo[])}`}>
             {previews.map((preview) => {
               const aspectInfo = preview.aspectInfo;
               const previewConfig = aspectInfo ? getResponsiveImageConfig(aspectInfo) : null;

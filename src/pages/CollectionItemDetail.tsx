@@ -606,49 +606,8 @@ const CollectionItemDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-          {/* Left Column - Images */}
-          <div className='lg:col-span-1'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
-                  <ImageIcon className='w-5 h-5 mr-2' />
-                  Images
-                </h2>
-
-                {/* ZIP Download Button */}
-                {item.images && item.images.length > 0 && (
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={handleDownloadImages}
-                    disabled={downloadingZip}
-                    className='flex items-center space-x-2'
-                  >
-                    {downloadingZip ? (
-                      <LoadingSpinner size='sm' />
-                    ) : (
-                      <Download className='w-4 h-4' />
-                    )}
-                    <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
-                  </Button>
-                )}
-              </div>
-
-              <ImageSlideshow
-                images={item.images || []}
-                fallbackIcon={<ImageIcon className='w-12 h-12 text-gray-400' />}
-                autoplay={true}
-                autoplayDelay={5000}
-                className='h-[32rem]'
-                showThumbnails={true}
-              />
-            </div>
-          </div>
-
-          {/* Right Column - Details */}
-          <div className='lg:col-span-2 space-y-6'>
+        {/* Main Content - Details */}
+        <div className='space-y-6 mb-8'>
             {/* Basic Information */}
             <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
               <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
@@ -719,6 +678,45 @@ const CollectionItemDetail: React.FC = () => {
 
             {/* Sale Information */}
             {renderSaleInfo()}
+        </div>
+
+        {/* Images Section - At Bottom with Smaller Size */}
+        <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+          <div className='flex items-center justify-between mb-4'>
+            <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
+              <ImageIcon className='w-5 h-5 mr-2' />
+              Images
+            </h2>
+
+            {/* ZIP Download Button */}
+            {item.images && item.images.length > 0 && (
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={handleDownloadImages}
+                disabled={downloadingZip}
+                className='flex items-center space-x-2'
+              >
+                {downloadingZip ? (
+                  <LoadingSpinner size='sm' />
+                ) : (
+                  <Download className='w-4 h-4' />
+                )}
+                <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
+              </Button>
+            )}
+          </div>
+
+          <div className='max-w-lg mx-auto'>
+            <ImageSlideshow
+              images={item.images || []}
+              fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
+              autoplay={true}
+              autoplayDelay={5000}
+              showThumbnails={true}
+              adaptiveLayout={true}
+              enableAspectRatioDetection={true}
+            />
           </div>
         </div>
       </div>

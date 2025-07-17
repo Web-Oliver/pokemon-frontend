@@ -148,7 +148,7 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
         mobileAspect: 'aspect-[4/3]', // Responsive fallback for mobile
         tabletAspect: 'aspect-video',
         desktopAspect: 'aspect-video',
-        objectFit: 'cover',
+        objectFit: 'contain',
         objectPosition: 'center',
       };
 
@@ -158,7 +158,7 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
         mobileAspect: 'aspect-[3/2]', // Better mobile display
         tabletAspect: 'aspect-[4/3]',
         desktopAspect: 'aspect-[4/3]',
-        objectFit: 'cover',
+        objectFit: 'contain',
         objectPosition: 'center',
       };
 
@@ -280,10 +280,14 @@ export const getContext7ImageClasses = (
   withHoverEffects: boolean = true
 ): string => {
   // Enhanced object position handling
-  const objectPosClass = config.objectPosition
-    .replace(' ', '-')
-    .replace('center-top', 'center-top')
-    .replace('center top', 'center-top');
+  let objectPosClass = config.objectPosition;
+  if (objectPosClass === 'center') {
+    objectPosClass = 'center';
+  } else if (objectPosClass === 'center top') {
+    objectPosClass = 'top';
+  } else {
+    objectPosClass = objectPosClass.replace(' ', '-');
+  }
   
   const baseClasses = `w-full h-full object-${config.objectFit} object-${objectPosClass} transition-all duration-500`;
   
@@ -303,27 +307,61 @@ export const getContext7ImageClasses = (
 
 /**
  * Determines optimal grid layout based on mixed aspect ratios
+ * Enhanced Context7 algorithm for vertical and horizontal image mixing
  */
 export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => {
   if (aspectInfos.length === 0) return 'grid-cols-1';
   
   const orientations = aspectInfos.map(info => info.orientation);
+  const categories = aspectInfos.map(info => info.category);
+  
   const hasVertical = orientations.includes('vertical');
   const hasHorizontal = orientations.includes('horizontal');
   const hasSquare = orientations.includes('square');
   
-  // Mixed orientations - adaptive grid
-  if (hasVertical && hasHorizontal) {
-    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr';
+  const verticalCount = orientations.filter(o => o === 'vertical').length;
+  const horizontalCount = orientations.filter(o => o === 'horizontal').length;
+  const squareCount = orientations.filter(o => o === 'square').length;
+  
+  const totalImages = aspectInfos.length;
+  const verticalRatio = verticalCount / totalImages;
+  const horizontalRatio = horizontalCount / totalImages;
+  
+  // Context7 enhanced logic for mixed orientations
+  if (hasVertical && hasHorizontal && hasSquare) {
+    // All three types - use masonry-style adaptive grid
+    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max';
   }
   
-  // Mostly vertical images - more columns
+  if (hasVertical && hasHorizontal) {
+    // Mixed vertical and horizontal
+    if (verticalRatio > 0.7) {
+      // Mostly vertical - use more columns
+      return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4';
+    } else if (horizontalRatio > 0.7) {
+      // Mostly horizontal - use fewer columns
+      return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6';
+    } else {
+      // Balanced mix - adaptive responsive grid
+      return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 auto-rows-fr';
+    }
+  }
+  
+  // Predominantly vertical images - optimize for more columns
   if (hasVertical && !hasHorizontal) {
+    if (categories.includes('ultra-tall')) {
+      // Ultra-tall images need special handling
+      return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3';
+    }
     return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4';
   }
   
-  // Mostly horizontal images - fewer columns
+  // Predominantly horizontal images - optimize for fewer columns  
   if (hasHorizontal && !hasVertical) {
+    if (categories.includes('ultra-wide')) {
+      // Ultra-wide images need special handling
+      return 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8';
+    }
     return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6';
   }
   
@@ -332,8 +370,14 @@ export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => 
     return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6';
   }
   
-  // Default fallback
-  return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
+  // Intelligent fallback based on total count
+  if (totalImages <= 2) {
+    return 'grid-cols-1 sm:grid-cols-2 gap-6';
+  } else if (totalImages <= 4) {
+    return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-5';
+  } else {
+    return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4';
+  }
 };
 
 /**
