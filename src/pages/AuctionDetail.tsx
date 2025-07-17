@@ -26,6 +26,7 @@ import { useCollection } from '../hooks/useCollection';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
+import ConfirmModal from '../components/common/ConfirmModal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { IAuctionItem } from '../domain/models/auction';
@@ -74,6 +75,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   } | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [removingItem, setRemovingItem] = useState(false);
   const [itemToRemove, setItemToRemove] = useState<{
     id: string;
     name: string;
@@ -236,16 +239,22 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   const confirmDeleteAuction = async () => {
     try {
+      setDeleting(true);
       await deleteAuction(currentAuctionId);
       // Set a flag in sessionStorage to indicate auctions list needs refresh
       sessionStorage.setItem('auctionsNeedRefresh', 'true');
       showSuccessToast('Auction deleted successfully');
+      setShowDeleteConfirmation(false);
       navigateToAuctions();
     } catch (err) {
       // Error handled by the hook
     } finally {
-      setShowDeleteConfirmation(false);
+      setDeleting(false);
     }
+  };
+
+  const handleCancelDeleteAuction = () => {
+    setShowDeleteConfirmation(false);
   };
 
   // Handle add items to auction
@@ -267,14 +276,21 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     }
 
     try {
+      setRemovingItem(true);
       await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
       showSuccessToast('Item removed from auction');
+      setShowRemoveItemConfirmation(false);
+      setItemToRemove(null);
     } catch (err) {
       // Error handled by the hook
     } finally {
-      setShowRemoveItemConfirmation(false);
-      setItemToRemove(null);
+      setRemovingItem(false);
     }
+  };
+
+  const handleCancelRemoveItem = () => {
+    setShowRemoveItemConfirmation(false);
+    setItemToRemove(null);
   };
 
   // Handle mark item as sold - open modal with item details
@@ -1037,73 +1053,30 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </Modal>
 
           {/* Delete Auction Confirmation Modal */}
-          <Modal
+          <ConfirmModal
             isOpen={showDeleteConfirmation}
-            onClose={() => setShowDeleteConfirmation(false)}
-            title='Delete Auction'
-            maxWidth='md'
-          >
-            <div className='p-6'>
-              <div className='flex items-center mb-4'>
-                <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4'>
-                  <AlertCircle className='w-6 h-6 text-red-600' />
-                </div>
-                <div>
-                  <h3 className='text-lg font-semibold text-gray-900'>Are you sure?</h3>
-                  <p className='text-sm text-gray-600'>
-                    This will permanently delete the auction "{currentAuction?.topText}". This
-                    action cannot be undone.
-                  </p>
-                </div>
-              </div>
-              <div className='flex justify-end space-x-3'>
-                <Button variant='outline' onClick={() => setShowDeleteConfirmation(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={confirmDeleteAuction}
-                  className='bg-red-600 hover:bg-red-700 text-white'
-                  disabled={loading}
-                >
-                  {loading ? 'Deleting...' : 'Delete Auction'}
-                </Button>
-              </div>
-            </div>
-          </Modal>
+            onClose={handleCancelDeleteAuction}
+            onConfirm={confirmDeleteAuction}
+            title="Delete Auction"
+            description={`Are you sure you want to delete the auction "${currentAuction?.topText || 'Untitled Auction'}"? This action cannot be undone and will permanently remove the auction and all its associated data.`}
+            confirmText="Delete Auction"
+            variant="danger"
+            icon="trash"
+            isLoading={deleting}
+          />
 
           {/* Remove Item Confirmation Modal */}
-          <Modal
+          <ConfirmModal
             isOpen={showRemoveItemConfirmation}
-            onClose={() => setShowRemoveItemConfirmation(false)}
-            title='Remove Item'
-            maxWidth='md'
-          >
-            <div className='p-6'>
-              <div className='flex items-center mb-4'>
-                <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mr-4'>
-                  <AlertCircle className='w-6 h-6 text-amber-600' />
-                </div>
-                <div>
-                  <h3 className='text-lg font-semibold text-gray-900'>Remove Item</h3>
-                  <p className='text-sm text-gray-600'>
-                    Are you sure you want to remove "{itemToRemove?.name}" from this auction?
-                  </p>
-                </div>
-              </div>
-              <div className='flex justify-end space-x-3'>
-                <Button variant='outline' onClick={() => setShowRemoveItemConfirmation(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={confirmRemoveItem}
-                  className='bg-red-600 hover:bg-red-700 text-white'
-                  disabled={loading}
-                >
-                  {loading ? 'Removing...' : 'Remove Item'}
-                </Button>
-              </div>
-            </div>
-          </Modal>
+            onClose={handleCancelRemoveItem}
+            onConfirm={confirmRemoveItem}
+            title="Remove Item from Auction"
+            description={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
+            confirmText="Remove Item"
+            variant="warning"
+            icon="trash"
+            isLoading={removingItem}
+          />
         </div>
       </div>
     </div>

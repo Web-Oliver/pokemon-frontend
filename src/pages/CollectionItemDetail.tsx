@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import ConfirmModal from '../components/common/ConfirmModal';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import * as collectionApi from '../api/collectionApi';
@@ -38,6 +39,8 @@ const CollectionItemDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloadingZip, setDownloadingZip] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // ZIP download handler
   const handleDownloadImages = async () => {
@@ -190,21 +193,19 @@ const CollectionItemDetail: React.FC = () => {
     fetchItem();
   }, []); // Run once on mount, URL params are read inside fetchItem
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
     const { type, id } = getUrlParams();
 
     if (!item || !type || !id) {
       return;
     }
 
-    // TODO: Replace with proper confirmation modal
-    const confirmed = true; // Temporarily bypass confirmation for eslint
-    if (!confirmed) {
-      return;
-    }
-
     try {
-      setLoading(true);
+      setDeleting(true);
 
       switch (type) {
         case 'psa':
@@ -219,14 +220,19 @@ const CollectionItemDetail: React.FC = () => {
       }
 
       showSuccessToast('Item deleted successfully');
+      setShowDeleteConfirm(false);
       // Navigate back to collection
       window.history.pushState({}, '', '/collection');
       window.dispatchEvent(new PopStateEvent('popstate'));
     } catch (err) {
       handleApiError(err, 'Failed to delete item');
     } finally {
-      setLoading(false);
+      setDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
   };
 
   const handleEdit = () => {
@@ -716,6 +722,19 @@ const CollectionItemDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Collection Item"
+        description="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
+        confirmText="Delete Item"
+        variant="danger"
+        icon="trash"
+        isLoading={deleting}
+      />
     </div>
   );
 };

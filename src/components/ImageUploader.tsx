@@ -12,8 +12,19 @@
  * - Stunning animations and hover effects
  */
 
-import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
+import React, { useState, useRef, DragEvent, ChangeEvent, useEffect } from 'react';
 import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
+import ConfirmModal from './common/ConfirmModal';
+import {
+  detectImageAspectRatio,
+  getResponsiveImageConfig,
+  buildResponsiveImageClasses,
+  getContext7ContainerClasses,
+  getContext7ImageClasses,
+  getContext7GlassOverlay,
+  getContext7ShimmerEffect,
+  type ImageAspectInfo,
+} from '../utils/imageUtils';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
@@ -23,6 +34,8 @@ interface ImageUploaderProps {
   maxFileSize?: number; // in MB
   acceptedTypes?: string[];
   disabled?: boolean;
+  enableAspectRatioDetection?: boolean;
+  adaptiveLayout?: boolean;
 }
 
 interface ImagePreview {
@@ -30,6 +43,7 @@ interface ImagePreview {
   file?: File;
   url: string;
   isExisting?: boolean;
+  aspectInfo?: ImageAspectInfo;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -40,6 +54,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   maxFileSize = 5, // 5MB default
   acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
   disabled = false,
+  enableAspectRatioDetection = true,
+  adaptiveLayout = true,
 }) => {
   const [previews, setPreviews] = useState<ImagePreview[]>(() => {
     // Initialize with existing images
@@ -55,7 +71,43 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   });
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [imageToRemove, setImageToRemove] = useState<{ id: string; isExisting: boolean } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Analyze aspect ratios for existing images
+  useEffect(() => {
+    if (!enableAspectRatioDetection || !existingImageUrls.length) {
+      return;
+    }
+
+    const analyzeExistingImages = async () => {
+      setIsAnalyzing(true);
+      try {
+        const aspectPromises = existingImageUrls.map(async (url, index) => {
+          const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+          const aspectInfo = await detectImageAspectRatio(fullUrl);
+          return { index, aspectInfo };
+        });
+        
+        const aspectResults = await Promise.all(aspectPromises);
+        
+        setPreviews(prev => {
+          return prev.map((preview, index) => {
+            const result = aspectResults.find(r => r.index === index);
+            return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+          });
+        });
+      } catch (error) {
+        console.warn('[ImageUploader] Failed to analyze existing image aspects:', error);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    };
+
+    analyzeExistingImages();
+  }, [existingImageUrls, enableAspectRatioDetection]);
 
   // Validate file
   const validateFile = (file: File): string | null => {
@@ -71,7 +123,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   // Process selected files
-  const processFiles = (_files: FileList | File[]) => {
+  const processFiles = async (_files: FileList | File[]) => {
     const newFiles: File[] = [];
     const newPreviews: ImagePreview[] = [];
     let errorMessage = '';
@@ -114,8 +166,33 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       setError(null);
     }
 
-    // Update previews
+    // Update previews first without aspect info
     setPreviews(prev => [...prev, ...newPreviews]);
+
+    // Analyze aspect ratios for new images if enabled
+    if (enableAspectRatioDetection && newPreviews.length > 0) {
+      setIsAnalyzing(true);
+      try {
+        const aspectPromises = newPreviews.map(async (preview) => {
+          const aspectInfo = await detectImageAspectRatio(preview.url);
+          return { id: preview.id, aspectInfo };
+        });
+        
+        const aspectResults = await Promise.all(aspectPromises);
+        
+        // Update previews with aspect info
+        setPreviews(prev => {
+          return prev.map(preview => {
+            const result = aspectResults.find(r => r.id === preview.id);
+            return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+          });
+        });
+      } catch (error) {
+        console.warn('[ImageUploader] Failed to analyze new image aspects:', error);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    }
 
     // Update parent component with all current files and remaining existing URLs
     const allFiles = [
@@ -129,9 +206,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   };
 
   // Handle file input change
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      processFiles(e.target.files);
+      await processFiles(e.target.files);
     }
     // Reset input value to allow selecting same file again
     e.target.value = '';
@@ -155,7 +232,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     setDragActive(false);
   };
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -165,20 +242,32 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      processFiles(e.dataTransfer.files);
+      await processFiles(e.dataTransfer.files);
     }
   };
 
-  // Remove image from preview
-  const removeImage = (id: string) => {
-    const imageToRemove = previews.find(p => p.id === id);
+  // Handle remove image request
+  const handleRemoveImage = (id: string) => {
+    const preview = previews.find(p => p.id === id);
+    if (preview) {
+      setImageToRemove({ id, isExisting: preview.isExisting || false });
+      setShowRemoveConfirm(true);
+    }
+  };
 
-    if (imageToRemove && !imageToRemove.isExisting && imageToRemove.url) {
-      // Clean up object URL to prevent memory leaks
-      URL.revokeObjectURL(imageToRemove.url);
+  // Confirm remove image from preview
+  const confirmRemoveImage = () => {
+    if (!imageToRemove) {
+      return;
     }
 
-    const updatedPreviews = previews.filter(p => p.id !== id);
+    const preview = previews.find(p => p.id === imageToRemove.id);
+    if (preview && !preview.isExisting && preview.url) {
+      // Clean up object URL to prevent memory leaks
+      URL.revokeObjectURL(preview.url);
+    }
+
+    const updatedPreviews = previews.filter(p => p.id !== imageToRemove.id);
     setPreviews(updatedPreviews);
 
     // Update parent component with remaining files and existing URLs
@@ -187,6 +276,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       .filter(p => p.isExisting)
       .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
     onImagesChange(remainingFiles, remainingExistingUrls);
+
+    setShowRemoveConfirm(false);
+    setImageToRemove(null);
+  };
+
+  const handleCancelRemoveImage = () => {
+    setShowRemoveConfirm(false);
+    setImageToRemove(null);
   };
 
   // Open file dialog
@@ -209,6 +306,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className='w-full'>
+      {/* Context7 Premium Analysis Indicator */}
+      {isAnalyzing && enableAspectRatioDetection && (
+        <div className='mb-6 flex items-center justify-center py-3'>
+          <div className='flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/50 shadow-lg backdrop-blur-sm'>
+            <Sparkles className='w-5 h-5 text-indigo-600 animate-spin' />
+            <span className='text-sm font-bold text-indigo-700 tracking-wide'>Analyzing image layouts...</span>
+          </div>
+        </div>
+      )}
+
       {/* Context7 Premium Error Message */}
       {error && (
         <div className='mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/60 rounded-2xl flex items-center backdrop-blur-sm shadow-lg relative overflow-hidden'>
@@ -342,57 +449,137 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-            {previews.map(preview => (
-              <div key={preview.id} className='relative group'>
-                {/* Context7 Premium Image Container */}
-                <div className='aspect-[3/5] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative'>
-                  <img
-                    src={preview.url}
-                    alt='Preview'
-                    className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
-                    onError={e => {
-                      // Handle broken image
-                      const target = e.target as HTMLImageElement;
-                      target.src =
-                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMCAyOEMxNi42ODYzIDI4IDEzLjUwNTQgMjYuNjgzOSAxMS4xNzE2IDI0LjM1MDRDOC44Mzc4NCAyMi4wMTY5IDcuNTIxNjggMTguODM2IDcuNTIxNjggMTUuNTIyNEM3LjUyMTY4IDEyLjIwODggOC44Mzc4NCA5LjAyNzkxIDExLjE3MTYgNi42OTQ0MkMxMy41MDU0IDQuMzYwOTMgMTYuNjg2MyAzLjA0NDc3IDIwIDMuMDQ0NzdDMjMuMzE0IDMuMDQ0NzcgMjYuNDk0OSA0LjM2MDkzIDI4LjgyODMgNi42OTQ0MkMzMS4xNjIyIDkuMDI3OTEgMzIuNDc4MyAxMi4yMDg4IDMyLjQ3ODMgMTUuNTIyNEMzMi40NzgzIDE4LjgzNiAzMS4xNjIyIDIyLjAxNjkgMjguODI4MyAyNC4zNTA0QzI2LjQ5NDkgMjYuNjgzOSAyMy4zMTQgMjggMjAgMjhaIiBmaWxsPSIjRDFEOURCIi8+CjxwYXRoIGQ9Ik0yMCAyMi41NDc3QzE5LjQxNjcgMjIuNTQ3NyAxOC44NjY3IDIyLjMxNTQgMTguNDYxOSAyMS45MTA2QzE4LjA1NzEgMjEuNTA1OCAxNy44MjQ4IDIwLjk1NTggMTcuODI0OCAyMC4zNzI0VjE0LjE5NzdDMTcuODI0OCAxMy42MTQ0IDE4LjA1NzEgMTMuMDY0NCAxOC40NjE5IDEyLjY1OTZDMTguODY2NyAxMi4yNTQ4IDE5LjQxNjcgMTIuMDIyNSAyMCAxMi4wMjI1QzIwLjU4MzMgMTIuMDIyNSAyMS4xMzMzIDEyLjI1NDggMjEuNTM4MSAxMi42NTk2QzIxLjk0MjkgMTMuMDY0NCAyMi4xNzUyIDEzLjYxNDQgMjIuMTc1MiAxNC4xOTc3VjIwLjM3MjRDMjIuMTc1MiAyMC45NTU4IDIxLjk0MjkgMjEuNTA1OCAyMS41MzgxIDIxLjkxMDZDMjEuMTMzMyAyMi4zMTU0IDIwLjU4MzMgMjIuNTQ3NyAyMCAyMi41NDc3WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMjAgMjYuNjk2N0MxOS40MTY3IDI2LjY5NjcgMTguODY2NyAyNi40NjQ0IDE4LjQ2MTkgMjYuMDU5NkMxOC4wNTcxIDI1LjY1NDggMTcuODI0OCAyNS4xMDQ4IDE3LjgyNDggMjQuNTIxNUMxNy44MjQ4IDIzLjkzODEgMTguMDU3MSAyMy4zODgxIDE4LjQ2MTkgMjIuOTgzM0MxOC44NjY3IDIyLjU3ODUgMTkuNDE2NyAyMi4zNDYyIDIwIDIyLjM0NjJDMjAuNTgzMyAyMi4zNDYyIDIxLjEzMzMgMjIuNTc4NSAyMS41MzgxIDIyLjk4MzNDMjEuOTQyOSAyMy4zODgxIDIyLjE3NTIgMjMuOTM4MSAyMi4xNzUyIDI0LjUyMTVDMjIuMTc1MiAyNS4xMDQ4IDIxLjk0MjkgMjUuNjU0OCAyMS41MzgxIDI2LjA1OTZDMjEuMTMzMyAyNi40NjQ0IDIwLjU4MzMgMjYuNjk2NyAyMCAyNi42OTY3WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
-                    }}
-                  />
+            {previews.map((preview) => {
+              const aspectInfo = preview.aspectInfo;
+              const previewConfig = aspectInfo ? getResponsiveImageConfig(aspectInfo) : null;
+              
+              // Determine container aspect ratio class
+              const getContainerAspectClass = () => {
+                if (!adaptiveLayout || !aspectInfo) return 'aspect-[3/5]'; // Default portrait
+                
+                switch (aspectInfo.category) {
+                  case 'ultra-wide':
+                    return 'aspect-[5/2] max-h-48';
+                  case 'wide':
+                    return 'aspect-video max-h-56';
+                  case 'landscape':
+                    return 'aspect-[4/3] max-h-64';
+                  case 'square':
+                    return 'aspect-square max-h-72';
+                  case 'portrait':
+                    return 'aspect-[3/4] max-h-80';
+                  case 'tall':
+                    return 'aspect-[3/5] max-h-88';
+                  case 'ultra-tall':
+                    return 'aspect-[2/5] max-h-96';
+                  default:
+                    return 'aspect-[3/5]';
+                }
+              };
+              
+              const containerAspectClass = getContainerAspectClass();
+              const containerClasses = aspectInfo 
+                ? getContext7ContainerClasses(aspectInfo.orientation)
+                : 'rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative';
+              
+              const imageClasses = previewConfig
+                ? getContext7ImageClasses(previewConfig, true)
+                : 'w-full h-full object-cover transition-all duration-500 group-hover:scale-110';
+              
+              return (
+                <div key={preview.id} className='relative group'>
+                  {/* Context7 Premium Responsive Image Container */}
+                  <div className={`${containerAspectClass} ${containerClasses}`}>
+                    <img
+                      src={preview.url}
+                      alt='Preview'
+                      className={imageClasses}
+                      onError={e => {
+                        // Handle broken image
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMCAyOEMxNi42ODYzIDI4IDEzLjUwNTQgMjYuNjgzOSAxMS4xNzE2IDI0LjM1MDRDOC44Mzc4NCAyMi4wMTY5IDcuNTIxNjggMTguODM2IDcuNTIxNjggMTUuNTIyNEM3LjUyMTY4IDEyLjIwODggOC44Mzc4NCA5LjAyNzkxIDExLjE3MTYgNi42OTQ0MkMxMy41MDU0IDQuMzYwOTMgMTYuNjg2MyAzLjA0NDc3IDIwIDMuMDQ0NzdDMjMuMzE0IDMuMDQ0NzcgMjYuNDk0OSA0LjM2MDkzIDI4LjgyODMgNi42OTQ0MkMzMS4xNjIyIDkuMDI3OTEgMzIuNDc4MyAxMi4yMDg4IDMyLjQ3ODMgMTUuNTIyNEMzMi40NzgzIDE4LjgzNiAzMS4xNjIyIDIyLjAxNjkgMjguODI4MyAyNC4zNTA0QzI2LjQ5NDkgMjYuNjgzOSAyMy4zMTQgMjggMjAgMjhaIiBmaWxsPSIjRDFEOURCIi8+CjxwYXRoIGQ9Ik0yMCAyMi41NDc3QzE5LjQxNjcgMjIuNTQ3NyAxOC44NjY3IDIyLjMxNTQgMTguNDYxOSAyMS45MTA2QzE4LjA1NzEgMjEuNTA1OCAxNy44MjQ4IDIwLjk1NTggMTcuODI0OCAyMC4zNzI0VjE0LjE5NzdDMTcuODI0OCAxMy42MTQ0IDE4LjA1NzEgMTMuMDY0NCAxOC40NjE5IDEyLjY1OTZDMTguODY2NyAxMi4yNTQ4IDE5LjQxNjcgMTIuMDIyNSAyMCAxMi4wMjI1QzIwLjU4MzMgMTIuMDIyNSAyMS4xMzMzIDEyLjI1NDggMjEuNTM4MSAxMi42NTk2QzIxLjk0MjkgMTMuMDY0NCAyMi4xNzUyIDEzLjYxNDQgMjIuMTc1MiAxNC4xOTc3VjIwLjM3MjRDMjIuMTc1MiAyMC45NTU4IDIxLjk0MjkgMjEuNTA1OCAyMS41MzgxIDIxLjkxMDZDMjEuMTMzMyAyMi4zMTU0IDIwLjU4MzMgMjIuNTQ3NyAyMCAyMi41NDc3WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMjAgMjYuNjk2N0MxOS40MTY3IDI2LjY5NjcgMTguODY2NyAyNi40NjQ0IDE4LjQ2MTkgMjYuMDU5NkMxOC4wNTcxIDI1LjY1NDggMTcuODI0OCAyNS4xMDQ4IDE3LjgyNDggMjQuNTIxNUMxNy44MjQ4IDIzLjkzODEgMTguMDU3MSAyMy4zODgxIDE4LjQ2MTkgMjIuOTgzM0MxOC44NjY3IDIyLjU3ODUgMTkuNDE2NyAyMi4zNDYyIDIwIDIyLjM0NjJDMjAuNTgzMyAyMi4zNDYyIDIxLjEzMzMgMjIuNTc4NSAyMS41MzgxIDIyLjk4MzNDMjEuOTQyOSAyMy4zODgxIDIyLjE3NTIgMjMuOTM4MSAyMi4xNzUyIDI0LjUyMTVDMjIuMTc1MiAyNS4xMDQ4IDIxLjk0MjkgMjUuNjU0OCAyMS41MzgxIDI2LjA1OTZDMjEuMTMzMyAyNi40NjQ0IDIwLjU4MzMgMjYuNjk2NyAyMCAyNi42OTY3WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                      }}
+                    />
 
-                  {/* Premium glass overlay */}
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                </div>
-
-                {/* Context7 Premium Remove Button */}
-                {!disabled && (
-                  <button
-                    onClick={e => {
-                      e.stopPropagation();
-                      removeImage(preview.id);
-                    }}
-                    className='absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm'
-                    aria-label='Remove image'
-                  >
-                    <X className='w-4 h-4' />
-                  </button>
-                )}
-
-                {/* Context7 Premium Existing Image Badge */}
-                {preview.isExisting && (
-                  <div className='absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-white/20 backdrop-blur-sm'>
-                    <div className='flex items-center space-x-1'>
-                      <div className='w-2 h-2 bg-white rounded-full animate-pulse'></div>
-                      <span>Existing</span>
-                    </div>
+                    {/* Context7 Premium Glass Overlay */}
+                    {aspectInfo && (
+                      <div className={getContext7GlassOverlay(aspectInfo.orientation)}></div>
+                    )}
+                    
+                    {/* Context7 Premium Shimmer Effect */}
+                    <div className={getContext7ShimmerEffect()}></div>
                   </div>
-                )}
 
-                {/* Context7 Premium Hover Effects */}
-                <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-              </div>
-            ))}
+                  {/* Context7 Premium Aspect Ratio Badge */}
+                  {aspectInfo && enableAspectRatioDetection && (
+                    <div className='absolute top-2 left-2 z-10'>
+                      <div className={`px-2 py-1 rounded-lg text-xs font-bold border backdrop-blur-xl transition-all duration-300 ${
+                        aspectInfo.orientation === 'vertical'
+                          ? 'bg-green-500/20 text-green-700 border-green-300/50'
+                          : aspectInfo.orientation === 'horizontal'
+                          ? 'bg-blue-500/20 text-blue-700 border-blue-300/50'
+                          : 'bg-purple-500/20 text-purple-700 border-purple-300/50'
+                      }`}>
+                        <div className='flex items-center space-x-1'>
+                          <div className={`w-1.5 h-1.5 rounded-full ${
+                            aspectInfo.orientation === 'vertical' ? 'bg-green-500' :
+                            aspectInfo.orientation === 'horizontal' ? 'bg-blue-500' : 'bg-purple-500'
+                          }`}></div>
+                          <span className='capitalize text-xs'>{aspectInfo.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Context7 Premium Remove Button */}
+                  {!disabled && (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleRemoveImage(preview.id);
+                      }}
+                      className='absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm'
+                      aria-label='Remove image'
+                    >
+                      <X className='w-4 h-4' />
+                    </button>
+                  )}
+
+                  {/* Context7 Premium Existing Image Badge */}
+                  {preview.isExisting && (
+                    <div className='absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-white/20 backdrop-blur-sm'>
+                      <div className='flex items-center space-x-1'>
+                        <div className='w-2 h-2 bg-white rounded-full animate-pulse'></div>
+                        <span>Existing</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Context7 Premium Hover Effects */}
+                  <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
+
+      {/* Remove Image Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showRemoveConfirm}
+        onClose={handleCancelRemoveImage}
+        onConfirm={confirmRemoveImage}
+        title="Remove Image"
+        description={`Are you sure you want to remove this image? ${
+          imageToRemove?.isExisting 
+            ? 'This will permanently remove the image from your collection.' 
+            : 'This will remove the image from the upload queue.'
+        }`}
+        confirmText="Remove Image"
+        variant={imageToRemove?.isExisting ? 'danger' : 'warning'}
+        icon="trash"
+      />
     </div>
   );
 };
