@@ -50,18 +50,38 @@ export interface OptimizedProductSearchResponse {
 export const getCardMarketRefProducts = async (
   params?: CardMarketRefProductsParams
 ): Promise<ICardMarketReferenceProduct[]> => {
-  // Use new unified search API with wildcard to get products
-  const optimizedParams: OptimizedProductSearchParams = {
-    query: params?.search || '*',
-    category: params?.category,
-    setName: params?.setName,
-    availableOnly: params?.available,
-    limit: params?.limit || 100,
-    page: params?.page || 1,
-  };
+  if (params?.search && params.search.trim()) {
+    // Use search endpoint when there's a search term
+    const optimizedParams: OptimizedProductSearchParams = {
+      query: params.search.trim(),
+      category: params?.category,
+      setName: params?.setName,
+      availableOnly: params?.available,
+      limit: params?.limit || 100,
+      page: params?.page || 1,
+    };
 
-  const response = await searchProductsOptimized(optimizedParams);
-  return response.data;
+    const response = await searchProductsOptimized(optimizedParams);
+    return response.data;
+  } else {
+    // Use the main cardmarket-ref-products endpoint for browsing
+    const queryParams = new URLSearchParams({
+      ...(params?.category && { category: params.category }),
+      ...(params?.setName && { setName: params.setName }),
+      ...(params?.available !== undefined && { available: params.available.toString() }),
+      ...(params?.limit && { limit: params.limit.toString() }),
+      ...(params?.page && { page: params.page.toString() }),
+    });
+
+    const response = await apiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
+    
+    // Handle both array and paginated response formats
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      return response.data.products || [];
+    }
+  }
 };
 
 /**
@@ -98,27 +118,25 @@ export const getPaginatedCardMarketRefProducts = async (
       hasPrevPage: page > 1,
     };
   } else {
-    // Use optimized search with wildcard for browsing/filtering
-    const optimizedParams: OptimizedProductSearchParams = {
-      query: '*',
-      page,
-      limit,
-      category,
-      setName,
-      availableOnly: available,
-    };
+    // Use the main cardmarket-ref-products endpoint for browsing without search
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(category && { category }),
+      ...(setName && { setName }),
+      ...(available !== undefined && { available: available.toString() }),
+    });
 
-    const response = await searchProductsOptimized(optimizedParams);
+    const response = await apiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
+    const data = response.data;
 
-    // Calculate pagination
-    const totalPages = Math.ceil(response.count / limit);
     return {
-      products: response.data,
-      total: response.count,
-      currentPage: page,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
+      products: data.products || [],
+      total: data.total || 0,
+      currentPage: data.currentPage || page,
+      totalPages: data.totalPages || 1,
+      hasNextPage: data.hasNextPage || false,
+      hasPrevPage: data.hasPrevPage || false,
     };
   }
 };
@@ -145,14 +163,6 @@ export const searchProductsOptimized = async (
 ): Promise<OptimizedProductSearchResponse> => {
   const { query, limit = 20, page = 1, ...filters } = params;
 
-  if (!query.trim()) {
-    return {
-      success: true,
-      query,
-      count: 0,
-      data: [],
-    };
-  }
 
   const queryParams = new URLSearchParams({
     query: query.trim(),

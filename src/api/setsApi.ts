@@ -45,12 +45,10 @@ export interface OptimizedSetSearchResponse {
  * @returns Promise<ISet[]> - Complete sets array
  */
 export const getSets = async (): Promise<ISet[]> => {
-  // Use new unified search API with wildcard to get all sets
-  const response = await searchSetsOptimized({
-    query: '*',
-    limit: 1000, // Large limit to get all sets
-  });
-  return response.data;
+  // Use the main sets endpoint to get all sets
+  const response = await apiClient.get('/sets?limit=1000');
+  const data = response.data;
+  return data.sets || [];
 };
 
 /**
@@ -85,25 +83,23 @@ export const getPaginatedSets = async (
       hasPrevPage: page > 1,
     };
   } else {
-    // Use optimized search with wildcard for browsing/filtering
-    const optimizedParams: OptimizedSetSearchParams = {
-      query: '*',
-      page,
-      limit,
-      ...(year && { year }),
-    };
+    // Use the main sets endpoint for browsing without search
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(year && { year: year.toString() }),
+    });
 
-    const response = await searchSetsOptimized(optimizedParams);
+    const response = await apiClient.get(`/sets?${queryParams.toString()}`);
+    const data = response.data;
 
-    // Calculate pagination
-    const totalPages = Math.ceil(response.count / limit);
     return {
-      sets: response.data,
-      total: response.count,
-      currentPage: page,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
+      sets: data.sets || [],
+      total: data.totalSets || 0,
+      currentPage: data.currentPage || page,
+      totalPages: data.totalPages || 1,
+      hasNextPage: data.hasNextPage || false,
+      hasPrevPage: data.hasPrevPage || false,
     };
   }
 };
@@ -128,14 +124,6 @@ export const searchSetsOptimized = async (
 ): Promise<OptimizedSetSearchResponse> => {
   const { query, limit = 20, page = 1, ...filters } = params;
 
-  if (!query.trim()) {
-    return {
-      success: true,
-      query,
-      count: 0,
-      data: [],
-    };
-  }
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
