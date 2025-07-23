@@ -23,6 +23,7 @@ import {
   getContext7ImageClasses,
   getContext7GlassOverlay,
   getContext7ShimmerEffect,
+  getOptimalGridLayout,
   type ImageAspectInfo,
 } from '../utils/imageUtils';
 
@@ -73,6 +74,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [imageToRemove, setImageToRemove] = useState<{ id: string; isExisting: boolean } | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -248,6 +250,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Handle remove image request
   const handleRemoveImage = (id: string) => {
+    // Prevent multiple clicks/rapid firing
+    if (isRemoving || showRemoveConfirm) {
+      return;
+    }
+    
     const preview = previews.find(p => p.id === id);
     if (preview) {
       setImageToRemove({ id, isExisting: preview.isExisting || false });
@@ -257,31 +264,40 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Confirm remove image from preview
   const confirmRemoveImage = () => {
-    if (!imageToRemove) {
+    if (!imageToRemove || isRemoving) {
       return;
     }
 
-    const preview = previews.find(p => p.id === imageToRemove.id);
-    if (preview && !preview.isExisting && preview.url) {
-      // Clean up object URL to prevent memory leaks
-      URL.revokeObjectURL(preview.url);
+    setIsRemoving(true);
+
+    try {
+      const preview = previews.find(p => p.id === imageToRemove.id);
+      if (preview && !preview.isExisting && preview.url) {
+        // Clean up object URL to prevent memory leaks
+        URL.revokeObjectURL(preview.url);
+      }
+
+      const updatedPreviews = previews.filter(p => p.id !== imageToRemove.id);
+      setPreviews(updatedPreviews);
+
+      // Update parent component with remaining files and existing URLs
+      const remainingFiles = updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!);
+      const remainingExistingUrls = updatedPreviews
+        .filter(p => p.isExisting)
+        .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+      onImagesChange(remainingFiles, remainingExistingUrls);
+    } finally {
+      // Always reset state, even if there's an error
+      setShowRemoveConfirm(false);
+      setImageToRemove(null);
+      setIsRemoving(false);
     }
-
-    const updatedPreviews = previews.filter(p => p.id !== imageToRemove.id);
-    setPreviews(updatedPreviews);
-
-    // Update parent component with remaining files and existing URLs
-    const remainingFiles = updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!);
-    const remainingExistingUrls = updatedPreviews
-      .filter(p => p.isExisting)
-      .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
-    onImagesChange(remainingFiles, remainingExistingUrls);
-
-    setShowRemoveConfirm(false);
-    setImageToRemove(null);
   };
 
   const handleCancelRemoveImage = () => {
+    if (isRemoving) {
+      return;
+    }
     setShowRemoveConfirm(false);
     setImageToRemove(null);
   };
@@ -511,35 +527,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     <div className={getContext7ShimmerEffect()}></div>
                   </div>
 
-                  {/* Context7 Premium Aspect Ratio Badge */}
-                  {aspectInfo && enableAspectRatioDetection && (
-                    <div className='absolute top-2 left-2 z-10'>
-                      <div className={`px-2 py-1 rounded-lg text-xs font-bold border backdrop-blur-xl transition-all duration-300 ${
-                        aspectInfo.orientation === 'vertical'
-                          ? 'bg-green-500/20 text-green-700 border-green-300/50'
-                          : aspectInfo.orientation === 'horizontal'
-                          ? 'bg-blue-500/20 text-blue-700 border-blue-300/50'
-                          : 'bg-purple-500/20 text-purple-700 border-purple-300/50'
-                      }`}>
-                        <div className='flex items-center space-x-1'>
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            aspectInfo.orientation === 'vertical' ? 'bg-green-500' :
-                            aspectInfo.orientation === 'horizontal' ? 'bg-blue-500' : 'bg-purple-500'
-                          }`}></div>
-                          <span className='capitalize text-xs'>{aspectInfo.category}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Context7 Premium Remove Button */}
                   {!disabled && (
                     <button
                       onClick={e => {
+                        e.preventDefault();
                         e.stopPropagation();
                         handleRemoveImage(preview.id);
                       }}
-                      className='absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm'
+                      onDoubleClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      disabled={isRemoving || showRemoveConfirm}
+                      className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm ${
+                        isRemoving || showRemoveConfirm ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                      }`}
                       aria-label='Remove image'
                     >
                       <X className='w-4 h-4' />
@@ -579,6 +583,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         confirmText="Remove Image"
         variant={imageToRemove?.isExisting ? 'danger' : 'warning'}
         icon="trash"
+        isLoading={isRemoving}
       />
     </div>
   );

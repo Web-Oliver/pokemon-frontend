@@ -12,7 +12,7 @@
  */
 
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Calendar, Plus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Banknote, Calendar, Plus } from 'lucide-react';
 import { IPriceHistoryEntry } from '../domain/models/common';
 import Button from './common/Button';
 import Input from './common/Input';
@@ -37,10 +37,17 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
       return;
     }
 
-    const price = parseFloat(newPrice);
+    const price = parseInt(newPrice, 10);
 
     if (isNaN(price) || price <= 0) {
-      showWarningToast('Please enter a valid price greater than 0');
+      showWarningToast('Please enter a valid whole number price greater than 0');
+      return;
+    }
+
+    // Check if the new price is the same as current price
+    const currentPriceInt = Math.round(currentPrice || 0);
+    if (price === currentPriceInt) {
+      showWarningToast('New price must be different from the current price');
       return;
     }
 
@@ -52,9 +59,9 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Only allow numbers and decimal point
+    // Only allow whole numbers
     const value = e.target.value;
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    const numericValue = value.replace(/[^0-9]/g, '');
     setNewPrice(numericValue);
   };
 
@@ -62,7 +69,9 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
     if (price === undefined || price === null || isNaN(price)) {
       return '0 kr.';
     }
-    return `${price} kr.`;
+    // Round to whole number if it has decimals
+    const wholePrice = Math.round(price);
+    return `${wholePrice} kr.`;
   };
 
   const formatDate = (dateString: string): string => {
@@ -120,7 +129,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
         <div className='flex items-center justify-between mb-8'>
           <h3 className='text-2xl font-bold text-slate-800 tracking-wide flex items-center'>
             <div className='w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mr-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-              <DollarSign className='w-6 h-6 text-white' />
+              <Banknote className='w-6 h-6 text-white' />
             </div>
             Price History
           </h3>
@@ -217,17 +226,20 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               <div className='flex-1'>
                 <Input
                   type='text'
-                  placeholder='Enter new price (e.g., 150.00)'
+                  inputMode='numeric'
+                  placeholder='Enter new price (e.g., 1500)'
                   value={newPrice}
                   onChange={handleInputChange}
-                  className='w-full'
-                  startIcon={<DollarSign className='w-4 h-4' />}
+                  className='w-full text-center'
                 />
               </div>
               <Button
                 onClick={handlePriceUpdate}
                 disabled={
-                  !newPrice.trim() || isNaN(parseFloat(newPrice)) || parseFloat(newPrice) <= 0
+                  !newPrice.trim() || 
+                  isNaN(parseInt(newPrice, 10)) || 
+                  parseInt(newPrice, 10) <= 0 ||
+                  parseInt(newPrice, 10) === Math.round(currentPrice || 0)
                 }
                 className='whitespace-nowrap px-8'
                 variant='primary'

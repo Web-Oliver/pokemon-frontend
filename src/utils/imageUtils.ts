@@ -174,12 +174,12 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
 
     case 'portrait':
       return {
-        baseAspect: 'aspect-[3/4]',
-        mobileAspect: 'aspect-[2/3]', // Optimized for mobile viewing
-        tabletAspect: 'aspect-[3/4]',
-        desktopAspect: 'aspect-[3/4]',
-        objectFit: 'cover',
-        objectPosition: 'center top', // Better for portrait photos
+        baseAspect: 'aspect-[3/5]', // Better match for PSA cards (0.6 ratio)
+        mobileAspect: 'aspect-[3/5]', // Keep consistent for PSA cards
+        tabletAspect: 'aspect-[3/5]',
+        desktopAspect: 'aspect-[3/5]',
+        objectFit: 'contain', // Show full image without cropping for PSA cards
+        objectPosition: 'center', // Center the full image
       };
 
     case 'tall':
@@ -188,8 +188,8 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
         mobileAspect: 'aspect-[2/3]', // More mobile-friendly
         tabletAspect: 'aspect-[3/5]',
         desktopAspect: 'aspect-[3/5]',
-        objectFit: 'cover',
-        objectPosition: 'center top', // Focus on top for tall images
+        objectFit: 'contain', // Show full image without cropping for PSA cards
+        objectPosition: 'center', // Center the full image
       };
 
     case 'ultra-tall':

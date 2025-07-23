@@ -251,17 +251,6 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
           </div>
         ))}
 
-        {/* Global Loading State */}
-        {state.isLoading && (
-          <div className='absolute inset-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-40'>
-            <div className='flex items-center space-x-2 text-gray-600 dark:text-gray-400'>
-              <div className='animate-spin'>
-                <Search size={20} />
-              </div>
-              <span>Searching...</span>
-            </div>
-          </div>
-        )}
       </div>
     );
   }

@@ -359,3 +359,58 @@ export const searchAvailableProducts = async (
   const response = await searchProductsOptimized(params);
   return response.data;
 };
+
+/**
+ * Get CardMarket reference set names
+ * @param query - Search query string (optional)
+ * @param limit - Maximum number of results
+ * @returns Promise<Array> - Array of set names with metadata
+ */
+export const getCardMarketSetNames = async (
+  query?: string,
+  limit: number = 50
+): Promise<Array<{
+  setName: string;
+  count: number;
+  totalAvailable: number;
+  categoryCount: number;
+  averagePrice: number;
+  score?: number;
+}>> => {
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+  });
+
+  if (query && query.trim()) {
+    queryParams.append('search', query.trim());
+  }
+
+  const response = await apiClient.get(`/cardmarket-ref-products/set-names?${queryParams.toString()}`);
+  const data = response.data;
+
+  return data.data || [];
+};
+
+/**
+ * Search CardMarket reference set names
+ * @param query - Search query string
+ * @param limit - Maximum number of results
+ * @returns Promise<Array> - Array of matching set names
+ */
+export const searchCardMarketSetNames = async (
+  query: string,
+  limit: number = 15
+): Promise<Array<{
+  setName: string;
+  count: number;
+  totalAvailable: number;
+  categoryCount: number;
+  averagePrice: number;
+  score: number;
+}>> => {
+  if (!query.trim()) {
+    return [];
+  }
+
+  return getCardMarketSetNames(query, limit);
+};

@@ -499,7 +499,7 @@ const CreateAuction: React.FC = () => {
                       <span>{selectedItemIds.size} selected</span>
                       {selectedItemIds.size > 0 && (
                         <span className='px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200'>
-                          ${selectedItemsValue.toFixed(2)} total
+                          {selectedItemsValue} kr. total
                         </span>
                       )}
                     </div>
@@ -588,14 +588,14 @@ const CreateAuction: React.FC = () => {
                           <div
                             key={item.id}
                             onClick={() => toggleItemSelection(item.id)}
-                            className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+                            className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col h-full ${
                               isSelected
                                 ? 'border-amber-400 bg-amber-50/80 shadow-lg scale-102'
                                 : 'border-slate-200 bg-white/80 hover:border-slate-300 hover:shadow-md'
                             }`}
                           >
                             {/* Selection Indicator */}
-                            <div className='absolute top-3 right-3'>
+                            <div className='absolute top-3 right-3 z-10'>
                               {isSelected ? (
                                 <CheckCircle className='w-6 h-6 text-amber-600' />
                               ) : (
@@ -610,17 +610,28 @@ const CreateAuction: React.FC = () => {
                                 fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
                                 autoplay={false}
                                 autoplayDelay={3000}
-                                className='h-96'
+                                className='w-full'
                                 showThumbnails={false}
+                                adaptiveLayout={true}
+                                enableAspectRatioDetection={true}
                               />
                             </div>
 
-                            {/* Item Details */}
-                            <div className='space-y-2'>
-                              <h5 className='font-bold text-slate-900 text-sm line-clamp-2'>
-                                {item.displayName}
-                              </h5>
-                              <div className='flex items-center justify-between'>
+                            {/* Item Details - Flexible content area */}
+                            <div className='flex flex-col flex-1 space-y-2'>
+                              <div className='flex-1'>
+                                <h5 className='font-bold text-slate-900 text-sm line-clamp-2 mb-2'>
+                                  {item.displayName}
+                                </h5>
+                                {item.setName && (
+                                  <p className='text-xs text-slate-500 font-medium truncate mb-2'>
+                                    {item.setName}
+                                  </p>
+                                )}
+                              </div>
+                              
+                              {/* Bottom info - Always at bottom */}
+                              <div className='flex items-center justify-between mt-auto pt-2'>
                                 <span className='text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded-lg'>
                                   {item.itemType === 'PsaGradedCard'
                                     ? 'PSA'
@@ -629,14 +640,9 @@ const CreateAuction: React.FC = () => {
                                       : 'Sealed'}
                                 </span>
                                 <span className='font-bold text-emerald-600'>
-                                  ${item.displayPrice.toFixed(2)}
+                                  {item.displayPrice} kr.
                                 </span>
                               </div>
-                              {item.setName && (
-                                <p className='text-xs text-slate-500 font-medium truncate'>
-                                  {item.setName}
-                                </p>
-                              )}
                             </div>
                           </div>
                         );

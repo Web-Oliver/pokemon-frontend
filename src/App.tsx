@@ -26,6 +26,8 @@ import SalesAnalytics from './pages/SalesAnalytics';
 import Analytics from './pages/Analytics';
 import Activity from './pages/Activity';
 import AddEditItem from './pages/AddEditItem';
+import DbaExport from './pages/DbaExport';
+import DbaSelection from './pages/DbaSelection';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -95,6 +97,7 @@ function App() {
     }
 
     switch (currentPath) {
+      case '/':
       case '/dashboard':
         return <Dashboard />;
       case '/collection':
@@ -104,7 +107,6 @@ function App() {
       case '/add-item':
         return <AddEditItem />;
       case '/sets':
-        return <SetSearch />;
       case '/set-search':
         return <SetSearch />;
       case '/sealed-products-search':
@@ -112,11 +114,14 @@ function App() {
       case '/auctions':
         return <Auctions />;
       case '/sales-analytics':
-        return <SalesAnalytics />;
       case '/analytics':
-        return <Analytics />;
+        return <SalesAnalytics />;
       case '/activity':
         return <Activity />;
+      case '/dba-export':
+        return <DbaExport />;
+      case '/dba-selection':
+        return <DbaSelection />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

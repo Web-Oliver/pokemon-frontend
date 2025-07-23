@@ -680,7 +680,7 @@ const CollectionItemDetail: React.FC = () => {
             {renderSaleInfo()}
         </div>
 
-        {/* Images Section - At Bottom with Smaller Size */}
+        {/* Images Section - Adaptive Layout Based on Image Orientation */}
         <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
           <div className='flex items-center justify-between mb-4'>
             <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
@@ -707,16 +707,21 @@ const CollectionItemDetail: React.FC = () => {
             )}
           </div>
 
-          <div className='max-w-lg mx-auto'>
-            <ImageSlideshow
-              images={item.images || []}
-              fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
-              autoplay={true}
-              autoplayDelay={5000}
-              showThumbnails={true}
-              adaptiveLayout={true}
-              enableAspectRatioDetection={true}
-            />
+          {/* Auto-sizing Container Based on Image Orientation */}
+          <div className='w-full flex justify-center'>
+            {/* Highly constrained container for PSA card optimal viewing */}
+            <div className='w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] xl:max-w-[440px]'>
+              <ImageSlideshow
+                images={item.images || []}
+                fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
+                autoplay={true}
+                autoplayDelay={5000}
+                showThumbnails={true}
+                adaptiveLayout={true}
+                enableAspectRatioDetection={true}
+                className='w-full'
+              />
+            </div>
           </div>
         </div>
       </div>

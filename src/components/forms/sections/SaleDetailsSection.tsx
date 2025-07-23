@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
-import { DollarSign } from 'lucide-react';
+import { Banknote } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 
@@ -36,9 +36,9 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
     <div className='bg-yellow-50/80 backdrop-blur-xl border border-yellow-200/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
       <div className='absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50'></div>
 
-      <h4 className='text-xl font-bold text-yellow-900 mb-8 flex items-center relative z-10'>
-        <DollarSign className='w-6 h-6 mr-3 text-yellow-600' />
-        Update Sale Information
+      <h4 className='text-xl font-bold text-yellow-900 mb-8 flex items-center justify-center relative z-10'>
+        <Banknote className='w-6 h-6 mr-3 text-yellow-600' />
+        Update Sale Information (kr.)
       </h4>
 
       <div className='relative z-10 space-y-8'>
@@ -63,11 +63,22 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             <div>
               <Input
                 label='Actual Sold Price (kr.)'
-                type='number'
-                step='0.01'
-                min='0'
-                {...register('actualSoldPrice')}
-                placeholder='0.00'
+                type='text'
+                inputMode='numeric'
+                {...register('actualSoldPrice', {
+                  pattern: {
+                    value: /^\d+$/,
+                    message: 'Price must be a whole number only',
+                  },
+                  validate: (value) => {
+                    const num = parseInt(value, 10);
+                    if (isNaN(num) || num < 0) {
+                      return 'Price must be a positive whole number';
+                    }
+                    return true;
+                  },
+                })}
+                placeholder='0'
                 className='bg-white'
               />
             </div>

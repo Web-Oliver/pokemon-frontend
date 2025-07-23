@@ -57,6 +57,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   // Removed legacy useSearch dependency - using enhanced autocomplete only
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
@@ -67,6 +68,18 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
     null
   );
+
+  // Helper function to convert ISO date to YYYY-MM-DD format
+  const formatDateForInput = (isoDate: string | undefined): string => {
+    if (!isoDate) {
+      return new Date().toISOString().split('T')[0];
+    }
+    // Handle both ISO string and already formatted date strings
+    if (isoDate.includes('T')) {
+      return isoDate.split('T')[0];
+    }
+    return isoDate;
+  };
 
   const {
     register,
@@ -83,7 +96,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       availability: initialData?.availability || 0,
       cardMarketPrice: initialData?.cardMarketPrice?.toString() || '',
       myPrice: initialData?.myPrice?.toString() || '',
-      dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
+      dateAdded: formatDateForInput(initialData?.dateAdded),
     },
   });
 
@@ -117,7 +130,22 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       setValue('availability', initialData.availability || 0);
       setValue('cardMarketPrice', initialData.cardMarketPrice?.toString() || '');
       setValue('myPrice', initialData.myPrice?.toString() || '');
-      setValue('dateAdded', initialData.dateAdded || new Date().toISOString().split('T')[0]);
+      setValue('dateAdded', formatDateForInput(initialData.dateAdded));
+      
+      // Set selectedProductData for existing products to maintain reference link
+      if (initialData.productId) {
+        setSelectedProductData({
+          _id: initialData.productId,
+          setName: initialData.setName,
+          name: initialData.name,
+          category: initialData.category,
+          available: initialData.availability,
+          price: initialData.cardMarketPrice
+        });
+      }
+      
+      // Update remaining existing images when initialData changes
+      setRemainingExistingImages(initialData.images || []);
     }
   }, [isEditing, initialData, setValue]);
 
@@ -155,8 +183,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     }
   }, [watchedPrice]);
 
-  const handleImagesChange = (files: File[]) => {
+  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
     setSelectedImages(files);
+    setRemainingExistingImages(remainingExistingUrls || []);
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
@@ -179,11 +208,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         );
       }
 
-      // Upload images first if any are selected
-      let imageUrls: string[] = [];
+      // Upload new images if any are selected
+      let newImageUrls: string[] = [];
       if (selectedImages.length > 0) {
-        imageUrls = await uploadMultipleImages(selectedImages);
+        newImageUrls = await uploadMultipleImages(selectedImages);
       }
+
+      // Combine existing images with new uploaded images
+      const allImageUrls = [...remainingExistingImages, ...newImageUrls];
 
       // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
@@ -195,7 +227,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         cardMarketPrice: data.cardMarketPrice ? parseFloat(data.cardMarketPrice) : undefined,
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
-        images: imageUrls,
+        images: allImageUrls,
         priceHistory:
           priceHistory.length > 0
             ? priceHistory
@@ -319,12 +351,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                     clearErrors('availability');
                   }
 
-                  // Auto-fill CardMarket price (convert EUR to DKK)
+                  // Auto-fill CardMarket price (already in correct currency)
                   if (selectedData.price) {
-                    const euroPrice = parseFloat(selectedData.price);
-                    if (!isNaN(euroPrice)) {
-                      const dkkPrice = Math.round(euroPrice * 7.46);
-                      setValue('cardMarketPrice', dkkPrice.toString(), { shouldValidate: true });
+                    const price = parseFloat(selectedData.price);
+                    if (!isNaN(price)) {
+                      setValue('cardMarketPrice', Math.round(price).toString(), { shouldValidate: true });
                       clearErrors('cardMarketPrice');
                     }
                   }
@@ -335,7 +366,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                     category: selectedData.category,
                     availability: selectedData.available,
                     cardMarketPrice: selectedData.price
-                      ? Math.round(parseFloat(selectedData.price) * 7.46)
+                      ? Math.round(parseFloat(selectedData.price))
                       : null,
                   });
                 }
@@ -346,7 +377,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               variant='premium'
               showMetadata={true}
               allowClear={true}
-              disabled={isEditing}
+              disabled={false}
               className='premium-search-integration'
             />
           </div>
@@ -380,7 +411,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.category?.message}
               options={productCategories}
-              disabled={loadingOptions}
+              disabled={loadingOptions || isEditing}
             />
             {watchedCategory && (
               <div className='mt-3 p-3 bg-purple-50/80 border border-purple-200/50 rounded-xl backdrop-blur-sm'>
@@ -405,7 +436,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.availability?.message}
               placeholder='0'
-              disabled={!!selectedProductData} // Disable if auto-filled from reference data
+              disabled={!!selectedProductData || isEditing} // Disable if auto-filled from reference data or editing
             />
             {selectedProductData && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
@@ -441,6 +472,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.cardMarketPrice?.message}
               placeholder='0'
+              disabled={isEditing}
             />
             {watchedCardMarketPrice && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
@@ -449,8 +481,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             )}
             {selectedProductData && selectedProductData.price && (
               <div className='mt-2 text-sm text-green-600 font-semibold'>
-                Converted from €{selectedProductData.price} EUR →{' '}
-                {Math.round(parseFloat(selectedProductData.price) * 7.46)} kr.
+                CardMarket Price: {Math.round(parseFloat(selectedProductData.price))} kr.
               </div>
             )}
           </div>
@@ -458,19 +489,24 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           <div>
             <Input
               label='My Price (kr.)'
-              type='number'
-              step='0.01'
-              min='0'
+              type='text'
+              inputMode='numeric'
               {...register('myPrice', {
                 required: 'Price is required',
-                min: { value: 0, message: 'Price must be non-negative' },
                 pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format',
+                  value: /^\d+$/,
+                  message: 'Price must be a whole number only',
+                },
+                validate: (value) => {
+                  const num = parseInt(value, 10);
+                  if (isNaN(num) || num < 0) {
+                    return 'Price must be a positive whole number';
+                  }
+                  return true;
                 },
               })}
               error={errors.myPrice?.message}
-              placeholder='0.00'
+              placeholder='0'
             />
             {watchedPrice && (
               <div className='mt-2 text-sm text-slate-600 font-semibold'>
@@ -487,6 +523,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 required: 'Date added is required',
               })}
               error={errors.dateAdded?.message}
+              disabled={isEditing}
             />
 
             {/* Investment Analysis */}
@@ -531,7 +568,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         <div className='relative z-10'>
           <ImageUploader
             onImagesChange={handleImagesChange}
-            existingImageUrls={initialData?.images || []}
+            existingImageUrls={remainingExistingImages}
             multiple={true}
             maxFiles={8}
             maxFileSize={5}

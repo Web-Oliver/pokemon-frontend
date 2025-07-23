@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { DollarSign, Star, Award } from 'lucide-react';
+import { Banknote, Star, Award } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
@@ -95,9 +95,9 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         className={`absolute inset-0 bg-gradient-to-br from-white/50 ${isPsaCard ? 'to-blue-50/50' : 'to-emerald-50/50'}`}
       ></div>
 
-      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-        <DollarSign className='w-6 h-6 mr-3 text-slate-600' />
-        {isEditing ? 'Update Price' : isPsaCard ? 'Grading & Pricing' : 'Condition & Pricing'}
+      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-center relative z-10'>
+        <Banknote className='w-6 h-6 mr-3 text-slate-600' />
+        {isEditing ? 'Update Price (kr.)' : isPsaCard ? 'Grading & Pricing (kr.)' : 'Condition & Pricing (kr.)'}
       </h4>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
@@ -136,19 +136,24 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         <div>
           <Input
             label='My Price (kr.)'
-            type='number'
-            step='0.01'
-            min='0'
+            type='text'
+            inputMode='numeric'
             {...register('myPrice', {
               required: 'Price is required',
-              min: { value: 0, message: 'Price must be non-negative' },
               pattern: {
-                value: /^\d+(\.\d{1,2})?$/,
-                message: 'Invalid price format',
+                value: /^\d+$/,
+                message: 'Price must be a whole number only',
+              },
+              validate: (value) => {
+                const num = parseInt(value, 10);
+                if (isNaN(num) || num < 0) {
+                  return 'Price must be a positive whole number';
+                }
+                return true;
               },
             })}
             error={errors.myPrice?.message}
-            placeholder='0.00'
+            placeholder='0'
             className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
             disabled={isEditing}
           />

@@ -258,6 +258,63 @@ export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): 
 };
 
 /**
+ * Export collection items to DBA.dk format
+ */
+export interface DbaExportItem {
+  id: string;
+  type: 'psa' | 'raw' | 'sealed';
+}
+
+export interface DbaExportRequest {
+  items: DbaExportItem[];
+  customDescription?: string;
+  includeMetadata?: boolean;
+}
+
+export interface DbaExportResponse {
+  success: boolean;
+  message: string;
+  data: {
+    itemCount: number;
+    jsonFilePath: string;
+    dataFolder: string;
+    items: Array<{
+      id: string;
+      title: string;
+      description: string;
+      price: number;
+      imagePaths: string[];
+      itemType: string;
+      metadata?: any;
+    }>;
+  };
+}
+
+export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaExportResponse> => {
+  const response = await apiClient.post('/export/dba', exportRequest);
+  return response.data;
+};
+
+/**
+ * Download DBA export as ZIP file
+ */
+export const downloadDbaZip = async (): Promise<void> => {
+  try {
+    const response = await apiClient.get('/export/dba/download', {
+      responseType: 'blob',
+    });
+
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `dba-export-${timestamp}.zip`;
+    
+    downloadBlob(response.data, filename);
+  } catch (error) {
+    console.error('[EXPORT API] Failed to download DBA ZIP:', error);
+    throw error;
+  }
+};
+
+/**
  * Utility function to trigger file download
  * @param blob - File blob to download
  * @param filename - Suggested filename

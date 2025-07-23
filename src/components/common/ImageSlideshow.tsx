@@ -295,26 +295,6 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
             </div>
           )}
 
-          {/* Context7 Premium Aspect Ratio Badge */}
-          {currentAspect && enableAspectRatioDetection && (
-            <div className='absolute top-4 right-4 z-20'>
-              <div className={`px-3 py-1.5 rounded-xl text-xs font-bold border backdrop-blur-xl transition-all duration-300 ${
-                currentAspect.orientation === 'vertical'
-                  ? 'bg-green-500/20 text-green-700 border-green-300/50'
-                  : currentAspect.orientation === 'horizontal'
-                  ? 'bg-blue-500/20 text-blue-700 border-blue-300/50'
-                  : 'bg-purple-500/20 text-purple-700 border-purple-300/50'
-              }`}>
-                <div className='flex items-center space-x-1'>
-                  <div className={`w-2 h-2 rounded-full ${
-                    currentAspect.orientation === 'vertical' ? 'bg-green-500' :
-                    currentAspect.orientation === 'horizontal' ? 'bg-blue-500' : 'bg-purple-500'
-                  }`}></div>
-                  <span className='capitalize'>{currentAspect.category}</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

@@ -21,7 +21,9 @@ import {
   getProductSuggestionsOptimized,
 } from '../api/cardMarketRefProductsApi';
 import { searchSetsOptimized, getSetSuggestionsOptimized } from '../api/setsApi';
+import { searchCardMarketSetNames } from '../api/cardMarketRefProductsApi';
 import { SEARCH_CONFIG } from '../utils/constants';
+import { formatDisplayNameWithNumber } from '../utils/cardUtils';
 
 export interface HierarchicalSearchConfig {
   searchMode: 'cards' | 'products';
@@ -194,15 +196,22 @@ export class HierarchicalSearchService {
       maxSuggestions: this.config.maxSuggestions,
     });
 
-    // Use optimized search endpoints
-    const response = await searchSetsOptimized({
-      query,
-      limit: this.config.maxSuggestions!,
-    });
-    const results = response.data;
-
-    console.log('[HIERARCHICAL SEARCH] searchSets results:', results);
-    return results.map(this.mapSetResultToSuggestion);
+    if (this.config.searchMode === 'products') {
+      // For products mode, search CardMarket reference set names
+      console.log('[HIERARCHICAL SEARCH] Using CardMarket set names for products mode');
+      const cardMarketSets = await searchCardMarketSetNames(query, this.config.maxSuggestions!);
+      console.log('[HIERARCHICAL SEARCH] CardMarket set names results:', cardMarketSets);
+      return cardMarketSets.map(this.mapCardMarketSetToSuggestion);
+    } else {
+      // For cards mode, use regular sets API
+      const response = await searchSetsOptimized({
+        query,
+        limit: this.config.maxSuggestions!,
+      });
+      const results = response.data;
+      console.log('[HIERARCHICAL SEARCH] searchSets results:', results);
+      return results.map(this.mapSetResultToSuggestion);
+    }
   }
 
   /**
@@ -264,13 +273,21 @@ export class HierarchicalSearchService {
     });
 
     try {
-      const results = await searchSetsOptimized({
-        query,
-        limit: this.config.maxSuggestions!,
-      });
-
-      console.log('[HIERARCHICAL SEARCH] searchSetsOptimized results:', results);
-      return results.data.map(this.mapSetResultToSuggestionOptimized);
+      if (this.config.searchMode === 'products') {
+        // For products mode, search CardMarket reference set names
+        console.log('[HIERARCHICAL SEARCH] Using CardMarket set names for products mode (optimized)');
+        const cardMarketSets = await searchCardMarketSetNames(query, this.config.maxSuggestions!);
+        console.log('[HIERARCHICAL SEARCH] CardMarket set names results (optimized):', cardMarketSets);
+        return cardMarketSets.map(this.mapCardMarketSetToSuggestion);
+      } else {
+        // For cards mode, use regular sets API
+        const results = await searchSetsOptimized({
+          query,
+          limit: this.config.maxSuggestions!,
+        });
+        console.log('[HIERARCHICAL SEARCH] searchSetsOptimized results:', results);
+        return results.data.map(this.mapSetResultToSuggestionOptimized);
+      }
     } catch (error) {
       console.error('[HIERARCHICAL SEARCH] searchSetsOptimized error:', error);
       // Fallback to legacy search
@@ -509,10 +526,11 @@ export class HierarchicalSearchService {
 
   private mapCardResultToSuggestion = (result: CardResult): SearchSuggestion => ({
     id: result._id,
-    displayName: result.cardName,
+    displayName: formatDisplayNameWithNumber(result.cardName, result.pokemonNumber),
     metadata: {
       setName: result.setInfo?.setName,
       category: undefined,
+      originalCardName: result.pokemonNumber ? `${result.cardName} (#${result.pokemonNumber})` : result.cardName, // Preserve original for backend
     },
     data: result,
   });
@@ -525,6 +543,31 @@ export class HierarchicalSearchService {
       category: result.category,
     },
     data: result,
+  });
+
+  private mapCardMarketSetToSuggestion = (result: {
+    setName: string;
+    count: number;
+    totalAvailable: number;
+    categoryCount: number;
+    averagePrice: number;
+    score?: number;
+  }): SearchSuggestion => ({
+    id: result.setName,
+    displayName: `${result.setName} (${result.count} products)`,
+    metadata: {
+      setName: result.setName,
+      count: result.count,
+      source: 'cardmarket',
+    },
+    data: {
+      setName: result.setName,
+      count: result.count,
+      totalAvailable: result.totalAvailable,
+      categoryCount: result.categoryCount,
+      averagePrice: result.averagePrice,
+      score: result.score || 0,
+    },
   });
 
   // Cache management methods
