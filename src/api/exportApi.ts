@@ -69,14 +69,43 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
             : `http://localhost:3000${imagePath}`;
           imageUrls.push(imageUrl);
 
-          // Generate filename based on item name and category
-          const itemName =
-            item.itemData.cardId?.cardName ||
-            item.itemData.cardId?.baseName ||
-            item.itemData.name ||
-            `item-${index + 1}`;
+          // Generate improved filename based on best practices
+          const category = item.itemCategory === 'PsaGradedCard' ? 'PSA' : 
+                          item.itemCategory === 'RawCard' ? 'RAW' : 'SEALED';
+          
+          let itemName = '';
+          
+          if (item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') {
+            const cardName = (item.itemData.cardId?.cardName || item.itemData.cardId?.baseName || 'Unknown')
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            const setName = (item.itemData.cardId?.setId?.setName || 'Unknown')
+              .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            const number = item.itemData.cardId?.pokemonNumber || '000';
+            
+            if (item.itemCategory === 'PsaGradedCard') {
+              const grade = item.itemData.grade || '0';
+              itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
+            } else {
+              const condition = (item.itemData.condition || 'NM').replace(/\s+/g, '').toUpperCase();
+              itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
+            }
+          } else {
+            // Sealed product
+            const productName = (item.itemData.name || 'Unknown')
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            itemName = `${category}_${productName}`;
+          }
+          
           const extension = imagePath.split('.').pop() || 'jpg';
-          itemNames.push(`${itemName}-${imageIndex + 1}.${extension}`);
+          const imageNumber = String(imageIndex + 1).padStart(2, '0');
+          itemNames.push(`${itemName}_img${imageNumber}.${extension}`);
         }
       });
     }
@@ -186,25 +215,44 @@ const createImageZip = async (
             : `http://localhost:3000${imagePath}`;
           imageUrls.push(imageUrl);
 
-          // Generate filename based on item name and type
+          // Generate improved filename based on best practices
           let itemName = '';
+          const category = itemType === 'psa-card' ? 'PSA' : 
+                          itemType === 'raw-card' ? 'RAW' : 'SEALED';
 
           if (itemType === 'psa-card' || itemType === 'raw-card') {
-            itemName = item.cardId?.cardName || item.cardId?.baseName || `${itemType}-${index + 1}`;
+            const cardName = (item.cardId?.cardName || item.cardId?.baseName || 'Unknown')
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            const setName = (item.cardId?.setId?.setName || 'Unknown')
+              .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            const number = item.cardId?.pokemonNumber || '000';
+            
             if (itemType === 'psa-card' && item.grade) {
-              itemName += `-PSA${item.grade}`;
-            }
-            if (itemType === 'raw-card' && item.condition) {
-              itemName += `-${item.condition}`;
+              itemName = `${category}_${setName}_${cardName}_${number}_PSA${item.grade}`;
+            } else if (itemType === 'raw-card' && item.condition) {
+              const condition = item.condition.replace(/\s+/g, '').toUpperCase();
+              itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
+            } else {
+              itemName = `${category}_${setName}_${cardName}_${number}`;
             }
           } else if (itemType === 'sealed-product') {
-            itemName = item.name || `${itemType}-${index + 1}`;
+            const productName = (item.name || 'Unknown')
+              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+              .replace(/\s+/g, '_') // Replace spaces with underscores
+              .toLowerCase();
+            itemName = `${category}_${productName}`;
           } else {
-            itemName = `${itemType}-${index + 1}`;
+            itemName = `${category}_item_${String(index + 1).padStart(3, '0')}`;
           }
 
           const extension = imagePath.split('.').pop() || 'jpg';
-          itemNames.push(`${itemName}-${imageIndex + 1}.${extension}`);
+          const imageNumber = String(imageIndex + 1).padStart(2, '0');
+          itemNames.push(`${itemName}_img${imageNumber}.${extension}`);
         }
       });
     }

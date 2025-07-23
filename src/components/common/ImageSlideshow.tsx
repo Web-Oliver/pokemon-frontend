@@ -215,13 +215,20 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                 return (
                   <div className='embla__slide flex-[0_0_100%] min-w-0 h-full relative overflow-hidden' key={index}>
                     <img
-                      src={`http://localhost:3000${image}`}
+                      src={image.startsWith('http') ? image : `http://localhost:3000${image}`}
                       alt={`Item image ${index + 1}`}
                       className={slideImageClasses}
+                      loading="lazy"
                       onError={e => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
+                        console.warn(`Failed to load image: ${target.src}`);
                       }}
+                      onLoad={e => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.opacity = '1';
+                      }}
+                      style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                     />
                     
                     {/* Context7 Premium Glass Overlay */}
@@ -350,14 +357,21 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                       aria-label={`Go to image ${index + 1}`}
                     >
                       <img
-                        src={`http://localhost:3000${image}`}
+                        src={image.startsWith('http') ? image : `http://localhost:3000${image}`}
                         alt={`Thumbnail ${index + 1}`}
                         className={thumbImageClasses}
+                        loading="lazy"
                         onError={e => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
                           target.parentElement!.style.backgroundColor = '#f3f4f6';
+                          console.warn(`Failed to load thumbnail: ${target.src}`);
                         }}
+                        onLoad={e => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.opacity = '1';
+                        }}
+                        style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                       />
                       
                       {/* Context7 Premium Active Overlay */}
