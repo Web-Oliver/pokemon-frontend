@@ -267,14 +267,26 @@ const DbaExport: React.FC = () => {
     const parts = ['Pokemon Kort'];
     
     if (item.type === 'sealed') {
-      // For sealed products: "Pokemon Kort" (shortened set name) (category) Sealed
-      const setName = item.setName || '';
-      const shortenedSet = shortenSetName(setName);
-      if (shortenedSet) {
-        parts.push(shortenedSet);
-      }
-      if (item.category) {
-        parts.push(item.category);
+      // For sealed products: "Pokemon Kort" (product name) Sealed
+      // Examples:
+      // - "Pokemon Kort Tag Team Reshiram & Charizard GX Premium Collection Box Sealed"
+      // - "Pokemon Kort GG End Booster Box Sealed"  
+      // - "Pokemon Kort Sword & Shield Figure Collection Sealed"
+      
+      const productName = item.name || '';
+      if (productName) {
+        // Clean the product name - remove redundant words and fix formatting
+        let cleanName = productName
+          .replace(/pokemon/gi, '') // Remove "Pokemon" since we already have "Pokemon Kort"
+          .replace(/pokémon/gi, '') // Remove "Pokémon" variants
+          .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+          .trim();
+        
+        // If the product name doesn't already contain "Box", "Collection", etc., keep it as is
+        // The examples show we want the full descriptive name
+        if (cleanName) {
+          parts.push(cleanName);
+        }
       }
       parts.push('Sealed');
     } else {
