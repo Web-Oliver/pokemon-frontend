@@ -117,16 +117,18 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       const exportData = sales.map(sale => ({
         ...sale,
         profit: (sale.actualSoldPrice || 0) - (sale.myPrice || 0),
-        profitMargin: sale.myPrice && sale.myPrice > 0 
-          ? (((sale.actualSoldPrice || 0) - sale.myPrice) / sale.myPrice) * 100 
-          : 0,
+        profitMargin:
+          sale.myPrice && sale.myPrice > 0
+            ? (((sale.actualSoldPrice || 0) - sale.myPrice) / sale.myPrice) * 100
+            : 0,
       }));
 
       // Generate filename with current date and optional date range
       const dateStr = new Date().toISOString().split('T')[0];
-      const rangeStr = dateRange.startDate && dateRange.endDate 
-        ? `_${dateRange.startDate}_to_${dateRange.endDate}`
-        : '';
+      const rangeStr =
+        dateRange.startDate && dateRange.endDate
+          ? `_${dateRange.startDate}_to_${dateRange.endDate}`
+          : '';
       const filename = `sales_export_${dateStr}${rangeStr}`;
 
       // Export using Context7 best practices

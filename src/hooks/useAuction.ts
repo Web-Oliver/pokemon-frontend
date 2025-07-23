@@ -25,7 +25,10 @@ export interface UseAuctionActions {
   deleteAuction: (_id: string) => Promise<void>;
   addItemToAuction: (_id: string, _itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
   removeItemFromAuction: (_id: string, _itemId: string, _itemCategory?: string) => Promise<void>;
-  markAuctionItemSold: (_id: string, _saleData: { itemId: string; itemCategory: string; soldPrice: number }) => Promise<void>;
+  markAuctionItemSold: (
+    _id: string,
+    _saleData: { itemId: string; itemCategory: string; soldPrice: number }
+  ) => Promise<void>;
   generateFacebookPost: (_id: string) => Promise<string>;
   downloadAuctionTextFile: (_id: string) => Promise<void>;
   downloadAuctionImagesZip: (_id: string) => Promise<void>;
@@ -112,8 +115,8 @@ export const useAuction = (): UseAuctionHook => {
 
         // CONSISTENCY FIX: Always refetch from server instead of manual state updates
         await Promise.all([
-          fetchAuctionById(id),  // Update current auction
-          fetchAuctions()        // Update auctions list cache
+          fetchAuctionById(id), // Update current auction
+          fetchAuctions(), // Update auctions list cache
         ]);
       } catch (err) {
         const errorMessage = `Failed to update auction with ID: ${id}`;
@@ -138,7 +141,7 @@ export const useAuction = (): UseAuctionHook => {
         await auctionsApi.deleteAuction(id);
 
         console.log('[useAuction] Auction deleted successfully, refetching all auctions...');
-        
+
         // Clear current auction if it's the one being deleted
         if ((currentAuction?.id || currentAuction?._id) === id) {
           setCurrentAuction(null);
@@ -146,7 +149,6 @@ export const useAuction = (): UseAuctionHook => {
 
         // Refetch all auctions from the server to ensure accurate state
         await fetchAuctions();
-        
       } catch (err) {
         const errorMessage = `Failed to delete auction with ID: ${id}`;
         setError(errorMessage);
@@ -170,8 +172,8 @@ export const useAuction = (): UseAuctionHook => {
 
         // CONSISTENCY FIX: Always refetch from server instead of manual state updates
         await Promise.all([
-          fetchAuctionById(id),  // Update current auction
-          fetchAuctions()        // Update auctions list cache
+          fetchAuctionById(id), // Update current auction
+          fetchAuctions(), // Update auctions list cache
         ]);
       } catch (err) {
         const errorMessage = `Failed to add item to auction with ID: ${id}`;
@@ -198,16 +200,16 @@ export const useAuction = (): UseAuctionHook => {
 
         // CRITICAL FIX: Refetch both current auction AND auctions list to invalidate cache
         await Promise.all([
-          fetchAuctionById(id),  // Update current auction
-          fetchAuctions()        // Update auctions list cache
+          fetchAuctionById(id), // Update current auction
+          fetchAuctions(), // Update auctions list cache
         ]);
       } catch (err: any) {
         // CRITICAL FIX: If we get 404, the item is already gone, so still refresh the cache
         if (err?.response?.status === 404) {
           console.log('[useAuction] Item already removed (404), refreshing cache...');
           await Promise.all([
-            fetchAuctionById(id),  // Update current auction
-            fetchAuctions()        // Update auctions list cache
+            fetchAuctionById(id), // Update current auction
+            fetchAuctions(), // Update auctions list cache
           ]);
         } else {
           const errorMessage = `Failed to remove item from auction with ID: ${id}`;
@@ -233,8 +235,8 @@ export const useAuction = (): UseAuctionHook => {
 
         // CONSISTENCY FIX: Always refetch from server instead of manual state updates
         await Promise.all([
-          fetchAuctionById(id),  // Update current auction
-          fetchAuctions()        // Update auctions list cache
+          fetchAuctionById(id), // Update current auction
+          fetchAuctions(), // Update auctions list cache
         ]);
       } catch (err) {
         const errorMessage = `Failed to mark auction item as sold for auction with ID: ${id}`;

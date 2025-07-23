@@ -19,16 +19,6 @@ interface SearchParams {
   search?: string;
 }
 
-interface PaginatedSetsResponse {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sets: any[];
-  total: number;
-  currentPage: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-}
-
 const SetSearch: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sets, setSets] = useState<any[]>([]);
@@ -46,33 +36,77 @@ const SetSearch: React.FC = () => {
 
   const itemsPerPage = 12;
 
-  // Fetch sets with pagination and filters
+  // Fetch sets with pagination and filters using optimized search when available
   const fetchSets = async (params: SearchParams = {}) => {
     try {
       setLoading(true);
       setError(null);
 
-      const requestParams = {
-        page: params.page || 1,
-        limit: params.limit || itemsPerPage,
-        ...(params.search && { search: params.search }),
-        ...(params.year && { year: params.year }),
-      };
+      const page = params.page || 1;
+      const limit = params.limit || itemsPerPage;
 
-      log('Fetching sets with params:', requestParams);
-
-      const response: PaginatedSetsResponse = await setsApi.getPaginatedSets(requestParams);
-
-      setSets(response.sets);
-      setPagination({
-        currentPage: response.currentPage,
-        totalPages: response.totalPages,
-        hasNextPage: response.hasNextPage,
-        hasPrevPage: response.hasPrevPage,
-        total: response.total,
+      log('Fetching sets with params:', {
+        page,
+        limit,
+        search: params.search,
+        year: params.year,
       });
 
-      log('Sets fetched successfully:', response.sets.length, 'sets');
+      let fetchedSets: any[] = [];
+      let paginationData = {
+        currentPage: page,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        total: 0,
+      };
+
+      if (params.search?.trim()) {
+        // Use optimized search when there's a search term
+        const optimizedParams: setsApi.OptimizedSetSearchParams = {
+          query: params.search.trim(),
+          page,
+          limit,
+          ...(params.year && { year: params.year }),
+        };
+
+        const optimizedResponse = await setsApi.searchSetsOptimized(optimizedParams);
+        fetchedSets = optimizedResponse.data;
+
+        // Calculate pagination for optimized search
+        const totalResults = optimizedResponse.count;
+        const totalPages = Math.ceil(totalResults / limit);
+        paginationData = {
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+          total: totalResults,
+        };
+      } else {
+        // Use paginated API when no search term (browsing/filtering)
+        const requestParams = {
+          page,
+          limit,
+          ...(params.year && { year: params.year }),
+        };
+
+        const response: setsApi.PaginatedSetsResponse =
+          await setsApi.getPaginatedSets(requestParams);
+        fetchedSets = response.sets;
+        paginationData = {
+          currentPage: response.currentPage,
+          totalPages: response.totalPages,
+          hasNextPage: response.hasNextPage,
+          hasPrevPage: response.hasPrevPage,
+          total: response.total,
+        };
+      }
+
+      setSets(fetchedSets);
+      setPagination(paginationData);
+
+      log('Sets fetched successfully:', fetchedSets.length, 'sets');
     } catch (error) {
       const errorMessage = 'Failed to fetch sets';
       setError(errorMessage);
@@ -155,8 +189,12 @@ const SetSearch: React.FC = () => {
             <div className='relative z-10'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>Set Search</h1>
-                  <p className='text-xl text-slate-600 font-medium leading-relaxed'>Discover and explore Pokémon card sets</p>
+                  <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
+                    Set Search
+                  </h1>
+                  <p className='text-xl text-slate-600 font-medium leading-relaxed'>
+                    Discover and explore Pokémon card sets
+                  </p>
                 </div>
                 <div className='flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl px-6 py-3 text-white shadow-xl'>
                   <Package className='w-6 h-6 mr-3' />
@@ -178,7 +216,9 @@ const SetSearch: React.FC = () => {
               <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
                 {/* Set Name Search */}
                 <div className='md:col-span-2'>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>Set Name</label>
+                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+                    Set Name
+                  </label>
                   <div className='relative group'>
                     <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300'></div>
                     <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-blue-600 transition-colors duration-300' />
@@ -195,7 +235,9 @@ const SetSearch: React.FC = () => {
 
                 {/* Year Filter */}
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>Year</label>
+                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+                    Year
+                  </label>
                   <div className='relative group'>
                     <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300'></div>
                     <Calendar className='absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-600 transition-colors duration-300' />
@@ -310,18 +352,30 @@ const SetSearch: React.FC = () => {
                         <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
                         <div className='relative z-10 space-y-4'>
                           <div className='border-b border-slate-200/50 pb-3'>
-                            <h3 className='text-xl font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors duration-300'>{set.setName}</h3>
-                            <p className='text-sm font-medium text-slate-500 bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg px-3 py-1 inline-block mt-2'>{set.year}</p>
+                            <h3 className='text-xl font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors duration-300'>
+                              {set.setName}
+                            </h3>
+                            <p className='text-sm font-medium text-slate-500 bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg px-3 py-1 inline-block mt-2'>
+                              {set.year}
+                            </p>
                           </div>
 
                           <div className='space-y-3'>
                             <div className='flex justify-between items-center py-2 px-3 bg-slate-50/80 rounded-lg'>
-                              <span className='text-sm font-medium text-slate-600'>Total Cards</span>
-                              <span className='text-lg font-bold text-slate-900'>{set.totalCardsInSet || 0}</span>
+                              <span className='text-sm font-medium text-slate-600'>
+                                Total Cards
+                              </span>
+                              <span className='text-lg font-bold text-slate-900'>
+                                {set.totalCardsInSet || 0}
+                              </span>
                             </div>
                             <div className='flex justify-between items-center py-2 px-3 bg-blue-50/80 rounded-lg'>
-                              <span className='text-sm font-medium text-blue-600'>PSA Population</span>
-                              <span className='text-lg font-bold text-blue-700'>{set.totalPsaPopulation || 0}</span>
+                              <span className='text-sm font-medium text-blue-600'>
+                                PSA Population
+                              </span>
+                              <span className='text-lg font-bold text-blue-700'>
+                                {set.totalPsaPopulation || 0}
+                              </span>
                             </div>
                           </div>
 

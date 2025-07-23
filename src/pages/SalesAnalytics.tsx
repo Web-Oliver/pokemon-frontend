@@ -31,7 +31,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
@@ -47,7 +46,7 @@ const SalesAnalytics: React.FC = () => {
     error,
     kpis,
     categoryBreakdown,
-    trendAnalysis,
+    trendAnalysis: _trendAnalysis,
     dateRange,
     setDateRange,
     refreshData,
@@ -83,7 +82,7 @@ const SalesAnalytics: React.FC = () => {
   };
 
   // Format percentage
-  const formatPercentage = (value: number) => {
+  const _formatPercentage = (value: number) => {
     return `${value.toFixed(1)}%`;
   };
 
@@ -126,48 +125,23 @@ const SalesAnalytics: React.FC = () => {
           };
         })
         .filter(item => item.value > 0)
-      : [];
+    : [];
 
-    // Get trend icon
-    const getTrendIcon = (trend: string) => {
-      switch (trend) {
-        case 'up':
-          return <ArrowUp className='w-4 h-4 text-green-500' />;
-        case 'down':
-          return <ArrowDown className='w-4 h-4 text-red-500' />;
-        default:
-          return <Minus className='w-4 h-4 text-gray-500' />;
-      }
-    };
-
-    if (loading && (!sales || sales.length === 0)) {
-      return (
-        <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
-          <div className='absolute inset-0 opacity-30'>
-            <div
-              className='w-full h-full'
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }}
-            ></div>
-          </div>
-          <div className='relative z-10 p-8'>
-            <div className='max-w-7xl mx-auto'>
-              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
-                <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5'></div>
-                <div className='relative z-10'>
-                  <LoadingSpinner size='large' />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+  // Get trend icon
+  const _getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'up':
+        return <ArrowUp className='w-4 h-4 text-green-500' />;
+      case 'down':
+        return <ArrowDown className='w-4 h-4 text-red-500' />;
+      default:
+        return <Minus className='w-4 h-4 text-gray-500' />;
     }
+  };
 
-  return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
-        {/* Context7 Premium Background Pattern */}
+  if (loading && (!sales || sales.length === 0)) {
+    return (
+      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
         <div className='absolute inset-0 opacity-30'>
           <div
             className='w-full h-full'
@@ -176,151 +150,180 @@ const SalesAnalytics: React.FC = () => {
             }}
           ></div>
         </div>
-
         <div className='relative z-10 p-8'>
-          <div className='max-w-7xl mx-auto space-y-10'>
-            {/* Context7 Premium Analytics Header */}
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+          <div className='max-w-7xl mx-auto'>
+            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5'></div>
               <div className='relative z-10'>
-                <div className='flex justify-between items-start'>
-                  <div>
-                    <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>Sales Analytics</h1>
-                    <p className='text-xl text-slate-600 font-medium leading-relaxed'>
-                      Track your collection's financial performance and trends
-                    </p>
-                  </div>
+                <LoadingSpinner size='large' />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-                  {/* Context7 Premium Date Range Filter */}
-                  <div className='flex items-center space-x-4'>
-                    <div className='flex items-center space-x-3'>
-                      <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center'>
-                        <Calendar className='w-4 h-4 text-white' />
-                      </div>
-                      <input
-                        type='date'
-                        value={dateRangeInput.startDate}
-                        onChange={e =>
-                          setDateRangeInput(prev => ({ ...prev, startDate: e.target.value }))
-                        }
-                        className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
-                        placeholder='Start Date'
-                      />
-                      <span className='text-slate-500 font-medium'>to</span>
-                      <input
-                        type='date'
-                        value={dateRangeInput.endDate}
-                        onChange={e =>
-                          setDateRangeInput(prev => ({ ...prev, endDate: e.target.value }))
-                        }
-                        className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
-                        placeholder='End Date'
-                      />
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+      {/* Context7 Premium Background Pattern */}
+      <div className='absolute inset-0 opacity-30'>
+        <div
+          className='w-full h-full'
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        ></div>
+      </div>
+
+      <div className='relative z-10 p-8'>
+        <div className='max-w-7xl mx-auto space-y-10'>
+          {/* Context7 Premium Analytics Header */}
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+            <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5'></div>
+            <div className='relative z-10'>
+              <div className='flex justify-between items-start'>
+                <div>
+                  <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent'>
+                    Sales Analytics
+                  </h1>
+                  <p className='text-xl text-slate-600 font-medium leading-relaxed'>
+                    Track your collection's financial performance and trends
+                  </p>
+                </div>
+
+                {/* Context7 Premium Date Range Filter */}
+                <div className='flex items-center space-x-4'>
+                  <div className='flex items-center space-x-3'>
+                    <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center'>
+                      <Calendar className='w-4 h-4 text-white' />
                     </div>
-
-                    <Button
-                      variant='primary'
-                      size='sm'
-                      onClick={handleDateRangeSubmit}
-                      disabled={loading}
-                    >
-                      <Filter className='w-4 h-4 mr-1' />
-                      Apply
-                    </Button>
-
-                    <Button variant='secondary' size='sm' onClick={clearDateRange} disabled={loading}>
-                      Clear
-                    </Button>
-
-                    <Button variant='secondary' size='sm' onClick={refreshData} disabled={loading}>
-                      <RefreshCcw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                      Refresh
-                    </Button>
+                    <input
+                      type='date'
+                      value={dateRangeInput.startDate}
+                      onChange={e =>
+                        setDateRangeInput(prev => ({ ...prev, startDate: e.target.value }))
+                      }
+                      className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                      placeholder='Start Date'
+                    />
+                    <span className='text-slate-500 font-medium'>to</span>
+                    <input
+                      type='date'
+                      value={dateRangeInput.endDate}
+                      onChange={e =>
+                        setDateRangeInput(prev => ({ ...prev, endDate: e.target.value }))
+                      }
+                      className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                      placeholder='End Date'
+                    />
                   </div>
+
+                  <Button
+                    variant='primary'
+                    size='sm'
+                    onClick={handleDateRangeSubmit}
+                    disabled={loading}
+                  >
+                    <Filter className='w-4 h-4 mr-1' />
+                    Apply
+                  </Button>
+
+                  <Button variant='secondary' size='sm' onClick={clearDateRange} disabled={loading}>
+                    Clear
+                  </Button>
+
+                  <Button variant='secondary' size='sm' onClick={refreshData} disabled={loading}>
+                    <RefreshCcw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
                 </div>
-
-                {error && (
-                  <div className='mt-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-2xl'>
-                    <p className='text-sm text-red-600 font-medium'>{error}</p>
-                  </div>
-                )}
               </div>
-              {/* Premium shimmer effect */}
-              <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
+
+              {error && (
+                <div className='mt-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-2xl'>
+                  <p className='text-sm text-red-600 font-medium'>{error}</p>
+                </div>
+              )}
             </div>
+            {/* Premium shimmer effect */}
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
+          </div>
 
-            {/* Context7 Premium KPI Summary Cards */}
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-              <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
-                <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
-                <div className='flex items-center relative z-10'>
-                  <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                    <DollarSign className='w-8 h-8 text-white' />
-                  </div>
-                  <div className='ml-6 flex-1'>
-                    <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>Revenue</p>
-                    <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                      {formatCurrency(kpis?.totalRevenue || 0)}
-                    </p>
-                    <p className='text-xs text-slate-500 mt-1 font-medium'>
-                      Total earned
-                    </p>
-                  </div>
+          {/* Context7 Premium KPI Summary Cards */}
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <DollarSign className='w-8 h-8 text-white' />
                 </div>
-              </div>
-
-              <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
-                <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5'></div>
-                <div className='flex items-center relative z-10'>
-                  <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                    <TrendingUp className='w-8 h-8 text-white' />
-                  </div>
-                  <div className='ml-6 flex-1'>
-                    <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>Facebook</p>
-                    <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
-                      {sales.filter(sale => sale.source === 'Facebook').length}
-                    </p>
-                    <p className='text-xs text-slate-500 mt-1 font-medium'>
-                      Items sold
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20'>
-                <div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5'></div>
-                <div className='flex items-center relative z-10'>
-                  <div className='w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                    <BarChart3 className='w-8 h-8 text-white' />
-                  </div>
-                  <div className='ml-6 flex-1'>
-                    <p className='text-sm font-bold text-purple-600 tracking-wide uppercase mb-1'>DBA</p>
-                    <p className='text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
-                      {sales.filter(sale => sale.source === 'DBA').length}
-                    </p>
-                    <p className='text-xs text-slate-500 mt-1 font-medium'>
-                      Items sold
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20'>
-                <div className='absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5'></div>
-                <div className='flex items-center relative z-10'>
-                  <div className='w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                    <PieChart className='w-8 h-8 text-white' />
-                  </div>
-                  <div className='ml-6 flex-1'>
-                    <p className='text-sm font-bold text-amber-600 tracking-wide uppercase mb-1'>Total Items</p>
-                    <p className='text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300'>{kpis?.totalItems || 0}</p>
-                    <p className='text-xs text-slate-500 mt-1 font-medium'>
-                      Items sold
-                    </p>
-                  </div>
+                <div className='ml-6 flex-1'>
+                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
+                    Revenue
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                    {formatCurrency(kpis?.totalRevenue || 0)}
+                  </p>
+                  <p className='text-xs text-slate-500 mt-1 font-medium'>Total earned</p>
                 </div>
               </div>
             </div>
+
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <TrendingUp className='w-8 h-8 text-white' />
+                </div>
+                <div className='ml-6 flex-1'>
+                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
+                    Facebook
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
+                    {sales.filter(sale => sale.source === 'Facebook').length}
+                  </p>
+                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <BarChart3 className='w-8 h-8 text-white' />
+                </div>
+                <div className='ml-6 flex-1'>
+                  <p className='text-sm font-bold text-purple-600 tracking-wide uppercase mb-1'>
+                    DBA
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
+                    {sales.filter(sale => sale.source === 'DBA').length}
+                  </p>
+                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20'>
+              <div className='absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5'></div>
+              <div className='flex items-center relative z-10'>
+                <div className='w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
+                  <PieChart className='w-8 h-8 text-white' />
+                </div>
+                <div className='ml-6 flex-1'>
+                  <p className='text-sm font-bold text-amber-600 tracking-wide uppercase mb-1'>
+                    Total Items
+                  </p>
+                  <p className='text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300'>
+                    {kpis?.totalItems || 0}
+                  </p>
+                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Charts Section */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -329,29 +332,35 @@ const SalesAnalytics: React.FC = () => {
               <div className='absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5'></div>
               <div className='relative z-10 p-8'>
                 <div className='mb-6'>
-                  <h2 className='text-2xl font-bold text-slate-900 mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>Revenue Over Time</h2>
-                  <p className='text-slate-600 font-medium'>Track your sales performance across different periods</p>
+                  <h2 className='text-2xl font-bold text-slate-900 mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
+                    Revenue Over Time
+                  </h2>
+                  <p className='text-slate-600 font-medium'>
+                    Track your sales performance across different periods
+                  </p>
                 </div>
                 {graphData && graphData.length > 0 ? (
                   <ResponsiveContainer width='100%' height={350}>
                     <BarChart data={graphData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <defs>
-                        <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                          <stop offset="100%" stopColor="#1E40AF" stopOpacity={0.3}/>
+                        <linearGradient id='revenueGradient' x1='0' y1='0' x2='0' y2='1'>
+                          <stop offset='0%' stopColor='#3B82F6' stopOpacity={0.8} />
+                          <stop offset='100%' stopColor='#1E40AF' stopOpacity={0.3} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray='3 3' stroke='#E2E8F0' opacity={0.6} />
                       <XAxis
                         dataKey='date'
-                        tickFormatter={value => new Date(value).toLocaleDateString('da-DK', { 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })}
+                        tickFormatter={value =>
+                          new Date(value).toLocaleDateString('da-DK', {
+                            month: 'short',
+                            day: 'numeric',
+                          })
+                        }
                         tick={{ fill: '#64748B', fontSize: 12 }}
                         axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
                       />
-                      <YAxis 
+                      <YAxis
                         tick={{ fill: '#64748B', fontSize: 12 }}
                         axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
                         tickFormatter={value => {
@@ -386,7 +395,9 @@ const SalesAnalytics: React.FC = () => {
                       <BarChart3 className='w-8 h-8 text-white' />
                     </div>
                     <h3 className='text-xl font-bold text-slate-900 mb-2'>No Revenue Data</h3>
-                    <p className='text-slate-500 font-medium'>Revenue data over time will appear here once you start selling items.</p>
+                    <p className='text-slate-500 font-medium'>
+                      Revenue data over time will appear here once you start selling items.
+                    </p>
                   </div>
                 )}
               </div>
@@ -440,8 +451,8 @@ const SalesAnalytics: React.FC = () => {
               <div className='flex justify-between items-center'>
                 <h2 className='text-lg font-semibold text-gray-900'>Recent Sales</h2>
                 {sales && sales.length > 0 && (
-                  <Button 
-                    variant='secondary' 
+                  <Button
+                    variant='secondary'
                     size='sm'
                     onClick={handleExportCSV}
                     disabled={loading}
@@ -490,7 +501,9 @@ const SalesAnalytics: React.FC = () => {
                       return (
                         <tr key={sale.id || `sale-${index}`} className='hover:bg-gray-50'>
                           <td className='px-6 py-4 whitespace-nowrap'>
-                            <div className='text-sm font-medium text-gray-900'>{sale.itemName || 'Unknown Item'}</div>
+                            <div className='text-sm font-medium text-gray-900'>
+                              {sale.itemName || 'Unknown Item'}
+                            </div>
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap'>
                             <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
@@ -509,7 +522,9 @@ const SalesAnalytics: React.FC = () => {
                             {formatCurrency(profit)}
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
-                            {sale.dateSold ? new Date(sale.dateSold).toLocaleDateString('da-DK') : 'Unknown'}
+                            {sale.dateSold
+                              ? new Date(sale.dateSold).toLocaleDateString('da-DK')
+                              : 'Unknown'}
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
                             {sale.source || 'Unknown'}

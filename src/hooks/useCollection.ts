@@ -106,7 +106,15 @@ export const useCollection = (): UseCollectionReturn => {
         collectionApi.getSealedProductCollection({ sold: true }),
       ]);
 
-      const soldItems = [...soldPsaCards, ...soldRawCards, ...soldSealedProducts];
+      // Deduplicate sold items by ID to prevent duplicate keys in React
+      const allSoldItems = [...soldPsaCards, ...soldRawCards, ...soldSealedProducts];
+      const soldItems = allSoldItems.filter((item, index, array) => {
+        const itemId = item.id || (item as any)._id;
+        return array.findIndex(otherItem => {
+          const otherId = otherItem.id || (otherItem as any)._id;
+          return otherId === itemId;
+        }) === index;
+      });
 
       setState(prev => ({
         ...prev,
@@ -171,7 +179,7 @@ export const useCollection = (): UseCollectionReturn => {
         // Ensure the updated card has the proper ID
         const cardWithId = {
           ...updatedCard,
-          id: updatedCard.id || (updatedCard as any)._id || id
+          id: updatedCard.id || (updatedCard as any)._id || id,
         };
 
         log(`[useCollection] Card with ensured ID:`, cardWithId);
@@ -181,8 +189,11 @@ export const useCollection = (): UseCollectionReturn => {
           const cardToUpdate = prev.psaCards.find(card => card.id === id);
           log(`[useCollection] Looking for card with ID: ${id}`);
           log(`[useCollection] Found card:`, cardToUpdate);
-          log(`[useCollection] Current psaCards IDs:`, prev.psaCards.map(c => ({ id: c.id, _id: (c as any)._id })));
-          
+          log(
+            `[useCollection] Current psaCards IDs:`,
+            prev.psaCards.map(c => ({ id: c.id, _id: (c as any)._id }))
+          );
+
           const updatedCards = prev.psaCards.map(card => {
             const matches = card.id === id;
             log(`[useCollection] Card ${card.id} matches ${id}? ${matches}`);
@@ -190,7 +201,10 @@ export const useCollection = (): UseCollectionReturn => {
           });
 
           log(`[useCollection] Updated cards count: ${updatedCards.length}`);
-          log(`[useCollection] Updated card at position:`, updatedCards.findIndex(c => c.id === id));
+          log(
+            `[useCollection] Updated card at position:`,
+            updatedCards.findIndex(c => c.id === id)
+          );
 
           return {
             ...prev,
@@ -304,7 +318,7 @@ export const useCollection = (): UseCollectionReturn => {
         // Ensure the updated card has the proper ID
         const cardWithId = {
           ...updatedCard,
-          id: updatedCard.id || (updatedCard as any)._id || id
+          id: updatedCard.id || (updatedCard as any)._id || id,
         };
 
         log(`[useCollection] Raw card with ensured ID:`, cardWithId);
@@ -499,13 +513,14 @@ export const useCollection = (): UseCollectionReturn => {
       try {
         log('Downloading PSA card images zip...');
         const zipBlob = await exportApi.zipPsaCardImages(cardIds);
-        
+
         // Generate filename
         const timestamp = new Date().toISOString().split('T')[0];
-        const filename = cardIds && cardIds.length > 0 
-          ? `psa-cards-selected-${timestamp}.zip`
-          : `psa-cards-all-${timestamp}.zip`;
-        
+        const filename =
+          cardIds && cardIds.length > 0
+            ? `psa-cards-selected-${timestamp}.zip`
+            : `psa-cards-all-${timestamp}.zip`;
+
         exportApi.downloadBlob(zipBlob, filename);
         showSuccessToast('PSA card images downloaded successfully');
         log('PSA card images zip downloaded successfully');
@@ -530,13 +545,14 @@ export const useCollection = (): UseCollectionReturn => {
       try {
         log('Downloading raw card images zip...');
         const zipBlob = await exportApi.zipRawCardImages(cardIds);
-        
+
         // Generate filename
         const timestamp = new Date().toISOString().split('T')[0];
-        const filename = cardIds && cardIds.length > 0 
-          ? `raw-cards-selected-${timestamp}.zip`
-          : `raw-cards-all-${timestamp}.zip`;
-        
+        const filename =
+          cardIds && cardIds.length > 0
+            ? `raw-cards-selected-${timestamp}.zip`
+            : `raw-cards-all-${timestamp}.zip`;
+
         exportApi.downloadBlob(zipBlob, filename);
         showSuccessToast('Raw card images downloaded successfully');
         log('Raw card images zip downloaded successfully');
@@ -561,13 +577,14 @@ export const useCollection = (): UseCollectionReturn => {
       try {
         log('Downloading sealed product images zip...');
         const zipBlob = await exportApi.zipSealedProductImages(productIds);
-        
+
         // Generate filename
         const timestamp = new Date().toISOString().split('T')[0];
-        const filename = productIds && productIds.length > 0 
-          ? `sealed-products-selected-${timestamp}.zip`
-          : `sealed-products-all-${timestamp}.zip`;
-        
+        const filename =
+          productIds && productIds.length > 0
+            ? `sealed-products-selected-${timestamp}.zip`
+            : `sealed-products-all-${timestamp}.zip`;
+
         exportApi.downloadBlob(zipBlob, filename);
         showSuccessToast('Sealed product images downloaded successfully');
         log('Sealed product images zip downloaded successfully');
@@ -584,7 +601,7 @@ export const useCollection = (): UseCollectionReturn => {
   // Load collection data on hook initialization
   useEffect(() => {
     fetchAllCollectionData();
-    
+
     // Check if collection needs refresh after returning from add-item page
     const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {

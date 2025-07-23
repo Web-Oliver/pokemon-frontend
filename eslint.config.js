@@ -37,22 +37,25 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       'prettier/prettier': 'error',
-      
+
       // React specific rules
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // TypeScript specific rules
       'no-unused-vars': 'off', // Disable base rule in favor of TypeScript version
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-        destructuredArrayIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // Code quality rules
       'no-console': 'off',
       'no-debugger': 'warn',
@@ -62,8 +65,8 @@ export default [
       'object-shorthand': 'error',
       'prefer-arrow-callback': 'error',
       'prefer-template': 'error',
-      'eqeqeq': ['error', 'always'],
-      'curly': ['error', 'all'],
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
       'no-duplicate-imports': 'error',
     },
   },

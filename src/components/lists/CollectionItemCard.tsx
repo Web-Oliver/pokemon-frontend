@@ -1,6 +1,6 @@
 /**
  * Collection Item Card Component
- * 
+ *
  * Reusable card component for displaying collection items (PSA, Raw Cards, Sealed Products)
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles item card display
@@ -10,15 +10,9 @@
  */
 
 import React from 'react';
-import {
-  Package,
-  Star,
-  Archive,
-  CheckCircle,
-  Eye,
-  DollarSign,
-} from 'lucide-react';
+import { Package, Star, Archive, CheckCircle, Eye, DollarSign } from 'lucide-react';
 import { ImageSlideshow } from '../common/ImageSlideshow';
+import { formatCardNameForDisplay } from '../../utils/cardUtils';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
@@ -41,49 +35,52 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
-  // Ensure we have a consistent ID for the item
-  const itemId = item.id || (item as any)._id || `fallback-${Date.now()}`;
-  
   // Get item display name
   const getItemName = () => {
-    return (item as any).cardId?.cardName || 
-           (item as any).cardName ||
-           (item as any).name ||
-           'Unknown Item';
+    const itemRecord = item as Record<string, unknown>;
+    const cardName = (
+      (itemRecord.cardId as Record<string, unknown>)?.cardName ||
+      itemRecord.cardName ||
+      itemRecord.name ||
+      'Unknown Item'
+    ) as string;
+    
+    // Format card name for display (remove hyphens and parentheses)
+    return formatCardNameForDisplay(cardName);
   };
 
   // Get item badge content based on type and tab
   const getBadgeContent = () => {
+    const itemRecord = item as Record<string, unknown>;
     switch (activeTab) {
       case 'psa-graded':
         return (
           <>
             <Star className='w-4 h-4 mr-1 text-yellow-500' />
-            Grade {(item as any).grade || 'N/A'}
+            Grade {itemRecord.grade || 'N/A'}
           </>
         );
       case 'raw-cards':
         return (
           <>
             <Package className='w-4 h-4 mr-1 text-emerald-500' />
-            {(item as any).condition || 'N/A'}
+            {itemRecord.condition || 'N/A'}
           </>
         );
       case 'sealed-products':
         return (
           <>
             <Archive className='w-4 h-4 mr-1 text-purple-500' />
-            {(item as any).category || 'N/A'}
+            {itemRecord.category || 'N/A'}
           </>
         );
       case 'sold-items':
         return (
           <>
             <CheckCircle className='w-4 h-4 mr-1 text-green-500' />
-            {(item as any).saleDetails?.dateSold 
-              ? new Date((item as any).saleDetails.dateSold).toLocaleDateString() 
-              : 'N/A'
-            }
+            {(item as any).saleDetails?.dateSold
+              ? new Date((item as any).saleDetails.dateSold).toLocaleDateString()
+              : 'N/A'}
           </>
         );
       default:
@@ -94,10 +91,10 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   const isUnsoldTab = activeTab !== 'sold-items';
 
   return (
-    <div className='group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 hover:scale-105 hover:border-indigo-200/50 overflow-hidden'>
+    <div className='group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 hover:scale-105 hover:border-indigo-200/50 overflow-hidden flex flex-col'>
       {/* Card Background Pattern */}
       <div className='absolute inset-0 bg-gradient-to-br from-slate-50/50 to-indigo-50/30 opacity-60'></div>
-      
+
       {/* Card Image Slideshow */}
       <div className='relative z-10 mb-6'>
         <ImageSlideshow
@@ -105,46 +102,48 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
           fallbackIcon={<Package className='w-8 h-8 text-indigo-600' />}
           autoplay={false}
           autoplayDelay={4000}
-          className="h-80 group-hover:scale-105 transition-transform duration-300"
+          className='w-full group-hover:scale-105 transition-transform duration-300'
           showThumbnails={false}
+          adaptiveLayout={true}
+          enableAspectRatioDetection={true}
         />
       </div>
 
-      {/* Card Content */}
-      <div className='relative z-10 space-y-4'>
-        <div className='text-center'>
-          <h4 className='text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
-            {getItemName()}
-          </h4>
-          
-          {/* Grade/Condition Badge */}
-          <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/50'>
-            {getBadgeContent()}
+      {/* Card Content - Flexible space */}
+      <div className='relative z-10 flex flex-col flex-1'>
+        <div className='flex-1 space-y-4'>
+          <div className='text-center'>
+            <h4 className='text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
+              {getItemName()}
+            </h4>
+
+            {/* Grade/Condition Badge */}
+            <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/50'>
+              {getBadgeContent()}
+            </div>
+          </div>
+
+          {/* Price Display */}
+          <div className='text-center space-y-2'>
+            <p className='text-2xl font-bold text-slate-900'>{item.myPrice || '0'} kr.</p>
+
+            {item.sold && (
+              <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200/50'>
+                <CheckCircle className='w-4 h-4 mr-1' />
+                Sold
+              </div>
+            )}
+
+            {activeTab === 'sold-items' && (item as any).saleDetails?.actualSoldPrice && (
+              <p className='text-sm font-medium text-green-600'>
+                Sold: {(item as any).saleDetails.actualSoldPrice} kr.
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Price Display */}
-        <div className='text-center space-y-2'>
-          <p className='text-2xl font-bold text-slate-900'>
-            {item.myPrice || '0'} kr.
-          </p>
-          
-          {item.sold && (
-            <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200/50'>
-              <CheckCircle className='w-4 h-4 mr-1' />
-              Sold
-            </div>
-          )}
-          
-          {activeTab === 'sold-items' && (item as any).saleDetails?.actualSoldPrice && (
-            <p className='text-sm font-medium text-green-600'>
-              Sold: {(item as any).saleDetails.actualSoldPrice} kr.
-            </p>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className='flex flex-col gap-3 pt-4'>
+        {/* Action Buttons - Always at bottom */}
+        <div className='flex flex-col gap-3 pt-4 mt-auto'>
           {/* View Details Button - Always visible */}
           <button
             onClick={() => onViewDetails(item, itemType)}
@@ -153,11 +152,11 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
             <Eye className='w-5 h-5 mr-2' />
             View Details
           </button>
-          
+
           {/* Mark as Sold Button - Only for unsold items */}
           {showMarkAsSoldButton && isUnsoldTab && !item.sold && onMarkAsSold && (
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onMarkAsSold(item, itemType);
               }}

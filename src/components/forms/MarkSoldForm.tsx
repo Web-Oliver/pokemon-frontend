@@ -56,7 +56,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   // Watch deliveryMethod to conditionally show buyer info
   const deliveryMethod = watch('deliveryMethod');
   const showBuyerInfo = deliveryMethod === DeliveryMethod.SENT;
-  const showBuyerName = deliveryMethod === DeliveryMethod.LOCAL_MEETUP || deliveryMethod === DeliveryMethod.SENT;
+  const showBuyerName =
+    deliveryMethod === DeliveryMethod.LOCAL_MEETUP || deliveryMethod === DeliveryMethod.SENT;
 
   const onFormSubmit = (data: FormData) => {
     // Convert date to ISO string if it's not already
@@ -258,7 +259,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                   control={control}
                   rules={{
                     required:
-                      deliveryMethod === DeliveryMethod.SENT || deliveryMethod === DeliveryMethod.LOCAL_MEETUP
+                      deliveryMethod === DeliveryMethod.SENT ||
+                      deliveryMethod === DeliveryMethod.LOCAL_MEETUP
                         ? 'Buyer full name is required'
                         : false,
                   }}

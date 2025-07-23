@@ -1,6 +1,6 @@
 /**
  * Collection Tabs Component
- * 
+ *
  * Tabbed navigation for collection management with Context7 premium design
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles tab navigation and content rendering
@@ -10,13 +10,7 @@
  */
 
 import React from 'react';
-import {
-  Package,
-  Star,
-  Archive,
-  CheckCircle,
-  Plus,
-} from 'lucide-react';
+import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
@@ -106,21 +100,37 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
   // Determine item type based on tab and item properties
   const getItemType = (item: any, activeTab: string): 'psa' | 'raw' | 'sealed' => {
-    if (activeTab === 'psa-graded') return 'psa';
-    if (activeTab === 'raw-cards') return 'raw';
-    if (activeTab === 'sealed-products') return 'sealed';
-    
+    if (activeTab === 'psa-graded') {
+      return 'psa';
+    }
+    if (activeTab === 'raw-cards') {
+      return 'raw';
+    }
+    if (activeTab === 'sealed-products') {
+      return 'sealed';
+    }
+
     // For sold items, detect type based on item properties
     if (activeTab === 'sold-items') {
-      if ('grade' in item || item.grade !== undefined) return 'psa';
-      if ('condition' in item || item.condition !== undefined) return 'raw';
-      if ('category' in item || item.category !== undefined) return 'sealed';
-      
+      if ('grade' in item || item.grade !== undefined) {
+        return 'psa';
+      }
+      if ('condition' in item || item.condition !== undefined) {
+        return 'raw';
+      }
+      if ('category' in item || item.category !== undefined) {
+        return 'sealed';
+      }
+
       // Fallback: check if item has cardId (PSA/Raw cards) or productId (sealed)
-      if (item.cardId || item.cardName) return item.grade ? 'psa' : 'raw';
-      if (item.productId || item.name) return 'sealed';
+      if (item.cardId || item.cardName) {
+        return item.grade ? 'psa' : 'raw';
+      }
+      if (item.productId || item.name) {
+        return 'sealed';
+      }
     }
-    
+
     return 'sealed'; // Default fallback
   };
 
@@ -174,15 +184,44 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
       );
     }
 
-    // Render collection items grid
+    // Debug: Check for duplicate IDs
+    const usedKeys = new Set<string>();
+    const duplicateKeys: string[] = [];
+    
+    data.forEach((item: CollectionItem, index: number) => {
+      const key = item.id || (item as any)._id || `fallback-${index}`;
+      if (usedKeys.has(key)) {
+        duplicateKeys.push(key);
+        console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
+          item,
+          index,
+          activeTab,
+          itemId: item.id,
+          itemMongoId: (item as any)._id,
+          cardId: (item as any).cardId,
+          productId: (item as any).productId
+        });
+      }
+      usedKeys.add(key);
+    });
+
+    if (duplicateKeys.length > 0) {
+      console.error(`[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`, duplicateKeys);
+    }
+
+    // Render collection items grid with guaranteed unique keys
     return (
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
         {data.map((item: CollectionItem, index: number) => {
           const itemType = getItemType(item, activeTab);
-          
+          // Ensure absolutely unique key by combining ID with index as fallback
+          const uniqueKey = item.id || (item as any)._id 
+            ? `${item.id || (item as any)._id}-${index}`
+            : `fallback-${activeTab}-${index}`;
+
           return (
             <CollectionItemCard
-              key={item.id || (item as any)._id || `fallback-${index}`}
+              key={uniqueKey}
               item={item}
               itemType={itemType}
               activeTab={activeTab}

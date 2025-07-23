@@ -12,7 +12,22 @@
  */
 
 import React from 'react';
-import { Package, TrendingUp, DollarSign, Star, Plus, BarChart3, Grid3X3, Edit, Trash2, Minus, CheckCircle, Award, Settings, Info } from 'lucide-react';
+import {
+  Package,
+  TrendingUp,
+  DollarSign,
+  Star,
+  Plus,
+  BarChart3,
+  Grid3X3,
+  Edit,
+  Trash2,
+  Minus,
+  CheckCircle,
+  Award,
+  Settings,
+  Info,
+} from 'lucide-react';
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -22,14 +37,14 @@ import { getRelativeTime } from '../utils/timeUtils';
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
   const { activities: recentActivities, loading: activitiesLoading } = useRecentActivities(5);
-  
+
   // Context7 Collection Statistics Hook
-  const { 
-    totalItems, 
-    totalValueFormatted, 
-    totalSales, 
+  const {
+    totalItems,
+    totalValueFormatted,
+    totalSales,
     topGradedCards,
-    loading: statsLoading 
+    loading: statsLoading,
   } = useCollectionStats();
 
   // Handle navigation to different sections
@@ -54,7 +69,7 @@ const Dashboard: React.FC = () => {
       sale_updated: Edit,
       milestone: Award,
       collection_stats: BarChart3,
-      system: Settings
+      system: Settings,
     };
     return iconMap[type] || Info;
   };
@@ -64,28 +79,28 @@ const Dashboard: React.FC = () => {
       emerald: {
         bg: 'from-emerald-500 to-teal-600',
         badge: 'bg-emerald-100 text-emerald-800',
-        dot: 'bg-emerald-400'
+        dot: 'bg-emerald-400',
       },
       amber: {
         bg: 'from-amber-500 to-orange-600',
         badge: 'bg-amber-100 text-amber-800',
-        dot: 'bg-amber-400'
+        dot: 'bg-amber-400',
       },
       purple: {
         bg: 'from-purple-500 to-violet-600',
         badge: 'bg-purple-100 text-purple-800',
-        dot: 'bg-purple-400'
+        dot: 'bg-purple-400',
       },
       indigo: {
         bg: 'from-indigo-500 to-blue-600',
         badge: 'bg-indigo-100 text-indigo-800',
-        dot: 'bg-indigo-400'
+        dot: 'bg-indigo-400',
       },
       red: {
         bg: 'from-red-500 to-rose-600',
         badge: 'bg-red-100 text-red-800',
-        dot: 'bg-red-400'
-      }
+        dot: 'bg-red-400',
+      },
     };
     return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
   };
@@ -248,7 +263,7 @@ const Dashboard: React.FC = () => {
           {/* Context7 Premium Recent Activity */}
           <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
-            
+
             {/* Header */}
             <div className='p-8 border-b border-slate-200/50 relative z-10'>
               <div className='flex items-center justify-between'>
@@ -273,14 +288,19 @@ const Dashboard: React.FC = () => {
                 </div>
               ) : recentActivities.length > 0 ? (
                 <div className='space-y-6'>
-                  {recentActivities.map((activity) => {
+                  {recentActivities.map(activity => {
                     const IconComponent = getActivityIcon(activity.type);
                     const colors = getColorClasses(activity.metadata?.color || 'indigo');
-                    
+
                     return (
-                      <div key={activity._id} className='flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/50 rounded-2xl p-4 transition-all duration-300'>
+                      <div
+                        key={activity._id}
+                        className='flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/50 rounded-2xl p-4 transition-all duration-300'
+                      >
                         <div className='flex-shrink-0'>
-                          <div className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                          <div
+                            className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                          >
                             <IconComponent className='w-6 h-6 text-white' />
                           </div>
                         </div>
@@ -293,25 +313,33 @@ const Dashboard: React.FC = () => {
                               {getRelativeTime(activity.timestamp)}
                             </span>
                           </div>
-                          <p className='text-sm text-slate-600 mt-1'>
-                            {activity.description}
-                          </p>
+                          <p className='text-sm text-slate-600 mt-1'>{activity.description}</p>
                           <div className='flex items-center mt-2 space-x-3'>
                             {activity.metadata?.badges?.map((badge, index) => (
-                              <span key={index} className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}>
+                              <span
+                                key={index}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}
+                              >
                                 {badge}
                               </span>
                             ))}
-                            {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
+                            {(activity.metadata?.newPrice ||
+                              activity.metadata?.salePrice ||
+                              activity.metadata?.estimatedValue) && (
                               <span className='text-xs text-slate-500'>
-                                {activity.metadata.newPrice && displayPrice(activity.metadata.newPrice)}
-                                {activity.metadata.salePrice && displayPrice(activity.metadata.salePrice)}
-                                {activity.metadata.estimatedValue && `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
+                                {activity.metadata.newPrice &&
+                                  displayPrice(activity.metadata.newPrice)}
+                                {activity.metadata.salePrice &&
+                                  displayPrice(activity.metadata.salePrice)}
+                                {activity.metadata.estimatedValue &&
+                                  `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                        <div
+                          className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                        ></div>
                       </div>
                     );
                   })}
@@ -330,7 +358,7 @@ const Dashboard: React.FC = () => {
 
               {/* Context7 Premium Show More Section */}
               <div className='mt-8 pt-6 border-t border-slate-200/50'>
-                <button 
+                <button
                   onClick={() => handleNavigation('/analytics')}
                   className='w-full group bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-2 border-indigo-200/50 hover:border-indigo-400 rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/20'
                 >

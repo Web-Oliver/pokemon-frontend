@@ -11,7 +11,7 @@
  * Following CLAUDE.md principles for separation of concerns
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
 
 interface SearchSuggestion {
@@ -61,13 +61,13 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   loading = false,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [_isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
       setIsAnimating(true);
       setSelectedIndex(0);
-      
+
       // Add animation timeout
       setTimeout(() => setIsAnimating(false), 300);
     }
@@ -76,7 +76,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isVisible || suggestions.length === 0) return;
+      if (!isVisible || suggestions.length === 0) {
+        return;
+      }
 
       switch (e.key) {
         case 'ArrowDown':
@@ -254,7 +256,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     const textLower = text.toLowerCase();
 
     // First try exact match
-    let matchIndex = textLower.indexOf(searchTerm);
+    const matchIndex = textLower.indexOf(searchTerm);
     if (matchIndex !== -1) {
       return (
         <>
@@ -282,7 +284,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
         matches.push({
           start: match.index,
           end: match.index + match[0].length,
-          word: match[0]
+          word: match[0],
         });
       }
     });
@@ -308,10 +310,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
         // Add highlighted match
         result.push(
-          <span
-            key={index}
-            className='bg-blue-100 text-blue-800 px-1 rounded font-medium'
-          >
+          <span key={index} className='bg-blue-100 text-blue-800 px-1 rounded font-medium'>
             {match.word}
           </span>
         );
@@ -331,10 +330,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   return (
     <div className='absolute top-full left-0 right-0 z-[9999] mt-2'>
       {/* Context7 Clean Overlay */}
-      <div
-        className='fixed inset-0 z-40 bg-black/20'
-        onClick={onClose}
-      />
+      <div className='fixed inset-0 z-40 bg-black/20' onClick={onClose} />
 
       {/* Context7 Clean Dropdown Container */}
       <div className='relative z-[9999]'>
@@ -355,7 +351,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                     {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
                   <p className='text-xs text-gray-500'>
-                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm.length > 20 ? searchTerm.substring(0, 20) + '...' : searchTerm}"
+                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "
+                    {searchTerm.length > 20 ? `${searchTerm.substring(0, 20)}...` : searchTerm}"
                   </p>
                 </div>
               </div>
@@ -414,21 +411,23 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                         <div className='w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center flex-shrink-0'>
                           {activeField === 'set' && <Package className='w-3 h-3 text-white' />}
                           {activeField === 'category' && <Hash className='w-3 h-3 text-white' />}
-                          {activeField === 'cardProduct' && <Search className='w-3 h-3 text-white' />}
+                          {activeField === 'cardProduct' && (
+                            <Search className='w-3 h-3 text-white' />
+                          )}
                         </div>
 
                         <div className='flex-1 min-w-0'>
-                          <h4 className={`text-sm font-medium ${
-                            isSelected ? 'text-blue-900' : 'text-gray-900'
-                          }`}>
+                          <h4
+                            className={`text-sm font-medium ${
+                              isSelected ? 'text-blue-900' : 'text-gray-900'
+                            }`}
+                          >
                             {highlightSearchTerm(displayName, searchTerm)}
                           </h4>
 
                           {/* Context7 Metadata */}
                           {metadata.length > 0 && (
-                            <div className='flex flex-wrap items-center gap-1 mt-1'>
-                              {metadata}
-                            </div>
+                            <div className='flex flex-wrap items-center gap-1 mt-1'>{metadata}</div>
                           )}
 
                           {/* Additional Context */}
@@ -441,9 +440,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
                         {/* Selection indicator */}
                         <div className='flex items-center'>
-                          <div className={`w-2 h-2 rounded-full transition-colors ${
-                            isSelected ? 'bg-blue-500' : 'bg-gray-300'
-                          }`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full transition-colors ${
+                              isSelected ? 'bg-blue-500' : 'bg-gray-300'
+                            }`}
+                          ></div>
                         </div>
                       </div>
                     </button>
@@ -461,7 +462,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                 <span>Navigate</span>
               </div>
               <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>Enter</kbd>
+                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>
+                  Enter
+                </kbd>
                 <span>Select</span>
               </div>
               <div className='flex items-center space-x-1'>

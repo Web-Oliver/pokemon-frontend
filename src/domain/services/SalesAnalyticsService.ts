@@ -119,7 +119,7 @@ export const aggregateByCategory = (sales: ISale[]) => {
     const actualPrice = Number(sale.actualSoldPrice) || 0;
     const myPrice = Number(sale.myPrice) || 0;
     const profit = actualPrice - myPrice;
-    
+
     categoryData[categoryKey].revenue += actualPrice;
     categoryData[categoryKey].profit += profit;
   });

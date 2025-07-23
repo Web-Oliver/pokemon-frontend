@@ -51,7 +51,9 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
 
         <div className='mt-4 p-4 bg-gradient-to-r from-slate-50/80 to-indigo-50/80 rounded-xl border border-slate-200/50 backdrop-blur-sm'>
           <div className='text-sm text-slate-600 space-y-1'>
-            <p className='font-semibold'>• Upload up to {maxFiles} images (max {maxFileSize}MB each)</p>
+            <p className='font-semibold'>
+              • Upload up to {maxFiles} images (max {maxFileSize}MB each)
+            </p>
             <p>• Supported formats: JPG, PNG, WebP</p>
             <p>• Include front, back, and detail shots for best results</p>
           </div>

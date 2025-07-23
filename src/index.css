@@ -43,20 +43,20 @@ body {
   .btn-premium {
     @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-2xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl;
   }
-  
+
   .card-premium {
     @apply bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 hover:scale-102 transition-all duration-500;
   }
-  
+
   .text-gradient {
     @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

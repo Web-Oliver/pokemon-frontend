@@ -10,11 +10,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  Plus,
-  Download,
-  FileText,
-} from 'lucide-react';
+import { Plus, Download, FileText } from 'lucide-react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
@@ -71,11 +67,7 @@ const Collection: React.FC = () => {
 
   // Get all collection items for export functionality
   const getAllCollectionItems = (): CollectionItem[] => {
-    return [
-      ...psaCards,
-      ...rawCards,
-      ...sealedProducts,
-    ];
+    return [...psaCards, ...rawCards, ...sealedProducts];
   };
 
   // Handle navigation to add new item
@@ -85,26 +77,21 @@ const Collection: React.FC = () => {
   };
 
   // Handle navigation to item detail page
-  const handleViewItemDetail = (
-    item: CollectionItem,
-    type: 'psa' | 'raw' | 'sealed'
-  ) => {
+  const handleViewItemDetail = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
     window.history.pushState({}, '', `/collection/${type}/${item.id}`);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   // Handle mark as sold button click
-  const handleMarkAsSold = (
-    item: CollectionItem,
-    type: 'psa' | 'raw' | 'sealed'
-  ) => {
+  const handleMarkAsSold = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
     setSelectedItem({
       id: item.id,
       type,
-      name: (item as any).cardId?.cardName || 
-            (item as any).cardName || 
-            (item as any).name || 
-            'Unknown Item',
+      name:
+        (item as any).cardId?.cardName ||
+        (item as any).cardName ||
+        (item as any).name ||
+        'Unknown Item',
     });
     setIsMarkSoldModalOpen(true);
   };
@@ -167,8 +154,6 @@ const Collection: React.FC = () => {
     selectAllItems(allItems);
   };
 
-
-
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
       {/* Context7 Premium Background Pattern */}
@@ -219,7 +204,6 @@ const Collection: React.FC = () => {
                     <FileText className='w-5 h-5 mr-3' />
                     Select & Export
                   </button>
-
                 </div>
 
                 <button

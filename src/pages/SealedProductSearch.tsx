@@ -5,13 +5,20 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, Package, Filter, ExternalLink, Euro, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Search,
+  Package,
+  Filter,
+  ExternalLink,
+  Euro,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import Input from '../components/common/Input';
 
 const SealedProductSearch: React.FC = () => {
   const [products, setProducts] = useState<ICardMarketReferenceProduct[]>([]);
@@ -41,41 +48,90 @@ const SealedProductSearch: React.FC = () => {
     'Elite-Trainer-Boxes',
     'Starter-Decks',
     'Theme-Decks',
-    'Tins'
+    'Tins',
   ];
 
-  // Fetch CardMarket reference products with pagination
+  // Fetch CardMarket reference products with pagination using optimized search
   const fetchProducts = async (page: number = 1) => {
     try {
       setLoading(true);
       setError(null);
 
-      const params: cardMarketRefProductsApi.CardMarketRefProductsParams = {
+      log('Fetching CardMarket reference products with params:', {
         page,
         limit: itemsPerPage,
-        ...(categoryFilter && { category: categoryFilter }),
-        ...(setNameFilter && { setName: setNameFilter }),
-        ...(availableOnly && { available: true }),
-        ...(searchTerm && { search: searchTerm }),
+        categoryFilter,
+        setNameFilter,
+        availableOnly,
+        searchTerm,
+      });
+
+      let fetchedProducts: ICardMarketReferenceProduct[] = [];
+      let paginationData = {
+        currentPage: page,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        total: 0,
       };
 
-      log('Fetching CardMarket reference products with params:', params);
+      if (searchTerm.trim()) {
+        // Use optimized search when there's a search term
+        const optimizedParams: cardMarketRefProductsApi.OptimizedProductSearchParams = {
+          query: searchTerm.trim(),
+          page,
+          limit: itemsPerPage,
+          ...(categoryFilter && { category: categoryFilter }),
+          ...(setNameFilter && { setName: setNameFilter }),
+          ...(availableOnly && { availableOnly: true }),
+        };
 
-      // Use paginated API now that backend supports it
-      const response = await cardMarketRefProductsApi.getPaginatedCardMarketRefProducts(params);
-      const fetchedProducts = response.products;
-      const paginationData = {
-        currentPage: response.currentPage,
-        totalPages: response.totalPages,
-        hasNextPage: response.hasNextPage,
-        hasPrevPage: response.hasPrevPage,
-        total: response.total,
-      };
+        const optimizedResponse =
+          await cardMarketRefProductsApi.searchProductsOptimized(optimizedParams);
+        fetchedProducts = optimizedResponse.data;
+
+        // Calculate pagination for optimized search
+        const totalResults = optimizedResponse.count;
+        const totalPages = Math.ceil(totalResults / itemsPerPage);
+        paginationData = {
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+          total: totalResults,
+        };
+      } else {
+        // Use paginated API when no search term (browsing/filtering)
+        const params: cardMarketRefProductsApi.CardMarketRefProductsParams = {
+          page,
+          limit: itemsPerPage,
+          ...(categoryFilter && { category: categoryFilter }),
+          ...(setNameFilter && { setName: setNameFilter }),
+          ...(availableOnly && { available: true }),
+        };
+
+        const response: cardMarketRefProductsApi.PaginatedCardMarketRefProductsResponse =
+          await cardMarketRefProductsApi.getPaginatedCardMarketRefProducts(params);
+        fetchedProducts = response.products;
+        paginationData = {
+          currentPage: response.currentPage,
+          totalPages: response.totalPages,
+          hasNextPage: response.hasNextPage,
+          hasPrevPage: response.hasPrevPage,
+          total: response.total,
+        };
+      }
 
       setProducts(fetchedProducts);
       setPagination(paginationData);
 
-      log('CardMarket reference products fetched successfully:', fetchedProducts.length, 'products', 'page', paginationData.currentPage);
+      log(
+        'CardMarket reference products fetched successfully:',
+        fetchedProducts.length,
+        'products',
+        'page',
+        paginationData.currentPage
+      );
     } catch (error) {
       const errorMessage = 'Failed to fetch CardMarket reference products';
       setError(errorMessage);
@@ -213,8 +269,18 @@ const SealedProductSearch: React.FC = () => {
                       ))}
                     </select>
                     <div className='absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10'>
-                      <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+                      <svg
+                        className='w-5 h-5 text-slate-400'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M19 9l-7 7-7-7'
+                        />
                       </svg>
                     </div>
                   </div>
@@ -251,14 +317,24 @@ const SealedProductSearch: React.FC = () => {
                           onChange={e => setAvailableOnly(e.target.checked)}
                           className='sr-only'
                         />
-                        <div className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 ${
-                          availableOnly 
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-500' 
-                            : 'border-slate-300 bg-white group-hover:border-emerald-400'
-                        }`}>
+                        <div
+                          className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 ${
+                            availableOnly
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-500'
+                              : 'border-slate-300 bg-white group-hover:border-emerald-400'
+                          }`}
+                        >
                           {availableOnly && (
-                            <svg className='w-4 h-4 text-white absolute top-0.5 left-0.5' fill='currentColor' viewBox='0 0 20 20'>
-                              <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
+                            <svg
+                              className='w-4 h-4 text-white absolute top-0.5 left-0.5'
+                              fill='currentColor'
+                              viewBox='0 0 20 20'
+                            >
+                              <path
+                                fillRule='evenodd'
+                                d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
+                                clipRule='evenodd'
+                              />
                             </svg>
                           )}
                         </div>
@@ -306,7 +382,9 @@ const SealedProductSearch: React.FC = () => {
                 <div className='flex justify-center items-center py-20'>
                   <div className='text-center'>
                     <LoadingSpinner size='lg' />
-                    <p className='mt-4 text-slate-600 font-medium'>Loading CardMarket products...</p>
+                    <p className='mt-4 text-slate-600 font-medium'>
+                      Loading CardMarket products...
+                    </p>
                   </div>
                 </div>
               )}
@@ -350,12 +428,11 @@ const SealedProductSearch: React.FC = () => {
                   {/* Results Header */}
                   <div className='flex items-center justify-between mb-8'>
                     <div>
-                      <h2 className='text-2xl font-bold text-slate-900'>
-                        CardMarket Products
-                      </h2>
+                      <h2 className='text-2xl font-bold text-slate-900'>CardMarket Products</h2>
                       <p className='text-slate-600 font-medium mt-1'>
                         Showing {products.length} of {pagination.total} products
-                        {pagination.totalPages > 1 && ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
+                        {pagination.totalPages > 1 &&
+                          ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
                       </p>
                     </div>
                     <div className='flex items-center text-sm text-slate-600 bg-slate-100 px-4 py-2 rounded-xl'>
@@ -391,24 +468,23 @@ const SealedProductSearch: React.FC = () => {
                                   <div className='font-bold text-slate-900'>
                                     {convertToDKK(parseFloat(product.price))} DKK
                                   </div>
-                                  <div className='text-xs text-slate-500'>
-                                    €{product.price}
-                                  </div>
+                                  <div className='text-xs text-slate-500'>€{product.price}</div>
                                 </div>
                               </div>
                             )}
-                            
+
                             <div className='flex justify-between items-center'>
                               <span className='text-slate-600 font-medium'>Available:</span>
-                              <span className={`font-bold px-2 py-1 rounded-lg text-sm ${
-                                product.available > 0 
-                                  ? 'text-emerald-700 bg-emerald-100' 
-                                  : 'text-red-700 bg-red-100'
-                              }`}>
-                                {product.available > 0 
+                              <span
+                                className={`font-bold px-2 py-1 rounded-lg text-sm ${
+                                  product.available > 0
+                                    ? 'text-emerald-700 bg-emerald-100'
+                                    : 'text-red-700 bg-red-100'
+                                }`}
+                              >
+                                {product.available > 0
                                   ? `${product.available} in stock`
-                                  : 'Out of stock'
-                                }
+                                  : 'Out of stock'}
                               </span>
                             </div>
 
@@ -454,33 +530,36 @@ const SealedProductSearch: React.FC = () => {
 
                           <div className='flex items-center space-x-2'>
                             {/* Page numbers */}
-                            {Array.from({ length: Math.min(7, pagination.totalPages) }, (_, index) => {
-                              let pageNumber;
-                              if (pagination.totalPages <= 7) {
-                                pageNumber = index + 1;
-                              } else if (pagination.currentPage <= 4) {
-                                pageNumber = index + 1;
-                              } else if (pagination.currentPage >= pagination.totalPages - 3) {
-                                pageNumber = pagination.totalPages - 6 + index;
-                              } else {
-                                pageNumber = pagination.currentPage - 3 + index;
-                              }
+                            {Array.from(
+                              { length: Math.min(7, pagination.totalPages) },
+                              (_, index) => {
+                                let pageNumber;
+                                if (pagination.totalPages <= 7) {
+                                  pageNumber = index + 1;
+                                } else if (pagination.currentPage <= 4) {
+                                  pageNumber = index + 1;
+                                } else if (pagination.currentPage >= pagination.totalPages - 3) {
+                                  pageNumber = pagination.totalPages - 6 + index;
+                                } else {
+                                  pageNumber = pagination.currentPage - 3 + index;
+                                }
 
-                              const isCurrentPage = pageNumber === pagination.currentPage;
-                              return (
-                                <button
-                                  key={pageNumber}
-                                  onClick={() => handlePageChange(pageNumber)}
-                                  className={`w-12 h-12 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
-                                    isCurrentPage
-                                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
-                                      : 'bg-white text-slate-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700'
-                                  }`}
-                                >
-                                  {pageNumber}
-                                </button>
-                              );
-                            })}
+                                const isCurrentPage = pageNumber === pagination.currentPage;
+                                return (
+                                  <button
+                                    key={pageNumber}
+                                    onClick={() => handlePageChange(pageNumber)}
+                                    className={`w-12 h-12 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
+                                      isCurrentPage
+                                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
+                                        : 'bg-white text-slate-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700'
+                                    }`}
+                                  >
+                                    {pageNumber}
+                                  </button>
+                                );
+                              }
+                            )}
                           </div>
 
                           <button
@@ -494,7 +573,8 @@ const SealedProductSearch: React.FC = () => {
                         </div>
 
                         <div className='mt-4 text-center text-sm text-slate-600'>
-                          Page {pagination.currentPage} of {pagination.totalPages} • {pagination.total} total products
+                          Page {pagination.currentPage} of {pagination.totalPages} •{' '}
+                          {pagination.total} total products
                         </div>
                       </div>
                     </div>

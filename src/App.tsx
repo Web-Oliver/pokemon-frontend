@@ -26,6 +26,8 @@ import SalesAnalytics from './pages/SalesAnalytics';
 import Analytics from './pages/Analytics';
 import Activity from './pages/Activity';
 import AddEditItem from './pages/AddEditItem';
+import DbaExport from './pages/DbaExport';
+import DbaSelection from './pages/DbaSelection';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -69,7 +71,8 @@ function App() {
     // Handle edit routes: /collection/edit/{type}/{id}
     if (currentPath.startsWith('/collection/edit/')) {
       const pathParts = currentPath.split('/');
-      if (pathParts.length === 5) { // /collection/edit/{type}/{id}
+      if (pathParts.length === 5) {
+        // /collection/edit/{type}/{id}
         const [, , , type, id] = pathParts;
         if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
           return <AddEditItem />;
@@ -78,9 +81,14 @@ function App() {
     }
 
     // Handle dynamic collection item detail routes
-    if (currentPath.startsWith('/collection/') && currentPath !== '/collection' && currentPath !== '/collection/add') {
+    if (
+      currentPath.startsWith('/collection/') &&
+      currentPath !== '/collection' &&
+      currentPath !== '/collection/add'
+    ) {
       const pathParts = currentPath.split('/');
-      if (pathParts.length === 4) { // /collection/{type}/{id}
+      if (pathParts.length === 4) {
+        // /collection/{type}/{id}
         const [, , type, id] = pathParts;
         if ((type === 'psa' || type === 'raw' || type === 'sealed') && id) {
           return <CollectionItemDetail />;
@@ -89,6 +97,7 @@ function App() {
     }
 
     switch (currentPath) {
+      case '/':
       case '/dashboard':
         return <Dashboard />;
       case '/collection':
@@ -98,7 +107,6 @@ function App() {
       case '/add-item':
         return <AddEditItem />;
       case '/sets':
-        return <SetSearch />;
       case '/set-search':
         return <SetSearch />;
       case '/sealed-products-search':
@@ -106,11 +114,14 @@ function App() {
       case '/auctions':
         return <Auctions />;
       case '/sales-analytics':
-        return <SalesAnalytics />;
       case '/analytics':
-        return <Analytics />;
+        return <SalesAnalytics />;
       case '/activity':
         return <Activity />;
+      case '/dba-export':
+        return <DbaExport />;
+      case '/dba-selection':
+        return <DbaSelection />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

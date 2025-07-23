@@ -15,9 +15,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Archive, Camera, Search, TrendingUp, Package } from 'lucide-react';
-import { ISealedProduct } from '../../domain/models/card';
+import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollection } from '../../hooks/useCollection';
-import { useSearch } from '../../hooks/useSearch';
+// Removed legacy useSearch - using enhanced autocomplete only
+import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { uploadMultipleImages } from '../../api/uploadApi';
 import { getProductCategories } from '../../api/searchApi';
 import Button from '../common/Button';
@@ -26,7 +27,7 @@ import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import SearchDropdown from '../search/SearchDropdown';
+import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -45,7 +46,6 @@ interface FormData {
   dateAdded: string;
 }
 
-
 const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   onCancel,
   onSuccess,
@@ -53,31 +53,33 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   isEditing = false,
 }) => {
   const { addSealedProduct, updateSealedProduct, loading } = useCollection();
-  const {
-    setName,
-    cardProductName: productName,
-    suggestions,
-    activeField,
-    selectedCardData: selectedProductData,
-    updateSetName,
-    updateCardProductName: updateProductName,
-    handleSuggestionSelect,
-    setActiveField,
-    getBestMatch,
-    setSearchMode,
-  } = useSearch();
-  
-  // Set search mode to 'products' for sealed product form
-  useEffect(() => {
-    setSearchMode('products');
-  }, [setSearchMode]);
+
+  // Removed legacy useSearch dependency - using enhanced autocomplete only
+
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
-  const [productCategories, setProductCategories] = useState<Array<{value: string, label: string}>>([]);
+  const [productCategories, setProductCategories] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
+  const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
+    null
+  );
+
+  // Helper function to convert ISO date to YYYY-MM-DD format
+  const formatDateForInput = (isoDate: string | undefined): string => {
+    if (!isoDate) {
+      return new Date().toISOString().split('T')[0];
+    }
+    // Handle both ISO string and already formatted date strings
+    if (isoDate.includes('T')) {
+      return isoDate.split('T')[0];
+    }
+    return isoDate;
+  };
 
   const {
     register,
@@ -85,6 +87,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
@@ -93,9 +96,30 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       availability: initialData?.availability || 0,
       cardMarketPrice: initialData?.cardMarketPrice?.toString() || '',
       myPrice: initialData?.myPrice?.toString() || '',
-      dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
+      dateAdded: formatDateForInput(initialData?.dateAdded),
     },
   });
+
+  // Configure autocomplete fields for reusable search (after useForm hook)
+  const autocompleteFields: AutocompleteField[] = [
+    {
+      id: 'setName',
+      value: watch('setName') || '',
+      placeholder: 'Set Name',
+      type: 'set',
+      required: true,
+    },
+    {
+      id: 'productName',
+      value: watch('productName') || '',
+      placeholder: 'Product Name',
+      type: 'cardProduct',
+      required: true,
+    },
+  ];
+
+  // Create config for enhanced autocomplete
+  const autocompleteConfig = createAutocompleteConfig('products');
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
@@ -106,59 +130,26 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       setValue('availability', initialData.availability || 0);
       setValue('cardMarketPrice', initialData.cardMarketPrice?.toString() || '');
       setValue('myPrice', initialData.myPrice?.toString() || '');
-      setValue('dateAdded', initialData.dateAdded || new Date().toISOString().split('T')[0]);
+      setValue('dateAdded', formatDateForInput(initialData.dateAdded));
       
-      // Update search state to match the loaded data
-      updateSetName(initialData.setName || '');
-      updateProductName(initialData.name || '');
+      // Set selectedProductData for existing products to maintain reference link
+      if (initialData.productId) {
+        setSelectedProductData({
+          _id: initialData.productId,
+          setName: initialData.setName,
+          name: initialData.name,
+          category: initialData.category,
+          available: initialData.availability,
+          price: initialData.cardMarketPrice
+        });
+      }
+      
+      // Update remaining existing images when initialData changes
+      setRemainingExistingImages(initialData.images || []);
     }
-  }, [isEditing, initialData, setValue, updateSetName, updateProductName]);
+  }, [isEditing, initialData, setValue]);
 
-  // Sync search state with form values
-  useEffect(() => {
-    if (setName && !isEditing) {
-      setValue('setName', setName);
-    }
-  }, [setName, setValue, isEditing]);
-
-  useEffect(() => {
-    if (productName && !isEditing) {
-      setValue('productName', productName);
-    }
-  }, [productName, setValue, isEditing]);
-
-  // Auto-fill logic when product is selected from search suggestions
-  useEffect(() => {
-    // Use selectedProductData from useSearch hook which contains the complete product data
-    if (selectedProductData && productName && activeField === null) {
-      console.log('[SEALED PRODUCT] Auto-filling from selected product:', selectedProductData);
-      
-      // Auto-fill set name if available
-      if (selectedProductData.setName) {
-        setValue('setName', selectedProductData.setName);
-      }
-      
-      // Auto-fill category if available
-      if (selectedProductData.category) {
-        setValue('category', selectedProductData.category);
-      }
-      
-      // Auto-fill availability from CardMarket reference data (actual scraped availability number)
-      if (selectedProductData.available !== undefined) {
-        setValue('availability', Number(selectedProductData.available));
-      }
-      
-      // Auto-fill CardMarket price if available (convert from EUR to DKK)
-      if (selectedProductData.price) {
-        const euroPrice = parseFloat(selectedProductData.price);
-        if (!isNaN(euroPrice)) {
-          // Convert EUR to DKK: 1 EUR = 7.46 DKK, rounded to whole number
-          const dkkPrice = Math.round(euroPrice * 7.46);
-          setValue('cardMarketPrice', dkkPrice.toString());
-        }
-      }
-    }
-  }, [selectedProductData, productName, activeField, setValue]);
+  // Removed legacy search state sync - using enhanced autocomplete only
 
   // Watch form fields for validation
   const watchedCategory = watch('category');
@@ -178,7 +169,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         setLoadingOptions(false);
       }
     };
-    
+
     loadOptions();
   }, []);
 
@@ -192,8 +183,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     }
   }, [watchedPrice]);
 
-  const handleImagesChange = (files: File[]) => {
+  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
     setSelectedImages(files);
+    setRemainingExistingImages(remainingExistingUrls || []);
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
@@ -203,37 +195,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     setValue('myPrice', newPrice.toString());
   };
 
-  // Autocomplete event handlers
-  const handleSetNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('setName', value);
-    updateSetName(value);
-    setShowSuggestions(true);
-  };
-
-  const handleProductNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setValue('productName', value);
-    updateProductName(value); // This will search for products, not cards
-    setShowSuggestions(true);
-  };
-
-  const handleSuggestionClick = (suggestion: unknown, fieldType: 'set' | 'cardProduct') => {
-    handleSuggestionSelect(suggestion, fieldType);
-    setShowSuggestions(false);
-  };
-
-  const handleInputFocus = (fieldType: 'set' | 'cardProduct') => {
-    setActiveField(fieldType);
-    setShowSuggestions(true);
-  };
-
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setShowSuggestions(false);
-      setActiveField(null);
-    }, 200);
-  };
+  // Removed legacy autocomplete event handlers - using enhanced autocomplete only
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
@@ -241,14 +203,19 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     try {
       // Ensure a product is selected from CardMarket reference data
       if (!selectedProductData?._id) {
-        throw new Error('Please select a product from the suggestions to ensure reference data link');
+        throw new Error(
+          'Please select a product from the suggestions to ensure reference data link'
+        );
       }
 
-      // Upload images first if any are selected
-      let imageUrls: string[] = [];
+      // Upload new images if any are selected
+      let newImageUrls: string[] = [];
       if (selectedImages.length > 0) {
-        imageUrls = await uploadMultipleImages(selectedImages);
+        newImageUrls = await uploadMultipleImages(selectedImages);
       }
+
+      // Combine existing images with new uploaded images
+      const allImageUrls = [...remainingExistingImages, ...newImageUrls];
 
       // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
@@ -260,7 +227,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         cardMarketPrice: data.cardMarketPrice ? parseFloat(data.cardMarketPrice) : undefined,
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
-        images: imageUrls,
+        images: allImageUrls,
         priceHistory:
           priceHistory.length > 0
             ? priceHistory
@@ -336,107 +303,103 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             <Package className='w-6 h-6 mr-3 text-slate-600' />
             Product Information
           </div>
-          {setName && (
+          {watch('setName') && (
             <div className='flex items-center text-sm text-purple-600 bg-purple-50/80 px-3 py-1 rounded-full backdrop-blur-sm'>
               <Search className='w-4 h-4 mr-1' />
-              Filtering by: {setName}
+              Filtering by: {watch('setName')}
             </div>
           )}
         </h4>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-          {/* Set Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='setName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Set Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='setName'
-                type='text'
-                {...register('setName', {
-                  required: 'Set name is required',
-                  minLength: { value: 2, message: 'Set name must be at least 2 characters' },
-                })}
-                onChange={handleSetNameChange}
-                onFocus={() => handleInputFocus('set')}
-                onBlur={handleInputBlur}
-                disabled={isEditing}
-                className={`w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
-                placeholder='e.g., Sword & Shield, Battle Styles'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.setName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.setName.message}</p>
-            )}
+          {/* Enhanced Autocomplete for Hierarchical Search */}
+          <div className='md:col-span-2'>
+            <EnhancedAutocomplete
+              config={autocompleteConfig}
+              fields={autocompleteFields}
+              onSelectionChange={selectedData => {
+                console.log('[SEALED PRODUCT] Enhanced autocomplete selection:', selectedData);
 
-            {/* Context7 Premium Set Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'set'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
+                // Store selected product data for form submission
+                setSelectedProductData(selectedData);
+
+                // Auto-fill form fields based on selection
+                if (selectedData) {
+                  // Auto-fill set name
+                  if (selectedData.setName) {
+                    setValue('setName', selectedData.setName, { shouldValidate: true });
+                    clearErrors('setName');
+                  }
+
+                  // Auto-fill product name
+                  if (selectedData.name) {
+                    setValue('productName', selectedData.name, { shouldValidate: true });
+                    clearErrors('productName');
+                  }
+
+                  // Auto-fill category
+                  if (selectedData.category) {
+                    setValue('category', selectedData.category, { shouldValidate: true });
+                    clearErrors('category');
+                  }
+
+                  // Auto-fill availability
+                  if (selectedData.available !== undefined) {
+                    setValue('availability', Number(selectedData.available), {
+                      shouldValidate: true,
+                    });
+                    clearErrors('availability');
+                  }
+
+                  // Auto-fill CardMarket price (already in correct currency)
+                  if (selectedData.price) {
+                    const price = parseFloat(selectedData.price);
+                    if (!isNaN(price)) {
+                      setValue('cardMarketPrice', Math.round(price).toString(), { shouldValidate: true });
+                      clearErrors('cardMarketPrice');
+                    }
+                  }
+
+                  console.log('[SEALED PRODUCT] Auto-filled fields:', {
+                    setName: selectedData.setName,
+                    productName: selectedData.name,
+                    category: selectedData.category,
+                    availability: selectedData.available,
+                    cardMarketPrice: selectedData.price
+                      ? Math.round(parseFloat(selectedData.price))
+                      : null,
+                  });
+                }
               }}
-              searchTerm={setName}
-              loading={false}
+              onError={error => {
+                console.error('[SEALED PRODUCT] Enhanced autocomplete error:', error);
+              }}
+              variant='premium'
+              showMetadata={true}
+              allowClear={true}
+              disabled={false}
+              className='premium-search-integration'
             />
           </div>
 
-          {/* Product Name with Context7 Premium Search */}
-          <div className='relative'>
-            <label
-              htmlFor='productName'
-              className='block text-sm font-bold text-slate-700 mb-2 tracking-wide'
-            >
-              Product Name
-              <span className='text-red-500 ml-1'>*</span>
-            </label>
-            <div className='relative group'>
-              <input
-                id='productName'
-                type='text'
-                {...register('productName', {
-                  required: 'Product name is required',
-                  minLength: { value: 2, message: 'Product name must be at least 2 characters' },
-                })}
-                onChange={handleProductNameChange}
-                onFocus={() => handleInputFocus('cardProduct')}
-                onBlur={handleInputBlur}
-                className='w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-300 transition-all duration-300 shadow-lg hover:shadow-xl focus:shadow-2xl placeholder-slate-400 text-slate-700 font-medium'
-                placeholder='e.g., Booster Box, Elite Trainer Box'
-              />
-              <Search className='absolute right-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors duration-300' />
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-            </div>
-            {errors.productName && (
-              <p className='mt-2 text-sm text-red-600 font-medium'>{errors.productName.message}</p>
-            )}
-
-            {/* Context7 Premium Product Suggestions Dropdown */}
-            <SearchDropdown
-              suggestions={suggestions}
-              isVisible={showSuggestions && activeField === 'cardProduct'}
-              activeField={activeField}
-              onSuggestionSelect={(suggestion, fieldType) =>
-                handleSuggestionClick(suggestion, fieldType)
-              }
-              onClose={() => {
-                setShowSuggestions(false);
-                setActiveField(null);
-              }}
-              searchTerm={productName}
-              loading={false}
+          {/* Form Registration for Enhanced Autocomplete Fields */}
+          <div className='hidden'>
+            {/* Register form fields for validation - Enhanced Autocomplete handles the UI */}
+            <input
+              {...register('setName', {
+                required: 'Set name is required',
+                minLength: { value: 2, message: 'Set name must be at least 2 characters' },
+              })}
+              value={watch('setName') || ''}
+              readOnly
+            />
+            <input
+              {...register('productName', {
+                required: 'Product name is required',
+                minLength: { value: 2, message: 'Product name must be at least 2 characters' },
+              })}
+              value={watch('productName') || ''}
+              readOnly
             />
           </div>
 
@@ -448,7 +411,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.category?.message}
               options={productCategories}
-              disabled={loadingOptions}
+              disabled={loadingOptions || isEditing}
             />
             {watchedCategory && (
               <div className='mt-3 p-3 bg-purple-50/80 border border-purple-200/50 rounded-xl backdrop-blur-sm'>
@@ -473,7 +436,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.availability?.message}
               placeholder='0'
-              disabled={!!selectedProductData} // Disable if auto-filled from reference data
+              disabled={!!selectedProductData || isEditing} // Disable if auto-filled from reference data or editing
             />
             {selectedProductData && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
@@ -509,6 +472,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.cardMarketPrice?.message}
               placeholder='0'
+              disabled={isEditing}
             />
             {watchedCardMarketPrice && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
@@ -517,7 +481,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             )}
             {selectedProductData && selectedProductData.price && (
               <div className='mt-2 text-sm text-green-600 font-semibold'>
-                Converted from €{selectedProductData.price} EUR → {Math.round(parseFloat(selectedProductData.price) * 7.46)} kr.
+                CardMarket Price: {Math.round(parseFloat(selectedProductData.price))} kr.
               </div>
             )}
           </div>
@@ -525,19 +489,24 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           <div>
             <Input
               label='My Price (kr.)'
-              type='number'
-              step='0.01'
-              min='0'
+              type='text'
+              inputMode='numeric'
               {...register('myPrice', {
                 required: 'Price is required',
-                min: { value: 0, message: 'Price must be non-negative' },
                 pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'Invalid price format',
+                  value: /^\d+$/,
+                  message: 'Price must be a whole number only',
+                },
+                validate: (value) => {
+                  const num = parseInt(value, 10);
+                  if (isNaN(num) || num < 0) {
+                    return 'Price must be a positive whole number';
+                  }
+                  return true;
                 },
               })}
               error={errors.myPrice?.message}
-              placeholder='0.00'
+              placeholder='0'
             />
             {watchedPrice && (
               <div className='mt-2 text-sm text-slate-600 font-semibold'>
@@ -554,6 +523,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 required: 'Date added is required',
               })}
               error={errors.dateAdded?.message}
+              disabled={isEditing}
             />
 
             {/* Investment Analysis */}
@@ -598,7 +568,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         <div className='relative z-10'>
           <ImageUploader
             onImagesChange={handleImagesChange}
-            existingImageUrls={initialData?.images || []}
+            existingImageUrls={remainingExistingImages}
             multiple={true}
             maxFiles={8}
             maxFileSize={5}

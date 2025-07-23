@@ -8,6 +8,8 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ICard } from '../domain/models/card';
 import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
 import * as cardsApi from '../api/cardsApi';
+import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
+import * as setsApi from '../api/setsApi';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
@@ -62,7 +64,7 @@ export interface UseSearchReturn extends SearchState {
   // General operations
   clearSearch: () => void;
   clearError: () => void;
-  
+
   // Configuration
   setSearchMode: (_mode: 'cards' | 'products') => void;
 }
@@ -86,17 +88,20 @@ export const useSearch = (): UseSearchReturn => {
 
   const debounceRef = useRef<number>();
   const abortControllerRef = useRef<AbortController | null>(null);
-  
+
   // Context7 Enhanced Caching System
   const suggestionsCacheRef = useRef<
-    Map<string, {
-      results: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
-      timestamp: number;
-      score: number;
-      ttl: number;
-    }>
+    Map<
+      string,
+      {
+        results: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
+        timestamp: number;
+        score: number;
+        ttl: number;
+      }
+    >
   >(new Map());
-  
+
   // Context7 Request Deduplication
   const pendingRequestsRef = useRef<Map<string, Promise<any>>>(new Map());
 
@@ -152,13 +157,30 @@ export const useSearch = (): UseSearchReturn => {
       try {
         log(`Searching for: ${query}`);
 
-        // Use new unified search API with hierarchical filtering
-        const results = await searchApi.searchCards(
+        // Always use NEW unified search API for cards
+        const searchResponse = await searchApi.searchCardsOptimized({
           query,
-          state.selectedSet || undefined, // setContext
-          state.selectedCategory || undefined, // categoryContext
-          50 // limit
-        );
+          setName: state.selectedSet || undefined,
+          limit: 50,
+        });
+
+        const results: CardResult[] = searchResponse.data.map(card => ({
+          _id: card._id,
+          cardName: card.cardName,
+          baseName: card.baseName,
+          variety: card.variety || '',
+          pokemonNumber: card.pokemonNumber || '',
+          setInfo: {
+            setName: card.setInfo?.setName || '',
+            year: card.setInfo?.year,
+          },
+          searchScore: card.relevanceScore || card.searchScore,
+          isExactMatch: card.searchMetadata?.confidence === 'very-high',
+          relevanceScore: card.relevanceScore,
+          fuseScore: card.fuseScore,
+          searchMetadata: card.searchMetadata,
+          highlights: card.highlights,
+        }));
 
         // Convert CardResult[] to ICard[] for compatibility
         const cardResults: ICard[] = results.map(result => ({
@@ -216,13 +238,13 @@ export const useSearch = (): UseSearchReturn => {
 
       // Context7 Advanced Cache Key Generation
       const cacheKey = `${fieldType}:${processedQuery}:${state.selectedSet || 'noSet'}:${state.selectedCategory || 'noCategory'}`;
-      
+
       // Context7 TTL-based Cache Check
       const cachedEntry = suggestionsCacheRef.current.get(cacheKey);
       if (cachedEntry) {
         const { results, timestamp, ttl } = cachedEntry;
         const isExpired = Date.now() - timestamp > ttl;
-        
+
         if (!isExpired) {
           console.log(`[SEARCH DEBUG] Using cached suggestions:`, results.length);
           setState(prev => ({ ...prev, suggestions: results }));
@@ -255,51 +277,111 @@ export const useSearch = (): UseSearchReturn => {
 
       try {
         console.log(`[SEARCH DEBUG] Making API call for ${fieldType} suggestions`);
-        
+
         // Create request promise for deduplication
         const requestPromise = (async () => {
           let suggestions: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[] = [];
-          
+
+          // Always use NEW unified search endpoints
           if (fieldType === 'set') {
-            if (searchMode === 'products') {
-              console.log(`[SEARCH DEBUG] Calling searchApi.searchProductSets with query: "${processedQuery}"`);
-              suggestions = await searchApi.searchProductSets(processedQuery, 15); // Product sets for sealed products
-              console.log(`[SEARCH DEBUG] searchProductSets returned:`, suggestions);
-            } else {
-              console.log(`[SEARCH DEBUG] Calling searchApi.searchSets with query: "${processedQuery}"`);
-              suggestions = await searchApi.searchSets(processedQuery, 15); // Card sets for PSA/Raw cards
-              console.log(`[SEARCH DEBUG] searchSets returned:`, suggestions);
-            }
-          } else if (fieldType === 'category') {
-            console.log(`[SEARCH DEBUG] Calling searchApi.searchCategories with query: "${processedQuery}"`);
-            suggestions = await searchApi.searchCategories(processedQuery, 15);
-            console.log(`[SEARCH DEBUG] searchCategories returned:`, suggestions);
-          } else if (fieldType === 'cardProduct') {
-            const searchParams = {
+            console.log(
+              `[SEARCH DEBUG] Calling NEW unified set search with query: "${processedQuery}"`
+            );
+            const setResponse = await searchApi.searchSetsOptimized({
               query: processedQuery,
-              setContext: state.selectedSet || undefined,
-              categoryContext: state.selectedCategory || undefined,
               limit: 15,
-            };
-            
+            });
+            suggestions = setResponse.data.map(set => ({
+              setName: set.setName,
+              year: set.year,
+              score: set.relevanceScore || set.searchScore || 0,
+              source: 'unified-search',
+              isExactMatch: set.searchMetadata?.confidence === 'very-high',
+              searchScore: set.relevanceScore,
+              relevanceScore: set.relevanceScore,
+              fuseScore: set.fuseScore,
+              searchMetadata: set.searchMetadata,
+              highlights: set.highlights,
+            }));
+            console.log(`[SEARCH DEBUG] NEW unified set search returned:`, suggestions);
+          } else if (fieldType === 'category') {
+            console.log(
+              `[SEARCH DEBUG] Getting predefined categories for query: "${processedQuery}"`
+            );
+            // Use predefined categories since searchCategories was removed
+            const allCategories = [
+              { category: 'Blisters', productCount: 100, isExactMatch: false, searchScore: 0 },
+              { category: 'Booster-Boxes', productCount: 200, isExactMatch: false, searchScore: 0 },
+              { category: 'Boosters', productCount: 150, isExactMatch: false, searchScore: 0 },
+              { category: 'Box-Sets', productCount: 50, isExactMatch: false, searchScore: 0 },
+              {
+                category: 'Elite-Trainer-Boxes',
+                productCount: 75,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              { category: 'Theme-Decks', productCount: 120, isExactMatch: false, searchScore: 0 },
+              { category: 'Tins', productCount: 80, isExactMatch: false, searchScore: 0 },
+              { category: 'Trainer-Kits', productCount: 30, isExactMatch: false, searchScore: 0 },
+            ];
+
+            suggestions = allCategories
+              .filter(cat => cat.category.toLowerCase().includes(processedQuery.toLowerCase()))
+              .slice(0, 15);
+            console.log(`[SEARCH DEBUG] Filtered categories returned:`, suggestions);
+          } else if (fieldType === 'cardProduct') {
             if (searchMode === 'products') {
-              console.log(`[SEARCH DEBUG] Calling searchApi.searchProducts with params:`, searchParams);
-              suggestions = await searchApi.searchProducts(
-                processedQuery,
-                state.selectedSet || undefined,
-                state.selectedCategory || undefined,
-                15
+              console.log(
+                `[SEARCH DEBUG] Calling NEW unified product search with query: "${processedQuery}"`
               );
-              console.log(`[SEARCH DEBUG] searchProducts returned:`, suggestions);
+              const productResponse = await searchApi.searchProductsOptimized({
+                query: processedQuery,
+                setName: state.selectedSet || undefined,
+                category: state.selectedCategory || undefined,
+                limit: 15,
+              });
+              suggestions = productResponse.data.map(product => ({
+                _id: product._id,
+                name: product.name,
+                setName: product.setName,
+                category: product.category,
+                available: product.available,
+                price: product.price,
+                searchScore: product.relevanceScore || product.searchScore,
+                isExactMatch: product.searchMetadata?.confidence === 'very-high',
+                relevanceScore: product.relevanceScore,
+                fuseScore: product.fuseScore,
+                searchMetadata: product.searchMetadata,
+                highlights: product.highlights,
+              }));
+              console.log(`[SEARCH DEBUG] NEW unified product search returned:`, suggestions);
             } else {
-              console.log(`[SEARCH DEBUG] Calling searchApi.searchCards with params:`, searchParams);
-              suggestions = await searchApi.searchCards(
-                processedQuery,
-                state.selectedSet || undefined,
-                state.selectedCategory || undefined,
-                15
+              console.log(
+                `[SEARCH DEBUG] Calling NEW unified card search with query: "${processedQuery}"`
               );
-              console.log(`[SEARCH DEBUG] searchCards returned:`, suggestions);
+              const cardResponse = await searchApi.searchCardsOptimized({
+                query: processedQuery,
+                setName: state.selectedSet || undefined,
+                limit: 15,
+              });
+              suggestions = cardResponse.data.map(card => ({
+                _id: card._id,
+                cardName: card.cardName,
+                baseName: card.baseName,
+                variety: card.variety || '',
+                pokemonNumber: card.pokemonNumber || '',
+                setInfo: {
+                  setName: card.setInfo?.setName || '',
+                  year: card.setInfo?.year,
+                },
+                searchScore: card.relevanceScore || card.searchScore,
+                isExactMatch: card.searchMetadata?.confidence === 'very-high',
+                relevanceScore: card.relevanceScore,
+                fuseScore: card.fuseScore,
+                searchMetadata: card.searchMetadata,
+                highlights: card.highlights,
+              }));
+              console.log(`[SEARCH DEBUG] NEW unified card search returned:`, suggestions);
             }
           }
 
@@ -307,7 +389,7 @@ export const useSearch = (): UseSearchReturn => {
           const optimizedSuggestions = suggestions
             .map(suggestion => ({
               ...suggestion,
-              relevanceScore: calculateRelevanceScore(suggestion, processedQuery, fieldType)
+              relevanceScore: calculateRelevanceScore(suggestion, processedQuery, fieldType),
             }))
             .sort((a, b) => b.relevanceScore - a.relevanceScore)
             .slice(0, 15); // Context7 optimal result limit
@@ -328,7 +410,7 @@ export const useSearch = (): UseSearchReturn => {
         pendingRequestsRef.current.set(cacheKey, requestPromise);
 
         const suggestions = await requestPromise;
-        
+
         // Check if request was aborted
         if (signal.aborted) {
           console.log(`[SEARCH DEBUG] Request aborted for: ${cacheKey}`);
@@ -341,7 +423,6 @@ export const useSearch = (): UseSearchReturn => {
           `[SEARCH DEBUG] Successfully set ${suggestions.length} suggestions for ${fieldType}: ${processedQuery}`
         );
         log(`Got ${suggestions.length} optimized suggestions for ${fieldType}: ${processedQuery}`);
-        
       } catch (error) {
         if (error.name === 'AbortError') {
           console.log(`[SEARCH DEBUG] Request aborted for: ${cacheKey}`);
@@ -477,16 +558,26 @@ export const useSearch = (): UseSearchReturn => {
   );
 
   /**
-   * Get best match for auto-fill functionality
+   * Get best match for auto-fill functionality using NEW unified search API
    */
-  const getBestMatch = useCallback(async (query: string): Promise<ICard | null> => {
-    try {
-      return await cardsApi.getBestMatchCard(query);
-    } catch (error) {
-      handleApiError(error, 'Failed to get best match');
-      return null;
-    }
-  }, []);
+  const getBestMatch = useCallback(
+    async (query: string): Promise<ICard | null> => {
+      try {
+        // Use NEW unified search API for best match
+        const searchResponse = await searchApi.searchCardsOptimized({
+          query,
+          setName: state.selectedSet || undefined,
+          limit: 1,
+        });
+
+        return searchResponse.data.length > 0 ? searchResponse.data[0] : null;
+      } catch (error) {
+        handleApiError(error, 'Failed to get best match');
+        return null;
+      }
+    },
+    [state.selectedSet]
+  );
 
   /**
    * Update set name field
@@ -611,56 +702,59 @@ export const useSearch = (): UseSearchReturn => {
     (suggestion: any, query: string, fieldType: string): number => {
       let score = 0;
       const queryLower = query.toLowerCase();
-      
+
       // Get the primary text field for comparison
       const primaryText = (
-        suggestion.cardName || 
-        suggestion.name || 
-        suggestion.setName || 
-        suggestion.category || 
+        suggestion.cardName ||
+        suggestion.name ||
+        suggestion.setName ||
+        suggestion.category ||
         ''
       ).toLowerCase();
-      
+
       // Context7 Scoring Factors
       // 1. Exact match boost
       if (primaryText === queryLower) {
         score += 100;
       }
-      
+
       // 2. Starts with query boost
       if (primaryText.startsWith(queryLower)) {
         score += 50;
       }
-      
+
       // 3. Contains query boost
       if (primaryText.includes(queryLower)) {
         score += 25;
       }
-      
+
       // 4. Length similarity (shorter is better for relevance)
       const lengthDiff = Math.abs(primaryText.length - queryLower.length);
       score += Math.max(0, 20 - lengthDiff);
-      
+
       // 5. Field-specific scoring
       if (fieldType === 'set' && suggestion.isExactMatch) {
         score += 30;
       }
-      
+
       if (fieldType === 'category' && suggestion.isExactMatch) {
         score += 30;
       }
-      
+
       // 6. Context relevance boost
       if (suggestion.setInfo && state.selectedSet) {
-        const setMatch = suggestion.setInfo.setName?.toLowerCase() === state.selectedSet.toLowerCase();
-        if (setMatch) score += 15;
+        const setMatch =
+          suggestion.setInfo.setName?.toLowerCase() === state.selectedSet.toLowerCase();
+        if (setMatch) {
+          score += 15;
+        }
       }
-      
+
       // 7. Popularity/frequency boost (if available)
       if (suggestion.score && typeof suggestion.score === 'number') {
         score += suggestion.score * 0.1;
       }
-      
+
       return score;
     },
     [state.selectedSet]
@@ -680,21 +774,21 @@ export const useSearch = (): UseSearchReturn => {
   useEffect(() => {
     // Periodic cache cleanup
     const cleanupInterval = setInterval(cleanupCache, 60000); // Every minute
-    
+
     return () => {
       // Cleanup debounce timer
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
-      
+
       // Cleanup abort controller
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       // Cleanup interval
       clearInterval(cleanupInterval);
-      
+
       // Clear pending requests
       pendingRequestsRef.current.clear();
     };
@@ -720,7 +814,7 @@ export const useSearch = (): UseSearchReturn => {
     // General operations
     clearSearch,
     clearError,
-    
+
     // Configuration
     setSearchMode,
   };

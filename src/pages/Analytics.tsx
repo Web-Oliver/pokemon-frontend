@@ -39,6 +39,12 @@ import {
   CheckCircle,
   Edit,
   Trash2,
+  Gavel,
+  Minus,
+  Info,
+  Settings,
+  Gift,
+  BarChart,
 } from 'lucide-react';
 import { useActivity, useActivityStats, ACTIVITY_TYPES } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
@@ -49,19 +55,14 @@ import { displayPrice } from '../utils/priceUtils';
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('month');
   const [selectedMetric, setSelectedMetric] = useState('all');
-  
+
   // Context7 Analytics Hooks - Use limited data for analytics
-  const {
-    activities,
-    stats,
-    loading,
-    error,
-    fetchActivities,
-    refresh
-  } = useActivity({ limit: 100 }); // Limit to 100 recent activities for analytics
-  
+  const { activities, stats, loading, error, fetchActivities, refresh } = useActivity({
+    limit: 100,
+  }); // Limit to 100 recent activities for analytics
+
   const { stats: activityStats, loading: statsLoading } = useActivityStats();
-  
+
   // Context7 Collection Statistics Hook - for real collection metrics
   const { totalValueFormatted } = useCollectionStats();
 
@@ -73,18 +74,46 @@ const Analytics: React.FC = () => {
 
   // Context7 Analytics Data Processing
   const processAnalyticsData = () => {
-    if (!activities.length) return null;
+    if (!activities.length) {
+      return null;
+    }
 
     // Remove any duplicates to ensure clean data
-    const uniqueActivities = activities.filter((activity, index, self) => 
-      index === self.findIndex(a => a._id === activity._id)
+    const uniqueActivities = activities.filter(
+      (activity, index, self) => index === self.findIndex(a => a._id === activity._id)
     );
 
-    // Activity type distribution
-    const typeDistribution = uniqueActivities.reduce((acc, activity) => {
-      acc[activity.type] = (acc[activity.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    // Activity type distribution with enhanced categorization
+    const typeDistribution = uniqueActivities.reduce(
+      (acc, activity) => {
+        // Use readable labels for activity types
+        const typeLabel = activity.type.replace(/_/g, ' ').toLowerCase()
+          .replace(/\b\w/g, l => l.toUpperCase());
+        acc[typeLabel] = (acc[typeLabel] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    // Category-based activity grouping for better insights
+    const categoryStats = {
+      collection: 0,
+      auction: 0,
+      sales: 0,
+      system: 0
+    };
+
+    uniqueActivities.forEach(activity => {
+      if (activity.type.includes('CARD') || activity.type.includes('PRICE')) {
+        categoryStats.collection++;
+      } else if (activity.type.includes('AUCTION')) {
+        categoryStats.auction++;
+      } else if (activity.type.includes('SALE')) {
+        categoryStats.sales++;
+      } else {
+        categoryStats.system++;
+      }
+    });
 
     // Daily activity trends (last 30 days)
     const dailyTrends = uniqueActivities
@@ -93,23 +122,29 @@ const Analytics: React.FC = () => {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         return activityDate >= thirtyDaysAgo;
       })
-      .reduce((acc, activity) => {
-        const date = new Date(activity.timestamp).toDateString();
-        acc[date] = (acc[date] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
+      .reduce(
+        (acc, activity) => {
+          const date = new Date(activity.timestamp).toDateString();
+          acc[date] = (acc[date] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
     // Value-related activities
-    const valueActivities = uniqueActivities.filter(activity => 
-      activity.metadata?.newPrice || 
-      activity.metadata?.salePrice || 
-      activity.metadata?.estimatedValue
+    const valueActivities = uniqueActivities.filter(
+      activity =>
+        activity.metadata?.newPrice ||
+        activity.metadata?.salePrice ||
+        activity.metadata?.estimatedValue
     );
 
     const totalValue = valueActivities.reduce((sum, activity) => {
-      const value = activity.metadata?.newPrice || 
-                   activity.metadata?.salePrice || 
-                   activity.metadata?.estimatedValue || 0;
+      const value =
+        activity.metadata?.newPrice ||
+        activity.metadata?.salePrice ||
+        activity.metadata?.estimatedValue ||
+        0;
       return sum + (typeof value === 'number' ? value : 0);
     }, 0);
 
@@ -118,38 +153,55 @@ const Analytics: React.FC = () => {
 
     return {
       typeDistribution,
+      categoryStats,
       dailyTrends,
       valueActivities,
       totalValue,
       totalActivities,
-      mostActiveDay: Object.entries(dailyTrends).sort(([,a], [,b]) => b - a)[0]
+      mostActiveDay: Object.entries(dailyTrends).sort(([, a], [, b]) => b - a)[0],
     };
   };
 
   const analyticsData = processAnalyticsData();
 
-  // Context7 Activity Type Colors
+  // Context7 Activity Type Colors - Enhanced for all activity types
   const getActivityColor = (type: string) => {
     const colorMap = {
       [ACTIVITY_TYPES.CARD_ADDED]: 'emerald',
-      [ACTIVITY_TYPES.PRICE_UPDATE]: 'amber',
-      [ACTIVITY_TYPES.AUCTION_CREATED]: 'purple',
-      [ACTIVITY_TYPES.SALE_COMPLETED]: 'emerald',
       [ACTIVITY_TYPES.CARD_UPDATED]: 'blue',
       [ACTIVITY_TYPES.CARD_DELETED]: 'red',
+      [ACTIVITY_TYPES.PRICE_UPDATE]: 'amber',
+      [ACTIVITY_TYPES.AUCTION_CREATED]: 'purple',
+      [ACTIVITY_TYPES.AUCTION_UPDATED]: 'indigo',
+      [ACTIVITY_TYPES.AUCTION_DELETED]: 'red',
+      [ACTIVITY_TYPES.AUCTION_ITEM_ADDED]: 'emerald',
+      [ACTIVITY_TYPES.AUCTION_ITEM_REMOVED]: 'orange',
+      [ACTIVITY_TYPES.SALE_COMPLETED]: 'emerald',
+      [ACTIVITY_TYPES.SALE_UPDATED]: 'blue',
+      [ACTIVITY_TYPES.MILESTONE]: 'yellow',
+      [ACTIVITY_TYPES.COLLECTION_STATS]: 'cyan',
+      [ACTIVITY_TYPES.SYSTEM]: 'slate',
     };
     return colorMap[type as keyof typeof colorMap] || 'indigo';
   };
 
-  // Context7 Activity Type Icons
+  // Context7 Activity Type Icons - Enhanced for all activity types
   const getActivityIcon = (type: string) => {
     const iconMap = {
       [ACTIVITY_TYPES.CARD_ADDED]: Plus,
       [ACTIVITY_TYPES.CARD_UPDATED]: Edit,
       [ACTIVITY_TYPES.CARD_DELETED]: Trash2,
       [ACTIVITY_TYPES.PRICE_UPDATE]: TrendingUp,
-      [ACTIVITY_TYPES.AUCTION_CREATED]: DollarSign,
+      [ACTIVITY_TYPES.AUCTION_CREATED]: Gavel,
+      [ACTIVITY_TYPES.AUCTION_UPDATED]: Edit,
+      [ACTIVITY_TYPES.AUCTION_DELETED]: Trash2,
+      [ACTIVITY_TYPES.AUCTION_ITEM_ADDED]: Plus,
+      [ACTIVITY_TYPES.AUCTION_ITEM_REMOVED]: Minus,
       [ACTIVITY_TYPES.SALE_COMPLETED]: CheckCircle,
+      [ACTIVITY_TYPES.SALE_UPDATED]: Edit,
+      [ACTIVITY_TYPES.MILESTONE]: Award,
+      [ACTIVITY_TYPES.COLLECTION_STATS]: BarChart,
+      [ACTIVITY_TYPES.SYSTEM]: Settings,
     };
     return iconMap[type as keyof typeof iconMap] || ActivityIcon;
   };
@@ -211,10 +263,10 @@ const Analytics: React.FC = () => {
               <div className='flex items-center space-x-4'>
                 <select
                   value={timeRange}
-                  onChange={(e) => setTimeRange(e.target.value)}
+                  onChange={e => setTimeRange(e.target.value)}
                   className='bg-white/20 border border-white/30 rounded-xl px-4 py-2 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50'
                 >
-                  {timeRangeOptions.map((option) => (
+                  {timeRangeOptions.map(option => (
                     <option key={option.value} value={option.value} className='text-slate-900'>
                       {option.label}
                     </option>
@@ -225,7 +277,9 @@ const Analytics: React.FC = () => {
                   className='p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300 group'
                   disabled={loading}
                 >
-                  <RefreshCw className={`w-5 h-5 transition-transform duration-300 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
+                  <RefreshCw
+                    className={`w-5 h-5 transition-transform duration-300 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`}
+                  />
                 </button>
               </div>
             </div>
@@ -299,8 +353,61 @@ const Analytics: React.FC = () => {
                     Last Activity
                   </p>
                   <p className='text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
-                    {activityStats?.lastActivity ? getRelativeTime(activityStats.lastActivity) : 'No activity'}
+                    {activityStats?.lastActivity
+                      ? getRelativeTime(activityStats.lastActivity)
+                      : 'No activity'}
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Context7 Category Overview */}
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+            <div className='bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/20'>
+              <div className='flex items-center'>
+                <div className='w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center'>
+                  <Package className='w-6 h-6 text-white' />
+                </div>
+                <div className='ml-4'>
+                  <p className='text-sm font-semibold text-slate-600 uppercase tracking-wide'>Collection</p>
+                  <p className='text-2xl font-bold text-slate-900'>{analyticsData?.categoryStats.collection || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/20'>
+              <div className='flex items-center'>
+                <div className='w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center'>
+                  <Gavel className='w-6 h-6 text-white' />
+                </div>
+                <div className='ml-4'>
+                  <p className='text-sm font-semibold text-slate-600 uppercase tracking-wide'>Auctions</p>
+                  <p className='text-2xl font-bold text-slate-900'>{analyticsData?.categoryStats.auction || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/20'>
+              <div className='flex items-center'>
+                <div className='w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center'>
+                  <DollarSign className='w-6 h-6 text-white' />
+                </div>
+                <div className='ml-4'>
+                  <p className='text-sm font-semibold text-slate-600 uppercase tracking-wide'>Sales</p>
+                  <p className='text-2xl font-bold text-slate-900'>{analyticsData?.categoryStats.sales || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className='bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/20'>
+              <div className='flex items-center'>
+                <div className='w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center'>
+                  <Settings className='w-6 h-6 text-white' />
+                </div>
+                <div className='ml-4'>
+                  <p className='text-sm font-semibold text-slate-600 uppercase tracking-wide'>System</p>
+                  <p className='text-2xl font-bold text-slate-900'>{analyticsData?.categoryStats.system || 0}</p>
                 </div>
               </div>
             </div>
@@ -315,23 +422,35 @@ const Analytics: React.FC = () => {
                   <PieChart className='w-6 h-6 mr-3 text-indigo-600' />
                   Activity Distribution
                 </h3>
-                
+
                 {analyticsData && (
                   <div className='space-y-4'>
-                    {Object.entries(analyticsData.typeDistribution).map(([type, count]) => {
-                      const IconComponent = getActivityIcon(type);
-                      const color = getActivityColor(type);
-                      const percentage = (count / (analyticsData?.totalActivities || 1) * 100).toFixed(1);
-                      
+                    {Object.entries(analyticsData.typeDistribution)
+                      .sort(([,a], [,b]) => b - a) // Sort by count descending
+                      .map(([typeLabel, count]) => {
+                      // Convert back to type constant for icon/color lookup
+                      const typeKey = typeLabel.toUpperCase().replace(/ /g, '_');
+                      const IconComponent = getActivityIcon(typeKey);
+                      const color = getActivityColor(typeKey);
+                      const percentage = (
+                        (count / (analyticsData?.totalActivities || 1)) *
+                        100
+                      ).toFixed(1);
+
                       return (
-                        <div key={type} className='flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300'>
+                        <div
+                          key={typeLabel}
+                          className='flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 group'
+                        >
                           <div className='flex items-center'>
-                            <div className={`w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4`}>
+                            <div
+                              className={`w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300`}
+                            >
                               <IconComponent className='w-5 h-5 text-white' />
                             </div>
                             <div>
-                              <p className='font-semibold text-slate-900 capitalize'>
-                                {type.replace(/_/g, ' ')}
+                              <p className='font-semibold text-slate-900'>
+                                {typeLabel}
                               </p>
                               <p className='text-sm text-slate-600'>
                                 {count} event{count !== 1 ? 's' : ''}
@@ -339,10 +458,10 @@ const Analytics: React.FC = () => {
                             </div>
                           </div>
                           <div className='text-right'>
-                            <p className='text-lg font-bold text-slate-900'>{percentage}%</p>
+                            <p className='text-lg font-bold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>{percentage}%</p>
                             <div className={`w-16 h-2 bg-slate-200 rounded-full overflow-hidden`}>
-                              <div 
-                                className={`h-full bg-gradient-to-r from-${color}-500 to-${color}-600 transition-all duration-500`}
+                              <div
+                                className={`h-full bg-gradient-to-r from-${color}-500 to-${color}-600 transition-all duration-500 group-hover:animate-pulse`}
                                 style={{ width: `${percentage}%` }}
                               ></div>
                             </div>
@@ -362,7 +481,7 @@ const Analytics: React.FC = () => {
                   <Target className='w-6 h-6 mr-3 text-indigo-600' />
                   Key Insights
                 </h3>
-                
+
                 <div className='space-y-6'>
                   <div className='p-6 rounded-2xl bg-gradient-to-r from-emerald-50/80 to-teal-50/80 border border-emerald-200/50'>
                     <div className='flex items-center mb-3'>
@@ -370,10 +489,9 @@ const Analytics: React.FC = () => {
                       <h4 className='font-bold text-emerald-900'>Most Active Day</h4>
                     </div>
                     <p className='text-emerald-800'>
-                      {analyticsData?.mostActiveDay && analyticsData.mostActiveDay[1] > 0 ? 
-                        `${new Date(analyticsData.mostActiveDay[0]).toLocaleDateString()} with ${analyticsData.mostActiveDay[1]} activities` :
-                        'Not enough data yet'
-                      }
+                      {analyticsData?.mostActiveDay && analyticsData.mostActiveDay[1] > 0
+                        ? `${new Date(analyticsData.mostActiveDay[0]).toLocaleDateString()} with ${analyticsData.mostActiveDay[1]} activities`
+                        : 'Not enough data yet'}
                     </p>
                   </div>
 
@@ -383,10 +501,9 @@ const Analytics: React.FC = () => {
                       <h4 className='font-bold text-purple-900'>Activity Trend</h4>
                     </div>
                     <p className='text-purple-800'>
-                      {analyticsData?.totalActivities ? 
-                        `${analyticsData.totalActivities} total activities tracked` :
-                        'Start using the app to see trends'
-                      }
+                      {analyticsData?.totalActivities
+                        ? `${analyticsData.totalActivities} total activities tracked`
+                        : 'Start using the app to see trends'}
                     </p>
                   </div>
 
@@ -413,46 +530,92 @@ const Analytics: React.FC = () => {
                   <LineChart className='w-6 h-6 mr-3 text-indigo-600' />
                   Recent Activity Timeline
                 </h3>
-                <button 
+                <button
                   onClick={() => handleNavigation('/activity')}
                   className='px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300'
                 >
                   View All Activities
                 </button>
               </div>
-              
+
               {loading ? (
                 <div className='flex justify-center py-16'>
                   <LoadingSpinner size='lg' text='Loading analytics...' />
                 </div>
               ) : analyticsData?.totalActivities ? (
                 <div className='space-y-4'>
-                  {activities.filter((activity, index, self) => 
-                    index === self.findIndex(a => a._id === activity._id)
-                  ).slice(0, 10).map((activity, index) => {
-                    const IconComponent = getActivityIcon(activity.type);
-                    const color = getActivityColor(activity.type);
-                    
-                    return (
-                      <div key={`${activity._id}-${index}`} className='flex items-center p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300'>
-                        <div className={`w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4`}>
-                          <IconComponent className='w-5 h-5 text-white' />
-                        </div>
-                        <div className='flex-1'>
-                          <p className='font-semibold text-slate-900'>{activity.title}</p>
-                          <p className='text-sm text-slate-600'>{activity.description}</p>
-                        </div>
-                        <div className='text-right'>
-                          <p className='text-sm text-slate-500'>{getRelativeTime(activity.timestamp)}</p>
-                          {(activity.metadata?.newPrice || activity.metadata?.salePrice) && (
-                            <p className='text-sm font-semibold text-slate-900'>
-                              {displayPrice(activity.metadata.newPrice || activity.metadata.salePrice)}
+                  {activities
+                    .filter(
+                      (activity, index, self) =>
+                        index === self.findIndex(a => a._id === activity._id)
+                    )
+                    .slice(0, 10)
+                    .map((activity, index) => {
+                      const IconComponent = getActivityIcon(activity.type);
+                      const color = getActivityColor(activity.type);
+
+                      return (
+                        <div
+                          key={`${activity._id}-${index}`}
+                          className='flex items-center p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 group hover:shadow-md'
+                        >
+                          <div
+                            className={`w-12 h-12 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                          >
+                            <IconComponent className='w-6 h-6 text-white' />
+                          </div>
+                          <div className='flex-1'>
+                            <div className='flex items-center gap-2 mb-1'>
+                              <p className='font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors duration-300'>
+                                {activity.title}
+                              </p>
+                              {activity.priority === 'HIGH' && (
+                                <span className='px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full'>
+                                  High Priority
+                                </span>
+                              )}
+                              {activity.priority === 'CRITICAL' && (
+                                <span className='px-2 py-1 bg-red-200 text-red-800 text-xs font-bold rounded-full'>
+                                  Critical
+                                </span>
+                              )}
+                            </div>
+                            <p className='text-sm text-slate-600'>{activity.description}</p>
+                            {activity.metadata?.cardName && (
+                              <p className='text-xs text-slate-500 mt-1'>
+                                Card: {activity.metadata.cardName}
+                                {activity.metadata.setName && ` • ${activity.metadata.setName}`}
+                              </p>
+                            )}
+                            {activity.metadata?.auctionTitle && (
+                              <p className='text-xs text-slate-500 mt-1'>
+                                Auction: {activity.metadata.auctionTitle}
+                              </p>
+                            )}
+                          </div>
+                          <div className='text-right'>
+                            <p className='text-sm text-slate-500 font-medium'>
+                              {getRelativeTime(activity.timestamp)}
                             </p>
-                          )}
+                            {(activity.metadata?.newPrice || activity.metadata?.salePrice || activity.metadata?.estimatedValue) && (
+                              <p className='text-sm font-semibold text-emerald-700'>
+                                {displayPrice(
+                                  activity.metadata.newPrice || activity.metadata.salePrice || activity.metadata.estimatedValue
+                                )}
+                              </p>
+                            )}
+                            {activity.metadata?.priceChangePercentage && (
+                              <p className={`text-xs font-medium ${
+                                activity.metadata.priceChangePercentage > 0 ? 'text-emerald-600' : 'text-red-600'
+                              }`}>
+                                {activity.metadata.priceChangePercentage > 0 ? '+' : ''}
+                                {activity.metadata.priceChangePercentage.toFixed(1)}%
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               ) : (
                 <div className='text-center py-16'>

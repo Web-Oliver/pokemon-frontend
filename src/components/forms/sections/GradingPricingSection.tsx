@@ -6,14 +6,14 @@
 
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { DollarSign, Star, Award } from 'lucide-react';
+import { Banknote, Star, Award } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
 
 interface GradingPricingSectionProps {
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
+  register: UseFormRegister<Record<string, unknown>>;
+  errors: FieldErrors<Record<string, unknown>>;
   // Card type - determines if we show PSA grades or conditions
   cardType: 'psa' | 'raw';
   // Current form values for display
@@ -73,29 +73,31 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
   const fieldLabel = isPsaCard ? 'PSA Grade' : 'Card Condition';
   const icon = isPsaCard ? Award : Star;
   const IconComponent = icon;
-  
+
   // Color schemes for different card types
-  const colorScheme = isPsaCard 
-    ? { 
+  const colorScheme = isPsaCard
+    ? {
         bg: 'from-blue-50/80 to-indigo-50/80',
         border: 'border-blue-200/50',
         text: 'text-blue-800',
-        accent: 'text-blue-600'
+        accent: 'text-blue-600',
       }
-    : { 
+    : {
         bg: 'from-emerald-50/80 to-teal-50/80',
-        border: 'border-emerald-200/50', 
+        border: 'border-emerald-200/50',
         text: 'text-emerald-800',
-        accent: 'text-emerald-600'
+        accent: 'text-emerald-600',
       };
 
   return (
     <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-      <div className={`absolute inset-0 bg-gradient-to-br from-white/50 ${isPsaCard ? 'to-blue-50/50' : 'to-emerald-50/50'}`}></div>
+      <div
+        className={`absolute inset-0 bg-gradient-to-br from-white/50 ${isPsaCard ? 'to-blue-50/50' : 'to-emerald-50/50'}`}
+      ></div>
 
-      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-        <DollarSign className='w-6 h-6 mr-3 text-slate-600' />
-        {isEditing ? 'Update Price' : (isPsaCard ? 'Grading & Pricing' : 'Condition & Pricing')}
+      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-center relative z-10'>
+        <Banknote className='w-6 h-6 mr-3 text-slate-600' />
+        {isEditing ? 'Update Price (kr.)' : isPsaCard ? 'Grading & Pricing (kr.)' : 'Condition & Pricing (kr.)'}
       </h4>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
@@ -111,11 +113,14 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             disabled={disableGradeConditionEdit}
           />
           {currentGradeOrCondition && (
-            <div className={`mt-3 p-3 bg-gradient-to-r ${colorScheme.bg} ${colorScheme.border} border rounded-xl backdrop-blur-sm`}>
+            <div
+              className={`mt-3 p-3 bg-gradient-to-r ${colorScheme.bg} ${colorScheme.border} border rounded-xl backdrop-blur-sm`}
+            >
               <div className='flex items-center'>
                 <IconComponent className={`w-4 h-4 ${colorScheme.accent} mr-2`} />
                 <span className={`text-sm ${colorScheme.text} font-bold`}>
-                  Selected: {options.find(option => option.value === currentGradeOrCondition)?.label}
+                  Selected:{' '}
+                  {options.find(option => option.value === currentGradeOrCondition)?.label}
                 </span>
               </div>
             </div>
@@ -131,19 +136,24 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         <div>
           <Input
             label='My Price (kr.)'
-            type='number'
-            step='0.01'
-            min='0'
+            type='text'
+            inputMode='numeric'
             {...register('myPrice', {
               required: 'Price is required',
-              min: { value: 0, message: 'Price must be non-negative' },
               pattern: {
-                value: /^\d+(\.\d{1,2})?$/,
-                message: 'Invalid price format',
+                value: /^\d+$/,
+                message: 'Price must be a whole number only',
+              },
+              validate: (value) => {
+                const num = parseInt(value, 10);
+                if (isNaN(num) || num < 0) {
+                  return 'Price must be a positive whole number';
+                }
+                return true;
               },
             })}
             error={errors.myPrice?.message}
-            placeholder='0.00'
+            placeholder='0'
             className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
             disabled={isEditing}
           />

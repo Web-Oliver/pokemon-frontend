@@ -12,7 +12,7 @@ const apiClient: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
     // CACHE FIX: Ensure fresh data for auction operations
     'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache'
+    Pragma: 'no-cache',
   },
   timeout: 10000, // 10 second timeout
 });
