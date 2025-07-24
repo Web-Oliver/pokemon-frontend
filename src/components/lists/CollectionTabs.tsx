@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
@@ -209,9 +210,23 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
       console.error(`[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`, duplicateKeys);
     }
 
-    // Render collection items grid with guaranteed unique keys
+    // Render collection items grid with guaranteed unique keys and futuristic animations
     return (
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
+      <motion.div 
+        className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-8xl mx-auto'
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.2
+            }
+          }
+        }}
+      >
         {data.map((item: CollectionItem, index: number) => {
           const itemType = getItemType(item, activeTab);
           // Ensure absolutely unique key by combining ID with index as fallback
@@ -220,17 +235,51 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
             : `fallback-${activeTab}-${index}`;
 
           return (
-            <CollectionItemCard
+            <motion.div
               key={uniqueKey}
-              item={item}
-              itemType={itemType}
-              activeTab={activeTab}
-              onViewDetails={onViewItemDetail}
-              onMarkAsSold={onMarkAsSold}
-            />
+              variants={{
+                hidden: { 
+                  opacity: 0, 
+                  y: 60,
+                  scale: 0.8,
+                  rotateX: -15
+                },
+                show: { 
+                  opacity: 1, 
+                  y: 0,
+                  scale: 1,
+                  rotateX: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 20,
+                    duration: 0.6
+                  }
+                }
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
+                }
+              }}
+              viewport={{ once: true, margin: "-50px" }}
+              className="mx-auto w-full max-w-sm"
+            >
+              <CollectionItemCard
+                item={item}
+                itemType={itemType}
+                activeTab={activeTab}
+                onViewDetails={onViewItemDetail}
+                onMarkAsSold={onMarkAsSold}
+              />
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     );
   };
 

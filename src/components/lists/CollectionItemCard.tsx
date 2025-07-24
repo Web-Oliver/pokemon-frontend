@@ -9,7 +9,8 @@
  * - Layer 3: UI Building Block component
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, useSpring, useTransform } from 'framer-motion';
 import { Package, Star, Archive, CheckCircle, Eye, DollarSign } from 'lucide-react';
 import { ImageSlideshow } from '../common/ImageSlideshow';
 import { formatCardNameForDisplay } from '../../utils/cardUtils';
@@ -35,6 +36,41 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Framer Motion spring values for 3D hover effects
+  const springConfig = { 
+    type: "spring", 
+    stiffness: 300, 
+    damping: 40, 
+    mass: 1 
+  };
+
+  const mouseX = useSpring(0, springConfig);
+  const mouseY = useSpring(0, springConfig);
+
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
+
+  // Mouse movement handlers for 3D effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseXPos = e.clientX - rect.left;
+    const mouseYPos = e.clientY - rect.top;
+    const xPct = mouseXPos / width - 0.5;
+    const yPct = mouseYPos / height - 0.5;
+    mouseX.set(xPct);
+    mouseY.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   // Get item display name
   const getItemName = () => {
     const itemRecord = item as Record<string, unknown>;
@@ -91,87 +127,184 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   const isUnsoldTab = activeTab !== 'sold-items';
 
   return (
-    <div className='group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 hover:scale-105 hover:border-indigo-200/50 overflow-hidden flex flex-col'>
-      {/* Card Background Pattern */}
-      <div className='absolute inset-0 bg-gradient-to-br from-slate-50/50 to-indigo-50/30 opacity-60'></div>
+    <motion.div 
+      className='group relative rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 overflow-hidden cursor-pointer'
+      onClick={() => onViewDetails(item, itemType)}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ 
+        scale: 1.05,
+        transition: { type: "spring", stiffness: 400, damping: 25 }
+      }}
+      whileTap={{ scale: 0.95 }}
+      style={{ 
+        rotateX, 
+        rotateY,
+        transformStyle: "preserve-3d"
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 40,
+        mass: 1
+      }}
+    >
+      {/* Futuristic glow effects */}
+      <motion.div 
+        className='absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-transparent to-purple-500/10 rounded-3xl pointer-events-none'
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      />
 
-      {/* Card Image Slideshow */}
-      <div className='relative z-10 mb-6'>
-        <ImageSlideshow
-          images={item.images || []}
-          fallbackIcon={<Package className='w-8 h-8 text-indigo-600' />}
-          autoplay={false}
-          autoplayDelay={4000}
-          className='w-full group-hover:scale-105 transition-transform duration-300'
-          showThumbnails={false}
-          adaptiveLayout={true}
-          enableAspectRatioDetection={true}
+      {/* Animated shimmer effect */}
+      <motion.div
+        className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-3xl'
+        initial={{ x: "-100%" }}
+        animate={{ 
+          x: isHovered ? "100%" : "-100%"
+        }}
+        transition={{ 
+          duration: 1.5, 
+          ease: "easeInOut",
+          repeat: isHovered ? Infinity : 0,
+          repeatDelay: 2
+        }}
+      />
+
+      {/* Card Image */}
+      <motion.div 
+        className="relative w-full h-full aspect-[3/5] min-h-[400px]"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <motion.div
+          className="w-full h-full rounded-xl overflow-hidden relative"
+          style={{ 
+            transform: "translateZ(20px)"
+          }}
+        >
+          <ImageSlideshow
+            images={item.images || []}
+            fallbackIcon={<Package className='w-8 h-8 text-indigo-600' />}
+            autoplay={false}
+            autoplayDelay={4000}
+            className='w-full h-full object-cover rounded-xl'
+            showThumbnails={false}
+            adaptiveLayout={false}
+            enableAspectRatioDetection={false}
+          />
+          {/* Image overlay shadow for text readability - works for both single and multiple images */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+        </motion.div>
+
+        {/* Enhanced shadow covering text area */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent z-30 rounded-b-xl pointer-events-none"
         />
-      </div>
+        
+        {/* Additional shadow overlay for better text readability */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black via-black/60 to-transparent z-40 rounded-b-xl pointer-events-none"
+        />
 
-      {/* Card Content - Flexible space */}
-      <div className='relative z-10 flex flex-col flex-1'>
-        <div className='flex-1 space-y-4'>
-          <div className='text-center'>
-            <h4 className='text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-700 transition-colors duration-300'>
-              {getItemName()}
-            </h4>
+        {/* Corner accent */}
+        <motion.div 
+          className="absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/50"
+          initial={{ scale: 1, opacity: 0.7 }}
+          animate={{ 
+            scale: isHovered ? 1.5 : 1,
+            opacity: isHovered ? 1 : 0.7
+          }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 20 
+          }}
+          style={{ transform: "translateZ(30px)" }}
+        />
+      </motion.div>
 
-            {/* Grade/Condition Badge */}
-            <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/50'>
-              {getBadgeContent()}
-            </div>
-          </div>
+      {/* Text Layer - Completely separate and always on top */}
+      <motion.div 
+        className="absolute inset-0 flex flex-col justify-end p-3 pointer-events-none z-50"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
+        {/* Grade Badge */}
+        <motion.div 
+          className="inline-flex items-center justify-center px-2 py-1 rounded-full text-[10px] font-bold mb-2 self-start pointer-events-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xl shadow-indigo-500/50"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          whileHover={{ 
+            scale: 1.1,
+            rotate: [0, -5, 5, 0],
+            shadow: "0 25px 50px -12px rgba(234, 179, 8, 0.8)",
+            transition: { 
+              rotate: { duration: 0.5, ease: "easeInOut" },
+              scale: { type: "spring", stiffness: 400, damping: 10 }
+            }
+          }}
+          transition={{ 
+            delay: 0.5, 
+            type: "spring", 
+            stiffness: 200, 
+            damping: 15 
+          }}
+        >
+          {getBadgeContent()}
+        </motion.div>
+        
+        {/* Set Name */}
+        <motion.p 
+          className="text-[10px] text-gray-300 font-medium mb-1 tracking-wide uppercase leading-tight break-words"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
+        >
+          {(item as any).cardId?.setId?.setName || (item as any).setName || (item as any).cardId?.setName || 'Unknown Set'}
+        </motion.p>
+        
+        {/* Card Name */}
+        <motion.h3 
+          className="text-xs font-bold text-white leading-tight break-words"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          whileHover={{ 
+            scale: 1.02,
+            transition: { type: "spring", stiffness: 400, damping: 25 }
+          }}
+          transition={{ delay: 0.7, duration: 0.4 }}
+        >
+          {getItemName()}
+        </motion.h3>
+      </motion.div>
 
-          {/* Price Display */}
-          <div className='text-center space-y-2'>
-            <p className='text-2xl font-bold text-slate-900'>{item.myPrice || '0'} kr.</p>
-
-            {item.sold && (
-              <div className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200/50'>
-                <CheckCircle className='w-4 h-4 mr-1' />
-                Sold
-              </div>
-            )}
-
-            {activeTab === 'sold-items' && (item as any).saleDetails?.actualSoldPrice && (
-              <p className='text-sm font-medium text-green-600'>
-                Sold: {(item as any).saleDetails.actualSoldPrice} kr.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Action Buttons - Always at bottom */}
-        <div className='flex flex-col gap-3 pt-4 mt-auto'>
-          {/* View Details Button - Always visible */}
-          <button
-            onClick={() => onViewDetails(item, itemType)}
-            className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-          >
-            <Eye className='w-5 h-5 mr-2' />
-            View Details
-          </button>
-
-          {/* Mark as Sold Button - Only for unsold items */}
-          {showMarkAsSoldButton && isUnsoldTab && !item.sold && onMarkAsSold && (
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                onMarkAsSold(item, itemType);
-              }}
-              className='w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
-            >
-              <DollarSign className='w-5 h-5 mr-2' />
-              Mark as Sold
-            </button>
-          )}
-        </div>
-      </div>
+      {/* Price in Bottom Right Corner */}
+      <motion.div 
+        className="absolute bottom-3 right-3 px-3 py-2 rounded-lg text-sm font-black bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg pointer-events-auto z-50"
+        initial={{ scale: 0, x: 20, y: 20 }}
+        animate={{ scale: 1, x: 0, y: 0 }}
+        whileHover={{ 
+          scale: 1.1,
+          transition: { type: "spring", stiffness: 400, damping: 10 }
+        }}
+        transition={{ 
+          delay: 0.8, 
+          type: "spring", 
+          stiffness: 200, 
+          damping: 15 
+        }}
+      >
+        {item.myPrice || '0'} kr.
+      </motion.div>
 
       {/* Hover Effect Overlay */}
       <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl'></div>
-    </div>
+    </motion.div>
   );
 };
 
