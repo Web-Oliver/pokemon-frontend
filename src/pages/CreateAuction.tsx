@@ -140,9 +140,9 @@ const CreateAuction: React.FC = () => {
     const loadCollectionData = async () => {
       try {
         await Promise.all([
-          fetchPsaCards(() => collectionApiService.getAllPsaCards()),
-          fetchRawCards(() => collectionApiService.getAllRawCards()),
-          fetchSealedProducts(() => collectionApiService.getAllSealedProducts()),
+          fetchPsaCards(() => collectionApiService.getPsaGradedCards()),
+          fetchRawCards(() => collectionApiService.getRawCards()),
+          fetchSealedProducts(() => collectionApiService.getSealedProducts()),
         ]);
       } catch (error) {
         log('Error loading collection data:', error);

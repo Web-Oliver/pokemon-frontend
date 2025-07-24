@@ -23,6 +23,7 @@ import {
   Timer,
   Search,
 } from 'lucide-react';
+import ThemeToggle from '../ui/ThemeToggle';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -155,19 +156,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950'>
+    <div className='min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950'>
       {/* Top Navigation Bar - Dark Futuristic */}
-      <header className='bg-zinc-950/90 backdrop-blur-xl shadow-2xl border-b border-zinc-800/50 sticky top-0 z-50'>
+      <header className='bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-zinc-800/50 sticky top-0 z-50'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between h-16'>
-            {/* Brand Logo - Dark Futuristic */}
+            {/* Brand Logo - Stunning Modern Design */}
             <div className='flex items-center space-x-3'>
-              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25'>
+              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20'>
                 <Package className='w-6 h-6 text-white' />
               </div>
               <div>
-                <h1 className='text-lg font-bold text-white'>PokéCollection</h1>
-                <p className='text-xs text-zinc-400'>Futuristic Edition</p>
+                <h1 className='text-lg font-bold text-gray-800 dark:text-white'>PokéCollection</h1>
+                <p className='text-xs text-gray-500 dark:text-zinc-400'>Professional Edition</p>
               </div>
             </div>
 
@@ -189,13 +190,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         onClick={() => setDropdownOpen(isDropdownOpen ? null : item.name)}
                         className={`group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300 whitespace-nowrap ${
                           isDropdownActive
-                            ? `${item.bgColor} text-white shadow-lg shadow-cyan-500/25 scale-105`
-                            : `text-zinc-300 hover:bg-zinc-800/50 hover:${item.textColor} hover:shadow-lg backdrop-blur-sm`
+                            ? `${item.bgColor} text-white shadow-lg shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20 scale-105`
+                            : `text-gray-600 dark:text-zinc-300 hover:bg-gray-100/80 dark:hover:bg-zinc-800/50 hover:${item.textColor} hover:shadow-lg backdrop-blur-sm`
                         }`}
                         aria-label={`Toggle ${item.name} menu`}
                       >
                         <Icon
-                          className={`w-4 h-4 mr-2 ${isDropdownActive ? 'text-white' : 'text-zinc-400'}`}
+                          className={`w-4 h-4 mr-2 ${isDropdownActive ? 'text-white' : 'text-gray-400 dark:text-zinc-400'}`}
                         />
                         <span className='text-xs'>{item.name}</span>
                         <ChevronDown
@@ -258,14 +259,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               })}
             </nav>
 
-            {/* Mobile Menu Button - Dark */}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className='md:hidden p-2 text-zinc-300 hover:text-cyan-400 hover:bg-zinc-800/50 rounded-lg transition-all duration-200'
-              aria-label='Toggle mobile menu'
-            >
-              {sidebarOpen ? <X className='w-5 h-5' /> : <Menu className='w-5 h-5' />}
-            </button>
+            {/* Right Side - Theme Toggle & Mobile Menu */}
+            <div className="flex items-center space-x-3">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+              
+              {/* Mobile Menu Button - Dark */}
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className='md:hidden p-2 text-zinc-300 hover:text-cyan-400 hover:bg-zinc-800/50 rounded-lg transition-all duration-200'
+                aria-label='Toggle mobile menu'
+              >
+                {sidebarOpen ? <X className='w-5 h-5' /> : <Menu className='w-5 h-5' />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation - Dark */}

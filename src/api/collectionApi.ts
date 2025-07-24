@@ -92,7 +92,7 @@ const _mapItemIds = (item: unknown): unknown => {
   }
 
   if (Array.isArray(item)) {
-    const mappedArray = item.map(mapItemIds);
+    const mappedArray = item.map(_mapItemIds);
 
     // Debug: Check for duplicate IDs in arrays (collection items)
     const ids = mappedArray
@@ -132,7 +132,7 @@ const _mapItemIds = (item: unknown): unknown => {
 
       if (Array.isArray(value)) {
         // Process arrays (like images, priceHistory)
-        newItem[key] = value.map((arrayItem: unknown) => mapItemIds(arrayItem));
+        newItem[key] = value.map((arrayItem: unknown) => _mapItemIds(arrayItem));
       } else if (
         typeof value === 'object' &&
         value !== null &&
@@ -140,7 +140,7 @@ const _mapItemIds = (item: unknown): unknown => {
         // Skip known metadata/property objects
         !isMetadataObject(key, value)
       ) {
-        newItem[key] = mapItemIds(value);
+        newItem[key] = _mapItemIds(value);
       }
     });
 
