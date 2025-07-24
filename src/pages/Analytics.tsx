@@ -229,76 +229,34 @@ const Analytics: React.FC = () => {
       error={error}
       variant="default"
     >
-      {/* Context7 Premium Background Pattern */}
-      <div className='absolute inset-0 opacity-30'>
-        <div
-          className='w-full h-full'
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
+      {/* Analytics Controls */}
+      <div className='mb-8'>
+        <div className='flex items-center space-x-4'>
+          <select
+            value={timeRange}
+            onChange={e => setTimeRange(e.target.value)}
+            className='bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg'
+          >
+            {timeRangeOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={refresh}
+            className='p-2 rounded-xl bg-white/80 backdrop-blur-sm border border-white/20 hover:bg-white/90 transition-all duration-300 group shadow-lg'
+            disabled={loading}
+          >
+            <RefreshCw
+              className={`w-5 h-5 text-slate-700 transition-transform duration-300 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`}
+            />
+          </button>
+        </div>
       </div>
 
-      <div className='relative z-10 p-8'>
-        <div className='max-w-7xl mx-auto space-y-8'>
-          {/* Context7 Premium Header */}
-          <div className='bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-3xl shadow-2xl text-white p-10 relative overflow-hidden border border-white/20'>
-            <div className='absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10'></div>
-            <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-white/50 via-white/80 to-white/50'></div>
-
-            <div className='relative z-10'>
-              <div className='flex items-center mb-6'>
-                <button
-                  onClick={() => handleNavigation('/dashboard')}
-                  className='mr-4 p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300 group'
-                >
-                  <ArrowLeft className='w-5 h-5 group-hover:scale-110 transition-transform duration-300' />
-                </button>
-                <div className='w-16 h-16 bg-white/20 rounded-3xl shadow-xl flex items-center justify-center mr-6'>
-                  <BarChart3 className='w-8 h-8 text-white' />
-                </div>
-                <div>
-                  <h1 className='text-4xl font-bold mb-2 tracking-wide drop-shadow-lg'>
-                    Analytics & Insights
-                  </h1>
-                  <p className='text-indigo-100 text-xl font-medium leading-relaxed'>
-                    Comprehensive data analysis and performance metrics
-                  </p>
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className='flex items-center space-x-4'>
-                <select
-                  value={timeRange}
-                  onChange={e => setTimeRange(e.target.value)}
-                  className='bg-white/20 border border-white/30 rounded-xl px-4 py-2 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50'
-                >
-                  {timeRangeOptions.map(option => (
-                    <option key={option.value} value={option.value} className='text-slate-900'>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={refresh}
-                  className='p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300 group'
-                  disabled={loading}
-                >
-                  <RefreshCw
-                    className={`w-5 h-5 transition-transform duration-300 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`}
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Premium floating elements */}
-            <div className='absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full animate-pulse'></div>
-            <div className='absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full animate-pulse delay-75'></div>
-          </div>
-
-          {/* Context7 Key Metrics Grid */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+      {/* Context7 Key Metrics Grid */}
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
             <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-300'>
               <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5'></div>
               <div className='flex items-center relative z-10'>
@@ -638,8 +596,6 @@ const Analytics: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
-      </div>
     </PageLayout>
   );
 };

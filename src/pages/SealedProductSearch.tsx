@@ -202,20 +202,8 @@ const SealedProductSearch: React.FC = () => {
       actions={headerActions}
       variant='emerald'
     >
-      {/* Context7 Premium Background Pattern */}
-      <div className='absolute inset-0 opacity-30'>
-        <div
-          className='w-full h-full'
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
-      </div>
-
-      <div className='relative z-10 p-8'>
-        <div className='max-w-7xl mx-auto space-y-10'>
-          {/* Premium Page Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+      {/* Premium Page Header */}
+      <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
             <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between'>
@@ -599,8 +587,6 @@ const SealedProductSearch: React.FC = () => {
               )}
             </div>
           </div>
-        </div>
-      </div>
     </PageLayout>
   );
 };

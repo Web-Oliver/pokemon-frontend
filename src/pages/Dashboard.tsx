@@ -136,20 +136,8 @@ const Dashboard: React.FC = () => {
       actions={headerActions}
       variant='default'
     >
-      {/* Context7 Premium Background Pattern */}
-      <div className='absolute inset-0 opacity-30'>
-        <div
-          className='w-full h-full'
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
-      </div>
-
-      <div className='relative z-10 p-8'>
-        <div className='max-w-7xl mx-auto space-y-8'>
-          {/* Context7 Premium Welcome Section */}
-          <div className='bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-3xl shadow-2xl text-white p-10 relative overflow-hidden border border-white/20'>
+      {/* Context7 Premium Welcome Section */}
+      <div className='bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-3xl shadow-2xl text-white p-10 relative overflow-hidden border border-white/20'>
             <div className='absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10'></div>
             <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-white/50 via-white/80 to-white/50'></div>
 

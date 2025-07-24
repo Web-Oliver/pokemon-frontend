@@ -39,6 +39,7 @@ import { useExportOperations } from '../hooks/useExportOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { displayPrice } from '../utils/formatting';
 
 const SalesAnalytics: React.FC = () => {
   const {
@@ -63,15 +64,7 @@ const SalesAnalytics: React.FC = () => {
   // Chart colors
   const chartColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('da-DK', {
-      style: 'currency',
-      currency: 'DKK',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(Math.round(amount));
-  };
+  // Use centralized price formatting from utils/formatting.ts
 
   const { exportSalesData } = useExportOperations();
 
@@ -163,15 +156,6 @@ const SalesAnalytics: React.FC = () => {
       actions={headerActions}
       variant="default"
     >
-      {/* Context7 Premium Background Pattern */}
-      <div className='absolute inset-0 opacity-30'>
-        <div
-          className='w-full h-full'
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
-      </div>
 
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
@@ -260,7 +244,7 @@ const SalesAnalytics: React.FC = () => {
                     Revenue
                   </p>
                   <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                    {formatCurrency(kpis?.totalRevenue || 0)}
+                    {displayPrice(kpis?.totalRevenue || 0)}
                   </p>
                   <p className='text-xs text-slate-500 mt-1 font-medium'>Total earned</p>
                 </div>
@@ -369,7 +353,7 @@ const SalesAnalytics: React.FC = () => {
                       />
                       <Tooltip
                         labelFormatter={value => new Date(value).toLocaleDateString('da-DK')}
-                        formatter={(value: number) => [formatCurrency(value), 'Revenue']}
+                        formatter={(value: number) => [displayPrice(value), 'Revenue']}
                         contentStyle={{
                           backgroundColor: 'rgba(255, 255, 255, 0.95)',
                           backdropFilter: 'blur(12px)',
@@ -428,7 +412,7 @@ const SalesAnalytics: React.FC = () => {
                           />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                      <Tooltip formatter={(value: number) => displayPrice(value)} />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -508,15 +492,15 @@ const SalesAnalytics: React.FC = () => {
                             </span>
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                            {formatCurrency(myPrice)}
+                            {displayPrice(myPrice)}
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                            {formatCurrency(actualPrice)}
+                            {displayPrice(actualPrice)}
                           </td>
                           <td
                             className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${profitColor}`}
                           >
-                            {formatCurrency(profit)}
+                            {displayPrice(profit)}
                           </td>
                           <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
                             {sale.dateSold
