@@ -67,9 +67,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   });
 
   useEffect(() => {
-    // Extract auction ID from URL
-    const pathParts = window.location.pathname.split('/');
-    const urlAuctionId = auctionId || pathParts[pathParts.length - 2]; // /auctions/{id}/edit
+    // Extract auction ID from URL using navigationHelper
+    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
 
     if (urlAuctionId && urlAuctionId !== 'auctions') {
       setCurrentAuctionId(urlAuctionId);
@@ -93,15 +92,15 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     }
   }, [currentAuction]);
 
-  // Navigation
+  // Navigation using navigationHelper
   const navigateToAuctionDetail = () => {
-    window.history.pushState({}, '', `/auctions/${currentAuctionId}`);
-    window.location.reload();
+    if (currentAuctionId) {
+      navigationHelper.navigateToAuctionDetail(currentAuctionId);
+    }
   };
 
   const navigateToAuctions = () => {
-    window.history.pushState({}, '', '/auctions');
-    window.location.reload();
+    navigationHelper.navigateToAuctions();
   };
 
   // Handle form input changes
@@ -221,8 +220,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
   // Handle viewing item details (navigate to collection detail)
   const handleViewItemDetail = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
-    window.history.pushState({}, '', `/collection/${type}/${item.id}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToItemDetail(type, item.id);
   };
 
   // Handle mark item as sold (show remove from auction option)
@@ -270,12 +268,12 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   if (loading) {
     return (
       <PageLayout
-        title="Edit Auction"
-        subtitle="Modify your auction details"
+        title='Edit Auction'
+        subtitle='Modify your auction details'
         loading={true}
         error={error}
         actions={headerActions}
-        variant="default"
+        variant='default'
       >
         <div className='absolute inset-0 opacity-30'>
           <div
@@ -302,10 +300,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   if (!currentAuction) {
     return (
       <PageLayout
-        title="Auction Not Found"
+        title='Auction Not Found'
         subtitle="The auction you're trying to edit doesn't exist or has been deleted"
         loading={false}
-        error="Auction not found"
+        error='Auction not found'
         actions={
           <button
             onClick={navigateToAuctions}
@@ -314,19 +312,19 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             Back to Auctions
           </button>
         }
-        variant="default"
+        variant='default'
       />
     );
   }
 
   return (
     <PageLayout
-      title="Edit Auction"
-      subtitle="Modify your auction details and manage items"
+      title='Edit Auction'
+      subtitle='Modify your auction details and manage items'
       loading={loading}
       error={error}
       actions={headerActions}
-      variant="default"
+      variant='default'
     >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
@@ -625,11 +623,11 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             isOpen={showRemoveItemConfirmation}
             onClose={handleCancelRemoveItem}
             onConfirm={confirmRemoveItem}
-            title="Remove Item from Auction"
+            title='Remove Item from Auction'
             description={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
-            confirmText="Remove Item"
-            variant="warning"
-            icon="trash"
+            confirmText='Remove Item'
+            variant='warning'
+            icon='trash'
             isLoading={removingItem}
           />
         </div>

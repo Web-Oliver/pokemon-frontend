@@ -108,7 +108,7 @@ export const searchCardsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`)) as any;
   const data = response.data || response;
 
   // Map the response data
@@ -140,7 +140,7 @@ export const getCardSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
   const data = response.data || response;
 
   // Extract card suggestions from the response
@@ -287,7 +287,7 @@ export const searchSetsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`)) as any;
 
   return {
     success: response.success || true,
@@ -315,7 +315,7 @@ export const getSetSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
 
   // Extract set suggestions from the response
   const setSuggestions = response.suggestions?.sets?.data || [];
@@ -464,7 +464,9 @@ export const searchProductsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/products?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/products?${queryParams.toString()}`
+  )) as any;
 
   return {
     success: response.success || true,
@@ -492,7 +494,7 @@ export const getProductSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
+  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
 
   // Extract product suggestions from the response
   const productSuggestions = response.suggestions?.products?.data || [];
@@ -653,9 +655,9 @@ export const getCardMarketSetNames = async (
     queryParams.append('search', query.trim());
   }
 
-  const response = await unifiedApiClient.get(
+  const response = (await unifiedApiClient.get(
     `/cardmarket-ref-products/set-names?${queryParams.toString()}`
-  ) as any;
+  )) as any;
 
   console.log('[CONSOLIDATED SEARCH] Raw API response:', response);
   console.log('[CONSOLIDATED SEARCH] Response.data:', response.data);

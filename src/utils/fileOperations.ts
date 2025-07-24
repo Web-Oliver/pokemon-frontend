@@ -192,11 +192,13 @@ export const exportToPDF = <T extends Record<string, any>>(
   try {
     // For now, convert to a simple text format that can be viewed as PDF
     // In a real implementation, you'd use jsPDF or similar
-    const textContent = data.map(item => 
-      Object.entries(item)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n')
-    ).join('\n\n');
+    const textContent = data
+      .map(item =>
+        Object.entries(item)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join('\n')
+      )
+      .join('\n\n');
 
     // Create Blob with text content (placeholder for PDF)
     const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
@@ -204,7 +206,9 @@ export const exportToPDF = <T extends Record<string, any>>(
     // Create download link
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = filename.endsWith('.pdf') ? filename.replace('.pdf', '.txt') : `${filename}.txt`;
+    link.download = filename.endsWith('.pdf')
+      ? filename.replace('.pdf', '.txt')
+      : `${filename}.txt`;
 
     // Trigger download
     document.body.appendChild(link);
@@ -213,7 +217,7 @@ export const exportToPDF = <T extends Record<string, any>>(
     // Cleanup
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
-    
+
     console.warn('PDF export is not fully implemented. Exported as text file instead.');
   } catch (error) {
     console.error('PDF Export Error:', error);
@@ -247,7 +251,7 @@ export interface ResponsiveImageConfig {
  * Detects image aspect ratio and provides classification
  */
 export const detectImageAspectRatio = async (imageUrl: string): Promise<ImageAspectInfo> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const img = new Image();
 
     img.onload = () => {

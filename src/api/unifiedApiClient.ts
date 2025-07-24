@@ -85,7 +85,6 @@ class DefaultOptimizationStrategy implements OptimizationStrategy {
   }
 }
 
-
 // ========== UNIFIED API CLIENT (SRP + DIP) ==========
 
 /**
@@ -145,7 +144,7 @@ export class UnifiedApiClient {
       errorMessage = `Failed to ${operation}`,
       logRequest = true,
       logResponse = true,
-      optimization = {}
+      optimization = {},
     } = config;
 
     try {

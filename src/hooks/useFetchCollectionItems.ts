@@ -5,7 +5,7 @@
  * Follows DRY principle - eliminates duplicate data fetching patterns
  */
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useAsyncOperation } from './useAsyncOperation';
 
 export interface FetchCollectionItemsConfig {
@@ -50,22 +50,23 @@ export const useFetchCollectionItems = <T = any>(
     setData: setItems,
   } = useAsyncOperation<T[]>(initialData);
 
-  // Store the last fetch function for refresh capability
-  let lastFetchFn: (() => Promise<T[]>) | null = null;
+  // Store the last fetch function for refresh capability using useRef
+  // This persists across renders and prevents refresh functionality from breaking
+  const lastFetchFnRef = useRef<(() => Promise<T[]>) | null>(null);
 
   const fetchItems = useCallback(
     async (fetchFn: () => Promise<T[]>): Promise<T[] | undefined> => {
-      lastFetchFn = fetchFn;
+      lastFetchFnRef.current = fetchFn;
       return await execute(fetchFn);
     },
     [execute]
   );
 
   const refreshItems = useCallback(async (): Promise<T[] | undefined> => {
-    if (!lastFetchFn) {
+    if (!lastFetchFnRef.current) {
       throw new Error('No fetch function available for refresh. Call fetchItems first.');
     }
-    return await execute(lastFetchFn);
+    return await execute(lastFetchFnRef.current);
   }, [execute]);
 
   return {
@@ -76,6 +77,6 @@ export const useFetchCollectionItems = <T = any>(
     refreshItems,
     clearError,
     setItems,
-    lastFetchFn,
+    lastFetchFn: lastFetchFnRef.current,
   };
 };

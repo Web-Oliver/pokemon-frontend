@@ -2,15 +2,16 @@
  * Sealed Product Operations Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  * Follows Single Responsibility Principle - only handles Sealed product operations
+ * 
+ * OPTIMIZED: Now uses useGenericCrudOperations to eliminate code duplication
+ * Following CLAUDE.md DRY principles - reduced from ~100 lines to ~30 lines
  */
 
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
-import { log } from '../utils/logger';
-import { useAsyncOperation } from './useAsyncOperation';
+import { useGenericCrudOperations } from './useGenericCrudOperations';
 
 export interface UseSealedProductOperationsReturn {
   loading: boolean;
@@ -27,70 +28,40 @@ export interface UseSealedProductOperationsReturn {
 
 /**
  * Hook for Sealed product operations
- * Follows SRP - only handles Sealed product API operations
+ * Uses generic CRUD operations to eliminate code duplication
+ * Follows SRP - only handles Sealed product configuration and interface mapping
  */
 export const useSealedProductOperations = (): UseSealedProductOperationsReturn => {
-  const { loading, error, execute, clearError } = useAsyncOperation();
   const collectionApi = getCollectionApiService();
 
-  const addSealedProduct = useCallback(
-    async (productData: Partial<ISealedProduct>): Promise<ISealedProduct> => {
-      return await execute(async () => {
-        log('Adding sealed product...');
-        const newProduct = await collectionApi.createSealedProduct(productData);
-        log('Sealed product added successfully');
-        showSuccessToast('Sealed product added to collection!');
-        return newProduct;
-      });
-    },
-    [execute, collectionApi]
-  );
+  // Memoize API operations configuration to prevent unnecessary re-renders
+  const apiOperations = useMemo(() => ({
+    create: collectionApi.createSealedProduct.bind(collectionApi),
+    update: collectionApi.updateSealedProduct.bind(collectionApi),
+    delete: collectionApi.deleteSealedProduct.bind(collectionApi),
+    markSold: collectionApi.markSealedProductSold.bind(collectionApi),
+  }), [collectionApi]);
 
-  const updateSealedProduct = useCallback(
-    async (id: string, productData: Partial<ISealedProduct>): Promise<ISealedProduct> => {
-      return await execute(async () => {
-        log(`Updating sealed product ${id}...`);
-        const updatedProduct = await collectionApi.updateSealedProduct(id, productData);
-        log('Sealed product updated successfully');
-        showSuccessToast('Sealed product updated successfully!');
-        return updatedProduct;
-      });
-    },
-    [execute, collectionApi]
-  );
+  // Memoize messages configuration
+  const messages = useMemo(() => ({
+    entityName: 'Sealed Product',
+    addSuccess: 'Sealed product added to collection!',
+    updateSuccess: 'Sealed product updated successfully!',
+    deleteSuccess: 'Sealed product removed from collection!',
+    soldSuccess: 'Sealed product marked as sold!',
+  }), []);
 
-  const deleteSealedProduct = useCallback(
-    async (id: string): Promise<void> => {
-      return await execute(async () => {
-        log(`Deleting sealed product ${id}...`);
-        await collectionApi.deleteSealedProduct(id);
-        log('Sealed product deleted successfully');
-        showSuccessToast('Sealed product removed from collection!');
-      });
-    },
-    [execute, collectionApi]
-  );
+  const { loading, error, add, update, delete: deleteItem, markSold, clearError } = 
+    useGenericCrudOperations<ISealedProduct>(apiOperations, messages);
 
-  const markSealedProductSold = useCallback(
-    async (id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> => {
-      return await execute(async () => {
-        log(`Marking sealed product ${id} as sold...`);
-        const soldProduct = await collectionApi.markSealedProductSold(id, saleDetails);
-        log('Sealed product marked as sold successfully');
-        showSuccessToast('Sealed product marked as sold! 💰');
-        return soldProduct;
-      });
-    },
-    [execute, collectionApi]
-  );
-
+  // Return interface-compatible methods
   return {
     loading,
     error,
-    addSealedProduct,
-    updateSealedProduct,
-    deleteSealedProduct,
-    markSealedProductSold,
+    addSealedProduct: add,
+    updateSealedProduct: update,
+    deleteSealedProduct: deleteItem,
+    markSealedProductSold: markSold,
     clearError,
   };
 };

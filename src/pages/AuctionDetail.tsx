@@ -31,7 +31,7 @@ import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { IAuctionItem } from '../domain/models/auction';
 import { ISaleDetails } from '../domain/models/common';
-import { showWarningToast, showSuccessToast } from '../utils/errorHandler';
+import { showWarningToast, showSuccessToast, handleApiError } from '../utils/errorHandler';
 import { navigationHelper } from '../utils/navigation';
 import { PageLayout } from '../components/layouts/PageLayout';
 
@@ -317,7 +317,10 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         itemType = 'sealed';
         break;
       default:
-        console.error('Unknown item category:', itemCategory);
+        handleApiError(
+          new Error(`Unknown item category: ${itemCategory}`),
+          'Invalid item category'
+        );
         return;
     }
 
@@ -371,8 +374,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       // Refresh the auction to show updated sold status (already handled by markAuctionItemSold)
       // await fetchAuctionById(currentAuctionId);
     } catch (error) {
-      console.error('Error marking item as sold:', error);
-      // Error handling is done by the useCollection hook
+      handleApiError(error, 'Failed to mark item as sold');
     }
   };
 
@@ -457,11 +459,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   if (!currentAuction) {
     return (
       <PageLayout
-        title="Auction Not Found"
-        subtitle="The requested auction could not be found"
+        title='Auction Not Found'
+        subtitle='The requested auction could not be found'
         loading={false}
-        error="Auction not found"
-        variant="default"
+        error='Auction not found'
+        variant='default'
       >
         <div className='absolute inset-0 opacity-30'>
           <div
@@ -494,12 +496,12 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   return (
     <PageLayout
-      title={currentAuction?.topText || "Auction Details"}
-      subtitle={currentAuction?.bottomText || "View and manage auction details"}
+      title={currentAuction?.topText || 'Auction Details'}
+      subtitle={currentAuction?.bottomText || 'View and manage auction details'}
       loading={loading}
       error={error}
       actions={headerActions}
-      variant="default"
+      variant='default'
     >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
@@ -1062,11 +1064,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             isOpen={showDeleteConfirmation}
             onClose={handleCancelDeleteAuction}
             onConfirm={confirmDeleteAuction}
-            title="Delete Auction"
+            title='Delete Auction'
             description={`Are you sure you want to delete the auction "${currentAuction?.topText || 'Untitled Auction'}"? This action cannot be undone and will permanently remove the auction and all its associated data.`}
-            confirmText="Delete Auction"
-            variant="danger"
-            icon="trash"
+            confirmText='Delete Auction'
+            variant='danger'
+            icon='trash'
             isLoading={deleting}
           />
 
@@ -1075,11 +1077,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             isOpen={showRemoveItemConfirmation}
             onClose={handleCancelRemoveItem}
             onConfirm={confirmRemoveItem}
-            title="Remove Item from Auction"
+            title='Remove Item from Auction'
             description={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
-            confirmText="Remove Item"
-            variant="warning"
-            icon="trash"
+            confirmText='Remove Item'
+            variant='warning'
+            icon='trash'
             isLoading={removingItem}
           />
         </div>

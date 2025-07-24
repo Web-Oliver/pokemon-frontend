@@ -6,7 +6,7 @@
  * for the Sales Analytics page component.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
 import { getSalesData, getSalesSummary, getSalesGraphData } from '../api/salesApi';
 import {
@@ -67,7 +67,7 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   /**
    * Fetch sales data from multiple endpoints
    */
-  const fetchSalesData = async (params?: DateRange) => {
+  const fetchSalesData = useCallback(async (params?: DateRange) => {
     setLoading(true);
     setError(null);
 
@@ -98,20 +98,20 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   /**
    * Refresh all data using current date range
    */
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     await fetchSalesData(dateRange);
-  };
+  }, [fetchSalesData, dateRange]);
 
   /**
    * Export sales data to CSV file
    * Following Context7 best practices for file download
    */
-  const exportSalesCSV = () => {
+  const exportSalesCSV = useCallback(() => {
     try {
       // Prepare data with computed values for CSV export
       const exportData = sales.map(sale => ({
@@ -143,15 +143,15 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       log('CSV export failed:', error);
       throw new Error('Failed to export sales data to CSV');
     }
-  };
+  }, [sales, dateRange]);
 
   /**
    * Update date range and fetch new data
    */
-  const handleDateRangeChange = (range: DateRange) => {
+  const handleDateRangeChange = useCallback((range: DateRange) => {
     setDateRange(range);
     fetchSalesData(range);
-  };
+  }, [fetchSalesData]);
 
   // Load initial data on component mount
   useEffect(() => {

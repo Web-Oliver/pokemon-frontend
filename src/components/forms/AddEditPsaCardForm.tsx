@@ -18,8 +18,9 @@ import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
 import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import Button from '../common/Button';
-import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
+import Input from '../common/Input';
+import { ButtonLoading } from '../common/LoadingStates';
 import FormHeader from '../common/FormHeader';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
@@ -121,7 +122,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
   // State for card selection (separate from form hooks for business logic)
   const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : (initialData?.cardId as any)?._id || null
+    typeof initialData?.cardId === 'string'
+      ? initialData.cardId
+      : (initialData?.cardId as any)?._id || null
   );
 
   // Configure autocomplete fields for reusable search (after useForm hook)
@@ -258,7 +261,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             priceHistory.priceHistory.length > 0
               ? priceHistory.priceHistory.map(entry => ({
                   price: entry.price,
-                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
                 }))
               : initialData?.priceHistory,
         };
@@ -293,7 +296,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             priceHistory.priceHistory.length > 0
               ? priceHistory.priceHistory.map(entry => ({
                   price: entry.price,
-                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
                 }))
               : [
                   {
@@ -531,7 +534,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         isEditing={isEditing}
         priceHistory={priceHistory.priceHistory.map(entry => ({
           price: entry.price,
-          dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+          dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
         }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}
@@ -566,10 +569,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
         <Button type='submit' variant='primary' disabled={isSubmitting} className='min-w-[120px]'>
           {isSubmitting ? (
-            <div className='flex items-center'>
-              <LoadingSpinner size='sm' className='mr-2' />
-              {isEditing ? 'Updating...' : 'Adding...'}
-            </div>
+            <ButtonLoading text={isEditing ? 'Updating...' : 'Adding...'} />
           ) : isEditing ? (
             'Update Card'
           ) : (

@@ -13,7 +13,6 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Download, FileText } from 'lucide-react';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import CollectionStats from '../components/lists/CollectionStats';
@@ -22,7 +21,6 @@ import CollectionExportModal from '../components/lists/CollectionExportModal';
 import { CollectionItem } from '../components/lists/CollectionItemCard';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { useCollectionExport } from '../hooks/useCollectionExport';
-import { ISaleDetails } from '../domain/models/common';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
@@ -34,18 +32,8 @@ const Collection: React.FC = () => {
     name: string;
   } | null>(null);
 
-  const {
-    psaCards,
-    rawCards,
-    sealedProducts,
-    soldItems,
-    loading,
-    error,
-    markPsaCardSold,
-    markRawCardSold,
-    markSealedProductSold,
-    refreshCollection,
-  } = useCollectionOperations();
+  const { psaCards, rawCards, sealedProducts, soldItems, loading, error, refreshCollection } =
+    useCollectionOperations();
 
   const {
     isExporting,
@@ -96,32 +84,11 @@ const Collection: React.FC = () => {
     setIsMarkSoldModalOpen(true);
   };
 
-  // Handle mark as sold form submission
-  const handleMarkSoldSubmit = async (saleDetails: ISaleDetails) => {
-    if (!selectedItem) {
-      return;
-    }
-
-    try {
-      switch (selectedItem.type) {
-        case 'psa':
-          await markPsaCardSold(selectedItem.id, saleDetails);
-          break;
-        case 'raw':
-          await markRawCardSold(selectedItem.id, saleDetails);
-          break;
-        case 'sealed':
-          await markSealedProductSold(selectedItem.id, saleDetails);
-          break;
-      }
-
-      // Close modal and reset selected item
-      setIsMarkSoldModalOpen(false);
-      setSelectedItem(null);
-    } catch (error) {
-      console.error('Error marking item as sold:', error);
-      // Error handling is done by the useCollection hook
-    }
+  // Handle successful mark as sold operation
+  const handleMarkSoldSuccess = () => {
+    // Close modal and reset selected item
+    setIsMarkSoldModalOpen(false);
+    setSelectedItem(null);
   };
 
   // Handle modal close
@@ -235,11 +202,14 @@ const Collection: React.FC = () => {
         title={`Mark "${selectedItem?.name}" as Sold`}
         maxWidth='2xl'
       >
-        <MarkSoldForm
-          onSubmit={handleMarkSoldSubmit}
-          onCancel={handleModalClose}
-          isLoading={loading}
-        />
+        {selectedItem && (
+          <MarkSoldForm
+            itemId={selectedItem.id}
+            itemType={selectedItem.type}
+            onCancel={handleModalClose}
+            onSuccess={handleMarkSoldSuccess}
+          />
+        )}
       </Modal>
     </PageLayout>
   );

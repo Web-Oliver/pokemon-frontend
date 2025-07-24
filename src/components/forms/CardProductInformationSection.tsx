@@ -10,19 +10,11 @@
  */
 
 import React from 'react';
-import { LucideIcon, Package, Award, Search } from 'lucide-react';
-import {
-  UseFormRegister,
-  FieldErrors,
-  UseFormSetValue,
-  UseFormWatch,
-  UseFormClearErrors,
-  Control,
-} from 'react-hook-form';
+import { LucideIcon, Search } from 'lucide-react';
+import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue, UseFormClearErrors, Control } from 'react-hook-form';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 import { AutocompleteField, AutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
-import Input from '../common/Input';
-import Select from '../common/Select';
+import { InformationFieldRenderer } from './fields';
 
 interface CardProductInformationSectionProps {
   /** React Hook Form register function */
@@ -54,8 +46,8 @@ interface CardProductInformationSectionProps {
   sectionTitle: string;
   /** Section icon */
   sectionIcon: LucideIcon;
-  /** Whether this is for sealed product form */
-  isSealedProductForm?: boolean;
+  /** Form type - determines which fields to render */
+  formType: 'card' | 'product';
 
   /** Additional read-only fields to display */
   readOnlyFields?: {
@@ -89,7 +81,7 @@ const CardProductInformationSection: React.FC<CardProductInformationSectionProps
   isDisabled = false,
   sectionTitle,
   sectionIcon: SectionIcon,
-  isSealedProductForm = false,
+  formType,
   readOnlyFields = {},
   productCategories = [],
   loadingOptions = false,
@@ -152,94 +144,17 @@ const CardProductInformationSection: React.FC<CardProductInformationSectionProps
           ))}
         </div>
 
-        {/* Read-only display fields for cards */}
-        {!isSealedProductForm && (
-          <>
-            {/* Pokemon Number */}
-            {readOnlyFields.pokemonNumber && (
-              <div>
-                <Input
-                  label='Pokemon Number'
-                  {...register('pokemonNumber')}
-                  error={errors.pokemonNumber?.message}
-                  placeholder='e.g., 006, 025, 150'
-                  disabled={true}
-                  value={watch('pokemonNumber') || ''}
-                  className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
-                />
-              </div>
-            )}
-
-            {/* Base Name */}
-            {readOnlyFields.baseName && (
-              <div>
-                <Input
-                  label='Base Name'
-                  {...register('baseName')}
-                  error={errors.baseName?.message}
-                  placeholder='e.g., Charizard, Pikachu, Mew'
-                  disabled={true}
-                  value={watch('baseName') || ''}
-                  className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
-                />
-              </div>
-            )}
-
-            {/* Variety */}
-            {readOnlyFields.variety && (
-              <div className='md:col-span-2'>
-                <Input
-                  label='Variety'
-                  {...register('variety')}
-                  error={errors.variety?.message}
-                  placeholder='e.g., Holo, Shadowless, 1st Edition'
-                  disabled={true}
-                  value={watch('variety') || ''}
-                  className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
-                />
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Additional fields for sealed products */}
-        {isSealedProductForm && (
-          <>
-            {/* Category */}
-            {readOnlyFields.category && (
-              <div>
-                <Select
-                  label='Category'
-                  {...register('category', { required: 'Category is required' })}
-                  error={errors.category?.message}
-                  options={productCategories}
-                  disabled={loadingOptions || isDisabled}
-                  value={watch('category') || ''}
-                />
-              </div>
-            )}
-
-            {/* Availability */}
-            {readOnlyFields.availability && (
-              <div>
-                <Input
-                  label='Availability'
-                  type='number'
-                  min='0'
-                  {...register('availability', {
-                    required: 'Availability is required',
-                    min: { value: 0, message: 'Availability must be 0 or greater' },
-                    validate: value => !isNaN(Number(value)) || 'Must be a valid number',
-                  })}
-                  error={errors.availability?.message}
-                  placeholder='0'
-                  disabled={isDisabled}
-                  value={watch('availability') || ''}
-                />
-              </div>
-            )}
-          </>
-        )}
+        {/* Dynamic field rendering using composition */}
+        <InformationFieldRenderer
+          fieldType={formType}
+          register={register}
+          errors={errors}
+          watch={watch}
+          readOnlyFields={readOnlyFields}
+          productCategories={productCategories}
+          loadingOptions={loadingOptions}
+          isDisabled={isDisabled}
+        />
       </div>
     </div>
   );

@@ -153,7 +153,7 @@ export const batchExportOperation = exportOperations.batchOperation;
  */
 export const generateAuctionFacebookPost = async (auctionId: string): Promise<string> => {
   // First, get the auction data
-  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`) as any;
+  const auction = (await unifiedApiClient.get(`/auctions/${auctionId}`)) as any;
   const auctionData = (auction.data || auction) as any;
 
   // Prepare the request body for the existing backend endpoint
@@ -167,7 +167,7 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
   };
 
   // Call the existing backend endpoint
-  const response = await unifiedApiClient.post('/generate-facebook-post', requestData) as any;
+  const response = (await unifiedApiClient.post('/generate-facebook-post', requestData)) as any;
   return response.data?.facebookPost || response.facebookPost || response;
 };
 
@@ -192,7 +192,7 @@ export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blo
  */
 export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   // Get auction data to extract image URLs
-  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`) as any;
+  const auction = (await unifiedApiClient.get(`/auctions/${auctionId}`)) as any;
 
   // Extract all image URLs from auction items
   const imageUrls: string[] = [];
@@ -238,7 +238,9 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
               const grade = (item.itemData as any).grade || '0';
               itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
             } else {
-              const condition = ((item.itemData as any).condition || 'NM').replace(/\s+/g, '').toUpperCase();
+              const condition = ((item.itemData as any).condition || 'NM')
+                .replace(/\s+/g, '')
+                .toUpperCase();
               itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
             }
           } else {
@@ -298,7 +300,7 @@ export const zipRawCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/raw-cards?ids=${cardIds.join(',')}`
       : '/export/zip/raw-cards';
-  const rawCards = await unifiedApiClient.get(endpoint) as any;
+  const rawCards = (await unifiedApiClient.get(endpoint)) as any;
   const cardsData = rawCards.data || rawCards;
 
   return createImageZip(cardsData, 'raw-card');
@@ -315,7 +317,7 @@ export const zipPsaCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/psa-cards?ids=${cardIds.join(',')}`
       : '/export/zip/psa-cards';
-  const psaCards = await unifiedApiClient.get(endpoint) as any;
+  const psaCards = (await unifiedApiClient.get(endpoint)) as any;
   const cardsData = psaCards.data || psaCards;
 
   return createImageZip(cardsData, 'psa-card');
@@ -332,7 +334,7 @@ export const zipSealedProductImages = async (productIds?: string[]): Promise<Blo
     productIds && productIds.length > 0
       ? `/export/zip/sealed-products?ids=${productIds.join(',')}`
       : '/export/zip/sealed-products';
-  const sealedProducts = await unifiedApiClient.get(endpoint) as any;
+  const sealedProducts = (await unifiedApiClient.get(endpoint)) as any;
   const productsData = sealedProducts.data || sealedProducts;
 
   return createImageZip(productsData, 'sealed-product');

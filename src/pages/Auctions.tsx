@@ -13,6 +13,8 @@ import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Select from '../components/common/Select';
+import { formatDateWithTime } from '../utils/formatting';
+import { getStatusColor, getStatusPriority } from '../utils/constants';
 
 const Auctions: React.FC = () => {
   const { auctions, loading, error, fetchAuctions, clearError } = useAuction();
@@ -54,21 +56,6 @@ const Auctions: React.FC = () => {
     fetchAuctions();
   };
 
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return 'Invalid Date';
-    }
-  };
-
   // Format currency
   const formatCurrency = (amount: number) => {
     const formatted = new Intl.NumberFormat('da-DK', {
@@ -76,38 +63,6 @@ const Auctions: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(amount);
     return `${formatted} kr.`;
-  };
-
-  // Get status color - Premium design system
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
-      case 'active':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'sold':
-        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-      case 'expired':
-        return 'bg-red-100 text-red-800 border border-red-200';
-      default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
-    }
-  };
-
-  // Get status priority for sorting
-  const getStatusPriority = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 1;
-      case 'draft':
-        return 2;
-      case 'sold':
-        return 3;
-      case 'expired':
-        return 4;
-      default:
-        return 5;
-    }
   };
 
   // Sort auctions by status priority and date
@@ -171,12 +126,12 @@ const Auctions: React.FC = () => {
 
   return (
     <PageLayout
-      title="Auctions"
-      subtitle="Manage and track your Pokémon card auctions"
+      title='Auctions'
+      subtitle='Manage and track your Pokémon card auctions'
       loading={loading}
       error={error}
       actions={headerActions}
-      variant="default"
+      variant='default'
     >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
@@ -423,7 +378,7 @@ const Auctions: React.FC = () => {
                                     <Calendar className='w-3 h-3 text-white' />
                                   </div>
                                   <span className='font-medium'>
-                                    {formatDate(auction.auctionDate)}
+                                    {formatDateWithTime(auction.auctionDate)}
                                   </span>
                                 </div>
 
@@ -463,7 +418,7 @@ const Auctions: React.FC = () => {
                               <div className='text-right'>
                                 <p className='text-sm text-slate-500 font-medium'>Last updated</p>
                                 <p className='text-sm font-bold text-slate-900'>
-                                  {formatDate(auction.updatedAt)}
+                                  {formatDateWithTime(auction.updatedAt)}
                                 </p>
                               </div>
                             </div>

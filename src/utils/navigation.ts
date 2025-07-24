@@ -65,7 +65,14 @@ export const navigationHelper = {
    * Used across multiple pages
    */
   navigateToCollection: () => {
-    navigationHelper.navigateTo('/');
+    navigationHelper.navigateTo('/collection');
+  },
+
+  /**
+   * Navigate to auctions list page
+   */
+  navigateToAuctions: () => {
+    navigationHelper.navigateTo('/auctions');
   },
 
   /**
@@ -126,5 +133,37 @@ export const navigationHelper = {
    */
   isEditPage: () => {
     return window.location.pathname.includes('/edit/');
+  },
+
+  /**
+   * Get URL parameters for collection item detail page
+   * Extracts type and id from /collection/{type}/{id} URLs
+   */
+  getCollectionItemParams: () => {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length === 4 && pathParts[1] === 'collection') {
+      // /collection/{type}/{id}
+      const [, , type, id] = pathParts;
+      return { type, id };
+    }
+    return { type: null, id: null };
+  },
+
+  /**
+   * Get auction ID from current URL
+   * Extracts auction ID from /auctions/{id}/edit or /auctions/{id} URLs
+   */
+  getAuctionIdFromUrl: () => {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts[1] === 'auctions' && pathParts.length >= 3) {
+      if (pathParts[3] === 'edit') {
+        // /auctions/{id}/edit
+        return pathParts[2];
+      } else if (pathParts.length === 3) {
+        // /auctions/{id}
+        return pathParts[2];
+      }
+    }
+    return null;
   },
 };

@@ -145,15 +145,9 @@ const CollectionItemDetail: React.FC = () => {
     }
   };
 
-  // Extract type and id from URL path
+  // Extract type and id from URL path using navigationHelper
   const getUrlParams = () => {
-    const pathParts = window.location.pathname.split('/');
-    if (pathParts.length === 4) {
-      // /collection/{type}/{id}
-      const [, , type, id] = pathParts;
-      return { type, id };
-    }
-    return { type: null, id: null };
+    return navigationHelper.getCollectionItemParams();
   };
 
   useEffect(() => {
@@ -228,8 +222,7 @@ const CollectionItemDetail: React.FC = () => {
       showSuccessToast('Item deleted successfully');
       setShowDeleteConfirm(false);
       // Navigate back to collection
-      window.history.pushState({}, '', '/collection');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      navigationHelper.navigateToCollection();
     } catch (err) {
       handleApiError(err, 'Failed to delete item');
     } finally {
@@ -250,14 +243,12 @@ const CollectionItemDetail: React.FC = () => {
 
     // Navigate to edit form with the item data
     // The edit forms are part of the AddEditItem page with edit mode
-    window.history.pushState({}, '', `/collection/edit/${type}/${id}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToEdit.item(type as 'psa' | 'raw' | 'sealed', id);
   };
 
   const handleBackToCollection = () => {
     // Navigate back to collection
-    window.history.pushState({}, '', '/collection');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToCollection();
   };
 
   const getItemTitle = () => {
@@ -585,169 +576,167 @@ const CollectionItemDetail: React.FC = () => {
           </div>
         ) : (
           <div className='max-w-6xl mx-auto p-8'>
-        {/* Header */}
-        <div className='mb-8'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => {
-              window.history.pushState({}, '', '/collection');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }}
-            className='mb-4'
-          >
-            <ArrowLeft className='w-4 h-4 mr-2' />
-            Back to Collection
-          </Button>
-
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8'>
-            <div className='flex items-start justify-between'>
-              <div>
-                <h1 className='text-3xl font-bold text-slate-900 mb-2'>{getItemTitle()}</h1>
-                <p className='text-xl text-slate-600 mb-2'>{getItemSubtitle()}</p>
-                <p className='text-lg text-slate-500'>Set: {getSetName()}</p>
-              </div>
-              <div className='flex items-center space-x-3'>
-                <Button variant='outline' size='sm' onClick={handleEdit}>
-                  <Edit className='w-4 h-4 mr-2' />
-                  Edit
-                </Button>
-                <Button variant='danger' size='sm' onClick={handleDelete}>
-                  <Trash2 className='w-4 h-4 mr-2' />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content - Details */}
-        <div className='space-y-6 mb-8'>
-          {/* Basic Information */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-            <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
-              <Info className='w-5 h-5 mr-2' />
-              Basic Information
-            </h2>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-slate-600'>My Price:</span>
-                  <span className='font-bold text-slate-900'>{item.myPrice || '0'} kr.</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-slate-600'>Date Added:</span>
-                  <span className='font-medium text-slate-900'>
-                    {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
-                  </span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-slate-600'>Status:</span>
-                  <span className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}>
-                    {item.sold ? 'Sold' : 'Available'}
-                  </span>
-                </div>
-              </div>
-
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-slate-600'>Item Type:</span>
-                  <span className='font-medium text-slate-900'>
-                    {(() => {
-                      const { type } = getUrlParams();
-                      return type === 'psa'
-                        ? 'PSA Graded Card'
-                        : type === 'raw'
-                          ? 'Raw Card'
-                          : 'Sealed Product';
-                    })()}
-                  </span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-slate-600'>Images:</span>
-                  <span className='font-medium text-slate-900'>{item.images?.length || 0}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Item-specific Information */}
-          {renderItemSpecificInfo()}
-
-          {/* Price History */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-            <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
-              <DollarSign className='w-5 h-5 mr-2' />
-              Price History
-            </h2>
-
-            <PriceHistoryDisplay
-              priceHistory={item.priceHistory || []}
-              currentPrice={item.myPrice}
-              onPriceUpdate={handlePriceUpdate}
-            />
-          </div>
-
-          {/* Sale Information */}
-          {renderSaleInfo()}
-        </div>
-
-        {/* Images Section - Adaptive Layout Based on Image Orientation */}
-        <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-          <div className='flex items-center justify-between mb-4'>
-            <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
-              <ImageIcon className='w-5 h-5 mr-2' />
-              Images
-            </h2>
-
-            {/* ZIP Download Button */}
-            {item.images && item.images.length > 0 && (
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={handleDownloadImages}
-                disabled={downloadingZip}
-                className='flex items-center space-x-2'
-              >
-                {downloadingZip ? <LoadingSpinner size='sm' /> : <Download className='w-4 h-4' />}
-                <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
+            {/* Header */}
+            <div className='mb-8'>
+              <Button variant='outline' size='sm' onClick={handleBackToCollection} className='mb-4'>
+                <ArrowLeft className='w-4 h-4 mr-2' />
+                Back to Collection
               </Button>
-            )}
-          </div>
 
-          {/* Auto-sizing Container Based on Image Orientation */}
-          <div className='w-full flex justify-center'>
-            {/* Highly constrained container for PSA card optimal viewing */}
-            <div className='w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] xl:max-w-[440px]'>
-              <ImageSlideshow
-                images={item.images || []}
-                fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
-                autoplay={true}
-                autoplayDelay={5000}
-                showThumbnails={true}
-                adaptiveLayout={true}
-                enableAspectRatioDetection={true}
-                className='w-full'
-              />
+              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8'>
+                <div className='flex items-start justify-between'>
+                  <div>
+                    <h1 className='text-3xl font-bold text-slate-900 mb-2'>{getItemTitle()}</h1>
+                    <p className='text-xl text-slate-600 mb-2'>{getItemSubtitle()}</p>
+                    <p className='text-lg text-slate-500'>Set: {getSetName()}</p>
+                  </div>
+                  <div className='flex items-center space-x-3'>
+                    <Button variant='outline' size='sm' onClick={handleEdit}>
+                      <Edit className='w-4 h-4 mr-2' />
+                      Edit
+                    </Button>
+                    <Button variant='danger' size='sm' onClick={handleDelete}>
+                      <Trash2 className='w-4 h-4 mr-2' />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content - Details */}
+            <div className='space-y-6 mb-8'>
+              {/* Basic Information */}
+              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+                <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+                  <Info className='w-5 h-5 mr-2' />
+                  Basic Information
+                </h2>
+
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                  <div className='space-y-3'>
+                    <div className='flex justify-between'>
+                      <span className='text-slate-600'>My Price:</span>
+                      <span className='font-bold text-slate-900'>{item.myPrice || '0'} kr.</span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span className='text-slate-600'>Date Added:</span>
+                      <span className='font-medium text-slate-900'>
+                        {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
+                      </span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span className='text-slate-600'>Status:</span>
+                      <span
+                        className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}
+                      >
+                        {item.sold ? 'Sold' : 'Available'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className='space-y-3'>
+                    <div className='flex justify-between'>
+                      <span className='text-slate-600'>Item Type:</span>
+                      <span className='font-medium text-slate-900'>
+                        {(() => {
+                          const { type } = getUrlParams();
+                          return type === 'psa'
+                            ? 'PSA Graded Card'
+                            : type === 'raw'
+                              ? 'Raw Card'
+                              : 'Sealed Product';
+                        })()}
+                      </span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span className='text-slate-600'>Images:</span>
+                      <span className='font-medium text-slate-900'>{item.images?.length || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Item-specific Information */}
+              {renderItemSpecificInfo()}
+
+              {/* Price History */}
+              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+                <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+                  <DollarSign className='w-5 h-5 mr-2' />
+                  Price History
+                </h2>
+
+                <PriceHistoryDisplay
+                  priceHistory={item.priceHistory || []}
+                  currentPrice={item.myPrice}
+                  onPriceUpdate={handlePriceUpdate}
+                />
+              </div>
+
+              {/* Sale Information */}
+              {renderSaleInfo()}
+            </div>
+
+            {/* Images Section - Adaptive Layout Based on Image Orientation */}
+            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+              <div className='flex items-center justify-between mb-4'>
+                <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
+                  <ImageIcon className='w-5 h-5 mr-2' />
+                  Images
+                </h2>
+
+                {/* ZIP Download Button */}
+                {item.images && item.images.length > 0 && (
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={handleDownloadImages}
+                    disabled={downloadingZip}
+                    className='flex items-center space-x-2'
+                  >
+                    {downloadingZip ? (
+                      <LoadingSpinner size='sm' />
+                    ) : (
+                      <Download className='w-4 h-4' />
+                    )}
+                    <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
+                  </Button>
+                )}
+              </div>
+
+              {/* Auto-sizing Container Based on Image Orientation */}
+              <div className='w-full flex justify-center'>
+                {/* Highly constrained container for PSA card optimal viewing */}
+                <div className='w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] xl:max-w-[440px]'>
+                  <ImageSlideshow
+                    images={item.images || []}
+                    fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
+                    autoplay={true}
+                    autoplayDelay={5000}
+                    showThumbnails={true}
+                    adaptiveLayout={true}
+                    enableAspectRatioDetection={true}
+                    className='w-full'
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
         )}
 
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={showDeleteConfirm}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title='Delete Collection Item'
-        description='Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection.'
-        confirmText='Delete Item'
-        variant='danger'
-        icon='trash'
-        isLoading={deleting}
-      />
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title='Delete Collection Item'
+          description='Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection.'
+          confirmText='Delete Item'
+          variant='danger'
+          icon='trash'
+          isLoading={deleting}
+        />
       </>
     </PageLayout>
   );

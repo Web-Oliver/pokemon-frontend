@@ -3,15 +3,22 @@
  * Ultra-premium select field with stunning visual hierarchy and micro-interactions
  * Features glass-morphism, premium gradients, and award-winning design patterns
  *
- * Following CLAUDE.md + Context7 principles:
+ * Following CLAUDE.md + Context7 principles + DRY optimization:
  * - Award-winning visual design with micro-interactions
  * - Glass-morphism and premium focus states
  * - Context7 design system compliance
- * - Stunning animations and hover effects
+ * - Centralized premium styling through PremiumFormElements
+ * - Eliminated duplicate styling code following SOLID principles
  */
 
 import { SelectHTMLAttributes, forwardRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import {
+  PremiumWrapper,
+  PremiumLabel,
+  PremiumErrorMessage,
+  PremiumHelperText,
+} from './PremiumFormElements';
 
 export interface SelectOption {
   value: string;
@@ -59,23 +66,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       .join(' ');
 
     return (
-      <div className={`${widthClass} group`}>
-        {label && (
-          <label
-            htmlFor={selectId}
-            className='block text-sm font-bold text-slate-700 mb-2 tracking-wide group-focus-within:text-indigo-600 transition-colors duration-300'
-          >
-            {label}
-          </label>
-        )}
+      <PremiumWrapper fullWidth={fullWidth} error={!!error}>
+        {label && <PremiumLabel htmlFor={selectId}>{label}</PremiumLabel>}
 
-        <div className={`relative ${widthClass}`}>
-          {/* Context7 Premium Background Gradient */}
-          <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-
-          {/* Premium Glow Effect */}
-          <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm -z-10 pointer-events-none'></div>
-
+        <div className={`relative ${fullWidth ? 'w-full' : ''}`}>
           <select ref={ref} id={selectId} className={finalSelectClassName} {...props}>
             {placeholder && (
               <option value='' disabled className='text-slate-400'>
@@ -102,19 +96,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
 
-        {error && (
-          <div className='mt-2 flex items-center'>
-            <div className='w-4 h-4 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mr-2 flex items-center justify-center'>
-              <span className='text-white text-xs font-bold'>!</span>
-            </div>
-            <p className='text-sm text-red-600 font-medium'>{error}</p>
-          </div>
-        )}
-
-        {helperText && !error && (
-          <p className='mt-2 text-sm text-slate-500 font-medium pl-1'>{helperText}</p>
-        )}
-      </div>
+        <PremiumErrorMessage error={error} />
+        <PremiumHelperText helperText={helperText} />
+      </PremiumWrapper>
     );
   }
 );

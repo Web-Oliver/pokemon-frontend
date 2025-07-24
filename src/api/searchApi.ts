@@ -22,6 +22,7 @@ import {
   OptimizedProductSearchParams,
   OptimizedSearchResponse,
 } from './consolidatedSearch';
+import { getApiCacheTTL } from '../config/cacheConfig';
 
 // Re-export suggestion functions for external use
 export {
@@ -71,7 +72,7 @@ setInterval(cleanupCache, 120000); // Every 2 minutes
  */
 export const searchCardsWithCache = async (
   params: OptimizedSearchParams,
-  ttl: number = 5 * 60 * 1000 // 5 minutes default
+  ttl: number = getApiCacheTTL('searchCards')
 ): Promise<OptimizedSearchResponse<any>> => {
   const cacheKey = createCacheKey({ type: 'cards', ...params });
 
@@ -112,7 +113,7 @@ export const searchCardsWithCache = async (
  */
 export const searchSetsWithCache = async (
   params: OptimizedSetSearchParams,
-  ttl: number = 5 * 60 * 1000 // 5 minutes default
+  ttl: number = getApiCacheTTL('searchSets')
 ): Promise<OptimizedSearchResponse<any>> => {
   const cacheKey = createCacheKey({ type: 'sets', ...params });
 
@@ -377,7 +378,7 @@ export const searchApi = {
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)! as any;
+      return (await pendingRequests.get(cacheKey)!) as any;
     }
 
     const requestPromise = (async () => {
@@ -397,7 +398,7 @@ export const searchApi = {
         const data = response;
 
         // Cache the result
-        const ttl = 300000; // 5 minutes
+        const ttl = getApiCacheTTL('searchCards');
         searchCache.set(cacheKey, {
           data,
           timestamp: Date.now(),
@@ -447,7 +448,7 @@ export const searchApi = {
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)! as any;
+      return (await pendingRequests.get(cacheKey)!) as any;
     }
 
     const requestPromise = (async () => {
@@ -462,7 +463,7 @@ export const searchApi = {
         const data = response;
 
         // Cache the result
-        const ttl = 180000; // 3 minutes for suggestions
+        const ttl = getApiCacheTTL('searchSuggestions');
         searchCache.set(cacheKey, {
           data,
           timestamp: Date.now(),
@@ -525,7 +526,7 @@ export const searchApi = {
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)! as any;
+      return (await pendingRequests.get(cacheKey)!) as any;
     }
 
     const requestPromise = (async () => {
@@ -547,7 +548,7 @@ export const searchApi = {
         const data = response;
 
         // Cache the result
-        const ttl = 300000; // 5 minutes
+        const ttl = getApiCacheTTL('searchCards');
         searchCache.set(cacheKey, {
           data,
           timestamp: Date.now(),
@@ -609,7 +610,7 @@ export const searchApi = {
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)! as any;
+      return (await pendingRequests.get(cacheKey)!) as any;
     }
 
     const requestPromise = (async () => {
@@ -631,7 +632,7 @@ export const searchApi = {
         const data = response;
 
         // Cache the result
-        const ttl = 300000; // 5 minutes
+        const ttl = getApiCacheTTL('searchCards');
         searchCache.set(cacheKey, {
           data,
           timestamp: Date.now(),
@@ -693,7 +694,7 @@ export const searchApi = {
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)! as any;
+      return (await pendingRequests.get(cacheKey)!) as any;
     }
 
     const requestPromise = (async () => {
@@ -715,7 +716,7 @@ export const searchApi = {
         const data = response;
 
         // Cache the result
-        const ttl = 600000; // 10 minutes for sets
+        const ttl = getApiCacheTTL('searchSets');
         searchCache.set(cacheKey, {
           data,
           timestamp: Date.now(),

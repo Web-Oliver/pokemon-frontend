@@ -7,7 +7,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import * as setsApi from '../api/setsApi';
-import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { usePageLayout } from '../hooks/usePageLayout';

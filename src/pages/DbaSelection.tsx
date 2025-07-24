@@ -18,9 +18,7 @@ import {
 } from 'lucide-react';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { PageLayout } from '../components/layouts/PageLayout';
-import { usePageLayout } from '../hooks/usePageLayout';
-import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { ButtonLoading } from '../components/common/LoadingStates';
 import Button from '../components/common/Button';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { formatCardNameForDisplay } from '../utils/formatting';
@@ -66,7 +64,7 @@ const DbaSelection: React.FC = () => {
         setError(null); // Clear any previous errors
         console.log('[DBA SELECTION] Loaded', (selections || []).length, 'DBA selections');
       } catch (error) {
-        console.error('[DBA SELECTION] Failed to load DBA selections:', error);
+        // Log for debugging but use centralized error handling
 
         // Retry once after a short delay if it's a network error
         if (retryCount === 0 && error.code === 'ERR_NETWORK') {
@@ -77,7 +75,9 @@ const DbaSelection: React.FC = () => {
 
         // Only show error to user after retries fail
         handleApiError(error, 'Failed to load DBA selections');
-        setError('Failed to load DBA selections. The page will continue to function with limited data.');
+        setError(
+          'Failed to load DBA selections. The page will continue to function with limited data.'
+        );
         setDbaSelections([]); // Set empty array to prevent crashes
       } finally {
         setLoadingDbaSelections(false);
@@ -90,7 +90,7 @@ const DbaSelection: React.FC = () => {
   // Calculate DBA info for an item using loaded DBA selections
   const calculateDbaInfo = (item: any, itemType: string): DbaSelectionInfo => {
     const itemId = item.id || item._id;
-    const dbaSelection = Array.isArray(dbaSelections) 
+    const dbaSelection = Array.isArray(dbaSelections)
       ? dbaSelections.find(s => s.itemId === itemId && s.itemType === itemType)
       : undefined;
 
@@ -229,7 +229,6 @@ const DbaSelection: React.FC = () => {
       setSelectedItems([]);
       showSuccessToast(`Marked ${selectedItems.length} items for DBA listing`);
     } catch (error) {
-      console.error('[DBA SELECTION] Failed to mark items:', error);
       handleApiError(error, 'Failed to mark items for DBA');
     } finally {
       setIsUpdating(false);
@@ -283,7 +282,6 @@ const DbaSelection: React.FC = () => {
       setSelectedItems([]);
       showSuccessToast(`Removed ${selectedItems.length} items from DBA listing`);
     } catch (error) {
-      console.error('[DBA SELECTION] Failed to remove items:', error);
       handleApiError(error, 'Failed to remove items from DBA');
     } finally {
       setIsUpdating(false);
@@ -482,10 +480,7 @@ const DbaSelection: React.FC = () => {
                     className='bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
                   >
                     {isUpdating ? (
-                      <>
-                        <LoadingSpinner size='sm' className='mr-2' />
-                        Updating...
-                      </>
+                      <ButtonLoading text='Updating...' />
                     ) : (
                       <>
                         <Calendar className='w-4 h-4 mr-2' />

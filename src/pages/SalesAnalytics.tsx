@@ -13,10 +13,8 @@ import {
   DollarSign,
   BarChart3,
   PieChart,
-  Calendar,
   RefreshCcw,
   Download,
-  Filter,
   ArrowUp,
   ArrowDown,
   Minus,
@@ -36,10 +34,10 @@ import {
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useExportOperations } from '../hooks/useExportOperations';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { handleApiError } from '../utils/errorHandler';
 import { displayPrice } from '../utils/formatting';
+import DateRangeFilter, { DateRangeState } from '../components/common/DateRangeFilter';
 
 const SalesAnalytics: React.FC = () => {
   const {
@@ -53,12 +51,11 @@ const SalesAnalytics: React.FC = () => {
     dateRange,
     setDateRange,
     refreshData,
-    exportSalesCSV,
   } = useSalesAnalytics();
 
-  const [dateRangeInput, setDateRangeInput] = useState({
-    startDate: dateRange?.startDate || '',
-    endDate: dateRange?.endDate || '',
+  const [localDateRange, setLocalDateRange] = useState<DateRangeState>({
+    startDate: dateRange?.startDate,
+    endDate: dateRange?.endDate,
   });
 
   // Chart colors
@@ -82,17 +79,13 @@ const SalesAnalytics: React.FC = () => {
     return `${value.toFixed(1)}%`;
   };
 
-  // Format date range filter
-  const handleDateRangeSubmit = () => {
+  // Handle date range changes from the DateRangeFilter component
+  const handleDateRangeChange = (newDateRange: DateRangeState) => {
+    setLocalDateRange(newDateRange);
     setDateRange({
-      startDate: dateRangeInput.startDate || undefined,
-      endDate: dateRangeInput.endDate || undefined,
+      startDate: newDateRange.startDate,
+      endDate: newDateRange.endDate,
     });
-  };
-
-  const clearDateRange = () => {
-    setDateRangeInput({ startDate: '', endDate: '' });
-    setDateRange({});
   };
 
   // Prepare pie chart data
@@ -149,14 +142,13 @@ const SalesAnalytics: React.FC = () => {
 
   return (
     <PageLayout
-      title="Sales Analytics"
-      subtitle="Financial tracking and analytics dashboard for sales data"
+      title='Sales Analytics'
+      subtitle='Financial tracking and analytics dashboard for sales data'
       loading={loading && (!sales || sales.length === 0)}
       error={error}
       actions={headerActions}
-      variant="default"
+      variant='default'
     >
-
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Analytics Header */}
@@ -173,47 +165,8 @@ const SalesAnalytics: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Context7 Premium Date Range Filter */}
+                {/* Export and Refresh Controls */}
                 <div className='flex items-center space-x-4'>
-                  <div className='flex items-center space-x-3'>
-                    <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center'>
-                      <Calendar className='w-4 h-4 text-white' />
-                    </div>
-                    <input
-                      type='date'
-                      value={dateRangeInput.startDate}
-                      onChange={e =>
-                        setDateRangeInput(prev => ({ ...prev, startDate: e.target.value }))
-                      }
-                      className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
-                      placeholder='Start Date'
-                    />
-                    <span className='text-slate-500 font-medium'>to</span>
-                    <input
-                      type='date'
-                      value={dateRangeInput.endDate}
-                      onChange={e =>
-                        setDateRangeInput(prev => ({ ...prev, endDate: e.target.value }))
-                      }
-                      className='border border-slate-300 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
-                      placeholder='End Date'
-                    />
-                  </div>
-
-                  <Button
-                    variant='primary'
-                    size='sm'
-                    onClick={handleDateRangeSubmit}
-                    disabled={loading}
-                  >
-                    <Filter className='w-4 h-4 mr-1' />
-                    Apply
-                  </Button>
-
-                  <Button variant='secondary' size='sm' onClick={clearDateRange} disabled={loading}>
-                    Clear
-                  </Button>
-
                   <Button variant='secondary' size='sm' onClick={refreshData} disabled={loading}>
                     <RefreshCcw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
                     Refresh
@@ -230,6 +183,15 @@ const SalesAnalytics: React.FC = () => {
             {/* Premium shimmer effect */}
             <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
           </div>
+
+          {/* Date Range Filter */}
+          <DateRangeFilter
+            value={localDateRange}
+            onChange={handleDateRangeChange}
+            showPresets={false}
+            showCustomRange={true}
+            loading={loading}
+          />
 
           {/* Context7 Premium KPI Summary Cards */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>

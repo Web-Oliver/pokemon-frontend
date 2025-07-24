@@ -1,12 +1,20 @@
 /**
  * Collection API Client
  * Handles CRUD operations for collection management (PSA cards, raw cards, sealed products)
+ * 
+ * OPTIMIZED: Now uses conditional logging system for production-ready code
+ * Following CLAUDE.md principles - removed excessive debug logging
  */
 
 import unifiedApiClient from './unifiedApiClient';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
+import { createApiLogger } from '../utils/apiLogger';
+import { ResponseTransformers } from '../utils/responseTransformer';
+
+// Create logger instance for this API
+const logger = createApiLogger('COLLECTION API');
 
 /**
  * Helper function to extract data from wrapped API responses
@@ -158,7 +166,7 @@ export interface PsaGradedCardsParams {
 export const getPsaGradedCards = async (
   params?: PsaGradedCardsParams
 ): Promise<IPsaGradedCard[]> => {
-  console.log('[COLLECTION API] getPsaGradedCards called with params:', params);
+  logger.logApiCall('getPsaGradedCards', params);
   const responseData = await unifiedApiClient.get('/psa-graded-cards', {
     params: {
       ...params,
@@ -174,14 +182,12 @@ export const getPsaGradedCards = async (
       enableDeduplication: false,
     },
   });
-  console.log('[COLLECTION API] getPsaGradedCards raw response:', responseData);
-  const extractedData = extractResponseData(responseData);
-  console.log('[COLLECTION API] getPsaGradedCards extracted data:', extractedData);
-  const mappedData = mapItemIds(extractedData);
-  console.log('[COLLECTION API] getPsaGradedCards mapped data:', mappedData);
-  console.log(
-    '[COLLECTION API] getPsaGradedCards returning array length:',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY'
+  logger.logResponse('getPsaGradedCards', responseData);
+  const mappedData = ResponseTransformers.standard<IPsaGradedCard[]>(responseData);
+  logger.logProcessedData('getPsaGradedCards', mappedData, 'mapped data');
+  logger.logProcessedData('getPsaGradedCards', 
+    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    'returning array length'
   );
   return mappedData as IPsaGradedCard[];
 };
@@ -193,8 +199,7 @@ export const getPsaGradedCards = async (
  */
 export const getPsaGradedCardById = async (id: string): Promise<IPsaGradedCard> => {
   const responseData = await unifiedApiClient.get(`/psa-graded-cards/${id}`);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IPsaGradedCard;
+  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 /**
@@ -206,8 +211,7 @@ export const createPsaGradedCard = async (
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
   const responseData = await unifiedApiClient.post('/psa-graded-cards', data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IPsaGradedCard;
+  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 /**
@@ -221,8 +225,7 @@ export const updatePsaGradedCard = async (
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
   const responseData = await unifiedApiClient.put(`/psa-graded-cards/${id}`, data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IPsaGradedCard;
+  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 /**
@@ -248,8 +251,7 @@ export const markPsaGradedCardSold = async (
     `/psa-graded-cards/${id}/mark-sold`,
     saleDetails
   );
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IPsaGradedCard;
+  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 // Raw Cards Collection APIs
@@ -266,7 +268,7 @@ export interface RawCardsParams {
  * @returns Promise<IRawCard[]> - Array of raw cards
  */
 export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> => {
-  console.log('[COLLECTION API] getRawCards called with params:', params);
+  logger.logApiCall('getRawCards', params);
   const responseData = await unifiedApiClient.get('/raw-cards', {
     params: {
       ...params,
@@ -282,13 +284,11 @@ export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> 
       enableDeduplication: false,
     },
   });
-  console.log('[COLLECTION API] getRawCards raw response:', responseData);
-  const extractedData = extractResponseData(responseData);
-  console.log('[COLLECTION API] getRawCards extracted data:', extractedData);
-  const mappedData = mapItemIds(extractedData);
-  console.log(
-    '[COLLECTION API] getRawCards returning array length:',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY'
+  logger.logResponse('getRawCards', responseData);
+  const mappedData = ResponseTransformers.standard<IRawCard[]>(responseData);
+  logger.logProcessedData('getRawCards', 
+    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    'returning array length'
   );
   return mappedData as IRawCard[];
 };
@@ -300,8 +300,7 @@ export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> 
  */
 export const getRawCardById = async (id: string): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.get(`/raw-cards/${id}`);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IRawCard;
+  return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
 /**
@@ -311,8 +310,7 @@ export const getRawCardById = async (id: string): Promise<IRawCard> => {
  */
 export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.post('/raw-cards', data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IRawCard;
+  return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
 /**
@@ -323,8 +321,7 @@ export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> 
  */
 export const updateRawCard = async (id: string, data: Partial<IRawCard>): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.put(`/raw-cards/${id}`, data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IRawCard;
+  return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
 /**
@@ -344,8 +341,7 @@ export const deleteRawCard = async (id: string): Promise<void> => {
  */
 export const markRawCardSold = async (id: string, saleDetails: ISaleDetails): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.post(`/raw-cards/${id}/mark-sold`, saleDetails);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as IRawCard;
+  return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
 // Sealed Products Collection APIs
@@ -364,7 +360,7 @@ export interface SealedProductCollectionParams {
 export const getSealedProductCollection = async (
   params?: SealedProductCollectionParams
 ): Promise<ISealedProduct[]> => {
-  console.log('[COLLECTION API] getSealedProductCollection called with params:', params);
+  logger.logApiCall('getSealedProductCollection', params);
   const responseData = await unifiedApiClient.get('/sealed-products', {
     params,
     optimization: {
@@ -372,13 +368,11 @@ export const getSealedProductCollection = async (
       enableDeduplication: false,
     },
   });
-  console.log('[COLLECTION API] getSealedProductCollection raw response:', responseData);
-  const extractedData = extractResponseData(responseData);
-  console.log('[COLLECTION API] getSealedProductCollection extracted data:', extractedData);
-  const mappedData = mapItemIds(extractedData);
-  console.log(
-    '[COLLECTION API] getSealedProductCollection returning array length:',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY'
+  logger.logResponse('getSealedProductCollection', responseData);
+  const mappedData = ResponseTransformers.standard<ISealedProduct[]>(responseData);
+  logger.logProcessedData('getSealedProductCollection', 
+    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    'returning array length'
   );
   return mappedData as ISealedProduct[];
 };
@@ -390,8 +384,7 @@ export const getSealedProductCollection = async (
  */
 export const getSealedProductById = async (id: string): Promise<ISealedProduct> => {
   const responseData = await unifiedApiClient.get(`/sealed-products/${id}`);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as ISealedProduct;
+  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
 
 /**
@@ -403,8 +396,7 @@ export const createSealedProduct = async (
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
   const responseData = await unifiedApiClient.post('/sealed-products', data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as ISealedProduct;
+  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
 
 /**
@@ -418,8 +410,7 @@ export const updateSealedProduct = async (
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
   const responseData = await unifiedApiClient.put(`/sealed-products/${id}`, data);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as ISealedProduct;
+  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
 
 /**
@@ -442,6 +433,5 @@ export const markSealedProductSold = async (
   saleDetails: ISaleDetails
 ): Promise<ISealedProduct> => {
   const responseData = await unifiedApiClient.post(`/sealed-products/${id}/mark-sold`, saleDetails);
-  const extractedData = extractResponseData(responseData);
-  return mapItemIds(extractedData) as ISealedProduct;
+  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };

@@ -3,14 +3,21 @@
  * Ultra-premium input field with stunning visual hierarchy and micro-interactions
  * Features glass-morphism, premium gradients, and award-winning design patterns
  *
- * Following CLAUDE.md + Context7 principles:
+ * Following CLAUDE.md + Context7 principles + DRY optimization:
  * - Award-winning visual design with micro-interactions
  * - Glass-morphism and premium focus states
  * - Context7 design system compliance
- * - Stunning animations and hover effects
+ * - Centralized premium styling through PremiumFormElements
+ * - Eliminated duplicate styling code following SOLID principles
  */
 
 import React, { InputHTMLAttributes, forwardRef } from 'react';
+import {
+  PremiumWrapper,
+  PremiumLabel,
+  PremiumErrorMessage,
+  PremiumHelperText,
+} from './PremiumFormElements';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -67,23 +74,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       .join(' ');
 
     return (
-      <div className={`${widthClass} group`}>
-        {label && (
-          <label
-            htmlFor={inputId}
-            className='block text-sm font-bold text-slate-700 mb-2 tracking-wide group-focus-within:text-indigo-600 transition-colors duration-300'
-          >
-            {label}
-          </label>
-        )}
+      <PremiumWrapper fullWidth={fullWidth} error={!!error}>
+        {label && <PremiumLabel htmlFor={inputId}>{label}</PremiumLabel>}
 
-        <div className={`${inputWithIconClasses} ${widthClass} relative`}>
-          {/* Context7 Premium Background Gradient */}
-          <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-
-          {/* Premium Glow Effect */}
-          <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm -z-10 pointer-events-none'></div>
-
+        <div className={`${inputWithIconClasses} ${fullWidth ? 'w-full' : ''} relative`}>
           {startIcon && (
             <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10'>
               <div className='h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
@@ -103,19 +97,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        {error && (
-          <div className='mt-2 flex items-center'>
-            <div className='w-4 h-4 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mr-2 flex items-center justify-center'>
-              <span className='text-white text-xs font-bold'>!</span>
-            </div>
-            <p className='text-sm text-red-600 font-medium'>{error}</p>
-          </div>
-        )}
-
-        {helperText && !error && (
-          <p className='mt-2 text-sm text-slate-500 font-medium pl-1'>{helperText}</p>
-        )}
-      </div>
+        <PremiumErrorMessage error={error} />
+        <PremiumHelperText helperText={helperText} />
+      </PremiumWrapper>
     );
   }
 );

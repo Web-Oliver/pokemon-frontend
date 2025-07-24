@@ -9,7 +9,7 @@
  * - Layer 3: UI Building Block component
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { Package, Star, Archive, CheckCircle, Eye, DollarSign } from 'lucide-react';
 import { ImageSlideshow } from '../common/ImageSlideshow';
@@ -28,7 +28,7 @@ export interface CollectionItemCardProps {
   onMarkAsSold?: (item: CollectionItem, itemType: 'psa' | 'raw' | 'sealed') => void;
 }
 
-export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
+const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   item,
   itemType,
   activeTab,
@@ -38,13 +38,13 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Framer Motion spring values for 3D hover effects
-  const springConfig = {
-    type: 'spring',
+  // Memoize spring configuration to prevent recreation on every render
+  const springConfig = useMemo(() => ({
+    type: 'spring' as const,
     stiffness: 300,
     damping: 40,
     mass: 1,
-  };
+  }), []);
 
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
@@ -52,8 +52,8 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   const rotateX = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
   const rotateY = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
 
-  // Mouse movement handlers for 3D effect
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Memoized mouse movement handlers for 3D effect
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -63,16 +63,20 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
     const yPct = mouseYPos / height - 0.5;
     mouseX.set(xPct);
     mouseY.set(yPct);
-  };
+  }, [mouseX, mouseY]);
 
-  const handleMouseLeave = () => {
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
     mouseX.set(0);
     mouseY.set(0);
-  };
+  }, [mouseX, mouseY]);
 
-  // Get item display name
-  const getItemName = () => {
+  // Memoized item display name calculation
+  const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
     const cardName = ((itemRecord.cardId as Record<string, unknown>)?.cardName ||
       itemRecord.cardName ||
@@ -81,10 +85,18 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
 
     // Format card name for display (remove hyphens and parentheses)
     return formatCardNameForDisplay(cardName);
-  };
+  }, [item]);
 
-  // Get item badge content based on type and tab
-  const getBadgeContent = () => {
+  // Memoized set name calculation
+  const setName = useMemo(() => {
+    return (item as any).cardId?.setId?.setName ||
+      (item as any).setName ||
+      (item as any).cardId?.setName ||
+      'Unknown Set';
+  }, [item]);
+
+  // Memoized badge content based on type and tab
+  const badgeContent = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
     switch (activeTab) {
       case 'psa-graded':
@@ -120,16 +132,21 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
       default:
         return null;
     }
-  };
+  }, [item, activeTab]);
+
+  // Memoized click handler to prevent unnecessary re-renders
+  const handleClick = useCallback(() => {
+    onViewDetails(item, itemType);
+  }, [onViewDetails, item, itemType]);
 
   const isUnsoldTab = activeTab !== 'sold-items';
 
   return (
     <motion.div
       className='group relative rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 overflow-hidden cursor-pointer'
-      onClick={() => onViewDetails(item, itemType)}
+      onClick={handleClick}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -249,7 +266,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
             damping: 15,
           }}
         >
-          {getBadgeContent()}
+          {badgeContent}
         </motion.div>
 
         {/* Set Name */}
@@ -259,10 +276,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.4 }}
         >
-          {(item as any).cardId?.setId?.setName ||
-            (item as any).setName ||
-            (item as any).cardId?.setName ||
-            'Unknown Set'}
+          {setName}
         </motion.p>
 
         {/* Card Name */}
@@ -276,7 +290,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
           }}
           transition={{ delay: 0.7, duration: 0.4 }}
         >
-          {getItemName()}
+          {itemName}
         </motion.h3>
       </motion.div>
 
@@ -304,5 +318,49 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
     </motion.div>
   );
 };
+
+/**
+ * Custom memo comparison function for CollectionItemCard
+ * Optimizes re-rendering by performing shallow comparison on critical props
+ * Following CLAUDE.md performance optimization principles
+ */
+const arePropsEqual = (
+  prevProps: CollectionItemCardProps,
+  nextProps: CollectionItemCardProps
+): boolean => {
+  // Check if the item itself has changed (by reference or critical properties)
+  if (prevProps.item !== nextProps.item) {
+    // Perform deeper comparison for item properties that affect rendering
+    const prevItem = prevProps.item as Record<string, unknown>;
+    const nextItem = nextProps.item as Record<string, unknown>;
+    
+    // Check critical properties that affect card display
+    if (
+      prevItem.id !== nextItem.id ||
+      prevItem.myPrice !== nextItem.myPrice ||
+      prevItem.images !== nextItem.images ||
+      JSON.stringify(prevItem.cardId) !== JSON.stringify(nextItem.cardId) ||
+      JSON.stringify(prevItem.saleDetails) !== JSON.stringify(nextItem.saleDetails)
+    ) {
+      return false;
+    }
+  }
+
+  // Check other critical props
+  return (
+    prevProps.itemType === nextProps.itemType &&
+    prevProps.activeTab === nextProps.activeTab &&
+    prevProps.showMarkAsSoldButton === nextProps.showMarkAsSoldButton &&
+    prevProps.onViewDetails === nextProps.onViewDetails &&
+    prevProps.onMarkAsSold === nextProps.onMarkAsSold
+  );
+};
+
+/**
+ * Memoized CollectionItemCard component
+ * Prevents unnecessary re-renders when props haven't changed
+ * Optimizes performance for large collection grids with hundreds of cards
+ */
+export const CollectionItemCard = memo(CollectionItemCardComponent, arePropsEqual);
 
 export default CollectionItemCard;

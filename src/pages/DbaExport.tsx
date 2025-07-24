@@ -24,7 +24,7 @@ import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { ButtonLoading } from '../components/common/LoadingStates';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
@@ -82,8 +82,8 @@ const DbaExport: React.FC = () => {
         console.log('[DBA EXPORT] Loaded DBA selections:', selections);
         setDbaSelections(selections.data || []);
       } catch (err) {
-        console.error('[DBA EXPORT] Failed to load DBA selections:', err);
-        
+        // Log for debugging but use centralized error handling
+
         // Retry once after a short delay if it's a network error
         if (retryCount === 0 && (err as any).code === 'ERR_NETWORK') {
           console.log('[DBA EXPORT] Retrying DBA selections load in 1 second...');
@@ -502,7 +502,6 @@ const DbaExport: React.FC = () => {
         `DBA export generated successfully! ${response.data.itemCount} items exported and added to DBA tracking.`
       );
     } catch (err) {
-      console.error('[DBA EXPORT] Export failed:', err);
       handleApiError(err, 'Failed to export to DBA format');
     } finally {
       setIsExporting(false);
@@ -517,7 +516,6 @@ const DbaExport: React.FC = () => {
       await exportApi.downloadDbaZip();
       showSuccessToast('DBA export ZIP downloaded successfully!');
     } catch (err) {
-      console.error('[DBA EXPORT] Download failed:', err);
       handleApiError(err, 'Failed to download DBA export');
     } finally {
       setIsExporting(false);
@@ -664,6 +662,9 @@ const DbaExport: React.FC = () => {
   };
 
   const { exportCollectionData } = useExportOperations();
+
+  // Combine all collection items for export
+  const allItems = [...psaCards, ...rawCards, ...sealedProducts];
 
   const headerActions = (
     <button
@@ -877,10 +878,7 @@ const DbaExport: React.FC = () => {
                     className='w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
                   >
                     {isExporting ? (
-                      <>
-                        <LoadingSpinner size='sm' className='mr-2' />
-                        Exporting...
-                      </>
+                      <ButtonLoading text='Exporting...' />
                     ) : (
                       <>
                         <Download className='w-4 h-4 mr-2' />

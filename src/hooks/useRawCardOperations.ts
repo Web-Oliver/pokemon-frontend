@@ -2,15 +2,16 @@
  * Raw Card Operations Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  * Follows Single Responsibility Principle - only handles Raw card operations
+ * 
+ * OPTIMIZED: Now uses useGenericCrudOperations to eliminate code duplication
+ * Following CLAUDE.md DRY principles - reduced from ~100 lines to ~30 lines
  */
 
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { IRawCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
-import { log } from '../utils/logger';
-import { useAsyncOperation } from './useAsyncOperation';
+import { useGenericCrudOperations } from './useGenericCrudOperations';
 
 export interface UseRawCardOperationsReturn {
   loading: boolean;
@@ -24,77 +25,40 @@ export interface UseRawCardOperationsReturn {
 
 /**
  * Hook for Raw card operations
- * Follows SRP - only handles Raw card API operations
+ * Uses generic CRUD operations to eliminate code duplication
+ * Follows SRP - only handles Raw card configuration and interface mapping
  */
 export const useRawCardOperations = (): UseRawCardOperationsReturn => {
-  const { loading, error, execute, clearError } = useAsyncOperation();
   const collectionApi = getCollectionApiService();
 
-  const addRawCard = useCallback(
-    async (cardData: Partial<IRawCard>): Promise<IRawCard> => {
-      return await execute(async () => {
-        log('Adding raw card...');
-        const newCard = await collectionApi.createRawCard(cardData);
-        log('Raw card added successfully');
-        showSuccessToast('Raw card added to collection!');
-        return newCard;
-      });
-    },
-    [execute, collectionApi]
-  );
+  // Memoize API operations configuration to prevent unnecessary re-renders
+  const apiOperations = useMemo(() => ({
+    create: collectionApi.createRawCard.bind(collectionApi),
+    update: collectionApi.updateRawCard.bind(collectionApi),
+    delete: collectionApi.deleteRawCard.bind(collectionApi),
+    markSold: collectionApi.markRawCardSold.bind(collectionApi),
+  }), [collectionApi]);
 
-  const updateRawCard = useCallback(
-    async (id: string, cardData: Partial<IRawCard>): Promise<IRawCard> => {
-      return await execute(async () => {
-        log(`Updating raw card ${id}...`);
-        const updatedCard = await collectionApi.updateRawCard(id, cardData);
+  // Memoize messages configuration
+  const messages = useMemo(() => ({
+    entityName: 'Raw Card',
+    addSuccess: 'Raw card added to collection!',
+    updateSuccess: 'Raw card updated successfully!',
+    deleteSuccess: 'Raw card removed from collection!',
+    soldSuccess: 'Raw card marked as sold!',
+  }), []);
 
-        // Ensure the updated card has the proper ID
-        const cardWithId = {
-          ...updatedCard,
-          id: updatedCard.id || (updatedCard as any)._id || id,
-        };
+  const { loading, error, add, update, delete: deleteItem, markSold, clearError } = 
+    useGenericCrudOperations<IRawCard>(apiOperations, messages);
 
-        log('Raw card updated successfully');
-        showSuccessToast('Raw card updated successfully!');
-        return cardWithId;
-      });
-    },
-    [execute, collectionApi]
-  );
-
-  const deleteRawCard = useCallback(
-    async (id: string): Promise<void> => {
-      return await execute(async () => {
-        log(`Deleting raw card ${id}...`);
-        await collectionApi.deleteRawCard(id);
-        log('Raw card deleted successfully');
-        showSuccessToast('Raw card removed from collection!');
-      });
-    },
-    [execute, collectionApi]
-  );
-
-  const markRawCardSold = useCallback(
-    async (id: string, saleDetails: ISaleDetails): Promise<IRawCard> => {
-      return await execute(async () => {
-        log(`Marking raw card ${id} as sold...`);
-        const soldCard = await collectionApi.markRawCardSold(id, saleDetails);
-        log('Raw card marked as sold successfully');
-        showSuccessToast('Raw card marked as sold! 💰');
-        return soldCard;
-      });
-    },
-    [execute, collectionApi]
-  );
-
+  // Return interface-compatible methods
   return {
     loading,
     error,
-    addRawCard,
-    updateRawCard,
-    deleteRawCard,
-    markRawCardSold,
+    addRawCard: add,
+    updateRawCard: update,
+    deleteRawCard: deleteItem,
+    markRawCardSold: markSold,
     clearError,
   };
 };

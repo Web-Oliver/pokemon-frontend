@@ -8,7 +8,7 @@
  * - DRY: Centralizes sale logic
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ISaleDetails } from '../domain/models/common';
 import { useCollectionOperations } from './useCollectionOperations';
 
@@ -45,7 +45,7 @@ export const useMarkSold = ({
 
   const { updatePsaCard, updateRawCard, updateSealedProduct } = useCollectionOperations();
 
-  const markAsSold = async (saleDetails: ISaleDetails): Promise<void> => {
+  const markAsSold = useCallback(async (saleDetails: ISaleDetails): Promise<void> => {
     setIsProcessing(true);
     setError(null);
 
@@ -80,11 +80,11 @@ export const useMarkSold = ({
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [itemType, itemId, updatePsaCard, updateRawCard, updateSealedProduct, onSuccess, onError]);
 
-  const clearError = (): void => {
+  const clearError = useCallback((): void => {
     setError(null);
-  };
+  }, []);
 
   return {
     isProcessing,

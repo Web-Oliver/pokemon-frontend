@@ -88,7 +88,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
   // State for card selection (separate from form hooks for business logic)
   const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : ((initialData?.cardId as any)?._id) || null
+    typeof initialData?.cardId === 'string'
+      ? initialData.cardId
+      : (initialData?.cardId as any)?._id || null
   );
 
   // Configure autocomplete fields for reusable search (after useForm hook)
@@ -209,8 +211,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           myPrice: priceToUse,
           images: finalImages,
           priceHistory:
-            priceHistory.priceHistory.map(entry => ({price: entry.price, dateUpdated: (entry as any).dateUpdated || new Date().toISOString()})).length > 0
-              ? priceHistory.priceHistory.map(entry => ({price: entry.price, dateUpdated: (entry as any).dateUpdated || new Date().toISOString()}))
+            priceHistory.priceHistory.map(entry => ({
+              price: entry.price,
+              dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+            })).length > 0
+              ? priceHistory.priceHistory.map(entry => ({
+                  price: entry.price,
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+                }))
               : initialData?.priceHistory,
         };
       } else {
@@ -241,8 +249,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           dateAdded: data.dateAdded,
           images: imageUrls,
           priceHistory:
-            priceHistory.priceHistory.map(entry => ({price: entry.price, dateUpdated: (entry as any).dateUpdated || new Date().toISOString()})).length > 0
-              ? priceHistory.priceHistory.map(entry => ({price: entry.price, dateUpdated: (entry as any).dateUpdated || new Date().toISOString()}))
+            priceHistory.priceHistory.map(entry => ({
+              price: entry.price,
+              dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+            })).length > 0
+              ? priceHistory.priceHistory.map(entry => ({
+                  price: entry.price,
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+                }))
               : [
                   {
                     price: parseFloat(data.myPrice),
@@ -350,7 +364,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         }}
         sectionTitle='Card Information'
         sectionIcon={Calendar}
-        isSealedProductForm={false}
+        formType='card'
         readOnlyFields={{
           pokemonNumber: true,
           baseName: true,
@@ -369,7 +383,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         isEditing={isEditing}
         priceHistory={priceHistory.priceHistory.map(entry => ({
           price: entry.price,
-          dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+          dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
         }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}

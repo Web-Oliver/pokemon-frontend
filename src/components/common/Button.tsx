@@ -3,14 +3,16 @@
  * Ultra-premium button with stunning visual hierarchy and micro-interactions
  * Features glass-morphism, premium gradients, and award-winning design patterns
  *
- * Following CLAUDE.md + Context7 principles:
+ * Following CLAUDE.md + Context7 principles + DRY optimization:
  * - Award-winning visual design with micro-interactions
  * - Premium gradients and shadow effects
  * - Context7 design system compliance
- * - Stunning hover and focus states
+ * - Centralized premium effects through PremiumFormElements
+ * - Eliminated duplicate styling code following SOLID principles
  */
 
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
+import { PremiumShimmer, PremiumGlow } from './PremiumFormElements';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -64,13 +66,15 @@ const Button: React.FC<ButtonProps> = ({
     .filter(Boolean)
     .join(' ');
 
+  const glowVariant = variant === 'primary' ? 'primary' : variant === 'secondary' ? 'secondary' : variant === 'danger' ? 'danger' : variant === 'success' ? 'success' : 'default';
+
   return (
     <button className={finalClassName} disabled={disabled || loading} {...props}>
       {/* Context7 Premium Shimmer Effect */}
-      <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
+      <PremiumShimmer />
 
       {/* Premium Glow Effect */}
-      <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10'></div>
+      <PremiumGlow variant={glowVariant} />
 
       {/* Premium Loading Spinner */}
       {loading && (

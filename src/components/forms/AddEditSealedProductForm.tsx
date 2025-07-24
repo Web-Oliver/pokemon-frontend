@@ -18,16 +18,13 @@ import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
 import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { getSearchApiService } from '../../services/ServiceRegistry';
-import Button from '../common/Button';
 import Input from '../common/Input';
-import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
 import CardProductInformationSection from './CardProductInformationSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -382,7 +379,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         }}
         sectionTitle='Product Information'
         sectionIcon={Package}
-        isSealedProductForm={true}
+        formType='product'
         readOnlyFields={{
           category: true,
           availability: true,

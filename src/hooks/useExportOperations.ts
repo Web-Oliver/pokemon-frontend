@@ -75,10 +75,15 @@ export const useExportOperations = (): UseExportOperationsReturn => {
               filename: finalFilename,
               columns: Object.keys(data[0] || {}).map(key => ({
                 key,
-                header: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()
+                header:
+                  key.charAt(0).toUpperCase() +
+                  key
+                    .slice(1)
+                    .replace(/([A-Z])/g, ' $1')
+                    .trim(),
               })),
               includeHeaders,
-              delimiter: ','
+              delimiter: ',',
             });
             break;
           case 'pdf':

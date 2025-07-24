@@ -4,7 +4,7 @@
  * Following CLAUDE.md layered architecture and Context7 design principles
  */
 
-import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import {
   Calendar,
   FileText,
@@ -29,12 +29,13 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
-import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
+import { getCollectionApiService } from '../services/ServiceRegistry';
 import Button from '../components/common/Button';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { usePageLayout } from '../hooks/usePageLayout';
 import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { PageLoading, ButtonLoading } from '../components/common/LoadingStates';
 // Lazy load ImageSlideshow for better performance
 const ImageSlideshow = lazy(() =>
   import('../components/common/ImageSlideshow').then(module => ({
@@ -48,32 +49,10 @@ const VirtualizedItemGrid = lazy(() => import('../components/lists/VirtualizedIt
 // Lazy load PerformanceMonitor for development
 const PerformanceMonitor = lazy(() => import('../components/debug/PerformanceMonitor'));
 import { log } from '../utils/logger';
+import { processImageUrl } from '../utils/formatting';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { IAuctionItem } from '../domain/models/auction';
-
-// Optimized helper function to process image URLs with memoization
-const processImageUrl = (imagePath: string | undefined): string | undefined => {
-  if (!imagePath) {
-    return undefined;
-  }
-
-  // Use regex for more efficient multiple localhost prefix cleanup
-  const cleanPath = imagePath.replace(/(http:\/\/localhost:3000)+/g, 'http://localhost:3000');
-
-  // If it's already a full URL after cleaning, return as-is
-  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-    return cleanPath;
-  }
-
-  // If it starts with /, it's already a proper absolute path
-  if (cleanPath.startsWith('/')) {
-    return `http://localhost:3000${cleanPath}`;
-  }
-
-  // Otherwise, assume it needs to be prefixed with the uploads path
-  return `http://localhost:3000/uploads/${cleanPath}`;
-};
 
 // Memoized function to avoid recreation on every render
 const memoizedProcessImageUrl = (imagePath: string | undefined) => {
@@ -97,13 +76,33 @@ interface UnifiedCollectionItem {
 
 const CreateAuction: React.FC = () => {
   const { createAuction, loading: auctionLoading, error, clearError } = useAuction();
+
+  // Use separate fetch hooks for better state management (following CLAUDE.md SRP)
+  const collectionApiService = getCollectionApiService();
   const {
-    psaCards,
-    rawCards,
-    sealedProducts,
-    loading: collectionLoading,
-    error: collectionError,
-  } = useCollectionOperations();
+    items: psaCards,
+    loading: psaLoading,
+    error: psaError,
+    fetchItems: fetchPsaCards,
+  } = useFetchCollectionItems<IPsaGradedCard>({ initialData: [] });
+
+  const {
+    items: rawCards,
+    loading: rawLoading,
+    error: rawError,
+    fetchItems: fetchRawCards,
+  } = useFetchCollectionItems<IRawCard>({ initialData: [] });
+
+  const {
+    items: sealedProducts,
+    loading: sealedLoading,
+    error: sealedError,
+    fetchItems: fetchSealedProducts,
+  } = useFetchCollectionItems<ISealedProduct>({ initialData: [] });
+
+  // Aggregate loading and error states
+  const collectionLoading = psaLoading || rawLoading || sealedLoading;
+  const collectionError = psaError || rawError || sealedError;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -136,6 +135,23 @@ const CreateAuction: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
 
+  // Fetch collection data on component mount
+  useEffect(() => {
+    const loadCollectionData = async () => {
+      try {
+        await Promise.all([
+          fetchPsaCards(() => collectionApiService.getAllPsaCards()),
+          fetchRawCards(() => collectionApiService.getAllRawCards()),
+          fetchSealedProducts(() => collectionApiService.getAllSealedProducts()),
+        ]);
+      } catch (error) {
+        log('Error loading collection data:', error);
+      }
+    };
+
+    loadCollectionData();
+  }, [fetchPsaCards, fetchRawCards, fetchSealedProducts, collectionApiService]);
+
   // Sort options for preview lists
   const [sortOptions, setSortOptions] = useState<{
     PsaGradedCard: 'order' | 'price-high' | 'price-low';
@@ -152,12 +168,16 @@ const CreateAuction: React.FC = () => {
     const items: UnifiedCollectionItem[] = [];
 
     // Early return if no data to avoid unnecessary processing
-    if (!psaCards.length && !rawCards.length && !sealedProducts.length) {
+    const psaCardsArray = psaCards || [];
+    const rawCardsArray = rawCards || [];
+    const sealedProductsArray = sealedProducts || [];
+
+    if (!psaCardsArray.length && !rawCardsArray.length && !sealedProductsArray.length) {
       return items;
     }
 
     // Add PSA Graded Cards
-    psaCards
+    psaCardsArray
       .filter(card => !card.sold)
       .forEach(card => {
         // Based on the console logs, PSA cards have a cardId object that contains populated card details
@@ -234,7 +254,7 @@ const CreateAuction: React.FC = () => {
       });
 
     // Add Raw Cards
-    rawCards
+    rawCardsArray
       .filter(card => !card.sold)
       .forEach(card => {
         // Based on the console logs, Raw cards have a cardId object that contains populated card details
@@ -299,7 +319,7 @@ const CreateAuction: React.FC = () => {
       });
 
     // Add Sealed Products
-    sealedProducts
+    sealedProductsArray
       .filter(product => !product.sold)
       .forEach(product => {
         const productName = product.name || 'Unknown Product';
@@ -1290,9 +1310,7 @@ const CreateAuction: React.FC = () => {
 
                   {/* Items Grid */}
                   {collectionLoading ? (
-                    <div className='py-12'>
-                      <LoadingSpinner text='Loading collection items...' />
-                    </div>
+                    <PageLoading text='Loading collection items...' />
                   ) : filteredItems.length === 0 ? (
                     <div className='py-12 text-center'>
                       <div className='w-16 h-16 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-lg flex items-center justify-center mx-auto mb-4'>
@@ -1347,13 +1365,7 @@ const CreateAuction: React.FC = () => {
                             </p>
                           </div>
                           <div className='flex justify-center w-full'>
-                            <Suspense
-                              fallback={
-                                <div className='py-12 text-center'>
-                                  <LoadingSpinner text='Loading optimized view...' />
-                                </div>
-                              }
-                            >
+                            <Suspense fallback={<PageLoading text='Loading optimized view...' />}>
                               <VirtualizedItemGrid
                                 items={filteredItems}
                                 selectedItemIds={selectedItemIds}
@@ -1512,7 +1524,7 @@ const CreateAuction: React.FC = () => {
                       className='bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 hover:from-teal-700 hover:via-cyan-700 hover:to-blue-700 text-white px-8 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
                     >
                       {auctionLoading ? (
-                        <LoadingSpinner size='sm' text='Creating...' />
+                        <ButtonLoading text='Creating...' />
                       ) : (
                         <>
                           <Save className='w-5 h-5 mr-3' />
