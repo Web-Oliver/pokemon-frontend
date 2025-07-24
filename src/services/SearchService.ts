@@ -74,7 +74,7 @@ import {
 } from '../api/consolidatedSearch';
 import { searchSetsOptimized, getSetSuggestionsOptimized, searchCardMarketSetNames } from '../api/consolidatedSearch';
 import { SEARCH_CONFIG } from '../utils/constants';
-import { formatDisplayNameWithNumber } from '../utils/cardUtils';
+import { formatDisplayNameWithNumber } from '../utils/formatting';
 
 /**
  * Search Service

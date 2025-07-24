@@ -31,8 +31,7 @@ import {
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { displayPrice } from '../utils/priceUtils';
-import { getRelativeTime } from '../utils/timeUtils';
+import { displayPrice, getRelativeTime } from '../utils/formatting';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook

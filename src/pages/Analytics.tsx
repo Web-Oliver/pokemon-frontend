@@ -49,8 +49,7 @@ import {
 import { useActivity, useActivityStats, ACTIVITY_TYPES } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { getRelativeTime } from '../utils/timeUtils';
-import { displayPrice } from '../utils/priceUtils';
+import { getRelativeTime, displayPrice } from '../utils/formatting';
 
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('month');

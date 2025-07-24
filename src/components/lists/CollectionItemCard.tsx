@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { Package, Star, Archive, CheckCircle, Eye, DollarSign } from 'lucide-react';
 import { ImageSlideshow } from '../common/ImageSlideshow';
-import { formatCardNameForDisplay } from '../../utils/cardUtils';
+import { formatCardNameForDisplay } from '../../utils/formatting';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 

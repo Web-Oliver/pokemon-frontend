@@ -14,7 +14,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
-import { formatCardNameForDisplay } from '../utils/cardUtils';
+import { formatCardNameForDisplay } from '../utils/formatting';
 import * as exportApi from '../api/exportApi';
 import * as dbaSelectionApi from '../api/dbaSelectionApi';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';

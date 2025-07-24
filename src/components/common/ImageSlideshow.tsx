@@ -12,7 +12,7 @@ import {
   getContext7ShimmerEffect,
   getOptimalGridLayout,
   type ImageAspectInfo,
-} from '../../utils/imageUtils';
+} from '../../utils/fileOperations';
 
 interface ImageSlideshowProps {
   images: string[];

@@ -42,8 +42,7 @@ import {
 } from 'lucide-react';
 import { useActivity, ACTIVITY_TYPES, ACTIVITY_PRIORITIES } from '../hooks/useActivity';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { displayPrice } from '../utils/priceUtils';
-import { getRelativeTime } from '../utils/timeUtils';
+import { displayPrice, getRelativeTime } from '../utils/formatting';
 
 const Activity: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');

@@ -25,7 +25,7 @@ import {
   getContext7ShimmerEffect,
   getOptimalGridLayout,
   type ImageAspectInfo,
-} from '../utils/imageUtils';
+} from '../utils/fileOperations';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

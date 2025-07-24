@@ -11,7 +11,7 @@ import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
-import { formatCardNameForDisplay } from '../utils/cardUtils';
+import { formatCardNameForDisplay } from '../utils/formatting';
 import { showSuccessToast, handleApiError } from '../utils/errorHandler';
 import * as dbaSelectionApi from '../api/dbaSelectionApi';
 

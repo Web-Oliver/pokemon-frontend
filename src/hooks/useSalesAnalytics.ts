@@ -15,7 +15,7 @@ import {
   aggregateByCategory,
   calculateTrendAnalysis,
 } from '../domain/services/SalesAnalyticsService';
-import { exportToCSV, commonCSVColumns } from '../utils/csvExport';
+import { exportToCSV, commonCSVColumns } from '../utils/fileOperations';
 import { log } from '../utils/logger';
 
 export interface DateRange {
