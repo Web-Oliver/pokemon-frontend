@@ -188,7 +188,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
     // Debug: Check for duplicate IDs
     const usedKeys = new Set<string>();
     const duplicateKeys: string[] = [];
-    
+
     data.forEach((item: CollectionItem, index: number) => {
       const key = item.id || (item as any)._id || `fallback-${index}`;
       if (usedKeys.has(key)) {
@@ -200,74 +200,78 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
           itemId: item.id,
           itemMongoId: (item as any)._id,
           cardId: (item as any).cardId,
-          productId: (item as any).productId
+          productId: (item as any).productId,
         });
       }
       usedKeys.add(key);
     });
 
     if (duplicateKeys.length > 0) {
-      console.error(`[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`, duplicateKeys);
+      console.error(
+        `[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`,
+        duplicateKeys
+      );
     }
 
     // Render collection items grid with guaranteed unique keys and futuristic animations
     return (
-      <motion.div 
+      <motion.div
         className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-8xl mx-auto'
-        initial="hidden"
-        animate="show"
+        initial='hidden'
+        animate='show'
         variants={{
           hidden: { opacity: 0 },
           show: {
             opacity: 1,
             transition: {
               staggerChildren: 0.1,
-              delayChildren: 0.2
-            }
-          }
+              delayChildren: 0.2,
+            },
+          },
         }}
       >
         {data.map((item: CollectionItem, index: number) => {
           const itemType = getItemType(item, activeTab);
           // Ensure absolutely unique key by combining ID with index as fallback
-          const uniqueKey = item.id || (item as any)._id 
-            ? `${item.id || (item as any)._id}-${index}`
-            : `fallback-${activeTab}-${index}`;
+          const uniqueKey =
+            item.id || (item as any)._id
+              ? `${item.id || (item as any)._id}-${index}`
+              : `fallback-${activeTab}-${index}`;
 
           return (
             <motion.div
               key={uniqueKey}
               variants={{
-                hidden: { 
-                  opacity: 0, 
+                hidden: {
+                  opacity: 0,
                   y: 60,
                   scale: 0.8,
-                  rotateX: -15
+                  rotateX: -15,
                 },
-                show: { 
-                  opacity: 1, 
+                show: {
+                  opacity: 1,
                   y: 0,
                   scale: 1,
                   rotateX: 0,
                   transition: {
-                    type: "spring",
+                    type: 'spring',
                     stiffness: 200,
                     damping: 20,
-                    duration: 0.6
-                  }
-                }
+                    duration: 0.6,
+                  },
+                },
               }}
               whileInView={{
                 opacity: 1,
                 y: 0,
                 transition: {
-                  type: "spring",
+                  type: 'spring',
                   stiffness: 100,
-                  damping: 15
-                }
+                  damping: 15,
+                },
               }}
-              viewport={{ once: true, margin: "-50px" }}
-              className="mx-auto w-full max-w-sm"
+              viewport={{ once: true, margin: '-50px' }}
+              className='mx-auto w-full max-w-sm'
             >
               <CollectionItemCard
                 item={item}

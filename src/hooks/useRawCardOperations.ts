@@ -48,7 +48,7 @@ export const useRawCardOperations = (): UseRawCardOperationsReturn => {
       return await execute(async () => {
         log(`Updating raw card ${id}...`);
         const updatedCard = await collectionApi.updateRawCard(id, cardData);
-        
+
         // Ensure the updated card has the proper ID
         const cardWithId = {
           ...updatedCard,

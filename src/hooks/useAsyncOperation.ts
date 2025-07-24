@@ -19,7 +19,9 @@ export interface UseAsyncOperationReturn<T = any> {
  * Generic hook for managing async operations with loading and error states
  * Eliminates the repeated pattern found in 10+ files
  */
-export const useAsyncOperation = <T = any>(initialData: T | null = null): UseAsyncOperationReturn<T> => {
+export const useAsyncOperation = <T = any>(
+  initialData: T | null = null
+): UseAsyncOperationReturn<T> => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<T | null>(initialData);

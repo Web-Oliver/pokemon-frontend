@@ -1,7 +1,7 @@
 /**
  * React Profiler Integration Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following Context7 + CLAUDE.md principles:
  * - React.Profiler integration for programmatic performance measurement
  * - Core Web Vitals tracking and reporting
@@ -9,7 +9,14 @@
  * - Development-only profiling with production opt-in capability
  */
 
-import React, { Profiler, ProfilerOnRenderCallback, useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+  Profiler,
+  ProfilerOnRenderCallback,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { Activity, BarChart3, Clock, Zap, AlertTriangle } from 'lucide-react';
 
 // Context7: Performance metrics interfaces
@@ -80,115 +87,125 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Context7: Enhanced onRender callback with aggregation and analysis
-  const onRenderCallback: ProfilerOnRenderCallback = useCallback((
-    profileId: string,
-    phase: 'mount' | 'update' | 'nested-update',
-    actualDuration: number,
-    baseDuration: number,
-    startTime: number,
-    commitTime: number,
-    interactions: Set<any>
-  ) => {
-    // Context7: Store individual render metrics
-    const renderMetric: ProfilerMetrics = {
-      id: profileId,
-      phase,
-      actualDuration,
-      baseDuration,
-      startTime,
-      commitTime,
-      interactions,
-    };
-
-    // Add to history with size limit
-    renderHistory.push(renderMetric);
-    if (renderHistory.length > MAX_HISTORY_SIZE) {
-      renderHistory.shift();
-    }
-
-    // Context7: Log slow renders above threshold
-    if (actualDuration > onRenderThreshold) {
-      console.warn(`[PROFILER] Slow render detected in ${profileId}:`, {
+  const onRenderCallback: ProfilerOnRenderCallback = useCallback(
+    (
+      profileId: string,
+      phase: 'mount' | 'update' | 'nested-update',
+      actualDuration: number,
+      baseDuration: number,
+      startTime: number,
+      commitTime: number,
+      interactions?: any
+    ) => {
+      // Context7: Store individual render metrics
+      const renderMetric: ProfilerMetrics = {
+        id: profileId,
         phase,
-        actualDuration: `${actualDuration.toFixed(2)}ms`,
-        baseDuration: `${baseDuration.toFixed(2)}ms`,
-        optimization: `${((1 - actualDuration / baseDuration) * 100).toFixed(1)}%`,
-        timestamp: new Date(startTime).toISOString(),
-      });
-    }
-
-    // Context7: Update aggregated metrics
-    if (aggregateMetrics) {
-      const existing = metricsStore.get(profileId);
-      const isMount = phase === 'mount';
-      
-      const updated: AggregatedMetrics = {
-        componentId: profileId,
-        renderCount: (existing?.renderCount || 0) + 1,
-        totalActualDuration: (existing?.totalActualDuration || 0) + actualDuration,
-        totalBaseDuration: (existing?.totalBaseDuration || 0) + baseDuration,
-        avgActualDuration: 0, // Will be calculated below
-        avgBaseDuration: 0, // Will be calculated below
-        mountTime: existing?.mountTime || (isMount ? actualDuration : 0),
-        lastUpdateTime: isMount ? existing?.lastUpdateTime || 0 : actualDuration,
-        slowestRender: Math.max(existing?.slowestRender || 0, actualDuration),
-        fastestRender: existing?.fastestRender ? Math.min(existing.fastestRender, actualDuration) : actualDuration,
-        optimizationScore: 0, // Will be calculated below
+        actualDuration,
+        baseDuration,
+        startTime,
+        commitTime,
+        interactions: interactions || [],
       };
 
-      // Calculate averages and optimization score
-      updated.avgActualDuration = updated.totalActualDuration / updated.renderCount;
-      updated.avgBaseDuration = updated.totalBaseDuration / updated.renderCount;
-      updated.optimizationScore = updated.avgBaseDuration > 0 
-        ? (1 - updated.avgActualDuration / updated.avgBaseDuration) * 100 
-        : 100;
+      // Add to history with size limit
+      renderHistory.push(renderMetric);
+      if (renderHistory.length > MAX_HISTORY_SIZE) {
+        renderHistory.shift();
+      }
 
-      metricsStore.set(profileId, updated);
+      // Context7: Log slow renders above threshold
+      if (actualDuration > onRenderThreshold) {
+        console.warn(`[PROFILER] Slow render detected in ${profileId}:`, {
+          phase,
+          actualDuration: `${actualDuration.toFixed(2)}ms`,
+          baseDuration: `${baseDuration.toFixed(2)}ms`,
+          optimization: `${((1 - actualDuration / baseDuration) * 100).toFixed(1)}%`,
+          timestamp: new Date(startTime).toISOString(),
+        });
+      }
 
-      // Update local state with proper throttling to prevent infinite re-renders
-      if (profileId === id) {
-        const now = Date.now();
-        const timeSinceLastUpdate = now - lastUpdateRef.current;
-        
-        // Throttle updates to at most once every 100ms
-        if (timeSinceLastUpdate > 100) {
-          lastUpdateRef.current = now;
-          
-          // Clear any pending timeout
-          if (updateTimeoutRef.current) {
-            clearTimeout(updateTimeoutRef.current);
-          }
-          
-          // Use setTimeout to defer the state update and break the render cycle
-          updateTimeoutRef.current = setTimeout(() => {
-            setMetrics(prevMetrics => {
-              // Only update if the data has actually changed meaningfully
-              if (!prevMetrics || 
+      // Context7: Update aggregated metrics
+      if (aggregateMetrics) {
+        const existing = metricsStore.get(profileId);
+        const isMount = phase === 'mount';
+
+        const updated: AggregatedMetrics = {
+          componentId: profileId,
+          renderCount: (existing?.renderCount || 0) + 1,
+          totalActualDuration: (existing?.totalActualDuration || 0) + actualDuration,
+          totalBaseDuration: (existing?.totalBaseDuration || 0) + baseDuration,
+          avgActualDuration: 0, // Will be calculated below
+          avgBaseDuration: 0, // Will be calculated below
+          mountTime: existing?.mountTime || (isMount ? actualDuration : 0),
+          lastUpdateTime: isMount ? existing?.lastUpdateTime || 0 : actualDuration,
+          slowestRender: Math.max(existing?.slowestRender || 0, actualDuration),
+          fastestRender: existing?.fastestRender
+            ? Math.min(existing.fastestRender, actualDuration)
+            : actualDuration,
+          optimizationScore: 0, // Will be calculated below
+        };
+
+        // Calculate averages and optimization score
+        updated.avgActualDuration = updated.totalActualDuration / updated.renderCount;
+        updated.avgBaseDuration = updated.totalBaseDuration / updated.renderCount;
+        updated.optimizationScore =
+          updated.avgBaseDuration > 0
+            ? (1 - updated.avgActualDuration / updated.avgBaseDuration) * 100
+            : 100;
+
+        metricsStore.set(profileId, updated);
+
+        // Update local state with proper throttling to prevent infinite re-renders
+        if (profileId === id) {
+          const now = Date.now();
+          const timeSinceLastUpdate = now - lastUpdateRef.current;
+
+          // Throttle updates to at most once every 100ms
+          if (timeSinceLastUpdate > 100) {
+            lastUpdateRef.current = now;
+
+            // Clear any pending timeout
+            if (updateTimeoutRef.current) {
+              clearTimeout(updateTimeoutRef.current);
+            }
+
+            // Use setTimeout to defer the state update and break the render cycle
+            updateTimeoutRef.current = setTimeout(() => {
+              setMetrics(prevMetrics => {
+                // Only update if the data has actually changed meaningfully
+                if (
+                  !prevMetrics ||
                   prevMetrics.renderCount !== updated.renderCount ||
-                  Math.abs(prevMetrics.avgActualDuration - updated.avgActualDuration) > 0.5) {
-                return updated;
-              }
-              return prevMetrics;
-            });
-          }, 0);
-        } else {
-          // If we're within the throttle window, schedule an update for later
-          if (updateTimeoutRef.current) {
-            clearTimeout(updateTimeoutRef.current);
+                  Math.abs(prevMetrics.avgActualDuration - updated.avgActualDuration) > 0.5
+                ) {
+                  return updated;
+                }
+                return prevMetrics;
+              });
+            }, 0);
+          } else {
+            // If we're within the throttle window, schedule an update for later
+            if (updateTimeoutRef.current) {
+              clearTimeout(updateTimeoutRef.current);
+            }
+
+            updateTimeoutRef.current = setTimeout(() => {
+              lastUpdateRef.current = Date.now();
+              setMetrics(updated);
+            }, 100 - timeSinceLastUpdate);
           }
-          
-          updateTimeoutRef.current = setTimeout(() => {
-            lastUpdateRef.current = Date.now();
-            setMetrics(updated);
-          }, 100 - timeSinceLastUpdate);
         }
       }
-    }
-  }, [id, onRenderThreshold, aggregateMetrics]);
+    },
+    [id, onRenderThreshold, aggregateMetrics]
+  );
 
   // Context7: Core Web Vitals tracking using PerformanceObserver
   useEffect(() => {
-    if (!enableWebVitals || typeof window === 'undefined') return;
+    if (!enableWebVitals || typeof window === 'undefined') {
+      return;
+    }
 
     const updateWebVitals = (vital: Partial<CoreWebVitals>) => {
       webVitals = { ...webVitals, ...vital };
@@ -196,7 +213,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     };
 
     // First Contentful Paint (FCP)
-    const fcpObserver = new PerformanceObserver((list) => {
+    const fcpObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint');
       if (fcpEntry) {
@@ -205,7 +222,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     });
 
     // Largest Contentful Paint (LCP)
-    const lcpObserver = new PerformanceObserver((list) => {
+    const lcpObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       const lcpEntry = entries[entries.length - 1]; // Latest LCP
       if (lcpEntry) {
@@ -214,18 +231,18 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     });
 
     // First Input Delay (FID)
-    const fidObserver = new PerformanceObserver((list) => {
+    const fidObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       entries.forEach(entry => {
         if (entry.name === 'first-input') {
-          const fid = entry.processingStart - entry.startTime;
+          const fid = (entry as any).processingStart - entry.startTime;
           updateWebVitals({ FID: fid });
         }
       });
     });
 
     // Cumulative Layout Shift (CLS)
-    const clsObserver = new PerformanceObserver((list) => {
+    const clsObserver = new PerformanceObserver(list => {
       let cls = webVitals.CLS || 0;
       const entries = list.getEntries();
       entries.forEach(entry => {
@@ -290,12 +307,20 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
 
   // Context7: Performance status assessment
   const getPerformanceStatus = () => {
-    if (!metrics) return { color: 'text-gray-400', icon: Clock, label: 'Initializing' };
-    
+    if (!metrics) {
+      return { color: 'text-gray-400', icon: Clock, label: 'Initializing' };
+    }
+
     const avgRender = metrics.avgActualDuration;
-    if (avgRender < 8) return { color: 'text-green-400', icon: Zap, label: 'Excellent' };
-    if (avgRender < 16) return { color: 'text-blue-400', icon: Activity, label: 'Good' };
-    if (avgRender < 33) return { color: 'text-yellow-400', icon: BarChart3, label: 'Fair' };
+    if (avgRender < 8) {
+      return { color: 'text-green-400', icon: Zap, label: 'Excellent' };
+    }
+    if (avgRender < 16) {
+      return { color: 'text-blue-400', icon: Activity, label: 'Good' };
+    }
+    if (avgRender < 33) {
+      return { color: 'text-yellow-400', icon: BarChart3, label: 'Fair' };
+    }
     return { color: 'text-red-400', icon: AlertTriangle, label: 'Poor' };
   };
 
@@ -305,10 +330,12 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
   return (
     <Profiler id={id} onRender={onRenderCallback}>
       {children}
-      
+
       {/* Context7: Development Performance Overlay */}
       {isVisible && metrics && (
-        <div className={`fixed bottom-4 left-4 z-50 bg-black/90 backdrop-blur-sm text-white rounded-lg p-4 text-xs font-mono space-y-3 max-w-sm border border-gray-600 ${className}`}>
+        <div
+          className={`fixed bottom-4 left-4 z-50 bg-black/90 backdrop-blur-sm text-white rounded-lg p-4 text-xs font-mono space-y-3 max-w-sm border border-gray-600 ${className}`}
+        >
           {/* Header */}
           <div className='flex items-center justify-between border-b border-gray-600 pb-2'>
             <div className='flex items-center space-x-2'>
@@ -323,25 +350,27 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
             <div className='text-gray-300 font-semibold text-xs border-b border-gray-700 pb-1'>
               Render Performance
             </div>
-            
+
             <div className='grid grid-cols-2 gap-2 text-xs'>
               <div className='flex justify-between'>
                 <span>Renders:</span>
                 <span className='font-bold text-blue-300'>{metrics.renderCount}</span>
               </div>
-              
+
               <div className='flex justify-between'>
                 <span>Avg time:</span>
                 <span className={`font-bold ${status.color}`}>
                   {metrics.avgActualDuration.toFixed(1)}ms
                 </span>
               </div>
-              
+
               <div className='flex justify-between'>
                 <span>Fastest:</span>
-                <span className='font-bold text-green-400'>{metrics.fastestRender.toFixed(1)}ms</span>
+                <span className='font-bold text-green-400'>
+                  {metrics.fastestRender.toFixed(1)}ms
+                </span>
               </div>
-              
+
               <div className='flex justify-between'>
                 <span>Slowest:</span>
                 <span className='font-bold text-red-400'>{metrics.slowestRender.toFixed(1)}ms</span>
@@ -350,7 +379,9 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
 
             <div className='flex justify-between'>
               <span>Optimization:</span>
-              <span className={`font-bold ${metrics.optimizationScore > 80 ? 'text-green-400' : metrics.optimizationScore > 60 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span
+                className={`font-bold ${metrics.optimizationScore > 80 ? 'text-green-400' : metrics.optimizationScore > 60 ? 'text-yellow-400' : 'text-red-400'}`}
+              >
                 {metrics.optimizationScore.toFixed(1)}%
               </span>
             </div>
@@ -362,39 +393,47 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
               <div className='text-gray-300 font-semibold text-xs border-b border-gray-700 pb-1'>
                 Core Web Vitals
               </div>
-              
+
               <div className='grid grid-cols-2 gap-2 text-xs'>
                 {webVitalsData.FCP && (
                   <div className='flex justify-between'>
                     <span>FCP:</span>
-                    <span className={`font-bold ${webVitalsData.FCP < 1800 ? 'text-green-400' : webVitalsData.FCP < 3000 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span
+                      className={`font-bold ${webVitalsData.FCP < 1800 ? 'text-green-400' : webVitalsData.FCP < 3000 ? 'text-yellow-400' : 'text-red-400'}`}
+                    >
                       {Math.round(webVitalsData.FCP)}ms
                     </span>
                   </div>
                 )}
-                
+
                 {webVitalsData.LCP && (
                   <div className='flex justify-between'>
                     <span>LCP:</span>
-                    <span className={`font-bold ${webVitalsData.LCP < 2500 ? 'text-green-400' : webVitalsData.LCP < 4000 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span
+                      className={`font-bold ${webVitalsData.LCP < 2500 ? 'text-green-400' : webVitalsData.LCP < 4000 ? 'text-yellow-400' : 'text-red-400'}`}
+                    >
                       {Math.round(webVitalsData.LCP)}ms
                     </span>
                   </div>
                 )}
-                
+
                 {webVitalsData.FID !== undefined && (
                   <div className='flex justify-between'>
                     <span>FID:</span>
-                    <span className={`font-bold ${webVitalsData.FID < 100 ? 'text-green-400' : webVitalsData.FID < 300 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span
+                      className={`font-bold ${webVitalsData.FID < 100 ? 'text-green-400' : webVitalsData.FID < 300 ? 'text-yellow-400' : 'text-red-400'}`}
+                    >
                       {Math.round(webVitalsData.FID)}ms
                     </span>
                   </div>
                 )}
-                
+
                 {webVitalsData.CLS !== undefined && (
                   <div className='flex justify-between'>
                     <span>CLS:</span>
-                    <span className={`font-bold ${webVitalsData.CLS < 0.1 ? 'text-green-400' : webVitalsData.CLS < 0.25 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span
+                      className={`font-bold ${webVitalsData.CLS < 0.1 ? 'text-green-400' : webVitalsData.CLS < 0.25 ? 'text-yellow-400' : 'text-red-400'}`}
+                    >
                       {webVitalsData.CLS.toFixed(3)}
                     </span>
                   </div>
@@ -436,38 +475,42 @@ export const clearMetrics = (): void => {
 // Context7: Performance analysis utilities
 export const analyzeComponentPerformance = (componentId: string) => {
   const metrics = metricsStore.get(componentId);
-  if (!metrics) return null;
+  if (!metrics) {
+    return null;
+  }
 
   const componentHistory = renderHistory.filter(r => r.id === componentId);
   const recentRenders = componentHistory.slice(-10);
-  
+
   return {
     ...metrics,
-    trend: recentRenders.length > 1 
-      ? recentRenders[recentRenders.length - 1].actualDuration - recentRenders[0].actualDuration
-      : 0,
-    consistency: recentRenders.length > 0
-      ? (metrics.slowestRender - metrics.fastestRender) / metrics.avgActualDuration
-      : 0,
+    trend:
+      recentRenders.length > 1
+        ? recentRenders[recentRenders.length - 1].actualDuration - recentRenders[0].actualDuration
+        : 0,
+    consistency:
+      recentRenders.length > 0
+        ? (metrics.slowestRender - metrics.fastestRender) / metrics.avgActualDuration
+        : 0,
     recommendations: generateRecommendations(metrics),
   };
 };
 
 const generateRecommendations = (metrics: AggregatedMetrics): string[] => {
   const recommendations: string[] = [];
-  
+
   if (metrics.optimizationScore < 70) {
     recommendations.push('Consider using React.memo() for this component');
   }
-  
+
   if (metrics.avgActualDuration > 33) {
     recommendations.push('Component renders are slow, check for expensive calculations');
   }
-  
+
   if (metrics.renderCount > 20 && metrics.lastUpdateTime > metrics.mountTime * 2) {
     recommendations.push('Frequent re-renders detected, optimize state management');
   }
-  
+
   return recommendations;
 };
 

@@ -34,6 +34,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { useExportOperations } from '../hooks/useExportOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
@@ -71,11 +73,12 @@ const SalesAnalytics: React.FC = () => {
     }).format(Math.round(amount));
   };
 
+  const { exportSalesData } = useExportOperations();
+
   // Handle CSV export with error handling and user feedback
   const handleExportCSV = async () => {
     try {
-      exportSalesCSV();
-      showSuccessToast('Sales data exported successfully!');
+      await exportSalesData(sales, dateRange);
     } catch (error) {
       handleApiError(error, 'Failed to export sales data');
     }
@@ -139,33 +142,27 @@ const SalesAnalytics: React.FC = () => {
     }
   };
 
-  if (loading && (!sales || sales.length === 0)) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
-        <div className='absolute inset-0 opacity-30'>
-          <div
-            className='w-full h-full'
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className='relative z-10 p-8'>
-          <div className='max-w-7xl mx-auto'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
-              <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5'></div>
-              <div className='relative z-10'>
-                <LoadingSpinner size='large' />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Actions for header
+  const headerActions = (
+    <button
+      onClick={handleExportCSV}
+      disabled={!sales || sales.length === 0}
+      className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+    >
+      <Download className='w-5 h-5 mr-2' />
+      Export CSV
+    </button>
+  );
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title="Sales Analytics"
+      subtitle="Financial tracking and analytics dashboard for sales data"
+      loading={loading && (!sales || sales.length === 0)}
+      error={error}
+      actions={headerActions}
+      variant="default"
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -556,7 +553,7 @@ const SalesAnalytics: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

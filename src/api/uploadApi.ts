@@ -1,6 +1,15 @@
 /**
  * Upload API Client
- * Handles image upload and cleanup operations
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for file upload mechanics only
+ * - OCP: Open for extension via different upload strategies
+ * - LSP: Maintains upload interface compatibility
+ * - ISP: Provides specific upload operations interface
+ * - DIP: Depends on unifiedApiClient abstraction
+ *
+ * Focuses exclusively on file upload and cleanup operations following SRP
  */
 
 import unifiedApiClient from './unifiedApiClient';
@@ -14,16 +23,19 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
   const formData = new FormData();
   formData.append('image', image);
 
-  const response = await unifiedApiClient.post('/upload/image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  const uploadedFile = response.data || response;
+  const response = await unifiedApiClient.apiCreate<any>(
+    '/upload/image',
+    formData,
+    'image upload',
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 
   // Extract only the path from the uploaded file
-  return uploadedFile.path;
+  return response.path;
 };
 
 /**
@@ -37,16 +49,19 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
     formData.append(`images`, image);
   });
 
-  const response = await unifiedApiClient.post('/upload/images', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  const uploadedFiles = response.data || response;
+  const response = await unifiedApiClient.apiCreate<any[]>(
+    '/upload/images',
+    formData,
+    'multiple image upload',
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 
   // Extract only the path from each uploaded file
-  return uploadedFiles.map((file: any) => file.path);
+  return response.map((file: any) => file.path);
 };
 
 /**
@@ -55,7 +70,7 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
  * @returns Promise<void>
  */
 export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
-  await unifiedApiClient.delete('/upload/cleanup', {
+  await unifiedApiClient.apiDelete<void>('/upload/cleanup', 'specific images', {
     data: { imageUrls },
   });
 };
@@ -65,5 +80,5 @@ export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
  * @returns Promise<void>
  */
 export const cleanupAllOrphanedImages = async (): Promise<void> => {
-  await unifiedApiClient.delete('/upload/cleanup-all');
+  await unifiedApiClient.apiDelete<void>('/upload/cleanup-all', 'orphaned images');
 };

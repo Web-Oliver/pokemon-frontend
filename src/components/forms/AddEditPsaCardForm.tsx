@@ -15,11 +15,12 @@ import { Award } from 'lucide-react';
 import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
-import { useFormValidation, commonValidationRules } from '../../hooks/useFormValidation';
+import { commonValidationRules } from '../../hooks/useFormValidation';
 import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
+import FormHeader from '../common/FormHeader';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
@@ -64,7 +65,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   isEditing = false,
 }) => {
   const { addPsaCard, updatePsaCard, loading } = useCollectionOperations();
-  
+
   // Validation rules for PSA card form
   const validationRules = {
     setName: { required: true },
@@ -109,11 +110,18 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   });
 
   const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } = baseForm;
-  const { register, handleSubmit, formState: { errors }, setValue, watch, clearErrors } = form;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    clearErrors,
+  } = form;
 
   // State for card selection (separate from form hooks for business logic)
   const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+    typeof initialData?.cardId === 'string' ? initialData.cardId : (initialData?.cardId as any)?._id || null
   );
 
   // Configure autocomplete fields for reusable search (after useForm hook)
@@ -143,7 +151,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       console.log('[PSA FORM] Updating form with initialData:', initialData);
 
       // Access card data from nested cardId object (populated by backend API)
-      const cardData = initialData.cardId;
+      const cardData = initialData.cardId as any;
       const setName = cardData?.setId?.setName || initialData.setName || '';
       const cardName = cardData?.cardName || initialData.cardName || '';
       const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
@@ -196,10 +204,10 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     }
   }, [watchedPrice, priceHistory]);
 
-  const handlePriceUpdate = (newPrice: number, date: string) => {
+  const handlePriceUpdate = (newPrice: number, _date: string) => {
     // Add new price to history using specialized hook
     priceHistory.addPriceEntry(newPrice, 'manual_update');
-    
+
     // Update form field
     setValue('myPrice', newPrice.toString());
   };
@@ -239,18 +247,27 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         };
       } else if (isEditing) {
         // For editing unsold items, only update price and images
-        const priceToUse = priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(data.myPrice);
+        const priceToUse =
+          priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(data.myPrice);
         const finalImages = [...imageUpload.remainingExistingImages, ...imageUrls];
-        
+
         cardData = {
           myPrice: priceToUse,
           images: finalImages,
-          priceHistory: priceHistory.priceHistory.length > 0 ? priceHistory.priceHistory : initialData?.priceHistory,
+          priceHistory:
+            priceHistory.priceHistory.length > 0
+              ? priceHistory.priceHistory.map(entry => ({
+                  price: entry.price,
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+                }))
+              : initialData?.priceHistory,
         };
       } else {
         // For new items, validate that a card was selected from autocomplete
         if (!selectedCardId) {
-          throw new Error('Please select a card from the search suggestions. Manual entry is not supported for PSA cards - you must select an existing card.');
+          throw new Error(
+            'Please select a card from the search suggestions. Manual entry is not supported for PSA cards - you must select an existing card.'
+          );
         }
 
         // Validate that the form data matches the selected card
@@ -262,7 +279,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             pokemonNumber: data.pokemonNumber,
             baseName: data.baseName,
             variety: data.variety,
-          }
+          },
         });
 
         // Use the selected card reference (schema requires cardId)
@@ -272,12 +289,18 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           myPrice: parseFloat(data.myPrice),
           dateAdded: new Date(data.dateAdded).toISOString(),
           images: imageUrls,
-          priceHistory: priceHistory.priceHistory.length > 0 
-            ? priceHistory.priceHistory 
-            : [{
-                price: parseFloat(data.myPrice),
-                dateUpdated: new Date().toISOString(),
-              }],
+          priceHistory:
+            priceHistory.priceHistory.length > 0
+              ? priceHistory.priceHistory.map(entry => ({
+                  price: entry.price,
+                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+                }))
+              : [
+                  {
+                    price: parseFloat(data.myPrice),
+                    dateUpdated: new Date().toISOString(),
+                  },
+                ],
         };
       }
 
@@ -307,26 +330,19 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-      {/* Form Header */}
-      <div className='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6'>
-        <div className='flex items-center'>
-          <div className='w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center'>
-            <Award className='w-6 h-6 text-white' />
-          </div>
-          <div className='ml-4'>
-            <h3 className='text-lg font-semibold text-blue-900'>
-              {isEditing ? 'Edit PSA Graded Card' : 'Add PSA Graded Card'}
-            </h3>
-            <p className='text-blue-700 text-sm'>
-              {isEditing
-                ? initialData?.sold
-                  ? 'Update buyer information and tracking details'
-                  : 'Update price and images (card info is locked after adding)'
-                : 'Add a new PSA graded card to your collection'}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Reusable Form Header */}
+      <FormHeader
+        icon={Award}
+        title={isEditing ? 'Edit PSA Graded Card' : 'Add PSA Graded Card'}
+        description={
+          isEditing
+            ? initialData?.sold
+              ? 'Update buyer information and tracking details'
+              : 'Update price and images (card info is locked after adding)'
+            : 'Add a new PSA graded card to your collection'
+        }
+        primaryColorClass='blue'
+      />
 
       {/* Card Information Section - Enhanced Autocomplete Integration */}
       {!(isEditing && initialData?.sold) && (
@@ -364,7 +380,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                     setSelectedCardId(cardId);
                     console.log('[PSA CARD] Selected card ID:', cardId);
                   } else {
-                    console.error('[PSA CARD] No ID found in selected data - card selection invalid');
+                    console.error(
+                      '[PSA CARD] No ID found in selected data - card selection invalid'
+                    );
                     return;
                   }
 
@@ -403,14 +421,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   setValue('variety', varietyValue, { shouldValidate: true });
                   clearErrors('variety');
 
-                  console.log('[PSA CARD] Card selection complete - all fields populated from card reference:', {
-                    cardId: selectedData.id,
-                    setName: setName,
-                    cardName: selectedData.cardName,
-                    pokemonNumber: pokemonNumber,
-                    baseName: baseName,
-                    variety: varietyValue,
-                  });
+                  console.log(
+                    '[PSA CARD] Card selection complete - all fields populated from card reference:',
+                    {
+                      cardId: selectedData.id,
+                      setName,
+                      cardName: selectedData.cardName,
+                      pokemonNumber,
+                      baseName,
+                      variety: varietyValue,
+                    }
+                  );
 
                   // Validate that all required card data is present
                   if (!selectedData.id || !selectedData.cardName || !selectedData.baseName) {
@@ -502,13 +523,16 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       {/* Grading & Pricing Section - Hidden for sold items */}
       <GradingPricingSection
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         cardType='psa'
         currentGradeOrCondition={watchedGrade}
         currentPrice={watchedPrice}
         isEditing={isEditing}
-        priceHistory={priceHistory.priceHistory}
+        priceHistory={priceHistory.priceHistory.map(entry => ({
+          price: entry.price,
+          dateUpdated: (entry as any).dateUpdated || new Date().toISOString()
+        }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}
         disableGradeConditionEdit={isEditing}
@@ -527,9 +551,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       {/* Sold Item Edit Section - Only for sold items */}
       <SaleDetailsSection
-        register={register}
-        errors={errors}
-        watch={watch}
+        register={register as any}
+        errors={errors as any}
+        watch={watch as any}
         isVisible={isEditing && initialData?.sold}
         itemName='card'
       />

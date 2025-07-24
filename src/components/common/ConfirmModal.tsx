@@ -2,7 +2,7 @@
  * Context7 Award-Winning Confirm Modal Component
  * Ultra-premium confirmation dialog with stunning visual hierarchy and micro-interactions
  * Specialized for delete operations with built-in danger styling
- * 
+ *
  * Following CLAUDE.md + Context7 + Catalyst UI principles:
  * - DRY: Now uses base Modal component to eliminate duplication
  * - Alert-style confirmation pattern from Catalyst UI
@@ -78,36 +78,33 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   };
 
   return (
-    <Modal 
-      isOpen={isOpen} 
-      onClose={handleCancel} 
-      title={title}
-      maxWidth="lg"
-    >
+    <Modal isOpen={isOpen} onClose={handleCancel} title={title} maxWidth='lg'>
       {/* Header with Icon */}
-      <div className="flex items-start space-x-4 mb-6">
+      <div className='flex items-start space-x-4 mb-6'>
         {/* Icon */}
         {IconComponent && (
-          <div className={`flex-shrink-0 flex items-center justify-center w-12 h-12 ${currentVariant.iconBg} rounded-2xl ring-2 ring-white/20 dark:ring-slate-700/20`}>
+          <div
+            className={`flex-shrink-0 flex items-center justify-center w-12 h-12 ${currentVariant.iconBg} rounded-2xl ring-2 ring-white/20 dark:ring-slate-700/20`}
+          >
             <IconComponent className={`w-6 h-6 ${currentVariant.iconColor}`} />
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1">
-          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <div className='flex-1'>
+          <p className='text-sm text-slate-600 dark:text-slate-300 leading-relaxed'>
             {description}
           </p>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+      <div className='flex justify-end space-x-3 pt-4 border-t border-slate-200/50 dark:border-slate-700/50'>
         {/* Cancel Button */}
         <button
           onClick={handleCancel}
           disabled={isLoading}
-          className="px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-600 border border-slate-300/50 dark:border-slate-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className='px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-600 border border-slate-300/50 dark:border-slate-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           {cancelText}
         </button>
@@ -117,12 +114,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           onClick={handleConfirm}
           disabled={isLoading}
           className={`px-6 py-2.5 text-sm font-medium text-white rounded-xl focus:outline-none focus:ring-2 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:scale-100 ${
-            isLoading ? currentVariant.confirmDisabled : `${currentVariant.confirmBg} focus:ring-offset-2`
+            isLoading
+              ? currentVariant.confirmDisabled
+              : `${currentVariant.confirmBg} focus:ring-offset-2`
           }`}
         >
           {isLoading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            <div className='flex items-center space-x-2'>
+              <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin'></div>
               <span>Processing...</span>
             </div>
           ) : (

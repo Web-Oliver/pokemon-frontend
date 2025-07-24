@@ -1,10 +1,23 @@
 /**
  * Sets API Client
- * Handles all set-related API operations matching the backend endpoints
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for set-related API operations
+ * - OCP: Open for extension via createResourceOperations configuration
+ * - LSP: Maintains ISet interface compatibility
+ * - ISP: Provides specific set operations interface
+ * - DIP: Depends on genericApiOperations abstraction
+ *
+ * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
+import { createResourceOperations, SET_CONFIG, idMapper } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
+import { searchSetsOptimized } from './consolidatedSearch';
+
+// ========== INTERFACES (ISP Compliance) ==========
 
 export interface PaginatedSetsParams {
   page?: number;
@@ -41,17 +54,114 @@ export interface OptimizedSetSearchResponse {
 }
 
 /**
- * Get all sets - USES NEW UNIFIED SEARCH API
- * @returns Promise<ISet[]> - Complete sets array
+ * Set creation payload interface
  */
-export const getSets = async (): Promise<ISet[]> => {
-  // Use the main sets endpoint to get all sets
-  const response = await unifiedApiClient.get('/sets?limit=1000');
-  return response.sets || [];
+interface ISetCreatePayload extends Omit<ISet, 'id' | '_id'> {}
+
+/**
+ * Set update payload interface
+ */
+interface ISetUpdatePayload extends Partial<ISetCreatePayload> {}
+
+// ========== GENERIC RESOURCE OPERATIONS ==========
+
+/**
+ * Core CRUD operations for sets using createResourceOperations
+ * Eliminates boilerplate patterns and ensures consistency with other API files
+ */
+const setOperations = createResourceOperations<ISet, ISetCreatePayload, ISetUpdatePayload>(
+  SET_CONFIG,
+  {
+    includeExportOperations: true,
+    includeBatchOperations: true,
+  }
+);
+
+// ========== EXPORTED API OPERATIONS ==========
+
+/**
+ * Get all sets with optional parameters
+ * @param params - Optional filter parameters
+ * @returns Promise<ISet[]> - Array of sets
+ */
+export const getSets = async (params?: { limit?: number }): Promise<ISet[]> => {
+  const { limit = 1000 } = params || {};
+  const response = await setOperations.getAll(
+    { limit },
+    {
+      transform: idMapper,
+    }
+  );
+  return response;
 };
 
 /**
- * Get paginated sets with optional filters - USES NEW UNIFIED SEARCH API
+ * Get set by ID
+ * @param id - Set ID
+ * @returns Promise<ISet> - Single set
+ */
+export const getSetById = async (id: string): Promise<ISet> => {
+  return setOperations.getById(id, {
+    transform: idMapper,
+  });
+};
+
+/**
+ * Create a new set
+ * @param setData - Set creation data
+ * @returns Promise<ISet> - Created set
+ */
+export const createSet = setOperations.create;
+
+/**
+ * Update existing set
+ * @param id - Set ID
+ * @param setData - Set update data
+ * @returns Promise<ISet> - Updated set
+ */
+export const updateSet = setOperations.update;
+
+/**
+ * Delete set
+ * @param id - Set ID
+ * @returns Promise<void>
+ */
+export const removeSet = setOperations.remove;
+
+/**
+ * Search sets with parameters
+ * @param searchParams - Set search parameters
+ * @returns Promise<ISet[]> - Search results
+ */
+export const searchSets = setOperations.search;
+
+/**
+ * Bulk create sets
+ * @param setsData - Array of set creation data
+ * @returns Promise<ISet[]> - Created sets
+ */
+export const bulkCreateSets = setOperations.bulkCreate;
+
+/**
+ * Export sets data
+ * @param exportParams - Export parameters
+ * @returns Promise<Blob> - Export file blob
+ */
+export const exportSets = setOperations.export;
+
+/**
+ * Batch operation on sets
+ * @param operation - Operation name
+ * @param ids - Set IDs
+ * @param operationData - Operation-specific data
+ * @returns Promise<ISet[]> - Operation results
+ */
+export const batchSetOperation = setOperations.batchOperation;
+
+// ========== SET-SPECIFIC OPERATIONS ==========
+
+/**
+ * Get paginated sets with optional filters
  * @param params - Optional pagination and filter parameters
  * @returns Promise<PaginatedSetsResponse> - Paginated sets response
  */
@@ -83,17 +193,21 @@ export const getPaginatedSets = async (
     };
   } else {
     // Use the main sets endpoint for browsing without search
-    const queryParams = new URLSearchParams({
+    const queryParams = {
       page: page.toString(),
       limit: limit.toString(),
       ...(year && { year: year.toString() }),
-    });
+    };
 
-    const response = await unifiedApiClient.get(`/sets?${queryParams.toString()}`);
+    const response = await unifiedApiClient.apiGet<PaginatedSetsResponse>(
+      '/sets',
+      'paginated sets',
+      { params: queryParams }
+    );
 
     return {
       sets: response.sets || [],
-      total: response.totalSets || 0,
+      total: response.total || 0,
       currentPage: response.currentPage || page,
       totalPages: response.totalPages || 1,
       hasNextPage: response.hasNextPage || false,
@@ -102,24 +216,13 @@ export const getPaginatedSets = async (
   }
 };
 
-/**
- * Get set by ID
- * @param id - Set ID
- * @returns Promise<ISet> - Single set
- */
-export const getSetById = async (id: string): Promise<ISet> => {
-  const response = await unifiedApiClient.get(`/sets/${id}`);
-  return response.data || response;
-};
-
-// Import consolidated search functions
-export { 
+// Import consolidated search functions for set-specific search operations
+export {
   searchSetsOptimized,
   getSetSuggestionsOptimized,
   getBestMatchSetOptimized,
   searchSetsByYear,
   searchSetsByYearRange,
   searchSetsByPsaPopulation,
-  searchSetsByCardCount
+  searchSetsByCardCount,
 } from './consolidatedSearch';
-

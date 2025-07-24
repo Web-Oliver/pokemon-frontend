@@ -1,10 +1,22 @@
 /**
  * Sales Analytics API Client
- * Handles sales data, analytics, and financial tracking operations
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for sales-related API operations
+ * - OCP: Open for extension via createResourceOperations configuration
+ * - LSP: Maintains ISale interface compatibility
+ * - ISP: Provides specific sales operations interface
+ * - DIP: Depends on genericApiOperations abstraction
+ *
+ * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
+import { createResourceOperations, SALES_CONFIG } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
+
+// ========== INTERFACES (ISP Compliance) ==========
 
 export interface SalesDataParams {
   startDate?: string;
@@ -23,15 +35,22 @@ export interface SalesGraphDataParams {
 }
 
 /**
- * Get sales data with optional filters
- * @param params - Optional filter parameters
- * @returns Promise<ISale[]> - Array of sales transactions
+ * Sale creation payload interface
  */
-export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
-  const response = await unifiedApiClient.get('/sales', { params });
-  const rawData = response.data || response;
+interface ISaleCreatePayload extends Omit<ISale, 'id'> {}
 
-  // Transform backend data to match ISale interface
+/**
+ * Sale update payload interface
+ */
+interface ISaleUpdatePayload extends Partial<ISaleCreatePayload> {}
+
+// ========== DATA TRANSFORMATION UTILITIES ==========
+
+/**
+ * Transform backend sales data to match ISale interface
+ * Eliminates data transformation duplication across components
+ */
+const transformSalesData = (rawData: any[]): ISale[] => {
   return rawData.map((item: any) => {
     let itemName = 'Unknown Item';
 
@@ -87,14 +106,105 @@ export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> =
   });
 };
 
+// ========== GENERIC RESOURCE OPERATIONS ==========
+
+/**
+ * Core CRUD operations for sales using createResourceOperations
+ * Eliminates boilerplate patterns and ensures consistency with other API files
+ */
+const salesOperations = createResourceOperations<ISale, ISaleCreatePayload, ISaleUpdatePayload>(
+  SALES_CONFIG,
+  {
+    includeExportOperations: true,
+    includeBatchOperations: true,
+  }
+);
+
+// ========== EXPORTED API OPERATIONS ==========
+
+/**
+ * Get sales data with optional filters and transformation
+ * @param params - Optional filter parameters
+ * @returns Promise<ISale[]> - Array of sales transactions
+ */
+export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
+  const rawData = await salesOperations.getAll(params);
+  return transformSalesData(rawData as any[]);
+};
+
+/**
+ * Get sale by ID
+ * @param id - Sale ID
+ * @returns Promise<ISale> - Single sale
+ */
+export const getSaleById = salesOperations.getById;
+
+/**
+ * Create a new sale
+ * @param saleData - Sale creation data
+ * @returns Promise<ISale> - Created sale
+ */
+export const createSale = salesOperations.create;
+
+/**
+ * Update existing sale
+ * @param id - Sale ID
+ * @param saleData - Sale update data
+ * @returns Promise<ISale> - Updated sale
+ */
+export const updateSale = salesOperations.update;
+
+/**
+ * Delete sale
+ * @param id - Sale ID
+ * @returns Promise<void>
+ */
+export const removeSale = salesOperations.remove;
+
+/**
+ * Search sales with parameters
+ * @param searchParams - Sale search parameters
+ * @returns Promise<ISale[]> - Search results
+ */
+export const searchSales = salesOperations.search;
+
+/**
+ * Bulk create sales
+ * @param salesData - Array of sale creation data
+ * @returns Promise<ISale[]> - Created sales
+ */
+export const bulkCreateSales = salesOperations.bulkCreate;
+
+/**
+ * Export sales data
+ * @param exportParams - Export parameters
+ * @returns Promise<Blob> - Export file blob
+ */
+export const exportSales = salesOperations.export;
+
+/**
+ * Batch operation on sales
+ * @param operation - Operation name
+ * @param ids - Sale IDs
+ * @param operationData - Operation-specific data
+ * @returns Promise<ISale[]> - Operation results
+ */
+export const batchSaleOperation = salesOperations.batchOperation;
+
+// ========== SALES-SPECIFIC ANALYTICS OPERATIONS ==========
+
 /**
  * Get sales summary analytics
  * @param params - Optional filter parameters
  * @returns Promise<ISalesSummary> - Sales summary data
  */
 export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISalesSummary> => {
-  const response = await unifiedApiClient.get('/sales/summary', { params });
-  return response.data || response;
+  const response = await unifiedApiClient.apiGet<ISalesSummary>(
+    '/sales/summary',
+    'sales summary analytics',
+    { params }
+  );
+  return response;
 };
 
 /**
@@ -105,6 +215,10 @@ export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISal
 export const getSalesGraphData = async (
   params?: SalesGraphDataParams
 ): Promise<ISalesGraphData[]> => {
-  const response = await unifiedApiClient.get('/sales/graph-data', { params });
-  return response.data || response;
+  const response = await unifiedApiClient.apiGet<ISalesGraphData[]>(
+    '/sales/graph-data',
+    'sales graph data',
+    { params }
+  );
+  return response;
 };

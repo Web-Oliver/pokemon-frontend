@@ -85,17 +85,6 @@ class DefaultOptimizationStrategy implements OptimizationStrategy {
   }
 }
 
-/**
- * No-op optimization strategy for cases where optimization is not needed
- */
-class NoOptimizationStrategy implements OptimizationStrategy {
-  async optimize<T>(
-    request: () => Promise<AxiosResponse<T>>,
-    config: OptimizationConfig
-  ): Promise<AxiosResponse<T>> {
-    return request();
-  }
-}
 
 // ========== UNIFIED API CLIENT (SRP + DIP) ==========
 
@@ -156,8 +145,7 @@ export class UnifiedApiClient {
       errorMessage = `Failed to ${operation}`,
       logRequest = true,
       logResponse = true,
-      optimization = {},
-      ...axiosConfig
+      optimization = {}
     } = config;
 
     try {
@@ -166,10 +154,7 @@ export class UnifiedApiClient {
       }
 
       // Apply optimization strategy
-      const response = await this.optimizationStrategy.optimize(
-        requestFn,
-        optimization
-      );
+      const response = await this.optimizationStrategy.optimize(requestFn, optimization);
 
       if (logResponse) {
         log(`${operation} completed successfully`);
@@ -195,12 +180,9 @@ export class UnifiedApiClient {
   /**
    * GET request with optimization support
    */
-  async get<T>(
-    url: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
+  async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
     const { optimization, ...axiosConfig } = config;
-    
+
     const defaultOptimization: OptimizationConfig = {
       enableCache: false, // Disable default caching
       cacheTTL: 5 * 60 * 1000, // 5 minutes
@@ -208,91 +190,68 @@ export class UnifiedApiClient {
       ...optimization,
     };
 
-    return this.makeRequest(
-      () => this.client.get<T>(url, axiosConfig),
-      { 
-        ...config,
-        operation: config.operation || `fetch ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
+    return this.makeRequest(() => this.client.get<T>(url, axiosConfig), {
+      ...config,
+      operation: config.operation || `fetch ${url}`,
+      optimization: defaultOptimization,
+    });
   }
 
   /**
    * POST request with optimization support
    */
-  async post<T>(
-    url: string,
-    data?: any,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
+  async post<T>(url: string, data?: any, config: EnhancedRequestConfig = {}): Promise<T> {
     const { optimization, ...axiosConfig } = config;
-    
+
     const defaultOptimization: OptimizationConfig = {
       enableCache: false,
       enableDeduplication: true,
       ...optimization,
     };
 
-    return this.makeRequest(
-      () => this.client.post<T>(url, data, axiosConfig),
-      { 
-        ...config,
-        operation: config.operation || `create ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
+    return this.makeRequest(() => this.client.post<T>(url, data, axiosConfig), {
+      ...config,
+      operation: config.operation || `create ${url}`,
+      optimization: defaultOptimization,
+    });
   }
 
   /**
    * PUT request with optimization support
    */
-  async put<T>(
-    url: string,
-    data?: any,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
+  async put<T>(url: string, data?: any, config: EnhancedRequestConfig = {}): Promise<T> {
     const { optimization, ...axiosConfig } = config;
-    
+
     const defaultOptimization: OptimizationConfig = {
       enableCache: false,
       enableDeduplication: true,
       ...optimization,
     };
 
-    return this.makeRequest(
-      () => this.client.put<T>(url, data, axiosConfig),
-      { 
-        ...config,
-        operation: config.operation || `update ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
+    return this.makeRequest(() => this.client.put<T>(url, data, axiosConfig), {
+      ...config,
+      operation: config.operation || `update ${url}`,
+      optimization: defaultOptimization,
+    });
   }
 
   /**
    * DELETE request with optimization support
    */
-  async delete<T = void>(
-    url: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
+  async delete<T = void>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
     const { optimization, ...axiosConfig } = config;
-    
+
     const defaultOptimization: OptimizationConfig = {
       enableCache: false,
       enableDeduplication: true,
       ...optimization,
     };
 
-    return this.makeRequest(
-      () => this.client.delete<T>(url, axiosConfig),
-      { 
-        ...config,
-        operation: config.operation || `delete ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
+    return this.makeRequest(() => this.client.delete<T>(url, axiosConfig), {
+      ...config,
+      operation: config.operation || `delete ${url}`,
+      optimization: defaultOptimization,
+    });
   }
 
   // ========== BATCH OPERATIONS ==========
@@ -306,17 +265,14 @@ export class UnifiedApiClient {
     batchConfig: BatchRequestConfig = {}
   ): Promise<T[]> {
     const batchKey = `batch-get-${JSON.stringify(batchConfig)}`;
-    
+
     if (!this.batchProcessors.has(batchKey)) {
       this.batchProcessors.set(
         batchKey,
-        new BatchProcessor(
-          async (urlsBatch: string[]) => {
-            const promises = urlsBatch.map(url => this.get<T>(url, config));
-            return Promise.all(promises);
-          },
-          batchConfig
-        )
+        new BatchProcessor(async (urlsBatch: string[]) => {
+          const promises = urlsBatch.map(url => this.get<T>(url, config));
+          return Promise.all(promises);
+        }, batchConfig)
       );
     }
 
@@ -340,19 +296,14 @@ export class UnifiedApiClient {
     batchConfig: BatchRequestConfig = {}
   ): Promise<T[]> {
     const batchKey = `batch-post-${JSON.stringify(batchConfig)}`;
-    
+
     if (!this.batchProcessors.has(batchKey)) {
       this.batchProcessors.set(
         batchKey,
-        new BatchProcessor(
-          async (requestsBatch: Array<{ url: string; data?: any }>) => {
-            const promises = requestsBatch.map(req => 
-              this.post<T>(req.url, req.data, config)
-            );
-            return Promise.all(promises);
-          },
-          batchConfig
-        )
+        new BatchProcessor(async (requestsBatch: Array<{ url: string; data?: any }>) => {
+          const promises = requestsBatch.map(req => this.post<T>(req.url, req.data, config));
+          return Promise.all(promises);
+        }, batchConfig)
       );
     }
 
@@ -450,10 +401,7 @@ export class UnifiedApiClient {
   /**
    * Prefetch data for predictive loading
    */
-  async prefetch<T>(
-    url: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<void> {
+  async prefetch<T>(url: string, config: EnhancedRequestConfig = {}): Promise<void> {
     try {
       await this.get<T>(url, {
         ...config,
@@ -517,7 +465,7 @@ export default {
 
   // Utility methods
   prefetch: unifiedApiClient.prefetch.bind(unifiedApiClient),
-  
+
   // Instance access
   instance: unifiedApiClient,
 };

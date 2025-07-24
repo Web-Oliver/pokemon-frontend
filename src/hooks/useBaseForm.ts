@@ -17,27 +17,35 @@ export interface BaseFormConfig<T extends FieldValues> {
   initialImages?: string[];
   initialPriceHistory?: any[];
   initialPrice?: number;
+  /** Initial data to populate form fields (for editing) */
+  initialData?: Partial<T>;
+  /** Whether form is in editing mode */
+  isEditing?: boolean;
+  /** Custom field mapping for initialData */
+  fieldMapping?: Record<string, string | ((value: any) => any)>;
 }
 
 export interface UseBaseFormReturn<T extends FieldValues> {
   // Form state
   form: UseFormReturn<T>;
   isSubmitting: boolean;
-  
+
   // Image upload
   imageUpload: ReturnType<typeof useImageUpload>;
-  
+
   // Price history
   priceHistory: ReturnType<typeof usePriceHistory>;
-  
+
   // Validation
   validateField: (fieldName: string, value: any) => string | undefined;
   isFormValid: (formData: Record<string, any>) => boolean;
-  
+
   // Form operations
   setSubmitting: (submitting: boolean) => void;
   resetForm: () => void;
   setFormData: (data: Partial<T>) => void;
+  /** Update form with initial data (centralized initialData handling) */
+  updateWithInitialData: (data: Partial<T>) => void;
 }
 
 /**
@@ -54,6 +62,9 @@ export const useBaseForm = <T extends FieldValues>(
     initialImages = [],
     initialPriceHistory = [],
     initialPrice = 0,
+    initialData,
+    isEditing = false,
+    fieldMapping = {},
   } = config;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,13 +95,72 @@ export const useBaseForm = <T extends FieldValues>(
     setIsSubmitting(false);
   }, [form, imageUpload, priceHistory]);
 
-  const setFormData = useCallback((data: Partial<T>) => {
-    Object.keys(data).forEach(key => {
-      if (data[key] !== undefined) {
-        form.setValue(key as any, data[key]);
+  const setFormData = useCallback(
+    (data: Partial<T>) => {
+      Object.keys(data).forEach(key => {
+        if (data[key] !== undefined) {
+          form.setValue(key as any, data[key]);
+        }
+      });
+    },
+    [form]
+  );
+
+  // Centralized initialData handling following CLAUDE.md SRP principle
+  const updateWithInitialData = useCallback(
+    (data: Partial<T>) => {
+      if (!data) {
+        return;
       }
-    });
-  }, [form]);
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          // Check if there's a custom field mapping
+          const mapping = fieldMapping[key];
+
+          let processedValue = value;
+
+          if (typeof mapping === 'function') {
+            // Custom transformation function
+            processedValue = mapping(value);
+          } else if (typeof mapping === 'string') {
+            // Field name mapping
+            form.setValue(mapping as any, value);
+            return;
+          }
+
+          // Handle common field transformations
+          if (key.includes('Date') && typeof value === 'string') {
+            // Date field transformation
+            processedValue = value.includes('T') ? value.split('T')[0] : value;
+          } else if (key.includes('Price') && typeof value === 'number') {
+            // Price field transformation to string
+            processedValue = value.toString();
+          }
+
+          form.setValue(key as any, processedValue, { shouldValidate: false });
+        }
+      });
+    },
+    [form, fieldMapping]
+  );
+
+  // Handle initialData on mount and when it changes (for async loading)
+  useEffect(() => {
+    if (isEditing && initialData) {
+      updateWithInitialData(initialData);
+
+      // Update images if provided
+      if (initialData.images && Array.isArray(initialData.images)) {
+        imageUpload.setRemainingExistingImages(initialData.images as string[]);
+      }
+
+      // Update price history if provided
+      if (initialData.priceHistory && Array.isArray(initialData.priceHistory)) {
+        // This would need to be implemented in usePriceHistory if needed
+      }
+    }
+  }, [isEditing, initialData, updateWithInitialData, imageUpload]);
 
   return {
     form,
@@ -102,5 +172,6 @@ export const useBaseForm = <T extends FieldValues>(
     setSubmitting,
     resetForm,
     setFormData,
+    updateWithInitialData,
   };
 };

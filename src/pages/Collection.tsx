@@ -11,6 +11,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Download, FileText } from 'lucide-react';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
@@ -72,14 +74,12 @@ const Collection: React.FC = () => {
 
   // Handle navigation to add new item
   const handleAddNewItem = () => {
-    window.history.pushState({}, '', '/collection/add');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToCreate.item();
   };
 
   // Handle navigation to item detail page
   const handleViewItemDetail = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
-    window.history.pushState({}, '', `/collection/${type}/${item.id}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToItemDetail(type, item.id);
   };
 
   // Handle mark as sold button click
@@ -154,8 +154,43 @@ const Collection: React.FC = () => {
     selectAllItems(allItems);
   };
 
+  const headerActions = (
+    <div className='flex items-center space-x-3'>
+      <button
+        onClick={handleExportAllItems}
+        disabled={isExporting || loading}
+        className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+      >
+        <FileText className='w-5 h-5 mr-2' />
+        {isExporting ? 'Exporting...' : 'Export All'}
+      </button>
+      <button
+        onClick={handleOpenExportModal}
+        disabled={isExporting || loading}
+        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+      >
+        <Download className='w-5 h-5 mr-2' />
+        Export Selected
+      </button>
+      <button
+        onClick={handleAddNewItem}
+        className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20'
+      >
+        <Plus className='w-5 h-5 mr-2' />
+        Add New Item
+      </button>
+    </div>
+  );
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title='My Premium Collection'
+      subtitle='Manage your Pokémon cards and sealed products with award-winning style'
+      loading={loading}
+      error={error}
+      actions={headerActions}
+      variant='default'
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -271,7 +306,7 @@ const Collection: React.FC = () => {
           />
         </Modal>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

@@ -250,7 +250,6 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
             )}
           </div>
         ))}
-
       </div>
     );
   }

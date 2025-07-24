@@ -41,6 +41,9 @@ import {
   Info,
 } from 'lucide-react';
 import { useActivity, ACTIVITY_TYPES, ACTIVITY_PRIORITIES } from '../hooks/useActivity';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 
@@ -169,7 +172,13 @@ const Activity: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title='Activity Feed'
+      subtitle='Recent activity and updates for your collection'
+      loading={loading}
+      error={error}
+      variant='default'
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -453,7 +462,7 @@ const Activity: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

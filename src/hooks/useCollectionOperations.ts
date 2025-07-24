@@ -63,7 +63,7 @@ export interface UseCollectionOperationsReturn extends CollectionState {
  */
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const collectionState = useCollectionState();
-  const { 
+  const {
     setCollectionState,
     addPsaCardToState,
     updatePsaCardInState,
@@ -76,7 +76,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     addSealedProductToState,
     updateSealedProductInState,
     removeSealedProductFromState,
-    moveSealedProductToSold
+    moveSealedProductToSold,
   } = collectionState;
   const psaOperations = usePsaCardOperations();
   const rawOperations = useRawCardOperations();
@@ -306,10 +306,20 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   }, [refreshCollection]);
 
   // Determine overall loading state
-  const isLoading = loading || psaOperations.loading || rawOperations.loading || sealedOperations.loading || imageExport.loading;
-  
+  const isLoading =
+    loading ||
+    psaOperations.loading ||
+    rawOperations.loading ||
+    sealedOperations.loading ||
+    imageExport.loading;
+
   // Determine overall error state (prioritize operation errors over general errors)
-  const overallError = psaOperations.error || rawOperations.error || sealedOperations.error || imageExport.error || error;
+  const overallError =
+    psaOperations.error ||
+    rawOperations.error ||
+    sealedOperations.error ||
+    imageExport.error ||
+    error;
 
   // Combined clear error function
   const clearAllErrors = useCallback(() => {

@@ -48,6 +48,9 @@ import {
 } from 'lucide-react';
 import { useActivity, useActivityStats, ACTIVITY_TYPES } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { getRelativeTime, displayPrice } from '../utils/formatting';
 
@@ -219,7 +222,13 @@ const Analytics: React.FC = () => {
   }, [timeRange]); // Remove fetchActivities from dependencies to prevent infinite loop
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title="Analytics Dashboard"
+      subtitle="Comprehensive analytics and insights for your collection"
+      loading={loading}
+      error={error}
+      variant="default"
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -631,7 +640,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

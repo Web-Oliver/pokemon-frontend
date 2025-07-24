@@ -27,7 +27,4 @@ export interface IDataExportApiService {
  * Combined Export API Service Interface
  * Follows Interface Segregation Principle - clients can depend on specific interfaces
  */
-export interface IExportApiService extends 
-  IImageExportApiService, 
-  IDataExportApiService {
-}
+export interface IExportApiService extends IImageExportApiService, IDataExportApiService {}

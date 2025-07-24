@@ -19,7 +19,7 @@ import { searchApiService } from './SearchApiService';
  */
 export class ServiceRegistry {
   private static instance: ServiceRegistry;
-  
+
   private _collectionApiService: ICollectionApiService;
   private _exportApiService: IExportApiService;
   private _uploadApiService: IUploadApiService;
@@ -79,14 +79,11 @@ export class ServiceRegistry {
 export const serviceRegistry = ServiceRegistry.getInstance();
 
 // Export convenience getters for direct access
-export const getCollectionApiService = (): ICollectionApiService => 
+export const getCollectionApiService = (): ICollectionApiService =>
   serviceRegistry.collectionApiService;
 
-export const getExportApiService = (): IExportApiService => 
-  serviceRegistry.exportApiService;
+export const getExportApiService = (): IExportApiService => serviceRegistry.exportApiService;
 
-export const getUploadApiService = (): IUploadApiService => 
-  serviceRegistry.uploadApiService;
+export const getUploadApiService = (): IUploadApiService => serviceRegistry.uploadApiService;
 
-export const getSearchApiService = (): ISearchApiService => 
-  serviceRegistry.searchApiService;
+export const getSearchApiService = (): ISearchApiService => serviceRegistry.searchApiService;

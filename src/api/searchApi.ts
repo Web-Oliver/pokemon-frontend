@@ -1,4 +1,34 @@
+/**
+ * Search API Client - Context7 Premium Search with Caching/Throttling
+ * Layer 2: Services/Hooks/Store (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for search caching, throttling, and optimization
+ * - OCP: Open for extension via different caching strategies
+ * - LSP: Maintains search interface compatibility
+ * - ISP: Provides specific search optimization interfaces
+ * - DIP: Depends on consolidatedSearch abstraction (single source of truth)
+ *
+ * DRY: Layers caching/throttling on top of consolidatedSearch.ts
+ */
+
 import unifiedApiClient from './unifiedApiClient';
+import {
+  searchCardsOptimized,
+  searchSetsOptimized,
+  searchProductsOptimized,
+  OptimizedSearchParams,
+  OptimizedSetSearchParams,
+  OptimizedProductSearchParams,
+  OptimizedSearchResponse,
+} from './consolidatedSearch';
+
+// Re-export suggestion functions for external use
+export {
+  getCardSuggestionsOptimized,
+  getSetSuggestionsOptimized,
+  getProductSuggestionsOptimized,
+} from './consolidatedSearch';
 
 // Context7 Search Performance Optimization
 const searchCache = new Map<
@@ -32,6 +62,157 @@ const cleanupCache = () => {
 
 // Context7 Periodic Cache Cleanup
 setInterval(cleanupCache, 120000); // Every 2 minutes
+
+// ========== CACHED SEARCH OPERATIONS ==========
+
+/**
+ * Cached card search wrapper
+ * Layers caching on top of consolidatedSearch.searchCardsOptimized
+ */
+export const searchCardsWithCache = async (
+  params: OptimizedSearchParams,
+  ttl: number = 5 * 60 * 1000 // 5 minutes default
+): Promise<OptimizedSearchResponse<any>> => {
+  const cacheKey = createCacheKey({ type: 'cards', ...params });
+
+  // Check cache first
+  const cached = searchCache.get(cacheKey);
+  if (cached && isValidCacheEntry(cached)) {
+    return cached.data as OptimizedSearchResponse<any>;
+  }
+
+  // Check pending requests (deduplication)
+  if (pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+  }
+
+  // Make request using consolidatedSearch
+  const request = searchCardsOptimized(params);
+  pendingRequests.set(cacheKey, request);
+
+  try {
+    const result = await request;
+
+    // Cache the result
+    searchCache.set(cacheKey, {
+      data: result,
+      timestamp: Date.now(),
+      ttl,
+    });
+
+    return result;
+  } finally {
+    pendingRequests.delete(cacheKey);
+  }
+};
+
+/**
+ * Cached set search wrapper
+ * Layers caching on top of consolidatedSearch.searchSetsOptimized
+ */
+export const searchSetsWithCache = async (
+  params: OptimizedSetSearchParams,
+  ttl: number = 5 * 60 * 1000 // 5 minutes default
+): Promise<OptimizedSearchResponse<any>> => {
+  const cacheKey = createCacheKey({ type: 'sets', ...params });
+
+  // Check cache first
+  const cached = searchCache.get(cacheKey);
+  if (cached && isValidCacheEntry(cached)) {
+    return cached.data as OptimizedSearchResponse<any>;
+  }
+
+  // Check pending requests (deduplication)
+  if (pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+  }
+
+  // Make request using consolidatedSearch
+  const request = searchSetsOptimized(params);
+  pendingRequests.set(cacheKey, request);
+
+  try {
+    const result = await request;
+
+    // Cache the result
+    searchCache.set(cacheKey, {
+      data: result,
+      timestamp: Date.now(),
+      ttl,
+    });
+
+    return result;
+  } finally {
+    pendingRequests.delete(cacheKey);
+  }
+};
+
+/**
+ * Cached product search wrapper
+ * Layers caching on top of consolidatedSearch.searchProductsOptimized
+ */
+export const searchProductsWithCache = async (
+  params: OptimizedProductSearchParams,
+  ttl: number = 5 * 60 * 1000 // 5 minutes default
+): Promise<OptimizedSearchResponse<any>> => {
+  const cacheKey = createCacheKey({ type: 'products', ...params });
+
+  // Check cache first
+  const cached = searchCache.get(cacheKey);
+  if (cached && isValidCacheEntry(cached)) {
+    return cached.data as OptimizedSearchResponse<any>;
+  }
+
+  // Check pending requests (deduplication)
+  if (pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+  }
+
+  // Make request using consolidatedSearch
+  const request = searchProductsOptimized(params);
+  pendingRequests.set(cacheKey, request);
+
+  try {
+    const result = await request;
+
+    // Cache the result
+    searchCache.set(cacheKey, {
+      data: result,
+      timestamp: Date.now(),
+      ttl,
+    });
+
+    return result;
+  } finally {
+    pendingRequests.delete(cacheKey);
+  }
+};
+
+// ========== CACHE MANAGEMENT ==========
+
+/**
+ * Clear search cache
+ */
+export const clearSearchCache = (): void => {
+  searchCache.clear();
+  pendingRequests.clear();
+};
+
+/**
+ * Get cache statistics
+ */
+export const getCacheStats = () => {
+  return {
+    cacheSize: searchCache.size,
+    pendingRequests: pendingRequests.size,
+    entries: Array.from(searchCache.entries()).map(([key, entry]) => ({
+      key,
+      age: Date.now() - entry.timestamp,
+      ttl: entry.ttl,
+      valid: isValidCacheEntry(entry),
+    })),
+  };
+};
 
 export interface SearchResult {
   success: boolean;
@@ -192,11 +373,11 @@ export const searchApi = {
     const cacheKey = createCacheKey({ query: processedQuery, types, limit, page, filters });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as any;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as any;
     }
 
     const requestPromise = (async () => {
@@ -234,7 +415,7 @@ export const searchApi = {
 
     try {
       const result = await requestPromise;
-      return result;
+      return result as any;
     } finally {
       pendingRequests.delete(cacheKey);
     }
@@ -262,11 +443,11 @@ export const searchApi = {
     const cacheKey = createCacheKey({ query: processedQuery, types, limit, endpoint: 'suggest' });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as any;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as any;
     }
 
     const requestPromise = (async () => {
@@ -299,7 +480,7 @@ export const searchApi = {
 
     try {
       const result = await requestPromise;
-      return result;
+      return result as any;
     } finally {
       pendingRequests.delete(cacheKey);
     }
@@ -340,11 +521,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as any;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as any;
     }
 
     const requestPromise = (async () => {
@@ -384,7 +565,7 @@ export const searchApi = {
 
     try {
       const result = await requestPromise;
-      return result;
+      return result as any;
     } finally {
       pendingRequests.delete(cacheKey);
     }
@@ -424,11 +605,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as any;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as any;
     }
 
     const requestPromise = (async () => {
@@ -468,7 +649,7 @@ export const searchApi = {
 
     try {
       const result = await requestPromise;
-      return result;
+      return result as any;
     } finally {
       pendingRequests.delete(cacheKey);
     }
@@ -508,11 +689,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as any;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as any;
     }
 
     const requestPromise = (async () => {
@@ -552,7 +733,7 @@ export const searchApi = {
 
     try {
       const result = await requestPromise;
-      return result;
+      return result as any;
     } finally {
       pendingRequests.delete(cacheKey);
     }
@@ -602,11 +783,11 @@ export const searchApi = {
     score += Math.max(0, 20 - lengthDiff);
 
     // Type-specific bonuses
-    if (type === 'sets' && result.year) {
+    if (type === 'sets' && (result as any).year) {
       score += 5; // Recent sets are more relevant
     }
 
-    if (type === 'products' && result.available) {
+    if (type === 'products' && (result as any).available) {
       score += 10; // Available products are more relevant
     }
 

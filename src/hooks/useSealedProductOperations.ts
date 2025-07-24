@@ -16,7 +16,10 @@ export interface UseSealedProductOperationsReturn {
   loading: boolean;
   error: string | null;
   addSealedProduct: (productData: Partial<ISealedProduct>) => Promise<ISealedProduct>;
-  updateSealedProduct: (id: string, productData: Partial<ISealedProduct>) => Promise<ISealedProduct>;
+  updateSealedProduct: (
+    id: string,
+    productData: Partial<ISealedProduct>
+  ) => Promise<ISealedProduct>;
   deleteSealedProduct: (id: string) => Promise<void>;
   markSealedProductSold: (id: string, saleDetails: ISaleDetails) => Promise<ISealedProduct>;
   clearError: () => void;

@@ -64,7 +64,7 @@ export const useCollectionState = (): UseCollectionStateReturn => {
   const updatePsaCardInState = useCallback((id: string, updatedCard: IPsaGradedCard) => {
     setState(prev => ({
       ...prev,
-      psaCards: prev.psaCards.map(card => card.id === id ? updatedCard : card),
+      psaCards: prev.psaCards.map(card => (card.id === id ? updatedCard : card)),
     }));
   }, []);
 
@@ -94,7 +94,7 @@ export const useCollectionState = (): UseCollectionStateReturn => {
   const updateRawCardInState = useCallback((id: string, updatedCard: IRawCard) => {
     setState(prev => ({
       ...prev,
-      rawCards: prev.rawCards.map(card => card.id === id ? updatedCard : card),
+      rawCards: prev.rawCards.map(card => (card.id === id ? updatedCard : card)),
     }));
   }, []);
 
@@ -124,7 +124,9 @@ export const useCollectionState = (): UseCollectionStateReturn => {
   const updateSealedProductInState = useCallback((id: string, updatedProduct: ISealedProduct) => {
     setState(prev => ({
       ...prev,
-      sealedProducts: prev.sealedProducts.map(product => product.id === id ? updatedProduct : product),
+      sealedProducts: prev.sealedProducts.map(product =>
+        product.id === id ? updatedProduct : product
+      ),
     }));
   }, []);
 

@@ -1,7 +1,7 @@
 /**
  * Generic API Operations
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * DRY Implementation - Eliminates repetitive CRUD patterns across 13+ API files
  * SOLID Principles:
  * - SRP: Single responsibility for generic CRUD operations
@@ -49,7 +49,7 @@ export async function getCollection<T>(
   options?: OperationOptions
 ): Promise<T[]> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiGet<T[]>(
     config.endpoint,
     `${config.resourceName} collection`,
@@ -72,7 +72,7 @@ export async function getResource<T>(
   options?: OperationOptions
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiGet<T>(
     `${config.endpoint}/${id}`,
     `${config.resourceName} by ID`,
@@ -92,7 +92,7 @@ export async function createResource<T>(
   options?: OperationOptions
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiCreate<T>(
     config.endpoint,
     resourceData,
@@ -114,7 +114,7 @@ export async function updateResource<T>(
   options?: OperationOptions
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiUpdate<T>(
     `${config.endpoint}/${id}`,
     resourceData,
@@ -135,12 +135,8 @@ export async function deleteResource(
   options?: OperationOptions
 ): Promise<void> {
   const { ...requestOptions } = options || {};
-  
-  await unifiedApiClient.apiDelete(
-    `${config.endpoint}/${id}`,
-    config.resourceName,
-    requestOptions
-  );
+
+  await unifiedApiClient.apiDelete(`${config.endpoint}/${id}`, config.resourceName, requestOptions);
 }
 
 /**
@@ -152,7 +148,7 @@ export async function bulkCreateResources<T>(
   options?: OperationOptions
 ): Promise<T[]> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.post<T[]>(
     `${config.endpoint}/bulk`,
     { items: resourcesData },
@@ -176,7 +172,7 @@ export async function searchResources<T>(
   options?: OperationOptions
 ): Promise<T[]> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiGet<T[]>(
     `${config.endpoint}/search`,
     `search ${config.resourceName}s`,
@@ -202,16 +198,12 @@ export async function markResourceSold<T>(
   options?: OperationOptions
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
-  
-  const data = await unifiedApiClient.post<T>(
-    `${config.endpoint}/${id}/mark-sold`,
-    saleDetails,
-    {
-      operation: `mark ${config.resourceName} as sold`,
-      successMessage: `${config.resourceName} marked as sold successfully! 💰`,
-      ...requestOptions,
-    }
-  );
+
+  const data = await unifiedApiClient.post<T>(`${config.endpoint}/${id}/mark-sold`, saleDetails, {
+    operation: `mark ${config.resourceName} as sold`,
+    successMessage: `${config.resourceName} marked as sold successfully! 💰`,
+    ...requestOptions,
+  });
 
   return transform ? transform(data) : data;
 }
@@ -226,7 +218,7 @@ export async function exportResource<T = Blob>(
   options?: OperationOptions
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.apiExport<T>(
     `${config.endpoint}/export`,
     config.resourceName,
@@ -251,7 +243,7 @@ export async function batchOperation<T>(
   options?: OperationOptions
 ): Promise<T[]> {
   const { transform, ...requestOptions } = options || {};
-  
+
   const data = await unifiedApiClient.post<T[]>(
     `${config.endpoint}/batch/${operation}`,
     { ids, data: operationData },
@@ -281,12 +273,14 @@ export function createResourceConfig(endpoint: string, resourceName: string): Re
  */
 export function createIdMapper() {
   return (data: any): any => {
-    if (!data) return data;
-    
+    if (!data) {
+      return data;
+    }
+
     if (Array.isArray(data)) {
       return data.map(mapSingleId);
     }
-    
+
     return mapSingleId(data);
   };
 }
@@ -296,23 +290,25 @@ export function createIdMapper() {
  * Extracted from repeated patterns across API files
  */
 function mapSingleId(item: any): any {
-  if (!item || typeof item !== 'object') return item;
-  
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+
   // Create a new object to avoid mutations
   const mapped = { ...item };
-  
+
   // Map _id to id if id doesn't exist
   if (mapped._id && !mapped.id) {
     mapped.id = mapped._id;
   }
-  
+
   // Recursively map nested objects (excluding metadata)
   for (const [key, value] of Object.entries(mapped)) {
     if (shouldMapNestedObject(key, value)) {
       mapped[key] = mapSingleId(value);
     }
   }
-  
+
   return mapped;
 }
 
@@ -323,14 +319,116 @@ function mapSingleId(item: any): any {
 function shouldMapNestedObject(key: string, value: any): boolean {
   // Skip known metadata objects
   const metadataKeys = [
-    'saleDetails', 'psaGrades', 'psaTotalGradedForCard', 
-    'priceHistory', 'metadata', 'cardInfo', 'productInfo', 'setInfo'
+    'saleDetails',
+    'psaGrades',
+    'psaTotalGradedForCard',
+    'priceHistory',
+    'metadata',
+    'cardInfo',
+    'productInfo',
+    'setInfo',
   ];
-  
-  if (metadataKeys.includes(key)) return false;
-  
+
+  if (metadataKeys.includes(key)) {
+    return false;
+  }
+
   // Only map objects that could have MongoDB _id fields
   return value && typeof value === 'object' && !Array.isArray(value);
+}
+
+// ========== RESOURCE OPERATIONS FACTORY ==========
+
+/**
+ * Generic resource operations interface
+ */
+export interface ResourceOperations<
+  TResource,
+  TCreatePayload = TResource,
+  TUpdatePayload = Partial<TResource>,
+> {
+  getAll: (params?: GenericParams, options?: OperationOptions) => Promise<TResource[]>;
+  getById: (id: string, options?: OperationOptions) => Promise<TResource>;
+  create: (data: TCreatePayload, options?: OperationOptions) => Promise<TResource>;
+  update: (id: string, data: TUpdatePayload, options?: OperationOptions) => Promise<TResource>;
+  remove: (id: string, options?: OperationOptions) => Promise<void>;
+  search: (searchParams: GenericParams, options?: OperationOptions) => Promise<TResource[]>;
+  bulkCreate: (items: TCreatePayload[], options?: OperationOptions) => Promise<TResource[]>;
+  markSold?: (id: string, saleDetails: any, options?: OperationOptions) => Promise<TResource>;
+  export?: (exportParams?: GenericParams, options?: OperationOptions) => Promise<Blob>;
+  batchOperation?: (
+    operation: string,
+    ids: string[],
+    operationData?: any,
+    options?: OperationOptions
+  ) => Promise<TResource[]>;
+}
+
+/**
+ * Create fully generic resource operations
+ * Eliminates boilerplate CRUD patterns across ALL API files
+ *
+ * @param config - Resource configuration (endpoint, resourceName)
+ * @param options - Optional specialized operations configuration
+ * @returns Complete CRUD operations interface for the resource type
+ */
+export function createResourceOperations<
+  TResource,
+  TCreatePayload = TResource,
+  TUpdatePayload = Partial<TResource>,
+>(
+  config: ResourceConfig,
+  options: {
+    includeSoldOperations?: boolean;
+    includeExportOperations?: boolean;
+    includeBatchOperations?: boolean;
+  } = {}
+): ResourceOperations<TResource, TCreatePayload, TUpdatePayload> {
+  const operations: ResourceOperations<TResource, TCreatePayload, TUpdatePayload> = {
+    // Core CRUD operations
+    getAll: (params?: GenericParams, requestOptions?: OperationOptions) =>
+      getCollection<TResource>(config, params, requestOptions),
+
+    getById: (id: string, requestOptions?: OperationOptions) =>
+      getResource<TResource>(config, id, requestOptions),
+
+    create: (data: TCreatePayload, requestOptions?: OperationOptions) =>
+      createResource<TResource>(config, data as Partial<TResource>, requestOptions),
+
+    update: (id: string, data: TUpdatePayload, requestOptions?: OperationOptions) =>
+      updateResource<TResource>(config, id, data as Partial<TResource>, requestOptions),
+
+    remove: (id: string, requestOptions?: OperationOptions) =>
+      deleteResource(config, id, requestOptions),
+
+    search: (searchParams: GenericParams, requestOptions?: OperationOptions) =>
+      searchResources<TResource>(config, searchParams, requestOptions),
+
+    bulkCreate: (items: TCreatePayload[], requestOptions?: OperationOptions) =>
+      bulkCreateResources<TResource>(config, items as Partial<TResource>[], requestOptions),
+  };
+
+  // Optional specialized operations
+  if (options.includeSoldOperations) {
+    operations.markSold = (id: string, saleDetails: any, requestOptions?: OperationOptions) =>
+      markResourceSold<TResource>(config, id, saleDetails, requestOptions);
+  }
+
+  if (options.includeExportOperations) {
+    operations.export = (exportParams?: GenericParams, requestOptions?: OperationOptions) =>
+      exportResource<Blob>(config, exportParams, requestOptions);
+  }
+
+  if (options.includeBatchOperations) {
+    operations.batchOperation = (
+      operation: string,
+      ids: string[],
+      operationData?: any,
+      requestOptions?: OperationOptions
+    ) => batchOperation<TResource>(config, operation, ids, operationData, requestOptions);
+  }
+
+  return operations;
 }
 
 // ========== RESOURCE-SPECIFIC HELPERS ==========
@@ -349,6 +447,34 @@ export const CARD_CONFIG = createResourceConfig('/cards', 'card');
  * Common configuration for set resources
  */
 export const SET_CONFIG = createResourceConfig('/sets', 'set');
+
+/**
+ * Common configuration for sales resources
+ */
+export const SALES_CONFIG = createResourceConfig('/sales', 'sale');
+
+/**
+ * Common configuration for CardMarket reference products
+ */
+export const CARDMARKET_REF_PRODUCTS_CONFIG = createResourceConfig(
+  '/cardmarket-ref-products',
+  'CardMarket reference product'
+);
+
+/**
+ * Common configuration for DBA selection resources
+ */
+export const DBA_SELECTION_CONFIG = createResourceConfig('/dba-selection', 'DBA selection');
+
+/**
+ * Common configuration for export resources
+ */
+export const EXPORT_CONFIG = createResourceConfig('/export', 'export');
+
+/**
+ * Common configuration for activity resources
+ */
+export const ACTIVITY_CONFIG = createResourceConfig('/activity', 'activity');
 
 /**
  * Common configuration for collection resources

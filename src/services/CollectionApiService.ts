@@ -78,7 +78,10 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.createSealedProduct(productData);
   }
 
-  async updateSealedProduct(id: string, productData: Partial<ISealedProduct>): Promise<ISealedProduct> {
+  async updateSealedProduct(
+    id: string,
+    productData: Partial<ISealedProduct>
+  ): Promise<ISealedProduct> {
     return await collectionApi.updateSealedProduct(id, productData);
   }
 

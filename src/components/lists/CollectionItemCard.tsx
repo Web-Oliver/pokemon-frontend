@@ -39,11 +39,11 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   // Framer Motion spring values for 3D hover effects
-  const springConfig = { 
-    type: "spring", 
-    stiffness: 300, 
-    damping: 40, 
-    mass: 1 
+  const springConfig = {
+    type: 'spring',
+    stiffness: 300,
+    damping: 40,
+    mass: 1,
   };
 
   const mouseX = useSpring(0, springConfig);
@@ -74,13 +74,11 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   // Get item display name
   const getItemName = () => {
     const itemRecord = item as Record<string, unknown>;
-    const cardName = (
-      (itemRecord.cardId as Record<string, unknown>)?.cardName ||
+    const cardName = ((itemRecord.cardId as Record<string, unknown>)?.cardName ||
       itemRecord.cardName ||
       itemRecord.name ||
-      'Unknown Item'
-    ) as string;
-    
+      'Unknown Item') as string;
+
     // Format card name for display (remove hyphens and parentheses)
     return formatCardNameForDisplay(cardName);
   };
@@ -127,7 +125,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
   const isUnsoldTab = activeTab !== 'sold-items';
 
   return (
-    <motion.div 
+    <motion.div
       className='group relative rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/20 overflow-hidden cursor-pointer'
       onClick={() => onViewDetails(item, itemType)}
       onMouseMove={handleMouseMove}
@@ -135,55 +133,55 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
       onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ 
+      whileHover={{
         scale: 1.05,
-        transition: { type: "spring", stiffness: 400, damping: 25 }
+        transition: { type: 'spring', stiffness: 400, damping: 25 },
       }}
       whileTap={{ scale: 0.95 }}
-      style={{ 
-        rotateX, 
+      style={{
+        rotateX,
         rotateY,
-        transformStyle: "preserve-3d"
+        transformStyle: 'preserve-3d',
       }}
       transition={{
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
         damping: 40,
-        mass: 1
+        mass: 1,
       }}
     >
       {/* Futuristic glow effects */}
-      <motion.div 
+      <motion.div
         className='absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-transparent to-purple-500/10 rounded-3xl pointer-events-none'
         initial={{ opacity: 0 }}
         animate={{ opacity: isHovered ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       />
 
       {/* Animated shimmer effect */}
       <motion.div
         className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-3xl'
-        initial={{ x: "-100%" }}
-        animate={{ 
-          x: isHovered ? "100%" : "-100%"
+        initial={{ x: '-100%' }}
+        animate={{
+          x: isHovered ? '100%' : '-100%',
         }}
-        transition={{ 
-          duration: 1.5, 
-          ease: "easeInOut",
+        transition={{
+          duration: 1.5,
+          ease: 'easeInOut',
           repeat: isHovered ? Infinity : 0,
-          repeatDelay: 2
+          repeatDelay: 2,
         }}
       />
 
       {/* Card Image */}
-      <motion.div 
-        className="relative w-full h-full aspect-[3/5] min-h-[400px]"
-        style={{ transformStyle: "preserve-3d" }}
+      <motion.div
+        className='relative w-full h-full aspect-[3/5] min-h-[400px]'
+        style={{ transformStyle: 'preserve-3d' }}
       >
         <motion.div
-          className="w-full h-full rounded-xl overflow-hidden relative"
-          style={{ 
-            transform: "translateZ(20px)"
+          className='w-full h-full rounded-xl overflow-hidden relative'
+          style={{
+            transform: 'translateZ(20px)',
           }}
         >
           <ImageSlideshow
@@ -197,85 +195,84 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
             enableAspectRatioDetection={false}
           />
           {/* Image overlay shadow for text readability - works for both single and multiple images */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none'></div>
         </motion.div>
 
         {/* Enhanced shadow covering text area */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent z-30 rounded-b-xl pointer-events-none"
-        />
-        
+        <div className='absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent z-30 rounded-b-xl pointer-events-none' />
+
         {/* Additional shadow overlay for better text readability */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black via-black/60 to-transparent z-40 rounded-b-xl pointer-events-none"
-        />
+        <div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black via-black/60 to-transparent z-40 rounded-b-xl pointer-events-none' />
 
         {/* Corner accent */}
-        <motion.div 
-          className="absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/50"
+        <motion.div
+          className='absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/50'
           initial={{ scale: 1, opacity: 0.7 }}
-          animate={{ 
+          animate={{
             scale: isHovered ? 1.5 : 1,
-            opacity: isHovered ? 1 : 0.7
+            opacity: isHovered ? 1 : 0.7,
           }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 20 
+          transition={{
+            type: 'spring',
+            stiffness: 300,
+            damping: 20,
           }}
-          style={{ transform: "translateZ(30px)" }}
+          style={{ transform: 'translateZ(30px)' }}
         />
       </motion.div>
 
       {/* Text Layer - Completely separate and always on top */}
-      <motion.div 
-        className="absolute inset-0 flex flex-col justify-end p-3 pointer-events-none z-50"
+      <motion.div
+        className='absolute inset-0 flex flex-col justify-end p-3 pointer-events-none z-50'
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
         {/* Grade Badge */}
-        <motion.div 
-          className="inline-flex items-center justify-center px-2 py-1 rounded-full text-[10px] font-bold mb-2 self-start pointer-events-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xl shadow-indigo-500/50"
+        <motion.div
+          className='inline-flex items-center justify-center px-2 py-1 rounded-full text-[10px] font-bold mb-2 self-start pointer-events-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-2xl shadow-indigo-500/50'
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          whileHover={{ 
+          whileHover={{
             scale: 1.1,
             rotate: [0, -5, 5, 0],
-            shadow: "0 25px 50px -12px rgba(234, 179, 8, 0.8)",
-            transition: { 
-              rotate: { duration: 0.5, ease: "easeInOut" },
-              scale: { type: "spring", stiffness: 400, damping: 10 }
-            }
+            shadow: '0 25px 50px -12px rgba(234, 179, 8, 0.8)',
+            transition: {
+              rotate: { duration: 0.5, ease: 'easeInOut' },
+              scale: { type: 'spring', stiffness: 400, damping: 10 },
+            },
           }}
-          transition={{ 
-            delay: 0.5, 
-            type: "spring", 
-            stiffness: 200, 
-            damping: 15 
+          transition={{
+            delay: 0.5,
+            type: 'spring',
+            stiffness: 200,
+            damping: 15,
           }}
         >
           {getBadgeContent()}
         </motion.div>
-        
+
         {/* Set Name */}
-        <motion.p 
-          className="text-[10px] text-gray-300 font-medium mb-1 tracking-wide uppercase leading-tight break-words"
+        <motion.p
+          className='text-[10px] text-gray-300 font-medium mb-1 tracking-wide uppercase leading-tight break-words'
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.4 }}
         >
-          {(item as any).cardId?.setId?.setName || (item as any).setName || (item as any).cardId?.setName || 'Unknown Set'}
+          {(item as any).cardId?.setId?.setName ||
+            (item as any).setName ||
+            (item as any).cardId?.setName ||
+            'Unknown Set'}
         </motion.p>
-        
+
         {/* Card Name */}
-        <motion.h3 
-          className="text-xs font-bold text-white leading-tight break-words"
+        <motion.h3
+          className='text-xs font-bold text-white leading-tight break-words'
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          whileHover={{ 
+          whileHover={{
             scale: 1.02,
-            transition: { type: "spring", stiffness: 400, damping: 25 }
+            transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           transition={{ delay: 0.7, duration: 0.4 }}
         >
@@ -284,19 +281,19 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
       </motion.div>
 
       {/* Price in Bottom Right Corner */}
-      <motion.div 
-        className="absolute bottom-3 right-3 px-3 py-2 rounded-lg text-sm font-black bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg pointer-events-auto z-50"
+      <motion.div
+        className='absolute bottom-3 right-3 px-3 py-2 rounded-lg text-sm font-black bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg pointer-events-auto z-50'
         initial={{ scale: 0, x: 20, y: 20 }}
         animate={{ scale: 1, x: 0, y: 0 }}
-        whileHover={{ 
+        whileHover={{
           scale: 1.1,
-          transition: { type: "spring", stiffness: 400, damping: 10 }
+          transition: { type: 'spring', stiffness: 400, damping: 10 },
         }}
-        transition={{ 
-          delay: 0.8, 
-          type: "spring", 
-          stiffness: 200, 
-          damping: 15 
+        transition={{
+          delay: 0.8,
+          type: 'spring',
+          stiffness: 200,
+          damping: 15,
         }}
       >
         {item.myPrice || '0'} kr.

@@ -48,7 +48,7 @@ export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
       return await execute(async () => {
         log(`Updating PSA graded card ${id}...`);
         const updatedCard = await collectionApi.updatePsaCard(id, cardData);
-        
+
         // Ensure the updated card has the proper ID
         const cardWithId = {
           ...updatedCard,

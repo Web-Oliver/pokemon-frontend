@@ -18,7 +18,6 @@ import ConfirmModal from './common/ConfirmModal';
 import {
   detectImageAspectRatio,
   getResponsiveImageConfig,
-  buildResponsiveImageClasses,
   getContext7ContainerClasses,
   getContext7ImageClasses,
   getContext7GlassOverlay,
@@ -73,7 +72,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [imageToRemove, setImageToRemove] = useState<{ id: string; isExisting: boolean } | null>(null);
+  const [imageToRemove, setImageToRemove] = useState<{ id: string; isExisting: boolean } | null>(
+    null
+  );
   const [isRemoving, setIsRemoving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,9 +93,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           const aspectInfo = await detectImageAspectRatio(fullUrl);
           return { index, aspectInfo };
         });
-        
+
         const aspectResults = await Promise.all(aspectPromises);
-        
+
         setPreviews(prev => {
           return prev.map((preview, index) => {
             const result = aspectResults.find(r => r.index === index);
@@ -175,13 +176,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (enableAspectRatioDetection && newPreviews.length > 0) {
       setIsAnalyzing(true);
       try {
-        const aspectPromises = newPreviews.map(async (preview) => {
+        const aspectPromises = newPreviews.map(async preview => {
           const aspectInfo = await detectImageAspectRatio(preview.url);
           return { id: preview.id, aspectInfo };
         });
-        
+
         const aspectResults = await Promise.all(aspectPromises);
-        
+
         // Update previews with aspect info
         setPreviews(prev => {
           return prev.map(preview => {
@@ -254,7 +255,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     if (isRemoving || showRemoveConfirm) {
       return;
     }
-    
+
     const preview = previews.find(p => p.id === id);
     if (preview) {
       setImageToRemove({ id, isExisting: preview.isExisting || false });
@@ -327,7 +328,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <div className='mb-6 flex items-center justify-center py-3'>
           <div className='flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/50 shadow-lg backdrop-blur-sm'>
             <Sparkles className='w-5 h-5 text-indigo-600 animate-spin' />
-            <span className='text-sm font-bold text-indigo-700 tracking-wide'>Analyzing image layouts...</span>
+            <span className='text-sm font-bold text-indigo-700 tracking-wide'>
+              Analyzing image layouts...
+            </span>
           </div>
         </div>
       )}
@@ -464,15 +467,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             </div>
           </div>
 
-          <div className={`grid ${getOptimalGridLayout(previews.map(p => p.aspectInfo).filter(Boolean) as ImageAspectInfo[])}`}>
-            {previews.map((preview) => {
+          <div
+            className={`grid ${getOptimalGridLayout(previews.map(p => p.aspectInfo).filter(Boolean) as ImageAspectInfo[])}`}
+          >
+            {previews.map(preview => {
               const aspectInfo = preview.aspectInfo;
               const previewConfig = aspectInfo ? getResponsiveImageConfig(aspectInfo) : null;
-              
+
               // Determine container aspect ratio class
               const getContainerAspectClass = () => {
-                if (!adaptiveLayout || !aspectInfo) return 'aspect-[3/5]'; // Default portrait
-                
+                if (!adaptiveLayout || !aspectInfo) {
+                  return 'aspect-[3/5]';
+                } // Default portrait
+
                 switch (aspectInfo.category) {
                   case 'ultra-wide':
                     return 'aspect-[5/2] max-h-48';
@@ -492,16 +499,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     return 'aspect-[3/5]';
                 }
               };
-              
+
               const containerAspectClass = getContainerAspectClass();
-              const containerClasses = aspectInfo 
+              const containerClasses = aspectInfo
                 ? getContext7ContainerClasses(aspectInfo.orientation)
                 : 'rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative';
-              
+
               const imageClasses = previewConfig
                 ? getContext7ImageClasses(previewConfig, true)
                 : 'w-full h-full object-cover transition-all duration-500 group-hover:scale-110';
-              
+
               return (
                 <div key={preview.id} className='relative group'>
                   {/* Context7 Premium Responsive Image Container */}
@@ -522,11 +529,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     {aspectInfo && (
                       <div className={getContext7GlassOverlay(aspectInfo.orientation)}></div>
                     )}
-                    
+
                     {/* Context7 Premium Shimmer Effect */}
                     <div className={getContext7ShimmerEffect()}></div>
                   </div>
-
 
                   {/* Context7 Premium Remove Button */}
                   {!disabled && (
@@ -542,7 +548,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                       }}
                       disabled={isRemoving || showRemoveConfirm}
                       className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm ${
-                        isRemoving || showRemoveConfirm ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                        isRemoving || showRemoveConfirm
+                          ? 'cursor-not-allowed opacity-50'
+                          : 'cursor-pointer'
                       }`}
                       aria-label='Remove image'
                     >
@@ -574,15 +582,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         isOpen={showRemoveConfirm}
         onClose={handleCancelRemoveImage}
         onConfirm={confirmRemoveImage}
-        title="Remove Image"
+        title='Remove Image'
         description={`Are you sure you want to remove this image? ${
-          imageToRemove?.isExisting 
-            ? 'This will permanently remove the image from your collection.' 
+          imageToRemove?.isExisting
+            ? 'This will permanently remove the image from your collection.'
             : 'This will remove the image from the upload queue.'
         }`}
-        confirmText="Remove Image"
+        confirmText='Remove Image'
         variant={imageToRemove?.isExisting ? 'danger' : 'warning'}
-        icon="trash"
+        icon='trash'
         isLoading={isRemoving}
       />
     </div>

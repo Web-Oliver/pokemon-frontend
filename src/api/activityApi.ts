@@ -1,20 +1,22 @@
 /**
- * Activity API Client - Context7 Premium Activity Management
+ * Activity API Client
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
  *
- * Frontend API client for activity management following Context7 patterns.
- * Provides comprehensive activity fetching, filtering, and search capabilities.
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for activity-related API operations
+ * - OCP: Open for extension via createResourceOperations configuration
+ * - LSP: Maintains Activity interface compatibility
+ * - ISP: Provides specific activity operations interface
+ * - DIP: Depends on genericApiOperations abstraction
  *
- * Features:
- * - Type-safe API calls
- * - Advanced filtering and pagination
- * - Real-time activity streaming
- * - Context7 error handling
- * - Premium search capabilities
+ * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
+ * Context7 Premium Activity Management with advanced filtering and search
  */
 
+import { createResourceOperations, ACTIVITY_CONFIG, idMapper } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
-import { handleApiError } from '../utils/errorHandler';
-import { log } from '../utils/logger';
+
+// ========== INTERFACES (ISP Compliance) ==========
 
 // Context7 Activity Types (matching backend)
 export const ACTIVITY_TYPES = {
@@ -69,7 +71,8 @@ export interface ActivityMetadata {
 }
 
 export interface Activity {
-  _id: string;
+  _id?: string;
+  id?: string;
   type: keyof typeof ACTIVITY_TYPES;
   title: string;
   description: string;
@@ -135,247 +138,284 @@ export interface ActivityTypesResponse {
   };
 }
 
-// Context7 Activity API Client
-class ActivityApiClient {
-  private readonly baseUrl = '/activities';
+/**
+ * Activity creation payload interface
+ */
+interface IActivityCreatePayload extends Omit<Activity, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
 
-  /**
-   * Get activities with advanced filtering and pagination
-   */
-  async getActivities(filters: ActivityFilters = {}): Promise<ActivityResponse> {
-    try {
-      log('[ACTIVITY API] Fetching activities with filters:', filters);
+/**
+ * Activity update payload interface
+ */
+interface IActivityUpdatePayload extends Partial<IActivityCreatePayload> {}
 
-      const params = new URLSearchParams();
+// ========== GENERIC RESOURCE OPERATIONS ==========
 
-      // Add filter parameters
-      if (filters.limit) {
-        params.append('limit', filters.limit.toString());
-      }
-      if (filters.offset) {
-        params.append('offset', filters.offset.toString());
-      }
-      if (filters.type) {
-        params.append('type', filters.type);
-      }
-      if (filters.entityType) {
-        params.append('entityType', filters.entityType);
-      }
-      if (filters.entityId) {
-        params.append('entityId', filters.entityId);
-      }
-      if (filters.priority) {
-        params.append('priority', filters.priority);
-      }
-      if (filters.dateRange) {
-        params.append('dateRange', filters.dateRange);
-      }
-      if (filters.search) {
-        params.append('search', filters.search);
-      }
+/**
+ * Core CRUD operations for activities using createResourceOperations
+ * Eliminates boilerplate patterns and ensures consistency with other API files
+ */
+const activityOperations = createResourceOperations<
+  Activity,
+  IActivityCreatePayload,
+  IActivityUpdatePayload
+>(ACTIVITY_CONFIG, {
+  includeExportOperations: true,
+  includeBatchOperations: true,
+});
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}?${params.toString()}`);
+// ========== EXPORTED API OPERATIONS ==========
 
-      log('[ACTIVITY API] Activities fetched successfully:', response.meta);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch activities');
-      throw error;
-    }
-  }
+/**
+ * Get all activities with optional filtering
+ * @param params - Optional filter parameters
+ * @returns Promise<Activity[]> - Array of activities
+ */
+export const getAllActivities = async (params?: Record<string, unknown>): Promise<Activity[]> => {
+  return activityOperations.getAll(params, {
+    transform: idMapper,
+  });
+};
 
-  /**
-   * Get recent activities (last 10 by default)
-   */
-  async getRecentActivities(limit: number = 10): Promise<{ success: boolean; data: Activity[] }> {
-    try {
-      log('[ACTIVITY API] Fetching recent activities, limit:', limit);
+/**
+ * Get activity by ID
+ * @param id - Activity ID
+ * @returns Promise<Activity> - Single activity
+ */
+export const getActivityById = async (id: string): Promise<Activity> => {
+  const response = await activityOperations.getById(id, {
+    transform: idMapper,
+  });
+  return response;
+};
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/recent?limit=${limit}`);
+/**
+ * Create a new activity
+ * @param activityData - Activity creation data
+ * @returns Promise<Activity> - Created activity
+ */
+export const createActivity = async (activityData: Partial<Activity>): Promise<Activity> => {
+  const response = await activityOperations.create(activityData as IActivityCreatePayload, {
+    transform: idMapper,
+  });
+  return response;
+};
 
-      log('[ACTIVITY API] Recent activities fetched:', response.data.length);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch recent activities');
-      throw error;
-    }
-  }
+/**
+ * Update existing activity
+ * @param id - Activity ID
+ * @param activityData - Activity update data
+ * @returns Promise<Activity> - Updated activity
+ */
+export const updateActivity = activityOperations.update;
 
-  /**
-   * Get activity statistics and analytics
-   */
-  async getActivityStats(): Promise<ActivityStatsResponse> {
-    try {
-      log('[ACTIVITY API] Fetching activity statistics');
+/**
+ * Delete activity
+ * @param id - Activity ID
+ * @returns Promise<void>
+ */
+export const removeActivity = activityOperations.remove;
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/stats`);
+/**
+ * Search activities with parameters
+ * @param searchParams - Activity search parameters
+ * @returns Promise<Activity[]> - Search results
+ */
+export const searchActivitiesGeneric = activityOperations.search;
 
-      log('[ACTIVITY API] Activity stats fetched:', response.data);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch activity statistics');
-      throw error;
-    }
-  }
+/**
+ * Bulk create activities
+ * @param activitiesData - Array of activity creation data
+ * @returns Promise<Activity[]> - Created activities
+ */
+export const bulkCreateActivities = activityOperations.bulkCreate;
 
-  /**
-   * Get available activity types and metadata
-   */
-  async getActivityTypes(): Promise<ActivityTypesResponse> {
-    try {
-      log('[ACTIVITY API] Fetching activity types');
+/**
+ * Export activities data
+ * @param exportParams - Export parameters
+ * @returns Promise<Blob> - Export file blob
+ */
+export const exportActivities = activityOperations.export;
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/types`);
+/**
+ * Batch operation on activities
+ * @param operation - Operation name
+ * @param ids - Activity IDs
+ * @param operationData - Operation-specific data
+ * @returns Promise<Activity[]> - Operation results
+ */
+export const batchActivityOperation = activityOperations.batchOperation;
 
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch activity types');
-      throw error;
-    }
-  }
+// ========== SPECIALIZED ACTIVITY OPERATIONS ==========
 
-  /**
-   * Search activities with full-text search
-   */
-  async searchActivities(
-    searchTerm: string,
-    filters: Omit<ActivityFilters, 'search'> = {}
-  ): Promise<{
+/**
+ * Get activities with advanced filtering and pagination
+ * @param filters - Activity filter parameters
+ * @returns Promise<ActivityResponse> - Paginated activity response
+ */
+export const getActivities = async (filters: ActivityFilters = {}): Promise<ActivityResponse> => {
+  const queryParams = {
+    ...(filters.limit && { limit: filters.limit.toString() }),
+    ...(filters.offset && { offset: filters.offset.toString() }),
+    ...(filters.type && { type: filters.type }),
+    ...(filters.entityType && { entityType: filters.entityType }),
+    ...(filters.entityId && { entityId: filters.entityId }),
+    ...(filters.priority && { priority: filters.priority }),
+    ...(filters.dateRange && { dateRange: filters.dateRange }),
+    ...(filters.search && { search: filters.search }),
+  };
+
+  const response = await unifiedApiClient.apiGet<ActivityResponse>(
+    '/activities',
+    'activities with filters',
+    { params: queryParams }
+  );
+
+  return response;
+};
+
+/**
+ * Get recent activities (last 10 by default)
+ * @param limit - Number of recent activities to fetch
+ * @returns Promise<{success: boolean; data: Activity[]}> - Recent activities
+ */
+export const getRecentActivities = async (
+  limit: number = 10
+): Promise<{ success: boolean; data: Activity[] }> => {
+  const response = await unifiedApiClient.apiGet<{ success: boolean; data: Activity[] }>(
+    `/activities/recent?limit=${limit}`,
+    'recent activities'
+  );
+
+  return response;
+};
+
+/**
+ * Get activity statistics and analytics
+ * @returns Promise<ActivityStatsResponse> - Activity statistics
+ */
+export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
+  const response = await unifiedApiClient.apiGet<ActivityStatsResponse>(
+    '/activities/stats',
+    'activity statistics'
+  );
+
+  return response;
+};
+
+/**
+ * Get available activity types and metadata
+ * @returns Promise<ActivityTypesResponse> - Activity types and metadata
+ */
+export const getActivityTypes = async (): Promise<ActivityTypesResponse> => {
+  const response = await unifiedApiClient.apiGet<ActivityTypesResponse>(
+    '/activities/types',
+    'activity types'
+  );
+
+  return response;
+};
+
+/**
+ * Search activities with full-text search
+ * @param searchTerm - Search term
+ * @param filters - Additional search filters
+ * @returns Promise<{success: boolean; data: Activity[]; meta: {searchTerm: string; resultCount: number}}> - Search results
+ */
+export const searchActivities = async (
+  searchTerm: string,
+  filters: Omit<ActivityFilters, 'search'> = {}
+): Promise<{
+  success: boolean;
+  data: Activity[];
+  meta: { searchTerm: string; resultCount: number };
+}> => {
+  const queryParams = {
+    q: searchTerm,
+    ...(filters.type && { type: filters.type }),
+    ...(filters.priority && { priority: filters.priority }),
+    ...(filters.entityType && { entityType: filters.entityType }),
+  };
+
+  const response = await unifiedApiClient.apiGet<{
     success: boolean;
     data: Activity[];
     meta: { searchTerm: string; resultCount: number };
-  }> {
-    try {
-      log('[ACTIVITY API] Searching activities:', searchTerm);
+  }>('/activities/search', 'activity search', { params: queryParams });
 
-      const params = new URLSearchParams();
-      params.append('q', searchTerm);
+  return response;
+};
 
-      // Add additional filters
-      if (filters.type) {
-        params.append('type', filters.type);
-      }
-      if (filters.priority) {
-        params.append('priority', filters.priority);
-      }
-      if (filters.entityType) {
-        params.append('entityType', filters.entityType);
-      }
+/**
+ * Get activities for a specific entity (card, auction, etc.)
+ * @param entityType - Type of entity
+ * @param entityId - Entity ID
+ * @returns Promise<{success: boolean; data: Activity[]}> - Entity activities
+ */
+export const getActivitiesForEntity = async (
+  entityType: string,
+  entityId: string
+): Promise<{ success: boolean; data: Activity[] }> => {
+  const response = await unifiedApiClient.apiGet<{ success: boolean; data: Activity[] }>(
+    `/activities/entity/${entityType}/${entityId}`,
+    'activities for entity'
+  );
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/search?${params.toString()}`);
+  return response;
+};
 
-      log('[ACTIVITY API] Search results:', response.meta.resultCount);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to search activities');
-      throw error;
-    }
-  }
+/**
+ * Mark an activity as read
+ * @param id - Activity ID
+ * @returns Promise<{success: boolean; data: Activity}> - Updated activity
+ */
+export const markActivityAsRead = async (
+  id: string
+): Promise<{ success: boolean; data: Activity }> => {
+  const response = await unifiedApiClient.apiUpdate<{ success: boolean; data: Activity }>(
+    `/activities/${id}/read`,
+    {},
+    'activity read status'
+  );
 
-  /**
-   * Get activities for a specific entity (card, auction, etc.)
-   */
-  async getActivitiesForEntity(
-    entityType: string,
-    entityId: string
-  ): Promise<{ success: boolean; data: Activity[] }> {
-    try {
-      log('[ACTIVITY API] Fetching activities for entity:', entityType, entityId);
+  return response;
+};
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/entity/${entityType}/${entityId}`);
+/**
+ * Archive an activity (soft delete)
+ * @param id - Activity ID
+ * @returns Promise<{success: boolean; message: string}> - Archive result
+ */
+export const archiveActivity = async (
+  id: string
+): Promise<{ success: boolean; message: string }> => {
+  const response = await unifiedApiClient.apiDelete<{ success: boolean; message: string }>(
+    `/activities/${id}`,
+    'activity'
+  );
 
-      log('[ACTIVITY API] Entity activities fetched:', response.data.length);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch entity activities');
-      throw error;
-    }
-  }
+  return response;
+};
 
-  /**
-   * Get a specific activity by ID
-   */
-  async getActivityById(id: string): Promise<{ success: boolean; data: Activity }> {
-    try {
-      log('[ACTIVITY API] Fetching activity by ID:', id);
+// Export all activity operations for convenience
+export default {
+  // Generic operations
+  getAllActivities,
+  getActivityById,
+  createActivity,
+  updateActivity,
+  removeActivity,
+  searchActivitiesGeneric,
+  bulkCreateActivities,
+  exportActivities,
+  batchActivityOperation,
 
-      const response = await unifiedApiClient.get(`${this.baseUrl}/${id}`);
-
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch activity');
-      throw error;
-    }
-  }
-
-  /**
-   * Mark an activity as read
-   */
-  async markActivityAsRead(id: string): Promise<{ success: boolean; data: Activity }> {
-    try {
-      log('[ACTIVITY API] Marking activity as read:', id);
-
-      const response = await unifiedApiClient.put(`${this.baseUrl}/${id}/read`);
-
-      log('[ACTIVITY API] Activity marked as read');
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to mark activity as read');
-      throw error;
-    }
-  }
-
-  /**
-   * Archive an activity (soft delete)
-   */
-  async archiveActivity(id: string): Promise<{ success: boolean; message: string }> {
-    try {
-      log('[ACTIVITY API] Archiving activity:', id);
-
-      const response = await unifiedApiClient.delete(`${this.baseUrl}/${id}`);
-
-      log('[ACTIVITY API] Activity archived');
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to archive activity');
-      throw error;
-    }
-  }
-
-  /**
-   * Create a manual activity (admin/system use)
-   */
-  async createActivity(
-    activityData: Partial<Activity>
-  ): Promise<{ success: boolean; data: Activity }> {
-    try {
-      log('[ACTIVITY API] Creating manual activity:', activityData.type);
-
-      const response = await unifiedApiClient.post(this.baseUrl, activityData);
-
-      log('[ACTIVITY API] Activity created:', response.data._id);
-      return response;
-    } catch (error) {
-      handleApiError(error, 'Failed to create activity');
-      throw error;
-    }
-  }
-}
-
-// Export singleton instance
-const activityApi = new ActivityApiClient();
-export default activityApi;
-
-// Named exports for convenience
-export const {
+  // Specialized operations
   getActivities,
   getRecentActivities,
   getActivityStats,
   getActivityTypes,
   searchActivities,
   getActivitiesForEntity,
-  getActivityById,
   markActivityAsRead,
   archiveActivity,
-  createActivity,
-} = activityApi;
+};

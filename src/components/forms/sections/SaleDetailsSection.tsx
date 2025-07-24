@@ -70,7 +70,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                     value: /^\d+$/,
                     message: 'Price must be a whole number only',
                   },
-                  validate: (value) => {
+                  validate: value => {
                     const num = parseInt(value, 10);
                     if (isNaN(num) || num < 0) {
                       return 'Price must be a positive whole number';

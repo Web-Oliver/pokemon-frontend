@@ -7,6 +7,9 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Calendar, DollarSign, Package, Filter, X } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Select from '../components/common/Select';
@@ -19,13 +22,11 @@ const Auctions: React.FC = () => {
 
   // Navigation state (using simple URL management for now)
   const navigateToAuctionDetail = (auctionId: string) => {
-    window.history.pushState({}, '', `/auctions/${auctionId}`);
-    window.location.reload();
+    navigationHelper.navigateToAuctionDetail(auctionId);
   };
 
   const navigateToCreateAuction = () => {
-    window.history.pushState({}, '', '/auctions/create');
-    window.location.reload();
+    navigationHelper.navigateToCreate.auction();
   };
 
   // Filter auctions based on status
@@ -158,8 +159,25 @@ const Auctions: React.FC = () => {
     }
   }, [error, clearError]);
 
+  const headerActions = (
+    <button
+      onClick={navigateToCreateAuction}
+      className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20'
+    >
+      <Plus className='w-5 h-5 mr-2' />
+      Create Auction
+    </button>
+  );
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title="Auctions"
+      subtitle="Manage and track your Pokémon card auctions"
+      loading={loading}
+      error={error}
+      actions={headerActions}
+      variant="default"
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -460,7 +478,7 @@ const Auctions: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

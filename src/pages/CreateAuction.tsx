@@ -31,11 +31,16 @@ import {
 import { useAuction } from '../hooks/useAuction';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import Button from '../components/common/Button';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 // Lazy load ImageSlideshow for better performance
-const ImageSlideshow = lazy(() => import('../components/common/ImageSlideshow').then(module => ({
-  default: module.ImageSlideshow
-})));
+const ImageSlideshow = lazy(() =>
+  import('../components/common/ImageSlideshow').then(module => ({
+    default: module.ImageSlideshow,
+  }))
+);
 
 // Lazy load VirtualizedItemGrid for large collections
 const VirtualizedItemGrid = lazy(() => import('../components/lists/VirtualizedItemGrid'));
@@ -49,21 +54,23 @@ import { IAuctionItem } from '../domain/models/auction';
 
 // Optimized helper function to process image URLs with memoization
 const processImageUrl = (imagePath: string | undefined): string | undefined => {
-  if (!imagePath) return undefined;
-  
+  if (!imagePath) {
+    return undefined;
+  }
+
   // Use regex for more efficient multiple localhost prefix cleanup
   const cleanPath = imagePath.replace(/(http:\/\/localhost:3000)+/g, 'http://localhost:3000');
-  
+
   // If it's already a full URL after cleaning, return as-is
   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
     return cleanPath;
   }
-  
+
   // If it starts with /, it's already a proper absolute path
   if (cleanPath.startsWith('/')) {
     return `http://localhost:3000${cleanPath}`;
   }
-  
+
   // Otherwise, assume it needs to be prefixed with the uploads path
   return `http://localhost:3000/uploads/${cleanPath}`;
 };
@@ -124,11 +131,11 @@ const CreateAuction: React.FC = () => {
   const [filterType, setFilterType] = useState<
     'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'
   >('all');
-  
+
   // UI state for improved experience
   const [showPreview, setShowPreview] = useState(false);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
-  
+
   // Sort options for preview lists
   const [sortOptions, setSortOptions] = useState<{
     PsaGradedCard: 'order' | 'price-high' | 'price-low';
@@ -143,7 +150,7 @@ const CreateAuction: React.FC = () => {
   // Optimized combination of collection items with improved memoization
   const allCollectionItems = useMemo((): UnifiedCollectionItem[] => {
     const items: UnifiedCollectionItem[] = [];
-    
+
     // Early return if no data to avoid unnecessary processing
     if (!psaCards.length && !rawCards.length && !sealedProducts.length) {
       return items;
@@ -159,11 +166,11 @@ const CreateAuction: React.FC = () => {
         let setName = 'Unknown Set';
         let pokemonNumber = '';
         let variety = '';
-        
+
         // Access nested cardId object for card details (populated by backend)
         const cardData = (card as any).cardId || card;
         const setData = cardData?.setId || cardData?.set;
-        
+
         if (cardData?.cardName) {
           cardName = cardData.cardName;
         } else if (cardData?.baseName) {
@@ -171,24 +178,24 @@ const CreateAuction: React.FC = () => {
         } else if (cardData?.pokemonNumber) {
           cardName = `Card #${cardData.pokemonNumber}`;
         }
-        
+
         if (setData?.setName) {
           setName = setData.setName;
         } else if (cardData?.setName) {
           setName = cardData.setName;
         }
-        
+
         if (cardData?.variety) {
           variety = cardData.variety;
         }
-        
+
         if (cardData?.pokemonNumber) {
           pokemonNumber = cardData.pokemonNumber;
         }
-        
+
         // Clean and build display name
         let cleanCardName = cardName;
-        
+
         // Remove common redundant prefixes and duplications
         cleanCardName = cleanCardName
           .replace(/^2025\s+/gi, '') // Remove year prefix
@@ -197,7 +204,7 @@ const CreateAuction: React.FC = () => {
           .replace(/Japanese\s+Japanese\s+/gi, 'Japanese ') // Remove duplicate "Japanese"
           .replace(/\s+/g, ' ') // Clean up multiple spaces
           .trim();
-        
+
         // Build concise display name
         let displayName = cleanCardName;
         if (variety && !displayName.includes(variety)) {
@@ -207,20 +214,20 @@ const CreateAuction: React.FC = () => {
           displayName = `#${pokemonNumber}`;
         }
         displayName = `${displayName} - PSA ${card.grade}`;
-        
+
         // Process image URLs using the memoized helper function
         const processedImages = (card.images || [])
           .map(memoizedProcessImageUrl)
           .filter(Boolean) as string[];
-        
+
         items.push({
           id: card.id,
           itemType: 'PsaGradedCard',
-          displayName: displayName,
+          displayName,
           displayPrice: card.myPrice || 0,
           displayImage: processedImages[0],
           images: processedImages,
-          setName: setName,
+          setName,
           grade: card.grade,
           originalItem: card,
         });
@@ -236,11 +243,11 @@ const CreateAuction: React.FC = () => {
         let setName = 'Unknown Set';
         let pokemonNumber = '';
         let variety = '';
-        
+
         // Access nested cardId object for card details (populated by backend)
         const cardData = (card as any).cardId || card;
         const setData = cardData?.setId || cardData?.set;
-        
+
         if (cardData?.cardName) {
           cardName = cardData.cardName;
         } else if (cardData?.baseName) {
@@ -248,21 +255,21 @@ const CreateAuction: React.FC = () => {
         } else if (cardData?.pokemonNumber) {
           cardName = `Card #${cardData.pokemonNumber}`;
         }
-        
+
         if (setData?.setName) {
           setName = setData.setName;
         } else if (cardData?.setName) {
           setName = cardData.setName;
         }
-        
+
         if (cardData?.variety) {
           variety = cardData.variety;
         }
-        
+
         if (cardData?.pokemonNumber) {
           pokemonNumber = cardData.pokemonNumber;
         }
-        
+
         // Build full display name
         let displayName = cardName;
         if (variety) {
@@ -272,20 +279,20 @@ const CreateAuction: React.FC = () => {
           displayName = `#${pokemonNumber}`;
         }
         displayName = `${displayName} - ${card.condition}`;
-        
+
         // Process image URLs using the memoized helper function
         const processedImages = (card.images || [])
           .map(memoizedProcessImageUrl)
           .filter(Boolean) as string[];
-        
+
         items.push({
           id: card.id,
           itemType: 'RawCard',
-          displayName: displayName,
+          displayName,
           displayPrice: card.myPrice || 0,
           displayImage: processedImages[0],
           images: processedImages,
-          setName: setName,
+          setName,
           condition: card.condition,
           originalItem: card,
         });
@@ -296,19 +303,17 @@ const CreateAuction: React.FC = () => {
       .filter(product => !product.sold)
       .forEach(product => {
         const productName = product.name || 'Unknown Product';
-        const displayName = product.setName 
-          ? `${productName} - ${product.setName}` 
-          : productName;
+        const displayName = product.setName ? `${productName} - ${product.setName}` : productName;
 
         // Process image URLs using the memoized helper function
         const processedImages = (product.images || [])
           .map(memoizedProcessImageUrl)
           .filter(Boolean) as string[];
-          
+
         items.push({
           id: product.id,
           itemType: 'SealedProduct',
-          displayName: displayName,
+          displayName,
           displayPrice: product.myPrice || 0,
           displayImage: processedImages[0],
           images: processedImages,
@@ -354,18 +359,18 @@ const CreateAuction: React.FC = () => {
       RawCard: [] as UnifiedCollectionItem[],
       SealedProduct: [] as UnifiedCollectionItem[],
     };
-    
+
     // Get items in order for each category, ensuring no duplicates
     Object.entries(selectedItemOrderByType).forEach(([itemType, orderArray]) => {
       const typedItemType = itemType as keyof typeof groups;
-      
+
       // Remove duplicates from the order array and only include selected items
       const uniqueSelectedIds = [...new Set(orderArray)].filter(id => selectedItemIds.has(id));
-      
+
       let items = uniqueSelectedIds
         .map(itemId => allCollectionItems.find(item => item.id === itemId))
         .filter(Boolean) as UnifiedCollectionItem[];
-      
+
       // Apply sorting based on sort option for this category
       const sortOption = sortOptions[typedItemType];
       if (sortOption === 'price-high') {
@@ -374,10 +379,10 @@ const CreateAuction: React.FC = () => {
         items = items.sort((a, b) => (a.displayPrice || 0) - (b.displayPrice || 0));
       }
       // If sortOption === 'order', keep the original order (no sorting needed)
-      
+
       groups[typedItemType] = items;
     });
-    
+
     return groups;
   }, [selectedItemOrderByType, allCollectionItems, selectedItemIds, sortOptions]);
 
@@ -404,51 +409,56 @@ const CreateAuction: React.FC = () => {
   };
 
   // Handle item selection with separate ordering per category
-  const toggleItemSelection = useCallback((itemId: string) => {
-    const item = allCollectionItems.find(item => item.id === itemId);
-    if (!item) return;
-
-    setSelectedItemIds(prev => {
-      const newSet = new Set(prev);
-      const isCurrentlySelected = newSet.has(itemId);
-      
-      if (isCurrentlySelected) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
+  const toggleItemSelection = useCallback(
+    (itemId: string) => {
+      const item = allCollectionItems.find(item => item.id === itemId);
+      if (!item) {
+        return;
       }
-      return newSet;
-    });
 
-    // Update the order array separately to avoid race conditions
-    setSelectedItemOrderByType(prevOrder => {
-      const isCurrentlySelected = selectedItemIds.has(itemId);
-      
-      if (isCurrentlySelected) {
-        // Remove from the appropriate category order array
-        return {
-          ...prevOrder,
-          [item.itemType]: prevOrder[item.itemType].filter(id => id !== itemId),
-        };
-      } else {
-        // Add to end of the appropriate category order array only if not already present
-        const currentOrder = prevOrder[item.itemType];
-        if (!currentOrder.includes(itemId)) {
+      setSelectedItemIds(prev => {
+        const newSet = new Set(prev);
+        const isCurrentlySelected = newSet.has(itemId);
+
+        if (isCurrentlySelected) {
+          newSet.delete(itemId);
+        } else {
+          newSet.add(itemId);
+        }
+        return newSet;
+      });
+
+      // Update the order array separately to avoid race conditions
+      setSelectedItemOrderByType(prevOrder => {
+        const isCurrentlySelected = selectedItemIds.has(itemId);
+
+        if (isCurrentlySelected) {
+          // Remove from the appropriate category order array
           return {
             ...prevOrder,
-            [item.itemType]: [...currentOrder, itemId],
+            [item.itemType]: prevOrder[item.itemType].filter(id => id !== itemId),
           };
+        } else {
+          // Add to end of the appropriate category order array only if not already present
+          const currentOrder = prevOrder[item.itemType];
+          if (!currentOrder.includes(itemId)) {
+            return {
+              ...prevOrder,
+              [item.itemType]: [...currentOrder, itemId],
+            };
+          }
+          return prevOrder;
         }
-        return prevOrder;
-      }
-    });
-  }, [allCollectionItems, selectedItemIds]);
+      });
+    },
+    [allCollectionItems, selectedItemIds]
+  );
 
   // Select all filtered items
   const selectAllItems = useCallback(() => {
     const newSelection = new Set(selectedItemIds);
     const newOrderItemsByType = { ...selectedItemOrderByType };
-    
+
     filteredItems.forEach(item => {
       if (!newSelection.has(item.id)) {
         newSelection.add(item.id);
@@ -458,7 +468,7 @@ const CreateAuction: React.FC = () => {
         }
       }
     });
-    
+
     setSelectedItemIds(newSelection);
     setSelectedItemOrderByType(newOrderItemsByType);
   }, [selectedItemIds, filteredItems, selectedItemOrderByType]);
@@ -484,34 +494,43 @@ const CreateAuction: React.FC = () => {
     e.dataTransfer.dropEffect = 'move';
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent, targetId: string, targetItemType: string) => {
-    e.preventDefault();
-    if (!draggedItem || draggedItem === targetId) return;
-
-    const draggedItemData = allCollectionItems.find(item => item.id === draggedItem);
-    if (!draggedItemData) return;
-
-    // Only allow reordering within the same category
-    if (draggedItemData.itemType !== targetItemType) return;
-
-    setSelectedItemOrderByType(prevOrder => {
-      const newOrder = { ...prevOrder };
-      const categoryOrder = [...newOrder[draggedItemData.itemType]];
-      const draggedIndex = categoryOrder.indexOf(draggedItem);
-      const targetIndex = categoryOrder.indexOf(targetId);
-      
-      if (draggedIndex !== -1 && targetIndex !== -1) {
-        // Remove dragged item and insert at target position
-        categoryOrder.splice(draggedIndex, 1);
-        categoryOrder.splice(targetIndex, 0, draggedItem);
-        newOrder[draggedItemData.itemType] = categoryOrder;
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetId: string, targetItemType: string) => {
+      e.preventDefault();
+      if (!draggedItem || draggedItem === targetId) {
+        return;
       }
-      
-      return newOrder;
-    });
-    
-    setDraggedItem(null);
-  }, [draggedItem, allCollectionItems]);
+
+      const draggedItemData = allCollectionItems.find(item => item.id === draggedItem);
+      if (!draggedItemData) {
+        return;
+      }
+
+      // Only allow reordering within the same category
+      if (draggedItemData.itemType !== targetItemType) {
+        return;
+      }
+
+      setSelectedItemOrderByType(prevOrder => {
+        const newOrder = { ...prevOrder };
+        const categoryOrder = [...newOrder[draggedItemData.itemType]];
+        const draggedIndex = categoryOrder.indexOf(draggedItem);
+        const targetIndex = categoryOrder.indexOf(targetId);
+
+        if (draggedIndex !== -1 && targetIndex !== -1) {
+          // Remove dragged item and insert at target position
+          categoryOrder.splice(draggedIndex, 1);
+          categoryOrder.splice(targetIndex, 0, draggedItem);
+          newOrder[draggedItemData.itemType] = categoryOrder;
+        }
+
+        return newOrder;
+      });
+
+      setDraggedItem(null);
+    },
+    [draggedItem, allCollectionItems]
+  );
 
   const handleDragEnd = useCallback(() => {
     setDraggedItem(null);
@@ -628,7 +647,13 @@ const CreateAuction: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50 relative overflow-hidden'>
+    <PageLayout
+      title='Create New Auction'
+      subtitle='Set up a new auction for your collection items'
+      loading={auctionLoading}
+      error={error}
+      variant='default'
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-20'>
         <div
@@ -846,8 +871,8 @@ const CreateAuction: React.FC = () => {
                           variant='outline'
                           size='sm'
                           className={`flex items-center space-x-2 transition-all duration-200 ${
-                            showPreview 
-                              ? 'bg-amber-50 border-amber-300 text-amber-700' 
+                            showPreview
+                              ? 'bg-amber-50 border-amber-300 text-amber-700'
                               : 'border-slate-300 text-slate-600 hover:bg-slate-50'
                           }`}
                         >
@@ -869,15 +894,21 @@ const CreateAuction: React.FC = () => {
                         <div className='flex items-center space-x-4 text-sm'>
                           <div className='flex items-center space-x-2'>
                             <Grid3X3 className='w-4 h-4 text-teal-600' />
-                            <span className='font-medium text-slate-700'>PSA: {selectedItemsByType.PsaGradedCard.length}</span>
+                            <span className='font-medium text-slate-700'>
+                              PSA: {selectedItemsByType.PsaGradedCard.length}
+                            </span>
                           </div>
                           <div className='flex items-center space-x-2'>
                             <Package className='w-4 h-4 text-blue-600' />
-                            <span className='font-medium text-slate-700'>Raw: {selectedItemsByType.RawCard.length}</span>
+                            <span className='font-medium text-slate-700'>
+                              Raw: {selectedItemsByType.RawCard.length}
+                            </span>
                           </div>
                           <div className='flex items-center space-x-2'>
                             <Users className='w-4 h-4 text-purple-600' />
-                            <span className='font-medium text-slate-700'>Sealed: {selectedItemsByType.SealedProduct.length}</span>
+                            <span className='font-medium text-slate-700'>
+                              Sealed: {selectedItemsByType.SealedProduct.length}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -886,9 +917,11 @@ const CreateAuction: React.FC = () => {
                       <div className='space-y-6'>
                         <div className='flex items-center space-x-2 text-xs font-medium text-amber-700 mb-4'>
                           <ArrowUpDown className='w-4 h-4' />
-                          <span>Drag to reorder manually or use the sort dropdowns to organize by price</span>
+                          <span>
+                            Drag to reorder manually or use the sort dropdowns to organize by price
+                          </span>
                         </div>
-                        
+
                         {/* PSA Graded Cards Section */}
                         {selectedItemsByType.PsaGradedCard.length > 0 && (
                           <div className='space-y-2'>
@@ -899,10 +932,15 @@ const CreateAuction: React.FC = () => {
                               </h5>
                               <select
                                 value={sortOptions.PsaGradedCard}
-                                onChange={(e) => setSortOptions(prev => ({
-                                  ...prev,
-                                  PsaGradedCard: e.target.value as 'order' | 'price-high' | 'price-low'
-                                }))}
+                                onChange={e =>
+                                  setSortOptions(prev => ({
+                                    ...prev,
+                                    PsaGradedCard: e.target.value as
+                                      | 'order'
+                                      | 'price-high'
+                                      | 'price-low',
+                                  }))
+                                }
                                 className='text-xs px-2 py-1 bg-white border border-teal-300 rounded-lg text-teal-700 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
@@ -915,13 +953,13 @@ const CreateAuction: React.FC = () => {
                                 <div
                                   key={item.id}
                                   draggable
-                                  onDragStart={(e) => handleDragStart(e, item.id)}
+                                  onDragStart={e => handleDragStart(e, item.id)}
                                   onDragOver={handleDragOver}
-                                  onDrop={(e) => handleDrop(e, item.id, 'PsaGradedCard')}
+                                  onDrop={e => handleDrop(e, item.id, 'PsaGradedCard')}
                                   onDragEnd={handleDragEnd}
                                   className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
-                                    draggedItem === item.id 
-                                      ? 'border-teal-400 shadow-lg scale-105 bg-teal-50' 
+                                    draggedItem === item.id
+                                      ? 'border-teal-400 shadow-lg scale-105 bg-teal-50'
                                       : 'border-teal-200 hover:border-teal-300'
                                   }`}
                                 >
@@ -931,34 +969,42 @@ const CreateAuction: React.FC = () => {
                                       {index + 1}
                                     </div>
                                   </div>
-                                  
+
                                   <div className='flex-1 flex items-center space-x-3'>
                                     <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
-                                        <img 
-                                          src={item.displayImage} 
+                                        <img
+                                          src={item.displayImage}
                                           alt={item.displayName}
                                           className='w-full h-full object-cover'
-                                          loading="lazy"
-                                          onError={(e) => {
+                                          loading='lazy'
+                                          onError={e => {
                                             const target = e.target as HTMLImageElement;
                                             target.style.display = 'none';
                                             target.nextElementSibling?.classList.remove('hidden');
                                           }}
                                         />
                                       ) : null}
-                                      <Package className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`} />
+                                      <Package
+                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                      />
                                     </div>
-                                    
+
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>{item.displayName}</p>
-                                      <p className='text-xs text-slate-500 truncate'>{item.setName}</p>
+                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                        {item.displayName}
+                                      </p>
+                                      <p className='text-xs text-slate-500 truncate'>
+                                        {item.setName}
+                                      </p>
                                     </div>
-                                    
+
                                     <div className='text-right'>
-                                      <p className='font-bold text-emerald-600 text-sm'>{item.displayPrice.toLocaleString()} kr.</p>
+                                      <p className='font-bold text-emerald-600 text-sm'>
+                                        {item.displayPrice.toLocaleString()} kr.
+                                      </p>
                                     </div>
-                                    
+
                                     <Button
                                       type='button'
                                       onClick={() => toggleItemSelection(item.id)}
@@ -985,10 +1031,12 @@ const CreateAuction: React.FC = () => {
                               </h5>
                               <select
                                 value={sortOptions.RawCard}
-                                onChange={(e) => setSortOptions(prev => ({
-                                  ...prev,
-                                  RawCard: e.target.value as 'order' | 'price-high' | 'price-low'
-                                }))}
+                                onChange={e =>
+                                  setSortOptions(prev => ({
+                                    ...prev,
+                                    RawCard: e.target.value as 'order' | 'price-high' | 'price-low',
+                                  }))
+                                }
                                 className='text-xs px-2 py-1 bg-white border border-blue-300 rounded-lg text-blue-700 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
@@ -1001,13 +1049,13 @@ const CreateAuction: React.FC = () => {
                                 <div
                                   key={item.id}
                                   draggable
-                                  onDragStart={(e) => handleDragStart(e, item.id)}
+                                  onDragStart={e => handleDragStart(e, item.id)}
                                   onDragOver={handleDragOver}
-                                  onDrop={(e) => handleDrop(e, item.id, 'RawCard')}
+                                  onDrop={e => handleDrop(e, item.id, 'RawCard')}
                                   onDragEnd={handleDragEnd}
                                   className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
-                                    draggedItem === item.id 
-                                      ? 'border-blue-400 shadow-lg scale-105 bg-blue-50' 
+                                    draggedItem === item.id
+                                      ? 'border-blue-400 shadow-lg scale-105 bg-blue-50'
                                       : 'border-blue-200 hover:border-blue-300'
                                   }`}
                                 >
@@ -1017,34 +1065,42 @@ const CreateAuction: React.FC = () => {
                                       {index + 1}
                                     </div>
                                   </div>
-                                  
+
                                   <div className='flex-1 flex items-center space-x-3'>
                                     <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
-                                        <img 
-                                          src={item.displayImage} 
+                                        <img
+                                          src={item.displayImage}
                                           alt={item.displayName}
                                           className='w-full h-full object-cover'
-                                          loading="lazy"
-                                          onError={(e) => {
+                                          loading='lazy'
+                                          onError={e => {
                                             const target = e.target as HTMLImageElement;
                                             target.style.display = 'none';
                                             target.nextElementSibling?.classList.remove('hidden');
                                           }}
                                         />
                                       ) : null}
-                                      <Package className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`} />
+                                      <Package
+                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                      />
                                     </div>
-                                    
+
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>{item.displayName}</p>
-                                      <p className='text-xs text-slate-500 truncate'>{item.setName}</p>
+                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                        {item.displayName}
+                                      </p>
+                                      <p className='text-xs text-slate-500 truncate'>
+                                        {item.setName}
+                                      </p>
                                     </div>
-                                    
+
                                     <div className='text-right'>
-                                      <p className='font-bold text-emerald-600 text-sm'>{item.displayPrice.toLocaleString()} kr.</p>
+                                      <p className='font-bold text-emerald-600 text-sm'>
+                                        {item.displayPrice.toLocaleString()} kr.
+                                      </p>
                                     </div>
-                                    
+
                                     <Button
                                       type='button'
                                       onClick={() => toggleItemSelection(item.id)}
@@ -1071,10 +1127,15 @@ const CreateAuction: React.FC = () => {
                               </h5>
                               <select
                                 value={sortOptions.SealedProduct}
-                                onChange={(e) => setSortOptions(prev => ({
-                                  ...prev,
-                                  SealedProduct: e.target.value as 'order' | 'price-high' | 'price-low'
-                                }))}
+                                onChange={e =>
+                                  setSortOptions(prev => ({
+                                    ...prev,
+                                    SealedProduct: e.target.value as
+                                      | 'order'
+                                      | 'price-high'
+                                      | 'price-low',
+                                  }))
+                                }
                                 className='text-xs px-2 py-1 bg-white border border-purple-300 rounded-lg text-purple-700 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
@@ -1087,13 +1148,13 @@ const CreateAuction: React.FC = () => {
                                 <div
                                   key={item.id}
                                   draggable
-                                  onDragStart={(e) => handleDragStart(e, item.id)}
+                                  onDragStart={e => handleDragStart(e, item.id)}
                                   onDragOver={handleDragOver}
-                                  onDrop={(e) => handleDrop(e, item.id, 'SealedProduct')}
+                                  onDrop={e => handleDrop(e, item.id, 'SealedProduct')}
                                   onDragEnd={handleDragEnd}
                                   className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
-                                    draggedItem === item.id 
-                                      ? 'border-purple-400 shadow-lg scale-105 bg-purple-50' 
+                                    draggedItem === item.id
+                                      ? 'border-purple-400 shadow-lg scale-105 bg-purple-50'
                                       : 'border-purple-200 hover:border-purple-300'
                                   }`}
                                 >
@@ -1103,34 +1164,42 @@ const CreateAuction: React.FC = () => {
                                       {index + 1}
                                     </div>
                                   </div>
-                                  
+
                                   <div className='flex-1 flex items-center space-x-3'>
                                     <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
-                                        <img 
-                                          src={item.displayImage} 
+                                        <img
+                                          src={item.displayImage}
                                           alt={item.displayName}
                                           className='w-full h-full object-cover'
-                                          loading="lazy"
-                                          onError={(e) => {
+                                          loading='lazy'
+                                          onError={e => {
                                             const target = e.target as HTMLImageElement;
                                             target.style.display = 'none';
                                             target.nextElementSibling?.classList.remove('hidden');
                                           }}
                                         />
                                       ) : null}
-                                      <Package className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`} />
+                                      <Package
+                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                      />
                                     </div>
-                                    
+
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>{item.displayName}</p>
-                                      <p className='text-xs text-slate-500 truncate'>{item.setName}</p>
+                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                        {item.displayName}
+                                      </p>
+                                      <p className='text-xs text-slate-500 truncate'>
+                                        {item.setName}
+                                      </p>
                                     </div>
-                                    
+
                                     <div className='text-right'>
-                                      <p className='font-bold text-emerald-600 text-sm'>{item.displayPrice.toLocaleString()} kr.</p>
+                                      <p className='font-bold text-emerald-600 text-sm'>
+                                        {item.displayPrice.toLocaleString()} kr.
+                                      </p>
                                     </div>
-                                    
+
                                     <Button
                                       type='button'
                                       onClick={() => toggleItemSelection(item.id)}
@@ -1146,10 +1215,12 @@ const CreateAuction: React.FC = () => {
                             </div>
                           </div>
                         )}
-                        
+
                         <div className='mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200'>
                           <div className='flex items-center justify-between'>
-                            <span className='font-semibold text-emerald-800'>Total Auction Value</span>
+                            <span className='font-semibold text-emerald-800'>
+                              Total Auction Value
+                            </span>
                             <span className='text-xl font-bold text-emerald-600'>
                               {selectedItemsValue.toLocaleString()} kr.
                             </span>
@@ -1243,7 +1314,9 @@ const CreateAuction: React.FC = () => {
                             <div className='flex items-center space-x-3'>
                               <div className='flex items-center space-x-2 text-sm font-medium'>
                                 <CheckCircle className='w-4 h-4 text-amber-600' />
-                                <span className='text-amber-800'>{selectedItemIds.size} items selected</span>
+                                <span className='text-amber-800'>
+                                  {selectedItemIds.size} items selected
+                                </span>
                               </div>
                               <span className='text-emerald-700 font-bold'>
                                 {selectedItemsValue.toLocaleString()} kr. total
@@ -1269,15 +1342,18 @@ const CreateAuction: React.FC = () => {
                         <div className='rounded-2xl bg-slate-50/50 p-4 overflow-hidden'>
                           <div className='mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200'>
                             <p className='text-sm text-blue-700 font-medium'>
-                              ⚡ Performance mode: Large collection detected. Using optimized virtual scrolling.
+                              ⚡ Performance mode: Large collection detected. Using optimized
+                              virtual scrolling.
                             </p>
                           </div>
                           <div className='flex justify-center w-full'>
-                            <Suspense fallback={
-                              <div className='py-12 text-center'>
-                                <LoadingSpinner text='Loading optimized view...' />
-                              </div>
-                            }>
+                            <Suspense
+                              fallback={
+                                <div className='py-12 text-center'>
+                                  <LoadingSpinner text='Loading optimized view...' />
+                                </div>
+                              }
+                            >
                               <VirtualizedItemGrid
                                 items={filteredItems}
                                 selectedItemIds={selectedItemIds}
@@ -1293,8 +1369,9 @@ const CreateAuction: React.FC = () => {
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-2xl bg-slate-50/50 p-4'>
                           {filteredItems.map(item => {
                             const isSelected = selectedItemIds.has(item.id);
-                            const selectionOrder = selectedItemOrderByType[item.itemType].indexOf(item.id) + 1;
-                            
+                            const selectionOrder =
+                              selectedItemOrderByType[item.itemType].indexOf(item.id) + 1;
+
                             return (
                               <div
                                 key={item.id}
@@ -1321,28 +1398,32 @@ const CreateAuction: React.FC = () => {
 
                                 {/* Item Type Badge */}
                                 <div className='absolute top-3 left-3 z-10'>
-                                  <span className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                                    item.itemType === 'PsaGradedCard'
-                                      ? 'bg-teal-100 text-teal-700 border border-teal-200'
-                                      : item.itemType === 'RawCard'
-                                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                      : 'bg-purple-100 text-purple-700 border border-purple-200'
-                                  }`}>
+                                  <span
+                                    className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                                      item.itemType === 'PsaGradedCard'
+                                        ? 'bg-teal-100 text-teal-700 border border-teal-200'
+                                        : item.itemType === 'RawCard'
+                                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                          : 'bg-purple-100 text-purple-700 border border-purple-200'
+                                    }`}
+                                  >
                                     {item.itemType === 'PsaGradedCard'
                                       ? `PSA ${item.grade}`
                                       : item.itemType === 'RawCard'
-                                      ? item.condition
-                                      : 'Sealed'}
+                                        ? item.condition
+                                        : 'Sealed'}
                                   </span>
                                 </div>
 
                                 {/* Optimized Item Image Slideshow with Suspense */}
                                 <div className='w-full mb-3 mt-8'>
-                                  <Suspense fallback={
-                                    <div className='w-full h-48 bg-slate-100 rounded-xl flex items-center justify-center'>
-                                      <Package className='w-8 h-8 text-slate-400' />
-                                    </div>
-                                  }>
+                                  <Suspense
+                                    fallback={
+                                      <div className='w-full h-48 bg-slate-100 rounded-xl flex items-center justify-center'>
+                                        <Package className='w-8 h-8 text-slate-400' />
+                                      </div>
+                                    }
+                                  >
                                     <ImageSlideshow
                                       images={item.displayImage ? [item.displayImage] : []}
                                       fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
@@ -1368,7 +1449,7 @@ const CreateAuction: React.FC = () => {
                                       </p>
                                     )}
                                   </div>
-                                  
+
                                   {/* Price - Always at bottom */}
                                   <div className='flex items-center justify-between mt-auto pt-2 border-t border-slate-100'>
                                     <span className='text-xs font-medium text-slate-600'>
@@ -1452,17 +1533,17 @@ const CreateAuction: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Performance Monitor for Development */}
       {process.env.NODE_ENV === 'development' && (
         <Suspense fallback={null}>
-          <PerformanceMonitor 
-            componentName="CreateAuction"
+          <PerformanceMonitor
+            componentName='CreateAuction'
             collectionSize={allCollectionItems.length}
           />
         </Suspense>
       )}
-    </div>
+    </PageLayout>
   );
 };
 

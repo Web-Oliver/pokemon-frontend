@@ -1,10 +1,150 @@
 /**
  * Export API Client
- * Handles export operations for auctions and collections
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for export-related API operations
+ * - OCP: Open for extension via createResourceOperations configuration
+ * - LSP: Maintains export interface compatibility
+ * - ISP: Provides specific export operations interface
+ * - DIP: Depends on genericApiOperations abstraction
+ *
+ * DRY: Uses createResourceOperations for basic CRUD, specialized for export functionality
  * Phase 10: Auction Management - Export Features
  */
 
+import { createResourceOperations, EXPORT_CONFIG } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
+
+// ========== INTERFACES (ISP Compliance) ==========
+
+/**
+ * Export job interface
+ */
+interface IExport {
+  id?: string;
+  _id?: string;
+  type: 'facebook' | 'dba' | 'zip' | 'csv';
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  parameters: Record<string, unknown>;
+  result?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Export creation payload interface
+ */
+interface IExportCreatePayload extends Omit<IExport, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+
+/**
+ * Export update payload interface
+ */
+interface IExportUpdatePayload extends Partial<IExportCreatePayload> {}
+
+/**
+ * Export collection items to DBA.dk format
+ */
+export interface DbaExportItem {
+  id: string;
+  type: 'psa' | 'raw' | 'sealed';
+}
+
+export interface DbaExportRequest {
+  items: DbaExportItem[];
+  customDescription?: string;
+  includeMetadata?: boolean;
+}
+
+export interface DbaExportResponse {
+  success: boolean;
+  message: string;
+  data: {
+    itemCount: number;
+    jsonFilePath: string;
+    dataFolder: string;
+    items: Array<{
+      id: string;
+      title: string;
+      description: string;
+      price: number;
+      imagePaths: string[];
+      itemType: string;
+      metadata?: any;
+    }>;
+  };
+}
+
+// ========== GENERIC RESOURCE OPERATIONS ==========
+
+/**
+ * Core CRUD operations for exports using createResourceOperations
+ * Eliminates boilerplate patterns and ensures consistency with other API files
+ */
+const exportOperations = createResourceOperations<
+  IExport,
+  IExportCreatePayload,
+  IExportUpdatePayload
+>(EXPORT_CONFIG, {
+  includeExportOperations: false, // Prevent circular dependency
+  includeBatchOperations: true,
+});
+
+// ========== EXPORTED API OPERATIONS ==========
+
+/**
+ * Get all export jobs
+ * @param params - Optional filter parameters
+ * @returns Promise<IExport[]> - Array of export jobs
+ */
+export const getExports = exportOperations.getAll;
+
+/**
+ * Get export job by ID
+ * @param id - Export job ID
+ * @returns Promise<IExport> - Single export job
+ */
+export const getExportById = exportOperations.getById;
+
+/**
+ * Create a new export job
+ * @param exportData - Export job creation data
+ * @returns Promise<IExport> - Created export job
+ */
+export const createExport = exportOperations.create;
+
+/**
+ * Update existing export job
+ * @param id - Export job ID
+ * @param exportData - Export job update data
+ * @returns Promise<IExport> - Updated export job
+ */
+export const updateExport = exportOperations.update;
+
+/**
+ * Delete export job
+ * @param id - Export job ID
+ * @returns Promise<void>
+ */
+export const removeExport = exportOperations.remove;
+
+/**
+ * Search export jobs with parameters
+ * @param searchParams - Export job search parameters
+ * @returns Promise<IExport[]> - Search results
+ */
+export const searchExports = exportOperations.search;
+
+/**
+ * Batch operation on export jobs
+ * @param operation - Operation name
+ * @param ids - Export job IDs
+ * @param operationData - Operation-specific data
+ * @returns Promise<IExport[]> - Operation results
+ */
+export const batchExportOperation = exportOperations.batchOperation;
+
+// ========== SPECIALIZED EXPORT OPERATIONS ==========
 
 /**
  * Generate Facebook post for auction
@@ -13,13 +153,13 @@ import unifiedApiClient from './unifiedApiClient';
  */
 export const generateAuctionFacebookPost = async (auctionId: string): Promise<string> => {
   // First, get the auction data
-  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`);
-  const auctionData = auction.data || auction;
+  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`) as any;
+  const auctionData = (auction.data || auction) as any;
 
   // Prepare the request body for the existing backend endpoint
   const requestData = {
-    items: auctionData.items.map((item: Record<string, unknown>) => ({
-      itemId: item.itemId || item.itemData?._id,
+    items: auctionData.items.map((item: any) => ({
+      itemId: item.itemId || (item.itemData as any)?._id,
       itemCategory: item.itemCategory,
     })),
     topText: auctionData.topText,
@@ -27,7 +167,7 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
   };
 
   // Call the existing backend endpoint
-  const response = await unifiedApiClient.post('/generate-facebook-post', requestData);
+  const response = await unifiedApiClient.post('/generate-facebook-post', requestData) as any;
   return response.data?.facebookPost || response.facebookPost || response;
 };
 
@@ -52,15 +192,15 @@ export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blo
  */
 export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   // Get auction data to extract image URLs
-  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`);
+  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`) as any;
 
   // Extract all image URLs from auction items
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  auction.items.forEach((item: Record<string, unknown>, index: number) => {
-    if (item.itemData && item.itemData.images) {
-      item.itemData.images.forEach((imagePath: string, imageIndex: number) => {
+  auction.items.forEach((item: any) => {
+    if ((item.itemData as any) && (item.itemData as any).images) {
+      (item.itemData as any).images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {
           // Convert relative path to full URL
           const imageUrl = imagePath.startsWith('http')
@@ -69,39 +209,47 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
           imageUrls.push(imageUrl);
 
           // Generate improved filename based on best practices
-          const category = item.itemCategory === 'PsaGradedCard' ? 'PSA' : 
-                          item.itemCategory === 'RawCard' ? 'RAW' : 'SEALED';
-          
+          const category =
+            item.itemCategory === 'PsaGradedCard'
+              ? 'PSA'
+              : item.itemCategory === 'RawCard'
+                ? 'RAW'
+                : 'SEALED';
+
           let itemName = '';
-          
+
           if (item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') {
-            const cardName = (item.itemData.cardId?.cardName || item.itemData.cardId?.baseName || 'Unknown')
+            const cardName = (
+              (item.itemData as any).cardId?.cardName ||
+              (item.itemData as any).cardId?.baseName ||
+              'Unknown'
+            )
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
-            const setName = (item.itemData.cardId?.setId?.setName || 'Unknown')
+            const setName = ((item.itemData as any).cardId?.setId?.setName || 'Unknown')
               .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
-            const number = item.itemData.cardId?.pokemonNumber || '000';
-            
+            const number = (item.itemData as any).cardId?.pokemonNumber || '000';
+
             if (item.itemCategory === 'PsaGradedCard') {
-              const grade = item.itemData.grade || '0';
+              const grade = (item.itemData as any).grade || '0';
               itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
             } else {
-              const condition = (item.itemData.condition || 'NM').replace(/\s+/g, '').toUpperCase();
+              const condition = ((item.itemData as any).condition || 'NM').replace(/\s+/g, '').toUpperCase();
               itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
             }
           } else {
             // Sealed product
-            const productName = (item.itemData.name || 'Unknown')
+            const productName = ((item.itemData as any).name || 'Unknown')
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
             itemName = `${category}_${productName}`;
           }
-          
+
           const extension = imagePath.split('.').pop() || 'jpg';
           const imageNumber = String(imageIndex + 1).padStart(2, '0');
           itemNames.push(`${itemName}_img${imageNumber}.${extension}`);
@@ -150,7 +298,7 @@ export const zipRawCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/raw-cards?ids=${cardIds.join(',')}`
       : '/export/zip/raw-cards';
-  const rawCards = await unifiedApiClient.get(endpoint);
+  const rawCards = await unifiedApiClient.get(endpoint) as any;
   const cardsData = rawCards.data || rawCards;
 
   return createImageZip(cardsData, 'raw-card');
@@ -167,7 +315,7 @@ export const zipPsaCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/psa-cards?ids=${cardIds.join(',')}`
       : '/export/zip/psa-cards';
-  const psaCards = await unifiedApiClient.get(endpoint);
+  const psaCards = await unifiedApiClient.get(endpoint) as any;
   const cardsData = psaCards.data || psaCards;
 
   return createImageZip(cardsData, 'psa-card');
@@ -184,7 +332,7 @@ export const zipSealedProductImages = async (productIds?: string[]): Promise<Blo
     productIds && productIds.length > 0
       ? `/export/zip/sealed-products?ids=${productIds.join(',')}`
       : '/export/zip/sealed-products';
-  const sealedProducts = await unifiedApiClient.get(endpoint);
+  const sealedProducts = await unifiedApiClient.get(endpoint) as any;
   const productsData = sealedProducts.data || sealedProducts;
 
   return createImageZip(productsData, 'sealed-product');
@@ -204,7 +352,7 @@ const createImageZip = async (
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  items.forEach((item: Record<string, unknown>, index: number) => {
+  items.forEach((item: any, index: number) => {
     if (item.images && item.images.length > 0) {
       item.images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {
@@ -216,8 +364,8 @@ const createImageZip = async (
 
           // Generate improved filename based on best practices
           let itemName = '';
-          const category = itemType === 'psa-card' ? 'PSA' : 
-                          itemType === 'raw-card' ? 'RAW' : 'SEALED';
+          const category =
+            itemType === 'psa-card' ? 'PSA' : itemType === 'raw-card' ? 'RAW' : 'SEALED';
 
           if (itemType === 'psa-card' || itemType === 'raw-card') {
             const cardName = (item.cardId?.cardName || item.cardId?.baseName || 'Unknown')
@@ -230,7 +378,7 @@ const createImageZip = async (
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
             const number = item.cardId?.pokemonNumber || '000';
-            
+
             if (itemType === 'psa-card' && item.grade) {
               itemName = `${category}_${setName}_${cardName}_${number}_PSA${item.grade}`;
             } else if (itemType === 'raw-card' && item.condition) {
@@ -292,53 +440,21 @@ const createImageZip = async (
  * @returns Promise<Blob> - Text file blob for download
  */
 export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): Promise<Blob> => {
-  const response = await unifiedApiClient.post(
+  const response = await unifiedApiClient.apiCreate<Blob>(
     '/collection/facebook-text-file',
-    {
-      itemIds: selectedItemIds,
-    },
-    {
-      responseType: 'blob',
-    }
+    { itemIds: selectedItemIds },
+    'collection Facebook text file',
+    { responseType: 'blob' }
   );
   return response;
 };
 
-/**
- * Export collection items to DBA.dk format
- */
-export interface DbaExportItem {
-  id: string;
-  type: 'psa' | 'raw' | 'sealed';
-}
-
-export interface DbaExportRequest {
-  items: DbaExportItem[];
-  customDescription?: string;
-  includeMetadata?: boolean;
-}
-
-export interface DbaExportResponse {
-  success: boolean;
-  message: string;
-  data: {
-    itemCount: number;
-    jsonFilePath: string;
-    dataFolder: string;
-    items: Array<{
-      id: string;
-      title: string;
-      description: string;
-      price: number;
-      imagePaths: string[];
-      itemType: string;
-      metadata?: any;
-    }>;
-  };
-}
-
 export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaExportResponse> => {
-  const response = await unifiedApiClient.post('/export/dba', exportRequest);
+  const response = await unifiedApiClient.apiCreate<DbaExportResponse>(
+    '/export/dba',
+    exportRequest,
+    'DBA export'
+  );
   return response;
 };
 
@@ -347,13 +463,15 @@ export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaE
  */
 export const downloadDbaZip = async (): Promise<void> => {
   try {
-    const response = await unifiedApiClient.get('/export/dba/download', {
-      responseType: 'blob',
-    });
+    const response = await unifiedApiClient.apiGet<Blob>(
+      '/export/dba/download',
+      'DBA export ZIP download',
+      { responseType: 'blob' }
+    );
 
     const timestamp = new Date().toISOString().split('T')[0];
     const filename = `dba-export-${timestamp}.zip`;
-    
+
     downloadBlob(response, filename);
   } catch (error) {
     console.error('[EXPORT API] Failed to download DBA ZIP:', error);

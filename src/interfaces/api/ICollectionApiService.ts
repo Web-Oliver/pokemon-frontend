@@ -16,7 +16,7 @@ export interface IPsaCardApiService {
   // Read operations
   getPsaGradedCards(filters?: { sold?: boolean }): Promise<IPsaGradedCard[]>;
   getPsaGradedCardById(id: string): Promise<IPsaGradedCard>;
-  
+
   // Write operations
   createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
   updatePsaCard(id: string, cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
@@ -32,7 +32,7 @@ export interface IRawCardApiService {
   // Read operations
   getRawCards(filters?: { sold?: boolean }): Promise<IRawCard[]>;
   getRawCardById(id: string): Promise<IRawCard>;
-  
+
   // Write operations
   createRawCard(cardData: Partial<IRawCard>): Promise<IRawCard>;
   updateRawCard(id: string, cardData: Partial<IRawCard>): Promise<IRawCard>;
@@ -48,7 +48,7 @@ export interface ISealedProductApiService {
   // Read operations
   getSealedProducts(filters?: { sold?: boolean }): Promise<ISealedProduct[]>;
   getSealedProductById(id: string): Promise<ISealedProduct>;
-  
+
   // Write operations
   createSealedProduct(productData: Partial<ISealedProduct>): Promise<ISealedProduct>;
   updateSealedProduct(id: string, productData: Partial<ISealedProduct>): Promise<ISealedProduct>;
@@ -60,8 +60,7 @@ export interface ISealedProductApiService {
  * Combined Collection API Service Interface
  * Follows Interface Segregation Principle - clients can depend on specific interfaces
  */
-export interface ICollectionApiService extends 
-  IPsaCardApiService, 
-  IRawCardApiService, 
-  ISealedProductApiService {
-}
+export interface ICollectionApiService
+  extends IPsaCardApiService,
+    IRawCardApiService,
+    ISealedProductApiService {}

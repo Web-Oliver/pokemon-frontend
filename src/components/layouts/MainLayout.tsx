@@ -107,7 +107,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           href: '/sealed-products-search',
           icon: Package2,
         },
-      ]
+      ],
     },
     {
       name: 'Auctions',
@@ -138,8 +138,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           name: 'Create Auction',
           href: '/auctions/create',
           icon: Gavel,
-        }
-      ]
+        },
+      ],
     },
     {
       name: 'Analytics',
@@ -183,11 +183,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
                 // Handle dropdown items
                 if (item.dropdown) {
-                  const isDropdownActive = item.dropdown.some(dropItem => currentPath === dropItem.href);
+                  const isDropdownActive = item.dropdown.some(
+                    dropItem => currentPath === dropItem.href
+                  );
                   const isDropdownOpen = dropdownOpen === item.name;
 
                   return (
-                    <div key={item.name} className="relative" data-dropdown>
+                    <div key={item.name} className='relative' data-dropdown>
                       <button
                         onClick={() => setDropdownOpen(isDropdownOpen ? null : item.name)}
                         className={`group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 whitespace-nowrap ${
@@ -197,14 +199,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         }`}
                         aria-label={`Toggle ${item.name} menu`}
                       >
-                        <Icon className={`w-4 h-4 mr-2 ${isDropdownActive ? 'text-white' : 'text-gray-500'}`} />
+                        <Icon
+                          className={`w-4 h-4 mr-2 ${isDropdownActive ? 'text-white' : 'text-gray-500'}`}
+                        />
                         <span className='text-xs'>{item.name}</span>
-                        <ChevronDown className={`w-3 h-3 ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''} ${isDropdownActive ? 'text-white/80' : 'text-gray-500'}`} />
+                        <ChevronDown
+                          className={`w-3 h-3 ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''} ${isDropdownActive ? 'text-white/80' : 'text-gray-500'}`}
+                        />
                       </button>
 
                       {/* Dropdown Menu */}
                       {isDropdownOpen && (
-                        <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                        <div className='absolute top-full right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50'>
                           {item.dropdown.map(dropItem => {
                             const DropIcon = dropItem.icon;
                             const isActive = currentPath === dropItem.href;
@@ -222,7 +228,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                               >
-                                <DropIcon className={`w-4 h-4 mr-3 ${isActive ? 'text-indigo-500' : 'text-gray-500'}`} />
+                                <DropIcon
+                                  className={`w-4 h-4 mr-3 ${isActive ? 'text-indigo-500' : 'text-gray-500'}`}
+                                />
                                 {dropItem.name}
                               </button>
                             );
@@ -274,11 +282,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
                   // Handle dropdown items for mobile
                   if (item.dropdown) {
-                    const isDropdownActive = item.dropdown.some(dropItem => currentPath === dropItem.href);
+                    const isDropdownActive = item.dropdown.some(
+                      dropItem => currentPath === dropItem.href
+                    );
                     const isMobileDropdownOpen = dropdownOpen === item.name;
 
                     return (
-                      <div key={item.name} className="space-y-2">
+                      <div key={item.name} className='space-y-2'>
                         <button
                           onClick={() => setDropdownOpen(isMobileDropdownOpen ? null : item.name)}
                           className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
@@ -292,14 +302,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                             className={`w-5 h-5 mr-3 ${isDropdownActive ? 'text-white' : 'text-gray-500'}`}
                           />
                           <span>{item.name}</span>
-                          <ChevronDown className={`w-4 h-4 ml-auto transition-transform duration-200 ${
-                            isMobileDropdownOpen ? 'rotate-180' : ''
-                          } ${isDropdownActive ? 'text-white/80' : 'text-gray-500'}`} />
+                          <ChevronDown
+                            className={`w-4 h-4 ml-auto transition-transform duration-200 ${
+                              isMobileDropdownOpen ? 'rotate-180' : ''
+                            } ${isDropdownActive ? 'text-white/80' : 'text-gray-500'}`}
+                          />
                         </button>
 
                         {/* Mobile Dropdown Items */}
                         {isMobileDropdownOpen && (
-                          <div className="ml-6 space-y-1">
+                          <div className='ml-6 space-y-1'>
                             {item.dropdown.map(dropItem => {
                               const DropIcon = dropItem.icon;
                               const isActive = currentPath === dropItem.href;
@@ -318,7 +330,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                   }`}
                                 >
-                                  <DropIcon className={`w-4 h-4 mr-3 ${isActive ? 'text-indigo-500' : 'text-gray-400'}`} />
+                                  <DropIcon
+                                    className={`w-4 h-4 mr-3 ${isActive ? 'text-indigo-500' : 'text-gray-400'}`}
+                                  />
                                   <span>{dropItem.name}</span>
                                   {isActive && <Zap className='w-3 h-3 ml-auto text-indigo-500' />}
                                 </button>

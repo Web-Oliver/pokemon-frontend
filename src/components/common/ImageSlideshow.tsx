@@ -10,7 +10,6 @@ import {
   getContext7ImageClasses,
   getContext7GlassOverlay,
   getContext7ShimmerEffect,
-  getOptimalGridLayout,
   type ImageAspectInfo,
 } from '../../utils/fileOperations';
 
@@ -87,20 +86,22 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
           const fullUrl = image.startsWith('http') ? image : `http://localhost:3000${image}`;
           return detectImageAspectRatio(fullUrl);
         });
-        
+
         const aspects = await Promise.all(aspectPromises);
         setImageAspects(aspects);
       } catch (error) {
         console.warn('[ImageSlideshow] Failed to analyze image aspects:', error);
         // Fallback to default square aspect ratios
-        setImageAspects(images.map(() => ({ 
-          ratio: 1, 
-          category: 'square' as const, 
-          orientation: 'square' as const,
-          cssClass: 'aspect-square',
-          containerClass: 'aspect-square',
-          responsiveClasses: 'aspect-square'
-        })));
+        setImageAspects(
+          images.map(() => ({
+            ratio: 1,
+            category: 'square' as const,
+            orientation: 'square' as const,
+            cssClass: 'aspect-square',
+            containerClass: 'aspect-square',
+            responsiveClasses: 'aspect-square',
+          }))
+        );
       } finally {
         setIsAnalyzing(false);
       }
@@ -131,7 +132,9 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
         className={`w-full group relative overflow-hidden ${className.includes('h-') ? '' : 'h-48'} ${className}`}
       >
         {/* Context7 Premium Fallback Container */}
-        <div className={`w-full h-full ${getContext7ContainerClasses('square')} flex items-center justify-center`}>
+        <div
+          className={`w-full h-full ${getContext7ContainerClasses('square')} flex items-center justify-center`}
+        >
           {/* Animated Background Pattern */}
           <div className='absolute inset-0 opacity-20'>
             <div className='w-full h-full bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10'></div>
@@ -175,14 +178,16 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
     if (!adaptiveLayout || !currentAspect) {
       return className.includes('h-') ? '' : 'h-48';
     }
-    
+
     const config = getResponsiveImageConfig(currentAspect);
     const responsiveClasses = buildResponsiveImageClasses(config);
     return responsiveClasses;
   };
 
   const containerClasses = getAdaptiveContainerClasses();
-  const imageClasses = responsiveConfig ? getContext7ImageClasses(responsiveConfig, true) : `w-full h-full object-cover object-center transition-all duration-500 group-hover:scale-110`;
+  const imageClasses = responsiveConfig
+    ? getContext7ImageClasses(responsiveConfig, true)
+    : `w-full h-full object-cover object-center transition-all duration-500 group-hover:scale-110`;
 
   return (
     <div className='space-y-6'>
@@ -200,7 +205,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
       <div className='relative w-full group'>
         <div
           className={`relative w-full overflow-hidden ${
-            adaptiveLayout && currentAspect 
+            adaptiveLayout && currentAspect
               ? `${containerClasses} ${getContext7ContainerClasses(currentAspect.orientation)}`
               : `${className.includes('h-') ? '' : 'h-48'} rounded-2xl bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl`
           } ${className}`}
@@ -210,15 +215,20 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
               {images.map((image, index) => {
                 const imageAspect = imageAspects[index];
                 const imageConfig = imageAspect ? getResponsiveImageConfig(imageAspect) : null;
-                const slideImageClasses = imageConfig ? getContext7ImageClasses(imageConfig, true) : imageClasses;
-                
+                const slideImageClasses = imageConfig
+                  ? getContext7ImageClasses(imageConfig, true)
+                  : imageClasses;
+
                 return (
-                  <div className='embla__slide flex-[0_0_100%] min-w-0 h-full relative overflow-hidden' key={index}>
+                  <div
+                    className='embla__slide flex-[0_0_100%] min-w-0 h-full relative overflow-hidden'
+                    key={index}
+                  >
                     <img
                       src={image.startsWith('http') ? image : `http://localhost:3000${image}`}
                       alt={`Item image ${index + 1}`}
                       className={slideImageClasses}
-                      loading="lazy"
+                      loading='lazy'
                       onError={e => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -230,12 +240,12 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                       }}
                       style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                     />
-                    
+
                     {/* Context7 Premium Glass Overlay */}
                     {imageAspect && (
                       <div className={getContext7GlassOverlay(imageAspect.orientation)}></div>
                     )}
-                    
+
                     {/* Context7 Premium Shimmer Effect */}
                     <div className={getContext7ShimmerEffect()}></div>
                   </div>
@@ -273,27 +283,29 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                 {images.map((_, index) => {
                   const isActive = index === selectedIndex;
                   const imageAspect = imageAspects[index];
-                  
+
                   return (
                     <button
                       key={index}
                       onClick={() => emblaMainApi?.scrollTo(index)}
                       className={`relative transition-all duration-300 rounded-full ${
-                        isActive 
-                          ? 'w-8 h-3 bg-white shadow-lg' 
+                        isActive
+                          ? 'w-8 h-3 bg-white shadow-lg'
                           : 'w-3 h-3 bg-white/60 hover:bg-white/80 hover:scale-110'
                       }`}
                       aria-label={`Go to image ${index + 1}`}
                     >
                       {/* Context7 Aspect Ratio Indicator */}
                       {isActive && imageAspect && (
-                        <div className={`absolute inset-0 rounded-full bg-gradient-to-r opacity-30 ${
-                          imageAspect.orientation === 'vertical' 
-                            ? 'from-green-400 to-emerald-400'
-                            : imageAspect.orientation === 'horizontal'
-                            ? 'from-blue-400 to-indigo-400' 
-                            : 'from-purple-400 to-pink-400'
-                        }`}></div>
+                        <div
+                          className={`absolute inset-0 rounded-full bg-gradient-to-r opacity-30 ${
+                            imageAspect.orientation === 'vertical'
+                              ? 'from-green-400 to-emerald-400'
+                              : imageAspect.orientation === 'horizontal'
+                                ? 'from-blue-400 to-indigo-400'
+                                : 'from-purple-400 to-pink-400'
+                          }`}
+                        ></div>
                       )}
                     </button>
                   );
@@ -301,7 +313,6 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
               </div>
             </div>
           )}
-
         </div>
       </div>
 
@@ -314,11 +325,13 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                 const thumbAspect = imageAspects[index];
                 const isActive = index === selectedIndex;
                 const thumbConfig = thumbAspect ? getResponsiveImageConfig(thumbAspect) : null;
-                
+
                 // Determine thumbnail container size based on aspect ratio
                 const getThumbnailContainerClass = () => {
-                  if (!thumbAspect) return 'w-16 h-16'; // Default square
-                  
+                  if (!thumbAspect) {
+                    return 'w-16 h-16';
+                  } // Default square
+
                   switch (thumbAspect.category) {
                     case 'ultra-wide':
                       return 'w-20 h-12'; // Wide thumbnail
@@ -338,14 +351,17 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                       return 'w-16 h-16';
                   }
                 };
-                
+
                 const containerClass = getThumbnailContainerClass();
-                const thumbImageClasses = thumbConfig 
+                const thumbImageClasses = thumbConfig
                   ? getContext7ImageClasses(thumbConfig, false)
                   : 'w-full h-full object-cover object-center';
-                
+
                 return (
-                  <div className='embla-thumbs__slide flex-[0_0_auto] min-w-0 group/thumb' key={index}>
+                  <div
+                    className='embla-thumbs__slide flex-[0_0_auto] min-w-0 group/thumb'
+                    key={index}
+                  >
                     <button
                       onClick={() => onThumbClick(index)}
                       className={`${containerClass} rounded-2xl overflow-hidden border-2 transition-all duration-300 relative ${
@@ -360,7 +376,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                         src={image.startsWith('http') ? image : `http://localhost:3000${image}`}
                         alt={`Thumbnail ${index + 1}`}
                         className={thumbImageClasses}
-                        loading="lazy"
+                        loading='lazy'
                         onError={e => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
@@ -373,28 +389,33 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
                         }}
                         style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                       />
-                      
+
                       {/* Context7 Premium Active Overlay */}
                       {isActive && (
                         <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-blue-500/20 pointer-events-none'></div>
                       )}
-                      
+
                       {/* Context7 Premium Hover Overlay */}
                       <div className='absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
-                      
+
                       {/* Context7 Premium Shimmer Effect */}
                       <div className={getContext7ShimmerEffect()}></div>
-                      
+
                       {/* Context7 Premium Aspect Ratio Indicator */}
                       {thumbAspect && enableAspectRatioDetection && (
                         <div className='absolute top-1 right-1 z-10'>
-                          <div className={`w-2 h-2 rounded-full ${
-                            thumbAspect.orientation === 'vertical' ? 'bg-green-400' :
-                            thumbAspect.orientation === 'horizontal' ? 'bg-blue-400' : 'bg-purple-400'
-                          } opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 shadow-lg`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              thumbAspect.orientation === 'vertical'
+                                ? 'bg-green-400'
+                                : thumbAspect.orientation === 'horizontal'
+                                  ? 'bg-blue-400'
+                                  : 'bg-purple-400'
+                            } opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 shadow-lg`}
+                          ></div>
                         </div>
                       )}
-                      
+
                       {/* Context7 Premium Active Badge */}
                       {isActive && (
                         <div className='absolute bottom-1 left-1 z-10'>

@@ -17,6 +17,9 @@ import { ArrowLeft, Star, Package, Archive } from 'lucide-react';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { getCollectionApiService } from '../services/ServiceRegistry';
@@ -100,8 +103,7 @@ const AddEditItem: React.FC = () => {
 
   // Handle navigation back to collection
   const handleBackToCollection = () => {
-    window.history.pushState({}, '', '/collection');
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    navigationHelper.navigateToCollection();
   };
 
   // Item type options for selection
@@ -145,8 +147,7 @@ const AddEditItem: React.FC = () => {
         const [, , , type, id] = pathParts;
         const itemViewPath = `/collection/${type}/${id}`;
         console.log('[EDIT SUCCESS] Redirecting to item view:', itemViewPath);
-        window.history.pushState({}, '', itemViewPath);
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        navigationHelper.navigateTo(itemViewPath);
       } else {
         // Fallback to collection if path parsing fails
         handleBackToCollection();
@@ -202,7 +203,13 @@ const AddEditItem: React.FC = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative'>
+    <PageLayout
+      title={isEditing ? 'Edit Item' : 'Add New Item'}
+      subtitle={isEditing ? 'Update your collection item' : 'Add a new item to your collection'}
+      loading={fetchLoading}
+      error={fetchError}
+      variant='blue'
+    >
       {/* Modern Background Pattern */}
       <div className='absolute inset-0 opacity-20'>
         <div
@@ -384,7 +391,7 @@ const AddEditItem: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

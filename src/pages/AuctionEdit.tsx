@@ -18,6 +18,9 @@ import {
   X,
 } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
@@ -247,9 +250,33 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     }
   };
 
+  const headerActions = (
+    <div className='flex items-center space-x-3'>
+      <button
+        onClick={handleSaveChanges}
+        className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Save Changes
+      </button>
+      <button
+        onClick={handleCancelEdit}
+        className='bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Cancel
+      </button>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+      <PageLayout
+        title="Edit Auction"
+        subtitle="Modify your auction details"
+        loading={true}
+        error={error}
+        actions={headerActions}
+        variant="default"
+      >
         <div className='absolute inset-0 opacity-30'>
           <div
             className='w-full h-full'
@@ -268,44 +295,39 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (!currentAuction) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
-        <div className='absolute inset-0 opacity-30'>
-          <div
-            className='w-full h-full'
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className='relative z-10 p-8'>
-          <div className='max-w-7xl mx-auto'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden'>
-              <div className='absolute inset-0 bg-gradient-to-r from-red-500/5 via-rose-500/5 to-pink-500/5'></div>
-              <div className='relative z-10 text-center'>
-                <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                  <Package className='w-10 h-10 text-slate-500' />
-                </div>
-                <h3 className='text-xl font-bold text-slate-900 mb-3'>Auction not found</h3>
-                <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
-                  The auction you're trying to edit doesn't exist or has been deleted.
-                </p>
-                <Button onClick={navigateToAuctions}>Back to Auctions</Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageLayout
+        title="Auction Not Found"
+        subtitle="The auction you're trying to edit doesn't exist or has been deleted"
+        loading={false}
+        error="Auction not found"
+        actions={
+          <button
+            onClick={navigateToAuctions}
+            className='bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+          >
+            Back to Auctions
+          </button>
+        }
+        variant="default"
+      />
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title="Edit Auction"
+      subtitle="Modify your auction details and manage items"
+      loading={loading}
+      error={error}
+      actions={headerActions}
+      variant="default"
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -612,7 +634,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           />
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

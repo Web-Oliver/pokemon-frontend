@@ -97,7 +97,11 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
       <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-center relative z-10'>
         <Banknote className='w-6 h-6 mr-3 text-slate-600' />
-        {isEditing ? 'Update Price (kr.)' : isPsaCard ? 'Grading & Pricing (kr.)' : 'Condition & Pricing (kr.)'}
+        {isEditing
+          ? 'Update Price (kr.)'
+          : isPsaCard
+            ? 'Grading & Pricing (kr.)'
+            : 'Condition & Pricing (kr.)'}
       </h4>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
@@ -144,7 +148,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 value: /^\d+$/,
                 message: 'Price must be a whole number only',
               },
-              validate: (value) => {
+              validate: value => {
                 const num = parseInt(value, 10);
                 if (isNaN(num) || num < 0) {
                   return 'Price must be a positive whole number';

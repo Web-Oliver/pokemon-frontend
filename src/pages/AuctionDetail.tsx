@@ -32,6 +32,8 @@ import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { IAuctionItem } from '../domain/models/auction';
 import { ISaleDetails } from '../domain/models/common';
 import { showWarningToast, showSuccessToast } from '../utils/errorHandler';
+import { navigationHelper } from '../utils/navigation';
+import { PageLayout } from '../components/layouts/PageLayout';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -100,13 +102,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Navigation
   const navigateToAuctions = () => {
-    window.history.pushState({}, '', '/auctions');
-    window.location.reload();
+    navigationHelper.navigateTo('/auctions');
   };
 
   const navigateToEditAuction = () => {
-    window.history.pushState({}, '', `/auctions/${currentAuctionId}/edit`);
-    window.location.reload();
+    navigationHelper.navigateToEdit.auction(currentAuctionId);
   };
 
   // Format date for display
@@ -437,34 +437,32 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const totalItems = currentAuction?.items.length || 0;
   const progress = totalItems > 0 ? (soldItems / totalItems) * 100 : 0;
 
-  if (loading) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
-        <div className='absolute inset-0 opacity-30'>
-          <div
-            className='w-full h-full'
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className='relative z-10 p-8'>
-          <div className='max-w-7xl mx-auto'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
-              <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
-              <div className='relative z-10'>
-                <LoadingSpinner text='Loading auction details...' />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const headerActions = (
+    <div className='flex items-center space-x-3'>
+      <button
+        onClick={navigateToEditAuction}
+        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Edit Auction
+      </button>
+      <button
+        onClick={navigateToAuctions}
+        className='bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Back to Auctions
+      </button>
+    </div>
+  );
 
   if (!currentAuction) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+      <PageLayout
+        title="Auction Not Found"
+        subtitle="The requested auction could not be found"
+        loading={false}
+        error="Auction not found"
+        variant="default"
+      >
         <div className='absolute inset-0 opacity-30'>
           <div
             className='w-full h-full'
@@ -490,12 +488,19 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title={currentAuction?.topText || "Auction Details"}
+      subtitle={currentAuction?.bottomText || "View and manage auction details"}
+      loading={loading}
+      error={error}
+      actions={headerActions}
+      variant="default"
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -1079,7 +1084,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           />
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

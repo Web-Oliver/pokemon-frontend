@@ -12,6 +12,9 @@
  */
 
 import React from 'react';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import {
   Package,
   TrendingUp,
@@ -27,6 +30,7 @@ import {
   Award,
   Settings,
   Info,
+  Calendar,
 } from 'lucide-react';
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
@@ -104,8 +108,34 @@ const Dashboard: React.FC = () => {
     return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
   };
 
+  const headerActions = (
+    <div className='flex items-center space-x-3'>
+      <button
+        onClick={() => navigationHelper.navigateToCreate.item()}
+        className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        <Plus className='w-5 h-5 mr-2' />
+        Add Item
+      </button>
+      <button
+        onClick={() => navigationHelper.navigateToCreate.auction()}
+        className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        <Calendar className='w-5 h-5 mr-2' />
+        Create Auction
+      </button>
+    </div>
+  );
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 relative overflow-hidden'>
+    <PageLayout
+      title='Dashboard'
+      subtitle='Overview of your Pokémon collection and recent activity'
+      loading={false}
+      error={null}
+      actions={headerActions}
+      variant='default'
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -375,7 +405,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

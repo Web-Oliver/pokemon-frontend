@@ -60,18 +60,24 @@ export const usePriceHistory = (
   }, []);
 
   const getLatestPrice = useCallback((): number | undefined => {
-    if (priceHistory.length === 0) return undefined;
+    if (priceHistory.length === 0) {
+      return undefined;
+    }
     return priceHistory[priceHistory.length - 1].price;
   }, [priceHistory]);
 
   const getPriceChangePercentage = useCallback((): number | undefined => {
-    if (priceHistory.length < 2) return undefined;
-    
+    if (priceHistory.length < 2) {
+      return undefined;
+    }
+
     const firstPrice = priceHistory[0].price;
     const latestPrice = priceHistory[priceHistory.length - 1].price;
-    
-    if (firstPrice === 0) return undefined;
-    
+
+    if (firstPrice === 0) {
+      return undefined;
+    }
+
     return ((latestPrice - firstPrice) / firstPrice) * 100;
   }, [priceHistory]);
 

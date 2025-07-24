@@ -34,7 +34,9 @@ export const useFormValidation = (rules: ValidationRules): UseFormValidationRetu
   const validateField = useCallback(
     (fieldName: string, value: any): string | undefined => {
       const rule = rules[fieldName];
-      if (!rule) return undefined;
+      if (!rule) {
+        return undefined;
+      }
 
       // Required validation
       if (rule.required && (!value || (typeof value === 'string' && value.trim() === ''))) {
@@ -124,7 +126,9 @@ export const commonValidationRules = {
     min: 0,
     custom: (value: string) => {
       const num = parseFloat(value);
-      if (isNaN(num)) return 'Must be a valid number';
+      if (isNaN(num)) {
+        return 'Must be a valid number';
+      }
       return undefined;
     },
   },

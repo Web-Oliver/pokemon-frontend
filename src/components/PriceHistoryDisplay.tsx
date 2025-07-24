@@ -93,13 +93,13 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
       (a, b) => new Date(b.dateUpdated).getTime() - new Date(a.dateUpdated).getTime()
     );
 
-    const latest = sortedHistory[0]?.price || currentPrice;
-    const previous = sortedHistory[1]?.price || currentPrice;
+    const latest = sortedHistory[0]?.price || currentPrice || 0;
+    const previous = sortedHistory[1]?.price || currentPrice || 0;
 
-    if (latest > previous) {
+    if (latest > previous && previous > 0) {
       const percentage = ((latest - previous) / previous) * 100;
       return { trend: 'up', percentage };
-    } else if (latest < previous) {
+    } else if (latest < previous && previous > 0) {
       const percentage = ((previous - latest) / previous) * 100;
       return { trend: 'down', percentage };
     }
@@ -236,8 +236,8 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               <Button
                 onClick={handlePriceUpdate}
                 disabled={
-                  !newPrice.trim() || 
-                  isNaN(parseInt(newPrice, 10)) || 
+                  !newPrice.trim() ||
+                  isNaN(parseInt(newPrice, 10)) ||
                   parseInt(newPrice, 10) <= 0 ||
                   parseInt(newPrice, 10) === Math.round(currentPrice || 0)
                 }

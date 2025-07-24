@@ -1,7 +1,7 @@
 /**
  * Search Service - DRY Implementation
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Following CLAUDE.md SOLID and DRY principles:
  * - Single Responsibility: Only handles search logic
  * - Open/Closed: Extensible for new search types
@@ -10,6 +10,7 @@
  */
 
 import { SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
+// Import only if needed - these functions are used internally but not exported from this service
 
 // ===== INTERFACES =====
 
@@ -43,7 +44,7 @@ export interface SearchSuggestion {
     count?: number;
     source?: string;
   };
-  data: any; // SetResult | CardResult | ProductResult | CategoryResult
+  data: SetResult | CardResult | ProductResult | CategoryResult;
 }
 
 export interface ISearchService {
@@ -62,17 +63,6 @@ export interface ISearchService {
 export type HierarchicalSearchConfig = SearchServiceConfig;
 export type HierarchicalSearchState = SearchState;
 export type IHierarchicalSearchService = ISearchService;
-import {
-  searchCardsOptimized,
-  searchCardsInSet,
-  getCardSuggestionsOptimized,
-} from '../api/consolidatedSearch';
-import {
-  searchProductsOptimized,
-  searchProductsInSet,
-  getProductSuggestionsOptimized,
-} from '../api/consolidatedSearch';
-import { searchSetsOptimized, getSetSuggestionsOptimized, searchCardMarketSetNames } from '../api/consolidatedSearch';
 import { SEARCH_CONFIG } from '../utils/constants';
 import { formatDisplayNameWithNumber } from '../utils/formatting';
 
@@ -83,7 +73,8 @@ import { formatDisplayNameWithNumber } from '../utils/formatting';
 export class SearchService implements ISearchService {
   private config: SearchServiceConfig;
   private state: SearchState;
-  private cache: Map<string, { data: SearchSuggestion[]; timestamp: number; ttl: number }> = new Map();
+  private cache: Map<string, { data: SearchSuggestion[]; timestamp: number; ttl: number }> =
+    new Map();
   private pendingRequests: Map<string, Promise<SearchSuggestion[]>> = new Map();
 
   constructor(config: SearchServiceConfig) {
@@ -192,32 +183,38 @@ export class SearchService implements ISearchService {
 
     try {
       const baseUrl = 'http://localhost:3000';
-      
+
       if (this.config.searchMode === 'products') {
         // For SEALED PRODUCTS: Get unique setName values from CardMarketReferenceProduct model
-        console.log('[SEARCH SERVICE] Getting product set names from CardMarketReferenceProduct.setName field');
-        const response = await fetch(`${baseUrl}/api/cardmarket-ref-products/set-names?search=${encodeURIComponent(query)}&limit=${this.config.maxSuggestions}`);
+        console.log(
+          '[SEARCH SERVICE] Getting product set names from CardMarketReferenceProduct.setName field'
+        );
+        const response = await fetch(
+          `${baseUrl}/api/cardmarket-ref-products/set-names?search=${encodeURIComponent(query)}&limit=${this.config.maxSuggestions}`
+        );
         const data = await response.json();
-        
+
         console.log('[SEARCH SERVICE] Product sets API response:', data);
-        
+
         if (!data.success) {
           throw new Error(data.message || 'Product set search failed');
         }
-        
+
         return data.data.map(this.mapProductSetToSuggestion);
       } else {
         // For CARDS: Use regular Set model (this was working)
         console.log('[SEARCH SERVICE] Using regular Set model for cards');
-        const response = await fetch(`${baseUrl}/api/search/sets?query=${encodeURIComponent(query)}&limit=${this.config.maxSuggestions}`);
+        const response = await fetch(
+          `${baseUrl}/api/search/sets?query=${encodeURIComponent(query)}&limit=${this.config.maxSuggestions}`
+        );
         const data = await response.json();
-        
+
         console.log('[SEARCH SERVICE] Regular sets API response:', data);
-        
+
         if (!data.success) {
           throw new Error(data.message || 'Set search failed');
         }
-        
+
         return data.data.map(this.mapUnifiedSetToSuggestion);
       }
     } catch (error) {
@@ -254,9 +251,9 @@ export class SearchService implements ISearchService {
   private async searchCardProducts(query: string): Promise<SearchSuggestion[]> {
     try {
       let endpoint: string;
-      let params = new URLSearchParams({
+      const params = new URLSearchParams({
         query,
-        limit: this.config.maxSuggestions!.toString()
+        limit: this.config.maxSuggestions!.toString(),
       });
 
       if (this.config.searchMode === 'products') {
@@ -277,21 +274,25 @@ export class SearchService implements ISearchService {
         }
       }
 
-      console.log('[SEARCH SERVICE] searchCardProducts calling:', `${endpoint}?${params.toString()}`);
-      
+      console.log(
+        '[SEARCH SERVICE] searchCardProducts calling:',
+        `${endpoint}?${params.toString()}`
+      );
+
       const baseUrl = 'http://localhost:3000';
       const response = await fetch(`${baseUrl}${endpoint}?${params.toString()}`);
       const data = await response.json();
-      
+
       console.log('[SEARCH SERVICE] Card/Product API response:', data);
-      
+
       if (!data.success) {
         throw new Error(data.message || 'Card/Product search failed');
       }
 
-      return data.data.map(this.config.searchMode === 'products' 
-        ? this.mapUnifiedProductToSuggestion 
-        : this.mapUnifiedCardToSuggestion
+      return data.data.map(
+        this.config.searchMode === 'products'
+          ? this.mapUnifiedProductToSuggestion
+          : this.mapUnifiedCardToSuggestion
       );
     } catch (error) {
       console.error('[SEARCH SERVICE] searchCardProducts error:', error);
@@ -392,17 +393,18 @@ export class SearchService implements ISearchService {
   // ===== MAPPING FUNCTIONS =====
 
   // For UNIFIED API: Maps unified search API set results (this was working for cards)
-  private mapUnifiedSetToSuggestion = (result: any): SearchSuggestion => {
+  private mapUnifiedSetToSuggestion = (result: SetResult): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapUnifiedSetToSuggestion - input:', result);
-    
+
     const setName = result.setName || 'Unknown Set';
     const cardCount = result.counts?.cards || result.totalCardsInSet || 0;
     const productCount = result.counts?.products || 0;
-    
-    const displayText = this.config.searchMode === 'products' 
-      ? `${setName} (${productCount} products)`
-      : `${setName} (${cardCount} cards)`;
-    
+
+    const displayText =
+      this.config.searchMode === 'products'
+        ? `${setName} (${productCount} products)`
+        : `${setName} (${cardCount} cards)`;
+
     return {
       id: setName,
       displayName: displayText,
@@ -416,12 +418,12 @@ export class SearchService implements ISearchService {
   };
 
   // For PRODUCTS: Maps CardMarketReferenceProduct setName field values
-  private mapProductSetToSuggestion = (result: any): SearchSuggestion => {
+  private mapProductSetToSuggestion = (result: SetResult): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapProductSetToSuggestion - input:', result);
-    
+
     const setName = result.setName || 'Unknown Set';
     const productCount = result.productCount || result.count || 0;
-    
+
     return {
       id: setName,
       displayName: `${setName} (${productCount} products)`,
@@ -447,15 +449,18 @@ export class SearchService implements ISearchService {
   });
 
   // For SEALED PRODUCTS: Maps CardMarketReferenceProduct set names
-  private mapCardMarketSetToSuggestion = (result: any): SearchSuggestion => {
+  private mapCardMarketSetToSuggestion = (result: SetResult): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapCardMarketSetToSuggestion - input:', result);
-    
+
     // CardMarket API returns: { setName, productCount, totalAvailable, averagePrice, etc. }
     const setName = result.setName || 'Unknown Set';
     const productCount = result.productCount || result.count || 0;
-    
-    console.log('[SEARCH SERVICE] mapCardMarketSetToSuggestion - extracted:', { setName, productCount });
-    
+
+    console.log('[SEARCH SERVICE] mapCardMarketSetToSuggestion - extracted:', {
+      setName,
+      productCount,
+    });
+
     return {
       id: setName,
       displayName: `${setName} (${productCount} products)`,
@@ -479,16 +484,16 @@ export class SearchService implements ISearchService {
   });
 
   // For UNIFIED API: Maps unified search API card results
-  private mapUnifiedCardToSuggestion = (result: any): SearchSuggestion => {
+  private mapUnifiedCardToSuggestion = (result: CardResult): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapUnifiedCardToSuggestion - input:', result);
-    
+
     const cardName = result.cardName || result.baseName || 'Unknown Card';
     const pokemonNumber = result.pokemonNumber ? `#${result.pokemonNumber}` : '';
     const setName = result.setInfo?.setName || 'Unknown Set';
     const variety = result.variety ? ` (${result.variety})` : '';
-    
+
     const displayName = `${pokemonNumber} ${cardName}${variety} - ${setName}`.trim();
-    
+
     return {
       id: result._id || result.id,
       displayName,
@@ -500,16 +505,16 @@ export class SearchService implements ISearchService {
     };
   };
 
-  // For UNIFIED API: Maps unified search API product results  
-  private mapUnifiedProductToSuggestion = (result: any): SearchSuggestion => {
+  // For UNIFIED API: Maps unified search API product results
+  private mapUnifiedProductToSuggestion = (result: ProductResult): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapUnifiedProductToSuggestion - input:', result);
-    
+
     const productName = result.name || 'Unknown Product';
     const setName = result.setName || 'Unknown Set';
     const category = result.category ? ` (${result.category})` : '';
-    
+
     const displayName = `${productName}${category} - ${setName}`;
-    
+
     return {
       id: result._id || result.id || productName,
       displayName,
@@ -528,7 +533,9 @@ export class SearchService implements ISearchService {
     metadata: {
       setName: result.setInfo?.setName,
       category: undefined,
-      originalCardName: result.pokemonNumber ? `${result.cardName} (#${result.pokemonNumber})` : result.cardName,
+      originalCardName: result.pokemonNumber
+        ? `${result.cardName} (#${result.pokemonNumber})`
+        : result.cardName,
     },
     data: result,
   });
@@ -584,10 +591,12 @@ export function createSearchService(config: SearchServiceConfig): SearchService 
  * Legacy factory function name for backward compatibility
  */
 export function createHierarchicalSearchService(config: HierarchicalSearchConfig): SearchService {
-  console.log('[SEARCH SERVICE] Creating service with legacy factory (using SearchService):', config);
+  console.log(
+    '[SEARCH SERVICE] Creating service with legacy factory (using SearchService):',
+    config
+  );
   return new SearchService(config);
 }
 
 // Legacy class export for backward compatibility
 export const HierarchicalSearchService = SearchService;
-

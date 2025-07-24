@@ -49,12 +49,12 @@ export function getCachedData<T>(cacheKey: string): T | null {
   if (entry && isCacheValid(entry)) {
     return entry.data;
   }
-  
+
   // Clean up expired cache entry
   if (entry) {
     requestCache.delete(cacheKey);
   }
-  
+
   return null;
 }
 
@@ -84,11 +84,10 @@ export function deduplicateRequest<T>(
   }
 
   // Create new request and store it
-  const newRequest = requestFn()
-    .finally(() => {
-      // Clean up pending request when completed
-      pendingRequests.delete(cacheKey);
-    });
+  const newRequest = requestFn().finally(() => {
+    // Clean up pending request when completed
+    pendingRequests.delete(cacheKey);
+  });
 
   pendingRequests.set(cacheKey, newRequest);
   return newRequest;
@@ -132,12 +131,12 @@ export function optimizedApiRequest<T>(
   // Create the actual request function
   const executeRequest = async (): Promise<AxiosResponse<T>> => {
     const response = await requestFn();
-    
+
     // Cache the response data if caching is enabled
     if (enableCache && response.status >= 200 && response.status < 300) {
       setCacheData(cacheKey, response.data, cacheTTL);
     }
-    
+
     return response;
   };
 
@@ -154,7 +153,7 @@ export function optimizedApiRequest<T>(
  */
 export class BatchProcessor<T, R> {
   private batchQueue: T[] = [];
-  private batchTimeout: NodeJS.Timeout | null = null;
+  private batchTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly batchSize: number;
   private readonly batchDelay: number;
   private readonly processFn: (items: T[]) => Promise<R[]>;
@@ -204,7 +203,9 @@ export class BatchProcessor<T, R> {
    * Process current batch
    */
   private async processBatch(): void {
-    if (this.batchQueue.length === 0) return;
+    if (this.batchQueue.length === 0) {
+      return;
+    }
 
     // Clear timeout and get current batch
     if (this.batchTimeout) {
@@ -217,7 +218,7 @@ export class BatchProcessor<T, R> {
 
     try {
       const results = await this.processFn(items);
-      
+
       // Resolve individual promises
       currentBatch.forEach((item: any, index: number) => {
         item.resolve(results[index]);

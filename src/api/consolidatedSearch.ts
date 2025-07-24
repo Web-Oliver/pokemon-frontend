@@ -108,7 +108,7 @@ export const searchCardsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`) as any;
   const data = response.data || response;
 
   // Map the response data
@@ -140,7 +140,7 @@ export const getCardSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
   const data = response.data || response;
 
   // Extract card suggestions from the response
@@ -287,7 +287,7 @@ export const searchSetsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`) as any;
 
   return {
     success: response.success || true,
@@ -315,7 +315,7 @@ export const getSetSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
 
   // Extract set suggestions from the response
   const setSuggestions = response.suggestions?.sets?.data || [];
@@ -464,7 +464,7 @@ export const searchProductsOptimized = async (
     }
   });
 
-  const response = await unifiedApiClient.get(`/search/products?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/products?${queryParams.toString()}`) as any;
 
   return {
     success: response.success || true,
@@ -492,7 +492,7 @@ export const getProductSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`);
+  const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`) as any;
 
   // Extract product suggestions from the response
   const productSuggestions = response.suggestions?.products?.data || [];
@@ -635,14 +635,16 @@ export const searchAvailableProducts = async (
 export const getCardMarketSetNames = async (
   query?: string,
   limit: number = 50
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score?: number;
-}>> => {
+): Promise<
+  Array<{
+    setName: string;
+    count: number;
+    totalAvailable: number;
+    categoryCount: number;
+    averagePrice: number;
+    score?: number;
+  }>
+> => {
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
   });
@@ -651,15 +653,17 @@ export const getCardMarketSetNames = async (
     queryParams.append('search', query.trim());
   }
 
-  const response = await unifiedApiClient.get(`/cardmarket-ref-products/set-names?${queryParams.toString()}`);
-  
+  const response = await unifiedApiClient.get(
+    `/cardmarket-ref-products/set-names?${queryParams.toString()}`
+  ) as any;
+
   console.log('[CONSOLIDATED SEARCH] Raw API response:', response);
   console.log('[CONSOLIDATED SEARCH] Response.data:', response.data);
-  
-  // Handle wrapped response format {success: true, data: [...]} 
+
+  // Handle wrapped response format {success: true, data: [...]}
   const data = response.data?.data || response.data || response;
   console.log('[CONSOLIDATED SEARCH] Extracted data:', data);
-  
+
   return Array.isArray(data) ? data : [];
 };
 
@@ -670,14 +674,16 @@ export const getCardMarketSetNames = async (
 export const searchCardMarketSetNames = async (
   query: string,
   limit: number = 15
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score: number;
-}>> => {
+): Promise<
+  Array<{
+    setName: string;
+    count: number;
+    totalAvailable: number;
+    categoryCount: number;
+    averagePrice: number;
+    score?: number;
+  }>
+> => {
   if (!query.trim()) {
     return [];
   }

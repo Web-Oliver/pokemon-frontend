@@ -16,10 +16,11 @@ import {
   Image as ImageIcon,
   TrendingUp,
   CheckCircle,
-  AlertCircle,
   Info,
   Download,
 } from 'lucide-react';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import ConfirmModal from '../components/common/ConfirmModal';
@@ -250,6 +251,12 @@ const CollectionItemDetail: React.FC = () => {
     // Navigate to edit form with the item data
     // The edit forms are part of the AddEditItem page with edit mode
     window.history.pushState({}, '', `/collection/edit/${type}/${id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  const handleBackToCollection = () => {
+    // Navigate back to collection
+    window.history.pushState({}, '', '/collection');
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
@@ -543,38 +550,41 @@ const CollectionItemDetail: React.FC = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex items-center justify-center'>
-        <LoadingSpinner size='lg' text='Loading item details...' />
-      </div>
-    );
-  }
-
-  if (error || !item) {
-    return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <AlertCircle className='w-16 h-16 text-red-500 mx-auto mb-4' />
-          <h2 className='text-2xl font-bold text-gray-900 mb-2'>Item Not Found</h2>
-          <p className='text-gray-600 mb-6'>{error || 'The requested item could not be found.'}</p>
-          <Button
-            onClick={() => {
-              window.history.pushState({}, '', '/collection');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }}
-            variant='primary'
-          >
-            Back to Collection
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const headerActions = (
+    <div className='flex items-center space-x-3'>
+      <button
+        onClick={handleEdit}
+        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Edit Item
+      </button>
+      <button
+        onClick={handleBackToCollection}
+        className='bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+      >
+        Back to Collection
+      </button>
+    </div>
+  );
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50'>
-      <div className='max-w-6xl mx-auto p-8'>
+    <PageLayout
+      title={getItemTitle()}
+      subtitle='View and manage your collection item'
+      loading={loading}
+      error={error || (!item ? 'Item not found' : null)}
+      actions={headerActions}
+      variant='default'
+    >
+      <>
+        {!item ? (
+          <div className='flex items-center justify-center min-h-64'>
+            <div className='text-center'>
+              <p className='text-slate-600 mb-4'>Loading item details...</p>
+            </div>
+          </div>
+        ) : (
+          <div className='max-w-6xl mx-auto p-8'>
         {/* Header */}
         <div className='mb-8'>
           <Button
@@ -613,76 +623,74 @@ const CollectionItemDetail: React.FC = () => {
 
         {/* Main Content - Details */}
         <div className='space-y-6 mb-8'>
-            {/* Basic Information */}
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-              <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
-                <Info className='w-5 h-5 mr-2' />
-                Basic Information
-              </h2>
+          {/* Basic Information */}
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+            <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+              <Info className='w-5 h-5 mr-2' />
+              Basic Information
+            </h2>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='space-y-3'>
-                  <div className='flex justify-between'>
-                    <span className='text-slate-600'>My Price:</span>
-                    <span className='font-bold text-slate-900'>{item.myPrice || '0'} kr.</span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span className='text-slate-600'>Date Added:</span>
-                    <span className='font-medium text-slate-900'>
-                      {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span className='text-slate-600'>Status:</span>
-                    <span
-                      className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}
-                    >
-                      {item.sold ? 'Sold' : 'Available'}
-                    </span>
-                  </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='space-y-3'>
+                <div className='flex justify-between'>
+                  <span className='text-slate-600'>My Price:</span>
+                  <span className='font-bold text-slate-900'>{item.myPrice || '0'} kr.</span>
                 </div>
+                <div className='flex justify-between'>
+                  <span className='text-slate-600'>Date Added:</span>
+                  <span className='font-medium text-slate-900'>
+                    {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+                <div className='flex justify-between'>
+                  <span className='text-slate-600'>Status:</span>
+                  <span className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}>
+                    {item.sold ? 'Sold' : 'Available'}
+                  </span>
+                </div>
+              </div>
 
-                <div className='space-y-3'>
-                  <div className='flex justify-between'>
-                    <span className='text-slate-600'>Item Type:</span>
-                    <span className='font-medium text-slate-900'>
-                      {(() => {
-                        const { type } = getUrlParams();
-                        return type === 'psa'
-                          ? 'PSA Graded Card'
-                          : type === 'raw'
-                            ? 'Raw Card'
-                            : 'Sealed Product';
-                      })()}
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span className='text-slate-600'>Images:</span>
-                    <span className='font-medium text-slate-900'>{item.images?.length || 0}</span>
-                  </div>
+              <div className='space-y-3'>
+                <div className='flex justify-between'>
+                  <span className='text-slate-600'>Item Type:</span>
+                  <span className='font-medium text-slate-900'>
+                    {(() => {
+                      const { type } = getUrlParams();
+                      return type === 'psa'
+                        ? 'PSA Graded Card'
+                        : type === 'raw'
+                          ? 'Raw Card'
+                          : 'Sealed Product';
+                    })()}
+                  </span>
+                </div>
+                <div className='flex justify-between'>
+                  <span className='text-slate-600'>Images:</span>
+                  <span className='font-medium text-slate-900'>{item.images?.length || 0}</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Item-specific Information */}
-            {renderItemSpecificInfo()}
+          {/* Item-specific Information */}
+          {renderItemSpecificInfo()}
 
-            {/* Price History */}
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-              <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
-                <DollarSign className='w-5 h-5 mr-2' />
-                Price History
-              </h2>
+          {/* Price History */}
+          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+            <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+              <DollarSign className='w-5 h-5 mr-2' />
+              Price History
+            </h2>
 
-              <PriceHistoryDisplay
-                priceHistory={item.priceHistory || []}
-                currentPrice={item.myPrice}
-                onPriceUpdate={handlePriceUpdate}
-              />
-            </div>
+            <PriceHistoryDisplay
+              priceHistory={item.priceHistory || []}
+              currentPrice={item.myPrice}
+              onPriceUpdate={handlePriceUpdate}
+            />
+          </div>
 
-            {/* Sale Information */}
-            {renderSaleInfo()}
+          {/* Sale Information */}
+          {renderSaleInfo()}
         </div>
 
         {/* Images Section - Adaptive Layout Based on Image Orientation */}
@@ -702,11 +710,7 @@ const CollectionItemDetail: React.FC = () => {
                 disabled={downloadingZip}
                 className='flex items-center space-x-2'
               >
-                {downloadingZip ? (
-                  <LoadingSpinner size='sm' />
-                ) : (
-                  <Download className='w-4 h-4' />
-                )}
+                {downloadingZip ? <LoadingSpinner size='sm' /> : <Download className='w-4 h-4' />}
                 <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
               </Button>
             )}
@@ -729,21 +733,23 @@ const CollectionItemDetail: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+        )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={showDeleteConfirm}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete Collection Item"
-        description="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
-        confirmText="Delete Item"
-        variant="danger"
-        icon="trash"
+        title='Delete Collection Item'
+        description='Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection.'
+        confirmText='Delete Item'
+        variant='danger'
+        icon='trash'
         isLoading={deleting}
       />
-    </div>
+      </>
+    </PageLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 /**
  * Error Boundary Component with Performance Monitoring
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following Context7 + CLAUDE.md principles:
  * - Comprehensive error catching with React Error Boundary
  * - Performance monitoring integration for error tracking
@@ -9,8 +9,8 @@
  * - Development debugging with detailed error information
  */
 
-import React, { Component, ReactNode, lazy, Suspense } from 'react';
-import { AlertTriangle, RefreshCw, Home, Code, Clock, Activity } from 'lucide-react';
+import { Component, ReactNode, lazy, Suspense } from 'react';
+import { AlertTriangle, RefreshCw, Home, Code, Activity } from 'lucide-react';
 
 // Context7: Lazy load ReactProfiler for performance monitoring
 const ReactProfiler = lazy(() => import('../debug/ReactProfiler'));
@@ -53,7 +53,7 @@ const errorMetrics = {
 };
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  private resetTimeoutId: number | null = null;
+  private resetTimeoutId: NodeJS.Timeout | null = null;
   private performanceObserver: PerformanceObserver | null = null;
 
   constructor(props: ErrorBoundaryProps) {
@@ -71,7 +71,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     // Update state so the next render will show the fallback UI
     const errorId = `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       hasError: true,
       error,
@@ -107,25 +107,29 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     console.error('Error ID:', errorId);
     console.error('Component Stack:', errorInfo.componentStack);
     console.error('Error Info:', errorInfo);
-    
+
     // Log performance metrics at time of error
     if (typeof window !== 'undefined' && window.performance) {
       const memoryInfo = (performance as any).memory;
-      const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
+      const navigationTiming = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
+
       console.group('📊 Performance Context at Error Time');
       if (memoryInfo) {
         console.log(`Memory Usage: ${(memoryInfo.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
         console.log(`Memory Limit: ${(memoryInfo.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB`);
       }
       if (navigationTiming) {
-        console.log(`Page Load Time: ${(navigationTiming.loadEventEnd - navigationTiming.navigationStart).toFixed(2)}ms`);
+        console.log(
+          `Page Load Time: ${(navigationTiming.loadEventEnd - navigationTiming.fetchStart).toFixed(2)}ms`
+        );
       }
       console.log(`Errors This Session: ${errorMetrics.totalErrors}`);
       console.log(`Component Error Count: ${componentErrorCount + 1}`);
       console.groupEnd();
     }
-    
+
     console.groupEnd();
 
     // Update state with error info
@@ -158,7 +162,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       const hasResetKeyChanged = resetKeys.some(
         (key, index) => key !== prevProps.resetKeys?.[index]
       );
-      
+
       if (hasResetKeyChanged) {
         this.resetErrorBoundary();
       }
@@ -174,7 +178,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.resetTimeoutId) {
       clearTimeout(this.resetTimeoutId);
     }
-    
+
     if (this.performanceObserver) {
       this.performanceObserver.disconnect();
     }
@@ -212,12 +216,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     const { hasError, error, errorInfo, errorId, retryCount } = this.state;
-    const { 
-      children, 
-      fallback, 
+    const {
+      children,
+      fallback,
       showErrorDetails = process.env.NODE_ENV === 'development',
       maxRetries = 3,
-      componentName = 'Component'
+      componentName = 'Component',
     } = this.props;
 
     if (hasError && error) {
@@ -229,64 +233,56 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // Default error UI with performance monitoring
       return (
         <Suspense fallback={null}>
-          <ReactProfiler id="ErrorBoundary" onRenderThreshold={10} aggregateMetrics={true}>
-            <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-              <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-red-100 overflow-hidden">
+          <ReactProfiler id='ErrorBoundary' onRenderThreshold={10} aggregateMetrics={true}>
+            <div className='min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4'>
+              <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-red-100 overflow-hidden'>
                 {/* Header */}
-                <div className="bg-gradient-to-r from-red-500 to-orange-500 px-8 py-6 text-white">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                      <AlertTriangle className="w-6 h-6" />
+                <div className='bg-gradient-to-r from-red-500 to-orange-500 px-8 py-6 text-white'>
+                  <div className='flex items-center space-x-3'>
+                    <div className='w-12 h-12 bg-white/20 rounded-full flex items-center justify-center'>
+                      <AlertTriangle className='w-6 h-6' />
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold">Something went wrong</h1>
-                      <p className="text-red-100">
-                        An error occurred in {componentName}
-                      </p>
+                      <h1 className='text-2xl font-bold'>Something went wrong</h1>
+                      <p className='text-red-100'>An error occurred in {componentName}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Error Content */}
-                <div className="p-8 space-y-6">
+                <div className='p-8 space-y-6'>
                   {/* Error Summary */}
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-red-800 mb-2 flex items-center">
-                      <Code className="w-4 h-4 mr-2" />
+                  <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+                    <h3 className='font-semibold text-red-800 mb-2 flex items-center'>
+                      <Code className='w-4 h-4 mr-2' />
                       Error Details
                     </h3>
-                    <p className="text-red-700 font-mono text-sm break-words">
-                      {error.message}
-                    </p>
-                    {errorId && (
-                      <p className="text-red-600 text-xs mt-2">
-                        Error ID: {errorId}
-                      </p>
-                    )}
+                    <p className='text-red-700 font-mono text-sm break-words'>{error.message}</p>
+                    {errorId && <p className='text-red-600 text-xs mt-2'>Error ID: {errorId}</p>}
                   </div>
 
                   {/* Performance Context */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
-                      <Activity className="w-4 h-4 mr-2" />
+                  <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+                    <h3 className='font-semibold text-blue-800 mb-2 flex items-center'>
+                      <Activity className='w-4 h-4 mr-2' />
                       Performance Context
                     </h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className='grid grid-cols-2 gap-4 text-sm'>
                       <div>
-                        <span className="text-blue-600 font-medium">Total Errors:</span>
-                        <span className="ml-2 text-blue-800">{errorMetrics.totalErrors}</span>
+                        <span className='text-blue-600 font-medium'>Total Errors:</span>
+                        <span className='ml-2 text-blue-800'>{errorMetrics.totalErrors}</span>
                       </div>
                       <div>
-                        <span className="text-blue-600 font-medium">Retry Count:</span>
-                        <span className="ml-2 text-blue-800">{retryCount}</span>
+                        <span className='text-blue-600 font-medium'>Retry Count:</span>
+                        <span className='ml-2 text-blue-800'>{retryCount}</span>
                       </div>
                       <div>
-                        <span className="text-blue-600 font-medium">Component:</span>
-                        <span className="ml-2 text-blue-800">{componentName}</span>
+                        <span className='text-blue-600 font-medium'>Component:</span>
+                        <span className='ml-2 text-blue-800'>{componentName}</span>
                       </div>
                       <div>
-                        <span className="text-blue-600 font-medium">Timestamp:</span>
-                        <span className="ml-2 text-blue-800">
+                        <span className='text-blue-600 font-medium'>Timestamp:</span>
+                        <span className='ml-2 text-blue-800'>
                           {new Date().toLocaleTimeString()}
                         </span>
                       </div>
@@ -294,56 +290,56 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-3">
+                  <div className='flex flex-wrap gap-3'>
                     {retryCount < maxRetries ? (
                       <button
                         onClick={this.handleRetry}
-                        className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        className='flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium'
                       >
-                        <RefreshCw className="w-4 h-4 mr-2" />
+                        <RefreshCw className='w-4 h-4 mr-2' />
                         Try Again ({maxRetries - retryCount} attempts left)
                       </button>
                     ) : (
                       <button
                         onClick={() => window.location.reload()}
-                        className="flex items-center px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                        className='flex items-center px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium'
                       >
-                        <RefreshCw className="w-4 h-4 mr-2" />
+                        <RefreshCw className='w-4 h-4 mr-2' />
                         Reload Page
                       </button>
                     )}
-                    
+
                     <button
                       onClick={this.handleGoHome}
-                      className="flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                      className='flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium'
                     >
-                      <Home className="w-4 h-4 mr-2" />
+                      <Home className='w-4 h-4 mr-2' />
                       Go to Homepage
                     </button>
                   </div>
 
                   {/* Development Details */}
                   {showErrorDetails && errorInfo && (
-                    <details className="bg-gray-50 border border-gray-200 rounded-lg">
-                      <summary className="p-4 cursor-pointer font-medium text-gray-700 hover:bg-gray-100">
-                        <span className="flex items-center">
-                          <Code className="w-4 h-4 mr-2" />
+                    <details className='bg-gray-50 border border-gray-200 rounded-lg'>
+                      <summary className='p-4 cursor-pointer font-medium text-gray-700 hover:bg-gray-100'>
+                        <span className='flex items-center'>
+                          <Code className='w-4 h-4 mr-2' />
                           Developer Information
                         </span>
                       </summary>
-                      <div className="p-4 border-t border-gray-200 space-y-4">
+                      <div className='p-4 border-t border-gray-200 space-y-4'>
                         {/* Stack Trace */}
                         <div>
-                          <h4 className="font-semibold text-gray-800 mb-2">Stack Trace:</h4>
-                          <pre className="bg-gray-800 text-green-400 p-3 rounded text-xs overflow-x-auto">
+                          <h4 className='font-semibold text-gray-800 mb-2'>Stack Trace:</h4>
+                          <pre className='bg-gray-800 text-green-400 p-3 rounded text-xs overflow-x-auto'>
                             {error.stack}
                           </pre>
                         </div>
-                        
+
                         {/* Component Stack */}
                         <div>
-                          <h4 className="font-semibold text-gray-800 mb-2">Component Stack:</h4>
-                          <pre className="bg-gray-800 text-blue-400 p-3 rounded text-xs overflow-x-auto">
+                          <h4 className='font-semibold text-gray-800 mb-2'>Component Stack:</h4>
+                          <pre className='bg-gray-800 text-blue-400 p-3 rounded text-xs overflow-x-auto'>
                             {errorInfo.componentStack}
                           </pre>
                         </div>
@@ -351,17 +347,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                         {/* Error History */}
                         {errorMetrics.errorHistory.length > 1 && (
                           <div>
-                            <h4 className="font-semibold text-gray-800 mb-2">Recent Errors:</h4>
-                            <div className="space-y-2 max-h-32 overflow-y-auto">
-                              {errorMetrics.errorHistory.slice(-5).map((errorRecord) => (
-                                <div key={errorRecord.errorId} className="bg-white p-2 rounded border text-xs">
-                                  <div className="flex justify-between items-start">
-                                    <span className="font-mono">{errorRecord.error}</span>
-                                    <span className="text-gray-500 ml-2">
+                            <h4 className='font-semibold text-gray-800 mb-2'>Recent Errors:</h4>
+                            <div className='space-y-2 max-h-32 overflow-y-auto'>
+                              {errorMetrics.errorHistory.slice(-5).map(errorRecord => (
+                                <div
+                                  key={errorRecord.errorId}
+                                  className='bg-white p-2 rounded border text-xs'
+                                >
+                                  <div className='flex justify-between items-start'>
+                                    <span className='font-mono'>{errorRecord.error}</span>
+                                    <span className='text-gray-500 ml-2'>
                                       {new Date(errorRecord.timestamp).toLocaleTimeString()}
                                     </span>
                                   </div>
-                                  <div className="text-gray-600 mt-1">
+                                  <div className='text-gray-600 mt-1'>
                                     Component: {errorRecord.component}
                                   </div>
                                 </div>

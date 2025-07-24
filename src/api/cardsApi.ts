@@ -1,32 +1,26 @@
 /**
  * Cards API Client
- * Handles all card-related API operations matching the backend endpoints
+ * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ *
+ * SOLID Principles Implementation:
+ * - SRP: Single responsibility for card-related API operations
+ * - OCP: Open for extension via createResourceOperations configuration
+ * - LSP: Maintains ICard interface compatibility
+ * - ISP: Provides specific card operations interface
+ * - DIP: Depends on genericApiOperations abstraction
+ *
+ * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import unifiedApiClient from './unifiedApiClient';
+import { createResourceOperations, CARD_CONFIG, idMapper } from './genericApiOperations';
 import { ICard } from '../domain/models/card';
+import { searchCardsOptimized } from './consolidatedSearch';
+
+// ========== INTERFACES (ISP Compliance) ==========
 
 /**
- * Helper function to map _id to id for MongoDB compatibility
- * @param card - Card object or array of cards
- * @returns Card(s) with id field mapped from _id
+ * Card-specific search parameters
  */
-const mapCardIds = (card: unknown): unknown => {
-  if (!card) {
-    return card;
-  }
-
-  if (Array.isArray(card)) {
-    return card.map(mapCardIds);
-  }
-
-  if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
-    (card as Record<string, unknown>).id = (card as Record<string, unknown>)._id;
-  }
-
-  return card;
-};
-
 export interface CardsSearchParams {
   setId?: string;
   cardName?: string;
@@ -62,20 +56,52 @@ export interface OptimizedSearchResponse {
 }
 
 /**
- * Get cards with optional filtering parameters - USES NEW UNIFIED SEARCH API
+ * Card creation payload interface
+ */
+interface ICardCreatePayload extends Omit<ICard, 'id' | '_id'> {}
+
+/**
+ * Card update payload interface
+ */
+interface ICardUpdatePayload extends Partial<ICardCreatePayload> {}
+
+// ========== GENERIC RESOURCE OPERATIONS ==========
+
+/**
+ * Core CRUD operations for cards using createResourceOperations
+ * Eliminates boilerplate patterns and ensures consistency with other API files
+ */
+const cardOperations = createResourceOperations<ICard, ICardCreatePayload, ICardUpdatePayload>(
+  CARD_CONFIG,
+  {
+    includeExportOperations: true,
+    includeBatchOperations: true,
+  }
+);
+
+// ========== EXPORTED API OPERATIONS ==========
+
+/**
+ * Get all cards with optional filtering parameters
  * @param params - Optional filter parameters
  * @returns Promise<ICard[]> - Array of cards
  */
 export const getCards = async (params?: CardsSearchParams): Promise<ICard[]> => {
-  // Use new unified search API instead of legacy endpoint
-  const searchParams: OptimizedSearchParams = {
-    query: params?.cardName || params?.baseName || '*', // Use wildcard if no specific search
-    setId: params?.setId,
-    limit: 50,
-  };
+  // If specific search parameters provided, use search instead
+  if (params?.cardName || params?.baseName) {
+    const searchParams: OptimizedSearchParams = {
+      query: params.cardName || params.baseName || '*',
+      setId: params.setId,
+      limit: 50,
+    };
+    const response = await searchCardsOptimized(searchParams);
+    return response.data;
+  }
 
-  const response = await searchCardsOptimized(searchParams);
-  return response.data;
+  // Otherwise use generic getAll with ID mapping
+  return cardOperations.getAll(params, {
+    transform: idMapper,
+  });
 };
 
 /**
@@ -84,18 +110,71 @@ export const getCards = async (params?: CardsSearchParams): Promise<ICard[]> => 
  * @returns Promise<ICard> - Single card with population data
  */
 export const getCardById = async (id: string): Promise<ICard> => {
-  const response = await unifiedApiClient.get(`/cards/${id}`);
-  const data = response.data.data || response.data;
-  return mapCardIds(data) as ICard;
+  return cardOperations.getById(id, {
+    transform: idMapper,
+  });
 };
 
-// Import consolidated search functions
-export { 
+/**
+ * Create a new card
+ * @param cardData - Card creation data
+ * @returns Promise<ICard> - Created card
+ */
+export const createCard = cardOperations.create;
+
+/**
+ * Update existing card
+ * @param id - Card ID
+ * @param cardData - Card update data
+ * @returns Promise<ICard> - Updated card
+ */
+export const updateCard = cardOperations.update;
+
+/**
+ * Delete card
+ * @param id - Card ID
+ * @returns Promise<void>
+ */
+export const removeCard = cardOperations.remove;
+
+/**
+ * Search cards with parameters
+ * @param searchParams - Card search parameters
+ * @returns Promise<ICard[]> - Search results
+ */
+export const searchCards = cardOperations.search;
+
+/**
+ * Bulk create cards
+ * @param cardsData - Array of card creation data
+ * @returns Promise<ICard[]> - Created cards
+ */
+export const bulkCreateCards = cardOperations.bulkCreate;
+
+/**
+ * Export cards data
+ * @param exportParams - Export parameters
+ * @returns Promise<Blob> - Export file blob
+ */
+export const exportCards = cardOperations.export;
+
+/**
+ * Batch operation on cards
+ * @param operation - Operation name
+ * @param ids - Card IDs
+ * @param operationData - Operation-specific data
+ * @returns Promise<ICard[]> - Operation results
+ */
+export const batchCardOperation = cardOperations.batchOperation;
+
+// ========== CARD-SPECIFIC OPERATIONS ==========
+
+// Import consolidated search functions for card-specific search operations
+export {
   searchCardsOptimized,
   getCardSuggestionsOptimized,
   getBestMatchCardOptimized,
   searchCardsInSet,
   searchCardsByPokemonNumber,
-  searchCardsByVariety
+  searchCardsByVariety,
 } from './consolidatedSearch';
-

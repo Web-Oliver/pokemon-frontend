@@ -18,6 +18,9 @@ import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
+import { PageLayout } from '../components/layouts/PageLayout';
+import { usePageLayout } from '../hooks/usePageLayout';
+import { navigationHelper } from '../utils/navigation';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const SealedProductSearch: React.FC = () => {
@@ -184,8 +187,21 @@ const SealedProductSearch: React.FC = () => {
     fetchProducts();
   }, []);
 
+  const headerActions = (
+    <div className='bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-white/20'>
+      <Package className='w-8 h-8 text-emerald-600' />
+    </div>
+  );
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50 relative overflow-hidden'>
+    <PageLayout
+      title='Sealed Product Search'
+      subtitle='Discover CardMarket reference products with real-time pricing'
+      loading={loading}
+      error={error}
+      actions={headerActions}
+      variant='emerald'
+    >
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -585,7 +601,7 @@ const SealedProductSearch: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

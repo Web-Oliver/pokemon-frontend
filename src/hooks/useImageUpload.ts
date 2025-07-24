@@ -52,10 +52,10 @@ export const useImageUpload = (initialImages: string[] = []): UseImageUploadRetu
       const uploadedUrls = await uploadApi.uploadMultipleImages(selectedImages);
       log(`Successfully uploaded ${uploadedUrls.length} images`);
       showSuccessToast(`Uploaded ${uploadedUrls.length} images successfully`);
-      
+
       // Clear selected images after successful upload
       setSelectedImages([]);
-      
+
       return uploadedUrls;
     });
   }, [selectedImages, execute, uploadApi]);

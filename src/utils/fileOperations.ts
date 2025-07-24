@@ -1,9 +1,9 @@
 /**
  * File Operations Utilities - Consolidated File Handling Functions
- * 
+ *
  * Consolidates csvExport.ts and imageUtils.ts into a single file
  * Following CLAUDE.md DRY principles to eliminate utility duplication
- * 
+ *
  * Contains:
  * - CSV export functionality with proper RFC 4180 compliance
  * - Advanced image processing and aspect ratio utilities
@@ -11,8 +11,10 @@
  */
 
 // ========================================
-// CSV EXPORT UTILITIES
+// EXPORT UTILITIES
 // ========================================
+
+export type ExportFormat = 'csv' | 'json' | 'pdf';
 
 export interface CSVColumn {
   key: string;
@@ -146,6 +148,79 @@ export const commonCSVColumns = {
   ] as CSVColumn[],
 };
 
+/**
+ * Converts data to JSON format and triggers download
+ */
+export const exportToJSON = <T extends Record<string, any>>(
+  data: T[],
+  filename: string = 'export.json'
+): void => {
+  try {
+    // Convert data to JSON with proper formatting
+    const jsonContent = JSON.stringify(data, null, 2);
+
+    // Create Blob with proper MIME type for JSON
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+
+    // Create download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename.endsWith('.json') ? filename : `${filename}.json`;
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (error) {
+    console.error('JSON Export Error:', error);
+    throw new Error('Failed to export JSON file');
+  }
+};
+
+/**
+ * Converts data to PDF format and triggers download
+ * Note: This is a placeholder implementation. For full PDF support,
+ * consider using libraries like jsPDF or html2pdf
+ */
+export const exportToPDF = <T extends Record<string, any>>(
+  data: T[],
+  filename: string = 'export.pdf'
+): void => {
+  try {
+    // For now, convert to a simple text format that can be viewed as PDF
+    // In a real implementation, you'd use jsPDF or similar
+    const textContent = data.map(item => 
+      Object.entries(item)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n')
+    ).join('\n\n');
+
+    // Create Blob with text content (placeholder for PDF)
+    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
+
+    // Create download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename.endsWith('.pdf') ? filename.replace('.pdf', '.txt') : `${filename}.txt`;
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    console.warn('PDF export is not fully implemented. Exported as text file instead.');
+  } catch (error) {
+    console.error('PDF Export Error:', error);
+    throw new Error('Failed to export PDF file');
+  }
+};
+
 // ========================================
 // IMAGE UTILITIES
 // ========================================
@@ -172,20 +247,20 @@ export interface ResponsiveImageConfig {
  * Detects image aspect ratio and provides classification
  */
 export const detectImageAspectRatio = async (imageUrl: string): Promise<ImageAspectInfo> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new Image();
-    
+
     img.onload = () => {
       const ratio = img.width / img.height;
       const aspectInfo = classifyAspectRatio(ratio);
       resolve(aspectInfo);
     };
-    
+
     img.onerror = () => {
       // Default to square if image fails to load
       resolve(classifyAspectRatio(1));
     };
-    
+
     img.src = imageUrl;
   });
 };
@@ -266,7 +341,7 @@ export const classifyAspectRatio = (ratio: number): ImageAspectInfo => {
  * Enhanced with Context7 patterns for both vertical and horizontal images
  */
 export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): ResponsiveImageConfig => {
-  const { category, orientation, ratio } = aspectInfo;
+  const { category, orientation } = aspectInfo;
 
   // Enhanced responsive configuration based on Context7 Tailwind patterns
   switch (category) {
@@ -374,15 +449,15 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
  */
 export const buildResponsiveImageClasses = (config: ResponsiveImageConfig): string => {
   const classes = [config.baseAspect];
-  
+
   if (config.mobileAspect) {
     classes.push(config.mobileAspect);
   }
-  
+
   if (config.tabletAspect) {
     classes.push(`sm:${config.tabletAspect}`);
   }
-  
+
   if (config.desktopAspect) {
     classes.push(`md:${config.desktopAspect}`);
   }
@@ -393,16 +468,19 @@ export const buildResponsiveImageClasses = (config: ResponsiveImageConfig): stri
 /**
  * Context7 premium container classes for different orientations
  */
-export const getContext7ContainerClasses = (orientation: ImageAspectInfo['orientation']): string => {
-  const baseClasses = 'rounded-2xl overflow-hidden bg-gradient-to-br shadow-xl transition-all duration-500 relative group';
-  
+export const getContext7ContainerClasses = (
+  orientation: ImageAspectInfo['orientation']
+): string => {
+  const baseClasses =
+    'rounded-2xl overflow-hidden bg-gradient-to-br shadow-xl transition-all duration-500 relative group';
+
   switch (orientation) {
     case 'vertical':
       return `${baseClasses} from-slate-100 via-slate-50 to-white border border-slate-200/50 hover:shadow-2xl hover:scale-105`;
-    
+
     case 'horizontal':
       return `${baseClasses} from-indigo-50 via-blue-50 to-slate-50 border border-indigo-200/50 hover:shadow-indigo-500/20 hover:scale-102`;
-    
+
     case 'square':
     default:
       return `${baseClasses} from-purple-50 via-indigo-50 to-slate-50 border border-purple-200/50 hover:shadow-purple-500/20 hover:scale-105`;
@@ -426,9 +504,9 @@ export const getContext7ImageClasses = (
   } else {
     objectPosClass = objectPosClass.replace(' ', '-');
   }
-  
+
   const baseClasses = `w-full h-full object-${config.objectFit} object-${objectPosClass} transition-all duration-500`;
-  
+
   if (withHoverEffects) {
     // Different hover effects based on object-fit
     if (config.objectFit === 'contain') {
@@ -439,7 +517,7 @@ export const getContext7ImageClasses = (
       return `${baseClasses} group-hover:scale-110 group-hover:brightness-105`;
     }
   }
-  
+
   return baseClasses;
 };
 
@@ -448,29 +526,31 @@ export const getContext7ImageClasses = (
  * Enhanced Context7 algorithm for vertical and horizontal image mixing
  */
 export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => {
-  if (aspectInfos.length === 0) return 'grid-cols-1';
-  
+  if (aspectInfos.length === 0) {
+    return 'grid-cols-1';
+  }
+
   const orientations = aspectInfos.map(info => info.orientation);
   const categories = aspectInfos.map(info => info.category);
-  
+
   const hasVertical = orientations.includes('vertical');
   const hasHorizontal = orientations.includes('horizontal');
   const hasSquare = orientations.includes('square');
-  
+
   const verticalCount = orientations.filter(o => o === 'vertical').length;
   const horizontalCount = orientations.filter(o => o === 'horizontal').length;
-  const squareCount = orientations.filter(o => o === 'square').length;
-  
+  // const squareCount = orientations.filter(o => o === 'square').length;
+
   const totalImages = aspectInfos.length;
   const verticalRatio = verticalCount / totalImages;
   const horizontalRatio = horizontalCount / totalImages;
-  
+
   // Context7 enhanced logic for mixed orientations
   if (hasVertical && hasHorizontal && hasSquare) {
     // All three types - use masonry-style adaptive grid
     return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max';
   }
-  
+
   if (hasVertical && hasHorizontal) {
     // Mixed vertical and horizontal
     if (verticalRatio > 0.7) {
@@ -484,7 +564,7 @@ export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => 
       return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 auto-rows-fr';
     }
   }
-  
+
   // Predominantly vertical images - optimize for more columns
   if (hasVertical && !hasHorizontal) {
     if (categories.includes('ultra-tall')) {
@@ -493,8 +573,8 @@ export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => 
     }
     return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4';
   }
-  
-  // Predominantly horizontal images - optimize for fewer columns  
+
+  // Predominantly horizontal images - optimize for fewer columns
   if (hasHorizontal && !hasVertical) {
     if (categories.includes('ultra-wide')) {
       // Ultra-wide images need special handling
@@ -502,12 +582,12 @@ export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => 
     }
     return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6';
   }
-  
+
   // Square images - balanced grid
   if (hasSquare) {
     return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6';
   }
-  
+
   // Intelligent fallback based on total count
   if (totalImages <= 2) {
     return 'grid-cols-1 sm:grid-cols-2 gap-6';
@@ -525,10 +605,10 @@ export const getContext7GlassOverlay = (orientation: ImageAspectInfo['orientatio
   switch (orientation) {
     case 'vertical':
       return 'absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300';
-    
+
     case 'horizontal':
       return 'absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300';
-    
+
     case 'square':
     default:
       return 'absolute inset-0 bg-gradient-to-br from-black/15 via-transparent to-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300';
@@ -558,10 +638,11 @@ export const preloadImageWithAspectRatio = async (imageUrl: string): Promise<Ima
 /**
  * Creates responsive srcSet for different screen sizes
  */
-export const createResponsiveSrcSet = (baseUrl: string, sizes: number[] = [320, 640, 1024, 1280]): string => {
-  return sizes
-    .map(size => `${baseUrl}?w=${size} ${size}w`)
-    .join(', ');
+export const createResponsiveSrcSet = (
+  baseUrl: string,
+  sizes: number[] = [320, 640, 1024, 1280]
+): string => {
+  return sizes.map(size => `${baseUrl}?w=${size} ${size}w`).join(', ');
 };
 
 /**
@@ -569,19 +650,19 @@ export const createResponsiveSrcSet = (baseUrl: string, sizes: number[] = [320, 
  */
 export const getOptimalSizesAttribute = (aspectInfo: ImageAspectInfo): string => {
   const { orientation, category } = aspectInfo;
-  
+
   if (orientation === 'vertical') {
     return '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
   }
-  
+
   if (orientation === 'horizontal' && category === 'ultra-wide') {
     return '(max-width: 640px) 100vw, (max-width: 1024px) 75vw, 50vw';
   }
-  
+
   if (orientation === 'horizontal') {
     return '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
   }
-  
+
   // Square and default
   return '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
 };

@@ -23,7 +23,6 @@ import AuctionDetail from './pages/AuctionDetail';
 import CreateAuction from './pages/CreateAuction';
 import AuctionEdit from './pages/AuctionEdit';
 import SalesAnalytics from './pages/SalesAnalytics';
-import Analytics from './pages/Analytics';
 import Activity from './pages/Activity';
 import AddEditItem from './pages/AddEditItem';
 import DbaExport from './pages/DbaExport';
