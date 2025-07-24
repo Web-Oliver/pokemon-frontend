@@ -3,7 +3,7 @@
  * Handles sales data, analytics, and financial tracking operations
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
 
 export interface SalesDataParams {
@@ -28,8 +28,8 @@ export interface SalesGraphDataParams {
  * @returns Promise<ISale[]> - Array of sales transactions
  */
 export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
-  const response = await apiClient.get('/sales', { params });
-  const rawData = response.data.data || response.data;
+  const response = await unifiedApiClient.get('/sales', { params });
+  const rawData = response.data || response;
 
   // Transform backend data to match ISale interface
   return rawData.map((item: any) => {
@@ -93,8 +93,8 @@ export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> =
  * @returns Promise<ISalesSummary> - Sales summary data
  */
 export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISalesSummary> => {
-  const response = await apiClient.get('/sales/summary', { params });
-  return response.data.data || response.data;
+  const response = await unifiedApiClient.get('/sales/summary', { params });
+  return response.data || response;
 };
 
 /**
@@ -105,6 +105,6 @@ export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISal
 export const getSalesGraphData = async (
   params?: SalesGraphDataParams
 ): Promise<ISalesGraphData[]> => {
-  const response = await apiClient.get('/sales/graph-data', { params });
-  return response.data.data || response.data;
+  const response = await unifiedApiClient.get('/sales/graph-data', { params });
+  return response.data || response;
 };

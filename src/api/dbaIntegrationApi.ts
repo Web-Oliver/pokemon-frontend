@@ -5,7 +5,7 @@
  * Following CLAUDE.md principles and TypeScript best practices
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 
 // Type definitions
 export interface DbaPostRequest {
@@ -97,9 +97,9 @@ export const postToDba = async (postData: DbaPostRequest): Promise<DbaPostRespon
   console.log('[DBA INTEGRATION API] Posting to DBA.dk:', postData);
   
   try {
-    const response = await apiClient.post('/export/dba/post', postData);
-    console.log('[DBA INTEGRATION API] Post successful:', response.data);
-    return response.data;
+    const response = await unifiedApiClient.post('/export/dba/post', postData);
+    console.log('[DBA INTEGRATION API] Post successful:', response);
+    return response;
   } catch (error) {
     console.error('[DBA INTEGRATION API] Post failed:', error);
     throw error;
@@ -115,9 +115,9 @@ export const getDbaStatus = async (): Promise<DbaStatusResponse> => {
   console.log('[DBA INTEGRATION API] Getting DBA status...');
   
   try {
-    const response = await apiClient.get('/export/dba/status');
-    console.log('[DBA INTEGRATION API] Status retrieved:', response.data);
-    return response.data;
+    const response = await unifiedApiClient.get('/export/dba/status');
+    console.log('[DBA INTEGRATION API] Status retrieved:', response);
+    return response;
   } catch (error) {
     console.error('[DBA INTEGRATION API] Status failed:', error);
     throw error;
@@ -134,9 +134,9 @@ export const testDbaIntegration = async (items: DbaPostRequest['items']): Promis
   console.log('[DBA INTEGRATION API] Testing DBA integration:', items);
   
   try {
-    const response = await apiClient.post('/export/dba/test', { items });
-    console.log('[DBA INTEGRATION API] Test successful:', response.data);
-    return response.data;
+    const response = await unifiedApiClient.post('/export/dba/test', { items });
+    console.log('[DBA INTEGRATION API] Test successful:', response);
+    return response;
   } catch (error) {
     console.error('[DBA INTEGRATION API] Test failed:', error);
     throw error;

@@ -18,7 +18,7 @@ import CollectionStats from '../components/lists/CollectionStats';
 import CollectionTabs, { TabType } from '../components/lists/CollectionTabs';
 import CollectionExportModal from '../components/lists/CollectionExportModal';
 import { CollectionItem } from '../components/lists/CollectionItemCard';
-import { useCollection } from '../hooks/useCollection';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { useCollectionExport } from '../hooks/useCollectionExport';
 import { ISaleDetails } from '../domain/models/common';
 
@@ -43,7 +43,7 @@ const Collection: React.FC = () => {
     markRawCardSold,
     markSealedProductSold,
     refreshCollection,
-  } = useCollection();
+  } = useCollectionOperations();
 
   const {
     isExporting,

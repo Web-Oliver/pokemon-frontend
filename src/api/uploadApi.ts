@@ -3,7 +3,7 @@
  * Handles image upload and cleanup operations
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 
 /**
  * Upload single image
@@ -14,13 +14,13 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
   const formData = new FormData();
   formData.append('image', image);
 
-  const response = await apiClient.post('/upload/image', formData, {
+  const response = await unifiedApiClient.post('/upload/image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
 
-  const uploadedFile = response.data.data || response.data;
+  const uploadedFile = response.data || response;
 
   // Extract only the path from the uploaded file
   return uploadedFile.path;
@@ -37,13 +37,13 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
     formData.append(`images`, image);
   });
 
-  const response = await apiClient.post('/upload/images', formData, {
+  const response = await unifiedApiClient.post('/upload/images', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
 
-  const uploadedFiles = response.data.data || response.data;
+  const uploadedFiles = response.data || response;
 
   // Extract only the path from each uploaded file
   return uploadedFiles.map((file: any) => file.path);
@@ -55,7 +55,7 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
  * @returns Promise<void>
  */
 export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
-  await apiClient.delete('/upload/cleanup', {
+  await unifiedApiClient.delete('/upload/cleanup', {
     data: { imageUrls },
   });
 };
@@ -65,5 +65,5 @@ export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
  * @returns Promise<void>
  */
 export const cleanupAllOrphanedImages = async (): Promise<void> => {
-  await apiClient.delete('/upload/cleanup-all');
+  await unifiedApiClient.delete('/upload/cleanup-all');
 };

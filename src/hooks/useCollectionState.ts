@@ -1,163 +1,77 @@
 /**
- * Collection State Hook
+ * Collection State Management Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- *
- * Following CLAUDE.md + Context7 React optimization principles:
- * - Single Responsibility: Only manages collection state (SRP)
- * - Dependency Inversion: Abstract state management from operations (DIP)
- * - DRY: Centralized state management logic
- * - Performance: Memoized state setters with useCallback
+ * Follows Single Responsibility Principle - only manages collection state
  */
 
 import { useState, useCallback } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { DisplayItem } from '../utils/collectionDataTransforms';
 
 export interface CollectionState {
-  psaCards: DisplayItem[];
-  rawCards: DisplayItem[];
-  sealedProducts: DisplayItem[];
-  soldItems: DisplayItem[];
-  loading: boolean;
-  error: string | null;
+  psaCards: IPsaGradedCard[];
+  rawCards: IRawCard[];
+  sealedProducts: ISealedProduct[];
+  soldItems: (IPsaGradedCard | IRawCard | ISealedProduct)[];
 }
 
-export interface UseCollectionStateReturn {
-  state: CollectionState;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  clearError: () => void;
-  updateState: (updater: (prev: CollectionState) => CollectionState) => void;
-  setPsaCards: (cards: IPsaGradedCard[]) => void;
-  setRawCards: (cards: IRawCard[]) => void;
-  setSealedProducts: (products: ISealedProduct[]) => void;
-  setSoldItems: (items: (IPsaGradedCard | IRawCard | ISealedProduct)[]) => void;
-  addPsaCard: (card: IPsaGradedCard) => void;
-  addRawCard: (card: IRawCard) => void;
-  addSealedProduct: (product: ISealedProduct) => void;
-  updatePsaCard: (id: string, card: IPsaGradedCard) => void;
-  updateRawCard: (id: string, card: IRawCard) => void;
-  updateSealedProduct: (id: string, product: ISealedProduct) => void;
-  removePsaCard: (id: string) => void;
-  removeRawCard: (id: string) => void;
-  removeSealedProduct: (id: string) => void;
+export interface UseCollectionStateReturn extends CollectionState {
+  // PSA Card state operations
+  addPsaCardToState: (card: IPsaGradedCard) => void;
+  updatePsaCardInState: (id: string, updatedCard: IPsaGradedCard) => void;
+  removePsaCardFromState: (id: string) => void;
   movePsaCardToSold: (id: string, soldCard: IPsaGradedCard) => void;
+
+  // Raw Card state operations
+  addRawCardToState: (card: IRawCard) => void;
+  updateRawCardInState: (id: string, updatedCard: IRawCard) => void;
+  removeRawCardFromState: (id: string) => void;
   moveRawCardToSold: (id: string, soldCard: IRawCard) => void;
+
+  // Sealed Product state operations
+  addSealedProductToState: (product: ISealedProduct) => void;
+  updateSealedProductInState: (id: string, updatedProduct: ISealedProduct) => void;
+  removeSealedProductFromState: (id: string) => void;
   moveSealedProductToSold: (id: string, soldProduct: ISealedProduct) => void;
+
+  // Bulk state operations
+  setCollectionState: (state: Partial<CollectionState>) => void;
+  resetCollectionState: () => void;
 }
+
+const initialState: CollectionState = {
+  psaCards: [],
+  rawCards: [],
+  sealedProducts: [],
+  soldItems: [],
+};
 
 /**
- * Collection State Management Hook
- *
- * Provides centralized state management for all collection data with optimized
- * performance using useCallback for stable function references.
+ * Hook for managing collection state operations
+ * Follows SRP - only handles state updates, no API calls
  */
 export const useCollectionState = (): UseCollectionStateReturn => {
-  const [state, setState] = useState<CollectionState>({
-    psaCards: [],
-    rawCards: [],
-    sealedProducts: [],
-    soldItems: [],
-    loading: false,
-    error: null,
-  });
+  const [state, setState] = useState<CollectionState>(initialState);
 
-  // Core state setters - memoized for performance
-  const setLoading = useCallback((loading: boolean) => {
-    setState(prev => ({ ...prev, loading }));
-  }, []);
-
-  const setError = useCallback((error: string | null) => {
-    setState(prev => ({ ...prev, error }));
-  }, []);
-
-  const clearError = useCallback(() => {
-    setState(prev => ({ ...prev, error: null }));
-  }, []);
-
-  const updateState = useCallback((updater: (prev: CollectionState) => CollectionState) => {
-    setState(updater);
-  }, []);
-
-  // Collection array setters - memoized for performance
-  const setPsaCards = useCallback((cards: IPsaGradedCard[]) => {
-    setState(prev => ({ ...prev, psaCards: cards }));
-  }, []);
-
-  const setRawCards = useCallback((cards: IRawCard[]) => {
-    setState(prev => ({ ...prev, rawCards: cards }));
-  }, []);
-
-  const setSealedProducts = useCallback((products: ISealedProduct[]) => {
-    setState(prev => ({ ...prev, sealedProducts: products }));
-  }, []);
-
-  const setSoldItems = useCallback((items: (IPsaGradedCard | IRawCard | ISealedProduct)[]) => {
-    setState(prev => ({ ...prev, soldItems: items }));
-  }, []);
-
-  // Optimistic update operations - memoized for performance
-  const addPsaCard = useCallback((card: IPsaGradedCard) => {
+  // PSA Card state operations
+  const addPsaCardToState = useCallback((card: IPsaGradedCard) => {
     setState(prev => ({
       ...prev,
       psaCards: [...prev.psaCards, card],
     }));
   }, []);
 
-  const addRawCard = useCallback((card: IRawCard) => {
+  const updatePsaCardInState = useCallback((id: string, updatedCard: IPsaGradedCard) => {
     setState(prev => ({
       ...prev,
-      rawCards: [...prev.rawCards, card],
+      psaCards: prev.psaCards.map(card => card.id === id ? updatedCard : card),
     }));
   }, []);
 
-  const addSealedProduct = useCallback((product: ISealedProduct) => {
-    setState(prev => ({
-      ...prev,
-      sealedProducts: [...prev.sealedProducts, product],
-    }));
-  }, []);
-
-  const updatePsaCard = useCallback((id: string, card: IPsaGradedCard) => {
-    setState(prev => ({
-      ...prev,
-      psaCards: prev.psaCards.map(c => (c.id === id ? card : c)),
-    }));
-  }, []);
-
-  const updateRawCard = useCallback((id: string, card: IRawCard) => {
-    setState(prev => ({
-      ...prev,
-      rawCards: prev.rawCards.map(c => (c.id === id ? card : c)),
-    }));
-  }, []);
-
-  const updateSealedProduct = useCallback((id: string, product: ISealedProduct) => {
-    setState(prev => ({
-      ...prev,
-      sealedProducts: prev.sealedProducts.map(p => (p.id === id ? product : p)),
-    }));
-  }, []);
-
-  const removePsaCard = useCallback((id: string) => {
+  const removePsaCardFromState = useCallback((id: string) => {
     setState(prev => ({
       ...prev,
       psaCards: prev.psaCards.filter(card => card.id !== id),
-    }));
-  }, []);
-
-  const removeRawCard = useCallback((id: string) => {
-    setState(prev => ({
-      ...prev,
-      rawCards: prev.rawCards.filter(card => card.id !== id),
-    }));
-  }, []);
-
-  const removeSealedProduct = useCallback((id: string) => {
-    setState(prev => ({
-      ...prev,
-      sealedProducts: prev.sealedProducts.filter(product => product.id !== id),
     }));
   }, []);
 
@@ -169,11 +83,55 @@ export const useCollectionState = (): UseCollectionStateReturn => {
     }));
   }, []);
 
+  // Raw Card state operations
+  const addRawCardToState = useCallback((card: IRawCard) => {
+    setState(prev => ({
+      ...prev,
+      rawCards: [...prev.rawCards, card],
+    }));
+  }, []);
+
+  const updateRawCardInState = useCallback((id: string, updatedCard: IRawCard) => {
+    setState(prev => ({
+      ...prev,
+      rawCards: prev.rawCards.map(card => card.id === id ? updatedCard : card),
+    }));
+  }, []);
+
+  const removeRawCardFromState = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      rawCards: prev.rawCards.filter(card => card.id !== id),
+    }));
+  }, []);
+
   const moveRawCardToSold = useCallback((id: string, soldCard: IRawCard) => {
     setState(prev => ({
       ...prev,
       rawCards: prev.rawCards.filter(card => card.id !== id),
       soldItems: [...prev.soldItems, soldCard],
+    }));
+  }, []);
+
+  // Sealed Product state operations
+  const addSealedProductToState = useCallback((product: ISealedProduct) => {
+    setState(prev => ({
+      ...prev,
+      sealedProducts: [...prev.sealedProducts, product],
+    }));
+  }, []);
+
+  const updateSealedProductInState = useCallback((id: string, updatedProduct: ISealedProduct) => {
+    setState(prev => ({
+      ...prev,
+      sealedProducts: prev.sealedProducts.map(product => product.id === id ? updatedProduct : product),
+    }));
+  }, []);
+
+  const removeSealedProductFromState = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      sealedProducts: prev.sealedProducts.filter(product => product.id !== id),
     }));
   }, []);
 
@@ -185,27 +143,42 @@ export const useCollectionState = (): UseCollectionStateReturn => {
     }));
   }, []);
 
+  // Bulk state operations
+  const setCollectionState = useCallback((newState: Partial<CollectionState>) => {
+    setState(prev => ({
+      ...prev,
+      ...newState,
+    }));
+  }, []);
+
+  const resetCollectionState = useCallback(() => {
+    setState(initialState);
+  }, []);
+
   return {
-    state,
-    setLoading,
-    setError,
-    clearError,
-    updateState,
-    setPsaCards,
-    setRawCards,
-    setSealedProducts,
-    setSoldItems,
-    addPsaCard,
-    addRawCard,
-    addSealedProduct,
-    updatePsaCard,
-    updateRawCard,
-    updateSealedProduct,
-    removePsaCard,
-    removeRawCard,
-    removeSealedProduct,
+    // State
+    ...state,
+
+    // PSA Card operations
+    addPsaCardToState,
+    updatePsaCardInState,
+    removePsaCardFromState,
     movePsaCardToSold,
+
+    // Raw Card operations
+    addRawCardToState,
+    updateRawCardInState,
+    removeRawCardFromState,
     moveRawCardToSold,
+
+    // Sealed Product operations
+    addSealedProductToState,
+    updateSealedProductInState,
+    removeSealedProductFromState,
     moveSealedProductToSold,
+
+    // Bulk operations
+    setCollectionState,
+    resetCollectionState,
   };
 };

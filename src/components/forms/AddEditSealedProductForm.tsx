@@ -1,26 +1,23 @@
 /**
- * Add/Edit Sealed Product Form Component - Context7 Award-Winning Design
+ * Add/Edit Sealed Product Form Component
+ * Refactored to follow SOLID principles
  *
- * Ultra-premium form for adding/editing sealed products with stunning visual hierarchy.
- * Features glass-morphism, premium gradients, and award-winning Context7 design patterns.
- *
- * Following CLAUDE.md + Context7 principles:
- * - Award-winning visual design with micro-interactions
- * - Glass-morphism and depth with floating elements
- * - Premium color palettes and gradients
- * - Context7 design system compliance
- * - Stunning animations and hover effects
+ * Following CLAUDE.md principles:
+ * - Single Responsibility: Form orchestration only
+ * - Dependency Inversion: Uses abstract hooks instead of concrete APIs
+ * - Interface Segregation: Uses specialized hooks for specific concerns
+ * - Open/Closed: Extensible through hook composition
+ * - DRY: Reuses common form patterns
  */
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { Archive, Camera, Search, TrendingUp, Package } from 'lucide-react';
+import { Archive, Package, Search, TrendingUp, Camera } from 'lucide-react';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
-import { useCollection } from '../../hooks/useCollection';
-// Removed legacy useSearch - using enhanced autocomplete only
+import { useCollectionOperations } from '../../hooks/useCollectionOperations';
+import { useBaseForm } from '../../hooks/useBaseForm';
+import { useFormValidation, commonValidationRules } from '../../hooks/useFormValidation';
 import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
-import { uploadMultipleImages } from '../../api/uploadApi';
-import { getProductCategories } from '../../api/searchApi';
+import { getSearchApiService } from '../../services/ServiceRegistry';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -46,49 +43,46 @@ interface FormData {
   dateAdded: string;
 }
 
+// Helper function to convert ISO date to YYYY-MM-DD format
+const formatDateForInput = (isoDate: string | undefined): string => {
+  if (!isoDate) {
+    return new Date().toISOString().split('T')[0];
+  }
+  // Handle both ISO string and already formatted date strings
+  if (isoDate.includes('T')) {
+    return isoDate.split('T')[0];
+  }
+  return isoDate;
+};
+
 const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   onCancel,
   onSuccess,
   initialData,
   isEditing = false,
 }) => {
-  const { addSealedProduct, updateSealedProduct, loading } = useCollection();
-
-  // Removed legacy useSearch dependency - using enhanced autocomplete only
-
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialData?.images || []);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
-  const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
-  const [productCategories, setProductCategories] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
-  const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
-    null
-  );
-
-  // Helper function to convert ISO date to YYYY-MM-DD format
-  const formatDateForInput = (isoDate: string | undefined): string => {
-    if (!isoDate) {
-      return new Date().toISOString().split('T')[0];
-    }
-    // Handle both ISO string and already formatted date strings
-    if (isoDate.includes('T')) {
-      return isoDate.split('T')[0];
-    }
-    return isoDate;
+  const { addSealedProduct, updateSealedProduct, loading } = useCollectionOperations();
+  
+  // Validation rules for Sealed Product form
+  const validationRules = {
+    setName: { required: true },
+    productName: { required: true },
+    category: { required: true },
+    availability: { 
+      required: true, 
+      min: 0,
+      custom: (value: string) => {
+        const num = parseInt(value);
+        if (isNaN(num)) return 'Must be a valid number';
+        return undefined;
+      }
+    },
+    cardMarketPrice: commonValidationRules.price,
+    myPrice: { ...commonValidationRules.price, required: true },
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    clearErrors,
-  } = useForm<FormData>({
+  // Initialize base form with specialized hooks
+  const baseForm = useBaseForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
       productName: initialData?.name || '',
@@ -98,7 +92,23 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded: formatDateForInput(initialData?.dateAdded),
     },
+    validationRules,
+    initialImages: initialData?.images || [],
+    initialPriceHistory: initialData?.priceHistory || [],
+    initialPrice: initialData?.myPrice || 0,
   });
+
+  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } = baseForm;
+  const { register, handleSubmit, formState: { errors }, setValue, watch, clearErrors } = form;
+
+  // State for product categories and selection
+  const [productCategories, setProductCategories] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
+    null
+  );
 
   // Configure autocomplete fields for reusable search (after useForm hook)
   const autocompleteFields: AutocompleteField[] = [
@@ -145,7 +155,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       }
       
       // Update remaining existing images when initialData changes
-      setRemainingExistingImages(initialData.images || []);
+      imageUpload.setRemainingExistingImages(initialData.images || []);
     }
   }, [isEditing, initialData, setValue]);
 
@@ -161,7 +171,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     const loadOptions = async () => {
       setLoadingOptions(true);
       try {
-        const categories = await getProductCategories();
+        const searchApi = getSearchApiService();
+        const categories = await searchApi.getProductCategories();
         setProductCategories(categories);
       } catch (error) {
         console.error('Failed to load form options:', error);
@@ -178,27 +189,23 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     if (watchedPrice) {
       const price = parseFloat(watchedPrice);
       if (!isNaN(price)) {
-        setCurrentPrice(price);
+        priceHistory.updateCurrentPrice(price);
       }
     }
-  }, [watchedPrice]);
-
-  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
-    setSelectedImages(files);
-    setRemainingExistingImages(remainingExistingUrls || []);
-  };
+  }, [watchedPrice, priceHistory]);
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
-    const newEntry = { price: newPrice, dateUpdated: date };
-    setPriceHistory(prev => [...prev, newEntry]);
-    setCurrentPrice(newPrice);
+    // Add new price to history using specialized hook
+    priceHistory.addPriceEntry(newPrice, 'manual_update');
+    
+    // Update form field
     setValue('myPrice', newPrice.toString());
   };
 
   // Removed legacy autocomplete event handlers - using enhanced autocomplete only
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+    setSubmitting(true);
 
     try {
       // Ensure a product is selected from CardMarket reference data
@@ -208,14 +215,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         );
       }
 
-      // Upload new images if any are selected
-      let newImageUrls: string[] = [];
-      if (selectedImages.length > 0) {
-        newImageUrls = await uploadMultipleImages(selectedImages);
-      }
+      // Upload images using specialized hook
+      const imageUrls = await imageUpload.uploadImages();
 
       // Combine existing images with new uploaded images
-      const allImageUrls = [...remainingExistingImages, ...newImageUrls];
+      const allImageUrls = [...imageUpload.remainingExistingImages, ...imageUrls];
 
       // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
@@ -228,17 +232,15 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
         images: allImageUrls,
-        priceHistory:
-          priceHistory.length > 0
-            ? priceHistory
-            : [
-                {
-                  price: parseFloat(data.myPrice),
-                  dateUpdated: new Date().toISOString(),
-                },
-              ],
+        priceHistory: priceHistory.priceHistory.length > 0
+          ? priceHistory.priceHistory
+          : [{
+              price: parseFloat(data.myPrice),
+              dateUpdated: new Date().toISOString(),
+            }],
       };
 
+      // Submit using collection operations hook
       if (isEditing && initialData?.id) {
         await updateSealedProduct(initialData.id, productData);
       } else {
@@ -247,9 +249,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       onSuccess();
     } catch (error) {
-      console.error('Failed to save sealed product:', error);
+      // Error handling is done by specialized hooks
+      console.error('Form submission failed:', error);
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
@@ -548,8 +551,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         {isEditing && priceHistory.length > 0 && (
           <div className='mt-8 pt-8 border-t border-slate-200/50'>
             <PriceHistoryDisplay
-              priceHistory={priceHistory}
-              currentPrice={currentPrice}
+              priceHistory={priceHistory.priceHistory}
+              currentPrice={priceHistory.currentPrice}
               onPriceUpdate={handlePriceUpdate}
             />
           </div>
@@ -567,8 +570,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
         <div className='relative z-10'>
           <ImageUploader
-            onImagesChange={handleImagesChange}
-            existingImageUrls={remainingExistingImages}
+            onImagesChange={imageUpload.handleImagesChange}
+            existingImageUrls={imageUpload.remainingExistingImages}
             multiple={true}
             maxFiles={8}
             maxFileSize={5}

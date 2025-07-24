@@ -1,24 +1,22 @@
 /**
- * Add/Edit Raw Card Form Component - Context7 Award-Winning Design
+ * Add/Edit Raw Card Form Component
+ * Refactored to follow SOLID principles
  *
- * Ultra-premium form for adding/editing raw (ungraded) cards with stunning visual hierarchy.
- * Features glass-morphism, premium gradients, and award-winning Context7 design patterns.
- *
- * Following CLAUDE.md + Context7 principles:
- * - Award-winning visual design with micro-interactions
- * - Glass-morphism and depth with floating elements
- * - Premium color palettes and gradients
- * - Context7 design system compliance
- * - Stunning animations and hover effects
+ * Following CLAUDE.md principles:
+ * - Single Responsibility: Form orchestration only
+ * - Dependency Inversion: Uses abstract hooks instead of concrete APIs
+ * - Interface Segregation: Uses specialized hooks for specific concerns
+ * - Open/Closed: Extensible through hook composition
+ * - DRY: Reuses common form patterns
  */
 
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
 import { Package, Calendar, Search } from 'lucide-react';
 import { IRawCard } from '../../domain/models/card';
-import { useCollection } from '../../hooks/useCollection';
+import { useCollectionOperations } from '../../hooks/useCollectionOperations';
+import { useBaseForm } from '../../hooks/useBaseForm';
+import { useFormValidation, commonValidationRules } from '../../hooks/useFormValidation';
 import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
-import { uploadMultipleImages } from '../../api/uploadApi';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -50,28 +48,18 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   initialData,
   isEditing = false,
 }) => {
-  const { addRawCard, updateRawCard, loading } = useCollection();
-  // Legacy useSearch removed - using EnhancedAutocomplete instead
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(
-    initialData?.images || []
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  // Legacy showSuggestions state removed - EnhancedAutocomplete handles UI state
-  const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
-  const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
-  );
+  const { addRawCard, updateRawCard, loading } = useCollectionOperations();
+  
+  // Validation rules for Raw card form
+  const validationRules = {
+    setName: { required: true },
+    cardName: { required: true },
+    condition: { required: true },
+    myPrice: { ...commonValidationRules.price, required: true },
+  };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    clearErrors,
-  } = useForm<FormData>({
+  // Initialize base form with specialized hooks
+  const baseForm = useBaseForm<FormData>({
     defaultValues: {
       setName: initialData?.setName || '',
       cardName: initialData?.cardName || '',
@@ -82,7 +70,19 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
     },
+    validationRules,
+    initialImages: initialData?.images || [],
+    initialPriceHistory: initialData?.priceHistory || [],
+    initialPrice: initialData?.myPrice || 0,
   });
+
+  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } = baseForm;
+  const { register, handleSubmit, formState: { errors }, setValue, watch, clearErrors } = form;
+
+  // State for card selection (separate from form hooks for business logic)
+  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
+    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+  );
 
   // Configure autocomplete fields for reusable search (after useForm hook)
   const autocompleteFields: AutocompleteField[] = [
@@ -160,125 +160,95 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     if (watchedPrice) {
       const price = parseFloat(watchedPrice);
       if (!isNaN(price)) {
-        setCurrentPrice(price);
+        priceHistory.updateCurrentPrice(price);
       }
     }
-  }, [watchedPrice]);
+  }, [watchedPrice, priceHistory]);
 
   const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
-    setSelectedImages(files);
+    imageUpload.setSelectedImages(files);
     if (remainingExistingUrls !== undefined) {
-      setRemainingExistingImages(remainingExistingUrls);
+      imageUpload.setRemainingExistingImages(remainingExistingUrls);
     }
   };
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
-    const newEntry = { price: newPrice, dateUpdated: date };
-    setPriceHistory(prev => [...prev, newEntry]);
-    setCurrentPrice(newPrice);
+    // Add new price to history using specialized hook
+    priceHistory.addPriceEntry(newPrice, 'manual_update');
+    
+    // Update form field
     setValue('myPrice', newPrice.toString());
   };
 
   // Event handlers removed - EnhancedAutocomplete handles all interactions
 
   const onSubmit = async (data: FormData) => {
-    console.log('[RAW FORM SUBMIT] ===== SUBMIT STARTED =====');
-    console.log('[RAW FORM SUBMIT] isEditing:', isEditing);
-    console.log('[RAW FORM SUBMIT] Form data received:', data);
-    console.log('[RAW FORM SUBMIT] selectedImages count:', selectedImages.length);
-    console.log('[RAW FORM SUBMIT] priceHistory:', priceHistory);
-
-    setIsSubmitting(true);
+    setSubmitting(true);
 
     try {
-      // Upload images first if any are selected
-      let imageUrls: string[] = [];
-      if (selectedImages.length > 0) {
-        console.log('[RAW FORM SUBMIT] Uploading images:', selectedImages.length);
-        imageUrls = await uploadMultipleImages(selectedImages);
-        console.log('[RAW FORM SUBMIT] Images uploaded successfully:', imageUrls);
-      } else {
-        console.log('[RAW FORM SUBMIT] No new images to upload');
-      }
+      // Upload images using specialized hook
+      const imageUrls = await imageUpload.uploadImages();
 
       // Prepare card data
       let cardData: Partial<IRawCard>;
 
       if (isEditing) {
-        console.log('[RAW FORM SUBMIT] Processing edit - updating price and images only');
-        // For editing, only update price and images (preserve card info)
-        // Use currentPrice from price history updates, not the disabled form field
-        const priceToUse = currentPrice > 0 ? currentPrice : parseFloat(data.myPrice);
-        // Combine new uploaded images with remaining existing images
-        const finalImages = [...remainingExistingImages, ...imageUrls];
+        // For editing, only update price and images
+        const priceToUse = priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(data.myPrice);
+        const finalImages = [...imageUpload.remainingExistingImages, ...imageUrls];
+        
         cardData = {
           myPrice: priceToUse,
           images: finalImages,
-          priceHistory: priceHistory.length > 0 ? priceHistory : initialData?.priceHistory,
+          priceHistory: priceHistory.priceHistory.length > 0 ? priceHistory.priceHistory : initialData?.priceHistory,
         };
-        console.log('[RAW FORM SUBMIT] Edit data prepared:', {
-          myPrice: priceToUse,
-          originalFormPrice: parseFloat(data.myPrice),
-          currentPriceFromHistory: currentPrice,
-          finalImageCount: finalImages.length,
-          remainingExistingImages: remainingExistingImages.length,
-          newUploadedImages: imageUrls.length,
-          priceHistoryCount: cardData.priceHistory?.length || 0,
-        });
       } else {
-        console.log('[RAW FORM SUBMIT] Processing new item creation');
-        
-        // Validate that a card has been selected
+        // For new items, validate that a card was selected from autocomplete
         if (!selectedCardId) {
-          throw new Error('Please select a card from the search suggestions');
+          throw new Error('Please select a card from the search suggestions. Manual entry is not supported for raw cards - you must select an existing card.');
         }
 
-        // For new items, use cardId reference (backend schema requirement)
+        // Validate that the form data matches the selected card
+        console.log('[RAW FORM] Validating selected card data:', {
+          selectedCardId,
+          formData: {
+            setName: data.setName,
+            cardName: data.cardName,
+            pokemonNumber: data.pokemonNumber,
+            baseName: data.baseName,
+            variety: data.variety,
+          }
+        });
+
+        // Use the selected card reference (schema requires cardId)
         cardData = {
           cardId: selectedCardId,
           condition: data.condition,
           myPrice: parseFloat(data.myPrice),
           dateAdded: data.dateAdded,
           images: imageUrls,
-          priceHistory:
-            priceHistory.length > 0
-              ? priceHistory
-              : [
-                  {
-                    price: parseFloat(data.myPrice),
-                    dateUpdated: new Date().toISOString(),
-                  },
-                ],
+          priceHistory: priceHistory.priceHistory.length > 0 
+            ? priceHistory.priceHistory 
+            : [{
+                price: parseFloat(data.myPrice),
+                dateUpdated: new Date().toISOString(),
+              }],
         };
       }
 
-      console.log('[RAW FORM SUBMIT] Final card data to submit:', cardData);
-      console.log('[RAW FORM SUBMIT] API call parameters:', {
-        isEditing,
-        itemId: initialData?.id,
-        updateFunction: isEditing ? 'updateRawCard' : 'addRawCard',
-      });
-
+      // Submit using collection operations hook
       if (isEditing && initialData?.id) {
-        console.log('[RAW FORM SUBMIT] Calling updateRawCard with ID:', initialData.id);
-        const result = await updateRawCard(initialData.id, cardData);
-        console.log('[RAW FORM SUBMIT] Update successful, result:', result);
+        await updateRawCard(initialData.id, cardData);
       } else {
-        console.log('[RAW FORM SUBMIT] Calling addRawCard');
-        const result = await addRawCard(cardData);
-        console.log('[RAW FORM SUBMIT] Creation successful, result:', result);
+        await addRawCard(cardData);
       }
 
-      console.log('[RAW FORM SUBMIT] ===== SUBMIT COMPLETED SUCCESSFULLY =====');
       onSuccess();
     } catch (error) {
-      console.error('[RAW FORM SUBMIT] ===== SUBMIT FAILED =====');
-      console.error('[RAW FORM SUBMIT] Error details:', error);
-      console.error('[RAW FORM SUBMIT] Error message:', error?.message);
-      console.error('[RAW FORM SUBMIT] Error stack:', error?.stack);
+      // Error handling is done by specialized hooks
+      console.error('Form submission failed:', error);
     } finally {
-      setIsSubmitting(false);
-      console.log('[RAW FORM SUBMIT] Submit process finished, isSubmitting set to false');
+      setSubmitting(false);
     }
   };
 
@@ -337,6 +307,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             config={autocompleteConfig}
             fields={autocompleteFields}
             onSelectionChange={selectedData => {
+              console.log('[RAW CARD] ===== ENHANCED AUTOCOMPLETE SELECTION =====');
               console.log('[RAW CARD] Enhanced autocomplete selection:', selectedData);
 
               // Auto-fill form fields based on selection
@@ -345,55 +316,67 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
                 console.log('[RAW CARD] Raw selected data:', selectedData);
 
                 // Store the selected card ID for backend submission
-                if (selectedData.id) {
-                  setSelectedCardId(selectedData.id);
-                  console.log('[RAW CARD] Selected card ID:', selectedData.id);
+                const cardId = selectedData._id || selectedData.id;
+                if (cardId) {
+                  setSelectedCardId(cardId);
+                  console.log('[RAW CARD] Selected card ID:', cardId);
+                } else {
+                  console.error('[RAW CARD] No ID found in selected data - card selection invalid');
+                  return;
                 }
 
                 // Auto-fill set name from setInfo or direct setName
                 const setName = selectedData.setInfo?.setName || selectedData.setName;
                 if (setName) {
                   setValue('setName', setName, { shouldValidate: true });
-                  // Legacy sync removed
                   clearErrors('setName'); // Clear any validation errors
+                } else {
+                  console.warn('[RAW CARD] No setName found in selected card data');
                 }
 
-                // Auto-fill card name
+                // Auto-fill card name (required)
                 if (selectedData.cardName) {
                   setValue('cardName', selectedData.cardName, { shouldValidate: true });
-                  // Legacy sync removed
                   clearErrors('cardName'); // Clear any validation errors
+                } else {
+                  console.warn('[RAW CARD] No cardName found in selected card data');
                 }
 
                 // Auto-fill pokemon number
-                if (selectedData.pokemonNumber) {
-                  setValue('pokemonNumber', selectedData.pokemonNumber, { shouldValidate: true });
-                  clearErrors('pokemonNumber'); // Clear any validation errors
-                }
+                const pokemonNumber = selectedData.pokemonNumber?.toString() || '';
+                console.log('[RAW CARD] Setting Pokemon Number:', pokemonNumber);
+                setValue('pokemonNumber', pokemonNumber, { shouldValidate: true });
+                clearErrors('pokemonNumber');
 
-                // Auto-fill base name
-                if (selectedData.baseName) {
-                  setValue('baseName', selectedData.baseName, { shouldValidate: true });
-                  clearErrors('baseName'); // Clear any validation errors
-                }
+                // Auto-fill base name (required)
+                const baseName = selectedData.baseName || selectedData.cardName || '';
+                console.log('[RAW CARD] Setting Base Name:', baseName);
+                setValue('baseName', baseName, { shouldValidate: true });
+                clearErrors('baseName');
 
                 // Auto-fill variety (always set, even if empty)
                 const varietyValue = selectedData.variety || '';
-                console.log('[RAW CARD] Variety value:', {
-                  raw: selectedData.variety,
-                  processed: varietyValue,
-                  type: typeof selectedData.variety,
-                });
+                console.log('[RAW CARD] Setting Variety:', varietyValue);
                 setValue('variety', varietyValue, { shouldValidate: true });
-                clearErrors('variety'); // Clear any validation errors
+                clearErrors('variety');
 
-                console.log('[RAW CARD] Auto-filled fields:', {
-                  setName,
+                console.log('[RAW CARD] Card selection complete - all fields populated from card reference:', {
+                  cardId: selectedData.id,
+                  setName: setName,
                   cardName: selectedData.cardName,
-                  pokemonNumber: selectedData.pokemonNumber,
-                  baseName: selectedData.baseName,
-                  variety: selectedData.variety,
+                  pokemonNumber: pokemonNumber,
+                  baseName: baseName,
+                  variety: varietyValue,
                 });
+
+                // Validate that all required card data is present
+                if (!selectedData.id || !selectedData.cardName || !selectedData.baseName) {
+                  console.error('[RAW CARD] Invalid card selection - missing required fields:', {
+                    hasId: !!selectedData.id,
+                    hasCardName: !!selectedData.cardName,
+                    hasBaseName: !!selectedData.baseName,
+                  });
+                }
               }
             }}
             onError={error => {
@@ -407,7 +390,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           />
         </div>
 
-        {/* Additional Card Fields */}
+        {/* Additional Card Fields - Read-Only when card is selected */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6 relative'>
           {/* Pokemon Number */}
           <div>
@@ -416,8 +399,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
               {...register('pokemonNumber')}
               error={errors.pokemonNumber?.message}
               placeholder='e.g., 006, 025, 150'
-              disabled={isEditing}
-              className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              disabled={true}
+              value={watch('pokemonNumber') || ''}
+              className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
             />
           </div>
 
@@ -425,14 +409,12 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           <div>
             <Input
               label='Base Name'
-              {...register('baseName', {
-                required: 'Base name is required',
-                minLength: { value: 2, message: 'Base name must be at least 2 characters' },
-              })}
+              {...register('baseName')}
               error={errors.baseName?.message}
               placeholder='e.g., Charizard, Pikachu, Mew'
-              disabled={isEditing}
-              className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              disabled={true}
+              value={watch('baseName') || ''}
+              className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
             />
           </div>
 
@@ -443,15 +425,15 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
               {...register('variety')}
               error={errors.variety?.message}
               placeholder='e.g., Holo, Shadowless, 1st Edition'
-              disabled={isEditing}
-              className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+              disabled={true}
+              value={watch('variety') || ''}
+              className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
             />
           </div>
         </div>
 
-        {/* Form Registration for Enhanced Autocomplete Fields */}
+        {/* Hidden form registrations for autocomplete fields only */}
         <div className='hidden'>
-          {/* Register form fields for validation - Enhanced Autocomplete handles the UI */}
           <input
             {...register('setName', {
               required: 'Set name is required',
@@ -469,14 +451,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             readOnly
           />
           <input {...register('pokemonNumber')} value={watch('pokemonNumber') || ''} readOnly />
-          <input
-            {...register('baseName', {
-              required: 'Base name is required',
-              minLength: { value: 2, message: 'Base name must be at least 2 characters' },
-            })}
-            value={watch('baseName') || ''}
-            readOnly
-          />
+          <input {...register('baseName')} value={watch('baseName') || ''} readOnly />
           <input {...register('variety')} value={watch('variety') || ''} readOnly />
         </div>
       </div>
@@ -490,7 +465,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         currentPrice={watchedPrice}
         isEditing={isEditing}
         priceHistory={priceHistory}
-        currentPriceNumber={currentPrice}
+        currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}
         disableGradeConditionEdit={false}
       />

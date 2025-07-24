@@ -3,7 +3,7 @@
  * Handles all DBA selection-related API operations
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 
 export interface DbaSelectionItem {
   itemId: string;
@@ -71,8 +71,8 @@ export const getDbaSelections = async (
     params.append('days', days.toString());
   }
   
-  const response = await apiClient.get(`/dba-selection?${params.toString()}`);
-  return response.data.data || [];
+  const response = await unifiedApiClient.get(`/dba-selection?${params.toString()}`);
+  return response.data || [];
 };
 
 /**
@@ -83,8 +83,8 @@ export const getDbaSelections = async (
 export const addToDbaSelection = async (
   items: DbaSelectionItem[]
 ): Promise<DbaSelectionResponse> => {
-  const response = await apiClient.post('/dba-selection', { items });
-  return response.data;
+  const response = await unifiedApiClient.post('/dba-selection', { items });
+  return response;
 };
 
 /**
@@ -95,8 +95,8 @@ export const addToDbaSelection = async (
 export const removeFromDbaSelection = async (
   items: Pick<DbaSelectionItem, 'itemId' | 'itemType'>[]
 ): Promise<DbaSelectionResponse> => {
-  const response = await apiClient.delete('/dba-selection', { data: { items } });
-  return response.data;
+  const response = await unifiedApiClient.delete('/dba-selection', { data: { items } });
+  return response;
 };
 
 /**
@@ -109,8 +109,8 @@ export const getDbaSelectionByItem = async (
   itemType: string,
   itemId: string
 ): Promise<DbaSelection> => {
-  const response = await apiClient.get(`/dba-selection/${itemType}/${itemId}`);
-  return response.data.data;
+  const response = await unifiedApiClient.get(`/dba-selection/${itemType}/${itemId}`);
+  return response.data;
 };
 
 /**
@@ -125,8 +125,8 @@ export const updateDbaSelectionNotes = async (
   itemId: string,
   notes: string
 ): Promise<DbaSelection> => {
-  const response = await apiClient.put(`/dba-selection/${itemType}/${itemId}/notes`, { notes });
-  return response.data.data;
+  const response = await unifiedApiClient.put(`/dba-selection/${itemType}/${itemId}/notes`, { notes });
+  return response.data;
 };
 
 /**
@@ -134,6 +134,6 @@ export const updateDbaSelectionNotes = async (
  * @returns Promise<DbaSelectionStats>
  */
 export const getDbaSelectionStats = async (): Promise<DbaSelectionStats> => {
-  const response = await apiClient.get('/dba-selection/stats');
-  return response.data.data;
+  const response = await unifiedApiClient.get('/dba-selection/stats');
+  return response.data;
 };

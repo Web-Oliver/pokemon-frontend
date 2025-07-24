@@ -18,7 +18,8 @@ import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import * as collectionApi from '../api/collectionApi';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import { getCollectionApiService } from '../services/ServiceRegistry';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { handleApiError } from '../utils/errorHandler';
@@ -37,11 +38,12 @@ interface ItemTypeOption {
 type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
 const AddEditItem: React.FC = () => {
+  const { loading: collectionLoading, error: collectionError } = useCollectionOperations();
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Parse URL to determine if in edit mode and get item details
   useEffect(() => {
@@ -59,11 +61,12 @@ const AddEditItem: React.FC = () => {
 
   // Fetch item data for editing
   const fetchItemForEdit = async (type: string, id: string) => {
-    setLoading(true);
-    setError(null);
+    setFetchLoading(true);
+    setFetchError(null);
 
     try {
       log(`Fetching ${type} item with ID: ${id} for editing`);
+      const collectionApi = getCollectionApiService();
       let fetchedItem: CollectionItem;
       let itemType: ItemType;
 
@@ -89,9 +92,9 @@ const AddEditItem: React.FC = () => {
       log('Item fetched successfully for editing');
     } catch (err) {
       handleApiError(err, 'Failed to fetch item for editing');
-      setError('Failed to load item for editing');
+      setFetchError('Failed to load item for editing');
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
   };
 
@@ -247,7 +250,7 @@ const AddEditItem: React.FC = () => {
           </div>
 
           {/* Loading State */}
-          {loading && (
+          {fetchLoading && (
             <div className='bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/30 p-8 text-center'>
               <LoadingSpinner size='lg' />
               <p className='mt-4 text-slate-600'>Loading item for editing...</p>
@@ -255,14 +258,14 @@ const AddEditItem: React.FC = () => {
           )}
 
           {/* Error State */}
-          {error && (
+          {fetchError && (
             <div className='bg-red-50/95 backdrop-blur-xl rounded-2xl shadow-xl border border-red-200/50 p-8'>
               <div className='text-center'>
                 <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                   <Archive className='w-6 h-6 text-red-600' />
                 </div>
                 <h3 className='text-lg font-bold text-red-900 mb-2'>Error Loading Item</h3>
-                <p className='text-red-700 mb-4'>{error}</p>
+                <p className='text-red-700 mb-4'>{fetchError}</p>
                 <button
                   onClick={handleBackToCollection}
                   className='bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-red-700 transition-colors'
@@ -274,7 +277,7 @@ const AddEditItem: React.FC = () => {
           )}
 
           {/* Modern Item Type Selection */}
-          {!loading && !error && !selectedItemType && (
+          {!fetchLoading && !fetchError && !selectedItemType && (
             <div className='bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/30 p-8 relative overflow-hidden'>
               <div className='absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-2xl'></div>
 
@@ -342,7 +345,7 @@ const AddEditItem: React.FC = () => {
           )}
 
           {/* Modern Selected Form */}
-          {!loading && !error && selectedItemType && (
+          {!fetchLoading && !fetchError && selectedItemType && (
             <div className='bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/30 p-8 relative overflow-hidden'>
               <div className='absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-full blur-2xl'></div>
 

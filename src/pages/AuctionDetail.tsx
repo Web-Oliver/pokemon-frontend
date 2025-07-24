@@ -22,7 +22,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
-import { useCollection } from '../hooks/useCollection';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
@@ -59,7 +59,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     markRawCardSold,
     markSealedProductSold,
     loading: collectionLoading,
-  } = useCollection();
+  } = useCollectionOperations();
 
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');

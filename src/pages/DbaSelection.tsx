@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, CheckCircle, Package, Star, Archive, Timer, AlertTriangle } from 'lucide-react';
-import { useCollection } from '../hooks/useCollection';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
@@ -33,7 +33,7 @@ interface ItemWithDbaInfo {
 }
 
 const DbaSelection: React.FC = () => {
-  const { psaCards, rawCards, sealedProducts, loading } = useCollection();
+  const { psaCards, rawCards, sealedProducts, loading } = useCollectionOperations();
   const [allItems, setAllItems] = useState<ItemWithDbaInfo[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);

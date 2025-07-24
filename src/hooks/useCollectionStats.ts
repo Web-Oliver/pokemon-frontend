@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { useCollection } from './useCollection';
+import { useCollectionOperations } from './useCollectionOperations';
 import { displayPrice } from '../utils/priceUtils';
 
 export interface CollectionStats {
@@ -24,7 +24,7 @@ export interface CollectionStats {
 }
 
 export const useCollectionStats = (): CollectionStats & { loading: boolean } => {
-  const { psaCards, rawCards, sealedProducts, soldItems, loading } = useCollection();
+  const { psaCards, rawCards, sealedProducts, soldItems, loading } = useCollectionOperations();
 
   const stats = useMemo((): CollectionStats => {
     // Total items count (active collection only, not sold)

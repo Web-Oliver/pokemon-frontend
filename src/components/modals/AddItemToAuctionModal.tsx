@@ -11,7 +11,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { useCollection } from '../../hooks/useCollection';
+import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
@@ -35,7 +35,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   onAddItems,
   currentAuctionItems = [],
 }) => {
-  const { psaCards, rawCards, sealedProducts, loading, error } = useCollection();
+  const { psaCards, rawCards, sealedProducts, loading, error } = useCollectionOperations();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');

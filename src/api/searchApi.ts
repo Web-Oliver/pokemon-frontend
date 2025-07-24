@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 
 // Context7 Search Performance Optimization
 const searchCache = new Map<
@@ -212,8 +212,8 @@ export const searchApi = {
       }
 
       try {
-        const response = await apiClient.get(`/search?${queryParams.toString()}`);
-        const data = response.data;
+        const response = await unifiedApiClient.get(`/search?${queryParams.toString()}`);
+        const data = response;
 
         // Cache the result
         const ttl = 300000; // 5 minutes
@@ -277,8 +277,8 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/search/suggest?${queryParams.toString()}`);
-        const data = response.data;
+        const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`);
+        const data = response;
 
         // Cache the result
         const ttl = 180000; // 3 minutes for suggestions
@@ -362,8 +362,8 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/search/cards?${queryParams.toString()}`);
-        const data = response.data;
+        const response = await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`);
+        const data = response;
 
         // Cache the result
         const ttl = 300000; // 5 minutes
@@ -446,8 +446,8 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
-        const data = response.data;
+        const response = await unifiedApiClient.get(`/search/products?${queryParams.toString()}`);
+        const data = response;
 
         // Cache the result
         const ttl = 300000; // 5 minutes
@@ -530,8 +530,8 @@ export const searchApi = {
       });
 
       try {
-        const response = await apiClient.get(`/search/sets?${queryParams.toString()}`);
-        const data = response.data;
+        const response = await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`);
+        const data = response;
 
         // Cache the result
         const ttl = 600000; // 10 minutes for sets

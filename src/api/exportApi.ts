@@ -4,7 +4,7 @@
  * Phase 10: Auction Management - Export Features
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 
 /**
  * Generate Facebook post for auction
@@ -13,22 +13,22 @@ import apiClient from './apiClient';
  */
 export const generateAuctionFacebookPost = async (auctionId: string): Promise<string> => {
   // First, get the auction data
-  const auctionResponse = await apiClient.get(`/auctions/${auctionId}`);
-  const auction = auctionResponse.data.data || auctionResponse.data;
+  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`);
+  const auctionData = auction.data || auction;
 
   // Prepare the request body for the existing backend endpoint
   const requestData = {
-    items: auction.items.map((item: Record<string, unknown>) => ({
+    items: auctionData.items.map((item: Record<string, unknown>) => ({
       itemId: item.itemId || item.itemData?._id,
       itemCategory: item.itemCategory,
     })),
-    topText: auction.topText,
-    bottomText: auction.bottomText,
+    topText: auctionData.topText,
+    bottomText: auctionData.bottomText,
   };
 
   // Call the existing backend endpoint
-  const response = await apiClient.post('/generate-facebook-post', requestData);
-  return response.data.data?.facebookPost || response.data.facebookPost || response.data;
+  const response = await unifiedApiClient.post('/generate-facebook-post', requestData);
+  return response.data?.facebookPost || response.facebookPost || response;
 };
 
 /**
@@ -52,8 +52,7 @@ export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blo
  */
 export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   // Get auction data to extract image URLs
-  const auctionResponse = await apiClient.get(`/auctions/${auctionId}`);
-  const auction = auctionResponse.data.data || auctionResponse.data;
+  const auction = await unifiedApiClient.get(`/auctions/${auctionId}`);
 
   // Extract all image URLs from auction items
   const imageUrls: string[] = [];
@@ -151,10 +150,10 @@ export const zipRawCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/raw-cards?ids=${cardIds.join(',')}`
       : '/export/zip/raw-cards';
-  const response = await apiClient.get(endpoint);
-  const rawCards = response.data.data || response.data;
+  const rawCards = await unifiedApiClient.get(endpoint);
+  const cardsData = rawCards.data || rawCards;
 
-  return createImageZip(rawCards, 'raw-card');
+  return createImageZip(cardsData, 'raw-card');
 };
 
 /**
@@ -168,10 +167,10 @@ export const zipPsaCardImages = async (cardIds?: string[]): Promise<Blob> => {
     cardIds && cardIds.length > 0
       ? `/export/zip/psa-cards?ids=${cardIds.join(',')}`
       : '/export/zip/psa-cards';
-  const response = await apiClient.get(endpoint);
-  const psaCards = response.data.data || response.data;
+  const psaCards = await unifiedApiClient.get(endpoint);
+  const cardsData = psaCards.data || psaCards;
 
-  return createImageZip(psaCards, 'psa-card');
+  return createImageZip(cardsData, 'psa-card');
 };
 
 /**
@@ -185,10 +184,10 @@ export const zipSealedProductImages = async (productIds?: string[]): Promise<Blo
     productIds && productIds.length > 0
       ? `/export/zip/sealed-products?ids=${productIds.join(',')}`
       : '/export/zip/sealed-products';
-  const response = await apiClient.get(endpoint);
-  const sealedProducts = response.data.data || response.data;
+  const sealedProducts = await unifiedApiClient.get(endpoint);
+  const productsData = sealedProducts.data || sealedProducts;
 
-  return createImageZip(sealedProducts, 'sealed-product');
+  return createImageZip(productsData, 'sealed-product');
 };
 
 /**
@@ -293,7 +292,7 @@ const createImageZip = async (
  * @returns Promise<Blob> - Text file blob for download
  */
 export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): Promise<Blob> => {
-  const response = await apiClient.post(
+  const response = await unifiedApiClient.post(
     '/collection/facebook-text-file',
     {
       itemIds: selectedItemIds,
@@ -302,7 +301,7 @@ export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): 
       responseType: 'blob',
     }
   );
-  return response.data;
+  return response;
 };
 
 /**
@@ -339,8 +338,8 @@ export interface DbaExportResponse {
 }
 
 export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaExportResponse> => {
-  const response = await apiClient.post('/export/dba', exportRequest);
-  return response.data;
+  const response = await unifiedApiClient.post('/export/dba', exportRequest);
+  return response;
 };
 
 /**
@@ -348,14 +347,14 @@ export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaE
  */
 export const downloadDbaZip = async (): Promise<void> => {
   try {
-    const response = await apiClient.get('/export/dba/download', {
+    const response = await unifiedApiClient.get('/export/dba/download', {
       responseType: 'blob',
     });
 
     const timestamp = new Date().toISOString().split('T')[0];
     const filename = `dba-export-${timestamp}.zip`;
     
-    downloadBlob(response.data, filename);
+    downloadBlob(response, filename);
   } catch (error) {
     console.error('[EXPORT API] Failed to download DBA ZIP:', error);
     throw error;

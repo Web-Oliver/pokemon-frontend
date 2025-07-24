@@ -3,7 +3,7 @@
  * Handles CardMarket reference data for sealed products
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 
 export interface CardMarketRefProductsParams {
@@ -73,13 +73,13 @@ export const getCardMarketRefProducts = async (
       ...(params?.page && { page: params.page.toString() }),
     });
 
-    const response = await apiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
+    const response = await unifiedApiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
     
     // Handle both array and paginated response formats
-    if (Array.isArray(response.data)) {
-      return response.data;
+    if (Array.isArray(response)) {
+      return response;
     } else {
-      return response.data.products || [];
+      return response.products || [];
     }
   }
 };
@@ -127,16 +127,15 @@ export const getPaginatedCardMarketRefProducts = async (
       ...(available !== undefined && { available: available.toString() }),
     });
 
-    const response = await apiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
-    const data = response.data;
+    const response = await unifiedApiClient.get(`/cardmarket-ref-products?${queryParams.toString()}`);
 
     return {
-      products: data.products || [],
-      total: data.total || 0,
-      currentPage: data.currentPage || page,
-      totalPages: data.totalPages || 1,
-      hasNextPage: data.hasNextPage || false,
-      hasPrevPage: data.hasPrevPage || false,
+      products: response.products || [],
+      total: response.total || 0,
+      currentPage: response.currentPage || page,
+      totalPages: response.totalPages || 1,
+      hasNextPage: response.hasNextPage || false,
+      hasPrevPage: response.hasPrevPage || false,
     };
   }
 };
@@ -149,268 +148,20 @@ export const getPaginatedCardMarketRefProducts = async (
 export const getCardMarketRefProductById = async (
   id: string
 ): Promise<ICardMarketReferenceProduct> => {
-  const response = await apiClient.get(`/cardmarket-ref-products/${id}`);
-  return response.data.data || response.data;
+  const response = await unifiedApiClient.get(`/cardmarket-ref-products/${id}`);
+  return response.data || response;
 };
 
-/**
- * New Optimized Product Search using unified search endpoints
- * @param params - Search parameters with enhanced filtering
- * @returns Promise<OptimizedProductSearchResponse> - Enhanced search results with fuzzy matching
- */
-export const searchProductsOptimized = async (
-  params: OptimizedProductSearchParams
-): Promise<OptimizedProductSearchResponse> => {
-  const { query, limit = 20, page = 1, ...filters } = params;
+// Import consolidated search functions
+export { 
+  searchProductsOptimized,
+  getProductSuggestionsOptimized,
+  getBestMatchProductOptimized,
+  searchProductsInSet,
+  searchProductsByCategory,
+  searchProductsByPriceRange,
+  searchAvailableProducts,
+  getCardMarketSetNames,
+  searchCardMarketSetNames
+} from './consolidatedSearch';
 
-
-  const queryParams = new URLSearchParams({
-    query: query.trim(),
-    limit: limit.toString(),
-    page: page.toString(),
-  });
-
-  // Add filters to query params
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      queryParams.append(key, value.toString());
-    }
-  });
-
-  const response = await apiClient.get(`/search/products?${queryParams.toString()}`);
-  const data = response.data;
-
-  return {
-    success: data.success,
-    query: data.query,
-    count: data.count,
-    data: data.data || [],
-  };
-};
-
-/**
- * Enhanced Product Suggestions using new suggest endpoint
- * @param query - Search query string
- * @param limit - Maximum number of suggestions
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of suggestion products with relevance scoring
- */
-export const getProductSuggestionsOptimized = async (
-  query: string,
-  limit: number = 10
-): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const queryParams = new URLSearchParams({
-    query: query.trim(),
-    types: 'products',
-    limit: limit.toString(),
-  });
-
-  const response = await apiClient.get(`/search/suggest?${queryParams.toString()}`);
-  const data = response.data;
-
-  // Extract product suggestions from the response
-  const productSuggestions = data.suggestions?.products?.data || [];
-  return productSuggestions;
-};
-
-/**
- * Get best match product using optimized search with limit=1
- * @param query - Search query string
- * @param setContext - Optional set context for better matching
- * @param categoryContext - Optional category context for better matching
- * @returns Promise<ICardMarketReferenceProduct | null> - Best matching product or null
- */
-export const getBestMatchProductOptimized = async (
-  query: string,
-  setContext?: string,
-  categoryContext?: string
-): Promise<ICardMarketReferenceProduct | null> => {
-  if (!query.trim()) {
-    return null;
-  }
-
-  const params: OptimizedProductSearchParams = {
-    query: query.trim(),
-    limit: 1,
-    page: 1,
-  };
-
-  if (setContext) {
-    params.setName = setContext;
-  }
-
-  if (categoryContext) {
-    params.category = categoryContext;
-  }
-
-  const response = await searchProductsOptimized(params);
-
-  return response.data.length > 0 ? response.data[0] : null;
-};
-
-/**
- * Search products within a specific set using optimized endpoint
- * @param query - Search query string
- * @param setName - Set name to filter by
- * @param limit - Maximum number of results
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of products from the specified set
- */
-export const searchProductsInSet = async (
-  query: string,
-  setName: string,
-  limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const params: OptimizedProductSearchParams = {
-    query: query.trim(),
-    setName,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchProductsOptimized(params);
-  return response.data;
-};
-
-/**
- * Search products by category using optimized endpoint
- * @param query - Search query string
- * @param category - Category to filter by
- * @param limit - Maximum number of results
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of products from the specified category
- */
-export const searchProductsByCategory = async (
-  query: string,
-  category: string,
-  limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const params: OptimizedProductSearchParams = {
-    query: query.trim(),
-    category,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchProductsOptimized(params);
-  return response.data;
-};
-
-/**
- * Search products by price range using optimized endpoint
- * @param query - Search query string
- * @param minPrice - Minimum price filter
- * @param maxPrice - Maximum price filter
- * @param limit - Maximum number of results
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of products within price range
- */
-export const searchProductsByPriceRange = async (
-  query: string,
-  minPrice: number,
-  maxPrice: number,
-  limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const params: OptimizedProductSearchParams = {
-    query: query.trim(),
-    minPrice,
-    maxPrice,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchProductsOptimized(params);
-  return response.data;
-};
-
-/**
- * Search only available products using optimized endpoint
- * @param query - Search query string
- * @param limit - Maximum number of results
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of available products
- */
-export const searchAvailableProducts = async (
-  query: string,
-  limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const params: OptimizedProductSearchParams = {
-    query: query.trim(),
-    availableOnly: true,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchProductsOptimized(params);
-  return response.data;
-};
-
-/**
- * Get CardMarket reference set names
- * @param query - Search query string (optional)
- * @param limit - Maximum number of results
- * @returns Promise<Array> - Array of set names with metadata
- */
-export const getCardMarketSetNames = async (
-  query?: string,
-  limit: number = 50
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score?: number;
-}>> => {
-  const queryParams = new URLSearchParams({
-    limit: limit.toString(),
-  });
-
-  if (query && query.trim()) {
-    queryParams.append('search', query.trim());
-  }
-
-  const response = await apiClient.get(`/cardmarket-ref-products/set-names?${queryParams.toString()}`);
-  const data = response.data;
-
-  return data.data || [];
-};
-
-/**
- * Search CardMarket reference set names
- * @param query - Search query string
- * @param limit - Maximum number of results
- * @returns Promise<Array> - Array of matching set names
- */
-export const searchCardMarketSetNames = async (
-  query: string,
-  limit: number = 15
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score: number;
-}>> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  return getCardMarketSetNames(query, limit);
-};

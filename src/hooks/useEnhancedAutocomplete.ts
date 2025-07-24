@@ -15,7 +15,7 @@ import {
   HierarchicalSearchConfig,
   SearchSuggestion,
   createHierarchicalSearchService,
-} from '../services/hierarchicalSearchService';
+} from '../services/SearchService';
 import { SEARCH_CONFIG } from '../utils/constants';
 
 export interface AutocompleteField {

@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Download, CheckCircle, Package, Star, Archive, FileDown, Settings, Timer, Calendar, AlertTriangle } from 'lucide-react';
-import { useCollection } from '../hooks/useCollection';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -34,7 +34,7 @@ interface SelectedItem {
 }
 
 const DbaExport: React.FC = () => {
-  const { psaCards, rawCards, sealedProducts, loading } = useCollection();
+  const { psaCards, rawCards, sealedProducts, loading } = useCollectionOperations();
   
   // Debug logging for collection data
   useEffect(() => {

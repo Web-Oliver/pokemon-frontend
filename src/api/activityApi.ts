@@ -12,7 +12,7 @@
  * - Premium search capabilities
  */
 
-import apiClient from './apiClient';
+import unifiedApiClient from './unifiedApiClient';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
@@ -174,10 +174,10 @@ class ActivityApiClient {
         params.append('search', filters.search);
       }
 
-      const response = await apiClient.get(`${this.baseUrl}?${params.toString()}`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}?${params.toString()}`);
 
-      log('[ACTIVITY API] Activities fetched successfully:', response.data.meta);
-      return response.data;
+      log('[ACTIVITY API] Activities fetched successfully:', response.meta);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch activities');
       throw error;
@@ -191,10 +191,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Fetching recent activities, limit:', limit);
 
-      const response = await apiClient.get(`${this.baseUrl}/recent?limit=${limit}`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/recent?limit=${limit}`);
 
-      log('[ACTIVITY API] Recent activities fetched:', response.data.data.length);
-      return response.data;
+      log('[ACTIVITY API] Recent activities fetched:', response.data.length);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch recent activities');
       throw error;
@@ -208,10 +208,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Fetching activity statistics');
 
-      const response = await apiClient.get(`${this.baseUrl}/stats`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/stats`);
 
-      log('[ACTIVITY API] Activity stats fetched:', response.data.data);
-      return response.data;
+      log('[ACTIVITY API] Activity stats fetched:', response.data);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity statistics');
       throw error;
@@ -225,9 +225,9 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Fetching activity types');
 
-      const response = await apiClient.get(`${this.baseUrl}/types`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/types`);
 
-      return response.data;
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity types');
       throw error;
@@ -262,10 +262,10 @@ class ActivityApiClient {
         params.append('entityType', filters.entityType);
       }
 
-      const response = await apiClient.get(`${this.baseUrl}/search?${params.toString()}`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/search?${params.toString()}`);
 
-      log('[ACTIVITY API] Search results:', response.data.meta.resultCount);
-      return response.data;
+      log('[ACTIVITY API] Search results:', response.meta.resultCount);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to search activities');
       throw error;
@@ -282,10 +282,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Fetching activities for entity:', entityType, entityId);
 
-      const response = await apiClient.get(`${this.baseUrl}/entity/${entityType}/${entityId}`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/entity/${entityType}/${entityId}`);
 
-      log('[ACTIVITY API] Entity activities fetched:', response.data.data.length);
-      return response.data;
+      log('[ACTIVITY API] Entity activities fetched:', response.data.length);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch entity activities');
       throw error;
@@ -299,9 +299,9 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Fetching activity by ID:', id);
 
-      const response = await apiClient.get(`${this.baseUrl}/${id}`);
+      const response = await unifiedApiClient.get(`${this.baseUrl}/${id}`);
 
-      return response.data;
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to fetch activity');
       throw error;
@@ -315,10 +315,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Marking activity as read:', id);
 
-      const response = await apiClient.patch(`${this.baseUrl}/${id}/read`);
+      const response = await unifiedApiClient.put(`${this.baseUrl}/${id}/read`);
 
       log('[ACTIVITY API] Activity marked as read');
-      return response.data;
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to mark activity as read');
       throw error;
@@ -332,10 +332,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Archiving activity:', id);
 
-      const response = await apiClient.delete(`${this.baseUrl}/${id}`);
+      const response = await unifiedApiClient.delete(`${this.baseUrl}/${id}`);
 
       log('[ACTIVITY API] Activity archived');
-      return response.data;
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to archive activity');
       throw error;
@@ -351,10 +351,10 @@ class ActivityApiClient {
     try {
       log('[ACTIVITY API] Creating manual activity:', activityData.type);
 
-      const response = await apiClient.post(this.baseUrl, activityData);
+      const response = await unifiedApiClient.post(this.baseUrl, activityData);
 
-      log('[ACTIVITY API] Activity created:', response.data.data._id);
-      return response.data;
+      log('[ACTIVITY API] Activity created:', response.data._id);
+      return response;
     } catch (error) {
       handleApiError(error, 'Failed to create activity');
       throw error;

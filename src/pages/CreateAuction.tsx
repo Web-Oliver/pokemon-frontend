@@ -29,7 +29,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useAuction } from '../hooks/useAuction';
-import { useCollection } from '../hooks/useCollection';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 // Lazy load ImageSlideshow for better performance
@@ -96,7 +96,7 @@ const CreateAuction: React.FC = () => {
     sealedProducts,
     loading: collectionLoading,
     error: collectionError,
-  } = useCollection();
+  } = useCollectionOperations();
 
   // Form state
   const [formData, setFormData] = useState({

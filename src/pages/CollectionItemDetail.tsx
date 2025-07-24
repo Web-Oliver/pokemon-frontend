@@ -25,8 +25,7 @@ import Button from '../components/common/Button';
 import ConfirmModal from '../components/common/ConfirmModal';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
-import * as collectionApi from '../api/collectionApi';
-import * as exportApi from '../api/exportApi';
+import { getCollectionApiService, getExportApiService } from '../services/ServiceRegistry';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
@@ -59,6 +58,8 @@ const CollectionItemDetail: React.FC = () => {
       let zipBlob: Blob;
       let filename: string;
       const timestamp = new Date().toISOString().split('T')[0];
+
+      const exportApi = getExportApiService();
 
       switch (type) {
         case 'psa':
@@ -110,6 +111,8 @@ const CollectionItemDetail: React.FC = () => {
       ];
 
       let updatedItem: CollectionItem;
+
+      const collectionApi = getCollectionApiService();
 
       // Update item based on type - backend will automatically sync myPrice to latest price
       if (type === 'psa') {
@@ -164,6 +167,7 @@ const CollectionItemDetail: React.FC = () => {
 
       try {
         log(`Fetching ${type} item with ID: ${id}`);
+        const collectionApi = getCollectionApiService();
         let fetchedItem;
 
         switch (type) {
@@ -206,6 +210,7 @@ const CollectionItemDetail: React.FC = () => {
 
     try {
       setDeleting(true);
+      const collectionApi = getCollectionApiService();
 
       switch (type) {
         case 'psa':
