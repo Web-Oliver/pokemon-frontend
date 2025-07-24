@@ -234,12 +234,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <Suspense fallback={null}>
           <ReactProfiler id='ErrorBoundary' onRenderThreshold={10} aggregateMetrics={true}>
-            <div className='min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4'>
-              <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-red-100 overflow-hidden'>
+            <div className='min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4'>
+              <div className='max-w-2xl w-full bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-700/40 overflow-hidden'>
                 {/* Header */}
                 <div className='bg-gradient-to-r from-red-500 to-orange-500 px-8 py-6 text-white'>
                   <div className='flex items-center space-x-3'>
-                    <div className='w-12 h-12 bg-white/20 rounded-full flex items-center justify-center'>
+                    <div className='w-12 h-12 bg-zinc-900/20 rounded-full flex items-center justify-center'>
                       <AlertTriangle className='w-6 h-6' />
                     </div>
                     <div>
@@ -252,29 +252,29 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 {/* Error Content */}
                 <div className='p-8 space-y-6'>
                   {/* Error Summary */}
-                  <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
-                    <h3 className='font-semibold text-red-800 mb-2 flex items-center'>
+                  <div className='bg-red-900/20 border border-red-700/40 rounded-lg p-4'>
+                    <h3 className='font-semibold text-red-300 mb-2 flex items-center'>
                       <Code className='w-4 h-4 mr-2' />
                       Error Details
                     </h3>
-                    <p className='text-red-700 font-mono text-sm break-words'>{error.message}</p>
-                    {errorId && <p className='text-red-600 text-xs mt-2'>Error ID: {errorId}</p>}
+                    <p className='text-red-200 font-mono text-sm break-words'>{error.message}</p>
+                    {errorId && <p className='text-red-400 text-xs mt-2'>Error ID: {errorId}</p>}
                   </div>
 
                   {/* Performance Context */}
-                  <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-                    <h3 className='font-semibold text-blue-800 mb-2 flex items-center'>
+                  <div className='bg-blue-900/20 border border-blue-700/40 rounded-lg p-4'>
+                    <h3 className='font-semibold text-blue-300 mb-2 flex items-center'>
                       <Activity className='w-4 h-4 mr-2' />
                       Performance Context
                     </h3>
                     <div className='grid grid-cols-2 gap-4 text-sm'>
                       <div>
-                        <span className='text-blue-600 font-medium'>Total Errors:</span>
-                        <span className='ml-2 text-blue-800'>{errorMetrics.totalErrors}</span>
+                        <span className='text-blue-400 font-medium'>Total Errors:</span>
+                        <span className='ml-2 text-blue-200'>{errorMetrics.totalErrors}</span>
                       </div>
                       <div>
-                        <span className='text-blue-600 font-medium'>Retry Count:</span>
-                        <span className='ml-2 text-blue-800'>{retryCount}</span>
+                        <span className='text-blue-400 font-medium'>Retry Count:</span>
+                        <span className='ml-2 text-blue-200'>{retryCount}</span>
                       </div>
                       <div>
                         <span className='text-blue-600 font-medium'>Component:</span>
@@ -347,20 +347,22 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                         {/* Error History */}
                         {errorMetrics.errorHistory.length > 1 && (
                           <div>
-                            <h4 className='font-semibold text-gray-800 mb-2'>Recent Errors:</h4>
+                            <h4 className='font-semibold text-zinc-200 mb-2'>Recent Errors:</h4>
                             <div className='space-y-2 max-h-32 overflow-y-auto'>
                               {errorMetrics.errorHistory.slice(-5).map(errorRecord => (
                                 <div
                                   key={errorRecord.errorId}
-                                  className='bg-white p-2 rounded border text-xs'
+                                  className='bg-zinc-800/60 p-2 rounded border border-zinc-700/40 text-xs'
                                 >
                                   <div className='flex justify-between items-start'>
-                                    <span className='font-mono'>{errorRecord.error}</span>
-                                    <span className='text-gray-500 ml-2'>
+                                    <span className='font-mono text-zinc-200'>
+                                      {errorRecord.error}
+                                    </span>
+                                    <span className='text-zinc-400 ml-2'>
                                       {new Date(errorRecord.timestamp).toLocaleTimeString()}
                                     </span>
                                   </div>
-                                  <div className='text-gray-600 mt-1'>
+                                  <div className='text-zinc-300 mt-1'>
                                     Component: {errorRecord.component}
                                   </div>
                                 </div>

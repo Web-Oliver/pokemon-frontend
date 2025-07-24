@@ -45,42 +45,45 @@ export const useMarkSold = ({
 
   const { updatePsaCard, updateRawCard, updateSealedProduct } = useCollectionOperations();
 
-  const markAsSold = useCallback(async (saleDetails: ISaleDetails): Promise<void> => {
-    setIsProcessing(true);
-    setError(null);
+  const markAsSold = useCallback(
+    async (saleDetails: ISaleDetails): Promise<void> => {
+      setIsProcessing(true);
+      setError(null);
 
-    try {
-      // Prepare the update data with sale details
-      const updateData = {
-        sold: true,
-        saleDetails,
-      };
+      try {
+        // Prepare the update data with sale details
+        const updateData = {
+          sold: true,
+          saleDetails,
+        };
 
-      // Call the appropriate update function based on item type
-      switch (itemType) {
-        case 'psa':
-          await updatePsaCard(itemId, updateData);
-          break;
-        case 'raw':
-          await updateRawCard(itemId, updateData);
-          break;
-        case 'sealed':
-          await updateSealedProduct(itemId, updateData);
-          break;
-        default:
-          throw new Error(`Unsupported item type: ${itemType}`);
+        // Call the appropriate update function based on item type
+        switch (itemType) {
+          case 'psa':
+            await updatePsaCard(itemId, updateData);
+            break;
+          case 'raw':
+            await updateRawCard(itemId, updateData);
+            break;
+          case 'sealed':
+            await updateSealedProduct(itemId, updateData);
+            break;
+          default:
+            throw new Error(`Unsupported item type: ${itemType}`);
+        }
+
+        // Call success callback if provided
+        onSuccess?.();
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to mark item as sold');
+        setError(error);
+        onError?.(error);
+      } finally {
+        setIsProcessing(false);
       }
-
-      // Call success callback if provided
-      onSuccess?.();
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to mark item as sold');
-      setError(error);
-      onError?.(error);
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [itemType, itemId, updatePsaCard, updateRawCard, updateSealedProduct, onSuccess, onError]);
+    },
+    [itemType, itemId, updatePsaCard, updateRawCard, updateSealedProduct, onSuccess, onError]
+  );
 
   const clearError = useCallback((): void => {
     setError(null);

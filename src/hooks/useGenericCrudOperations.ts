@@ -1,7 +1,7 @@
 /**
  * Generic CRUD Operations Hook
  * Eliminates code duplication across PSA/Raw/Sealed operations hooks
- * 
+ *
  * Following CLAUDE.md DRY + SOLID principles:
  * - Single Responsibility: Handles generic CRUD operations
  * - Open/Closed: Extensible through configuration
@@ -44,7 +44,7 @@ interface GenericCrudOperationsReturn<T> {
  * Generic hook for CRUD operations
  * Consolidates duplicate logic from PSA/Raw/Sealed operation hooks
  * Uses TypeScript generics for type safety while maintaining reusability
- * 
+ *
  * @param apiOperations - API service methods for CRUD operations
  * @param messages - User-facing messages for success notifications
  * @returns Consistent CRUD operation interface with loading/error states

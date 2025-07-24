@@ -687,7 +687,7 @@ const CreateAuction: React.FC = () => {
       <div className='relative z-10 p-8'>
         <div className='max-w-4xl mx-auto space-y-8'>
           {/* Context7 Premium Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden group'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden group'>
             <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-cyan-500/5 to-blue-500/5'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between mb-6'>
@@ -696,7 +696,7 @@ const CreateAuction: React.FC = () => {
                     onClick={navigateToAuctions}
                     variant='outline'
                     size='sm'
-                    className='text-slate-600 hover:text-slate-800 border-slate-300 hover:border-slate-400'
+                    className='text-zinc-300 hover:text-zinc-100 border-zinc-600 hover:border-zinc-500'
                   >
                     <ArrowLeft className='w-4 h-4 mr-2' />
                     Back to Auctions
@@ -709,10 +709,10 @@ const CreateAuction: React.FC = () => {
                   <Gavel className='w-8 h-8 text-white' />
                 </div>
                 <div>
-                  <h1 className='text-4xl font-bold text-slate-900 tracking-wide bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent'>
+                  <h1 className='text-4xl font-bold text-zinc-100 tracking-wide bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent'>
                     Create New Auction
                   </h1>
-                  <p className='text-xl text-slate-600 font-medium leading-relaxed'>
+                  <p className='text-xl text-zinc-300 font-medium leading-relaxed'>
                     Start a new auction for your Pokémon collection
                   </p>
                 </div>
@@ -747,13 +747,13 @@ const CreateAuction: React.FC = () => {
           )}
 
           {/* Create Auction Form */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-teal-500/3 via-cyan-500/3 to-blue-500/3'></div>
             <div className='relative z-10 p-8'>
               <form onSubmit={handleSubmit} className='space-y-8'>
                 {/* Top Text Field */}
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide flex items-center'>
+                  <label className='block text-sm font-bold text-zinc-200 mb-3 tracking-wide flex items-center'>
                     <div className='w-6 h-6 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center mr-3'>
                       <FileText className='w-3 h-3 text-white' />
                     </div>
@@ -765,10 +765,10 @@ const CreateAuction: React.FC = () => {
                     value={formData.topText}
                     onChange={handleInputChange}
                     placeholder='Enter the main auction title/description (e.g., "Pokemon Card Auction #1")'
-                    className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-4 py-4 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/60 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-zinc-100 placeholder-zinc-400 ${
                       validationErrors.topText
                         ? 'border-red-300 bg-red-50/50'
-                        : 'border-slate-300 hover:border-slate-400'
+                        : 'border-zinc-600 hover:border-zinc-500'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
@@ -781,7 +781,7 @@ const CreateAuction: React.FC = () => {
 
                 {/* Bottom Text Field */}
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide flex items-center'>
+                  <label className='block text-sm font-bold text-zinc-200 mb-3 tracking-wide flex items-center'>
                     <div className='w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mr-3'>
                       <FileText className='w-3 h-3 text-white' />
                     </div>
@@ -793,10 +793,10 @@ const CreateAuction: React.FC = () => {
                     onChange={handleInputChange}
                     placeholder='Enter the auction footer/closing text (e.g., "Happy bidding! Payment due within 48 hours.")'
                     rows={4}
-                    className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 resize-none ${
+                    className={`w-full px-4 py-4 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/60 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 resize-none text-zinc-100 placeholder-zinc-400 ${
                       validationErrors.bottomText
                         ? 'border-red-300 bg-red-50/50'
-                        : 'border-slate-300 hover:border-slate-400'
+                        : 'border-zinc-600 hover:border-zinc-500'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
@@ -809,7 +809,7 @@ const CreateAuction: React.FC = () => {
 
                 {/* Auction Date Field */}
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide flex items-center'>
+                  <label className='block text-sm font-bold text-zinc-200 mb-3 tracking-wide flex items-center'>
                     <div className='w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3'>
                       <Calendar className='w-3 h-3 text-white' />
                     </div>
@@ -821,10 +821,10 @@ const CreateAuction: React.FC = () => {
                     value={formData.auctionDate}
                     onChange={handleInputChange}
                     min={getCurrentDate()}
-                    className={`w-full px-4 py-4 bg-white/50 backdrop-blur-sm border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-4 py-4 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/60 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-zinc-100 ${
                       validationErrors.auctionDate
                         ? 'border-red-300 bg-red-50/50'
-                        : 'border-slate-300 hover:border-slate-400'
+                        : 'border-zinc-600 hover:border-zinc-500'
                     }`}
                     disabled={auctionLoading || collectionLoading}
                   />
@@ -833,7 +833,7 @@ const CreateAuction: React.FC = () => {
                       {validationErrors.auctionDate}
                     </p>
                   )}
-                  <p className='mt-2 text-sm text-slate-500 font-medium'>
+                  <p className='mt-2 text-sm text-zinc-400 font-medium'>
                     Leave empty to set the date later. You can add items to the auction after
                     creation.
                   </p>
@@ -841,7 +841,7 @@ const CreateAuction: React.FC = () => {
 
                 {/* Status Field */}
                 <div>
-                  <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide flex items-center'>
+                  <label className='block text-sm font-bold text-zinc-200 mb-3 tracking-wide flex items-center'>
                     <div className='w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3'>
                       <Sparkles className='w-3 h-3 text-white' />
                     </div>
@@ -851,13 +851,13 @@ const CreateAuction: React.FC = () => {
                     name='status'
                     value={formData.status}
                     onChange={handleInputChange}
-                    className='w-full px-4 py-4 bg-white/50 backdrop-blur-sm border border-slate-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400'
+                    className='w-full px-4 py-4 bg-zinc-800/50 backdrop-blur-sm border border-zinc-600 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-zinc-500 text-zinc-100'
                     disabled={auctionLoading || collectionLoading}
                   >
                     <option value='draft'>Draft - Not visible to public</option>
                     <option value='active'>Active - Live auction</option>
                   </select>
-                  <p className='mt-2 text-sm text-slate-500 font-medium'>
+                  <p className='mt-2 text-sm text-zinc-400 font-medium'>
                     Start with "Draft" to review and add items before making it active.
                   </p>
                 </div>
@@ -865,14 +865,14 @@ const CreateAuction: React.FC = () => {
                 {/* Collection Items Selection */}
                 <div className='space-y-8'>
                   <div className='flex items-center justify-between'>
-                    <h3 className='text-xl font-bold text-slate-900 tracking-wide flex items-center'>
+                    <h3 className='text-xl font-bold text-zinc-100 tracking-wide flex items-center'>
                       <div className='w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3'>
                         <Package className='w-4 h-4 text-white' />
                       </div>
                       Select Items for Auction
                     </h3>
                     <div className='flex items-center space-x-3'>
-                      <div className='flex items-center space-x-2 text-sm font-medium text-slate-600'>
+                      <div className='flex items-center space-x-2 text-sm font-medium text-zinc-300'>
                         <Hash className='w-4 h-4' />
                         <span>{selectedItemIds.size} selected</span>
                         {selectedItemIds.size > 0 && (
@@ -893,7 +893,7 @@ const CreateAuction: React.FC = () => {
                           className={`flex items-center space-x-2 transition-all duration-200 ${
                             showPreview
                               ? 'bg-amber-50 border-amber-300 text-amber-700'
-                              : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                              : 'border-zinc-600 text-zinc-300 hover:bg-zinc-800'
                           }`}
                         >
                           <Eye className='w-4 h-4' />
@@ -914,19 +914,19 @@ const CreateAuction: React.FC = () => {
                         <div className='flex items-center space-x-4 text-sm'>
                           <div className='flex items-center space-x-2'>
                             <Grid3X3 className='w-4 h-4 text-teal-600' />
-                            <span className='font-medium text-slate-700'>
+                            <span className='font-medium text-zinc-200'>
                               PSA: {selectedItemsByType.PsaGradedCard.length}
                             </span>
                           </div>
                           <div className='flex items-center space-x-2'>
                             <Package className='w-4 h-4 text-blue-600' />
-                            <span className='font-medium text-slate-700'>
+                            <span className='font-medium text-zinc-200'>
                               Raw: {selectedItemsByType.RawCard.length}
                             </span>
                           </div>
                           <div className='flex items-center space-x-2'>
                             <Users className='w-4 h-4 text-purple-600' />
-                            <span className='font-medium text-slate-700'>
+                            <span className='font-medium text-zinc-200'>
                               Sealed: {selectedItemsByType.SealedProduct.length}
                             </span>
                           </div>
@@ -961,7 +961,7 @@ const CreateAuction: React.FC = () => {
                                       | 'price-low',
                                   }))
                                 }
-                                className='text-xs px-2 py-1 bg-white border border-teal-300 rounded-lg text-teal-700 font-medium'
+                                className='text-xs px-2 py-1 bg-teal-900/30 border border-teal-600/40 rounded-lg text-teal-300 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
                                 <option value='price-high'>Price: High to Low</option>
@@ -977,21 +977,21 @@ const CreateAuction: React.FC = () => {
                                   onDragOver={handleDragOver}
                                   onDrop={e => handleDrop(e, item.id, 'PsaGradedCard')}
                                   onDragEnd={handleDragEnd}
-                                  className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
+                                  className={`group flex items-center space-x-4 p-3 bg-zinc-800/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
                                     draggedItem === item.id
                                       ? 'border-teal-400 shadow-lg scale-105 bg-teal-50'
                                       : 'border-teal-200 hover:border-teal-300'
                                   }`}
                                 >
                                   <div className='flex items-center space-x-3'>
-                                    <GripVertical className='w-4 h-4 text-slate-400 group-hover:text-teal-600' />
+                                    <GripVertical className='w-4 h-4 text-zinc-500 group-hover:text-teal-600' />
                                     <div className='w-6 h-6 bg-gradient-to-br from-teal-100 to-teal-200 rounded-lg flex items-center justify-center font-bold text-teal-700 text-xs'>
                                       {index + 1}
                                     </div>
                                   </div>
 
                                   <div className='flex-1 flex items-center space-x-3'>
-                                    <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
+                                    <div className='w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
                                         <img
                                           src={item.displayImage}
@@ -1006,15 +1006,15 @@ const CreateAuction: React.FC = () => {
                                         />
                                       ) : null}
                                       <Package
-                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                        className={`w-5 h-5 text-zinc-500 ${item.displayImage ? 'hidden' : ''}`}
                                       />
                                     </div>
 
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                      <p className='font-semibold text-zinc-100 truncate text-sm'>
                                         {item.displayName}
                                       </p>
-                                      <p className='text-xs text-slate-500 truncate'>
+                                      <p className='text-xs text-zinc-400 truncate'>
                                         {item.setName}
                                       </p>
                                     </div>
@@ -1057,7 +1057,7 @@ const CreateAuction: React.FC = () => {
                                     RawCard: e.target.value as 'order' | 'price-high' | 'price-low',
                                   }))
                                 }
-                                className='text-xs px-2 py-1 bg-white border border-blue-300 rounded-lg text-blue-700 font-medium'
+                                className='text-xs px-2 py-1 bg-blue-900/30 border border-blue-600/40 rounded-lg text-blue-300 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
                                 <option value='price-high'>Price: High to Low</option>
@@ -1073,21 +1073,21 @@ const CreateAuction: React.FC = () => {
                                   onDragOver={handleDragOver}
                                   onDrop={e => handleDrop(e, item.id, 'RawCard')}
                                   onDragEnd={handleDragEnd}
-                                  className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
+                                  className={`group flex items-center space-x-4 p-3 bg-zinc-800/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
                                     draggedItem === item.id
                                       ? 'border-blue-400 shadow-lg scale-105 bg-blue-50'
                                       : 'border-blue-200 hover:border-blue-300'
                                   }`}
                                 >
                                   <div className='flex items-center space-x-3'>
-                                    <GripVertical className='w-4 h-4 text-slate-400 group-hover:text-blue-600' />
+                                    <GripVertical className='w-4 h-4 text-zinc-500 group-hover:text-blue-600' />
                                     <div className='w-6 h-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center font-bold text-blue-700 text-xs'>
                                       {index + 1}
                                     </div>
                                   </div>
 
                                   <div className='flex-1 flex items-center space-x-3'>
-                                    <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
+                                    <div className='w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
                                         <img
                                           src={item.displayImage}
@@ -1102,15 +1102,15 @@ const CreateAuction: React.FC = () => {
                                         />
                                       ) : null}
                                       <Package
-                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                        className={`w-5 h-5 text-zinc-500 ${item.displayImage ? 'hidden' : ''}`}
                                       />
                                     </div>
 
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                      <p className='font-semibold text-zinc-100 truncate text-sm'>
                                         {item.displayName}
                                       </p>
-                                      <p className='text-xs text-slate-500 truncate'>
+                                      <p className='text-xs text-zinc-400 truncate'>
                                         {item.setName}
                                       </p>
                                     </div>
@@ -1156,7 +1156,7 @@ const CreateAuction: React.FC = () => {
                                       | 'price-low',
                                   }))
                                 }
-                                className='text-xs px-2 py-1 bg-white border border-purple-300 rounded-lg text-purple-700 font-medium'
+                                className='text-xs px-2 py-1 bg-purple-900/30 border border-purple-600/40 rounded-lg text-purple-300 font-medium'
                               >
                                 <option value='order'>Manual Order</option>
                                 <option value='price-high'>Price: High to Low</option>
@@ -1172,21 +1172,21 @@ const CreateAuction: React.FC = () => {
                                   onDragOver={handleDragOver}
                                   onDrop={e => handleDrop(e, item.id, 'SealedProduct')}
                                   onDragEnd={handleDragEnd}
-                                  className={`group flex items-center space-x-4 p-3 bg-white/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
+                                  className={`group flex items-center space-x-4 p-3 bg-zinc-800/80 rounded-xl border-2 transition-all duration-200 cursor-move hover:shadow-md ${
                                     draggedItem === item.id
                                       ? 'border-purple-400 shadow-lg scale-105 bg-purple-50'
                                       : 'border-purple-200 hover:border-purple-300'
                                   }`}
                                 >
                                   <div className='flex items-center space-x-3'>
-                                    <GripVertical className='w-4 h-4 text-slate-400 group-hover:text-purple-600' />
+                                    <GripVertical className='w-4 h-4 text-zinc-500 group-hover:text-purple-600' />
                                     <div className='w-6 h-6 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center font-bold text-purple-700 text-xs'>
                                       {index + 1}
                                     </div>
                                   </div>
 
                                   <div className='flex-1 flex items-center space-x-3'>
-                                    <div className='w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden'>
+                                    <div className='w-10 h-10 bg-zinc-700 rounded-lg flex items-center justify-center overflow-hidden'>
                                       {item.displayImage ? (
                                         <img
                                           src={item.displayImage}
@@ -1201,15 +1201,15 @@ const CreateAuction: React.FC = () => {
                                         />
                                       ) : null}
                                       <Package
-                                        className={`w-5 h-5 text-slate-400 ${item.displayImage ? 'hidden' : ''}`}
+                                        className={`w-5 h-5 text-zinc-500 ${item.displayImage ? 'hidden' : ''}`}
                                       />
                                     </div>
 
                                     <div className='flex-1 min-w-0'>
-                                      <p className='font-semibold text-slate-900 truncate text-sm'>
+                                      <p className='font-semibold text-zinc-100 truncate text-sm'>
                                         {item.displayName}
                                       </p>
-                                      <p className='text-xs text-slate-500 truncate'>
+                                      <p className='text-xs text-zinc-400 truncate'>
                                         {item.setName}
                                       </p>
                                     </div>
@@ -1253,21 +1253,21 @@ const CreateAuction: React.FC = () => {
                   {/* Search and Filter Controls */}
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <div className='relative'>
-                      <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400' />
+                      <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500' />
                       <input
                         type='text'
                         placeholder='Search items...'
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className='w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200'
+                        className='w-full pl-10 pr-4 py-3 bg-zinc-800/50 backdrop-blur-sm border border-zinc-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 text-zinc-100 placeholder-zinc-400'
                       />
                     </div>
                     <div className='relative'>
-                      <Filter className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400' />
+                      <Filter className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500' />
                       <select
                         value={filterType}
                         onChange={e => setFilterType(e.target.value as any)}
-                        className='w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200'
+                        className='w-full pl-10 pr-4 py-3 bg-zinc-800/50 backdrop-blur-sm border border-zinc-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 text-zinc-100 placeholder-zinc-400'
                       >
                         <option value='all'>All Items</option>
                         <option value='PsaGradedCard'>PSA Graded Cards</option>
@@ -1296,14 +1296,14 @@ const CreateAuction: React.FC = () => {
                           onClick={clearAllSelections}
                           variant='outline'
                           size='sm'
-                          className='text-slate-600 border-slate-300 hover:bg-slate-50'
+                          className='text-zinc-300 border-zinc-600 hover:bg-zinc-800'
                         >
                           <X className='w-4 h-4 mr-1' />
                           Clear Selection
                         </Button>
                       )}
                     </div>
-                    <p className='text-sm text-slate-500 font-medium'>
+                    <p className='text-sm text-zinc-400 font-medium'>
                       {filteredItems.length} items available
                     </p>
                   </div>
@@ -1314,10 +1314,10 @@ const CreateAuction: React.FC = () => {
                   ) : filteredItems.length === 0 ? (
                     <div className='py-12 text-center'>
                       <div className='w-16 h-16 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-lg flex items-center justify-center mx-auto mb-4'>
-                        <Package className='w-8 h-8 text-slate-500' />
+                        <Package className='w-8 h-8 text-zinc-400' />
                       </div>
-                      <h4 className='text-lg font-bold text-slate-900 mb-2'>No items found</h4>
-                      <p className='text-slate-600 font-medium'>
+                      <h4 className='text-lg font-bold text-zinc-100 mb-2'>No items found</h4>
+                      <p className='text-zinc-300 font-medium'>
                         {searchTerm || filterType !== 'all'
                           ? 'Try adjusting your search or filter.'
                           : 'Add items to your collection first.'}
@@ -1357,7 +1357,7 @@ const CreateAuction: React.FC = () => {
 
                       {/* Conditional Rendering: Virtualized Grid for Large Collections */}
                       {shouldUseVirtualization ? (
-                        <div className='rounded-2xl bg-slate-50/50 p-4 overflow-hidden'>
+                        <div className='rounded-2xl bg-zinc-800/50 p-4 overflow-hidden'>
                           <div className='mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200'>
                             <p className='text-sm text-blue-700 font-medium'>
                               ⚡ Performance mode: Large collection detected. Using optimized
@@ -1378,7 +1378,7 @@ const CreateAuction: React.FC = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-2xl bg-slate-50/50 p-4'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-2xl bg-zinc-800/50 p-4'>
                           {filteredItems.map(item => {
                             const isSelected = selectedItemIds.has(item.id);
                             const selectionOrder =
@@ -1391,7 +1391,7 @@ const CreateAuction: React.FC = () => {
                                 className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col h-full hover:scale-102 ${
                                   isSelected
                                     ? 'border-amber-400 bg-amber-50/80 shadow-lg transform scale-105'
-                                    : 'border-slate-200 bg-white/80 hover:border-amber-300 hover:shadow-md'
+                                    : 'border-zinc-700/40 bg-zinc-800/80 hover:border-amber-400/60 hover:shadow-md'
                                 }`}
                               >
                                 {/* Selection Indicator with Order Number */}
@@ -1404,7 +1404,7 @@ const CreateAuction: React.FC = () => {
                                       </div>
                                     </div>
                                   ) : (
-                                    <Circle className='w-6 h-6 text-slate-400 group-hover:text-amber-500 transition-colors' />
+                                    <Circle className='w-6 h-6 text-zinc-500 group-hover:text-cyan-400 transition-colors' />
                                   )}
                                 </div>
 
@@ -1431,14 +1431,14 @@ const CreateAuction: React.FC = () => {
                                 <div className='w-full mb-3 mt-8'>
                                   <Suspense
                                     fallback={
-                                      <div className='w-full h-48 bg-slate-100 rounded-xl flex items-center justify-center'>
-                                        <Package className='w-8 h-8 text-slate-400' />
+                                      <div className='w-full h-48 bg-zinc-700 rounded-xl flex items-center justify-center'>
+                                        <Package className='w-8 h-8 text-zinc-500' />
                                       </div>
                                     }
                                   >
                                     <ImageSlideshow
                                       images={item.displayImage ? [item.displayImage] : []}
-                                      fallbackIcon={<Package className='w-6 h-6 text-slate-400' />}
+                                      fallbackIcon={<Package className='w-6 h-6 text-zinc-500' />}
                                       autoplay={false}
                                       autoplayDelay={3000}
                                       className='w-full h-48'
@@ -1452,11 +1452,11 @@ const CreateAuction: React.FC = () => {
                                 {/* Item Details */}
                                 <div className='flex flex-col flex-1 space-y-2'>
                                   <div className='flex-1'>
-                                    <h5 className='font-bold text-slate-900 text-sm line-clamp-2 mb-2'>
+                                    <h5 className='font-bold text-zinc-100 text-sm line-clamp-2 mb-2'>
                                       {item.displayName}
                                     </h5>
                                     {item.setName && (
-                                      <p className='text-xs text-slate-500 font-medium truncate mb-2'>
+                                      <p className='text-xs text-zinc-400 font-medium truncate mb-2'>
                                         {item.setName}
                                       </p>
                                     )}
@@ -1464,9 +1464,7 @@ const CreateAuction: React.FC = () => {
 
                                   {/* Price - Always at bottom */}
                                   <div className='flex items-center justify-between mt-auto pt-2 border-t border-slate-100'>
-                                    <span className='text-xs font-medium text-slate-600'>
-                                      Price
-                                    </span>
+                                    <span className='text-xs font-medium text-zinc-300'>Price</span>
                                     <span className='font-bold text-emerald-600 text-lg'>
                                       {item.displayPrice.toLocaleString()} kr.
                                     </span>
@@ -1514,7 +1512,7 @@ const CreateAuction: React.FC = () => {
                       onClick={navigateToAuctions}
                       variant='outline'
                       disabled={auctionLoading || collectionLoading}
-                      className='text-slate-600 hover:text-slate-800 border-slate-300 hover:border-slate-400'
+                      className='text-zinc-300 hover:text-zinc-100 border-zinc-600 hover:border-zinc-500'
                     >
                       Cancel
                     </Button>
@@ -1530,7 +1528,7 @@ const CreateAuction: React.FC = () => {
                           <Save className='w-5 h-5 mr-3' />
                           Create Auction
                           {selectedItemIds.size > 0 && (
-                            <span className='ml-2 px-3 py-1 bg-white/20 rounded-lg text-xs font-bold flex items-center space-x-1'>
+                            <span className='ml-2 px-3 py-1 bg-zinc-800/40 rounded-lg text-xs font-bold flex items-center space-x-1 text-zinc-300'>
                               <Hash className='w-3 h-3' />
                               <span>{selectedItemIds.size}</span>
                             </span>

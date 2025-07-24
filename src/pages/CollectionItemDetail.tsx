@@ -572,7 +572,7 @@ const CollectionItemDetail: React.FC = () => {
         {!item ? (
           <div className='flex items-center justify-center min-h-64'>
             <div className='text-center'>
-              <p className='text-slate-600 mb-4'>Loading item details...</p>
+              <p className='text-zinc-400 mb-4'>Loading item details...</p>
             </div>
           </div>
         ) : (
@@ -584,12 +584,12 @@ const CollectionItemDetail: React.FC = () => {
                 Back to Collection
               </Button>
 
-              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8'>
+              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8'>
                 <div className='flex items-start justify-between'>
                   <div>
-                    <h1 className='text-3xl font-bold text-slate-900 mb-2'>{getItemTitle()}</h1>
-                    <p className='text-xl text-slate-600 mb-2'>{getItemSubtitle()}</p>
-                    <p className='text-lg text-slate-500'>Set: {getSetName()}</p>
+                    <h1 className='text-3xl font-bold text-zinc-100 mb-2'>{getItemTitle()}</h1>
+                    <p className='text-xl text-zinc-300 mb-2'>{getItemSubtitle()}</p>
+                    <p className='text-lg text-zinc-400'>Set: {getSetName()}</p>
                   </div>
                   <div className='flex items-center space-x-3'>
                     <Button variant='outline' size='sm' onClick={handleEdit}>
@@ -608,8 +608,8 @@ const CollectionItemDetail: React.FC = () => {
             {/* Main Content - Details */}
             <div className='space-y-6 mb-8'>
               {/* Basic Information */}
-              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-                <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
+                <h2 className='text-xl font-semibold text-zinc-100 mb-4 flex items-center'>
                   <Info className='w-5 h-5 mr-2' />
                   Basic Information
                 </h2>
@@ -617,17 +617,17 @@ const CollectionItemDetail: React.FC = () => {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                   <div className='space-y-3'>
                     <div className='flex justify-between'>
-                      <span className='text-slate-600'>My Price:</span>
-                      <span className='font-bold text-slate-900'>{item.myPrice || '0'} kr.</span>
+                      <span className='text-zinc-300'>My Price:</span>
+                      <span className='font-bold text-zinc-100'>{item.myPrice || '0'} kr.</span>
                     </div>
                     <div className='flex justify-between'>
-                      <span className='text-slate-600'>Date Added:</span>
-                      <span className='font-medium text-slate-900'>
+                      <span className='text-zinc-300'>Date Added:</span>
+                      <span className='font-medium text-zinc-100'>
                         {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
                       </span>
                     </div>
                     <div className='flex justify-between'>
-                      <span className='text-slate-600'>Status:</span>
+                      <span className='text-zinc-300'>Status:</span>
                       <span
                         className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}
                       >
@@ -638,8 +638,8 @@ const CollectionItemDetail: React.FC = () => {
 
                   <div className='space-y-3'>
                     <div className='flex justify-between'>
-                      <span className='text-slate-600'>Item Type:</span>
-                      <span className='font-medium text-slate-900'>
+                      <span className='text-zinc-300'>Item Type:</span>
+                      <span className='font-medium text-zinc-100'>
                         {(() => {
                           const { type } = getUrlParams();
                           return type === 'psa'
@@ -651,8 +651,8 @@ const CollectionItemDetail: React.FC = () => {
                       </span>
                     </div>
                     <div className='flex justify-between'>
-                      <span className='text-slate-600'>Images:</span>
-                      <span className='font-medium text-slate-900'>{item.images?.length || 0}</span>
+                      <span className='text-zinc-300'>Images:</span>
+                      <span className='font-medium text-zinc-100'>{item.images?.length || 0}</span>
                     </div>
                   </div>
                 </div>
@@ -662,8 +662,8 @@ const CollectionItemDetail: React.FC = () => {
               {renderItemSpecificInfo()}
 
               {/* Price History */}
-              <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
-                <h2 className='text-xl font-semibold text-slate-900 mb-4 flex items-center'>
+              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
+                <h2 className='text-xl font-semibold text-zinc-100 mb-4 flex items-center'>
                   <DollarSign className='w-5 h-5 mr-2' />
                   Price History
                 </h2>
@@ -680,9 +680,9 @@ const CollectionItemDetail: React.FC = () => {
             </div>
 
             {/* Images Section - Using Standardized ImageProductView */}
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
               <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
+                <h2 className='text-xl font-semibold text-zinc-100 flex items-center'>
                   <ImageIcon className='w-5 h-5 mr-2' />
                   Images
                 </h2>
@@ -718,9 +718,9 @@ const CollectionItemDetail: React.FC = () => {
                       const { type } = getUrlParams();
                       return type as 'psa' | 'raw' | 'sealed';
                     })()}
-                    grade={('grade' in item) ? item.grade : undefined}
-                    condition={('condition' in item) ? item.condition : undefined}
-                    category={('category' in item) ? item.category : undefined}
+                    grade={'grade' in item ? item.grade : undefined}
+                    condition={'condition' in item ? item.condition : undefined}
+                    category={'category' in item ? item.category : undefined}
                     sold={item.sold}
                     saleDate={item.saleDetails?.dateSold}
                     variant='detail'

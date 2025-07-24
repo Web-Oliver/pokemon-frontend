@@ -134,16 +134,16 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
       {/* Error Display */}
       {error && (
-        <div className='mb-6 p-4 bg-red-50 border border-red-200 rounded-lg'>
-          <p className='text-red-800'>Error: {error.message}</p>
+        <div className='mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg'>
+          <p className='text-red-300'>Error: {error.message}</p>
         </div>
       )}
 
-      <div className='bg-white rounded-lg shadow-lg p-6 mt-6'>
+      <div className='bg-zinc-900/80 backdrop-blur-xl rounded-lg shadow-lg p-6 mt-6 border border-zinc-700/50'>
         <form onSubmit={handleSubmit(onFormSubmit)} className='space-y-6'>
           {/* Sale Information Section */}
-          <div className='bg-gray-50 p-4 rounded-lg'>
-            <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center'>
+          <div className='bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50'>
+            <h3 className='text-lg font-semibold text-zinc-100 mb-4 flex items-center'>
               <svg
                 className='w-5 h-5 mr-2 text-green-600'
                 fill='none'
@@ -245,8 +245,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           </div>
 
           {/* Delivery Information Section */}
-          <div className='bg-gray-50 p-4 rounded-lg'>
-            <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center'>
+          <div className='bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50'>
+            <h3 className='text-lg font-semibold text-zinc-100 mb-4 flex items-center'>
               <svg
                 className='w-5 h-5 mr-2 text-blue-600'
                 fill='none'
@@ -283,7 +283,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             {/* Conditional Buyer Information */}
             {showBuyerName && (
               <div className='space-y-4 border-t pt-4'>
-                <h4 className='font-medium text-gray-900'>Buyer Information</h4>
+                <h4 className='font-medium text-zinc-100'>Buyer Information</h4>
 
                 {/* Buyer Full Name */}
                 <div>
@@ -348,7 +348,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                 {/* Buyer Address - only show for shipped items */}
                 {showBuyerInfo && (
                   <div className='space-y-4'>
-                    <h5 className='font-medium text-gray-700'>Shipping Address</h5>
+                    <h5 className='font-medium text-zinc-200'>Shipping Address</h5>
 
                     <div>
                       <Controller

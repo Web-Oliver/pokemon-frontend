@@ -46,11 +46,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
     const baseInputClasses =
-      'block w-full py-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl shadow-lg placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 focus:bg-white text-slate-700 font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl group-hover:border-indigo-200 focus:shadow-[0_0_0_3px_rgb(99,102,241,0.1)] hover:border-indigo-300/60';
+      'block w-full py-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-2xl shadow-lg placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 focus:bg-zinc-800/95 text-zinc-100 font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl group-hover:border-cyan-600/30 focus:shadow-[0_0_0_3px_rgb(6,182,212,0.1)] hover:border-cyan-500/40';
 
     const errorInputClasses = error
-      ? 'border-red-300/60 focus:ring-red-500/50 focus:border-red-400 bg-red-50/50'
-      : 'border-slate-200/50 focus:ring-indigo-500/50 focus:border-indigo-300';
+      ? 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20'
+      : 'border-zinc-700/50 focus:ring-cyan-500/50 focus:border-cyan-400';
 
     const widthClass = fullWidth ? 'w-full' : '';
 
@@ -80,7 +80,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <div className={`${inputWithIconClasses} ${fullWidth ? 'w-full' : ''} relative`}>
           {startIcon && (
             <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10'>
-              <div className='h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
+              <div className='h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
                 {startIcon}
               </div>
             </div>
@@ -90,7 +90,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
           {endIcon && (
             <div className='absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-10'>
-              <div className='h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
+              <div className='h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
                 {endIcon}
               </div>
             </div>

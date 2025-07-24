@@ -89,7 +89,7 @@ export class ExportApiService implements IExportApiService {
         itemType,
         format: 'zip',
         exportedAt: new Date().toISOString(),
-        config: config,
+        config,
       },
     };
   }

@@ -1,7 +1,7 @@
 /**
  * InformationFieldRenderer Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following CLAUDE.md composition over conditions:
  * - Strategy Pattern: Renders appropriate fields based on type
  * - Open/Closed: New field types can be added without modification

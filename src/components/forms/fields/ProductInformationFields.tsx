@@ -1,7 +1,7 @@
 /**
  * ProductInformationFields Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following CLAUDE.md composition over conditions:
  * - Single Responsibility: Handles only product-specific fields
  * - Open/Closed: Extensible through field configuration

@@ -1,7 +1,7 @@
 /**
  * Search Hooks - Modular Search System
  * Replaces the monolithic 822-line useSearch hook with focused, composable hooks
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Each hook handles one aspect of search
  * - Open/Closed: Extensible by composing different hook combinations
@@ -29,7 +29,7 @@ export type { SearchState, UseSearchReturn } from '../useSearch';
  * Composed Search Hook
  * Provides backward compatibility with the original useSearch interface
  * Combines all the split hooks into a single interface
- * 
+ *
  * Use this if you need all search functionality, or use individual hooks for specific needs
  */
 export const useComposedSearch = () => {
@@ -42,28 +42,25 @@ export const useComposedSearch = () => {
   return {
     // Basic search
     ...basicSearch,
-    
+
     // Suggestions
     suggestions: suggestions.suggestions,
     searchMeta: suggestions.searchMeta,
     searchSuggestions: suggestions.searchSuggestions,
     clearSuggestions: suggestions.clearSuggestions,
     getSuggestionDisplayText: suggestions.getSuggestionDisplayText,
-    
+
     // Hierarchical search
     ...hierarchical,
-    
+
     // Cache management
     getCacheStats: cache.getCacheStats,
     getCacheSize: cache.getCacheSize,
     clearCache: cache.clearCache,
     cleanupExpiredEntries: cache.cleanupExpiredEntries,
-    
+
     // Combined operations
-    handleSuggestionSelect: (
-      suggestion: any,
-      fieldType: 'set' | 'category' | 'cardProduct'
-    ) => {
+    handleSuggestionSelect: (suggestion: any, fieldType: 'set' | 'category' | 'cardProduct') => {
       // Use hierarchical selection logic
       hierarchical.handleHierarchicalSelection(suggestion, fieldType);
     },
@@ -78,7 +75,7 @@ export const useComposedSearch = () => {
 export const useLightweightSearch = () => {
   const basicSearch = useBasicSearch();
   const suggestions = useSearchSuggestions();
-  
+
   return {
     ...basicSearch,
     suggestions: suggestions.suggestions,

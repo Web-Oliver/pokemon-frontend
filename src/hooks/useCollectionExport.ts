@@ -13,11 +13,7 @@ import { useState, useCallback } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { exportApiService } from '../services/ExportApiService';
-import {
-  ExportRequest,
-  ExportItemType,
-  ExportFormat,
-} from '../interfaces/api/IExportApiService';
+import { ExportRequest, ExportItemType, ExportFormat } from '../interfaces/api/IExportApiService';
 import { showSuccessToast, showWarningToast, handleApiError } from '../utils/errorHandler';
 import {
   formatExportSuccessMessage,

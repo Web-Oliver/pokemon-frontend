@@ -150,8 +150,8 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
           <div className='text-red-500 mb-4'>
             <Package className='mx-auto w-12 h-12' />
           </div>
-          <h3 className='text-lg font-medium text-gray-900 mb-2'>Error Loading Collection</h3>
-          <p className='text-gray-500 mb-4'>{error}</p>
+          <h3 className='text-lg font-medium text-zinc-100 mb-2'>Error Loading Collection</h3>
+          <p className='text-zinc-400 mb-4'>{error}</p>
           <button
             onClick={() => window.location.reload()}
             className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors'
@@ -172,11 +172,11 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
               className: 'mx-auto w-12 h-12',
             })}
           </div>
-          <h3 className='text-lg font-medium text-gray-900 mb-2'>No Items Found</h3>
-          <p className='text-gray-500 mb-4'>{emptyMessage}</p>
+          <h3 className='text-lg font-medium text-zinc-100 mb-2'>No Items Found</h3>
+          <p className='text-zinc-400 mb-4'>{emptyMessage}</p>
           <button
             onClick={onAddNewItem}
-            className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center'
+            className='bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center'
           >
             <Plus className='w-4 h-4 mr-2' />
             Add First Item
@@ -288,12 +288,12 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   return (
-    <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
-      <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-blue-500/3'></div>
+    <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden'>
+      <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5'></div>
 
       <div className='relative z-10'>
         {/* Tab Navigation */}
-        <div className='border-b border-slate-200/50 px-8 pt-8'>
+        <div className='border-b border-zinc-700/50 px-8 pt-8'>
           <nav className='-mb-px flex space-x-1'>
             {tabs.map(tab => {
               const isActive = activeTab === tab.id;
@@ -304,16 +304,16 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
                   onClick={() => onTabChange(tab.id)}
                   className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${
                     isActive
-                      ? 'border-indigo-500 text-indigo-700 bg-indigo-50/50 shadow-lg'
-                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 hover:bg-slate-50/50'
+                      ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg'
+                      : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'
                   }`}
                 >
                   <div className='flex items-center space-x-3'>
                     <div
                       className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
                         isActive
-                          ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg scale-110'
-                          : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'
+                          ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110'
+                          : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'
                       }`}
                     >
                       <Icon className='w-4 h-4' />
@@ -321,7 +321,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
                     <span className='tracking-wide'>{tab.name}</span>
                   </div>
                   {isActive && (
-                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full shadow-lg animate-pulse'></div>
+                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse'></div>
                   )}
                 </button>
               );

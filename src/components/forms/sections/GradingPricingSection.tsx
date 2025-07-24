@@ -90,13 +90,13 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
       };
 
   return (
-    <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+    <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
       <div
-        className={`absolute inset-0 bg-gradient-to-br from-white/50 ${isPsaCard ? 'to-blue-50/50' : 'to-emerald-50/50'}`}
+        className={`absolute inset-0 bg-gradient-to-br from-zinc-800/50 ${isPsaCard ? 'to-blue-900/50' : 'to-emerald-900/50'}`}
       ></div>
 
-      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-center relative z-10'>
-        <Banknote className='w-6 h-6 mr-3 text-slate-600' />
+      <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center justify-center relative z-10'>
+        <Banknote className='w-6 h-6 mr-3 text-zinc-300' />
         {isEditing
           ? 'Update Price (kr.)'
           : isPsaCard

@@ -1,6 +1,6 @@
 /**
  * Image Product View Component
- * 
+ *
  * Standardized reusable component for displaying product images across all pages.
  * Based on the premium design from CollectionItemCard with enhanced functionality.
  * Following CLAUDE.md principles:
@@ -11,18 +11,18 @@
  */
 
 import React, { useState, memo, useCallback } from 'react';
-import { 
-  Package, 
-  Star, 
-  Archive, 
-  CheckCircle, 
-  Eye, 
+import {
+  Package,
+  Star,
+  Archive,
+  CheckCircle,
+  Eye,
   Download,
   Share,
   Heart,
   MoreHorizontal,
   Edit,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
 
@@ -32,7 +32,7 @@ export interface ImageProductViewProps {
   title: string;
   subtitle?: string;
   price?: number | string;
-  
+
   // Product type and status
   type?: 'psa' | 'raw' | 'sealed';
   grade?: string | number;
@@ -40,7 +40,7 @@ export interface ImageProductViewProps {
   category?: string;
   sold?: boolean;
   saleDate?: string;
-  
+
   // Display options
   variant?: 'card' | 'detail' | 'auction' | 'minimal';
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -48,11 +48,11 @@ export interface ImageProductViewProps {
   showPrice?: boolean;
   showActions?: boolean;
   enableInteractions?: boolean;
-  
+
   // Layout options
   aspectRatio?: 'auto' | 'card' | 'square' | 'wide';
   className?: string;
-  
+
   // Callback functions
   onView?: () => void;
   onEdit?: () => void;
@@ -94,10 +94,34 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
   // Size configuration - Made image much bigger, text smaller
   const sizeConfig = {
-    sm: { width: 'w-32', height: 'h-80', textHeight: 'h-16', text: 'text-[10px]', badge: 'text-[8px]' },
-    md: { width: 'w-48', height: 'h-[30rem]', textHeight: 'h-20', text: 'text-xs', badge: 'text-[9px]' },
-    lg: { width: 'w-64', height: 'h-[36rem]', textHeight: 'h-24', text: 'text-sm', badge: 'text-[10px]' },
-    xl: { width: 'w-80', height: 'h-[44rem]', textHeight: 'h-28', text: 'text-base', badge: 'text-xs' },
+    sm: {
+      width: 'w-32',
+      height: 'h-80',
+      textHeight: 'h-16',
+      text: 'text-[10px]',
+      badge: 'text-[8px]',
+    },
+    md: {
+      width: 'w-48',
+      height: 'h-[30rem]',
+      textHeight: 'h-20',
+      text: 'text-xs',
+      badge: 'text-[9px]',
+    },
+    lg: {
+      width: 'w-64',
+      height: 'h-[36rem]',
+      textHeight: 'h-24',
+      text: 'text-sm',
+      badge: 'text-[10px]',
+    },
+    xl: {
+      width: 'w-80',
+      height: 'h-[44rem]',
+      textHeight: 'h-28',
+      text: 'text-base',
+      badge: 'text-xs',
+    },
   }[size];
 
   // Aspect ratio configuration
@@ -155,7 +179,9 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
   // Render action buttons
   const renderActions = () => {
-    if (!showActions) return null;
+    if (!showActions) {
+      return null;
+    }
 
     const actions = [
       { icon: Eye, label: 'View', onClick: onView, show: !!onView },
@@ -166,13 +192,15 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
       { icon: Trash2, label: 'Delete', onClick: onDelete, show: !!onDelete },
     ].filter(action => action.show);
 
-    if (actions.length === 0) return null;
+    if (actions.length === 0) {
+      return null;
+    }
 
     return (
       <div className='absolute top-3 right-3 z-50'>
         <div className='relative'>
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               setIsActionsOpen(!isActionsOpen);
             }}
@@ -180,20 +208,20 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           >
             <MoreHorizontal className='w-4 h-4' />
           </button>
-          
+
           {isActionsOpen && (
-            <div className='absolute top-10 right-0 bg-white rounded-lg shadow-lg border p-2 min-w-[120px]'>
+            <div className='absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-lg shadow-2xl border border-zinc-700/40 p-2 min-w-[120px]'>
               {actions.map((action, index) => {
                 const Icon = action.icon;
                 return (
                   <button
                     key={index}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       action.onClick?.();
                       setIsActionsOpen(false);
                     }}
-                    className='w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors'
+                    className='w-full flex items-center px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800/60 rounded transition-colors'
                   >
                     <Icon className='w-4 h-4 mr-2' />
                     {action.label}
@@ -209,8 +237,9 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
   // Variant-specific styling
   const getVariantStyles = () => {
-    const baseStyles = 'relative rounded-xl shadow-lg border border-gray-200 overflow-hidden bg-white';
-    
+    const baseStyles =
+      'relative rounded-xl shadow-lg border border-zinc-700/40 overflow-hidden bg-zinc-900/80 backdrop-blur-xl';
+
     switch (variant) {
       case 'detail':
         return `${baseStyles} shadow-xl`;
@@ -228,6 +257,10 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
     <div
       className={`group ${getVariantStyles()} transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className} flex flex-col ${sizeConfig.height}`}
       onClick={handleClick}
+      style={{
+        boxShadow:
+          '0 35px 60px -12px rgba(0, 0, 0, 0.5), 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 20px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+      }}
     >
       {/* Main Image Container - Much bigger */}
       <div className={`relative w-full ${variant === 'detail' ? 'min-h-[500px]' : 'flex-1'}`}>
@@ -240,25 +273,27 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
             className='w-full h-full'
             showThumbnails={variant === 'detail'}
           />
-          
-          {/* Enhanced text overlay shadow for better visibility */}
-          <div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10 pointer-events-none' />
-          <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/90 to-transparent z-15 pointer-events-none' />
+
+          {/* Enhanced multi-layer text overlay shadow for better visibility */}
+          <div className='absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/95 via-black/80 via-black/60 to-transparent z-10 pointer-events-none' />
+          <div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/98 via-black/85 to-transparent z-15 pointer-events-none' />
+          <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/95 to-transparent z-20 pointer-events-none' />
+          <div className='absolute bottom-0 left-0 right-0 h-8 bg-black/90 z-25 pointer-events-none' />
         </div>
 
         {/* Action buttons */}
         {renderActions()}
       </div>
 
-      {/* Text Layer - Smaller, better visibility */}
-      <div className={`absolute bottom-0 left-0 right-0 ${sizeConfig.textHeight} flex flex-col justify-end p-2 pointer-events-none z-20`}>
+      {/* Text Layer - Enhanced shadows for better visibility */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 ${sizeConfig.textHeight} flex flex-col justify-end p-2 pointer-events-none z-30`}
+      >
         {/* Badge */}
         {showBadge && (
           <div
             className={`inline-flex items-center justify-center px-2 py-1 rounded-full ${sizeConfig.badge} font-bold mb-1 self-start pointer-events-auto ${
-              sold 
-                ? 'bg-green-600 text-white shadow-lg'
-                : 'bg-blue-600 text-white shadow-lg'
+              sold ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-600 text-white shadow-lg'
             }`}
             style={{
               textShadow: '0 1px 3px rgba(0,0,0,0.8)',
@@ -271,7 +306,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
         {/* Subtitle */}
         {subtitle && (
-          <p 
+          <p
             className={`${sizeConfig.badge} text-white font-semibold mb-0.5 tracking-wide uppercase leading-tight break-words`}
             style={{
               textShadow: '0 1px 3px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.8)',
@@ -283,10 +318,11 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
         )}
 
         {/* Title */}
-        <h3 
+        <h3
           className={`${sizeConfig.text} font-bold text-white leading-tight break-words`}
           style={{
-            textShadow: '0 2px 4px rgba(0,0,0,1), 0 1px 2px rgba(0,0,0,0.9), 0 3px 8px rgba(0,0,0,0.7)',
+            textShadow:
+              '0 2px 4px rgba(0,0,0,1), 0 1px 2px rgba(0,0,0,0.9), 0 3px 8px rgba(0,0,0,0.7)',
             WebkitTextStroke: '0.5px rgba(0,0,0,0.3)',
           }}
         >
@@ -296,8 +332,8 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
       {/* Price in Bottom Right Corner */}
       {showPrice && price && (
-        <div 
-          className={`absolute bottom-2 right-2 px-2 py-1 rounded-lg ${sizeConfig.badge} font-bold bg-cyan-400 text-black pointer-events-auto z-20 shadow-lg`}
+        <div
+          className={`absolute bottom-2 right-2 px-2 py-1 rounded-lg ${sizeConfig.badge} font-bold bg-cyan-400 text-black pointer-events-auto z-40 shadow-xl`}
           style={{
             textShadow: '0 1px 2px rgba(0,0,0,0.3)',
           }}

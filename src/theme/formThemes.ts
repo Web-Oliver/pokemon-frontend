@@ -1,7 +1,7 @@
 /**
  * Centralized Form Theme Configuration System
  * Eliminates theme duplication across FormHeader, FormActionButtons, and other components
- * 
+ *
  * Following CLAUDE.md DRY + SOLID principles:
  * - Single Responsibility: Manages only theme configuration
  * - Open/Closed: Extensible by adding new color schemes
@@ -9,7 +9,7 @@
  * - Interface Segregation: Separate interfaces for different theme aspects
  */
 
-export type ThemeColor = 'purple' | 'blue' | 'emerald' | 'amber' | 'rose';
+export type ThemeColor = 'purple' | 'blue' | 'emerald' | 'amber' | 'rose' | 'dark';
 
 /**
  * Base theme interface for form headers
@@ -161,13 +161,34 @@ export const formThemes: Record<ThemeColor, FormThemeConfig> = {
       border: 'border-rose-200/50',
     },
   },
+  dark: {
+    header: {
+      background: 'from-zinc-900/80 to-zinc-800/80',
+      border: 'border-zinc-700/50',
+      topBorder: 'from-cyan-500 to-blue-500',
+      overlay: 'from-cyan-500/5 to-blue-500/5',
+      iconBackground: 'from-cyan-500 to-blue-600',
+      titleText: 'from-cyan-400 to-blue-400',
+      descriptionText: 'text-zinc-300',
+    },
+    button: {
+      primary: 'bg-gradient-to-r from-cyan-600 to-blue-600',
+      primaryHover: 'hover:from-cyan-700 hover:to-blue-700',
+    },
+    element: {
+      gradient: 'from-cyan-500/10 via-blue-500/10 to-cyan-500/10',
+      glow: 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20',
+      focus: 'focus:ring-cyan-500/50 focus:border-cyan-300',
+      border: 'border-zinc-700/50',
+    },
+  },
 } as const;
 
 /**
  * Helper function to get theme configuration
  * Provides type safety and default fallback
  */
-export const getFormTheme = (color: ThemeColor = 'purple'): FormThemeConfig => {
+export const getFormTheme = (color: ThemeColor = 'dark'): FormThemeConfig => {
   return formThemes[color];
 };
 
@@ -175,7 +196,7 @@ export const getFormTheme = (color: ThemeColor = 'purple'): FormThemeConfig => {
  * Helper function to get header theme only
  * For components that only need header styling
  */
-export const getHeaderTheme = (color: ThemeColor = 'purple'): FormHeaderTheme => {
+export const getHeaderTheme = (color: ThemeColor = 'dark'): FormHeaderTheme => {
   return formThemes[color].header;
 };
 
@@ -183,7 +204,7 @@ export const getHeaderTheme = (color: ThemeColor = 'purple'): FormHeaderTheme =>
  * Helper function to get button theme only
  * For components that only need button styling
  */
-export const getButtontheme = (color: ThemeColor = 'purple'): FormButtonTheme => {
+export const getButtontheme = (color: ThemeColor = 'dark'): FormButtonTheme => {
   return formThemes[color].button;
 };
 
@@ -191,7 +212,7 @@ export const getButtontheme = (color: ThemeColor = 'purple'): FormButtonTheme =>
  * Helper function to get element theme only
  * For premium form elements that need gradient/glow effects
  */
-export const getElementTheme = (color: ThemeColor = 'purple'): PremiumElementTheme => {
+export const getElementTheme = (color: ThemeColor = 'dark'): PremiumElementTheme => {
   return formThemes[color].element;
 };
 

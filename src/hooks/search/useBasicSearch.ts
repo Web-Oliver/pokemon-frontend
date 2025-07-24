@@ -1,7 +1,7 @@
 /**
  * Basic Search Hook
  * Handles core search functionality without hierarchical logic
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Only handles basic search operations
  * - Extracted from 822-line useSearch hook for better maintainability
@@ -10,7 +10,13 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { ICard } from '../../domain/models/card';
-import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../../api/searchApi';
+import {
+  searchApi,
+  SetResult,
+  CardResult,
+  ProductResult,
+  CategoryResult,
+} from '../../api/searchApi';
 import { handleApiError } from '../../utils/errorHandler';
 import { log } from '../../utils/logger';
 
@@ -46,82 +52,84 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setState(prev => ({
+          ...prev,
+          searchTerm: '',
+          searchResults: [],
+          error: null,
+        }));
+        return;
+      }
+
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
       setState(prev => ({
         ...prev,
-        searchTerm: '',
-        searchResults: [],
+        searchTerm: query,
+        loading: true,
         error: null,
       }));
-      return;
-    }
 
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+      try {
+        log(`[BASIC SEARCH] Searching for: ${query}`);
 
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+        let results: ICard[] = [];
 
-    setState(prev => ({
-      ...prev,
-      searchTerm: query,
-      loading: true,
-      error: null,
-    }));
+        if (state.searchMode === 'cards') {
+          // Search for cards using the search API
+          const searchResults = await searchApi.searchCards({
+            query,
+            limit: 20,
+          });
+          results = searchResults;
+        } else {
+          // For products, we would implement product search here
+          // Currently using cards as fallback
+          const searchResults = await searchApi.searchCards({
+            query,
+            limit: 20,
+          });
+          results = searchResults;
+        }
 
-    try {
-      log(`[BASIC SEARCH] Searching for: ${query}`);
-      
-      let results: ICard[] = [];
-      
-      if (state.searchMode === 'cards') {
-        // Search for cards using the search API
-        const searchResults = await searchApi.searchCards({
-          query,
-          limit: 20,
-        });
-        results = searchResults;
-      } else {
-        // For products, we would implement product search here
-        // Currently using cards as fallback
-        const searchResults = await searchApi.searchCards({
-          query,
-          limit: 20,
-        });
-        results = searchResults;
+        if (!abortController.signal.aborted) {
+          setState(prev => ({
+            ...prev,
+            searchResults: results,
+            loading: false,
+          }));
+          log(`[BASIC SEARCH] Found ${results.length} results`);
+        }
+      } catch (error) {
+        if (!abortController.signal.aborted) {
+          const errorMessage = 'Search failed. Please try again.';
+          handleApiError(error, errorMessage);
+
+          setState(prev => ({
+            ...prev,
+            error: errorMessage,
+            loading: false,
+            searchResults: [],
+          }));
+        }
       }
-
-      if (!abortController.signal.aborted) {
-        setState(prev => ({
-          ...prev,
-          searchResults: results,
-          loading: false,
-        }));
-        log(`[BASIC SEARCH] Found ${results.length} results`);
-      }
-
-    } catch (error) {
-      if (!abortController.signal.aborted) {
-        const errorMessage = 'Search failed. Please try again.';
-        handleApiError(error, errorMessage);
-        
-        setState(prev => ({
-          ...prev,
-          error: errorMessage,
-          loading: false,
-          searchResults: [],
-        }));
-      }
-    }
-  }, [state.searchMode]);
+    },
+    [state.searchMode]
+  );
 
   const getBestMatch = useCallback(async (query: string): Promise<ICard | null> => {
     try {
       log(`[BASIC SEARCH] Getting best match for: ${query}`);
-      
+
       const results = await searchApi.searchCards({
         query,
         limit: 1,

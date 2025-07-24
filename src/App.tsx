@@ -26,7 +26,6 @@ import SalesAnalytics from './pages/SalesAnalytics';
 import Activity from './pages/Activity';
 import AddEditItem from './pages/AddEditItem';
 import DbaExport from './pages/DbaExport';
-import DbaSelection from './pages/DbaSelection';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -119,8 +118,6 @@ function App() {
         return <Activity />;
       case '/dba-export':
         return <DbaExport />;
-      case '/dba-selection':
-        return <DbaSelection />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

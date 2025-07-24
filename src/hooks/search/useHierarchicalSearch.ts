@@ -1,7 +1,7 @@
 /**
  * Hierarchical Search Hook
  * Handles set-based filtering and hierarchical search logic
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Only handles hierarchical search relationships
  * - Extracted from 822-line useSearch hook for better maintainability
@@ -19,7 +19,7 @@ export interface HierarchicalSearchState {
   categoryName: string;
   cardProductName: string;
   activeField: 'set' | 'category' | 'cardProduct' | null;
-  
+
   // Selected data for autofill
   selectedCardData: {
     cardName: string;
@@ -36,18 +36,18 @@ export interface UseHierarchicalSearchReturn extends HierarchicalSearchState {
   updateSetName: (value: string) => void;
   updateCategoryName: (value: string) => void;
   updateCardProductName: (value: string) => void;
-  
+
   // Selection management
   clearSelectedSet: () => void;
   clearSelectedCategory: () => void;
   setActiveField: (field: 'set' | 'category' | 'cardProduct' | null) => void;
-  
+
   // Hierarchical selection logic
   handleHierarchicalSelection: (
     suggestion: SetResult | CardResult | ProductResult | CategoryResult,
     fieldType: 'set' | 'category' | 'cardProduct'
   ) => void;
-  
+
   // Filtering logic
   shouldShowSuggestions: (fieldType: 'set' | 'category' | 'cardProduct') => boolean;
   getFilteredSearchContext: () => {
@@ -119,7 +119,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
       ...prev,
       selectedCategory: null,
       categoryName: '',
-      // Also clear dependent fields  
+      // Also clear dependent fields
       cardProductName: '',
       selectedCardData: null,
     }));
@@ -133,109 +133,122 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
     }));
   }, []);
 
-  const handleHierarchicalSelection = useCallback((
-    suggestion: SetResult | CardResult | ProductResult | CategoryResult,
-    fieldType: 'set' | 'category' | 'cardProduct'
-  ) => {
-    log(`[HIERARCHICAL SEARCH] Handling ${fieldType} selection:`, suggestion);
+  const handleHierarchicalSelection = useCallback(
+    (
+      suggestion: SetResult | CardResult | ProductResult | CategoryResult,
+      fieldType: 'set' | 'category' | 'cardProduct'
+    ) => {
+      log(`[HIERARCHICAL SEARCH] Handling ${fieldType} selection:`, suggestion);
 
-    switch (fieldType) {
-      case 'set':
-        if ('setName' in suggestion) {
-          setState(prev => ({
-            ...prev,
-            selectedSet: suggestion.id || suggestion.setName,
-            setName: suggestion.setName,
-            activeField: null, // Clear active field after selection
-            // Clear dependent fields
-            cardProductName: '',
-            selectedCardData: null,
-          }));
-          log(`[HIERARCHICAL SEARCH] Set selected: ${suggestion.setName}`);
-        }
-        break;
-
-      case 'category':
-        if ('category' in suggestion) {
-          setState(prev => ({
-            ...prev,
-            selectedCategory: suggestion.category,
-            categoryName: suggestion.category,
-            activeField: null,
-            // Clear dependent fields
-            cardProductName: '',
-            selectedCardData: null,
-          }));
-          log(`[HIERARCHICAL SEARCH] Category selected: ${suggestion.category}`);
-        }
-        break;
-
-      case 'cardProduct':
-        // Handle both card and product selections
-        if ('cardName' in suggestion && 'baseName' in suggestion) {
-          // Card selection - autofill form data
-          setState(prev => ({
-            ...prev,
-            cardProductName: suggestion.cardName,
-            activeField: null,
-            selectedCardData: {
-              cardName: suggestion.cardName,
-              pokemonNumber: suggestion.pokemonNumber || '',
-              baseName: suggestion.baseName,
-              variety: suggestion.variety || '',
-              setInfo: 'setName' in suggestion ? {
-                setName: suggestion.setName,
-                year: suggestion.year,
-              } : undefined,
-            },
-            // Auto-fill set if not already selected
-            ...(!prev.selectedSet && 'setName' in suggestion ? {
-              selectedSet: suggestion.setName,
+      switch (fieldType) {
+        case 'set':
+          if ('setName' in suggestion) {
+            setState(prev => ({
+              ...prev,
+              selectedSet: suggestion.id || suggestion.setName,
               setName: suggestion.setName,
-            } : {}),
-          }));
-          log(`[HIERARCHICAL SEARCH] Card selected: ${suggestion.cardName}`);
-        } else if ('name' in suggestion && 'category' in suggestion) {
-          // Product selection
-          setState(prev => ({
-            ...prev,
-            cardProductName: suggestion.name,
-            activeField: null,
-            selectedCardData: {
-              cardName: suggestion.name,
-              pokemonNumber: '',
-              baseName: suggestion.name,
-              variety: '',
-              categoryInfo: { category: suggestion.category },
-            },
-            // Auto-fill category if not already selected
-            ...(!prev.selectedCategory ? {
+              activeField: null, // Clear active field after selection
+              // Clear dependent fields
+              cardProductName: '',
+              selectedCardData: null,
+            }));
+            log(`[HIERARCHICAL SEARCH] Set selected: ${suggestion.setName}`);
+          }
+          break;
+
+        case 'category':
+          if ('category' in suggestion) {
+            setState(prev => ({
+              ...prev,
               selectedCategory: suggestion.category,
               categoryName: suggestion.category,
-            } : {}),
-          }));
-          log(`[HIERARCHICAL SEARCH] Product selected: ${suggestion.name}`);
-        }
-        break;
-    }
-  }, []);
+              activeField: null,
+              // Clear dependent fields
+              cardProductName: '',
+              selectedCardData: null,
+            }));
+            log(`[HIERARCHICAL SEARCH] Category selected: ${suggestion.category}`);
+          }
+          break;
 
-  const shouldShowSuggestions = useCallback((fieldType: 'set' | 'category' | 'cardProduct'): boolean => {
-    // Only show suggestions for the currently active field
-    return state.activeField === fieldType;
-  }, [state.activeField]);
+        case 'cardProduct':
+          // Handle both card and product selections
+          if ('cardName' in suggestion && 'baseName' in suggestion) {
+            // Card selection - autofill form data
+            setState(prev => ({
+              ...prev,
+              cardProductName: suggestion.cardName,
+              activeField: null,
+              selectedCardData: {
+                cardName: suggestion.cardName,
+                pokemonNumber: suggestion.pokemonNumber || '',
+                baseName: suggestion.baseName,
+                variety: suggestion.variety || '',
+                setInfo:
+                  'setName' in suggestion
+                    ? {
+                        setName: suggestion.setName,
+                        year: suggestion.year,
+                      }
+                    : undefined,
+              },
+              // Auto-fill set if not already selected
+              ...(!prev.selectedSet && 'setName' in suggestion
+                ? {
+                    selectedSet: suggestion.setName,
+                    setName: suggestion.setName,
+                  }
+                : {}),
+            }));
+            log(`[HIERARCHICAL SEARCH] Card selected: ${suggestion.cardName}`);
+          } else if ('name' in suggestion && 'category' in suggestion) {
+            // Product selection
+            setState(prev => ({
+              ...prev,
+              cardProductName: suggestion.name,
+              activeField: null,
+              selectedCardData: {
+                cardName: suggestion.name,
+                pokemonNumber: '',
+                baseName: suggestion.name,
+                variety: '',
+                categoryInfo: { category: suggestion.category },
+              },
+              // Auto-fill category if not already selected
+              ...(!prev.selectedCategory
+                ? {
+                    selectedCategory: suggestion.category,
+                    categoryName: suggestion.category,
+                  }
+                : {}),
+            }));
+            log(`[HIERARCHICAL SEARCH] Product selected: ${suggestion.name}`);
+          }
+          break;
+      }
+    },
+    []
+  );
+
+  const shouldShowSuggestions = useCallback(
+    (fieldType: 'set' | 'category' | 'cardProduct'): boolean => {
+      // Only show suggestions for the currently active field
+      return state.activeField === fieldType;
+    },
+    [state.activeField]
+  );
 
   const getFilteredSearchContext = useCallback(() => {
     const context: { setFilter?: string; categoryFilter?: string } = {};
-    
+
     if (state.selectedSet) {
       context.setFilter = state.selectedSet;
     }
-    
+
     if (state.selectedCategory) {
       context.categoryFilter = state.selectedCategory;
     }
-    
+
     return context;
   }, [state.selectedSet, state.selectedCategory]);
 

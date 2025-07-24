@@ -193,15 +193,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft':
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-zinc-700 text-zinc-200 border border-zinc-600';
       case 'active':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
+        return 'bg-cyan-900/50 text-cyan-300 border border-cyan-600';
       case 'sold':
-        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+        return 'bg-emerald-900/50 text-emerald-300 border border-emerald-600';
       case 'expired':
-        return 'bg-red-100 text-red-800 border border-red-200';
+        return 'bg-red-900/50 text-red-300 border border-red-600';
       default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-zinc-700 text-zinc-200 border border-zinc-600';
     }
   };
 
@@ -209,13 +209,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const getItemCategoryColor = (category: string) => {
     switch (category) {
       case 'PsaGradedCard':
-        return 'bg-purple-100 text-purple-800 border border-purple-200';
+        return 'bg-purple-900/50 text-purple-300 border border-purple-600';
       case 'RawCard':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
+        return 'bg-cyan-900/50 text-cyan-300 border border-cyan-600';
       case 'SealedProduct':
-        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+        return 'bg-emerald-900/50 text-emerald-300 border border-emerald-600';
       default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-zinc-700 text-zinc-200 border border-zinc-600';
     }
   };
 
@@ -476,14 +476,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         </div>
         <div className='relative z-10 p-8'>
           <div className='max-w-7xl mx-auto'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-16 relative overflow-hidden'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-16 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-red-500/5 via-rose-500/5 to-pink-500/5'></div>
               <div className='relative z-10 text-center'>
                 <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                  <Package className='w-10 h-10 text-slate-500' />
+                  <Package className='w-10 h-10 text-zinc-400' />
                 </div>
-                <h3 className='text-xl font-bold text-slate-900 mb-3'>Auction not found</h3>
-                <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
+                <h3 className='text-xl font-bold text-zinc-100 mb-3'>Auction not found</h3>
+                <p className='text-zinc-400 font-medium max-w-md mx-auto leading-relaxed mb-8'>
                   The auction you're looking for doesn't exist or has been deleted.
                 </p>
                 <Button onClick={navigateToAuctions}>Back to Auctions</Button>
@@ -517,14 +517,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden group'>
-            <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden group'>
+            <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between mb-6'>
                 <Button
                   onClick={navigateToAuctions}
                   variant='outline'
-                  className='inline-flex items-center border-slate-300 hover:border-slate-400 text-slate-600 hover:text-slate-800'
+                  className='inline-flex items-center border-zinc-600 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100'
                 >
                   <ArrowLeft className='w-4 h-4 mr-2' />
                   Back to Auctions
@@ -552,10 +552,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
               <div className='flex items-start justify-between'>
                 <div className='flex-1 min-w-0'>
-                  <div className='flex items-center space-x-3 mb-4'>
-                    <h1 className='text-4xl font-bold text-slate-900 tracking-wide bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>
-                      {currentAuction.topText || 'Untitled Auction'}
-                    </h1>
+                  <div className='flex items-center space-x-3 mb-6'>
                     <span
                       className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
                     >
@@ -564,19 +561,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     </span>
                   </div>
 
-                  <p className='text-xl text-slate-600 font-medium leading-relaxed mb-6'>
-                    {currentAuction.bottomText || 'No description available'}
-                  </p>
-
                   <div className='grid grid-cols-1 md:grid-cols-3 gap-6 text-sm'>
-                    <div className='flex items-center text-slate-600'>
+                    <div className='flex items-center text-zinc-300'>
                       <div className='w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-3'>
                         <Calendar className='w-4 h-4 text-white' />
                       </div>
                       <span className='font-medium'>{formatDate(currentAuction.auctionDate)}</span>
                     </div>
 
-                    <div className='flex items-center text-slate-600'>
+                    <div className='flex items-center text-zinc-300'>
                       <div className='w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-3'>
                         <Package className='w-4 h-4 text-white' />
                       </div>
@@ -585,7 +578,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       </span>
                     </div>
 
-                    <div className='flex items-center text-slate-600'>
+                    <div className='flex items-center text-zinc-300'>
                       <div className='w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3'>
                         <DollarSign className='w-4 h-4 text-white' />
                       </div>
@@ -598,7 +591,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               </div>
             </div>
             {/* Premium shimmer effect */}
-            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
           </div>
 
           {/* Context7 Premium Error Message */}
@@ -627,14 +620,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Context7 Premium Progress and Stats */}
           <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5'></div>
               <div className='relative z-10'>
                 <div className='flex items-center justify-between mb-4'>
                   <h3 className='text-sm font-bold text-indigo-600 tracking-wide uppercase'>
                     Sales Progress
                   </h3>
-                  <span className='text-sm font-bold text-slate-900'>
+                  <span className='text-sm font-bold text-zinc-100'>
                     {soldItems}/{totalItems}
                   </span>
                 </div>
@@ -644,13 +637,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <p className='text-xs text-slate-500 font-medium'>
+                <p className='text-xs text-zinc-400 font-medium'>
                   {progress.toFixed(1)}% of items sold
                 </p>
               </div>
             </div>
 
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
+            <div className='group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
               <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
@@ -660,14 +653,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
                     Sold Value
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                  <p className='text-3xl font-bold text-zinc-100 group-hover:text-emerald-300 transition-colors duration-300'>
                     {formatCurrency(currentAuction.soldValue || 0)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
+            <div className='group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
               <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
@@ -677,7 +670,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
                     Remaining Value
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
+                  <p className='text-3xl font-bold text-zinc-100 group-hover:text-blue-300 transition-colors duration-300'>
                     {formatCurrency(
                       (currentAuction.totalValue || 0) - (currentAuction.soldValue || 0)
                     )}
@@ -688,10 +681,10 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Export and Social Media Tools */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-violet-500/3 via-purple-500/3 to-indigo-500/3'></div>
             <div className='relative z-10'>
-              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>
+              <h3 className='text-2xl font-bold text-zinc-100 mb-6 tracking-wide'>
                 Export & Social Media Tools
               </h3>
 
@@ -761,7 +754,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               {showFacebookPost && generatedFacebookPost && (
                 <div className='mt-8'>
                   <div className='flex items-center justify-between mb-4'>
-                    <h4 className='text-sm font-bold text-slate-700 tracking-wide uppercase'>
+                    <h4 className='text-sm font-bold text-zinc-300 tracking-wide uppercase'>
                       Generated Facebook Post
                     </h4>
                     <Button onClick={() => setShowFacebookPost(false)} variant='outline' size='sm'>
@@ -770,7 +763,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
                   <div className='bg-slate-50/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200'>
                     <textarea
-                      className='w-full h-32 p-4 border-0 bg-transparent resize-none focus:outline-none text-sm font-medium text-slate-700'
+                      className='w-full h-32 p-4 border-0 bg-transparent resize-none focus:outline-none text-sm font-medium text-zinc-300'
                       value={generatedFacebookPost}
                       readOnly
                     />
@@ -791,11 +784,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Items */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/3 via-teal-500/3 to-cyan-500/3'></div>
             <div className='relative z-10'>
-              <div className='px-8 py-6 border-b border-slate-200/50 flex items-center justify-between'>
-                <h2 className='text-2xl font-bold text-slate-900 tracking-wide'>
+              <div className='px-8 py-6 border-b border-zinc-600/50 flex items-center justify-between'>
+                <h2 className='text-2xl font-bold text-zinc-100 tracking-wide'>
                   Auction Items ({currentAuction.items.length})
                 </h2>
                 <Button
@@ -810,10 +803,10 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               {currentAuction.items.length === 0 ? (
                 <div className='p-16 text-center'>
                   <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                    <Package className='w-10 h-10 text-slate-500' />
+                    <Package className='w-10 h-10 text-zinc-400' />
                   </div>
-                  <h3 className='text-xl font-bold text-slate-900 mb-3'>No items in auction</h3>
-                  <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
+                  <h3 className='text-xl font-bold text-zinc-100 mb-3'>No items in auction</h3>
+                  <p className='text-zinc-300 font-medium max-w-md mx-auto leading-relaxed mb-8'>
                     Add items from your collection to this auction.
                   </p>
                   <Button
@@ -831,45 +824,31 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     return (
                       <div
                         key={`${item.itemId || item.itemData?._id}-${index}`}
-                        className='group bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 p-6 hover:bg-white/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden'
+                        className='group bg-zinc-800/60 backdrop-blur-sm rounded-2xl shadow-lg border border-zinc-600/40 p-6 hover:bg-zinc-800/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden'
                       >
                         <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
                         <div className='relative z-10'>
                           <div className='flex items-start space-x-6'>
-                            {/* Standardized Image Product View */}
+                            {/* Regular Image Display */}
                             <div className='flex-shrink-0'>
-                              <ImageProductView
-                                images={displayData.itemImage ? [displayData.itemImage] : []}
-                                title={displayData.itemName}
-                                subtitle={displayData.setName}
-                                price={displayData.price}
-                                type={
-                                  item.itemCategory === 'PsaGradedCard' 
-                                    ? 'psa' 
-                                    : item.itemCategory === 'RawCard' 
-                                      ? 'raw' 
-                                      : 'sealed'
-                                }
-                                grade={displayData.grade}
-                                condition={displayData.condition}
-                                category={item.itemCategory}
-                                sold={isItemSold(item)}
-                                variant='auction'
-                                size='sm'
-                                aspectRatio='card'
-                                showBadge={true}
-                                showPrice={true}
-                                showActions={false}
-                                enableInteractions={false}
-                                className='w-32 h-44'
-                              />
+                              {displayData.itemImage ? (
+                                <img
+                                  src={displayData.itemImage}
+                                  alt={displayData.itemName}
+                                  className='w-32 h-52 object-cover rounded-xl border border-zinc-600 shadow-lg'
+                                />
+                              ) : (
+                                <div className='w-32 h-52 bg-zinc-800 rounded-xl border border-zinc-600 flex items-center justify-center'>
+                                  <Package className='w-8 h-8 text-zinc-500' />
+                                </div>
+                              )}
                             </div>
 
                             {/* Card Details */}
                             <div className='flex-1 min-w-0'>
                               <div className='flex items-center justify-between mb-4'>
                                 <div className='flex items-center space-x-3'>
-                                  <h3 className='text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                                  <h3 className='text-xl font-bold text-zinc-100 group-hover:text-emerald-300 transition-colors duration-300'>
                                     {displayData.itemName}
                                   </h3>
                                   <span
@@ -917,34 +896,34 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                               <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
                                 <div className='space-y-2'>
                                   <div className='flex items-center space-x-2 text-sm'>
-                                    <span className='font-medium text-slate-600'>Item ID:</span>
-                                    <span className='text-slate-800 font-mono text-xs'>
+                                    <span className='font-medium text-zinc-300'>Item ID:</span>
+                                    <span className='text-zinc-100 font-mono text-xs'>
                                       {item.itemId || item.itemData?._id}
                                     </span>
                                   </div>
                                   {displayData.itemName &&
                                     displayData.itemName !== 'Unknown Item' && (
                                       <div className='flex items-center space-x-2 text-sm'>
-                                        <span className='font-medium text-slate-600'>
+                                        <span className='font-medium text-zinc-300'>
                                           Card Name:
                                         </span>
-                                        <span className='text-slate-800 font-medium'>
+                                        <span className='text-zinc-100 font-medium'>
                                           {displayData.itemName}
                                         </span>
                                       </div>
                                     )}
                                   {item.itemCategory === 'PsaGradedCard' && displayData.grade && (
                                     <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>PSA Grade:</span>
-                                      <span className='text-slate-800 font-bold text-blue-600'>
+                                      <span className='font-medium text-zinc-300'>PSA Grade:</span>
+                                      <span className='text-zinc-100 font-bold text-blue-600'>
                                         Grade {displayData.grade}
                                       </span>
                                     </div>
                                   )}
                                   {item.itemCategory === 'RawCard' && displayData.condition && (
                                     <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Condition:</span>
-                                      <span className='text-slate-800 font-medium'>
+                                      <span className='font-medium text-zinc-300'>Condition:</span>
+                                      <span className='text-zinc-100 font-medium'>
                                         {displayData.condition}
                                       </span>
                                     </div>
@@ -954,27 +933,25 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                 <div className='space-y-2'>
                                   {displayData.setName && (
                                     <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>Set:</span>
-                                      <span className='text-slate-800 font-medium'>
+                                      <span className='font-medium text-zinc-300'>Set:</span>
+                                      <span className='text-zinc-100 font-medium'>
                                         {displayData.setName}
                                       </span>
                                     </div>
                                   )}
                                   {displayData.price && (
                                     <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>
+                                      <span className='font-medium text-zinc-300'>
                                         Listed Price:
                                       </span>
-                                      <span className='text-slate-800 font-bold text-green-600'>
+                                      <span className='text-zinc-100 font-bold text-green-600'>
                                         {formatCurrency(displayData.price)}
                                       </span>
                                     </div>
                                   )}
                                   {item.salePrice && (
                                     <div className='flex items-center space-x-2 text-sm'>
-                                      <span className='font-medium text-slate-600'>
-                                        Sale Price:
-                                      </span>
+                                      <span className='font-medium text-zinc-300'>Sale Price:</span>
                                       <span className='text-emerald-600 font-bold'>
                                         {formatCurrency(item.salePrice)}
                                       </span>
@@ -994,41 +971,41 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Metadata */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-slate-500/3 via-gray-500/3 to-slate-500/3'></div>
             <div className='relative z-10'>
-              <h3 className='text-2xl font-bold text-slate-900 mb-6 tracking-wide'>
+              <h3 className='text-2xl font-bold text-zinc-100 mb-6 tracking-wide'>
                 Auction Details
               </h3>
               <dl className='grid grid-cols-1 md:grid-cols-2 gap-6 text-sm'>
                 <div>
-                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>Created</dt>
-                  <dd className='text-slate-900 font-medium'>
+                  <dt className='font-bold text-zinc-300 tracking-wide uppercase mb-2'>Created</dt>
+                  <dd className='text-zinc-100 font-medium'>
                     {formatDate(currentAuction.createdAt)}
                   </dd>
                 </div>
                 <div>
-                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                  <dt className='font-bold text-zinc-300 tracking-wide uppercase mb-2'>
                     Last Updated
                   </dt>
-                  <dd className='text-slate-900 font-medium'>
+                  <dd className='text-zinc-100 font-medium'>
                     {formatDate(currentAuction.updatedAt)}
                   </dd>
                 </div>
                 <div>
-                  <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                  <dt className='font-bold text-zinc-300 tracking-wide uppercase mb-2'>
                     Active Status
                   </dt>
-                  <dd className='text-slate-900 font-medium'>
+                  <dd className='text-zinc-100 font-medium'>
                     {currentAuction.isActive ? 'Yes' : 'No'}
                   </dd>
                 </div>
                 {currentAuction.generatedFacebookPost && (
                   <div className='md:col-span-2'>
-                    <dt className='font-bold text-slate-600 tracking-wide uppercase mb-2'>
+                    <dt className='font-bold text-zinc-300 tracking-wide uppercase mb-2'>
                       Generated Facebook Post
                     </dt>
-                    <dd className='text-slate-900 mt-1'>
+                    <dd className='text-zinc-100 mt-1'>
                       <div className='bg-slate-50/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200'>
                         <p className='whitespace-pre-wrap text-sm font-medium'>
                           {currentAuction.generatedFacebookPost}

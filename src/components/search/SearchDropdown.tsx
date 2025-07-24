@@ -334,9 +334,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
       {/* Context7 Clean Dropdown Container */}
       <div className='relative z-[9999]'>
-        <div className='bg-white border border-gray-200 rounded-lg shadow-xl max-h-[480px] overflow-hidden'>
+        <div className='bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl max-h-[480px] overflow-hidden'>
           {/* Context7 Header */}
-          <div className='p-4 border-b border-gray-100 bg-gray-50'>
+          <div className='p-4 border-b border-zinc-700/30 bg-zinc-800/60 backdrop-blur-xl'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center space-x-3'>
                 <div className='w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center'>
@@ -345,12 +345,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                   {activeField === 'cardProduct' && <Search className='w-4 h-4 text-white' />}
                 </div>
                 <div>
-                  <h3 className='text-sm font-semibold text-gray-900'>
+                  <h3 className='text-sm font-semibold text-zinc-100'>
                     {activeField === 'set' && 'Pokémon Sets'}
                     {activeField === 'category' && 'Product Categories'}
                     {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
-                  <p className='text-xs text-gray-500'>
+                  <p className='text-xs text-zinc-400'>
                     {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "
                     {searchTerm.length > 20 ? `${searchTerm.substring(0, 20)}...` : searchTerm}"
                   </p>
@@ -360,23 +360,23 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
               {/* Context7 Close Button */}
               <button
                 onClick={onClose}
-                className='w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors'
+                className='w-8 h-8 bg-zinc-800/80 border border-zinc-700/40 rounded-lg flex items-center justify-center hover:bg-zinc-700/80 transition-colors'
               >
-                <span className='text-gray-400 text-sm'>×</span>
+                <span className='text-zinc-300 text-sm'>×</span>
               </button>
             </div>
           </div>
 
           {/* Context7 Optimized Suggestions List */}
-          <div className='max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
+          <div className='max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-800'>
             {loading ? (
               <div className='p-6 text-center'>
                 <div className='w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3'></div>
-                <p className='text-gray-600 text-sm'>Searching collection...</p>
+                <p className='text-zinc-300 text-sm'>Searching collection...</p>
               </div>
             ) : suggestions.length === 0 ? (
               <div className='p-6 text-center'>
-                <div className='w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                <div className='w-12 h-12 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto mb-3'>
                   <Search className='w-6 h-6 text-gray-400' />
                 </div>
                 <p className='text-gray-600 text-sm mb-1'>No results found</p>
@@ -455,20 +455,24 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
           </div>
 
           {/* Context7 Footer with shortcuts */}
-          <div className='p-3 bg-gray-50 border-t border-gray-100'>
-            <div className='flex items-center justify-center space-x-4 text-xs text-gray-500'>
+          <div className='p-3 bg-zinc-800/60 backdrop-blur-xl border-t border-zinc-700/30'>
+            <div className='flex items-center justify-center space-x-4 text-xs text-zinc-400'>
               <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>↑↓</kbd>
+                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
+                  ↑↓
+                </kbd>
                 <span>Navigate</span>
               </div>
               <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>
+                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
                   Enter
                 </kbd>
                 <span>Select</span>
               </div>
               <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-white border border-gray-200 rounded text-xs'>Esc</kbd>
+                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
+                  Esc
+                </kbd>
                 <span>Close</span>
               </div>
             </div>

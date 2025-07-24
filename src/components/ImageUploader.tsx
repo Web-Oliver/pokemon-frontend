@@ -352,7 +352,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           dragActive
             ? 'border-indigo-400 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 shadow-2xl scale-105'
             : disabled
-              ? 'border-slate-200 bg-slate-50/50'
+              ? 'border-zinc-700/40 bg-zinc-800/50'
               : 'border-slate-300 hover:border-indigo-300 hover:bg-gradient-to-br hover:from-indigo-50/30 hover:via-blue-50/30 hover:to-purple-50/30 hover:shadow-xl hover:scale-102'
         } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} backdrop-blur-sm`}
         onDragEnter={handleDragIn}
@@ -388,7 +388,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 ? 'bg-slate-100 text-slate-300'
                 : dragActive
                   ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-2xl scale-110 rotate-3'
-                  : 'bg-gradient-to-br from-slate-100 to-white text-slate-400 group-hover:from-indigo-100 group-hover:to-purple-100 group-hover:text-indigo-600 group-hover:scale-110 group-hover:shadow-xl border border-slate-200/50 group-hover:border-indigo-200'
+                  : 'bg-gradient-to-br from-zinc-800/60 to-zinc-900/80 text-zinc-400 group-hover:from-cyan-900/30 group-hover:to-blue-900/30 group-hover:text-cyan-400 group-hover:scale-110 group-hover:shadow-xl border border-zinc-700/40 group-hover:border-cyan-600/40'
             }`}
           >
             {dragActive ? (
@@ -428,7 +428,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             className={`inline-flex items-center space-x-4 px-6 py-3 rounded-2xl text-xs font-semibold tracking-wide transition-all duration-300 ${
               disabled
                 ? 'bg-slate-100 text-slate-300'
-                : 'bg-white/80 backdrop-blur-sm text-slate-500 border border-slate-200/50 shadow-lg group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-200'
+                : 'bg-zinc-800/80 backdrop-blur-sm text-zinc-400 border border-zinc-700/40 shadow-lg group-hover:bg-cyan-900/30 group-hover:text-cyan-400 group-hover:border-cyan-600/40'
             }`}
           >
             <div className='flex items-center space-x-1'>
@@ -503,7 +503,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               const containerAspectClass = getContainerAspectClass();
               const containerClasses = aspectInfo
                 ? getContext7ContainerClasses(aspectInfo.orientation)
-                : 'rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-white border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative';
+                : 'rounded-2xl overflow-hidden bg-gradient-to-br from-zinc-800/60 to-zinc-900/80 border border-zinc-700/40 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-105 relative';
 
               const imageClasses = previewConfig
                 ? getContext7ImageClasses(previewConfig, true)
@@ -547,7 +547,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                         e.stopPropagation();
                       }}
                       disabled={isRemoving || showRemoveConfirm}
-                      className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white backdrop-blur-sm ${
+                      className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-zinc-600 backdrop-blur-sm ${
                         isRemoving || showRemoveConfirm
                           ? 'cursor-not-allowed opacity-50'
                           : 'cursor-pointer'
@@ -560,9 +560,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
                   {/* Context7 Premium Existing Image Badge */}
                   {preview.isExisting && (
-                    <div className='absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-white/20 backdrop-blur-sm'>
+                    <div className='absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-zinc-600/20 backdrop-blur-sm'>
                       <div className='flex items-center space-x-1'>
-                        <div className='w-2 h-2 bg-white rounded-full animate-pulse'></div>
+                        <div className='w-2 h-2 bg-zinc-200 rounded-full animate-pulse'></div>
                         <span>Existing</span>
                       </div>
                     </div>

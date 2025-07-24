@@ -1,7 +1,7 @@
 /**
  * Search Cache Hook
  * Handles caching logic for search operations
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Only handles caching and TTL management
  * - Extracted from 822-line useSearch hook for better maintainability
@@ -34,14 +34,14 @@ export interface UseSearchCacheReturn {
   getCachedResults: (key: string) => SearchResultType | null;
   setCachedResults: (key: string, results: SearchResultType, ttl?: number) => void;
   clearCache: () => void;
-  
+
   // Cache statistics
   getCacheStats: () => CacheStats;
   getCacheSize: () => number;
-  
+
   // Cache management
   cleanupExpiredEntries: () => void;
-  
+
   // Performance metrics
   getQueryTime: (startTime: number) => number;
 }
@@ -60,12 +60,15 @@ export const useSearchCache = (): UseSearchCacheReturn => {
   });
 
   // Use centralized cache configuration for consistency
-  const cacheTTL = useMemo(() => ({
-    sets: getCacheTTL('SETS'),
-    cards: getCacheTTL('CARDS'), 
-    products: getCacheTTL('PRODUCTS'),
-    categories: getCacheTTL('CATEGORIES'),
-  }), []);
+  const cacheTTL = useMemo(
+    () => ({
+      sets: getCacheTTL('SETS'),
+      cards: getCacheTTL('CARDS'),
+      products: getCacheTTL('PRODUCTS'),
+      categories: getCacheTTL('CATEGORIES'),
+    }),
+    []
+  );
 
   const getCachedResults = useCallback((key: string): SearchResultType | null => {
     const cached = cacheRef.current.get(key);
@@ -76,7 +79,7 @@ export const useSearchCache = (): UseSearchCacheReturn => {
     if (cached && now - cached.timestamp < cached.ttl) {
       // Valid cache hit
       cached.hitCount++;
-      cached.score = cached.hitCount / (now - cached.timestamp) * 1000; // Score based on hits/age
+      cached.score = (cached.hitCount / (now - cached.timestamp)) * 1000; // Score based on hits/age
 
       statsRef.current.cacheHits++;
       statsRef.current.hitRate = (statsRef.current.cacheHits / statsRef.current.totalQueries) * 100;
@@ -94,35 +97,39 @@ export const useSearchCache = (): UseSearchCacheReturn => {
     return null;
   }, []);
 
-  const setCachedResults = useCallback((key: string, results: SearchResultType, customTtl?: number) => {
-    const ttl = customTtl || cacheTTL.cards; // Default to cards TTL
-    const now = Date.now();
+  const setCachedResults = useCallback(
+    (key: string, results: SearchResultType, customTtl?: number) => {
+      const ttl = customTtl || cacheTTL.cards; // Default to cards TTL
+      const now = Date.now();
 
-    const entry: CacheEntry = {
-      results,
-      timestamp: now,
-      score: 1, // Initial score
-      ttl,
-      hitCount: 0,
-    };
+      const entry: CacheEntry = {
+        results,
+        timestamp: now,
+        score: 1, // Initial score
+        ttl,
+        hitCount: 0,
+      };
 
-    cacheRef.current.set(key, entry);
-    log(`[SEARCH CACHE] Cached results for key: ${key} (TTL: ${ttl}ms)`);
+      cacheRef.current.set(key, entry);
+      log(`[SEARCH CACHE] Cached results for key: ${key} (TTL: ${ttl}ms)`);
 
-    // Cleanup if cache gets too large (LRU-style)
-    if (cacheRef.current.size > 100) {
-      const oldestKey = Array.from(cacheRef.current.entries())
-        .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
-      
-      cacheRef.current.delete(oldestKey);
-      log(`[SEARCH CACHE] Evicted oldest entry: ${oldestKey}`);
-    }
-  }, [cacheTTL]);
+      // Cleanup if cache gets too large (LRU-style)
+      if (cacheRef.current.size > 100) {
+        const oldestKey = Array.from(cacheRef.current.entries()).sort(
+          ([, a], [, b]) => a.timestamp - b.timestamp
+        )[0][0];
+
+        cacheRef.current.delete(oldestKey);
+        log(`[SEARCH CACHE] Evicted oldest entry: ${oldestKey}`);
+      }
+    },
+    [cacheTTL]
+  );
 
   const clearCache = useCallback(() => {
     const size = cacheRef.current.size;
     cacheRef.current.clear();
-    
+
     // Reset stats
     statsRef.current = {
       totalQueries: 0,

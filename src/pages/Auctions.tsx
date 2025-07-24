@@ -146,11 +146,11 @@ const Auctions: React.FC = () => {
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-10 relative overflow-hidden group'>
             <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
             <div className='relative z-10 flex items-center justify-between'>
               <div>
-                <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>
+                <h1 className='text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent'>
                   Auction Management
                 </h1>
                 <p className='text-xl text-slate-600 font-medium leading-relaxed'>
@@ -183,7 +183,7 @@ const Auctions: React.FC = () => {
 
           {/* Context7 Premium Auction Stats */}
           <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
+            <div className='group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
               <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
@@ -193,14 +193,14 @@ const Auctions: React.FC = () => {
                   <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
                     Active Auctions
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
+                  <p className='text-3xl font-bold text-zinc-100 group-hover:text-blue-300 transition-colors duration-300'>
                     {activeAuctions}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-slate-500/20'>
+            <div className='group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-slate-500/20'>
               <div className='absolute inset-0 bg-gradient-to-br from-slate-500/5 to-gray-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-slate-500 to-gray-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
@@ -210,14 +210,14 @@ const Auctions: React.FC = () => {
                   <p className='text-sm font-bold text-slate-600 tracking-wide uppercase mb-1'>
                     Draft Auctions
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-slate-700 transition-colors duration-300'>
+                  <p className='text-3xl font-bold text-zinc-100 group-hover:text-zinc-300 transition-colors duration-300'>
                     {draftAuctions}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
+            <div className='group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
               <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
               <div className='flex items-center relative z-10'>
                 <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
@@ -227,7 +227,7 @@ const Auctions: React.FC = () => {
                   <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
                     Completed
                   </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
+                  <p className='text-3xl font-bold text-zinc-100 group-hover:text-emerald-300 transition-colors duration-300'>
                     {completedAuctions}
                   </p>
                 </div>
@@ -236,11 +236,11 @@ const Auctions: React.FC = () => {
           </div>
 
           {/* Context7 Premium Filters */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-purple-500/3 via-indigo-500/3 to-blue-500/3'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between mb-6'>
-                <h2 className='text-2xl font-bold text-slate-900 flex items-center tracking-wide'>
+                <h2 className='text-2xl font-bold text-zinc-100 flex items-center tracking-wide'>
                   <div className='w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-lg flex items-center justify-center mr-4'>
                     <Filter className='w-5 h-5 text-white' />
                   </div>
@@ -307,7 +307,7 @@ const Auctions: React.FC = () => {
 
           {/* Context7 Premium Loading State */}
           {loading && (
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-12 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5'></div>
               <div className='relative z-10'>
                 <LoadingSpinner text='Loading auctions...' />
@@ -317,11 +317,11 @@ const Auctions: React.FC = () => {
 
           {/* Context7 Premium Auctions List */}
           {!loading && (
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-amber-500/3 via-orange-500/3 to-red-500/3'></div>
               <div className='relative z-10'>
                 <div className='px-8 py-6 border-b border-slate-200/50'>
-                  <h2 className='text-2xl font-bold text-slate-900 tracking-wide'>
+                  <h2 className='text-2xl font-bold text-zinc-100 tracking-wide'>
                     Auctions ({sortedAuctions.length})
                   </h2>
                 </div>
@@ -331,7 +331,7 @@ const Auctions: React.FC = () => {
                     <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
                       <Package className='w-10 h-10 text-slate-500' />
                     </div>
-                    <h3 className='text-xl font-bold text-slate-900 mb-3'>No auctions found</h3>
+                    <h3 className='text-xl font-bold text-zinc-100 mb-3'>No auctions found</h3>
                     <p className='text-slate-600 font-medium max-w-md mx-auto leading-relaxed mb-8'>
                       {statusFilter
                         ? `No auctions found with status "${statusFilter}". Try adjusting your filters.`
@@ -350,7 +350,7 @@ const Auctions: React.FC = () => {
                     {sortedAuctions.map((auction, index) => (
                       <div
                         key={auction.id || auction._id || `auction-${index}`}
-                        className='group bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 p-6 hover:bg-white/80 hover:shadow-xl hover:scale-102 transition-all duration-300 cursor-pointer relative overflow-hidden'
+                        className='group bg-zinc-800/60 backdrop-blur-sm rounded-2xl shadow-lg border border-zinc-600/40 p-6 hover:bg-zinc-800/80 hover:shadow-xl hover:scale-102 transition-all duration-300 cursor-pointer relative overflow-hidden'
                         onClick={() => navigateToAuctionDetail(auction.id || auction._id)}
                       >
                         <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
@@ -358,7 +358,7 @@ const Auctions: React.FC = () => {
                           <div className='flex items-center justify-between'>
                             <div className='flex-1 min-w-0'>
                               <div className='flex items-center space-x-3 mb-3'>
-                                <h3 className='text-xl font-bold text-slate-900 truncate group-hover:text-amber-700 transition-colors duration-300'>
+                                <h3 className='text-xl font-bold text-zinc-100 truncate group-hover:text-amber-300 transition-colors duration-300'>
                                   {auction.topText || 'Untitled Auction'}
                                 </h3>
                                 <span
@@ -417,7 +417,7 @@ const Auctions: React.FC = () => {
                             <div className='ml-4'>
                               <div className='text-right'>
                                 <p className='text-sm text-slate-500 font-medium'>Last updated</p>
-                                <p className='text-sm font-bold text-slate-900'>
+                                <p className='text-sm font-bold text-zinc-100'>
                                   {formatDateWithTime(auction.updatedAt)}
                                 </p>
                               </div>

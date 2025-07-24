@@ -1,7 +1,7 @@
 /**
  * PremiumFormElements - Centralized export for all premium form components
  * Eliminates 400+ lines of duplicate styling across form elements
- * 
+ *
  * Following CLAUDE.md DRY principles:
  * - Single source of truth for premium form styling
  * - Centralized export for easy imports

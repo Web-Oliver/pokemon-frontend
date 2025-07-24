@@ -1,7 +1,7 @@
 /**
  * Form Fields Index
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Centralized exports for form field components
  * Following CLAUDE.md organization principles
  */

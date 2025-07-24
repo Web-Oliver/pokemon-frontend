@@ -37,15 +37,15 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-700 text-white focus:ring-indigo-500/50 border border-indigo-500/20 shadow-[0_4px_14px_0_rgb(99,102,241,0.3)] hover:shadow-[0_6px_20px_0_rgb(99,102,241,0.4)]',
+      'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white focus:ring-cyan-500/50 border border-cyan-500/20 shadow-[0_4px_14px_0_rgb(6,182,212,0.3)] hover:shadow-[0_6px_20px_0_rgb(6,182,212,0.4)]',
     secondary:
-      'bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white focus:ring-slate-500/50 border border-slate-500/20 shadow-[0_4px_14px_0_rgb(71,85,105,0.3)] hover:shadow-[0_6px_20px_0_rgb(71,85,105,0.4)]',
+      'bg-gradient-to-r from-zinc-700 to-zinc-800 hover:from-zinc-800 hover:to-zinc-900 text-zinc-100 focus:ring-zinc-500/50 border border-zinc-600/30 shadow-[0_4px_14px_0_rgb(39,39,42,0.3)] hover:shadow-[0_6px_20px_0_rgb(39,39,42,0.4)]',
     danger:
       'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white focus:ring-red-500/50 border border-red-500/20 shadow-[0_4px_14px_0_rgb(220,38,127,0.3)] hover:shadow-[0_6px_20px_0_rgb(220,38,127,0.4)]',
     success:
       'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white focus:ring-emerald-500/50 border border-emerald-500/20 shadow-[0_4px_14px_0_rgb(5,150,105,0.3)] hover:shadow-[0_6px_20px_0_rgb(5,150,105,0.4)]',
     outline:
-      'border-2 border-slate-300/50 bg-white/80 backdrop-blur-sm hover:bg-white hover:border-indigo-400 hover:shadow-lg text-slate-700 hover:text-slate-900 focus:ring-indigo-500/50 shadow-[0_2px_8px_0_rgb(0,0,0,0.08)] hover:shadow-[0_4px_14px_0_rgb(99,102,241,0.15)]',
+      'border-2 border-zinc-600/50 bg-zinc-900/80 backdrop-blur-sm hover:bg-zinc-800/90 hover:border-cyan-400/60 hover:shadow-lg text-zinc-200 hover:text-cyan-100 focus:ring-cyan-500/50 shadow-[0_2px_8px_0_rgb(0,0,0,0.3)] hover:shadow-[0_4px_14px_0_rgb(6,182,212,0.25)]',
   };
 
   const sizeClasses = {
@@ -66,7 +66,16 @@ const Button: React.FC<ButtonProps> = ({
     .filter(Boolean)
     .join(' ');
 
-  const glowVariant = variant === 'primary' ? 'primary' : variant === 'secondary' ? 'secondary' : variant === 'danger' ? 'danger' : variant === 'success' ? 'success' : 'default';
+  const glowVariant =
+    variant === 'primary'
+      ? 'primary'
+      : variant === 'secondary'
+        ? 'secondary'
+        : variant === 'danger'
+          ? 'danger'
+          : variant === 'success'
+            ? 'success'
+            : 'default';
 
   return (
     <button className={finalClassName} disabled={disabled || loading} {...props}>

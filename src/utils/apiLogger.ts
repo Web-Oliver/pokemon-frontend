@@ -1,7 +1,7 @@
 /**
  * API Logger Utility
  * Conditional logging for API operations based on environment
- * 
+ *
  * Following CLAUDE.md DRY + SOLID principles:
  * - Single Responsibility: Only handles API logging logic
  * - Open/Closed: Extensible through configuration
@@ -34,7 +34,10 @@ export class ApiLogger {
    */
   logApiCall(methodName: string, params?: any): void {
     if (isApiLoggingEnabled()) {
-      console.log(`${this.prefix} ${methodName} called${params ? ' with params:' : ''}`, params || '');
+      console.log(
+        `${this.prefix} ${methodName} called${params ? ' with params:' : ''}`,
+        params || ''
+      );
     }
   }
 
@@ -104,11 +107,11 @@ export const apiLog = {
       console.log(`[API DEBUG] ${message}`, data || '');
     }
   },
-  
+
   error: (message: string, error?: any) => {
     console.error(`[API ERROR] ${message}`, error || '');
   },
-  
+
   warn: (message: string, data?: any) => {
     console.warn(`[API WARNING] ${message}`, data || '');
   },

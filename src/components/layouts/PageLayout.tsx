@@ -34,9 +34,9 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   // Define variant-specific gradient classes
   const gradientClasses = {
-    default: 'from-slate-50 via-indigo-50 to-purple-50',
-    blue: 'from-slate-50 via-blue-50 to-indigo-50',
-    emerald: 'from-slate-50 via-emerald-50 to-teal-50',
+    default: 'from-zinc-950 via-zinc-900 to-zinc-950',
+    blue: 'from-zinc-950 via-zinc-900 to-zinc-950',
+    emerald: 'from-zinc-950 via-zinc-900 to-zinc-950',
   };
 
   // Loading state
@@ -78,15 +78,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Page Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
-            <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-blue-500/5'></div>
+          <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl p-10 relative overflow-hidden group'>
+            <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5'></div>
             <div className='relative z-10 flex items-center justify-between'>
               <div>
-                <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'>
+                <h1 className='text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent'>
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className='text-xl text-slate-600 font-medium leading-relaxed'>{subtitle}</p>
+                  <p className='text-xl text-zinc-300 font-medium leading-relaxed'>{subtitle}</p>
                 )}
               </div>
               {actions && <div className='flex items-center space-x-4'>{actions}</div>}
@@ -95,12 +95,12 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
 
           {/* Error Display */}
           {error && (
-            <div className='bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-3xl p-6 shadow-lg'>
+            <div className='bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-3xl p-6 shadow-lg'>
               <div className='flex items-center space-x-3'>
-                <div className='text-red-600 text-sm font-medium bg-red-100/80 px-4 py-2 rounded-2xl border border-red-200/30'>
+                <div className='text-red-400 text-sm font-medium bg-red-900/50 px-4 py-2 rounded-2xl border border-red-500/30'>
                   Error
                 </div>
-                <span className='text-red-700 font-medium text-lg'>{error}</span>
+                <span className='text-red-300 font-medium text-lg'>{error}</span>
               </div>
             </div>
           )}

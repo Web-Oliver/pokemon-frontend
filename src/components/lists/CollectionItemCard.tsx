@@ -34,7 +34,6 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
-
   // Memoized item display name calculation
   const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
@@ -49,10 +48,12 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
 
   // Memoized set name calculation
   const setName = useMemo(() => {
-    return (item as any).cardId?.setId?.setName ||
+    return (
+      (item as any).cardId?.setId?.setName ||
       (item as any).setName ||
       (item as any).cardId?.setName ||
-      'Unknown Set';
+      'Unknown Set'
+    );
   }, [item]);
 
   // Memoized click handler to prevent unnecessary re-renders
@@ -99,7 +100,7 @@ const arePropsEqual = (
     // Perform deeper comparison for item properties that affect rendering
     const prevItem = prevProps.item as Record<string, unknown>;
     const nextItem = nextProps.item as Record<string, unknown>;
-    
+
     // Check critical properties that affect card display
     if (
       prevItem.id !== nextItem.id ||

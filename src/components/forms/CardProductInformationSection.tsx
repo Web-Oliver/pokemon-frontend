@@ -11,7 +11,14 @@
 
 import React from 'react';
 import { LucideIcon, Search } from 'lucide-react';
-import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue, UseFormClearErrors, Control } from 'react-hook-form';
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormWatch,
+  UseFormSetValue,
+  UseFormClearErrors,
+  Control,
+} from 'react-hook-form';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 import { AutocompleteField, AutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
 import { InformationFieldRenderer } from './fields';
@@ -90,22 +97,27 @@ const CardProductInformationSection: React.FC<CardProductInformationSectionProps
   const currentSetName = watch('setName');
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-lg p-6 ${className}`}>
+    <div
+      className={`bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden ${className}`}
+    >
+      {/* Backdrop gradient */}
+      <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
+
       {/* Section Header */}
-      <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center justify-between'>
+      <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center justify-between relative z-10'>
         <div className='flex items-center'>
-          <SectionIcon className='w-6 h-6 mr-3 text-slate-600' />
+          <SectionIcon className='w-6 h-6 mr-3 text-zinc-300' />
           {sectionTitle}
         </div>
         {currentSetName && (
-          <div className='flex items-center text-sm text-blue-600 bg-blue-50/80 px-3 py-1 rounded-full backdrop-blur-sm'>
+          <div className='flex items-center text-sm text-blue-300 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-600/30'>
             <Search className='w-4 h-4 mr-1' />
             Filtering by: {currentSetName}
           </div>
         )}
       </h4>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10'>
         {/* Enhanced Autocomplete for Hierarchical Search */}
         <div className='md:col-span-2'>
           <EnhancedAutocomplete

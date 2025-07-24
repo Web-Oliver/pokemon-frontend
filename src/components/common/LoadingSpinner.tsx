@@ -34,18 +34,18 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const colorClasses = {
-    blue: 'text-indigo-600',
-    gray: 'text-slate-600',
-    green: 'text-emerald-600',
-    red: 'text-red-600',
-    yellow: 'text-amber-600',
-    purple: 'text-purple-600',
+    blue: 'text-cyan-400',
+    gray: 'text-zinc-400',
+    green: 'text-emerald-400',
+    red: 'text-red-400',
+    yellow: 'text-amber-400',
+    purple: 'text-purple-400',
   };
 
   // Spinner classes are handled inline in the component
 
   const containerClasses = fullScreen
-    ? 'fixed inset-0 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm z-50'
+    ? 'fixed inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm z-50'
     : 'flex items-center justify-center';
 
   const textSizeClasses = {
@@ -62,11 +62,11 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         <div className='relative'>
           {/* Multi-layer rotating rings */}
           <div
-            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 animate-spin ${sizeClasses[size]}`}
+            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 animate-spin ${sizeClasses[size]}`}
             style={{ clipPath: 'polygon(0% 0%, 25% 0%, 25% 25%, 0% 25%)' }}
           ></div>
           <div
-            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l from-cyan-400 via-blue-400 to-purple-400 animate-spin ${sizeClasses[size]} opacity-60`}
+            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l from-cyan-400 via-blue-400 to-cyan-400 animate-spin ${sizeClasses[size]} opacity-60`}
             style={{
               clipPath: 'polygon(75% 75%, 100% 75%, 100% 100%, 75% 100%)',
               animationDuration: '1.5s',
@@ -76,7 +76,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
           {/* Inner pulsing circle with enhanced glow */}
           <div
-            className={`relative bg-white/95 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-2xl flex items-center justify-center ${sizeClasses[size]} shadow-[0_0_20px_0_rgb(99,102,241,0.3)]`}
+            className={`relative bg-zinc-900/95 backdrop-blur-sm rounded-full border border-zinc-700/50 shadow-2xl flex items-center justify-center ${sizeClasses[size]} shadow-[0_0_20px_0_rgb(6,182,212,0.3)]`}
           >
             <div
               className={`w-1/2 h-1/2 bg-gradient-to-br ${colorClasses[color]} rounded-full animate-pulse opacity-90 shadow-lg`}
@@ -85,18 +85,18 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
           {/* Premium shimmer effect with enhanced animation */}
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-ping opacity-30 ${sizeClasses[size]}`}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-cyan-200/20 to-transparent animate-ping opacity-30 ${sizeClasses[size]}`}
             style={{ animationDelay: '0.5s' }}
           ></div>
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-indigo-300/20 to-transparent animate-ping opacity-20 ${sizeClasses[size]}`}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-cyan-300/20 to-transparent animate-ping opacity-20 ${sizeClasses[size]}`}
             style={{ animationDelay: '1s' }}
           ></div>
         </div>
 
         {text && (
           <p
-            className={`mt-4 text-slate-700 font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent`}
+            className={`mt-4 text-zinc-300 font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent`}
           >
             {text}
           </p>

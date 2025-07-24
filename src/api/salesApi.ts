@@ -51,6 +51,10 @@ interface ISaleUpdatePayload extends Partial<ISaleCreatePayload> {}
  * Eliminates data transformation duplication across components
  */
 const transformSalesData = (rawData: any[]): ISale[] => {
+  if (!rawData || !Array.isArray(rawData)) {
+    return [];
+  }
+
   return rawData.map((item: any) => {
     let itemName = 'Unknown Item';
 

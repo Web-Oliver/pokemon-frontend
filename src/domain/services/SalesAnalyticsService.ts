@@ -56,7 +56,7 @@ interface RawGraphDataPoint {
 }
 
 export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[] => {
-  if (!rawData || rawData.length === 0) {
+  if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
     return [];
   }
 

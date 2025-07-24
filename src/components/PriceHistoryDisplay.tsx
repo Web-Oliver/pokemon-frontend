@@ -110,7 +110,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
   const { trend, percentage } = calculateTrend();
 
   return (
-    <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden group'>
+    <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden group'>
       {/* Context7 Premium Background Pattern */}
       <div className='absolute inset-0 opacity-30'>
         <div
@@ -127,7 +127,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
       <div className='p-8 relative z-10'>
         {/* Context7 Premium Header */}
         <div className='flex items-center justify-between mb-8'>
-          <h3 className='text-2xl font-bold text-slate-800 tracking-wide flex items-center'>
+          <h3 className='text-2xl font-bold text-zinc-100 tracking-wide flex items-center'>
             <div className='w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mr-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
               <Banknote className='w-6 h-6 text-white' />
             </div>
@@ -183,15 +183,15 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               .map((entry, index) => (
                 <div
                   key={index}
-                  className='flex justify-between items-center p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300 group/item'
+                  className='flex justify-between items-center p-4 bg-zinc-800/60 backdrop-blur-sm rounded-2xl border border-zinc-600/40 shadow-lg hover:shadow-xl hover:scale-102 transition-all duration-300 group/item'
                 >
                   <div className='flex items-center'>
                     <div className='w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mr-3 animate-pulse'></div>
-                    <span className='font-bold text-slate-900 text-lg'>
+                    <span className='font-bold text-zinc-100 text-lg'>
                       {formatPrice(entry.price)}
                     </span>
                   </div>
-                  <div className='flex items-center text-slate-500 group-hover/item:text-slate-700 transition-colors duration-300'>
+                  <div className='flex items-center text-zinc-400 group-hover/item:text-zinc-200 transition-colors duration-300'>
                     <Calendar className='w-4 h-4 mr-2' />
                     <span className='text-sm font-medium'>{formatDate(entry.dateUpdated)}</span>
                   </div>
@@ -199,11 +199,11 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               ))
           ) : (
             <div className='text-center py-12'>
-              <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-white rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-200/50 shadow-lg'>
-                <TrendingUp className='w-8 h-8 text-slate-400' />
+              <div className='w-20 h-20 bg-gradient-to-br from-zinc-800/60 to-zinc-900/80 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-zinc-700/40 shadow-lg'>
+                <TrendingUp className='w-8 h-8 text-zinc-400' />
               </div>
-              <div className='text-lg font-semibold text-slate-600 mb-2'>No Price History</div>
-              <div className='text-sm text-slate-500'>
+              <div className='text-lg font-semibold text-zinc-300 mb-2'>No Price History</div>
+              <div className='text-sm text-zinc-400'>
                 Start tracking by adding your first price update
               </div>
             </div>
@@ -217,7 +217,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               <div className='w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-lg flex items-center justify-center mr-3'>
                 <Plus className='w-5 h-5 text-white' />
               </div>
-              <div className='text-lg font-bold text-slate-700 tracking-wide'>
+              <div className='text-lg font-bold text-zinc-200 tracking-wide'>
                 Update Market Price
               </div>
             </div>
@@ -248,8 +248,8 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               </Button>
             </div>
 
-            <div className='mt-4 p-4 bg-gradient-to-r from-slate-50 to-white rounded-2xl border border-slate-200/50 shadow-sm'>
-              <div className='text-xs text-slate-600 font-medium'>
+            <div className='mt-4 p-4 bg-gradient-to-r from-zinc-800/60 to-zinc-900/80 rounded-2xl border border-zinc-700/40 shadow-sm'>
+              <div className='text-xs text-zinc-300 font-medium'>
                 💡 <span className='font-bold'>Pro Tip:</span> Regular price updates help track your
                 collection's market value over time
               </div>

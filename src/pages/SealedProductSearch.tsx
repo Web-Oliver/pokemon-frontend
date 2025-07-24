@@ -186,7 +186,7 @@ const SealedProductSearch: React.FC = () => {
   }, []);
 
   const headerActions = (
-    <div className='bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-white/20'>
+    <div className='bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-zinc-600/20'>
       <Package className='w-8 h-8 text-emerald-600' />
     </div>
   );
@@ -201,15 +201,15 @@ const SealedProductSearch: React.FC = () => {
       variant='emerald'
     >
       {/* Premium Page Header */}
-      <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 relative overflow-hidden group'>
+      <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 p-10 relative overflow-hidden group'>
         <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5'></div>
         <div className='relative z-10'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-4xl font-bold text-slate-900 tracking-wide mb-3 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent'>
+              <h1 className='text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent'>
                 Sealed Products Search
               </h1>
-              <p className='text-xl text-slate-600 font-medium leading-relaxed'>
+              <p className='text-xl text-zinc-300 font-medium leading-relaxed'>
                 Browse CardMarket reference products and pricing
               </p>
             </div>
@@ -223,56 +223,58 @@ const SealedProductSearch: React.FC = () => {
           </div>
         </div>
         {/* Premium shimmer effect */}
-        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
+        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-zinc-700/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
       </div>
 
       {/* Premium Search Filters */}
-      <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+      <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 p-8 relative overflow-hidden'>
         <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-emerald-500/5 to-teal-500/5'></div>
         <div className='relative z-10'>
           <div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
             {/* Product Name Search */}
             <div className='lg:col-span-4'>
-              <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+              <label className='block text-sm font-bold text-zinc-300 mb-3 tracking-wide'>
                 Product Name
               </label>
               <div className='relative group'>
                 <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300'></div>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-emerald-600 transition-colors duration-300 z-10' />
+                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5 group-focus-within:text-emerald-400 transition-colors duration-300 z-10' />
                 <input
                   type='text'
                   placeholder='Search product names...'
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className='w-full pl-10 pr-4 py-3 text-base font-medium bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-300 focus:bg-white transition-all duration-300 hover:shadow-xl'
+                  className='w-full pl-10 pr-4 py-3 text-base font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400 focus:bg-zinc-800 text-zinc-100 placeholder-zinc-400 transition-all duration-300 hover:shadow-xl'
                 />
               </div>
             </div>
 
             {/* Category Filter */}
             <div className='lg:col-span-3'>
-              <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+              <label className='block text-sm font-bold text-zinc-300 mb-3 tracking-wide'>
                 Category
               </label>
               <div className='relative group'>
                 <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/10 via-cyan-500/10 to-emerald-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300'></div>
-                <Filter className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-teal-600 transition-colors duration-300 z-10' />
+                <Filter className='absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5 group-focus-within:text-teal-400 transition-colors duration-300 z-10' />
                 <select
                   value={categoryFilter}
                   onChange={e => setCategoryFilter(e.target.value)}
-                  className='w-full pl-10 pr-10 py-3 text-base font-medium bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-300 focus:bg-white transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer'
+                  className='w-full pl-10 pr-10 py-3 text-base font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-400 focus:bg-zinc-800 text-zinc-100 transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer'
                 >
-                  <option value=''>All Categories</option>
+                  <option value='' className='bg-zinc-800 text-zinc-100'>
+                    All Categories
+                  </option>
                   {categories.map(category => (
-                    <option key={category} value={category}>
+                    <option key={category} value={category} className='bg-zinc-800 text-zinc-100'>
                       {category.replace(/-/g, ' ')}
                     </option>
                   ))}
                 </select>
                 <div className='absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10'>
                   <svg
-                    className='w-5 h-5 text-slate-400'
+                    className='w-5 h-5 text-zinc-400'
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
@@ -290,19 +292,19 @@ const SealedProductSearch: React.FC = () => {
 
             {/* Set Name Filter */}
             <div className='lg:col-span-3'>
-              <label className='block text-sm font-bold text-slate-700 mb-3 tracking-wide'>
+              <label className='block text-sm font-bold text-zinc-300 mb-3 tracking-wide'>
                 Set Name
               </label>
               <div className='relative group'>
                 <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300'></div>
-                <Package className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-cyan-600 transition-colors duration-300 z-10' />
+                <Package className='absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5 group-focus-within:text-cyan-400 transition-colors duration-300 z-10' />
                 <input
                   type='text'
                   placeholder='Filter by set name...'
                   value={setNameFilter}
                   onChange={e => setSetNameFilter(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className='w-full pl-10 pr-4 py-3 text-base font-medium bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-300 focus:bg-white transition-all duration-300 hover:shadow-xl'
+                  className='w-full pl-10 pr-4 py-3 text-base font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 focus:bg-zinc-800 text-zinc-100 placeholder-zinc-400 transition-all duration-300 hover:shadow-xl'
                 />
               </div>
             </div>
@@ -323,7 +325,7 @@ const SealedProductSearch: React.FC = () => {
                       className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 ${
                         availableOnly
                           ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-500'
-                          : 'border-slate-300 bg-white group-hover:border-emerald-400'
+                          : 'border-zinc-500 bg-zinc-800 group-hover:border-emerald-400'
                       }`}
                     >
                       {availableOnly && (
@@ -341,7 +343,7 @@ const SealedProductSearch: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  <span className='text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition-colors duration-300'>
+                  <span className='text-sm font-bold text-zinc-300 group-hover:text-emerald-400 transition-colors duration-300'>
                     Available Only
                   </span>
                 </label>
@@ -356,7 +358,7 @@ const SealedProductSearch: React.FC = () => {
                 >
                   {loading ? (
                     <div className='flex items-center justify-center'>
-                      <div className='w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2'></div>
+                      <div className='w-5 h-5 border-2 border-zinc-300/30 border-t-zinc-200 rounded-full animate-spin mr-2'></div>
                       Searching...
                     </div>
                   ) : (
@@ -366,7 +368,7 @@ const SealedProductSearch: React.FC = () => {
                 <button
                   onClick={handleClearFilters}
                   disabled={loading}
-                  className='w-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-6 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-slate-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
+                  className='w-full bg-gradient-to-r from-zinc-700 to-zinc-800 text-zinc-300 px-6 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 hover:text-zinc-100 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-zinc-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none'
                 >
                   Clear
                 </button>
@@ -377,25 +379,25 @@ const SealedProductSearch: React.FC = () => {
       </div>
 
       {/* Premium Search Results */}
-      <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-emerald-50/50'></div>
+      <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 relative overflow-hidden'>
+        <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/30 to-emerald-900/10'></div>
         <div className='p-8 relative z-10'>
           {loading && (
             <div className='flex justify-center items-center py-20'>
               <div className='text-center'>
                 <LoadingSpinner size='lg' />
-                <p className='mt-4 text-slate-600 font-medium'>Loading CardMarket products...</p>
+                <p className='mt-4 text-zinc-300 font-medium'>Loading CardMarket products...</p>
               </div>
             </div>
           )}
 
           {error && (
             <div className='text-center py-20'>
-              <div className='w-20 h-20 bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                <Package className='w-10 h-10 text-red-500' />
+              <div className='w-20 h-20 bg-gradient-to-br from-red-900/50 to-pink-900/50 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-red-500/30'>
+                <Package className='w-10 h-10 text-red-400' />
               </div>
-              <h3 className='text-2xl font-bold text-slate-900 mb-3'>Error Loading Products</h3>
-              <p className='text-slate-600 font-medium mb-6 max-w-md mx-auto'>{error}</p>
+              <h3 className='text-2xl font-bold text-zinc-100 mb-3'>Error Loading Products</h3>
+              <p className='text-zinc-300 font-medium mb-6 max-w-md mx-auto'>{error}</p>
               <button
                 onClick={handleSearch}
                 className='bg-gradient-to-r from-red-500 to-pink-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300'
@@ -407,11 +409,11 @@ const SealedProductSearch: React.FC = () => {
 
           {!loading && !error && products.length === 0 && (
             <div className='text-center py-20'>
-              <div className='w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6'>
-                <Search className='w-10 h-10 text-slate-400' />
+              <div className='w-20 h-20 bg-gradient-to-br from-zinc-800 to-zinc-700 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-zinc-600/50'>
+                <Search className='w-10 h-10 text-zinc-400' />
               </div>
-              <h3 className='text-2xl font-bold text-slate-900 mb-3'>No Products Found</h3>
-              <p className='text-slate-600 font-medium mb-6 max-w-md mx-auto'>
+              <h3 className='text-2xl font-bold text-zinc-100 mb-3'>No Products Found</h3>
+              <p className='text-zinc-300 font-medium mb-6 max-w-md mx-auto'>
                 Try adjusting your search criteria to find more products.
               </p>
               <button
@@ -428,14 +430,14 @@ const SealedProductSearch: React.FC = () => {
               {/* Results Header */}
               <div className='flex items-center justify-between mb-8'>
                 <div>
-                  <h2 className='text-2xl font-bold text-slate-900'>CardMarket Products</h2>
-                  <p className='text-slate-600 font-medium mt-1'>
+                  <h2 className='text-2xl font-bold text-zinc-100'>CardMarket Products</h2>
+                  <p className='text-zinc-300 font-medium mt-1'>
                     Showing {products.length} of {pagination.total} products
                     {pagination.totalPages > 1 &&
                       ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
                   </p>
                 </div>
-                <div className='flex items-center text-sm text-slate-600 bg-slate-100 px-4 py-2 rounded-xl'>
+                <div className='flex items-center text-sm text-zinc-300 bg-zinc-800/50 px-4 py-2 rounded-xl border border-zinc-600/50'>
                   <Euro className='w-4 h-4 mr-2' />
                   <span>Prices in EUR → DKK conversion</span>
                 </div>
@@ -446,40 +448,40 @@ const SealedProductSearch: React.FC = () => {
                 {products.map(product => (
                   <div
                     key={product._id}
-                    className='bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden'
+                    className='bg-zinc-800/90 backdrop-blur-sm border border-zinc-700/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden'
                   >
                     <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
                     <div className='relative z-10 space-y-4'>
                       <div>
-                        <h3 className='font-bold text-slate-900 text-lg leading-tight line-clamp-2 group-hover:text-emerald-700 transition-colors duration-300'>
+                        <h3 className='font-bold text-zinc-100 text-lg leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors duration-300'>
                           {product.name}
                         </h3>
-                        <p className='text-slate-600 font-medium mt-1'>{product.setName}</p>
-                        <span className='inline-block px-3 py-1 text-xs font-bold bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 rounded-full mt-2'>
+                        <p className='text-zinc-300 font-medium mt-1'>{product.setName}</p>
+                        <span className='inline-block px-3 py-1 text-xs font-bold bg-gradient-to-r from-emerald-900/50 to-teal-900/50 text-emerald-400 rounded-full mt-2 border border-emerald-500/30'>
                           {product.category?.replace('-', ' ') || 'Unknown'}
                         </span>
                       </div>
 
-                      <div className='space-y-3 pt-3 border-t border-slate-200/50'>
+                      <div className='space-y-3 pt-3 border-t border-zinc-700/50'>
                         {product.price && (
                           <div className='flex justify-between items-center'>
-                            <span className='text-slate-600 font-medium'>Price:</span>
+                            <span className='text-zinc-300 font-medium'>Price:</span>
                             <div className='text-right'>
-                              <div className='font-bold text-slate-900'>
+                              <div className='font-bold text-zinc-100'>
                                 {convertToDKK(parseFloat(product.price))} DKK
                               </div>
-                              <div className='text-xs text-slate-500'>€{product.price}</div>
+                              <div className='text-xs text-zinc-400'>€{product.price}</div>
                             </div>
                           </div>
                         )}
 
                         <div className='flex justify-between items-center'>
-                          <span className='text-slate-600 font-medium'>Available:</span>
+                          <span className='text-zinc-300 font-medium'>Available:</span>
                           <span
                             className={`font-bold px-2 py-1 rounded-lg text-sm ${
                               product.available > 0
-                                ? 'text-emerald-700 bg-emerald-100'
-                                : 'text-red-700 bg-red-100'
+                                ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-500/30'
+                                : 'text-red-400 bg-red-900/30 border border-red-500/30'
                             }`}
                           >
                             {product.available > 0
@@ -489,7 +491,7 @@ const SealedProductSearch: React.FC = () => {
                         </div>
 
                         {product.lastUpdated && (
-                          <div className='text-xs text-slate-500 text-center pt-2'>
+                          <div className='text-xs text-zinc-500 text-center pt-2'>
                             Updated: {new Date(product.lastUpdated).toLocaleDateString()}
                           </div>
                         )}
@@ -497,7 +499,7 @@ const SealedProductSearch: React.FC = () => {
 
                       {/* External Link */}
                       {product.url && (
-                        <div className='pt-3 border-t border-slate-200/50'>
+                        <div className='pt-3 border-t border-zinc-700/50'>
                           <a
                             href={product.url}
                             target='_blank'
@@ -517,12 +519,12 @@ const SealedProductSearch: React.FC = () => {
               {/* Premium Pagination */}
               {pagination.totalPages > 1 && (
                 <div className='mt-12 flex items-center justify-center'>
-                  <div className='bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 p-6'>
+                  <div className='bg-zinc-800/90 backdrop-blur-sm rounded-2xl shadow-xl border border-zinc-700/50 p-6'>
                     <div className='flex items-center space-x-4'>
                       <button
                         onClick={() => handlePageChange(pagination.currentPage - 1)}
                         disabled={!pagination.hasPrevPage}
-                        className='flex items-center px-4 py-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg'
+                        className='flex items-center px-4 py-3 bg-gradient-to-r from-zinc-700 to-zinc-800 text-zinc-300 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-zinc-100 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg'
                       >
                         <ChevronLeft className='w-5 h-5 mr-2' />
                         Previous
@@ -550,7 +552,7 @@ const SealedProductSearch: React.FC = () => {
                               className={`w-12 h-12 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
                                 isCurrentPage
                                   ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
-                                  : 'bg-white text-slate-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700'
+                                  : 'bg-zinc-800 text-zinc-300 hover:bg-gradient-to-r hover:from-emerald-900/50 hover:to-teal-900/50 hover:text-emerald-400 border border-zinc-600/50'
                               }`}
                             >
                               {pageNumber}
@@ -562,14 +564,14 @@ const SealedProductSearch: React.FC = () => {
                       <button
                         onClick={() => handlePageChange(pagination.currentPage + 1)}
                         disabled={!pagination.hasNextPage}
-                        className='flex items-center px-4 py-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg'
+                        className='flex items-center px-4 py-3 bg-gradient-to-r from-zinc-700 to-zinc-800 text-zinc-300 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-zinc-100 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg'
                       >
                         Next
                         <ChevronRight className='w-5 h-5 ml-2' />
                       </button>
                     </div>
 
-                    <div className='mt-4 text-center text-sm text-slate-600'>
+                    <div className='mt-4 text-center text-sm text-zinc-400'>
                       Page {pagination.currentPage} of {pagination.totalPages} • {pagination.total}{' '}
                       total products
                     </div>

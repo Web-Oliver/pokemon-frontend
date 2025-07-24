@@ -285,7 +285,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         </div>
         <div className='relative z-10 p-8'>
           <div className='max-w-7xl mx-auto'>
-            <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
+            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-12 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
               <div className='relative z-10'>
                 <LoadingSpinner text='Loading auction details...' />
@@ -339,7 +339,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       <div className='relative z-10 p-8'>
         <div className='max-w-7xl mx-auto space-y-10'>
           {/* Context7 Premium Header */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden group'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden group'>
             <div className='absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between mb-6'>
@@ -417,7 +417,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           )}
 
           {/* Context7 Premium Auction Details Form */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-pink-500/3'></div>
             <div className='relative z-10'>
               <div className='flex items-center justify-between mb-6'>
@@ -511,7 +511,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Items Management */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
             <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/3 via-teal-500/3 to-cyan-500/3'></div>
             <div className='relative z-10'>
               <div className='px-8 py-6 border-b border-slate-200/50 flex items-center justify-between'>
@@ -581,7 +581,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                             }}
                             variant='outline'
                             size='sm'
-                            className='text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 bg-white/90 backdrop-blur-sm shadow-lg'
+                            className='text-red-400 hover:text-red-300 border-red-700/40 hover:border-red-600/60 bg-zinc-900/80 backdrop-blur-sm shadow-lg'
                           >
                             <Trash2 className='w-4 h-4 mr-1' />
                             Remove
@@ -591,7 +591,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                         {/* Auction Specific Badge */}
                         {auctionItem.sold && (
                           <div className='absolute top-4 left-4 z-20'>
-                            <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200 bg-white/90 backdrop-blur-sm shadow-lg'>
+                            <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-900/30 text-emerald-300 border border-emerald-600/40 backdrop-blur-sm shadow-lg'>
                               <Check className='w-3 h-3 mr-1' />
                               Sold in Auction
                             </span>

@@ -1,7 +1,7 @@
 /**
  * Unified Export Utilities
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Consolidated utility functions for all export operations
  * Following CLAUDE.md principles:
  * - DRY: Eliminates duplication across export functions
@@ -83,7 +83,7 @@ export const generateExportFilename = (
   const timestamp = new Date().toISOString().split('T')[0];
   const countSuffix = itemCount !== undefined ? `_${itemCount}` : '';
   const baseName = customName || config.defaultFilename;
-  
+
   return `${baseName}${countSuffix}_${timestamp}${config.fileExtension}`;
 };
 
@@ -111,7 +111,7 @@ export const getExportConfigKey = (itemType: ExportItemType, format: ExportForma
   } else if (format === 'dba') {
     return 'collection-dba';
   }
-  
+
   throw new Error(`Unsupported export combination: ${itemType} + ${format}`);
 };
 
@@ -127,16 +127,16 @@ export const validateExportRequest = (
   if (!itemType) {
     throw new Error('Item type is required for export');
   }
-  
+
   if (!format) {
     throw new Error('Export format is required');
   }
-  
+
   // Auction exports require specific item ID
   if (itemType === 'auction' && (!itemIds || itemIds.length !== 1)) {
     throw new Error('Auction export requires exactly one auction ID');
   }
-  
+
   // Check if combination is supported
   try {
     getExportConfigKey(itemType, format);
@@ -155,15 +155,15 @@ export const formatExportSuccessMessage = (
   itemType?: ExportItemType
 ): string => {
   const formatLabels: Record<ExportFormat, string> = {
-    'zip': 'image archive',
+    zip: 'image archive',
     'facebook-text': 'Facebook text file',
-    'dba': 'DBA export file',
-    'json': 'JSON file',
+    dba: 'DBA export file',
+    json: 'JSON file',
   };
-  
+
   const formatLabel = formatLabels[format] || format;
   const typeLabel = itemType ? ` ${itemType.replace('-', ' ')}` : '';
-  
+
   return `Successfully exported ${itemCount}${typeLabel} items as ${formatLabel}!`;
 };
 
@@ -178,13 +178,13 @@ export const formatExportErrorMessage = (
 ): string => {
   const formatLabel = format.replace('-', ' ');
   const typeLabel = itemType ? ` ${itemType.replace('-', ' ')}` : '';
-  
+
   let message = `Failed to export${typeLabel} items as ${formatLabel}`;
-  
+
   if (originalError) {
     message += `: ${originalError}`;
   }
-  
+
   return message;
 };
 

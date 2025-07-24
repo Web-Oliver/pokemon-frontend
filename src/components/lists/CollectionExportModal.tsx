@@ -141,12 +141,8 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
                     <div className='ml-3 flex-1'>
                       <div className='flex items-center'>
                         <Icon className='w-4 h-4 text-gray-500 mr-2' />
-                        <span className='text-sm font-medium text-gray-900'>
-                          {format.label}
-                        </span>
-                        <span className='ml-2 text-xs text-gray-500'>
-                          {format.extension}
-                        </span>
+                        <span className='text-sm font-medium text-gray-900'>{format.label}</span>
+                        <span className='ml-2 text-xs text-gray-500'>{format.extension}</span>
                       </div>
                       <p className='text-xs text-gray-600 mt-1'>{format.description}</p>
                     </div>
@@ -233,9 +229,8 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             ) : (
               <Download className='w-4 h-4 mr-2' />
             )}
-            Export as {exportFormats.find(f => f.value === selectedFormat)?.label} ({
-              selectedItemIds.length
-            })
+            Export as {exportFormats.find(f => f.value === selectedFormat)?.label} (
+            {selectedItemIds.length})
           </button>
         </div>
       </div>

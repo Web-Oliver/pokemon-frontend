@@ -64,31 +64,31 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
 
     const inputClasses = `
       w-full px-4 py-3 pr-12
-      bg-white dark:bg-gray-800
-      border border-gray-300 dark:border-gray-600
+      bg-zinc-900/80 backdrop-blur-xl
+      border border-zinc-700/40
       rounded-lg
-      text-gray-900 dark:text-gray-100
-      placeholder-gray-500 dark:placeholder-gray-400
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+      text-zinc-100
+      placeholder-zinc-400
+      focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400
       transition-all duration-200
       ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-      ${variant === 'premium' ? 'backdrop-blur-sm bg-white/90 dark:bg-gray-800/90' : ''}
+      ${variant === 'premium' ? 'backdrop-blur-sm bg-zinc-900/90' : ''}
     `;
 
     const dropdownClasses = `
       absolute top-full left-0 right-0 z-50 mt-1
-      bg-white dark:bg-gray-800
-      border border-gray-300 dark:border-gray-600
-      rounded-lg shadow-lg
+      bg-zinc-900/95 backdrop-blur-xl
+      border border-zinc-700/40
+      rounded-lg shadow-2xl
       overflow-hidden
-      ${variant === 'premium' ? 'backdrop-blur-sm bg-white/95 dark:bg-gray-800/95' : ''}
+      ${variant === 'premium' ? 'backdrop-blur-sm bg-zinc-900/95' : ''}
     `;
 
     const suggestionClasses = `
       px-4 py-3 cursor-pointer
-      hover:bg-gray-100 dark:hover:bg-gray-700
+      hover:bg-zinc-800/80 hover:backdrop-blur-xl
       transition-colors duration-150
-      border-b border-gray-200 dark:border-gray-700 last:border-b-0
+      border-b border-zinc-700/30 last:border-b-0
     `;
 
     return (
@@ -97,10 +97,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
         {fields.map(field => (
           <div key={field.id} className='relative mb-4 last:mb-0'>
             {/* Field Label */}
-            <label
-              htmlFor={field.id}
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'
-            >
+            <label htmlFor={field.id} className='block text-sm font-medium text-zinc-300 mb-2'>
               {field.placeholder}
               {field.required && <span className='text-red-500 ml-1'>*</span>}
             </label>
@@ -127,7 +124,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                   <button
                     type='button'
                     onClick={() => callbacks.onClear(field.id)}
-                    className='text-gray-400 hover:text-gray-600 transition-colors'
+                    className='text-zinc-400 hover:text-zinc-200 transition-colors'
                   >
                     <X size={16} />
                   </button>
@@ -136,7 +133,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                 {/* Loading Indicator */}
                 {state.isLoading && state.activeField === field.id && (
                   <div className='animate-spin'>
-                    <Search size={16} className='text-gray-400' />
+                    <Search size={16} className='text-zinc-400' />
                   </div>
                 )}
 
@@ -144,7 +141,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                 {!state.isLoading && (
                   <ChevronDown
                     size={16}
-                    className={`text-gray-400 transition-transform ${
+                    className={`text-zinc-400 transition-transform ${
                       state.activeField === field.id ? 'rotate-180' : ''
                     }`}
                   />
@@ -158,7 +155,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                 <div className='overflow-y-auto' style={{ maxHeight: `${maxHeight}px` }}>
                   {/* Suggestions Header */}
                   {showMetadata && (
-                    <div className='px-4 py-2 bg-gray-50 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600'>
+                    <div className='px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-sm text-zinc-300 border-b border-zinc-700/30'>
                       <div className='flex items-center space-x-2'>
                         <Search size={14} />
                         <span>
@@ -179,13 +176,11 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                     >
                       <div className='flex items-center justify-between'>
                         <div className='flex-1'>
-                          <div className='font-medium text-gray-900 dark:text-gray-100'>
-                            {suggestion.displayName}
-                          </div>
+                          <div className='font-medium text-zinc-100'>{suggestion.displayName}</div>
 
                           {/* Metadata */}
                           {showMetadata && (
-                            <div className='flex items-center space-x-4 mt-1 text-sm text-gray-500 dark:text-gray-400'>
+                            <div className='flex items-center space-x-4 mt-1 text-sm text-zinc-400'>
                               {suggestion.metadata.setName && (
                                 <span className='flex items-center space-x-1'>
                                   <span>Set:</span>
@@ -210,7 +205,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                         </div>
 
                         {/* Selection Indicator */}
-                        <div className='ml-2 text-blue-500'>
+                        <div className='ml-2 text-cyan-400'>
                           <Check size={16} />
                         </div>
                       </div>
@@ -219,24 +214,18 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                 </div>
 
                 {/* Keyboard Shortcuts */}
-                <div className='px-4 py-2 bg-gray-50 dark:bg-gray-700 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600'>
+                <div className='px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-xs text-zinc-400 border-t border-zinc-700/30'>
                   <div className='flex items-center space-x-4'>
                     <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs'>
-                        ↑↓
-                      </kbd>
+                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>↑↓</kbd>
                       <span>Navigate</span>
                     </span>
                     <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs'>
-                        Enter
-                      </kbd>
+                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>Enter</kbd>
                       <span>Select</span>
                     </span>
                     <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs'>
-                        Esc
-                      </kbd>
+                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>Esc</kbd>
                       <span>Close</span>
                     </span>
                   </div>
@@ -246,7 +235,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
 
             {/* Error Message */}
             {state.error && state.activeField === field.id && (
-              <div className='mt-2 text-sm text-red-600 dark:text-red-400'>{state.error}</div>
+              <div className='mt-2 text-sm text-red-400'>{state.error}</div>
             )}
           </div>
         ))}

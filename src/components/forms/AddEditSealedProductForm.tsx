@@ -389,11 +389,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       />
 
       {/* Context7 Premium Pricing & Investment Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-purple-50/50'></div>
+      <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative'>
+        <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50'></div>
 
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-          <TrendingUp className='w-6 h-6 mr-3 text-slate-600' />
+        <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10'>
+          <TrendingUp className='w-6 h-6 mr-3 text-zinc-300' />
           Pricing & Investment Metrics
         </h4>
 
@@ -498,11 +498,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       </div>
 
       {/* Context7 Premium Image Upload Section */}
-      <div className='bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative'>
-        <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
+      <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative'>
+        <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
 
-        <h4 className='text-xl font-bold text-slate-900 mb-6 flex items-center relative z-10'>
-          <Camera className='w-6 h-6 mr-3 text-slate-600' />
+        <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10'>
+          <Camera className='w-6 h-6 mr-3 text-zinc-300' />
           Product Images
         </h4>
 

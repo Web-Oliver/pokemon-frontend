@@ -1,7 +1,7 @@
 /**
  * Collection API Client
  * Handles CRUD operations for collection management (PSA cards, raw cards, sealed products)
- * 
+ *
  * OPTIMIZED: Now uses conditional logging system for production-ready code
  * Following CLAUDE.md principles - removed excessive debug logging
  */
@@ -22,7 +22,7 @@ const logger = createApiLogger('COLLECTION API');
  * @param responseData - Raw response from API
  * @returns The actual data array/object
  */
-const extractResponseData = (responseData: any): any => {
+const _extractResponseData = (responseData: any): any => {
   if (responseData && typeof responseData === 'object' && 'data' in responseData) {
     return responseData.data;
   }
@@ -86,7 +86,7 @@ const isMetadataObject = (key: string, value: any): boolean => {
  * @param item - Item object or array of items
  * @returns Item(s) with id field mapped from _id
  */
-const mapItemIds = (item: unknown): unknown => {
+const _mapItemIds = (item: unknown): unknown => {
   if (!item) {
     return item;
   }
@@ -185,7 +185,8 @@ export const getPsaGradedCards = async (
   logger.logResponse('getPsaGradedCards', responseData);
   const mappedData = ResponseTransformers.standard<IPsaGradedCard[]>(responseData);
   logger.logProcessedData('getPsaGradedCards', mappedData, 'mapped data');
-  logger.logProcessedData('getPsaGradedCards', 
+  logger.logProcessedData(
+    'getPsaGradedCards',
     Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
     'returning array length'
   );
@@ -286,7 +287,8 @@ export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> 
   });
   logger.logResponse('getRawCards', responseData);
   const mappedData = ResponseTransformers.standard<IRawCard[]>(responseData);
-  logger.logProcessedData('getRawCards', 
+  logger.logProcessedData(
+    'getRawCards',
     Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
     'returning array length'
   );
@@ -370,7 +372,8 @@ export const getSealedProductCollection = async (
   });
   logger.logResponse('getSealedProductCollection', responseData);
   const mappedData = ResponseTransformers.standard<ISealedProduct[]>(responseData);
-  logger.logProcessedData('getSealedProductCollection', 
+  logger.logProcessedData(
+    'getSealedProductCollection',
     Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
     'returning array length'
   );

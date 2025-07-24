@@ -33,18 +33,18 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
   }
 
   return (
-    <div className='bg-yellow-50/80 backdrop-blur-xl border border-yellow-200/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
-      <div className='absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50'></div>
+    <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+      <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
 
-      <h4 className='text-xl font-bold text-yellow-900 mb-8 flex items-center justify-center relative z-10'>
-        <Banknote className='w-6 h-6 mr-3 text-yellow-600' />
+      <h4 className='text-xl font-bold text-zinc-100 mb-8 flex items-center justify-center relative z-10'>
+        <Banknote className='w-6 h-6 mr-3 text-zinc-300' />
         Update Sale Information (kr.)
       </h4>
 
       <div className='relative z-10 space-y-8'>
         {/* Sale Details */}
         <div>
-          <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Sale Details</h5>
+          <h5 className='text-lg font-semibold text-zinc-200 mb-4'>Sale Details</h5>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             <div>
               <Select
@@ -56,7 +56,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   { value: 'Mobilepay', label: 'Mobilepay' },
                   { value: 'BankTransfer', label: 'Bank Transfer' },
                 ]}
-                className='bg-white'
+                className=''
               />
             </div>
 
@@ -79,7 +79,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   },
                 })}
                 placeholder='0'
-                className='bg-white'
+                className=''
               />
             </div>
 
@@ -92,7 +92,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   { value: 'Facebook', label: 'Facebook' },
                   { value: 'DBA', label: 'DBA' },
                 ]}
-                className='bg-white'
+                className=''
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
 
         {/* Delivery Method */}
         <div>
-          <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Delivery Method</h5>
+          <h5 className='text-lg font-semibold text-zinc-200 mb-4'>Delivery Method</h5>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             <div>
               <Select
@@ -111,19 +111,19 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   { value: 'Sent', label: 'Sent (Shipping)' },
                   { value: 'Local Meetup', label: 'Local Meetup' },
                 ]}
-                className='bg-white'
+                className=''
               />
             </div>
 
             <div>
-              <Input label='Date Sold' type='date' {...register('dateSold')} className='bg-white' />
+              <Input label='Date Sold' type='date' {...register('dateSold')} className='' />
             </div>
           </div>
         </div>
 
         {/* Buyer Information */}
         <div>
-          <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Buyer Information</h5>
+          <h5 className='text-lg font-semibold text-zinc-200 mb-4'>Buyer Information</h5>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             <div>
               <Input
@@ -131,7 +131,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 type='text'
                 {...register('buyerFullName')}
                 placeholder='Enter buyer name'
-                className='bg-white'
+                className=''
               />
             </div>
 
@@ -141,7 +141,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 type='text'
                 {...register('buyerPhoneNumber')}
                 placeholder='Enter buyer phone'
-                className='bg-white'
+                className=''
               />
             </div>
 
@@ -151,7 +151,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                 type='email'
                 {...register('buyerEmail')}
                 placeholder='Enter buyer email'
-                className='bg-white'
+                className=''
               />
             </div>
           </div>
@@ -160,7 +160,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
         {/* Conditional Address/Tracking Section */}
         {watchedDeliveryMethod === 'Sent' && (
           <div>
-            <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Shipping Information</h5>
+            <h5 className='text-lg font-semibold text-zinc-200 mb-4'>Shipping Information</h5>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <div className='md:col-span-2'>
                 <Input
@@ -168,7 +168,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   type='text'
                   {...register('streetName')}
                   placeholder='Enter street address'
-                  className='bg-white'
+                  className=''
                 />
               </div>
 
@@ -178,7 +178,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   type='text'
                   {...register('postnr')}
                   placeholder='Enter postal code'
-                  className='bg-white'
+                  className=''
                 />
               </div>
 
@@ -188,7 +188,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   type='text'
                   {...register('city')}
                   placeholder='Enter city'
-                  className='bg-white'
+                  className=''
                 />
               </div>
 
@@ -198,7 +198,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
                   type='text'
                   {...register('trackingNumber')}
                   placeholder='Enter tracking number'
-                  className='bg-white'
+                  className=''
                 />
               </div>
             </div>
@@ -207,7 +207,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
 
         {watchedDeliveryMethod === 'Local Meetup' && (
           <div>
-            <h5 className='text-lg font-semibold text-yellow-800 mb-4'>Local Meetup Information</h5>
+            <h5 className='text-lg font-semibold text-zinc-200 mb-4'>Local Meetup Information</h5>
             <div className='p-4 bg-blue-50/80 border border-blue-200/50 rounded-xl backdrop-blur-sm'>
               <p className='text-sm text-blue-800'>
                 <strong>Local Meetup:</strong> No shipping address or tracking required for local
@@ -218,7 +218,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
         )}
 
         <div className='p-4 bg-yellow-100/80 rounded-xl border border-yellow-300/50 backdrop-blur-sm'>
-          <p className='text-sm text-yellow-800'>
+          <p className='text-sm text-zinc-200'>
             <strong>Note:</strong> This {itemName} is sold. You can only update sale information,
             buyer details, and delivery information.
           </p>

@@ -76,15 +76,15 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
 
       // Fetch all sales analytics data in parallel
       const [salesData, summaryData, graphDataRaw] = await Promise.all([
-        getSalesData(params),
-        getSalesSummary(params),
-        getSalesGraphData(params),
+        getSalesData(params).catch(() => []),
+        getSalesSummary(params).catch(() => null),
+        getSalesGraphData(params).catch(() => []),
       ]);
 
       // Process and set the data
-      setSales(salesData);
+      setSales(Array.isArray(salesData) ? salesData : []);
       setSummary(summaryData);
-      setGraphData(processGraphData(graphDataRaw));
+      setGraphData(processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : []));
 
       log('Sales analytics data loaded successfully', {
         salesCount: salesData.length,
@@ -113,8 +113,11 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
    */
   const exportSalesCSV = useCallback(() => {
     try {
+      // Ensure sales is an array before mapping
+      const safeSales = Array.isArray(sales) ? sales : [];
+
       // Prepare data with computed values for CSV export
-      const exportData = sales.map(sale => ({
+      const exportData = safeSales.map(sale => ({
         ...sale,
         profit: (sale.actualSoldPrice || 0) - (sale.myPrice || 0),
         profitMargin:
@@ -148,10 +151,13 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   /**
    * Update date range and fetch new data
    */
-  const handleDateRangeChange = useCallback((range: DateRange) => {
-    setDateRange(range);
-    fetchSalesData(range);
-  }, [fetchSalesData]);
+  const handleDateRangeChange = useCallback(
+    (range: DateRange) => {
+      setDateRange(range);
+      fetchSalesData(range);
+    },
+    [fetchSalesData]
+  );
 
   // Load initial data on component mount
   useEffect(() => {
@@ -159,9 +165,9 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   }, []);
 
   // Computed values based on current data
-  const kpis = calculateKPIs(sales);
-  const categoryBreakdown = aggregateByCategory(sales);
-  const trendAnalysis = calculateTrendAnalysis(graphData);
+  const kpis = calculateKPIs(Array.isArray(sales) ? sales : []);
+  const categoryBreakdown = aggregateByCategory(Array.isArray(sales) ? sales : []);
+  const trendAnalysis = calculateTrendAnalysis(Array.isArray(graphData) ? graphData : []);
 
   return {
     // Data State

@@ -1,7 +1,7 @@
 /**
  * Centralized Response Transformation Utility
  * Eliminates duplicate response transformation logic across API files
- * 
+ *
  * Following CLAUDE.md DRY + SOLID principles:
  * - Single Responsibility: Only handles response transformation
  * - Open/Closed: Extensible through configuration
@@ -23,7 +23,7 @@ export interface StandardApiResponse<T> {
 /**
  * MongoDB document interface for ID transformation
  */
-interface MongoDocument {
+interface _MongoDocument {
   _id?: string;
   id?: string;
   [key: string]: any;
@@ -55,7 +55,7 @@ const DEFAULT_CONFIG: TransformationConfig = {
  */
 const METADATA_KEYS = [
   'saleDetails',
-  'psaGrades', 
+  'psaGrades',
   'psaTotalGradedForCard',
   'priceHistory',
   'metadata',
@@ -215,9 +215,7 @@ export const transformResponseWithCustom = <T>(
  * Response transformer factory
  * Creates configured transformer functions for reuse
  */
-export const createResponseTransformer = <T>(
-  config: Partial<TransformationConfig>
-) => {
+export const createResponseTransformer = <T>(config: Partial<TransformationConfig>) => {
   return (responseData: any): T => transformResponse<T>(responseData, config);
 };
 
@@ -227,13 +225,13 @@ export const createResponseTransformer = <T>(
 export const ResponseTransformers = {
   /** Standard transformation for most API responses */
   standard: <T>(data: any): T => transformStandardResponse<T>(data),
-  
+
   /** For responses that don't need ID transformation */
   noIdMapping: <T>(data: any): T => transformResponseNoIdMapping<T>(data),
-  
+
   /** For responses that only need data extraction */
   extractOnly: <T>(data: any): T => extractResponseData<T>(data),
-  
+
   /** For raw responses that don't need any transformation */
   raw: <T>(data: any): T => data as T,
 } as const;

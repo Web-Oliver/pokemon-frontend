@@ -1,7 +1,7 @@
 /**
  * PremiumLabel - Reusable premium label component
  * Eliminates duplicate label styling across form components
- * 
+ *
  * Following CLAUDE.md DRY principles:
  * - Centralized label styling and animations
  * - Consistent focus-within color transitions
@@ -24,7 +24,7 @@ export const PremiumLabel: React.FC<PremiumLabelProps> = ({
   return (
     <label
       htmlFor={htmlFor}
-      className={`block text-sm font-bold text-slate-700 mb-2 tracking-wide group-focus-within:text-indigo-600 transition-colors duration-300 ${className}`}
+      className={`block text-sm font-bold text-zinc-300 mb-2 tracking-wide group-focus-within:text-cyan-400 transition-colors duration-300 ${className}`}
     >
       {children}
     </label>

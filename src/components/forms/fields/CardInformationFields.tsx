@@ -1,7 +1,7 @@
 /**
  * CardInformationFields Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following CLAUDE.md composition over conditions:
  * - Single Responsibility: Handles only card-specific fields
  * - Open/Closed: Extensible through field configuration

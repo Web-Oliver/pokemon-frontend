@@ -349,14 +349,15 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       {/* Card Information Section - Enhanced Autocomplete Integration */}
       {!(isEditing && initialData?.sold) && (
-        <div className='bg-white border border-gray-200 rounded-lg p-6'>
-          <h4 className='text-lg font-medium text-gray-900 mb-4 flex items-center justify-between'>
+        <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+          <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
+          <h4 className='text-lg font-medium text-zinc-100 mb-4 flex items-center justify-between relative z-10'>
             <div className='flex items-center'>
-              <Award className='w-5 h-5 mr-2 text-gray-600' />
+              <Award className='w-5 h-5 mr-2 text-zinc-300' />
               Card Information
             </div>
             {watch('setName') && (
-              <div className='flex items-center text-sm text-blue-600'>
+              <div className='flex items-center text-sm text-blue-300 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-600/30'>
                 <Award className='w-4 h-4 mr-1' />
                 Filtering by: {watch('setName')}
               </div>
@@ -364,7 +365,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           </h4>
 
           {/* Enhanced Autocomplete for Hierarchical Search */}
-          <div className='mb-6'>
+          <div className='mb-6 relative z-10'>
             <EnhancedAutocomplete
               config={autocompleteConfig}
               fields={autocompleteFields}

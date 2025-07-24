@@ -1,7 +1,7 @@
 /**
  * useFormSubmission Hook
  * Eliminates form submission code duplication across Add/Edit form components
- * 
+ *
  * Following CLAUDE.md DRY + SOLID principles:
  * - Single Responsibility: Handles form submission orchestration
  * - Open/Closed: Extensible through configuration
@@ -47,7 +47,11 @@ interface FormSubmissionConfig<T> {
 
 interface UseFormSubmissionReturn<FormData> {
   isSubmitting: boolean;
-  handleSubmit: (handleSubmit: UseFormHandleSubmit<FormData>) => (onSubmit: (data: FormData) => Promise<void>) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (
+    handleSubmit: UseFormHandleSubmit<FormData>
+  ) => (
+    onSubmit: (data: FormData) => Promise<void>
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   submitError: string | null;
   clearSubmitError: () => void;
 }
@@ -56,7 +60,7 @@ interface UseFormSubmissionReturn<FormData> {
  * Generic form submission hook
  * Consolidates image upload, data preparation, and submission logic
  * Reduces form component complexity by ~100 lines each
- * 
+ *
  * @param config - Configuration object containing submission logic and dependencies
  * @returns Form submission state and handlers
  */
@@ -88,7 +92,7 @@ export const useFormSubmission = <T, FormData = any>(
             setIsSubmitting(false);
           }
         };
-        
+
         return reactHookFormHandleSubmit(memoizedSubmissionHandler);
       };
     },

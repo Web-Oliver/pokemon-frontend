@@ -200,11 +200,11 @@ const Activity: React.FC = () => {
               <div className='flex items-center mb-6'>
                 <button
                   onClick={() => handleNavigation('/dashboard')}
-                  className='mr-4 p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300 group'
+                  className='mr-4 p-2 rounded-xl bg-zinc-800/40 hover:bg-zinc-700/50 transition-all duration-300 group'
                 >
                   <ArrowLeft className='w-5 h-5 group-hover:scale-110 transition-transform duration-300' />
                 </button>
-                <div className='w-16 h-16 bg-white/20 rounded-3xl shadow-xl flex items-center justify-center mr-6'>
+                <div className='w-16 h-16 bg-zinc-800/40 rounded-3xl shadow-xl flex items-center justify-center mr-6'>
                   <ActivityIcon className='w-8 h-8 text-white' />
                 </div>
                 <div>
@@ -219,9 +219,9 @@ const Activity: React.FC = () => {
 
               {/* Live Stats */}
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                <div className='bg-white/10 rounded-2xl p-4 backdrop-blur-sm'>
+                <div className='bg-zinc-800/20 rounded-2xl p-4 backdrop-blur-sm'>
                   <div className='flex items-center'>
-                    <div className='w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-3'>
+                    <div className='w-10 h-10 bg-zinc-800/40 rounded-xl flex items-center justify-center mr-3'>
                       <Zap className='w-5 h-5 text-white' />
                     </div>
                     <div>
@@ -230,9 +230,9 @@ const Activity: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className='bg-white/10 rounded-2xl p-4 backdrop-blur-sm'>
+                <div className='bg-zinc-800/20 rounded-2xl p-4 backdrop-blur-sm'>
                   <div className='flex items-center'>
-                    <div className='w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-3'>
+                    <div className='w-10 h-10 bg-zinc-800/40 rounded-xl flex items-center justify-center mr-3'>
                       <Clock className='w-5 h-5 text-white' />
                     </div>
                     <div>
@@ -245,9 +245,9 @@ const Activity: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className='bg-white/10 rounded-2xl p-4 backdrop-blur-sm'>
+                <div className='bg-zinc-800/20 rounded-2xl p-4 backdrop-blur-sm'>
                   <div className='flex items-center'>
-                    <div className='w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-3'>
+                    <div className='w-10 h-10 bg-zinc-800/40 rounded-xl flex items-center justify-center mr-3'>
                       <Target className='w-5 h-5 text-white' />
                     </div>
                     <div>
@@ -260,13 +260,13 @@ const Activity: React.FC = () => {
             </div>
 
             {/* Premium floating elements */}
-            <div className='absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full animate-pulse'></div>
-            <div className='absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full animate-pulse delay-75'></div>
+            <div className='absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse'></div>
+            <div className='absolute -bottom-6 -left-6 w-32 h-32 bg-zinc-800/10 rounded-full animate-pulse delay-75'></div>
           </div>
 
           {/* Context7 Premium Filter Section */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
-            <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
+            <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
             <div className='p-8 relative z-10'>
               <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6'>
                 {/* Search */}
@@ -278,7 +278,7 @@ const Activity: React.FC = () => {
                       placeholder='Search activities...'
                       value={searchInput}
                       onChange={e => setSearchInput(e.target.value)}
-                      className='w-full pl-12 pr-4 py-3 bg-white/60 border border-slate-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300'
+                      className='w-full pl-12 pr-4 py-3 bg-zinc-800/60 border border-zinc-700/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-zinc-100 placeholder-zinc-400'
                     />
                     {searchTerm && (
                       <button
@@ -308,7 +308,7 @@ const Activity: React.FC = () => {
                         className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 ${
                           isActive
                             ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
-                            : 'bg-white/60 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700'
+                            : 'bg-zinc-800/60 text-zinc-300 hover:bg-cyan-900/30 hover:text-cyan-400'
                         }`}
                       >
                         <IconComponent className='w-4 h-4 mr-2' />
@@ -324,7 +324,7 @@ const Activity: React.FC = () => {
                   <select
                     value={filters.dateRange || 'all'}
                     onChange={e => handleDateRangeChange(e.target.value)}
-                    className='bg-white/60 border border-slate-200/50 rounded-xl px-4 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                    className='bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-2 text-sm font-medium text-zinc-300 focus:outline-none focus:ring-2 focus:ring-cyan-500'
                   >
                     {dateRangeOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -338,8 +338,8 @@ const Activity: React.FC = () => {
           </div>
 
           {/* Context7 Premium Activity Timeline */}
-          <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 relative overflow-hidden'>
-            <div className='absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50'></div>
+          <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden'>
+            <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
             <div className='p-8 relative z-10'>
               {loading && activities.length === 0 ? (
                 <div className='flex justify-center py-16'>

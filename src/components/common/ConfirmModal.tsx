@@ -104,7 +104,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <button
           onClick={handleCancel}
           disabled={isLoading}
-          className='px-6 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-600 border border-slate-300/50 dark:border-slate-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='px-6 py-2.5 text-sm font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           {cancelText}
         </button>
