@@ -23,7 +23,7 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
   const formData = new FormData();
   formData.append('image', image);
 
-  const response = await unifiedApiClient.apiCreate<any>(
+  const response = await unifiedApiClient.apiCreate<{success: boolean, data: any} | any>(
     '/upload/image',
     formData,
     'image upload',
@@ -34,8 +34,11 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
     }
   );
 
+  // Handle wrapped response format {success: true, data: {...}} or direct response
+  const uploadedFile = response.data || response;
+  
   // Extract only the path from the uploaded file
-  return response.path;
+  return uploadedFile.path;
 };
 
 /**
@@ -49,7 +52,7 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
     formData.append(`images`, image);
   });
 
-  const response = await unifiedApiClient.apiCreate<any[]>(
+  const response = await unifiedApiClient.apiCreate<{success: boolean, data: any[]}>(
     '/upload/images',
     formData,
     'multiple image upload',
@@ -60,8 +63,18 @@ export const uploadMultipleImages = async (images: File[]): Promise<string[]> =>
     }
   );
 
+  // Handle wrapped response format {success: true, data: [...]}
+  // Extract the actual data array from the response
+  const uploadedFiles = response.data || response || [];
+  
+  // Ensure we have an array to work with
+  if (!Array.isArray(uploadedFiles)) {
+    console.error('[UPLOAD API] Expected array but got:', uploadedFiles);
+    throw new Error('Invalid response format from upload API');
+  }
+
   // Extract only the path from each uploaded file
-  return response.map((file: any) => file.path);
+  return uploadedFiles.map((file: any) => file.path);
 };
 
 /**
