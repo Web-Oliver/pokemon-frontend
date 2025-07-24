@@ -4,19 +4,17 @@
  * Consolidated implementation following SOLID principles and eliminating duplication
  */
 
-import {
-  IExportApiService,
-  ExportRequest,
-  ExportResult,
-  ExportItemType,
-  ExportFormat,
-} from '../interfaces/api/IExportApiService';
 import * as exportApi from '../api/exportApi';
 import {
-  validateExportRequest,
-  getExportConfigKey,
-  getExportConfig,
+  ExportRequest,
+  ExportResult,
+  IExportApiService,
+} from '../interfaces/api/IExportApiService';
+import {
   generateExportFilename,
+  getExportConfig,
+  getExportConfigKey,
+  validateExportRequest,
 } from '../utils/exportUtils';
 
 /**
@@ -56,7 +54,10 @@ export class ExportApiService implements IExportApiService {
    * Consolidated image export operation
    * Eliminates duplication between zipPsaCardImages, zipRawCardImages, zipSealedProductImages
    */
-  async exportImages(request: ExportRequest, config: any): Promise<ExportResult> {
+  async exportImages(
+    request: ExportRequest,
+    config: any
+  ): Promise<ExportResult> {
     const { itemType, itemIds, options } = request;
     let blob: Blob;
 
@@ -79,7 +80,8 @@ export class ExportApiService implements IExportApiService {
     }
 
     // Generate standardized filename
-    const filename = options?.filename || generateExportFilename(config, itemIds?.length);
+    const filename =
+      options?.filename || generateExportFilename(config, itemIds?.length);
 
     return {
       blob,
@@ -110,14 +112,19 @@ export class ExportApiService implements IExportApiService {
         break;
       case 'dba':
         // Handle DBA export (implementation would depend on backend support)
-        const dbaItems = (itemIds || []).map(id => ({ id, type: 'mixed' as const }));
+        const dbaItems = (itemIds || []).map((id) => ({
+          id,
+          type: 'mixed' as const,
+        }));
         const dbaResponse = await exportApi.exportToDba({
           items: dbaItems,
           customDescription: options?.customDescription,
           includeMetadata: options?.includeMetadata,
         });
         // Note: This would need backend modifications to return blob directly
-        blob = new Blob([JSON.stringify(dbaResponse)], { type: config.mimeType });
+        blob = new Blob([JSON.stringify(dbaResponse)], {
+          type: config.mimeType,
+        });
         itemCount = dbaResponse.data.itemCount;
         break;
       default:
@@ -125,7 +132,8 @@ export class ExportApiService implements IExportApiService {
     }
 
     // Generate standardized filename
-    const filename = options?.filename || generateExportFilename(config, itemCount);
+    const filename =
+      options?.filename || generateExportFilename(config, itemCount);
 
     return {
       blob,

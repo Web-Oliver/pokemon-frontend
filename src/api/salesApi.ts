@@ -61,7 +61,10 @@ const transformSalesData = (rawData: any[]): ISale[] => {
     // Extract item name based on item type
     if (item.itemType === 'sealedProduct') {
       itemName = item.name || 'Unknown Sealed Product';
-    } else if (item.itemType === 'psaGradedCard' || item.itemType === 'rawCard') {
+    } else if (
+      item.itemType === 'psaGradedCard' ||
+      item.itemType === 'rawCard'
+    ) {
       if (item.cardId?.cardName) {
         itemName = item.cardId.cardName;
         // Add set name if available
@@ -92,7 +95,9 @@ const transformSalesData = (rawData: any[]): ISale[] => {
         typeof item.saleDetails.actualSoldPrice === 'object' &&
         item.saleDetails.actualSoldPrice.$numberDecimal
       ) {
-        actualSoldPrice = parseFloat(item.saleDetails.actualSoldPrice.$numberDecimal);
+        actualSoldPrice = parseFloat(
+          item.saleDetails.actualSoldPrice.$numberDecimal
+        );
       } else {
         actualSoldPrice = Number(item.saleDetails.actualSoldPrice);
       }
@@ -116,13 +121,14 @@ const transformSalesData = (rawData: any[]): ISale[] => {
  * Core CRUD operations for sales using createResourceOperations
  * Eliminates boilerplate patterns and ensures consistency with other API files
  */
-const salesOperations = createResourceOperations<ISale, ISaleCreatePayload, ISaleUpdatePayload>(
-  SALES_CONFIG,
-  {
-    includeExportOperations: true,
-    includeBatchOperations: true,
-  }
-);
+const salesOperations = createResourceOperations<
+  ISale,
+  ISaleCreatePayload,
+  ISaleUpdatePayload
+>(SALES_CONFIG, {
+  includeExportOperations: true,
+  includeBatchOperations: true,
+});
 
 // ========== EXPORTED API OPERATIONS ==========
 
@@ -131,7 +137,9 @@ const salesOperations = createResourceOperations<ISale, ISaleCreatePayload, ISal
  * @param params - Optional filter parameters
  * @returns Promise<ISale[]> - Array of sales transactions
  */
-export const getSalesData = async (params?: SalesDataParams): Promise<ISale[]> => {
+export const getSalesData = async (
+  params?: SalesDataParams
+): Promise<ISale[]> => {
   const rawData = await salesOperations.getAll(params);
   return transformSalesData(rawData as any[]);
 };
@@ -202,7 +210,9 @@ export const batchSaleOperation = salesOperations.batchOperation;
  * @param params - Optional filter parameters
  * @returns Promise<ISalesSummary> - Sales summary data
  */
-export const getSalesSummary = async (params?: SalesSummaryParams): Promise<ISalesSummary> => {
+export const getSalesSummary = async (
+  params?: SalesSummaryParams
+): Promise<ISalesSummary> => {
   const response = await unifiedApiClient.apiGet<ISalesSummary>(
     '/sales/summary',
     'sales summary analytics',

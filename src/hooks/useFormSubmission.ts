@@ -85,7 +85,8 @@ export const useFormSubmission = <T, FormData = any>(
           try {
             await onSubmit(data);
           } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Form submission failed';
+            const errorMessage =
+              error instanceof Error ? error.message : 'Form submission failed';
             setSubmitError(errorMessage);
             console.error('Form submission failed:', error);
           } finally {
@@ -163,11 +164,22 @@ export const createPriceHistoryEntry = (
  * Common pattern across PSA/Raw card forms
  */
 export const prepareSaleDetails = (formData: any) => ({
-  paymentMethod: formData.paymentMethod as 'CASH' | 'Mobilepay' | 'BankTransfer' | undefined,
-  actualSoldPrice: formData.actualSoldPrice ? parseFloat(formData.actualSoldPrice) : undefined,
-  deliveryMethod: formData.deliveryMethod as 'Sent' | 'Local Meetup' | undefined,
+  paymentMethod: formData.paymentMethod as
+    | 'CASH'
+    | 'Mobilepay'
+    | 'BankTransfer'
+    | undefined,
+  actualSoldPrice: formData.actualSoldPrice
+    ? parseFloat(formData.actualSoldPrice)
+    : undefined,
+  deliveryMethod: formData.deliveryMethod as
+    | 'Sent'
+    | 'Local Meetup'
+    | undefined,
   source: formData.source as 'Facebook' | 'DBA' | undefined,
-  dateSold: formData.dateSold ? new Date(formData.dateSold).toISOString() : undefined,
+  dateSold: formData.dateSold
+    ? new Date(formData.dateSold).toISOString()
+    : undefined,
   buyerFullName: formData.buyerFullName?.trim() || '',
   buyerPhoneNumber: formData.buyerPhoneNumber?.trim() || '',
   buyerEmail: formData.buyerEmail?.trim() || '',

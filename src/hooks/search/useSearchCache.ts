@@ -9,11 +9,20 @@
  */
 
 import { useRef, useCallback, useMemo } from 'react';
-import { SetResult, CardResult, ProductResult, CategoryResult } from '../../api/searchApi';
+import {
+  SetResult,
+  CardResult,
+  ProductResult,
+  CategoryResult,
+} from '../../api/searchApi';
 import { log } from '../../utils/logger';
 import { getCacheTTL } from '../../config/cacheConfig';
 
-type SearchResultType = SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
+type SearchResultType =
+  | SetResult[]
+  | CardResult[]
+  | ProductResult[]
+  | CategoryResult[];
 
 interface CacheEntry {
   results: SearchResultType;
@@ -32,7 +41,11 @@ interface CacheStats {
 export interface UseSearchCacheReturn {
   // Cache operations
   getCachedResults: (key: string) => SearchResultType | null;
-  setCachedResults: (key: string, results: SearchResultType, ttl?: number) => void;
+  setCachedResults: (
+    key: string,
+    results: SearchResultType,
+    ttl?: number
+  ) => void;
   clearCache: () => void;
 
   // Cache statistics
@@ -70,32 +83,38 @@ export const useSearchCache = (): UseSearchCacheReturn => {
     []
   );
 
-  const getCachedResults = useCallback((key: string): SearchResultType | null => {
-    const cached = cacheRef.current.get(key);
-    const now = Date.now();
+  const getCachedResults = useCallback(
+    (key: string): SearchResultType | null => {
+      const cached = cacheRef.current.get(key);
+      const now = Date.now();
 
-    statsRef.current.totalQueries++;
+      statsRef.current.totalQueries++;
 
-    if (cached && now - cached.timestamp < cached.ttl) {
-      // Valid cache hit
-      cached.hitCount++;
-      cached.score = (cached.hitCount / (now - cached.timestamp)) * 1000; // Score based on hits/age
+      if (cached && now - cached.timestamp < cached.ttl) {
+        // Valid cache hit
+        cached.hitCount++;
+        cached.score = (cached.hitCount / (now - cached.timestamp)) * 1000; // Score based on hits/age
 
-      statsRef.current.cacheHits++;
-      statsRef.current.hitRate = (statsRef.current.cacheHits / statsRef.current.totalQueries) * 100;
+        statsRef.current.cacheHits++;
+        statsRef.current.hitRate =
+          (statsRef.current.cacheHits / statsRef.current.totalQueries) * 100;
 
-      log(`[SEARCH CACHE] Cache hit for key: ${key} (score: ${cached.score.toFixed(2)})`);
-      return cached.results;
-    }
+        log(
+          `[SEARCH CACHE] Cache hit for key: ${key} (score: ${cached.score.toFixed(2)})`
+        );
+        return cached.results;
+      }
 
-    if (cached) {
-      // Expired entry
-      cacheRef.current.delete(key);
-      log(`[SEARCH CACHE] Cache expired for key: ${key}`);
-    }
+      if (cached) {
+        // Expired entry
+        cacheRef.current.delete(key);
+        log(`[SEARCH CACHE] Cache expired for key: ${key}`);
+      }
 
-    return null;
-  }, []);
+      return null;
+    },
+    []
+  );
 
   const setCachedResults = useCallback(
     (key: string, results: SearchResultType, customTtl?: number) => {

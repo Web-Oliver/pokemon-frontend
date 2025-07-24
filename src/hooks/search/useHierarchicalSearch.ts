@@ -9,7 +9,12 @@
  */
 
 import { useState, useCallback } from 'react';
-import { SetResult, CardResult, ProductResult, CategoryResult } from '../../api/searchApi';
+import {
+  SetResult,
+  CardResult,
+  ProductResult,
+  CategoryResult,
+} from '../../api/searchApi';
 import { log } from '../../utils/logger';
 
 export interface HierarchicalSearchState {
@@ -49,7 +54,9 @@ export interface UseHierarchicalSearchReturn extends HierarchicalSearchState {
   ) => void;
 
   // Filtering logic
-  shouldShowSuggestions: (fieldType: 'set' | 'category' | 'cardProduct') => boolean;
+  shouldShowSuggestions: (
+    fieldType: 'set' | 'category' | 'cardProduct'
+  ) => boolean;
   getFilteredSearchContext: () => {
     setFilter?: string;
     categoryFilter?: string;
@@ -73,7 +80,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
   });
 
   const updateSetName = useCallback((value: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       setName: value,
       activeField: 'set',
@@ -84,7 +91,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
   }, []);
 
   const updateCategoryName = useCallback((value: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       categoryName: value,
       activeField: 'category',
@@ -95,7 +102,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
   }, []);
 
   const updateCardProductName = useCallback((value: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       cardProductName: value,
       activeField: 'cardProduct',
@@ -103,7 +110,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
   }, []);
 
   const clearSelectedSet = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedSet: null,
       setName: '',
@@ -115,7 +122,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
   }, []);
 
   const clearSelectedCategory = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedCategory: null,
       categoryName: '',
@@ -126,12 +133,15 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
     log('[HIERARCHICAL SEARCH] Cleared selected category');
   }, []);
 
-  const setActiveField = useCallback((field: 'set' | 'category' | 'cardProduct' | null) => {
-    setState(prev => ({
-      ...prev,
-      activeField: field,
-    }));
-  }, []);
+  const setActiveField = useCallback(
+    (field: 'set' | 'category' | 'cardProduct' | null) => {
+      setState((prev) => ({
+        ...prev,
+        activeField: field,
+      }));
+    },
+    []
+  );
 
   const handleHierarchicalSelection = useCallback(
     (
@@ -143,7 +153,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
       switch (fieldType) {
         case 'set':
           if ('setName' in suggestion) {
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               selectedSet: suggestion.id || suggestion.setName,
               setName: suggestion.setName,
@@ -158,7 +168,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
 
         case 'category':
           if ('category' in suggestion) {
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               selectedCategory: suggestion.category,
               categoryName: suggestion.category,
@@ -167,7 +177,9 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
               cardProductName: '',
               selectedCardData: null,
             }));
-            log(`[HIERARCHICAL SEARCH] Category selected: ${suggestion.category}`);
+            log(
+              `[HIERARCHICAL SEARCH] Category selected: ${suggestion.category}`
+            );
           }
           break;
 
@@ -175,7 +187,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
           // Handle both card and product selections
           if ('cardName' in suggestion && 'baseName' in suggestion) {
             // Card selection - autofill form data
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               cardProductName: suggestion.cardName,
               activeField: null,
@@ -203,7 +215,7 @@ export const useHierarchicalSearch = (): UseHierarchicalSearchReturn => {
             log(`[HIERARCHICAL SEARCH] Card selected: ${suggestion.cardName}`);
           } else if ('name' in suggestion && 'category' in suggestion) {
             // Product selection
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               cardProductName: suggestion.name,
               activeField: null,

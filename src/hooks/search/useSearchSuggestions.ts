@@ -20,7 +20,11 @@ import { handleApiError } from '../../utils/errorHandler';
 import { log } from '../../utils/logger';
 import { useSearchCache } from './useSearchCache';
 
-type SuggestionType = SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
+type SuggestionType =
+  | SetResult[]
+  | CardResult[]
+  | ProductResult[]
+  | CategoryResult[];
 
 export interface SuggestionsState {
   suggestions: SuggestionType;
@@ -73,7 +77,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
   const searchSuggestions = useCallback(
     async (query: string, type: 'set' | 'card' | 'product' | 'category') => {
       if (!query.trim()) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           suggestions: [],
           error: null,
@@ -97,7 +101,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           loading: true,
           error: null,
@@ -109,7 +113,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
           // Check cache first
           const cachedResults = cache.getCachedResults(cacheKey);
           if (cachedResults) {
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               suggestions: cachedResults,
               loading: false,
@@ -122,7 +126,9 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
             return;
           }
 
-          log(`[SEARCH SUGGESTIONS] Searching ${type} suggestions for: ${query}`);
+          log(
+            `[SEARCH SUGGESTIONS] Searching ${type} suggestions for: ${query}`
+          );
 
           let results: SuggestionType = [];
 
@@ -145,7 +151,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
             // Cache the results
             cache.setCachedResults(cacheKey, results);
 
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               suggestions: results,
               loading: false,
@@ -156,14 +162,16 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
               },
             }));
 
-            log(`[SEARCH SUGGESTIONS] Found ${results.length} ${type} suggestions`);
+            log(
+              `[SEARCH SUGGESTIONS] Found ${results.length} ${type} suggestions`
+            );
           }
         } catch (error) {
           if (!abortController.signal.aborted) {
             const errorMessage = `Failed to load ${type} suggestions. Please try again.`;
             handleApiError(error, errorMessage);
 
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               error: errorMessage,
               loading: false,
@@ -184,7 +192,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
       log(`[SEARCH SUGGESTIONS] Selected ${fieldType} suggestion:`, suggestion);
 
       // Clear suggestions after selection
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         suggestions: [],
       }));
@@ -197,7 +205,9 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
   );
 
   const getSuggestionDisplayText = useCallback(
-    (suggestion: SetResult | CardResult | ProductResult | CategoryResult): string => {
+    (
+      suggestion: SetResult | CardResult | ProductResult | CategoryResult
+    ): string => {
       if ('setName' in suggestion) {
         // SetResult
         return `${suggestion.setName} (${suggestion.year || 'Unknown Year'})`;
@@ -234,7 +244,7 @@ export const useSearchSuggestions = (): UseSearchSuggestionsReturn => {
   }, []);
 
   const clearError = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       error: null,
     }));

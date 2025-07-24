@@ -136,7 +136,11 @@ export async function deleteResource(
 ): Promise<void> {
   const { ...requestOptions } = options || {};
 
-  await unifiedApiClient.apiDelete(`${config.endpoint}/${id}`, config.resourceName, requestOptions);
+  await unifiedApiClient.apiDelete(
+    `${config.endpoint}/${id}`,
+    config.resourceName,
+    requestOptions
+  );
 }
 
 /**
@@ -199,11 +203,15 @@ export async function markResourceSold<T>(
 ): Promise<T> {
   const { transform, ...requestOptions } = options || {};
 
-  const data = await unifiedApiClient.post<T>(`${config.endpoint}/${id}/mark-sold`, saleDetails, {
-    operation: `mark ${config.resourceName} as sold`,
-    successMessage: `${config.resourceName} marked as sold successfully! 💰`,
-    ...requestOptions,
-  });
+  const data = await unifiedApiClient.post<T>(
+    `${config.endpoint}/${id}/mark-sold`,
+    saleDetails,
+    {
+      operation: `mark ${config.resourceName} as sold`,
+      successMessage: `${config.resourceName} marked as sold successfully! 💰`,
+      ...requestOptions,
+    }
+  );
 
   return transform ? transform(data) : data;
 }
@@ -263,7 +271,10 @@ export async function batchOperation<T>(
  * Create resource configuration
  * Helper for consistent resource config creation
  */
-export function createResourceConfig(endpoint: string, resourceName: string): ResourceConfig {
+export function createResourceConfig(
+  endpoint: string,
+  resourceName: string
+): ResourceConfig {
   return { endpoint, resourceName };
 }
 
@@ -347,15 +358,38 @@ export interface ResourceOperations<
   TCreatePayload = TResource,
   TUpdatePayload = Partial<TResource>,
 > {
-  getAll: (params?: GenericParams, options?: OperationOptions) => Promise<TResource[]>;
+  getAll: (
+    params?: GenericParams,
+    options?: OperationOptions
+  ) => Promise<TResource[]>;
   getById: (id: string, options?: OperationOptions) => Promise<TResource>;
-  create: (data: TCreatePayload, options?: OperationOptions) => Promise<TResource>;
-  update: (id: string, data: TUpdatePayload, options?: OperationOptions) => Promise<TResource>;
+  create: (
+    data: TCreatePayload,
+    options?: OperationOptions
+  ) => Promise<TResource>;
+  update: (
+    id: string,
+    data: TUpdatePayload,
+    options?: OperationOptions
+  ) => Promise<TResource>;
   remove: (id: string, options?: OperationOptions) => Promise<void>;
-  search: (searchParams: GenericParams, options?: OperationOptions) => Promise<TResource[]>;
-  bulkCreate: (items: TCreatePayload[], options?: OperationOptions) => Promise<TResource[]>;
-  markSold?: (id: string, saleDetails: any, options?: OperationOptions) => Promise<TResource>;
-  export?: (exportParams?: GenericParams, options?: OperationOptions) => Promise<Blob>;
+  search: (
+    searchParams: GenericParams,
+    options?: OperationOptions
+  ) => Promise<TResource[]>;
+  bulkCreate: (
+    items: TCreatePayload[],
+    options?: OperationOptions
+  ) => Promise<TResource[]>;
+  markSold?: (
+    id: string,
+    saleDetails: any,
+    options?: OperationOptions
+  ) => Promise<TResource>;
+  export?: (
+    exportParams?: GenericParams,
+    options?: OperationOptions
+  ) => Promise<Blob>;
   batchOperation?: (
     operation: string,
     ids: string[],
@@ -384,7 +418,11 @@ export function createResourceOperations<
     includeBatchOperations?: boolean;
   } = {}
 ): ResourceOperations<TResource, TCreatePayload, TUpdatePayload> {
-  const operations: ResourceOperations<TResource, TCreatePayload, TUpdatePayload> = {
+  const operations: ResourceOperations<
+    TResource,
+    TCreatePayload,
+    TUpdatePayload
+  > = {
     // Core CRUD operations
     getAll: (params?: GenericParams, requestOptions?: OperationOptions) =>
       getCollection<TResource>(config, params, requestOptions),
@@ -393,10 +431,23 @@ export function createResourceOperations<
       getResource<TResource>(config, id, requestOptions),
 
     create: (data: TCreatePayload, requestOptions?: OperationOptions) =>
-      createResource<TResource>(config, data as Partial<TResource>, requestOptions),
+      createResource<TResource>(
+        config,
+        data as Partial<TResource>,
+        requestOptions
+      ),
 
-    update: (id: string, data: TUpdatePayload, requestOptions?: OperationOptions) =>
-      updateResource<TResource>(config, id, data as Partial<TResource>, requestOptions),
+    update: (
+      id: string,
+      data: TUpdatePayload,
+      requestOptions?: OperationOptions
+    ) =>
+      updateResource<TResource>(
+        config,
+        id,
+        data as Partial<TResource>,
+        requestOptions
+      ),
 
     remove: (id: string, requestOptions?: OperationOptions) =>
       deleteResource(config, id, requestOptions),
@@ -405,18 +456,27 @@ export function createResourceOperations<
       searchResources<TResource>(config, searchParams, requestOptions),
 
     bulkCreate: (items: TCreatePayload[], requestOptions?: OperationOptions) =>
-      bulkCreateResources<TResource>(config, items as Partial<TResource>[], requestOptions),
+      bulkCreateResources<TResource>(
+        config,
+        items as Partial<TResource>[],
+        requestOptions
+      ),
   };
 
   // Optional specialized operations
   if (options.includeSoldOperations) {
-    operations.markSold = (id: string, saleDetails: any, requestOptions?: OperationOptions) =>
-      markResourceSold<TResource>(config, id, saleDetails, requestOptions);
+    operations.markSold = (
+      id: string,
+      saleDetails: any,
+      requestOptions?: OperationOptions
+    ) => markResourceSold<TResource>(config, id, saleDetails, requestOptions);
   }
 
   if (options.includeExportOperations) {
-    operations.export = (exportParams?: GenericParams, requestOptions?: OperationOptions) =>
-      exportResource<Blob>(config, exportParams, requestOptions);
+    operations.export = (
+      exportParams?: GenericParams,
+      requestOptions?: OperationOptions
+    ) => exportResource<Blob>(config, exportParams, requestOptions);
   }
 
   if (options.includeBatchOperations) {
@@ -425,7 +485,14 @@ export function createResourceOperations<
       ids: string[],
       operationData?: any,
       requestOptions?: OperationOptions
-    ) => batchOperation<TResource>(config, operation, ids, operationData, requestOptions);
+    ) =>
+      batchOperation<TResource>(
+        config,
+        operation,
+        ids,
+        operationData,
+        requestOptions
+      );
   }
 
   return operations;
@@ -464,7 +531,10 @@ export const CARDMARKET_REF_PRODUCTS_CONFIG = createResourceConfig(
 /**
  * Common configuration for DBA selection resources
  */
-export const DBA_SELECTION_CONFIG = createResourceConfig('/dba-selection', 'DBA selection');
+export const DBA_SELECTION_CONFIG = createResourceConfig(
+  '/dba-selection',
+  'DBA selection'
+);
 
 /**
  * Common configuration for export resources
@@ -479,9 +549,15 @@ export const ACTIVITY_CONFIG = createResourceConfig('/activity', 'activity');
 /**
  * Common configuration for collection resources
  */
-export const PSA_CARD_CONFIG = createResourceConfig('/psa-graded-cards', 'PSA card');
+export const PSA_CARD_CONFIG = createResourceConfig(
+  '/psa-graded-cards',
+  'PSA card'
+);
 export const RAW_CARD_CONFIG = createResourceConfig('/raw-cards', 'raw card');
-export const SEALED_PRODUCT_CONFIG = createResourceConfig('/sealed-products', 'sealed product');
+export const SEALED_PRODUCT_CONFIG = createResourceConfig(
+  '/sealed-products',
+  'sealed product'
+);
 
 /**
  * Common ID mapper instance

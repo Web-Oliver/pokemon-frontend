@@ -12,21 +12,20 @@
  * - Stunning animations and hover effects
  */
 
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Package, Archive } from 'lucide-react';
+import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
 import { PageLayout } from '../components/layouts/PageLayout';
-import { usePageLayout } from '../hooks/usePageLayout';
-import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import { useCollectionOperations } from '../hooks/useCollectionOperations';
-import { getCollectionApiService } from '../services/ServiceRegistry';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
+import { navigationHelper } from '../utils/navigation';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -41,7 +40,8 @@ interface ItemTypeOption {
 type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
 const AddEditItem: React.FC = () => {
-  const { loading: collectionLoading, error: collectionError } = useCollectionOperations();
+  const { loading: collectionLoading, error: collectionError } =
+    useCollectionOperations();
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
@@ -205,42 +205,46 @@ const AddEditItem: React.FC = () => {
   return (
     <PageLayout
       title={isEditing ? 'Edit Item' : 'Add New Item'}
-      subtitle={isEditing ? 'Update your collection item' : 'Add a new item to your collection'}
+      subtitle={
+        isEditing
+          ? 'Update your collection item'
+          : 'Add a new item to your collection'
+      }
       loading={fetchLoading}
       error={fetchError}
-      variant='blue'
+      variant="blue"
     >
       {/* Modern Background Pattern */}
-      <div className='absolute inset-0 opacity-20'>
+      <div className="absolute inset-0 opacity-20">
         <div
-          className='w-full h-full'
+          className="w-full h-full"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         ></div>
       </div>
 
-      <div className='relative z-10 p-6'>
-        <div className='max-w-4xl mx-auto space-y-6'>
+      <div className="relative z-10 p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           {/* Modern Header */}
-          <div className='bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-cyan-200/30 p-6 relative overflow-hidden'>
-            <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500'></div>
-            <div className='absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-xl'></div>
+          <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-cyan-200/30 p-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500"></div>
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-xl"></div>
 
-            <div className='flex items-center justify-between relative z-10'>
-              <div className='flex items-center space-x-4'>
+            <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center space-x-4">
                 <button
                   onClick={handleBackToCollection}
-                  className='p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group'
-                  aria-label='Back to collection'
+                  className="p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group"
+                  aria-label="Back to collection"
                 >
-                  <ArrowLeft className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
+                  <ArrowLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                 </button>
                 <div>
-                  <h1 className='text-2xl font-bold text-zinc-100 mb-1'>
+                  <h1 className="text-2xl font-bold text-zinc-100 mb-1">
                     {isEditing ? 'Edit Item' : 'Add New Item'}
                   </h1>
-                  <p className='text-zinc-400 text-sm'>
+                  <p className="text-zinc-400 text-sm">
                     {isEditing
                       ? 'Update your collection item details'
                       : 'Add a new item to your collection'}
@@ -249,33 +253,37 @@ const AddEditItem: React.FC = () => {
               </div>
 
               {/* Status Indicator */}
-              <div className='flex items-center space-x-2 bg-green-900/30 px-3 py-1.5 rounded-full'>
-                <div className='w-2 h-2 bg-green-400 rounded-full animate-pulse'></div>
-                <span className='text-xs font-medium text-green-300'>Active</span>
+              <div className="flex items-center space-x-2 bg-green-900/30 px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium text-green-300">
+                  Active
+                </span>
               </div>
             </div>
           </div>
 
           {/* Loading State */}
           {fetchLoading && (
-            <div className='bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 text-center'>
-              <LoadingSpinner size='lg' />
-              <p className='mt-4 text-zinc-400'>Loading item for editing...</p>
+            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 text-center">
+              <LoadingSpinner size="lg" />
+              <p className="mt-4 text-zinc-400">Loading item for editing...</p>
             </div>
           )}
 
           {/* Error State */}
           {fetchError && (
-            <div className='bg-red-50/95 backdrop-blur-xl rounded-2xl shadow-xl border border-red-200/50 p-8'>
-              <div className='text-center'>
-                <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                  <Archive className='w-6 h-6 text-red-600' />
+            <div className="bg-red-50/95 backdrop-blur-xl rounded-2xl shadow-xl border border-red-200/50 p-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Archive className="w-6 h-6 text-red-600" />
                 </div>
-                <h3 className='text-lg font-bold text-red-300 mb-2'>Error Loading Item</h3>
-                <p className='text-red-400 mb-4'>{fetchError}</p>
+                <h3 className="text-lg font-bold text-red-300 mb-2">
+                  Error Loading Item
+                </h3>
+                <p className="text-red-400 mb-4">{fetchError}</p>
                 <button
                   onClick={handleBackToCollection}
-                  className='bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-red-700 transition-colors'
+                  className="bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-red-700 transition-colors"
                 >
                   Back to Collection
                 </button>
@@ -285,17 +293,19 @@ const AddEditItem: React.FC = () => {
 
           {/* Modern Item Type Selection */}
           {!fetchLoading && !fetchError && !selectedItemType && (
-            <div className='bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden'>
-              <div className='absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl'></div>
+            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden">
+              <div className="absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"></div>
 
-              <div className='mb-8 relative z-10'>
-                <h2 className='text-xl font-bold text-zinc-100 mb-2'>Select Item Type</h2>
-                <p className='text-zinc-400 text-sm'>
+              <div className="mb-8 relative z-10">
+                <h2 className="text-xl font-bold text-zinc-100 mb-2">
+                  Select Item Type
+                </h2>
+                <p className="text-zinc-400 text-sm">
                   Choose the type of item you want to add to your collection
                 </p>
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10'>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                 {itemTypes.map((itemType, index) => {
                   const Icon = itemType.icon;
                   const gradientClasses = {
@@ -323,26 +333,26 @@ const AddEditItem: React.FC = () => {
                       ></div>
 
                       {/* Icon container */}
-                      <div className='relative z-10 mb-4'>
+                      <div className="relative z-10 mb-4">
                         <div
                           className={`w-12 h-12 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-lg shadow-md flex items-center justify-center group-hover:scale-110 transition-all duration-300`}
                         >
-                          <Icon className='w-6 h-6 text-white' />
+                          <Icon className="w-6 h-6 text-white" />
                         </div>
                       </div>
 
-                      <div className='relative z-10'>
-                        <h3 className='text-lg font-bold text-zinc-100 mb-2 group-hover:text-zinc-200 transition-colors duration-300'>
+                      <div className="relative z-10">
+                        <h3 className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-zinc-200 transition-colors duration-300">
                           {itemType.name}
                         </h3>
-                        <p className='text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors duration-300'>
+                        <p className="text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors duration-300">
                           {itemType.description}
                         </p>
                       </div>
 
                       {/* Arrow indicator */}
-                      <div className='absolute bottom-4 right-4 w-5 h-5 text-zinc-500 group-hover:text-zinc-300 group-hover:translate-x-1 transition-all duration-300 opacity-0 group-hover:opacity-100'>
-                        <ArrowLeft className='w-5 h-5 rotate-180' />
+                      <div className="absolute bottom-4 right-4 w-5 h-5 text-zinc-500 group-hover:text-zinc-300 group-hover:translate-x-1 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <ArrowLeft className="w-5 h-5 rotate-180" />
                       </div>
                     </button>
                   );
@@ -353,40 +363,48 @@ const AddEditItem: React.FC = () => {
 
           {/* Modern Selected Form */}
           {!fetchLoading && !fetchError && selectedItemType && (
-            <div className='bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden'>
-              <div className='absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl'></div>
+            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden">
+              <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"></div>
 
-              <div className='flex items-center justify-between mb-8 relative z-10'>
-                <div className='flex items-center space-x-4'>
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center space-x-4">
                   {!isEditing && (
                     <button
                       onClick={() => setSelectedItemType(null)}
-                      className='p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group'
-                      aria-label='Back to item type selection'
+                      className="p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group"
+                      aria-label="Back to item type selection"
                     >
-                      <ArrowLeft className='w-5 h-5 group-hover:scale-110 transition-transform duration-200' />
+                      <ArrowLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                     </button>
                   )}
                   <div>
-                    <h2 className='text-xl font-bold text-zinc-100 mb-1'>
-                      {itemTypes.find(type => type.id === selectedItemType)?.name}
+                    <h2 className="text-xl font-bold text-zinc-100 mb-1">
+                      {
+                        itemTypes.find((type) => type.id === selectedItemType)
+                          ?.name
+                      }
                     </h2>
-                    <p className='text-zinc-400 text-sm'>
-                      {itemTypes.find(type => type.id === selectedItemType)?.description}
+                    <p className="text-zinc-400 text-sm">
+                      {
+                        itemTypes.find((type) => type.id === selectedItemType)
+                          ?.description
+                      }
                     </p>
                   </div>
                 </div>
 
                 {/* Progress indicator */}
-                <div className='flex items-center space-x-2'>
-                  <div className='w-2 h-2 bg-cyan-500 rounded-full'></div>
-                  <div className='w-2 h-2 bg-cyan-300 rounded-full'></div>
-                  <div className='w-2 h-2 bg-zinc-600 rounded-full'></div>
-                  <span className='text-xs font-medium text-zinc-400 ml-2'>Step 2 of 3</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-cyan-300 rounded-full"></div>
+                  <div className="w-2 h-2 bg-zinc-600 rounded-full"></div>
+                  <span className="text-xs font-medium text-zinc-400 ml-2">
+                    Step 2 of 3
+                  </span>
                 </div>
               </div>
 
-              <div className='relative z-10'>{renderForm()}</div>
+              <div className="relative z-10">{renderForm()}</div>
             </div>
           )}
         </div>

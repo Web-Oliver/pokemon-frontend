@@ -21,7 +21,9 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 interface AddItemToAuctionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddItems: (items: { itemId: string; itemCategory: string }[]) => Promise<void>;
+  onAddItems: (
+    items: { itemId: string; itemCategory: string }[]
+  ) => Promise<void>;
   currentAuctionItems?: { itemId: string; itemCategory: string }[];
 }
 
@@ -40,7 +42,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   onAddItems,
   currentAuctionItems = [],
 }) => {
-  const { psaCards, rawCards, sealedProducts, loading, error } = useCollectionOperations();
+  const { psaCards, rawCards, sealedProducts, loading, error } =
+    useCollectionOperations();
 
   // Helper function to get full image URL
   const getImageUrl = (imagePath: string | undefined) => {
@@ -55,7 +58,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
 
   // Create exclusion list for items already in auction
   const excludedItems = useMemo(
-    () => currentAuctionItems.map(item => `${item.itemId}-${item.itemCategory}`),
+    () =>
+      currentAuctionItems.map((item) => `${item.itemId}-${item.itemCategory}`),
     [currentAuctionItems]
   );
 
@@ -63,8 +67,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   const collectionItems = useMemo(() => {
     const allItems: CollectionItem[] = [
       ...psaCards
-        .filter(card => !card.sold)
-        .map(card => ({
+        .filter((card) => !card.sold)
+        .map((card) => ({
           ...card,
           id: card.id || (card as any)._id,
           itemType: 'PsaGradedCard' as const,
@@ -77,8 +81,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           grade: card.grade,
         })),
       ...rawCards
-        .filter(card => !card.sold)
-        .map(card => ({
+        .filter((card) => !card.sold)
+        .map((card) => ({
           ...card,
           id: card.id || (card as any)._id,
           itemType: 'RawCard' as const,
@@ -91,8 +95,8 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           condition: card.condition,
         })),
       ...sealedProducts
-        .filter(product => !product.sold)
-        .map(product => ({
+        .filter((product) => !product.sold)
+        .map((product) => ({
           ...product,
           id: product.id || (product as any)._id,
           itemType: 'SealedProduct' as const,
@@ -144,7 +148,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
 
   // Handle item selection
   const handleSelectItems = async (selectedItems: CollectionItem[]) => {
-    const itemsToAdd = selectedItems.map(item => ({
+    const itemsToAdd = selectedItems.map((item) => ({
       itemId: item.id,
       itemCategory: item.itemType,
     }));
@@ -153,28 +157,32 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   };
 
   // Custom item renderer with auction-specific styling
-  const renderItem = ({ item, isSelected, onToggle }: ItemRenderProps<CollectionItem>) => (
+  const renderItem = ({
+    item,
+    isSelected,
+    onToggle,
+  }: ItemRenderProps<CollectionItem>) => (
     <div
       key={item.id}
-      className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-        isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-      }`}
+      className={`p-4 hover:bg-gray-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
       onClick={() => onToggle(item.id)}
     >
-      <div className='flex items-start space-x-4'>
+      <div className="flex items-start space-x-4">
         {/* Selection Checkbox */}
-        <div className='flex-shrink-0 mt-1'>
+        <div className="flex-shrink-0 mt-1">
           <div
-            className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-              isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
-            }`}
+            className={`w-5 h-5 rounded border-2 flex items-center justify-center ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}
           >
             {isSelected && (
-              <svg className='w-3 h-3 text-white' fill='currentColor' viewBox='0 0 20 20'>
+              <svg
+                className="w-3 h-3 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
-                  fillRule='evenodd'
-                  d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                  clipRule='evenodd'
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
                 />
               </svg>
             )}
@@ -183,35 +191,37 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
 
         {/* Item Image */}
         {item.displayImage && (
-          <div className='flex-shrink-0'>
+          <div className="flex-shrink-0">
             <img
               src={item.displayImage}
               alt={item.displayName}
-              className='w-16 h-16 object-cover rounded-lg border border-gray-200'
+              className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-zinc-700 dark:border-zinc-700"
             />
           </div>
         )}
 
         {/* Item Details */}
-        <div className='flex-1 min-w-0'>
-          <div className='flex items-start justify-between'>
-            <div className='flex-1 min-w-0'>
-              <h4 className='text-sm font-medium text-gray-900 truncate'>{item.displayName}</h4>
-              <div className='mt-1 flex items-center space-x-2'>
-                <span className='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800'>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-zinc-100 dark:text-white truncate">
+                {item.displayName}
+              </h4>
+              <div className="mt-1 flex items-center space-x-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-zinc-900 dark:bg-zinc-900 text-gray-800 dark:text-zinc-200 dark:text-zinc-100">
                   {item.category}
                 </span>
                 {item.itemType === 'PsaGradedCard' && item.grade && (
-                  <span className='inline-flex items-center text-xs text-gray-600'>
-                    <Star className='w-3 h-3 mr-1' />
+                  <span className="inline-flex items-center text-xs text-gray-600 dark:text-zinc-400 dark:text-zinc-300">
+                    <Star className="w-3 h-3 mr-1" />
                     Grade {item.grade}
                   </span>
                 )}
               </div>
             </div>
-            <div className='ml-4 text-right'>
-              <div className='flex items-center text-sm font-medium text-gray-900'>
-                <DollarSign className='w-4 h-4 mr-1' />
+            <div className="ml-4 text-right">
+              <div className="flex items-center text-sm font-medium text-gray-900 dark:text-zinc-100 dark:text-white">
+                <DollarSign className="w-4 h-4 mr-1" />
                 {new Intl.NumberFormat('da-DK', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
@@ -221,10 +231,10 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
             </div>
           </div>
 
-          <div className='mt-2 flex items-center text-xs text-gray-500 space-x-4'>
+          <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 space-x-4">
             {item.setName && <span>Set: {item.setName}</span>}
-            <span className='flex items-center'>
-              <Calendar className='w-3 h-3 mr-1' />
+            <span className="flex items-center">
+              <Calendar className="w-3 h-3 mr-1" />
               Added {formatDate(item.dateAdded)}
             </span>
           </div>
@@ -242,9 +252,9 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
       loading={loading}
       error={error}
       excludedItems={excludedItems}
-      title='Add Items to Auction'
+      title="Add Items to Auction"
       emptyStateMessage={'No unsold items available in your collection.'}
-      searchPlaceholder='Search items by name or set...'
+      searchPlaceholder="Search items by name or set..."
       filterOptions={filterOptions}
       renderItem={renderItem}
       searchFilter={searchFilter}

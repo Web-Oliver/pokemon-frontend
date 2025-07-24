@@ -61,7 +61,11 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
     const widthClass = fullWidth ? 'w-full' : '';
 
-    const finalSelectClassName = [baseSelectClasses, errorSelectClasses, className]
+    const finalSelectClassName = [
+      baseSelectClasses,
+      errorSelectClasses,
+      className,
+    ]
       .filter(Boolean)
       .join(' ');
 
@@ -70,18 +74,23 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label && <PremiumLabel htmlFor={selectId}>{label}</PremiumLabel>}
 
         <div className={`relative ${fullWidth ? 'w-full' : ''}`}>
-          <select ref={ref} id={selectId} className={finalSelectClassName} {...props}>
+          <select
+            ref={ref}
+            id={selectId}
+            className={finalSelectClassName}
+            {...props}
+          >
             {placeholder && (
-              <option value='' disabled className='text-zinc-400 bg-zinc-900'>
+              <option value="" disabled className="text-zinc-400 bg-zinc-900">
                 {placeholder}
               </option>
             )}
-            {options.map(option => (
+            {options.map((option) => (
               <option
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
-                className='text-zinc-100 bg-zinc-900 py-2'
+                className="text-zinc-100 bg-zinc-900 py-2"
               >
                 {option.label}
               </option>
@@ -89,9 +98,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
 
           {/* Context7 Premium Dropdown Icon */}
-          <div className='absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10'>
-            <div className='w-8 h-8 bg-zinc-800 group-focus-within:bg-cyan-900/50 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm group-focus-within:shadow-md group-focus-within:scale-110 group-focus-within:shadow-[0_2px_8px_0_rgb(6,182,212,0.2)]'>
-              <ChevronDown className='h-4 w-4 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:rotate-180' />
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10">
+            <div className="w-8 h-8 bg-zinc-800 group-focus-within:bg-cyan-900/50 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm group-focus-within:shadow-md group-focus-within:scale-110 group-focus-within:shadow-[0_2px_8px_0_rgb(6,182,212,0.2)]">
+              <ChevronDown className="h-4 w-4 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:rotate-180" />
             </div>
           </div>
         </div>

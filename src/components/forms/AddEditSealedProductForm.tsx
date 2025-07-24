@@ -16,7 +16,10 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
+import {
+  AutocompleteField,
+  createAutocompleteConfig,
+} from '../../hooks/useEnhancedAutocomplete';
 import { getSearchApiService } from '../../services/ServiceRegistry';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -61,7 +64,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   initialData,
   isEditing = false,
 }) => {
-  const { addSealedProduct, updateSealedProduct, loading } = useCollectionOperations();
+  const { addSealedProduct, updateSealedProduct, loading } =
+    useCollectionOperations();
 
   // Validation rules for Sealed Product form
   const validationRules = {
@@ -116,7 +120,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     },
   });
 
-  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } = baseForm;
+  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } =
+    baseForm;
   const {
     register,
     handleSubmit,
@@ -131,9 +136,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     Array<{ value: string; label: string }>
   >([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
-  const [selectedProductData, setSelectedProductData] = useState<Record<string, unknown> | null>(
-    null
-  );
+  const [selectedProductData, setSelectedProductData] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   // Configure autocomplete fields for reusable search (after useForm hook)
   const autocompleteFields: AutocompleteField[] = [
@@ -236,7 +242,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       const imageUrls = await imageUpload.uploadImages();
 
       // Combine existing images with new uploaded images
-      const allImageUrls = [...imageUpload.remainingExistingImages, ...imageUrls];
+      const allImageUrls = [
+        ...imageUpload.remainingExistingImages,
+        ...imageUrls,
+      ];
 
       // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
@@ -245,7 +254,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         name: data.productName.trim(),
         category: data.category,
         availability: Number(data.availability), // Convert to number as required by backend
-        cardMarketPrice: data.cardMarketPrice ? parseFloat(data.cardMarketPrice) : undefined,
+        cardMarketPrice: data.cardMarketPrice
+          ? parseFloat(data.cardMarketPrice)
+          : undefined,
         myPrice: parseFloat(data.myPrice),
         dateAdded: data.dateAdded,
         images: allImageUrls,
@@ -278,8 +289,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
   if (loading && !isSubmitting) {
     return (
-      <div className='flex items-center justify-center py-12'>
-        <LoadingSpinner size='lg' />
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -296,7 +307,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='space-y-8'>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Reusable Form Header */}
       <FormHeader
         icon={Archive}
@@ -307,7 +318,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             : 'Add a new sealed product to your premium collection'
         }
         isEditing={isEditing}
-        primaryColorClass='purple'
+        primaryColorClass="purple"
       />
 
       {/* Reusable Product Information Section */}
@@ -320,8 +331,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         control={form.control}
         autocompleteConfig={autocompleteConfig}
         autocompleteFields={autocompleteFields}
-        onSelectionChange={selectedData => {
-          console.log('[SEALED PRODUCT] Enhanced autocomplete selection:', selectedData);
+        onSelectionChange={(selectedData) => {
+          console.log(
+            '[SEALED PRODUCT] Enhanced autocomplete selection:',
+            selectedData
+          );
 
           // Store selected product data for form submission
           setSelectedProductData(selectedData);
@@ -330,19 +344,25 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           if (selectedData) {
             // Auto-fill set name
             if (selectedData.setName) {
-              setValue('setName', selectedData.setName, { shouldValidate: true });
+              setValue('setName', selectedData.setName, {
+                shouldValidate: true,
+              });
               clearErrors('setName');
             }
 
             // Auto-fill product name
             if (selectedData.name) {
-              setValue('productName', selectedData.name, { shouldValidate: true });
+              setValue('productName', selectedData.name, {
+                shouldValidate: true,
+              });
               clearErrors('productName');
             }
 
             // Auto-fill category
             if (selectedData.category) {
-              setValue('category', selectedData.category, { shouldValidate: true });
+              setValue('category', selectedData.category, {
+                shouldValidate: true,
+              });
               clearErrors('category');
             }
 
@@ -358,7 +378,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             if (selectedData.price) {
               const price = parseFloat(selectedData.price);
               if (!isNaN(price)) {
-                setValue('cardMarketPrice', Math.round(price).toString(), { shouldValidate: true });
+                setValue('cardMarketPrice', Math.round(price).toString(), {
+                  shouldValidate: true,
+                });
                 clearErrors('cardMarketPrice');
               }
             }
@@ -374,12 +396,12 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             });
           }
         }}
-        onError={error => {
+        onError={(error) => {
           console.error('[SEALED PRODUCT] Enhanced autocomplete error:', error);
         }}
-        sectionTitle='Product Information'
+        sectionTitle="Product Information"
         sectionIcon={Package}
-        formType='product'
+        formType="product"
         readOnlyFields={{
           category: true,
           availability: true,
@@ -389,21 +411,21 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       />
 
       {/* Context7 Premium Pricing & Investment Section */}
-      <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative'>
-        <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50'></div>
+      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50"></div>
 
-        <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10'>
-          <TrendingUp className='w-6 h-6 mr-3 text-zinc-300' />
+        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10">
+          <TrendingUp className="w-6 h-6 mr-3 text-zinc-300" />
           Pricing & Investment Metrics
         </h4>
 
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           <div>
             <Input
-              label='CardMarket Price (kr.)'
-              type='number'
-              step='1'
-              min='0'
+              label="CardMarket Price (kr.)"
+              type="number"
+              step="1"
+              min="0"
               {...register('cardMarketPrice', {
                 min: { value: 0, message: 'Price must be non-negative' },
                 pattern: {
@@ -412,33 +434,34 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 },
               })}
               error={errors.cardMarketPrice?.message}
-              placeholder='0'
+              placeholder="0"
               disabled={isEditing}
             />
             {watchedCardMarketPrice && (
-              <div className='mt-2 text-sm text-purple-600 font-semibold'>
+              <div className="mt-2 text-sm text-purple-600 font-semibold">
                 Market: {parseFloat(watchedCardMarketPrice || '0')} kr.
               </div>
             )}
             {selectedProductData && selectedProductData.price && (
-              <div className='mt-2 text-sm text-green-600 font-semibold'>
-                CardMarket Price: {Math.round(parseFloat(selectedProductData.price))} kr.
+              <div className="mt-2 text-sm text-green-600 font-semibold">
+                CardMarket Price:{' '}
+                {Math.round(parseFloat(selectedProductData.price))} kr.
               </div>
             )}
           </div>
 
           <div>
             <Input
-              label='My Price (kr.)'
-              type='text'
-              inputMode='numeric'
+              label="My Price (kr.)"
+              type="text"
+              inputMode="numeric"
               {...register('myPrice', {
                 required: 'Price is required',
                 pattern: {
                   value: /^\d+$/,
                   message: 'Price must be a whole number only',
                 },
-                validate: value => {
+                validate: (value) => {
                   const num = parseInt(value, 10);
                   if (isNaN(num) || num < 0) {
                     return 'Price must be a positive whole number';
@@ -447,10 +470,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 },
               })}
               error={errors.myPrice?.message}
-              placeholder='0'
+              placeholder="0"
             />
             {watchedPrice && (
-              <div className='mt-2 text-sm text-slate-600 font-semibold'>
+              <div className="mt-2 text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-semibold">
                 Paid: {parseFloat(watchedPrice || '0')} kr.
               </div>
             )}
@@ -458,8 +481,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
           <div>
             <Input
-              label='Date Added'
-              type='date'
+              label="Date Added"
+              type="date"
               {...register('dateAdded', {
                 required: 'Date added is required',
               })}
@@ -469,13 +492,13 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
             {/* Investment Analysis */}
             {calculateProfitMargin() && (
-              <div className='mt-3 p-3 bg-gradient-to-r from-green-50/80 to-emerald-50/80 border border-green-200/50 rounded-xl backdrop-blur-sm'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-sm font-bold text-green-800'>Potential Margin:</span>
+              <div className="mt-3 p-3 bg-gradient-to-r from-green-50/80 to-emerald-50/80 border border-green-200/50 rounded-xl backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-green-800">
+                    Potential Margin:
+                  </span>
                   <span
-                    className={`text-sm font-bold ${
-                      parseFloat(calculateProfitMargin()!) > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}
+                    className={`text-sm font-bold ${parseFloat(calculateProfitMargin()!) > 0 ? 'text-green-600' : 'text-red-600'}`}
                   >
                     {calculateProfitMargin()}%
                   </span>
@@ -487,7 +510,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
         {/* Price History Section (for editing existing products) */}
         {isEditing && priceHistory.length > 0 && (
-          <div className='mt-8 pt-8 border-t border-slate-200/50'>
+          <div className="mt-8 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50">
             <PriceHistoryDisplay
               priceHistory={priceHistory.priceHistory}
               currentPrice={priceHistory.currentPrice}
@@ -498,15 +521,15 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       </div>
 
       {/* Context7 Premium Image Upload Section */}
-      <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative'>
-        <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
+      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
 
-        <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10'>
-          <Camera className='w-6 h-6 mr-3 text-zinc-300' />
+        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10">
+          <Camera className="w-6 h-6 mr-3 text-zinc-300" />
           Product Images
         </h4>
 
-        <div className='relative z-10'>
+        <div className="relative z-10">
           <ImageUploader
             onImagesChange={imageUpload.handleImagesChange}
             existingImageUrls={imageUpload.remainingExistingImages}
@@ -515,11 +538,15 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             maxFileSize={5}
           />
 
-          <div className='mt-4 p-4 bg-gradient-to-r from-slate-50/80 to-purple-50/80 rounded-xl border border-slate-200/50 backdrop-blur-sm'>
-            <div className='text-sm text-slate-600 space-y-1'>
-              <p className='font-semibold'>• Upload up to 8 images (max 5MB each)</p>
+          <div className="mt-4 p-4 bg-gradient-to-r from-slate-50/80 to-purple-50/80 rounded-xl border border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 backdrop-blur-sm">
+            <div className="text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300 space-y-1">
+              <p className="font-semibold">
+                • Upload up to 8 images (max 5MB each)
+              </p>
               <p>• Supported formats: JPG, PNG, WebP</p>
-              <p>• Include package front, back, and seal shots for authenticity</p>
+              <p>
+                • Include package front, back, and seal shots for authenticity
+              </p>
             </div>
           </div>
         </div>
@@ -532,7 +559,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         isEditing={isEditing}
         submitButtonText={isEditing ? 'Update Product' : 'Add Product'}
         loadingSubmitText={isEditing ? 'Updating...' : 'Adding...'}
-        primaryButtonColorClass='purple'
+        primaryButtonColorClass="purple"
       />
     </form>
   );

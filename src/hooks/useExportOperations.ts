@@ -7,7 +7,12 @@
 
 import { useCallback, useState } from 'react';
 import { useAsyncOperation } from './useAsyncOperation';
-import { exportToCSV, exportToPDF, exportToJSON, ExportFormat } from '../utils/fileOperations';
+import {
+  exportToCSV,
+  exportToPDF,
+  exportToJSON,
+  ExportFormat,
+} from '../utils/fileOperations';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 
 export interface ExportConfig {
@@ -33,7 +38,10 @@ export interface UseExportOperationsReturn {
     sales: any[],
     dateRange?: { startDate?: string; endDate?: string }
   ) => Promise<void>;
-  exportCollectionData: (items: any[], type?: 'all' | 'psa' | 'raw' | 'sealed') => Promise<void>;
+  exportCollectionData: (
+    items: any[],
+    type?: 'all' | 'psa' | 'raw' | 'sealed'
+  ) => Promise<void>;
   exportAnalyticsData: (data: any[], reportType?: string) => Promise<void>;
 
   // Utility
@@ -73,7 +81,7 @@ export const useExportOperations = (): UseExportOperationsReturn => {
           case 'csv':
             exportToCSV(data, {
               filename: finalFilename,
-              columns: Object.keys(data[0] || {}).map(key => ({
+              columns: Object.keys(data[0] || {}).map((key) => ({
                 key,
                 header:
                   key.charAt(0).toUpperCase() +
@@ -96,7 +104,9 @@ export const useExportOperations = (): UseExportOperationsReturn => {
             throw new Error(`Unsupported export format: ${format}`);
         }
 
-        showSuccessToast(`Data exported successfully as ${format.toUpperCase()}!`);
+        showSuccessToast(
+          `Data exported successfully as ${format.toUpperCase()}!`
+        );
         return Promise.resolve();
       });
     },
@@ -126,7 +136,10 @@ export const useExportOperations = (): UseExportOperationsReturn => {
 
   // Specialized export for sales data
   const exportSalesData = useCallback(
-    async (sales: any[], dateRange?: { startDate?: string; endDate?: string }): Promise<void> => {
+    async (
+      sales: any[],
+      dateRange?: { startDate?: string; endDate?: string }
+    ): Promise<void> => {
       let filename = 'sales_data';
 
       if (dateRange?.startDate && dateRange?.endDate) {
@@ -144,8 +157,12 @@ export const useExportOperations = (): UseExportOperationsReturn => {
 
   // Specialized export for collection data
   const exportCollectionData = useCallback(
-    async (items: any[], type: 'all' | 'psa' | 'raw' | 'sealed' = 'all'): Promise<void> => {
-      const filename = type === 'all' ? 'collection_all_items' : `collection_${type}_cards`;
+    async (
+      items: any[],
+      type: 'all' | 'psa' | 'raw' | 'sealed' = 'all'
+    ): Promise<void> => {
+      const filename =
+        type === 'all' ? 'collection_all_items' : `collection_${type}_cards`;
       await exportCSV(items, filename);
     },
     [exportCSV]

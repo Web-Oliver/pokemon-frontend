@@ -9,7 +9,13 @@
  * - Interface Segregation: Separate interfaces for different theme aspects
  */
 
-export type ThemeColor = 'purple' | 'blue' | 'emerald' | 'amber' | 'rose' | 'dark';
+export type ThemeColor =
+  | 'purple'
+  | 'blue'
+  | 'emerald'
+  | 'amber'
+  | 'rose'
+  | 'dark';
 
 /**
  * Base theme interface for form headers
@@ -212,7 +218,9 @@ export const getButtontheme = (color: ThemeColor = 'dark'): FormButtonTheme => {
  * Helper function to get element theme only
  * For premium form elements that need gradient/glow effects
  */
-export const getElementTheme = (color: ThemeColor = 'dark'): PremiumElementTheme => {
+export const getElementTheme = (
+  color: ThemeColor = 'dark'
+): PremiumElementTheme => {
   return formThemes[color].element;
 };
 
@@ -221,14 +229,17 @@ export const getElementTheme = (color: ThemeColor = 'dark'): PremiumElementTheme
  * Combines multiple theme aspects into ready-to-use className strings
  */
 export const buildThemeClasses = {
-  headerBackground: (color: ThemeColor) => `bg-gradient-to-br ${getHeaderTheme(color).background}`,
+  headerBackground: (color: ThemeColor) =>
+    `bg-gradient-to-br ${getHeaderTheme(color).background}`,
   headerBorder: (color: ThemeColor) => `border ${getHeaderTheme(color).border}`,
   buttonPrimary: (color: ThemeColor) => {
     const theme = getButtontheme(color);
     return `${theme.primary} ${theme.primaryHover}`;
   },
-  elementGradient: (color: ThemeColor) => `bg-gradient-to-r ${getElementTheme(color).gradient}`,
-  elementGlow: (color: ThemeColor) => `bg-gradient-to-r ${getElementTheme(color).glow}`,
+  elementGradient: (color: ThemeColor) =>
+    `bg-gradient-to-r ${getElementTheme(color).gradient}`,
+  elementGlow: (color: ThemeColor) =>
+    `bg-gradient-to-r ${getElementTheme(color).glow}`,
 } as const;
 
 export default formThemes;

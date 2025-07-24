@@ -28,18 +28,24 @@ export interface UseImageUploadReturn {
  * Hook for image upload operations
  * Follows SRP - only handles image selection, upload, and management
  */
-export const useImageUpload = (initialImages: string[] = []): UseImageUploadReturn => {
+export const useImageUpload = (
+  initialImages: string[] = []
+): UseImageUploadReturn => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [remainingExistingImages, setRemainingExistingImages] = useState<string[]>(initialImages);
+  const [remainingExistingImages, setRemainingExistingImages] =
+    useState<string[]>(initialImages);
   const { loading, error, execute, clearError } = useAsyncOperation();
   const uploadApi = getUploadApiService();
 
-  const handleImagesChange = useCallback((files: File[], remainingExistingUrls?: string[]) => {
-    setSelectedImages(files);
-    if (remainingExistingUrls !== undefined) {
-      setRemainingExistingImages(remainingExistingUrls);
-    }
-  }, []);
+  const handleImagesChange = useCallback(
+    (files: File[], remainingExistingUrls?: string[]) => {
+      setSelectedImages(files);
+      if (remainingExistingUrls !== undefined) {
+        setRemainingExistingImages(remainingExistingUrls);
+      }
+    },
+    []
+  );
 
   const uploadImages = useCallback(async (): Promise<string[]> => {
     return await execute(async () => {
@@ -61,7 +67,9 @@ export const useImageUpload = (initialImages: string[] = []): UseImageUploadRetu
   }, [selectedImages, execute, uploadApi]);
 
   const removeExistingImage = useCallback((imageUrl: string) => {
-    setRemainingExistingImages(prev => prev.filter(url => url !== imageUrl));
+    setRemainingExistingImages((prev) =>
+      prev.filter((url) => url !== imageUrl)
+    );
   }, []);
 
   const clearImages = useCallback(() => {

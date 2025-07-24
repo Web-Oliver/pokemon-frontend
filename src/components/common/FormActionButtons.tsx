@@ -55,26 +55,32 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
   const buttonTheme = buildThemeClasses.buttonPrimary(primaryButtonColorClass);
 
   return (
-    <div className={`flex justify-end space-x-6 pt-8 border-t border-slate-200/50 ${className}`}>
+    <div
+      className={`flex justify-end space-x-6 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 ${className}`}
+    >
       {/* Cancel Button */}
       <Button
-        type='button'
-        variant='secondary'
+        type="button"
+        variant="secondary"
         onClick={onCancel}
         disabled={isSubmitting || cancelDisabled}
-        className='px-8 py-3'
+        className="px-8 py-3"
       >
         Cancel
       </Button>
 
       {/* Submit Button */}
       <Button
-        type='submit'
-        variant='primary'
+        type="submit"
+        variant="primary"
         disabled={isSubmitting}
         className={`min-w-[140px] px-8 py-3 ${buttonTheme}`}
       >
-        {isSubmitting ? <ButtonLoading text={finalLoadingText} /> : finalSubmitText}
+        {isSubmitting ? (
+          <ButtonLoading text={finalLoadingText} />
+        ) : (
+          finalSubmitText
+        )}
       </Button>
     </div>
   );

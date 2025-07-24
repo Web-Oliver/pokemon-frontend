@@ -40,7 +40,10 @@ export function formatCardNameForDisplay(cardName: string): string {
  * @param pokemonNumber - Pokemon number (optional)
  * @returns Formatted display name
  */
-export function formatDisplayNameWithNumber(cardName: string, pokemonNumber?: string): string {
+export function formatDisplayNameWithNumber(
+  cardName: string,
+  pokemonNumber?: string
+): string {
   const formattedName = formatCardNameForDisplay(cardName);
 
   if (pokemonNumber) {
@@ -89,7 +92,10 @@ export interface CardNameInfo {
  * @param pokemonNumber - Optional pokemon number
  * @returns Object with both original and display names
  */
-export function createCardNameInfo(cardName: string, pokemonNumber?: string): CardNameInfo {
+export function createCardNameInfo(
+  cardName: string,
+  pokemonNumber?: string
+): CardNameInfo {
   const originalName =
     pokemonNumber && !cardName.includes(pokemonNumber)
       ? `${cardName} (#${pokemonNumber})`
@@ -162,7 +168,9 @@ export const displayPrice = (
   }
 
   const numericPrice = parseFloat(formattedPrice);
-  const displayValue = compact ? formatCompactNumber(numericPrice) : numericPrice.toLocaleString();
+  const displayValue = compact
+    ? formatCompactNumber(numericPrice)
+    : numericPrice.toLocaleString();
 
   return `${displayValue} ${currency}`;
 };
@@ -325,13 +333,18 @@ export const formatDateWithTime = (dateString: string): string => {
  * Handles localhost prefix cleanup and proper URL construction
  * Moved from CreateAuction.tsx following DRY principles
  */
-export const processImageUrl = (imagePath: string | undefined): string | undefined => {
+export const processImageUrl = (
+  imagePath: string | undefined
+): string | undefined => {
   if (!imagePath) {
     return undefined;
   }
 
   // Use regex for more efficient multiple localhost prefix cleanup
-  const cleanPath = imagePath.replace(/(http:\/\/localhost:3000)+/g, 'http://localhost:3000');
+  const cleanPath = imagePath.replace(
+    /(http:\/\/localhost:3000)+/g,
+    'http://localhost:3000'
+  );
 
   // If it's already a full URL after cleaning, return as-is
   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {

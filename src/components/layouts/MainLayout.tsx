@@ -156,38 +156,44 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950'>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       {/* Top Navigation Bar - Dark Futuristic */}
-      <header className='bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-zinc-800/50 sticky top-0 z-50'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex items-center justify-between h-16'>
+      <header className="bg-white/90 dark:bg-zinc-900/90 dark:bg-zinc-950/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 dark:border-zinc-800/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             {/* Brand Logo - Stunning Modern Design */}
-            <div className='flex items-center space-x-3'>
-              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20'>
-                <Package className='w-6 h-6 text-white' />
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20">
+                <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className='text-lg font-bold text-gray-800 dark:text-white'>PokéCollection</h1>
-                <p className='text-xs text-gray-500 dark:text-zinc-400'>Professional Edition</p>
+                <h1 className="text-lg font-bold text-gray-800 dark:text-zinc-200 dark:text-zinc-100 dark:text-white">
+                  PokéCollection
+                </h1>
+                <p className="text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 dark:text-zinc-400">
+                  Professional Edition
+                </p>
               </div>
             </div>
 
             {/* Desktop Navigation - Scrollable */}
-            <nav className='hidden md:flex items-center space-x-1 overflow-visible flex-1'>
-              {navigation.map(item => {
+            <nav className="hidden md:flex items-center space-x-1 overflow-visible flex-1">
+              {navigation.map((item) => {
                 const Icon = item.icon;
 
                 // Handle dropdown items
                 if (item.dropdown) {
                   const isDropdownActive = item.dropdown.some(
-                    dropItem => currentPath === dropItem.href
+                    (dropItem) => currentPath === dropItem.href
                   );
                   const isDropdownOpen = dropdownOpen === item.name;
 
                   return (
-                    <div key={item.name} className='relative' data-dropdown>
+                    <div key={item.name} className="relative" data-dropdown>
                       <button
-                        onClick={() => setDropdownOpen(isDropdownOpen ? null : item.name)}
+                        onClick={() =>
+                          setDropdownOpen(isDropdownOpen ? null : item.name)
+                        }
                         className={`group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300 whitespace-nowrap ${
                           isDropdownActive
                             ? `${item.bgColor} text-white shadow-lg shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20 scale-105`
@@ -198,7 +204,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         <Icon
                           className={`w-4 h-4 mr-2 ${isDropdownActive ? 'text-white' : 'text-gray-400 dark:text-zinc-400'}`}
                         />
-                        <span className='text-xs'>{item.name}</span>
+                        <span className="text-xs">{item.name}</span>
                         <ChevronDown
                           className={`w-3 h-3 ml-1 transition-transform ${isDropdownOpen ? 'rotate-180' : ''} ${isDropdownActive ? 'text-white/80' : 'text-zinc-400'}`}
                         />
@@ -206,8 +212,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
                       {/* Dropdown Menu - Dark Futuristic */}
                       {isDropdownOpen && (
-                        <div className='absolute top-full right-0 mt-1 w-48 bg-zinc-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-700/50 py-2 z-50'>
-                          {item.dropdown.map(dropItem => {
+                        <div className="absolute top-full right-0 mt-1 w-48 bg-zinc-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-zinc-700/50 py-2 z-50">
+                          {item.dropdown.map((dropItem) => {
                             const DropIcon = dropItem.icon;
                             const isActive = currentPath === dropItem.href;
 
@@ -218,11 +224,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                   handleNavigation(dropItem.href);
                                   setDropdownOpen(null);
                                 }}
-                                className={`w-full flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                                  isActive
-                                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 shadow-lg'
-                                    : 'text-zinc-300 hover:bg-zinc-800/50 hover:text-cyan-400'
-                                }`}
+                                className={`w-full flex items-center px-4 py-2 text-sm font-medium transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 shadow-lg' : 'text-zinc-300 hover:bg-zinc-800/50 hover:text-cyan-400'}`}
                               >
                                 <DropIcon
                                   className={`w-4 h-4 mr-3 ${isActive ? 'text-cyan-400' : 'text-zinc-400'}`}
@@ -251,9 +253,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     aria-label={`Navigate to ${item.name}`}
                     aria-current={isActive ? 'page' : undefined}
                   >
-                    <Icon className={`w-4 h-4 mr-2 ${isActive ? 'text-white' : 'text-zinc-400'}`} />
-                    <span className='text-xs'>{item.name}</span>
-                    {isActive && <Zap className='w-3 h-3 ml-1 text-white/80' />}
+                    <Icon
+                      className={`w-4 h-4 mr-2 ${isActive ? 'text-white' : 'text-zinc-400'}`}
+                    />
+                    <span className="text-xs">{item.name}</span>
+                    {isActive && <Zap className="w-3 h-3 ml-1 text-white/80" />}
                   </button>
                 );
               })}
@@ -263,36 +267,44 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-3">
               {/* Theme Toggle */}
               <ThemeToggle />
-              
+
               {/* Mobile Menu Button - Dark */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className='md:hidden p-2 text-zinc-300 hover:text-cyan-400 hover:bg-zinc-800/50 rounded-lg transition-all duration-200'
-                aria-label='Toggle mobile menu'
+                className="md:hidden p-2 text-zinc-300 hover:text-cyan-400 hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
+                aria-label="Toggle mobile menu"
               >
-                {sidebarOpen ? <X className='w-5 h-5' /> : <Menu className='w-5 h-5' />}
+                {sidebarOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
 
           {/* Mobile Navigation - Dark */}
           {sidebarOpen && (
-            <div className='md:hidden py-4 border-t border-zinc-700/50 bg-zinc-950/95 backdrop-blur-xl'>
-              <nav className='flex flex-col space-y-2'>
-                {navigation.map(item => {
+            <div className="md:hidden py-4 border-t border-zinc-700/50 bg-zinc-950/95 backdrop-blur-xl">
+              <nav className="flex flex-col space-y-2">
+                {navigation.map((item) => {
                   const Icon = item.icon;
 
                   // Handle dropdown items for mobile
                   if (item.dropdown) {
                     const isDropdownActive = item.dropdown.some(
-                      dropItem => currentPath === dropItem.href
+                      (dropItem) => currentPath === dropItem.href
                     );
                     const isMobileDropdownOpen = dropdownOpen === item.name;
 
                     return (
-                      <div key={item.name} className='space-y-2'>
+                      <div key={item.name} className="space-y-2">
                         <button
-                          onClick={() => setDropdownOpen(isMobileDropdownOpen ? null : item.name)}
+                          onClick={() =>
+                            setDropdownOpen(
+                              isMobileDropdownOpen ? null : item.name
+                            )
+                          }
                           className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                             isDropdownActive
                               ? `${item.bgColor} text-white shadow-lg shadow-cyan-500/25`
@@ -305,16 +317,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                           />
                           <span>{item.name}</span>
                           <ChevronDown
-                            className={`w-4 h-4 ml-auto transition-transform duration-200 ${
-                              isMobileDropdownOpen ? 'rotate-180' : ''
-                            } ${isDropdownActive ? 'text-white/80' : 'text-zinc-400'}`}
+                            className={`w-4 h-4 ml-auto transition-transform duration-200 ${isMobileDropdownOpen ? 'rotate-180' : ''} ${isDropdownActive ? 'text-white/80' : 'text-zinc-400'}`}
                           />
                         </button>
 
                         {/* Mobile Dropdown Items */}
                         {isMobileDropdownOpen && (
-                          <div className='ml-6 space-y-1'>
-                            {item.dropdown.map(dropItem => {
+                          <div className="ml-6 space-y-1">
+                            {item.dropdown.map((dropItem) => {
                               const DropIcon = dropItem.icon;
                               const isActive = currentPath === dropItem.href;
 
@@ -326,17 +336,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                     setSidebarOpen(false);
                                     setDropdownOpen(null);
                                   }}
-                                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                                    isActive
-                                      ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 shadow-sm'
-                                      : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-cyan-400'
-                                  }`}
+                                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 shadow-sm' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-cyan-400'}`}
                                 >
                                   <DropIcon
                                     className={`w-4 h-4 mr-3 ${isActive ? 'text-cyan-400' : 'text-zinc-500'}`}
                                   />
                                   <span>{dropItem.name}</span>
-                                  {isActive && <Zap className='w-3 h-3 ml-auto text-cyan-400' />}
+                                  {isActive && (
+                                    <Zap className="w-3 h-3 ml-auto text-cyan-400" />
+                                  )}
                                 </button>
                               );
                             })}
@@ -367,16 +375,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-zinc-400'}`}
                       />
                       <span>{item.name}</span>
-                      {isActive && <Zap className='w-4 h-4 ml-auto text-white/80' />}
+                      {isActive && (
+                        <Zap className="w-4 h-4 ml-auto text-white/80" />
+                      )}
                     </button>
                   );
                 })}
               </nav>
 
               {/* Version Info - Dark */}
-              <div className='mt-4 px-4 pt-4 border-t border-zinc-700/50'>
-                <div className='flex items-center justify-center space-x-2 text-sm text-zinc-400'>
-                  <Sparkles className='w-4 h-4 text-cyan-400' />
+              <div className="mt-4 px-4 pt-4 border-t border-zinc-700/50">
+                <div className="flex items-center justify-center space-x-2 text-sm text-zinc-400">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
                   <span>v1.0.0 Futuristic</span>
                 </div>
               </div>
@@ -386,7 +396,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content - Full Width */}
-      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
     </div>
   );
 };

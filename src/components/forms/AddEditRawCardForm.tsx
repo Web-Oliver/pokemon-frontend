@@ -16,7 +16,10 @@ import { IRawCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { AutocompleteField, createAutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
+import {
+  AutocompleteField,
+  createAutocompleteConfig,
+} from '../../hooks/useEnhancedAutocomplete';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
@@ -68,7 +71,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       variety: initialData?.variety || '',
       condition: initialData?.condition || '',
       myPrice: initialData?.myPrice?.toString() || '',
-      dateAdded: initialData?.dateAdded || new Date().toISOString().split('T')[0],
+      dateAdded:
+        initialData?.dateAdded || new Date().toISOString().split('T')[0],
     },
     validationRules,
     initialImages: initialData?.images || [],
@@ -76,7 +80,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     initialPrice: initialData?.myPrice || 0,
   });
 
-  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } = baseForm;
+  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } =
+    baseForm;
   const {
     register,
     handleSubmit,
@@ -124,7 +129,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       const cardData = initialData.cardId as any;
       const setName = cardData?.setId?.setName || initialData.setName || '';
       const cardName = cardData?.cardName || initialData.cardName || '';
-      const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
+      const pokemonNumber =
+        cardData?.pokemonNumber || initialData.pokemonNumber || '';
       const baseName = cardData?.baseName || initialData.baseName || '';
       const variety = cardData?.variety || initialData.variety || '';
 
@@ -174,7 +180,10 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     }
   }, [watchedPrice, priceHistory]);
 
-  const handleImagesChange = (files: File[], remainingExistingUrls?: string[]) => {
+  const handleImagesChange = (
+    files: File[],
+    remainingExistingUrls?: string[]
+  ) => {
     imageUpload.setSelectedImages(files);
     if (remainingExistingUrls !== undefined) {
       imageUpload.setRemainingExistingImages(remainingExistingUrls);
@@ -204,20 +213,27 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       if (isEditing) {
         // For editing, only update price and images
         const priceToUse =
-          priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(data.myPrice);
-        const finalImages = [...imageUpload.remainingExistingImages, ...imageUrls];
+          priceHistory.currentPrice > 0
+            ? priceHistory.currentPrice
+            : parseFloat(data.myPrice);
+        const finalImages = [
+          ...imageUpload.remainingExistingImages,
+          ...imageUrls,
+        ];
 
         cardData = {
           myPrice: priceToUse,
           images: finalImages,
           priceHistory:
-            priceHistory.priceHistory.map(entry => ({
+            priceHistory.priceHistory.map((entry) => ({
               price: entry.price,
-              dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+              dateUpdated:
+                (entry as any).dateUpdated || new Date().toISOString(),
             })).length > 0
-              ? priceHistory.priceHistory.map(entry => ({
+              ? priceHistory.priceHistory.map((entry) => ({
                   price: entry.price,
-                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+                  dateUpdated:
+                    (entry as any).dateUpdated || new Date().toISOString(),
                 }))
               : initialData?.priceHistory,
         };
@@ -249,13 +265,15 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           dateAdded: data.dateAdded,
           images: imageUrls,
           priceHistory:
-            priceHistory.priceHistory.map(entry => ({
+            priceHistory.priceHistory.map((entry) => ({
               price: entry.price,
-              dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+              dateUpdated:
+                (entry as any).dateUpdated || new Date().toISOString(),
             })).length > 0
-              ? priceHistory.priceHistory.map(entry => ({
+              ? priceHistory.priceHistory.map((entry) => ({
                   price: entry.price,
-                  dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+                  dateUpdated:
+                    (entry as any).dateUpdated || new Date().toISOString(),
                 }))
               : [
                   {
@@ -284,14 +302,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
   if (loading && !isSubmitting) {
     return (
-      <div className='flex items-center justify-center py-12'>
-        <LoadingSpinner size='lg' />
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='space-y-8'>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Reusable Form Header */}
       <FormHeader
         icon={Package}
@@ -301,7 +319,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             ? 'Update your raw card information'
             : 'Add a new raw card to your premium collection'
         }
-        primaryColorClass='emerald'
+        primaryColorClass="emerald"
       />
 
       {/* Reusable Card Information Section */}
@@ -316,7 +334,10 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         autocompleteFields={autocompleteFields}
         onSelectionChange={(selectedData: any) => {
           console.log('[RAW CARD] ===== ENHANCED AUTOCOMPLETE SELECTION =====');
-          console.log('[RAW CARD] Enhanced autocomplete selection:', selectedData);
+          console.log(
+            '[RAW CARD] Enhanced autocomplete selection:',
+            selectedData
+          );
 
           // Auto-fill form fields based on selection
           if (selectedData) {
@@ -326,12 +347,15 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
               setSelectedCardId(cardId);
               console.log('[RAW CARD] Selected card ID:', cardId);
             } else {
-              console.error('[RAW CARD] No ID found in selected data - card selection invalid');
+              console.error(
+                '[RAW CARD] No ID found in selected data - card selection invalid'
+              );
               return;
             }
 
             // Auto-fill set name
-            const setName = selectedData.setInfo?.setName || selectedData.setName;
+            const setName =
+              selectedData.setInfo?.setName || selectedData.setName;
             if (setName) {
               setValue('setName', setName, { shouldValidate: true });
               clearErrors('setName');
@@ -339,7 +363,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
             // Auto-fill card name
             if (selectedData.cardName) {
-              setValue('cardName', selectedData.cardName, { shouldValidate: true });
+              setValue('cardName', selectedData.cardName, {
+                shouldValidate: true,
+              });
               clearErrors('cardName');
             }
 
@@ -349,7 +375,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             clearErrors('pokemonNumber');
 
             // Auto-fill base name
-            const baseName = selectedData.baseName || selectedData.cardName || '';
+            const baseName =
+              selectedData.baseName || selectedData.cardName || '';
             setValue('baseName', baseName, { shouldValidate: true });
             clearErrors('baseName');
 
@@ -362,9 +389,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         onError={(error: any) => {
           console.error('[RAW CARD] Enhanced autocomplete error:', error);
         }}
-        sectionTitle='Card Information'
+        sectionTitle="Card Information"
         sectionIcon={Calendar}
-        formType='card'
+        formType="card"
         readOnlyFields={{
           pokemonNumber: true,
           baseName: true,
@@ -377,11 +404,11 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       <GradingPricingSection
         register={register as any}
         errors={errors as any}
-        cardType='raw'
+        cardType="raw"
         currentGradeOrCondition={watchedCondition}
         currentPrice={watchedPrice}
         isEditing={isEditing}
-        priceHistory={priceHistory.priceHistory.map(entry => ({
+        priceHistory={priceHistory.priceHistory.map((entry) => ({
           price: entry.price,
           dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
         }))}
@@ -396,7 +423,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         existingImageUrls={initialData?.images || []}
         maxFiles={8}
         maxFileSize={5}
-        title='Card Images'
+        title="Card Images"
       />
 
       {/* Reusable Action Buttons */}
@@ -406,7 +433,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         isEditing={isEditing}
         submitButtonText={isEditing ? 'Update Card' : 'Add Card'}
         loadingSubmitText={isEditing ? 'Updating...' : 'Adding...'}
-        primaryButtonColorClass='emerald'
+        primaryButtonColorClass="emerald"
       />
     </form>
   );

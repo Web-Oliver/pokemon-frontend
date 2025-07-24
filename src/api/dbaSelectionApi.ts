@@ -12,7 +12,11 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import { createResourceOperations, DBA_SELECTION_CONFIG, idMapper } from './genericApiOperations';
+import {
+  createResourceOperations,
+  DBA_SELECTION_CONFIG,
+  idMapper,
+} from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 
 // ========== INTERFACES (ISP Compliance) ==========
@@ -73,7 +77,8 @@ interface IDbaSelectionCreatePayload
 /**
  * DBA selection update payload interface
  */
-interface IDbaSelectionUpdatePayload extends Partial<IDbaSelectionCreatePayload> {}
+interface IDbaSelectionUpdatePayload
+  extends Partial<IDbaSelectionCreatePayload> {}
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 
@@ -97,7 +102,9 @@ const dbaSelectionOperations = createResourceOperations<
  * @param params - Optional filter parameters
  * @returns Promise<DbaSelection[]> - Array of DBA selections
  */
-export const getDbaSelections = async (params?: DbaSelectionParams): Promise<DbaSelection[]> => {
+export const getDbaSelections = async (
+  params?: DbaSelectionParams
+): Promise<DbaSelection[]> => {
   const { active, expiring, days } = params || {};
 
   const queryParams = {
@@ -116,7 +123,9 @@ export const getDbaSelections = async (params?: DbaSelectionParams): Promise<Dba
  * @param id - DBA selection ID
  * @returns Promise<DbaSelection> - Single DBA selection
  */
-export const getDbaSelectionById = async (id: string): Promise<DbaSelection> => {
+export const getDbaSelectionById = async (
+  id: string
+): Promise<DbaSelection> => {
   return dbaSelectionOperations.getById(id, {
     transform: idMapper,
   });
@@ -200,11 +209,14 @@ export const addToDbaSelection = async (
 export const removeFromDbaSelection = async (
   items: Pick<DbaSelectionItem, 'itemId' | 'itemType'>[]
 ): Promise<DbaSelectionResponse> => {
-  const response = await unifiedApiClient.delete<DbaSelectionResponse>('/dba-selection', {
-    data: { items },
-    operation: 'remove DBA selection items',
-    successMessage: 'Items removed from DBA selection successfully',
-  });
+  const response = await unifiedApiClient.delete<DbaSelectionResponse>(
+    '/dba-selection',
+    {
+      data: { items },
+      operation: 'remove DBA selection items',
+      successMessage: 'Items removed from DBA selection successfully',
+    }
+  );
   return response;
 };
 

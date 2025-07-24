@@ -37,11 +37,21 @@ export const exportToCSV = <T extends Record<string, any>>(
   data: T[],
   options: CSVExportOptions
 ): void => {
-  const { filename = 'export.csv', columns, delimiter = ',', includeHeaders = true } = options;
+  const {
+    filename = 'export.csv',
+    columns,
+    delimiter = ',',
+    includeHeaders = true,
+  } = options;
 
   try {
     // Generate CSV content
-    const csvContent = generateCSVContent(data, columns, delimiter, includeHeaders);
+    const csvContent = generateCSVContent(
+      data,
+      columns,
+      delimiter,
+      includeHeaders
+    );
 
     // Create Blob with proper MIME type for CSV
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -78,15 +88,17 @@ const generateCSVContent = <T extends Record<string, any>>(
 
   // Add headers if requested
   if (includeHeaders) {
-    const headers = columns.map(col => escapeCSVField(col.header));
+    const headers = columns.map((col) => escapeCSVField(col.header));
     lines.push(headers.join(delimiter));
   }
 
   // Add data rows
-  data.forEach(item => {
-    const row = columns.map(col => {
+  data.forEach((item) => {
+    const row = columns.map((col) => {
       const value = item[col.key];
-      const formattedValue = col.formatter ? col.formatter(value) : String(value ?? '');
+      const formattedValue = col.formatter
+        ? col.formatter(value)
+        : String(value ?? '');
       return escapeCSVField(formattedValue);
     });
     lines.push(row.join(delimiter));
@@ -101,7 +113,12 @@ const generateCSVContent = <T extends Record<string, any>>(
  */
 const escapeCSVField = (value: string): string => {
   // If value contains delimiter, newlines, or quotes, wrap in quotes and escape internal quotes
-  if (value.includes(',') || value.includes('\n') || value.includes('\r') || value.includes('"')) {
+  if (
+    value.includes(',') ||
+    value.includes('\n') ||
+    value.includes('\r') ||
+    value.includes('"')
+  ) {
     return `"${value.replace(/"/g, '""')}"`;
   }
   return value;
@@ -160,7 +177,9 @@ export const exportToJSON = <T extends Record<string, any>>(
     const jsonContent = JSON.stringify(data, null, 2);
 
     // Create Blob with proper MIME type for JSON
-    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const blob = new Blob([jsonContent], {
+      type: 'application/json;charset=utf-8;',
+    });
 
     // Create download link
     const link = document.createElement('a');
@@ -193,7 +212,7 @@ export const exportToPDF = <T extends Record<string, any>>(
     // For now, convert to a simple text format that can be viewed as PDF
     // In a real implementation, you'd use jsPDF or similar
     const textContent = data
-      .map(item =>
+      .map((item) =>
         Object.entries(item)
           .map(([key, value]) => `${key}: ${value}`)
           .join('\n')
@@ -218,7 +237,9 @@ export const exportToPDF = <T extends Record<string, any>>(
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
 
-    console.warn('PDF export is not fully implemented. Exported as text file instead.');
+    console.warn(
+      'PDF export is not fully implemented. Exported as text file instead.'
+    );
   } catch (error) {
     console.error('PDF Export Error:', error);
     throw new Error('Failed to export PDF file');
@@ -231,7 +252,14 @@ export const exportToPDF = <T extends Record<string, any>>(
 
 export interface ImageAspectInfo {
   ratio: number;
-  category: 'square' | 'portrait' | 'landscape' | 'wide' | 'tall' | 'ultra-wide' | 'ultra-tall';
+  category:
+    | 'square'
+    | 'portrait'
+    | 'landscape'
+    | 'wide'
+    | 'tall'
+    | 'ultra-wide'
+    | 'ultra-tall';
   orientation: 'vertical' | 'horizontal' | 'square';
   cssClass: string;
   containerClass: string;
@@ -250,8 +278,10 @@ export interface ResponsiveImageConfig {
 /**
  * Detects image aspect ratio and provides classification
  */
-export const detectImageAspectRatio = async (imageUrl: string): Promise<ImageAspectInfo> => {
-  return new Promise(resolve => {
+export const detectImageAspectRatio = async (
+  imageUrl: string
+): Promise<ImageAspectInfo> => {
+  return new Promise((resolve) => {
     const img = new Image();
 
     img.onload = () => {
@@ -344,7 +374,9 @@ export const classifyAspectRatio = (ratio: number): ImageAspectInfo => {
  * Gets optimized responsive image configuration based on aspect ratio
  * Enhanced with Context7 patterns for both vertical and horizontal images
  */
-export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): ResponsiveImageConfig => {
+export const getResponsiveImageConfig = (
+  aspectInfo: ImageAspectInfo
+): ResponsiveImageConfig => {
   const { category, orientation } = aspectInfo;
 
   // Enhanced responsive configuration based on Context7 Tailwind patterns
@@ -451,7 +483,9 @@ export const getResponsiveImageConfig = (aspectInfo: ImageAspectInfo): Responsiv
 /**
  * Builds responsive CSS classes for image containers
  */
-export const buildResponsiveImageClasses = (config: ResponsiveImageConfig): string => {
+export const buildResponsiveImageClasses = (
+  config: ResponsiveImageConfig
+): string => {
   const classes = [config.baseAspect];
 
   if (config.mobileAspect) {
@@ -529,20 +563,22 @@ export const getContext7ImageClasses = (
  * Determines optimal grid layout based on mixed aspect ratios
  * Enhanced Context7 algorithm for vertical and horizontal image mixing
  */
-export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => {
+export const getOptimalGridLayout = (
+  aspectInfos: ImageAspectInfo[]
+): string => {
   if (aspectInfos.length === 0) {
     return 'grid-cols-1';
   }
 
-  const orientations = aspectInfos.map(info => info.orientation);
-  const categories = aspectInfos.map(info => info.category);
+  const orientations = aspectInfos.map((info) => info.orientation);
+  const categories = aspectInfos.map((info) => info.category);
 
   const hasVertical = orientations.includes('vertical');
   const hasHorizontal = orientations.includes('horizontal');
   const hasSquare = orientations.includes('square');
 
-  const verticalCount = orientations.filter(o => o === 'vertical').length;
-  const horizontalCount = orientations.filter(o => o === 'horizontal').length;
+  const verticalCount = orientations.filter((o) => o === 'vertical').length;
+  const horizontalCount = orientations.filter((o) => o === 'horizontal').length;
   // const squareCount = orientations.filter(o => o === 'square').length;
 
   const totalImages = aspectInfos.length;
@@ -605,7 +641,9 @@ export const getOptimalGridLayout = (aspectInfos: ImageAspectInfo[]): string => 
 /**
  * Context7 premium glass overlay effects
  */
-export const getContext7GlassOverlay = (orientation: ImageAspectInfo['orientation']): string => {
+export const getContext7GlassOverlay = (
+  orientation: ImageAspectInfo['orientation']
+): string => {
   switch (orientation) {
     case 'vertical':
       return 'absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300';
@@ -629,7 +667,9 @@ export const getContext7ShimmerEffect = (): string => {
 /**
  * Preloads an image and returns aspect ratio information
  */
-export const preloadImageWithAspectRatio = async (imageUrl: string): Promise<ImageAspectInfo> => {
+export const preloadImageWithAspectRatio = async (
+  imageUrl: string
+): Promise<ImageAspectInfo> => {
   try {
     const aspectInfo = await detectImageAspectRatio(imageUrl);
     return aspectInfo;
@@ -646,13 +686,15 @@ export const createResponsiveSrcSet = (
   baseUrl: string,
   sizes: number[] = [320, 640, 1024, 1280]
 ): string => {
-  return sizes.map(size => `${baseUrl}?w=${size} ${size}w`).join(', ');
+  return sizes.map((size) => `${baseUrl}?w=${size} ${size}w`).join(', ');
 };
 
 /**
  * Gets optimal sizes attribute for responsive images
  */
-export const getOptimalSizesAttribute = (aspectInfo: ImageAspectInfo): string => {
+export const getOptimalSizesAttribute = (
+  aspectInfo: ImageAspectInfo
+): string => {
   const { orientation, category } = aspectInfo;
 
   if (orientation === 'vertical') {

@@ -122,7 +122,7 @@ export class UnifiedApiClient {
     // Response interceptor for global error handling
     instance.interceptors.response.use(
       (response: AxiosResponse) => response,
-      error => {
+      (error) => {
         handleApiError(error);
         return Promise.reject(error);
       }
@@ -153,7 +153,10 @@ export class UnifiedApiClient {
       }
 
       // Apply optimization strategy
-      const response = await this.optimizationStrategy.optimize(requestFn, optimization);
+      const response = await this.optimizationStrategy.optimize(
+        requestFn,
+        optimization
+      );
 
       if (logResponse) {
         log(`${operation} completed successfully`);
@@ -199,7 +202,11 @@ export class UnifiedApiClient {
   /**
    * POST request with optimization support
    */
-  async post<T>(url: string, data?: any, config: EnhancedRequestConfig = {}): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
@@ -218,7 +225,11 @@ export class UnifiedApiClient {
   /**
    * PUT request with optimization support
    */
-  async put<T>(url: string, data?: any, config: EnhancedRequestConfig = {}): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
@@ -237,7 +248,10 @@ export class UnifiedApiClient {
   /**
    * DELETE request with optimization support
    */
-  async delete<T = void>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
+  async delete<T = void>(
+    url: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
@@ -269,7 +283,7 @@ export class UnifiedApiClient {
       this.batchProcessors.set(
         batchKey,
         new BatchProcessor(async (urlsBatch: string[]) => {
-          const promises = urlsBatch.map(url => this.get<T>(url, config));
+          const promises = urlsBatch.map((url) => this.get<T>(url, config));
           return Promise.all(promises);
         }, batchConfig)
       );
@@ -299,10 +313,15 @@ export class UnifiedApiClient {
     if (!this.batchProcessors.has(batchKey)) {
       this.batchProcessors.set(
         batchKey,
-        new BatchProcessor(async (requestsBatch: Array<{ url: string; data?: any }>) => {
-          const promises = requestsBatch.map(req => this.post<T>(req.url, req.data, config));
-          return Promise.all(promises);
-        }, batchConfig)
+        new BatchProcessor(
+          async (requestsBatch: Array<{ url: string; data?: any }>) => {
+            const promises = requestsBatch.map((req) =>
+              this.post<T>(req.url, req.data, config)
+            );
+            return Promise.all(promises);
+          },
+          batchConfig
+        )
       );
     }
 
@@ -400,7 +419,10 @@ export class UnifiedApiClient {
   /**
    * Prefetch data for predictive loading
    */
-  async prefetch<T>(url: string, config: EnhancedRequestConfig = {}): Promise<void> {
+  async prefetch<T>(
+    url: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<void> {
     try {
       await this.get<T>(url, {
         ...config,

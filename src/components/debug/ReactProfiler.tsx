@@ -133,12 +133,15 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
         const updated: AggregatedMetrics = {
           componentId: profileId,
           renderCount: (existing?.renderCount || 0) + 1,
-          totalActualDuration: (existing?.totalActualDuration || 0) + actualDuration,
+          totalActualDuration:
+            (existing?.totalActualDuration || 0) + actualDuration,
           totalBaseDuration: (existing?.totalBaseDuration || 0) + baseDuration,
           avgActualDuration: 0, // Will be calculated below
           avgBaseDuration: 0, // Will be calculated below
           mountTime: existing?.mountTime || (isMount ? actualDuration : 0),
-          lastUpdateTime: isMount ? existing?.lastUpdateTime || 0 : actualDuration,
+          lastUpdateTime: isMount
+            ? existing?.lastUpdateTime || 0
+            : actualDuration,
           slowestRender: Math.max(existing?.slowestRender || 0, actualDuration),
           fastestRender: existing?.fastestRender
             ? Math.min(existing.fastestRender, actualDuration)
@@ -147,8 +150,10 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
         };
 
         // Calculate averages and optimization score
-        updated.avgActualDuration = updated.totalActualDuration / updated.renderCount;
-        updated.avgBaseDuration = updated.totalBaseDuration / updated.renderCount;
+        updated.avgActualDuration =
+          updated.totalActualDuration / updated.renderCount;
+        updated.avgBaseDuration =
+          updated.totalBaseDuration / updated.renderCount;
         updated.optimizationScore =
           updated.avgBaseDuration > 0
             ? (1 - updated.avgActualDuration / updated.avgBaseDuration) * 100
@@ -172,12 +177,14 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
 
             // Use setTimeout to defer the state update and break the render cycle
             updateTimeoutRef.current = setTimeout(() => {
-              setMetrics(prevMetrics => {
+              setMetrics((prevMetrics) => {
                 // Only update if the data has actually changed meaningfully
                 if (
                   !prevMetrics ||
                   prevMetrics.renderCount !== updated.renderCount ||
-                  Math.abs(prevMetrics.avgActualDuration - updated.avgActualDuration) > 0.5
+                  Math.abs(
+                    prevMetrics.avgActualDuration - updated.avgActualDuration
+                  ) > 0.5
                 ) {
                   return updated;
                 }
@@ -213,16 +220,18 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     };
 
     // First Contentful Paint (FCP)
-    const fcpObserver = new PerformanceObserver(list => {
+    const fcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint');
+      const fcpEntry = entries.find(
+        (entry) => entry.name === 'first-contentful-paint'
+      );
       if (fcpEntry) {
         updateWebVitals({ FCP: fcpEntry.startTime });
       }
     });
 
     // Largest Contentful Paint (LCP)
-    const lcpObserver = new PerformanceObserver(list => {
+    const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lcpEntry = entries[entries.length - 1]; // Latest LCP
       if (lcpEntry) {
@@ -231,9 +240,9 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     });
 
     // First Input Delay (FID)
-    const fidObserver = new PerformanceObserver(list => {
+    const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.name === 'first-input') {
           const fid = (entry as any).processingStart - entry.startTime;
           updateWebVitals({ FID: fid });
@@ -242,10 +251,10 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
     });
 
     // Cumulative Layout Shift (CLS)
-    const clsObserver = new PerformanceObserver(list => {
+    const clsObserver = new PerformanceObserver((list) => {
       let cls = webVitals.CLS || 0;
       const entries = list.getEntries();
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (!(entry as any).hadRecentInput) {
           cls += (entry as any).value;
         }
@@ -260,9 +269,13 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
       clsObserver.observe({ entryTypes: ['layout-shift'] });
 
       // TTFB from navigation timing
-      const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navEntry = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
       if (navEntry) {
-        updateWebVitals({ TTFB: navEntry.responseStart - navEntry.requestStart });
+        updateWebVitals({
+          TTFB: navEntry.responseStart - navEntry.requestStart,
+        });
       }
     } catch (error) {
       console.warn('[PROFILER] PerformanceObserver not supported:', error);
@@ -284,7 +297,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key === 'P') {
-        setIsVisible(prev => !prev);
+        setIsVisible((prev) => !prev);
       }
     };
 
@@ -337,47 +350,53 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
           className={`fixed bottom-4 left-4 z-50 bg-black/90 backdrop-blur-sm text-white rounded-lg p-4 text-xs font-mono space-y-3 max-w-sm border border-gray-600 ${className}`}
         >
           {/* Header */}
-          <div className='flex items-center justify-between border-b border-gray-600 pb-2'>
-            <div className='flex items-center space-x-2'>
+          <div className="flex items-center justify-between border-b border-gray-600 pb-2">
+            <div className="flex items-center space-x-2">
               <StatusIcon className={`w-4 h-4 ${status.color}`} />
-              <span className='font-bold'>{id}</span>
+              <span className="font-bold">{id}</span>
             </div>
-            <span className={`text-xs ${status.color} font-semibold`}>{status.label}</span>
+            <span className={`text-xs ${status.color} font-semibold`}>
+              {status.label}
+            </span>
           </div>
 
           {/* Render Metrics */}
-          <div className='space-y-2'>
-            <div className='text-gray-300 font-semibold text-xs border-b border-gray-700 pb-1'>
+          <div className="space-y-2">
+            <div className="text-gray-300 dark:text-zinc-700 font-semibold text-xs border-b border-gray-700 pb-1">
               Render Performance
             </div>
 
-            <div className='grid grid-cols-2 gap-2 text-xs'>
-              <div className='flex justify-between'>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex justify-between">
                 <span>Renders:</span>
-                <span className='font-bold text-blue-300'>{metrics.renderCount}</span>
+                <span className="font-bold text-blue-300">
+                  {metrics.renderCount}
+                </span>
               </div>
 
-              <div className='flex justify-between'>
+              <div className="flex justify-between">
                 <span>Avg time:</span>
                 <span className={`font-bold ${status.color}`}>
                   {metrics.avgActualDuration.toFixed(1)}ms
                 </span>
               </div>
 
-              <div className='flex justify-between'>
+              <div className="flex justify-between">
                 <span>Fastest:</span>
-                <span className='font-bold text-green-400'>
+                <span className="font-bold text-green-400">
                   {metrics.fastestRender.toFixed(1)}ms
                 </span>
               </div>
 
-              <div className='flex justify-between'>
+              <div className="flex justify-between">
                 <span>Slowest:</span>
-                <span className='font-bold text-red-400'>{metrics.slowestRender.toFixed(1)}ms</span>
+                <span className="font-bold text-red-400">
+                  {metrics.slowestRender.toFixed(1)}ms
+                </span>
               </div>
             </div>
 
-            <div className='flex justify-between'>
+            <div className="flex justify-between">
               <span>Optimization:</span>
               <span
                 className={`font-bold ${metrics.optimizationScore > 80 ? 'text-green-400' : metrics.optimizationScore > 60 ? 'text-yellow-400' : 'text-red-400'}`}
@@ -389,14 +408,14 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
 
           {/* Core Web Vitals */}
           {enableWebVitals && Object.keys(webVitalsData).length > 0 && (
-            <div className='space-y-2'>
-              <div className='text-gray-300 font-semibold text-xs border-b border-gray-700 pb-1'>
+            <div className="space-y-2">
+              <div className="text-gray-300 dark:text-zinc-700 font-semibold text-xs border-b border-gray-700 pb-1">
                 Core Web Vitals
               </div>
 
-              <div className='grid grid-cols-2 gap-2 text-xs'>
+              <div className="grid grid-cols-2 gap-2 text-xs">
                 {webVitalsData.FCP && (
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>FCP:</span>
                     <span
                       className={`font-bold ${webVitalsData.FCP < 1800 ? 'text-green-400' : webVitalsData.FCP < 3000 ? 'text-yellow-400' : 'text-red-400'}`}
@@ -407,7 +426,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
                 )}
 
                 {webVitalsData.LCP && (
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>LCP:</span>
                     <span
                       className={`font-bold ${webVitalsData.LCP < 2500 ? 'text-green-400' : webVitalsData.LCP < 4000 ? 'text-yellow-400' : 'text-red-400'}`}
@@ -418,7 +437,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
                 )}
 
                 {webVitalsData.FID !== undefined && (
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>FID:</span>
                     <span
                       className={`font-bold ${webVitalsData.FID < 100 ? 'text-green-400' : webVitalsData.FID < 300 ? 'text-yellow-400' : 'text-red-400'}`}
@@ -429,7 +448,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
                 )}
 
                 {webVitalsData.CLS !== undefined && (
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>CLS:</span>
                     <span
                       className={`font-bold ${webVitalsData.CLS < 0.1 ? 'text-green-400' : webVitalsData.CLS < 0.25 ? 'text-yellow-400' : 'text-red-400'}`}
@@ -443,9 +462,12 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
           )}
 
           {/* Controls */}
-          <div className='border-t border-gray-600 pt-2 text-xs text-gray-400'>
+          <div className="border-t border-gray-600 pt-2 text-xs text-gray-400 dark:text-zinc-600 dark:text-zinc-500">
             <div>Ctrl+Shift+P to toggle</div>
-            <div>Uptime: {((performance.now() - mountTimeRef.current) / 1000).toFixed(1)}s</div>
+            <div>
+              Uptime:{' '}
+              {((performance.now() - mountTimeRef.current) / 1000).toFixed(1)}s
+            </div>
           </div>
         </div>
       )}
@@ -479,18 +501,20 @@ export const analyzeComponentPerformance = (componentId: string) => {
     return null;
   }
 
-  const componentHistory = renderHistory.filter(r => r.id === componentId);
+  const componentHistory = renderHistory.filter((r) => r.id === componentId);
   const recentRenders = componentHistory.slice(-10);
 
   return {
     ...metrics,
     trend:
       recentRenders.length > 1
-        ? recentRenders[recentRenders.length - 1].actualDuration - recentRenders[0].actualDuration
+        ? recentRenders[recentRenders.length - 1].actualDuration -
+          recentRenders[0].actualDuration
         : 0,
     consistency:
       recentRenders.length > 0
-        ? (metrics.slowestRender - metrics.fastestRender) / metrics.avgActualDuration
+        ? (metrics.slowestRender - metrics.fastestRender) /
+          metrics.avgActualDuration
         : 0,
     recommendations: generateRecommendations(metrics),
   };
@@ -504,11 +528,18 @@ const generateRecommendations = (metrics: AggregatedMetrics): string[] => {
   }
 
   if (metrics.avgActualDuration > 33) {
-    recommendations.push('Component renders are slow, check for expensive calculations');
+    recommendations.push(
+      'Component renders are slow, check for expensive calculations'
+    );
   }
 
-  if (metrics.renderCount > 20 && metrics.lastUpdateTime > metrics.mountTime * 2) {
-    recommendations.push('Frequent re-renders detected, optimize state management');
+  if (
+    metrics.renderCount > 20 &&
+    metrics.lastUpdateTime > metrics.mountTime * 2
+  ) {
+    recommendations.push(
+      'Frequent re-renders detected, optimize state management'
+    );
   }
 
   return recommendations;

@@ -19,8 +19,14 @@ export { useHierarchicalSearch } from './useHierarchicalSearch';
 // Export types
 export type { BasicSearchState, UseBasicSearchReturn } from './useBasicSearch';
 export type { UseSearchCacheReturn } from './useSearchCache';
-export type { SuggestionsState, UseSearchSuggestionsReturn } from './useSearchSuggestions';
-export type { HierarchicalSearchState, UseHierarchicalSearchReturn } from './useHierarchicalSearch';
+export type {
+  SuggestionsState,
+  UseSearchSuggestionsReturn,
+} from './useSearchSuggestions';
+export type {
+  HierarchicalSearchState,
+  UseHierarchicalSearchReturn,
+} from './useHierarchicalSearch';
 
 // Re-export common types from the original useSearch
 export type { SearchState, UseSearchReturn } from '../useSearch';
@@ -60,7 +66,10 @@ export const useComposedSearch = () => {
     cleanupExpiredEntries: cache.cleanupExpiredEntries,
 
     // Combined operations
-    handleSuggestionSelect: (suggestion: any, fieldType: 'set' | 'category' | 'cardProduct') => {
+    handleSuggestionSelect: (
+      suggestion: any,
+      fieldType: 'set' | 'category' | 'cardProduct'
+    ) => {
       // Use hierarchical selection logic
       hierarchical.handleHierarchicalSelection(suggestion, fieldType);
     },

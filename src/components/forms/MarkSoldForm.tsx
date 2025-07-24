@@ -45,7 +45,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     itemType,
     itemId,
     onSuccess,
-    onError: err => console.error('Failed to mark item as sold:', err),
+    onError: (err) => console.error('Failed to mark item as sold:', err),
   });
   const {
     control,
@@ -75,7 +75,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   const deliveryMethod = watch('deliveryMethod');
   const showBuyerInfo = deliveryMethod === DeliveryMethod.SENT;
   const showBuyerName =
-    deliveryMethod === DeliveryMethod.LOCAL_MEETUP || deliveryMethod === DeliveryMethod.SENT;
+    deliveryMethod === DeliveryMethod.LOCAL_MEETUP ||
+    deliveryMethod === DeliveryMethod.SENT;
 
   const onFormSubmit = async (data: FormData) => {
     // Clear any previous errors
@@ -84,13 +85,17 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     // Convert date to ISO string if it's not already
     const formattedData: ISaleDetails = {
       ...data,
-      dateSold: data.dateSold ? new Date(data.dateSold).toISOString() : undefined,
+      dateSold: data.dateSold
+        ? new Date(data.dateSold).toISOString()
+        : undefined,
     };
 
     // Remove empty buyer address if not needed
     if (
       !showBuyerInfo ||
-      (!data.buyerAddress?.streetName && !data.buyerAddress?.postnr && !data.buyerAddress?.city)
+      (!data.buyerAddress?.streetName &&
+        !data.buyerAddress?.postnr &&
+        !data.buyerAddress?.city)
     ) {
       delete formattedData.buyerAddress;
     }
@@ -100,7 +105,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   };
 
   // Payment method options
-  const paymentMethodOptions = Object.values(PaymentMethod).map(method => ({
+  const paymentMethodOptions = Object.values(PaymentMethod).map((method) => ({
     value: method,
     label:
       method === PaymentMethod.MOBILEPAY
@@ -111,77 +116,82 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   }));
 
   // Delivery method options
-  const deliveryMethodOptions = Object.values(DeliveryMethod).map(method => ({
+  const deliveryMethodOptions = Object.values(DeliveryMethod).map((method) => ({
     value: method,
     label: method,
   }));
 
   // Source options
-  const sourceOptions = Object.values(Source).map(source => ({
+  const sourceOptions = Object.values(Source).map((source) => ({
     value: source,
     label: source,
   }));
 
   return (
-    <div className='max-w-2xl mx-auto'>
+    <div className="max-w-2xl mx-auto">
       {/* Reusable Form Header */}
       <FormHeader
         icon={DollarSign}
-        title='Mark Item as Sold'
-        description='Enter the sale details for this item'
-        primaryColorClass='amber'
+        title="Mark Item as Sold"
+        description="Enter the sale details for this item"
+        primaryColorClass="amber"
       />
 
       {/* Error Display */}
       {error && (
-        <div className='mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg'>
-          <p className='text-red-300'>Error: {error.message}</p>
+        <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg">
+          <p className="text-red-300">Error: {error.message}</p>
         </div>
       )}
 
-      <div className='bg-zinc-900/80 backdrop-blur-xl rounded-lg shadow-lg p-6 mt-6 border border-zinc-700/50'>
-        <form onSubmit={handleSubmit(onFormSubmit)} className='space-y-6'>
+      <div className="bg-zinc-900/80 backdrop-blur-xl rounded-lg shadow-lg p-6 mt-6 border border-zinc-700/50">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
           {/* Sale Information Section */}
-          <div className='bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50'>
-            <h3 className='text-lg font-semibold text-zinc-100 mb-4 flex items-center'>
+          <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50">
+            <h3 className="text-lg font-semibold text-zinc-100 mb-4 flex items-center">
               <svg
-                className='w-5 h-5 mr-2 text-green-600'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
+                className="w-5 h-5 mr-2 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1'
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
                 />
               </svg>
               Sale Information
             </h3>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Actual Sold Price */}
               <div>
                 <Controller
-                  name='actualSoldPrice'
+                  name="actualSoldPrice"
                   control={control}
                   rules={{
                     required: 'Sale price is required',
-                    min: { value: 0.01, message: 'Price must be greater than 0' },
+                    min: {
+                      value: 0.01,
+                      message: 'Price must be greater than 0',
+                    },
                   }}
                   render={({ field }) => (
                     <Input
                       {...field}
-                      label='Actual Sold Price *'
-                      type='number'
-                      step='0.01'
-                      placeholder='0.00'
+                      label="Actual Sold Price *"
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
                       error={errors.actualSoldPrice?.message}
                       value={field.value || ''}
-                      onChange={e => {
+                      onChange={(e) => {
                         const value = e.target.value;
-                        field.onChange(value === '' ? undefined : parseFloat(value));
+                        field.onChange(
+                          value === '' ? undefined : parseFloat(value)
+                        );
                       }}
                     />
                   )}
@@ -191,14 +201,14 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
               {/* Date Sold */}
               <div>
                 <Controller
-                  name='dateSold'
+                  name="dateSold"
                   control={control}
                   rules={{ required: 'Sale date is required' }}
                   render={({ field }) => (
                     <Input
                       {...field}
-                      label='Date Sold *'
-                      type='date'
+                      label="Date Sold *"
+                      type="date"
                       error={errors.dateSold?.message}
                       value={field.value ? field.value.split('T')[0] : ''}
                     />
@@ -209,16 +219,16 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
               {/* Payment Method */}
               <div>
                 <Controller
-                  name='paymentMethod'
+                  name="paymentMethod"
                   control={control}
                   rules={{ required: 'Payment method is required' }}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label='Payment Method *'
+                      label="Payment Method *"
                       options={paymentMethodOptions}
                       error={errors.paymentMethod?.message}
-                      placeholder='Select payment method'
+                      placeholder="Select payment method"
                     />
                   )}
                 />
@@ -227,16 +237,16 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
               {/* Source */}
               <div>
                 <Controller
-                  name='source'
+                  name="source"
                   control={control}
                   rules={{ required: 'Source is required' }}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label='Source *'
+                      label="Source *"
                       options={sourceOptions}
                       error={errors.source?.message}
-                      placeholder='Select sale source'
+                      placeholder="Select sale source"
                     />
                   )}
                 />
@@ -245,36 +255,36 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           </div>
 
           {/* Delivery Information Section */}
-          <div className='bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50'>
-            <h3 className='text-lg font-semibold text-zinc-100 mb-4 flex items-center'>
+          <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-600/50">
+            <h3 className="text-lg font-semibold text-zinc-100 mb-4 flex items-center">
               <svg
-                className='w-5 h-5 mr-2 text-blue-600'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
+                className="w-5 h-5 mr-2 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                 />
               </svg>
               Delivery Information
             </h3>
 
-            <div className='mb-4'>
+            <div className="mb-4">
               <Controller
-                name='deliveryMethod'
+                name="deliveryMethod"
                 control={control}
                 rules={{ required: 'Delivery method is required' }}
                 render={({ field }) => (
                   <Select
                     {...field}
-                    label='Delivery Method *'
+                    label="Delivery Method *"
                     options={deliveryMethodOptions}
                     error={errors.deliveryMethod?.message}
-                    placeholder='Select delivery method'
+                    placeholder="Select delivery method"
                   />
                 )}
               />
@@ -282,13 +292,13 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
             {/* Conditional Buyer Information */}
             {showBuyerName && (
-              <div className='space-y-4 border-t pt-4'>
-                <h4 className='font-medium text-zinc-100'>Buyer Information</h4>
+              <div className="space-y-4 border-t pt-4">
+                <h4 className="font-medium text-zinc-100">Buyer Information</h4>
 
                 {/* Buyer Full Name */}
                 <div>
                   <Controller
-                    name='buyerFullName'
+                    name="buyerFullName"
                     control={control}
                     rules={{
                       required:
@@ -300,8 +310,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                     render={({ field }) => (
                       <Input
                         {...field}
-                        label='Buyer Full Name *'
-                        placeholder='John Doe'
+                        label="Buyer Full Name *"
+                        placeholder="John Doe"
                         error={errors.buyerFullName?.message}
                       />
                     )}
@@ -310,17 +320,17 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
                 {/* Buyer Contact - only show for shipped items */}
                 {showBuyerInfo && (
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Controller
-                        name='buyerPhoneNumber'
+                        name="buyerPhoneNumber"
                         control={control}
                         render={({ field }) => (
                           <Input
                             {...field}
-                            label='Phone Number'
-                            type='tel'
-                            placeholder='+45 12 34 56 78'
+                            label="Phone Number"
+                            type="tel"
+                            placeholder="+45 12 34 56 78"
                             error={errors.buyerPhoneNumber?.message}
                           />
                         )}
@@ -329,14 +339,14 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
                     <div>
                       <Controller
-                        name='buyerEmail'
+                        name="buyerEmail"
                         control={control}
                         render={({ field }) => (
                           <Input
                             {...field}
-                            label='Email'
-                            type='email'
-                            placeholder='buyer@example.com'
+                            label="Email"
+                            type="email"
+                            placeholder="buyer@example.com"
                             error={errors.buyerEmail?.message}
                           />
                         )}
@@ -347,12 +357,14 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
                 {/* Buyer Address - only show for shipped items */}
                 {showBuyerInfo && (
-                  <div className='space-y-4'>
-                    <h5 className='font-medium text-zinc-200'>Shipping Address</h5>
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-zinc-200">
+                      Shipping Address
+                    </h5>
 
                     <div>
                       <Controller
-                        name='buyerAddress.streetName'
+                        name="buyerAddress.streetName"
                         control={control}
                         rules={{
                           required:
@@ -363,18 +375,18 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                         render={({ field }) => (
                           <Input
                             {...field}
-                            label='Street Address *'
-                            placeholder='123 Main Street'
+                            label="Street Address *"
+                            placeholder="123 Main Street"
                             error={errors.buyerAddress?.streetName?.message}
                           />
                         )}
                       />
                     </div>
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Controller
-                          name='buyerAddress.postnr'
+                          name="buyerAddress.postnr"
                           control={control}
                           rules={{
                             required:
@@ -385,8 +397,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                           render={({ field }) => (
                             <Input
                               {...field}
-                              label='Postal Code *'
-                              placeholder='12345'
+                              label="Postal Code *"
+                              placeholder="12345"
                               error={errors.buyerAddress?.postnr?.message}
                             />
                           )}
@@ -395,7 +407,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
                       <div>
                         <Controller
-                          name='buyerAddress.city'
+                          name="buyerAddress.city"
                           control={control}
                           rules={{
                             required:
@@ -406,8 +418,8 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                           render={({ field }) => (
                             <Input
                               {...field}
-                              label='City *'
-                              placeholder='Copenhagen'
+                              label="City *"
+                              placeholder="Copenhagen"
                               error={errors.buyerAddress?.city?.message}
                             />
                           )}
@@ -418,13 +430,13 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                     {/* Tracking Number */}
                     <div>
                       <Controller
-                        name='trackingNumber'
+                        name="trackingNumber"
                         control={control}
                         render={({ field }) => (
                           <Input
                             {...field}
-                            label='Tracking Number'
-                            placeholder='1234567890'
+                            label="Tracking Number"
+                            placeholder="1234567890"
                             error={errors.trackingNumber?.message}
                           />
                         )}
@@ -441,9 +453,9 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             onCancel={onCancel}
             isSubmitting={isProcessing}
             isEditing={false}
-            submitButtonText='Mark as Sold'
-            loadingSubmitText='Marking as Sold...'
-            primaryButtonColorClass='amber'
+            submitButtonText="Mark as Sold"
+            loadingSubmitText="Marking as Sold..."
+            primaryButtonColorClass="amber"
             cancelDisabled={isProcessing}
           />
         </form>

@@ -62,12 +62,17 @@ interface UseActivityReturn {
   archiveActivity: (id: string) => Promise<void>;
 
   // Utilities
-  getActivitiesForEntity: (entityType: string, entityId: string) => Promise<Activity[]>;
+  getActivitiesForEntity: (
+    entityType: string,
+    entityId: string
+  ) => Promise<Activity[]>;
   getActivityById: (id: string) => Promise<Activity | null>;
 }
 
 // Context7 Premium Activity Hook
-export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityReturn => {
+export const useActivity = (
+  initialFilters: ActivityFilters = {}
+): UseActivityReturn => {
   // Context7 State Management
   const [state, setState] = useState<UseActivityState>({
     activities: [],
@@ -104,7 +109,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
         }
         lastFetchRef.current = filterKey;
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           loading: true,
           error: null,
@@ -116,10 +121,12 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
 
         const response = await activityApi.getActivities(filters);
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           activities:
-            newFilters?.offset === 0 ? response.data : [...prev.activities, ...response.data],
+            newFilters?.offset === 0
+              ? response.data
+              : [...prev.activities, ...response.data],
           hasMore: response.meta.hasMore,
           total: response.meta.total,
           page: response.meta.page,
@@ -129,7 +136,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
         log('[USE ACTIVITY] Activities fetched successfully:', response.meta);
       } catch (error: any) {
         if (error.name !== 'AbortError') {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             loading: false,
             error: 'Failed to fetch activities',
@@ -142,17 +149,20 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   );
 
   // Context7 Recent Activities Fetch
-  const fetchRecentActivities = useCallback(async (limit: number = 10): Promise<Activity[]> => {
-    try {
-      log('[USE ACTIVITY] Fetching recent activities, limit:', limit);
+  const fetchRecentActivities = useCallback(
+    async (limit: number = 10): Promise<Activity[]> => {
+      try {
+        log('[USE ACTIVITY] Fetching recent activities, limit:', limit);
 
-      const response = await activityApi.getRecentActivities(limit);
-      return response.data;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch recent activities');
-      return [];
-    }
-  }, []);
+        const response = await activityApi.getRecentActivities(limit);
+        return response.data;
+      } catch (error) {
+        handleApiError(error, 'Failed to fetch recent activities');
+        return [];
+      }
+    },
+    []
+  );
 
   // Context7 Stats Fetch
   const fetchActivityStats = useCallback(async () => {
@@ -161,7 +171,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
 
       const response = await activityApi.getActivityStats();
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         stats: response.data,
       }));
@@ -174,7 +184,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const searchActivities = useCallback(
     async (term: string) => {
       try {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           loading: true,
           error: null,
@@ -196,7 +206,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
           entityType: state.filters.entityType,
         });
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           activities: response.data,
           hasMore: false, // Search results don't support pagination
@@ -204,7 +214,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
           loading: false,
         }));
       } catch (error) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           loading: false,
           error: 'Failed to search activities',
@@ -233,7 +243,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
 
   // Context7 Filter Management
   const setFilters = useCallback((newFilters: Partial<ActivityFilters>) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       filters: { ...prev.filters, ...newFilters, offset: 0 }, // Reset offset
       searchTerm: '', // Clear search when filtering
@@ -242,7 +252,7 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
 
   // Context7 Clear Search
   const clearSearch = useCallback(() => {
-    setState(prev => ({ ...prev, searchTerm: '' }));
+    setState((prev) => ({ ...prev, searchTerm: '' }));
     fetchActivities({ offset: 0 });
   }, [fetchActivities]);
 
@@ -252,9 +262,9 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
       await activityApi.markActivityAsRead(id);
 
       // Optimistic update
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        activities: prev.activities.map(activity =>
+        activities: prev.activities.map((activity) =>
           activity._id === id
             ? { ...activity, isRead: true, readAt: new Date().toISOString() }
             : activity
@@ -273,9 +283,9 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
       await activityApi.archiveActivity(id);
 
       // Remove from list
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        activities: prev.activities.filter(activity => activity._id !== id),
+        activities: prev.activities.filter((activity) => activity._id !== id),
         total: prev.total - 1,
       }));
 
@@ -289,7 +299,10 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   const getActivitiesForEntity = useCallback(
     async (entityType: string, entityId: string): Promise<Activity[]> => {
       try {
-        const response = await activityApi.getActivitiesForEntity(entityType, entityId);
+        const response = await activityApi.getActivitiesForEntity(
+          entityType,
+          entityId
+        );
         return response.data;
       } catch (error) {
         handleApiError(error, 'Failed to fetch entity activities');
@@ -300,15 +313,18 @@ export const useActivity = (initialFilters: ActivityFilters = {}): UseActivityRe
   );
 
   // Context7 Get Activity by ID
-  const getActivityById = useCallback(async (id: string): Promise<Activity | null> => {
-    try {
-      const response = await activityApi.getActivityById(id);
-      return response.data;
-    } catch (error) {
-      handleApiError(error, 'Failed to fetch activity');
-      return null;
-    }
-  }, []);
+  const getActivityById = useCallback(
+    async (id: string): Promise<Activity | null> => {
+      try {
+        const response = await activityApi.getActivityById(id);
+        return response.data;
+      } catch (error) {
+        handleApiError(error, 'Failed to fetch activity');
+        return null;
+      }
+    },
+    []
+  );
 
   // Context7 Initial Load Effect
   useEffect(() => {

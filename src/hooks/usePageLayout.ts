@@ -6,7 +6,10 @@
  */
 
 import { useCallback } from 'react';
-import { useAsyncOperation, UseAsyncOperationReturn } from './useAsyncOperation';
+import {
+  useAsyncOperation,
+  UseAsyncOperationReturn,
+} from './useAsyncOperation';
 
 export interface PageLayoutState<T = any> extends UseAsyncOperationReturn<T> {
   navigateTo: (path: string) => void;
@@ -18,7 +21,9 @@ export interface PageLayoutState<T = any> extends UseAsyncOperationReturn<T> {
  * Centralized hook for common page patterns
  * Eliminates duplicate page structure, loading states, and navigation patterns
  */
-export const usePageLayout = <T = any>(initialData: T | null = null): PageLayoutState<T> => {
+export const usePageLayout = <T = any>(
+  initialData: T | null = null
+): PageLayoutState<T> => {
   const asyncOperation = useAsyncOperation<T>(initialData);
 
   const navigateTo = useCallback((path: string) => {

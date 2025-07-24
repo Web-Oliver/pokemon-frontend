@@ -31,7 +31,10 @@ export interface EnhancedAutocompleteProps {
  * Enhanced Autocomplete Component
  * Reusable autocomplete component with Context7 design
  */
-export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompleteProps>(
+export const EnhancedAutocomplete = forwardRef<
+  HTMLDivElement,
+  EnhancedAutocompleteProps
+>(
   (
     {
       config,
@@ -94,37 +97,42 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
     return (
       <div ref={ref} className={baseClasses}>
         {/* Render fields */}
-        {fields.map(field => (
-          <div key={field.id} className='relative mb-4 last:mb-0'>
+        {fields.map((field) => (
+          <div key={field.id} className="relative mb-4 last:mb-0">
             {/* Field Label */}
-            <label htmlFor={field.id} className='block text-sm font-medium text-zinc-300 mb-2'>
+            <label
+              htmlFor={field.id}
+              className="block text-sm font-medium text-zinc-300 mb-2"
+            >
               {field.placeholder}
-              {field.required && <span className='text-red-500 ml-1'>*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
 
             {/* Input Field */}
-            <div className='relative'>
+            <div className="relative">
               <input
                 id={field.id}
-                type='text'
+                type="text"
                 value={state.fields[field.id]?.value || ''}
-                onChange={e => callbacks.onFieldChange(field.id, e.target.value)}
+                onChange={(e) =>
+                  callbacks.onFieldChange(field.id, e.target.value)
+                }
                 onFocus={() => callbacks.onFieldFocus(field.id)}
                 onBlur={() => callbacks.onFieldBlur(field.id)}
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
                 className={inputClasses}
-                autoComplete='off'
+                autoComplete="off"
               />
 
               {/* Input Icons */}
-              <div className='absolute inset-y-0 right-0 flex items-center pr-3 space-x-2'>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 space-x-2">
                 {/* Clear Button */}
                 {allowClear && state.fields[field.id]?.value && (
                   <button
-                    type='button'
+                    type="button"
                     onClick={() => callbacks.onClear(field.id)}
-                    className='text-zinc-400 hover:text-zinc-200 transition-colors'
+                    className="text-zinc-400 hover:text-zinc-200 transition-colors"
                   >
                     <X size={16} />
                   </button>
@@ -132,8 +140,8 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
 
                 {/* Loading Indicator */}
                 {state.isLoading && state.activeField === field.id && (
-                  <div className='animate-spin'>
-                    <Search size={16} className='text-zinc-400' />
+                  <div className="animate-spin">
+                    <Search size={16} className="text-zinc-400" />
                   </div>
                 )}
 
@@ -152,11 +160,14 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
             {/* Suggestions Dropdown */}
             {state.activeField === field.id && state.suggestions.length > 0 && (
               <div className={dropdownClasses}>
-                <div className='overflow-y-auto' style={{ maxHeight: `${maxHeight}px` }}>
+                <div
+                  className="overflow-y-auto"
+                  style={{ maxHeight: `${maxHeight}px` }}
+                >
                   {/* Suggestions Header */}
                   {showMetadata && (
-                    <div className='px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-sm text-zinc-300 border-b border-zinc-700/30'>
-                      <div className='flex items-center space-x-2'>
+                    <div className="px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-sm text-zinc-300 border-b border-zinc-700/30">
+                      <div className="flex items-center space-x-2">
                         <Search size={14} />
                         <span>
                           {state.suggestions.length} suggestion
@@ -172,31 +183,37 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                     <div
                       key={suggestion.id || index}
                       className={suggestionClasses}
-                      onClick={() => callbacks.onSuggestionSelect(suggestion, field.id)}
+                      onClick={() =>
+                        callbacks.onSuggestionSelect(suggestion, field.id)
+                      }
                     >
-                      <div className='flex items-center justify-between'>
-                        <div className='flex-1'>
-                          <div className='font-medium text-zinc-100'>{suggestion.displayName}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-zinc-100">
+                            {suggestion.displayName}
+                          </div>
 
                           {/* Metadata */}
                           {showMetadata && (
-                            <div className='flex items-center space-x-4 mt-1 text-sm text-zinc-400'>
+                            <div className="flex items-center space-x-4 mt-1 text-sm text-zinc-400">
                               {suggestion.metadata.setName && (
-                                <span className='flex items-center space-x-1'>
+                                <span className="flex items-center space-x-1">
                                   <span>Set:</span>
-                                  <span className='font-medium'>{suggestion.metadata.setName}</span>
+                                  <span className="font-medium">
+                                    {suggestion.metadata.setName}
+                                  </span>
                                 </span>
                               )}
                               {suggestion.metadata.category && (
-                                <span className='flex items-center space-x-1'>
+                                <span className="flex items-center space-x-1">
                                   <span>Category:</span>
-                                  <span className='font-medium'>
+                                  <span className="font-medium">
                                     {suggestion.metadata.category}
                                   </span>
                                 </span>
                               )}
                               {suggestion.metadata.count !== undefined && (
-                                <span className='flex items-center space-x-1'>
+                                <span className="flex items-center space-x-1">
                                   <span>{suggestion.metadata.count} items</span>
                                 </span>
                               )}
@@ -205,7 +222,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                         </div>
 
                         {/* Selection Indicator */}
-                        <div className='ml-2 text-cyan-400'>
+                        <div className="ml-2 text-cyan-400">
                           <Check size={16} />
                         </div>
                       </div>
@@ -214,18 +231,24 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
                 </div>
 
                 {/* Keyboard Shortcuts */}
-                <div className='px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-xs text-zinc-400 border-t border-zinc-700/30'>
-                  <div className='flex items-center space-x-4'>
-                    <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>↑↓</kbd>
+                <div className="px-4 py-2 bg-zinc-800/60 backdrop-blur-xl text-xs text-zinc-400 border-t border-zinc-700/30">
+                  <div className="flex items-center space-x-4">
+                    <span className="flex items-center space-x-1">
+                      <kbd className="px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs">
+                        ↑↓
+                      </kbd>
                       <span>Navigate</span>
                     </span>
-                    <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>Enter</kbd>
+                    <span className="flex items-center space-x-1">
+                      <kbd className="px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs">
+                        Enter
+                      </kbd>
                       <span>Select</span>
                     </span>
-                    <span className='flex items-center space-x-1'>
-                      <kbd className='px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs'>Esc</kbd>
+                    <span className="flex items-center space-x-1">
+                      <kbd className="px-1.5 py-0.5 bg-zinc-700/80 rounded text-xs">
+                        Esc
+                      </kbd>
                       <span>Close</span>
                     </span>
                   </div>
@@ -235,7 +258,7 @@ export const EnhancedAutocomplete = forwardRef<HTMLDivElement, EnhancedAutocompl
 
             {/* Error Message */}
             {state.error && state.activeField === field.id && (
-              <div className='mt-2 text-sm text-red-400'>{state.error}</div>
+              <div className="mt-2 text-sm text-red-400">{state.error}</div>
             )}
           </div>
         ))}
@@ -252,7 +275,9 @@ EnhancedAutocomplete.displayName = 'EnhancedAutocomplete';
 export const PremiumAutocomplete = forwardRef<
   HTMLDivElement,
   Omit<EnhancedAutocompleteProps, 'variant'>
->((props, ref) => <EnhancedAutocomplete {...props} ref={ref} variant='premium' />);
+>((props, ref) => (
+  <EnhancedAutocomplete {...props} ref={ref} variant="premium" />
+));
 
 PremiumAutocomplete.displayName = 'PremiumAutocomplete';
 
@@ -262,6 +287,8 @@ PremiumAutocomplete.displayName = 'PremiumAutocomplete';
 export const CompactAutocomplete = forwardRef<
   HTMLDivElement,
   Omit<EnhancedAutocompleteProps, 'variant'>
->((props, ref) => <EnhancedAutocomplete {...props} ref={ref} variant='compact' />);
+>((props, ref) => (
+  <EnhancedAutocomplete {...props} ref={ref} variant="compact" />
+));
 
 CompactAutocomplete.displayName = 'CompactAutocomplete';

@@ -90,7 +90,11 @@ const METADATA_PROPERTIES = [
  * Backend returns format: {success: true, count: number, data: Array}
  */
 export const extractResponseData = <T>(responseData: any): T => {
-  if (responseData && typeof responseData === 'object' && 'data' in responseData) {
+  if (
+    responseData &&
+    typeof responseData === 'object' &&
+    'data' in responseData
+  ) {
     return responseData.data as T;
   }
   return responseData as T;
@@ -107,7 +111,7 @@ export const isMetadataObject = (key: string, value: any): boolean => {
 
   // Check if object contains metadata properties
   if (typeof value === 'object' && value !== null) {
-    const hasMetadataProps = METADATA_PROPERTIES.some(prop => prop in value);
+    const hasMetadataProps = METADATA_PROPERTIES.some((prop) => prop in value);
     if (hasMetadataProps) {
       return true;
     }
@@ -126,7 +130,7 @@ export const mapMongoIds = <T>(data: T): T => {
   }
 
   if (Array.isArray(data)) {
-    return data.map(item => mapMongoIds(item)) as T;
+    return data.map((item) => mapMongoIds(item)) as T;
   }
 
   if (typeof data === 'object') {
@@ -215,7 +219,9 @@ export const transformResponseWithCustom = <T>(
  * Response transformer factory
  * Creates configured transformer functions for reuse
  */
-export const createResponseTransformer = <T>(config: Partial<TransformationConfig>) => {
+export const createResponseTransformer = <T>(
+  config: Partial<TransformationConfig>
+) => {
   return (responseData: any): T => transformResponse<T>(responseData, config);
 };
 

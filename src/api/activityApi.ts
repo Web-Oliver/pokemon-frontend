@@ -13,7 +13,11 @@
  * Context7 Premium Activity Management with advanced filtering and search
  */
 
-import { createResourceOperations, ACTIVITY_CONFIG, idMapper } from './genericApiOperations';
+import {
+  createResourceOperations,
+  ACTIVITY_CONFIG,
+  idMapper,
+} from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 
 // ========== INTERFACES (ISP Compliance) ==========
@@ -141,7 +145,8 @@ export interface ActivityTypesResponse {
 /**
  * Activity creation payload interface
  */
-interface IActivityCreatePayload extends Omit<Activity, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+interface IActivityCreatePayload
+  extends Omit<Activity, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
 
 /**
  * Activity update payload interface
@@ -170,7 +175,9 @@ const activityOperations = createResourceOperations<
  * @param params - Optional filter parameters
  * @returns Promise<Activity[]> - Array of activities
  */
-export const getAllActivities = async (params?: Record<string, unknown>): Promise<Activity[]> => {
+export const getAllActivities = async (
+  params?: Record<string, unknown>
+): Promise<Activity[]> => {
   return activityOperations.getAll(params, {
     transform: idMapper,
   });
@@ -193,10 +200,15 @@ export const getActivityById = async (id: string): Promise<Activity> => {
  * @param activityData - Activity creation data
  * @returns Promise<Activity> - Created activity
  */
-export const createActivity = async (activityData: Partial<Activity>): Promise<Activity> => {
-  const response = await activityOperations.create(activityData as IActivityCreatePayload, {
-    transform: idMapper,
-  });
+export const createActivity = async (
+  activityData: Partial<Activity>
+): Promise<Activity> => {
+  const response = await activityOperations.create(
+    activityData as IActivityCreatePayload,
+    {
+      transform: idMapper,
+    }
+  );
   return response;
 };
 
@@ -252,7 +264,9 @@ export const batchActivityOperation = activityOperations.batchOperation;
  * @param filters - Activity filter parameters
  * @returns Promise<ActivityResponse> - Paginated activity response
  */
-export const getActivities = async (filters: ActivityFilters = {}): Promise<ActivityResponse> => {
+export const getActivities = async (
+  filters: ActivityFilters = {}
+): Promise<ActivityResponse> => {
   const queryParams = {
     ...(filters.limit && { limit: filters.limit.toString() }),
     ...(filters.offset && { offset: filters.offset.toString() }),
@@ -281,10 +295,10 @@ export const getActivities = async (filters: ActivityFilters = {}): Promise<Acti
 export const getRecentActivities = async (
   limit: number = 10
 ): Promise<{ success: boolean; data: Activity[] }> => {
-  const response = await unifiedApiClient.apiGet<{ success: boolean; data: Activity[] }>(
-    `/activities/recent?limit=${limit}`,
-    'recent activities'
-  );
+  const response = await unifiedApiClient.apiGet<{
+    success: boolean;
+    data: Activity[];
+  }>(`/activities/recent?limit=${limit}`, 'recent activities');
 
   return response;
 };
@@ -355,10 +369,10 @@ export const getActivitiesForEntity = async (
   entityType: string,
   entityId: string
 ): Promise<{ success: boolean; data: Activity[] }> => {
-  const response = await unifiedApiClient.apiGet<{ success: boolean; data: Activity[] }>(
-    `/activities/entity/${entityType}/${entityId}`,
-    'activities for entity'
-  );
+  const response = await unifiedApiClient.apiGet<{
+    success: boolean;
+    data: Activity[];
+  }>(`/activities/entity/${entityType}/${entityId}`, 'activities for entity');
 
   return response;
 };
@@ -371,11 +385,10 @@ export const getActivitiesForEntity = async (
 export const markActivityAsRead = async (
   id: string
 ): Promise<{ success: boolean; data: Activity }> => {
-  const response = await unifiedApiClient.apiUpdate<{ success: boolean; data: Activity }>(
-    `/activities/${id}/read`,
-    {},
-    'activity read status'
-  );
+  const response = await unifiedApiClient.apiUpdate<{
+    success: boolean;
+    data: Activity;
+  }>(`/activities/${id}/read`, {}, 'activity read status');
 
   return response;
 };
@@ -388,10 +401,10 @@ export const markActivityAsRead = async (
 export const archiveActivity = async (
   id: string
 ): Promise<{ success: boolean; message: string }> => {
-  const response = await unifiedApiClient.apiDelete<{ success: boolean; message: string }>(
-    `/activities/${id}`,
-    'activity'
-  );
+  const response = await unifiedApiClient.apiDelete<{
+    success: boolean;
+    message: string;
+  }>(`/activities/${id}`, 'activity');
 
   return response;
 };

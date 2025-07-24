@@ -20,7 +20,10 @@ import {
   Control,
 } from 'react-hook-form';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
-import { AutocompleteField, AutocompleteConfig } from '../../hooks/useEnhancedAutocomplete';
+import {
+  AutocompleteField,
+  AutocompleteConfig,
+} from '../../hooks/useEnhancedAutocomplete';
 import { InformationFieldRenderer } from './fields';
 
 interface CardProductInformationSectionProps {
@@ -74,7 +77,9 @@ interface CardProductInformationSectionProps {
   className?: string;
 }
 
-const CardProductInformationSection: React.FC<CardProductInformationSectionProps> = ({
+const CardProductInformationSection: React.FC<
+  CardProductInformationSectionProps
+> = ({
   register,
   errors,
   setValue,
@@ -101,41 +106,41 @@ const CardProductInformationSection: React.FC<CardProductInformationSectionProps
       className={`bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden ${className}`}
     >
       {/* Backdrop gradient */}
-      <div className='absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50'></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
 
       {/* Section Header */}
-      <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center justify-between relative z-10'>
-        <div className='flex items-center'>
-          <SectionIcon className='w-6 h-6 mr-3 text-zinc-300' />
+      <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center justify-between relative z-10">
+        <div className="flex items-center">
+          <SectionIcon className="w-6 h-6 mr-3 text-zinc-300" />
           {sectionTitle}
         </div>
         {currentSetName && (
-          <div className='flex items-center text-sm text-blue-300 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-600/30'>
-            <Search className='w-4 h-4 mr-1' />
+          <div className="flex items-center text-sm text-blue-300 bg-blue-900/50 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-600/30">
+            <Search className="w-4 h-4 mr-1" />
             Filtering by: {currentSetName}
           </div>
         )}
       </h4>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10'>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
         {/* Enhanced Autocomplete for Hierarchical Search */}
-        <div className='md:col-span-2'>
+        <div className="md:col-span-2">
           <EnhancedAutocomplete
             config={autocompleteConfig}
             fields={autocompleteFields}
             onSelectionChange={onSelectionChange}
             onError={onError}
-            variant='premium'
+            variant="premium"
             showMetadata={true}
             allowClear={true}
             disabled={isDisabled}
-            className='premium-search-integration'
+            className="premium-search-integration"
           />
         </div>
 
         {/* Hidden form registrations for autocomplete fields */}
-        <div className='hidden'>
-          {autocompleteFields.map(field => (
+        <div className="hidden">
+          {autocompleteFields.map((field) => (
             <input
               key={field.id}
               {...register(

@@ -11,7 +11,8 @@ export const handleApiError = (error: unknown, userMessage?: string): void => {
   logError('API Error:', error);
 
   // Extract meaningful error message
-  let displayMessage = userMessage || 'An unexpected error occurred. Please try again.';
+  let displayMessage =
+    userMessage || 'An unexpected error occurred. Please try again.';
 
   if (error && typeof error === 'object') {
     const err = error as Record<string, unknown>;
@@ -43,7 +44,10 @@ export const handleApiError = (error: unknown, userMessage?: string): void => {
  * @param message - Success message to display
  * @param options - Optional toast configuration
  */
-export const showSuccessToast = (message: string, options?: Record<string, unknown>): void => {
+export const showSuccessToast = (
+  message: string,
+  options?: Record<string, unknown>
+): void => {
   toast.success(message, {
     duration: 4000,
     position: 'top-right',
@@ -62,7 +66,10 @@ export const showSuccessToast = (message: string, options?: Record<string, unkno
  * @param message - Info message to display
  * @param options - Optional toast configuration
  */
-export const showInfoToast = (message: string, options?: Record<string, unknown>): void => {
+export const showInfoToast = (
+  message: string,
+  options?: Record<string, unknown>
+): void => {
   toast(message, {
     duration: 4000,
     position: 'top-right',
@@ -81,7 +88,10 @@ export const showInfoToast = (message: string, options?: Record<string, unknown>
  * @param message - Warning message to display
  * @param options - Optional toast configuration
  */
-export const showWarningToast = (message: string, options?: Record<string, unknown>): void => {
+export const showWarningToast = (
+  message: string,
+  options?: Record<string, unknown>
+): void => {
   toast(message, {
     duration: 4000,
     position: 'top-right',

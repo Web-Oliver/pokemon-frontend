@@ -55,12 +55,14 @@ interface RawGraphDataPoint {
   count?: number; // Support both formats for backwards compatibility
 }
 
-export const processGraphData = (rawData: RawGraphDataPoint[]): ISalesGraphData[] => {
+export const processGraphData = (
+  rawData: RawGraphDataPoint[]
+): ISalesGraphData[] => {
   if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
     return [];
   }
 
-  return rawData.map(dataPoint => {
+  return rawData.map((dataPoint) => {
     const revenue = Number(dataPoint.sales || dataPoint.revenue) || 0;
     const profit = Number(dataPoint.profit) || 0;
     const itemsSold = Number(dataPoint.itemCount || dataPoint.count) || 0;
@@ -98,7 +100,7 @@ export const aggregateByCategory = (sales: ISale[]) => {
     sealedProduct: { count: 0, revenue: 0, profit: 0 },
   };
 
-  sales.forEach(sale => {
+  sales.forEach((sale) => {
     // Convert backend values to camelCase for internal use
     let categoryKey: keyof typeof categoryData;
     switch (sale.itemCategory) {
@@ -188,7 +190,7 @@ export const filterSalesByDateRange = (
     return [];
   }
 
-  return sales.filter(sale => {
+  return sales.filter((sale) => {
     const saleDate = new Date(sale.dateSold);
 
     if (startDate && saleDate < new Date(startDate)) {
@@ -227,7 +229,8 @@ export const calculateKPIs = (sales: ISale[]) => {
   const averageSalePrice = totalRevenue > 0 ? totalRevenue / totalItems : 0;
 
   // Calculate average margin: (profit / revenue) * 100
-  const averageMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+  const averageMargin =
+    totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
   const profitabilityRatio = averageMargin; // Same as average margin
 
   const categoryBreakdown = aggregateByCategory(sales);

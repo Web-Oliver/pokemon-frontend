@@ -23,7 +23,11 @@ const logger = createApiLogger('COLLECTION API');
  * @returns The actual data array/object
  */
 const _extractResponseData = (responseData: any): any => {
-  if (responseData && typeof responseData === 'object' && 'data' in responseData) {
+  if (
+    responseData &&
+    typeof responseData === 'object' &&
+    'data' in responseData
+  ) {
     return responseData.data;
   }
   return responseData;
@@ -71,7 +75,7 @@ const isMetadataObject = (key: string, value: any): boolean => {
       'psa_8',
       'psa_9',
       'psa_10',
-    ].some(prop => prop in value);
+    ].some((prop) => prop in value);
 
     if (hasMetadataProps) {
       return true;
@@ -96,18 +100,22 @@ const _mapItemIds = (item: unknown): unknown => {
 
     // Debug: Check for duplicate IDs in arrays (collection items)
     const ids = mappedArray
-      .filter(item => item && typeof item === 'object')
-      .map(item => (item as any).id)
-      .filter(id => id !== undefined);
+      .filter((item) => item && typeof item === 'object')
+      .map((item) => (item as any).id)
+      .filter((id) => id !== undefined);
 
     const uniqueIds = new Set(ids);
     if (ids.length !== uniqueIds.size) {
       const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
-      console.error('[COLLECTION API] Duplicate IDs detected in array:', duplicates, {
-        totalItems: ids.length,
-        uniqueItems: uniqueIds.size,
-        items: mappedArray,
-      });
+      console.error(
+        '[COLLECTION API] Duplicate IDs detected in array:',
+        duplicates,
+        {
+          totalItems: ids.length,
+          uniqueItems: uniqueIds.size,
+          items: mappedArray,
+        }
+      );
     }
 
     return mappedArray;
@@ -122,17 +130,22 @@ const _mapItemIds = (item: unknown): unknown => {
       // Keep _id for debugging but ensure id is primary
     } else if (!newItem.id) {
       // Log warning for items without any ID - this shouldn't happen with valid MongoDB documents
-      console.warn('[COLLECTION API] Item found without _id or id field:', newItem);
+      console.warn(
+        '[COLLECTION API] Item found without _id or id field:',
+        newItem
+      );
     }
 
     // Only recursively process specific nested collection-related objects and arrays
     // Avoid processing metadata objects like saleDetails, psaGrades, etc.
-    Object.keys(newItem).forEach(key => {
+    Object.keys(newItem).forEach((key) => {
       const value = newItem[key];
 
       if (Array.isArray(value)) {
         // Process arrays (like images, priceHistory)
-        newItem[key] = value.map((arrayItem: unknown) => _mapItemIds(arrayItem));
+        newItem[key] = value.map((arrayItem: unknown) =>
+          _mapItemIds(arrayItem)
+        );
       } else if (
         typeof value === 'object' &&
         value !== null &&
@@ -183,7 +196,8 @@ export const getPsaGradedCards = async (
     },
   });
   logger.logResponse('getPsaGradedCards', responseData);
-  const mappedData = ResponseTransformers.standard<IPsaGradedCard[]>(responseData);
+  const mappedData =
+    ResponseTransformers.standard<IPsaGradedCard[]>(responseData);
   logger.logProcessedData('getPsaGradedCards', mappedData, 'mapped data');
   logger.logProcessedData(
     'getPsaGradedCards',
@@ -198,7 +212,9 @@ export const getPsaGradedCards = async (
  * @param id - PSA graded card ID
  * @returns Promise<IPsaGradedCard> - Single PSA graded card
  */
-export const getPsaGradedCardById = async (id: string): Promise<IPsaGradedCard> => {
+export const getPsaGradedCardById = async (
+  id: string
+): Promise<IPsaGradedCard> => {
   const responseData = await unifiedApiClient.get(`/psa-graded-cards/${id}`);
   return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
@@ -225,7 +241,10 @@ export const updatePsaGradedCard = async (
   id: string,
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
-  const responseData = await unifiedApiClient.put(`/psa-graded-cards/${id}`, data);
+  const responseData = await unifiedApiClient.put(
+    `/psa-graded-cards/${id}`,
+    data
+  );
   return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
@@ -268,7 +287,9 @@ export interface RawCardsParams {
  * @param params - Optional filter parameters
  * @returns Promise<IRawCard[]> - Array of raw cards
  */
-export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> => {
+export const getRawCards = async (
+  params?: RawCardsParams
+): Promise<IRawCard[]> => {
   logger.logApiCall('getRawCards', params);
   const responseData = await unifiedApiClient.get('/raw-cards', {
     params: {
@@ -310,7 +331,9 @@ export const getRawCardById = async (id: string): Promise<IRawCard> => {
  * @param data - Raw card data
  * @returns Promise<IRawCard> - Created raw card
  */
-export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> => {
+export const createRawCard = async (
+  data: Partial<IRawCard>
+): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.post('/raw-cards', data);
   return ResponseTransformers.standard<IRawCard>(responseData);
 };
@@ -321,7 +344,10 @@ export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> 
  * @param data - Updated raw card data
  * @returns Promise<IRawCard> - Updated raw card
  */
-export const updateRawCard = async (id: string, data: Partial<IRawCard>): Promise<IRawCard> => {
+export const updateRawCard = async (
+  id: string,
+  data: Partial<IRawCard>
+): Promise<IRawCard> => {
   const responseData = await unifiedApiClient.put(`/raw-cards/${id}`, data);
   return ResponseTransformers.standard<IRawCard>(responseData);
 };
@@ -341,8 +367,14 @@ export const deleteRawCard = async (id: string): Promise<void> => {
  * @param saleDetails - Sale details
  * @returns Promise<IRawCard> - Updated raw card
  */
-export const markRawCardSold = async (id: string, saleDetails: ISaleDetails): Promise<IRawCard> => {
-  const responseData = await unifiedApiClient.post(`/raw-cards/${id}/mark-sold`, saleDetails);
+export const markRawCardSold = async (
+  id: string,
+  saleDetails: ISaleDetails
+): Promise<IRawCard> => {
+  const responseData = await unifiedApiClient.post(
+    `/raw-cards/${id}/mark-sold`,
+    saleDetails
+  );
   return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
@@ -371,7 +403,8 @@ export const getSealedProductCollection = async (
     },
   });
   logger.logResponse('getSealedProductCollection', responseData);
-  const mappedData = ResponseTransformers.standard<ISealedProduct[]>(responseData);
+  const mappedData =
+    ResponseTransformers.standard<ISealedProduct[]>(responseData);
   logger.logProcessedData(
     'getSealedProductCollection',
     Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
@@ -385,7 +418,9 @@ export const getSealedProductCollection = async (
  * @param id - Sealed product ID
  * @returns Promise<ISealedProduct> - Single sealed product
  */
-export const getSealedProductById = async (id: string): Promise<ISealedProduct> => {
+export const getSealedProductById = async (
+  id: string
+): Promise<ISealedProduct> => {
   const responseData = await unifiedApiClient.get(`/sealed-products/${id}`);
   return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
@@ -412,7 +447,10 @@ export const updateSealedProduct = async (
   id: string,
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.put(`/sealed-products/${id}`, data);
+  const responseData = await unifiedApiClient.put(
+    `/sealed-products/${id}`,
+    data
+  );
   return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
 
@@ -435,6 +473,9 @@ export const markSealedProductSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.post(`/sealed-products/${id}/mark-sold`, saleDetails);
+  const responseData = await unifiedApiClient.post(
+    `/sealed-products/${id}/mark-sold`,
+    saleDetails
+  );
   return ResponseTransformers.standard<ISealedProduct>(responseData);
 };

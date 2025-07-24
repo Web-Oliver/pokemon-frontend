@@ -12,7 +12,10 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import { createResourceOperations, AUCTION_CONFIG } from './genericApiOperations';
+import {
+  createResourceOperations,
+  AUCTION_CONFIG,
+} from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { IAuction } from '../domain/models/auction';
 
@@ -130,10 +133,14 @@ export const addItemToAuction = async (
   id: string,
   itemData: AddItemToAuctionData
 ): Promise<IAuction> => {
-  return await unifiedApiClient.post<IAuction>(`/auctions/${id}/items`, itemData, {
-    operation: 'add item to auction',
-    successMessage: 'Item added to auction successfully!',
-  });
+  return await unifiedApiClient.post<IAuction>(
+    `/auctions/${id}/items`,
+    itemData,
+    {
+      operation: 'add item to auction',
+      successMessage: 'Item added to auction successfully!',
+    }
+  );
 };
 
 /**
@@ -150,13 +157,16 @@ export const removeItemFromAuction = async (
     itemCategory: itemCategory || 'PsaGradedCard',
   };
 
-  return await unifiedApiClient.delete<IAuction>(`/auctions/${id}/remove-item`, {
-    operation: 'remove item from auction',
-    successMessage: 'Item removed from auction successfully!',
-    // Pass data in config for DELETE request
-    optimization: { enableCache: false },
-    data: payload,
-  });
+  return await unifiedApiClient.delete<IAuction>(
+    `/auctions/${id}/remove-item`,
+    {
+      operation: 'remove item from auction',
+      successMessage: 'Item removed from auction successfully!',
+      // Pass data in config for DELETE request
+      optimization: { enableCache: false },
+      data: payload,
+    }
+  );
 };
 
 /**
@@ -167,8 +177,12 @@ export const markAuctionItemSold = async (
   id: string,
   saleData: { itemId: string; itemCategory: string; soldPrice: number }
 ): Promise<IAuction> => {
-  return await unifiedApiClient.put<IAuction>(`/auctions/${id}/items/sold`, saleData, {
-    operation: 'mark auction item as sold',
-    successMessage: 'Auction item marked as sold! 💰',
-  });
+  return await unifiedApiClient.put<IAuction>(
+    `/auctions/${id}/items/sold`,
+    saleData,
+    {
+      operation: 'mark auction item as sold',
+      successMessage: 'Auction item marked as sold! 💰',
+    }
+  );
 };

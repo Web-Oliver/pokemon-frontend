@@ -63,7 +63,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   };
 
   const currentVariant = variantStyles[variant];
-  const IconComponent = icon === 'trash' ? Trash2 : icon === 'warning' ? AlertTriangle : null;
+  const IconComponent =
+    icon === 'trash' ? Trash2 : icon === 'warning' ? AlertTriangle : null;
 
   const handleConfirm = () => {
     if (!isLoading) {
@@ -78,9 +79,9 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} title={title} maxWidth='lg'>
+    <Modal isOpen={isOpen} onClose={handleCancel} title={title} maxWidth="lg">
       {/* Header with Icon */}
-      <div className='flex items-start space-x-4 mb-6'>
+      <div className="flex items-start space-x-4 mb-6">
         {/* Icon */}
         {IconComponent && (
           <div
@@ -91,20 +92,20 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         )}
 
         {/* Content */}
-        <div className='flex-1'>
-          <p className='text-sm text-slate-600 dark:text-slate-300 leading-relaxed'>
+        <div className="flex-1">
+          <p className="text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300 dark:text-slate-300 leading-relaxed">
             {description}
           </p>
         </div>
       </div>
 
       {/* Actions */}
-      <div className='flex justify-end space-x-3 pt-4 border-t border-slate-200/50 dark:border-slate-700/50'>
+      <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 dark:border-slate-700/50">
         {/* Cancel Button */}
         <button
           onClick={handleCancel}
           disabled={isLoading}
-          className='px-6 py-2.5 text-sm font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
+          className="px-6 py-2.5 text-sm font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-500/50 transition-all duration-300 backdrop-blur-sm hover:shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {cancelText}
         </button>
@@ -120,8 +121,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           }`}
         >
           {isLoading ? (
-            <div className='flex items-center space-x-2'>
-              <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin'></div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               <span>Processing...</span>
             </div>
           ) : (

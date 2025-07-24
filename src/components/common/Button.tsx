@@ -78,7 +78,11 @@ const Button: React.FC<ButtonProps> = ({
             : 'default';
 
   return (
-    <button className={finalClassName} disabled={disabled || loading} {...props}>
+    <button
+      className={finalClassName}
+      disabled={disabled || loading}
+      {...props}
+    >
       {/* Context7 Premium Shimmer Effect */}
       <PremiumShimmer />
 
@@ -87,30 +91,30 @@ const Button: React.FC<ButtonProps> = ({
 
       {/* Premium Loading Spinner */}
       {loading && (
-        <div className='relative z-10 mr-3'>
-          <svg className='w-5 h-5 animate-spin' fill='none' viewBox='0 0 24 24'>
+        <div className="relative z-10 mr-3">
+          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle
-              className='opacity-30'
-              cx='12'
-              cy='12'
-              r='10'
-              stroke='currentColor'
-              strokeWidth='3'
+              className="opacity-30"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="3"
             />
             <path
-              className='opacity-90'
-              fill='currentColor'
-              d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+              className="opacity-90"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
         </div>
       )}
 
       {/* Button Content */}
-      <span className='relative z-10'>{children}</span>
+      <span className="relative z-10">{children}</span>
 
       {/* Context7 Premium Gradient Overlay */}
-      <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </button>
   );
 };

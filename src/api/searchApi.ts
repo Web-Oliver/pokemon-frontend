@@ -48,7 +48,11 @@ const createCacheKey = (params: Record<string, unknown>): string => {
   return JSON.stringify(params, Object.keys(params).sort());
 };
 
-const isValidCacheEntry = (entry: { data: unknown; timestamp: number; ttl: number }): boolean => {
+const isValidCacheEntry = (entry: {
+  data: unknown;
+  timestamp: number;
+  ttl: number;
+}): boolean => {
   return entry && Date.now() - entry.timestamp < entry.ttl;
 };
 
@@ -84,7 +88,9 @@ export const searchCardsWithCache = async (
 
   // Check pending requests (deduplication)
   if (pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+    return pendingRequests.get(cacheKey) as Promise<
+      OptimizedSearchResponse<any>
+    >;
   }
 
   // Make request using consolidatedSearch
@@ -125,7 +131,9 @@ export const searchSetsWithCache = async (
 
   // Check pending requests (deduplication)
   if (pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+    return pendingRequests.get(cacheKey) as Promise<
+      OptimizedSearchResponse<any>
+    >;
   }
 
   // Make request using consolidatedSearch
@@ -166,7 +174,9 @@ export const searchProductsWithCache = async (
 
   // Check pending requests (deduplication)
   if (pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey) as Promise<OptimizedSearchResponse<any>>;
+    return pendingRequests.get(cacheKey) as Promise<
+      OptimizedSearchResponse<any>
+    >;
   }
 
   // Make request using consolidatedSearch
@@ -371,7 +381,13 @@ export const searchApi = {
       };
     }
 
-    const cacheKey = createCacheKey({ query: processedQuery, types, limit, page, filters });
+    const cacheKey = createCacheKey({
+      query: processedQuery,
+      types,
+      limit,
+      page,
+      filters,
+    });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
       return cachedEntry.data as any;
@@ -394,7 +410,9 @@ export const searchApi = {
       }
 
       try {
-        const response = await unifiedApiClient.get(`/search?${queryParams.toString()}`);
+        const response = await unifiedApiClient.get(
+          `/search?${queryParams.toString()}`
+        );
         const data = response;
 
         // Cache the result
@@ -441,7 +459,12 @@ export const searchApi = {
       };
     }
 
-    const cacheKey = createCacheKey({ query: processedQuery, types, limit, endpoint: 'suggest' });
+    const cacheKey = createCacheKey({
+      query: processedQuery,
+      types,
+      limit,
+      endpoint: 'suggest',
+    });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
       return cachedEntry.data as any;
@@ -459,7 +482,9 @@ export const searchApi = {
       });
 
       try {
-        const response = await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`);
+        const response = await unifiedApiClient.get(
+          `/search/suggest?${queryParams.toString()}`
+        );
         const data = response;
 
         // Cache the result
@@ -500,7 +525,12 @@ export const searchApi = {
     minPsaPopulation?: number;
     limit?: number;
     page?: number;
-  }): Promise<{ success: boolean; query: string; count: number; data: CardResult[] }> {
+  }): Promise<{
+    success: boolean;
+    query: string;
+    count: number;
+    data: CardResult[];
+  }> {
     const { query, limit = 20, page = 1, ...filters } = params;
 
     const processedQuery = query.trim();
@@ -544,7 +574,9 @@ export const searchApi = {
       });
 
       try {
-        const response = await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`);
+        const response = await unifiedApiClient.get(
+          `/search/cards?${queryParams.toString()}`
+        );
         const data = response;
 
         // Cache the result
@@ -584,7 +616,12 @@ export const searchApi = {
     availableOnly?: boolean;
     limit?: number;
     page?: number;
-  }): Promise<{ success: boolean; query: string; count: number; data: ProductResult[] }> {
+  }): Promise<{
+    success: boolean;
+    query: string;
+    count: number;
+    data: ProductResult[];
+  }> {
     const { query, limit = 20, page = 1, ...filters } = params;
 
     const processedQuery = query.trim();
@@ -628,7 +665,9 @@ export const searchApi = {
       });
 
       try {
-        const response = await unifiedApiClient.get(`/search/products?${queryParams.toString()}`);
+        const response = await unifiedApiClient.get(
+          `/search/products?${queryParams.toString()}`
+        );
         const data = response;
 
         // Cache the result
@@ -668,7 +707,12 @@ export const searchApi = {
     minCardCount?: number;
     limit?: number;
     page?: number;
-  }): Promise<{ success: boolean; query: string; count: number; data: SetResult[] }> {
+  }): Promise<{
+    success: boolean;
+    query: string;
+    count: number;
+    data: SetResult[];
+  }> {
     const { query, limit = 20, page = 1, ...filters } = params;
 
     const processedQuery = query.trim();
@@ -712,7 +756,9 @@ export const searchApi = {
       });
 
       try {
-        const response = await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`);
+        const response = await unifiedApiClient.get(
+          `/search/sets?${queryParams.toString()}`
+        );
         const data = response;
 
         // Cache the result
@@ -774,7 +820,7 @@ export const searchApi = {
     // Word boundary matching
     const words = queryLower.split(' ');
     const textWords = primaryText.split(' ');
-    const wordMatches = words.filter(word =>
+    const wordMatches = words.filter((word) =>
       textWords.some((textWord: string) => textWord.includes(word))
     ).length;
     score += (wordMatches / words.length) * 30;
@@ -814,7 +860,8 @@ export const searchApi = {
 
     return (
       primaryText === queryLower ||
-      primaryText.replace(/[^a-z0-9]/g, '') === queryLower.replace(/[^a-z0-9]/g, '')
+      primaryText.replace(/[^a-z0-9]/g, '') ===
+        queryLower.replace(/[^a-z0-9]/g, '')
     );
   },
 };
@@ -822,7 +869,9 @@ export const searchApi = {
 /**
  * Get all available product categories from the backend (actual enum values)
  */
-export const getProductCategories = async (): Promise<Array<{ value: string; label: string }>> => {
+export const getProductCategories = async (): Promise<
+  Array<{ value: string; label: string }>
+> => {
   // Use the actual backend enum categories from SealedProduct model
   return [
     { value: 'Blisters', label: 'Blisters' },

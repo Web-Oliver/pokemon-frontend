@@ -56,11 +56,11 @@ const ThemeToggle: React.FC = () => {
     },
   ];
 
-  const currentTheme = themes.find(t => t.name === theme) || themes[0];
+  const currentTheme = themes.find((t) => t.name === theme) || themes[0];
   const Icon = currentTheme.icon;
 
   const handleThemeChange = () => {
-    const currentIndex = themes.findIndex(t => t.name === theme);
+    const currentIndex = themes.findIndex((t) => t.name === theme);
     const nextIndex = (currentIndex + 1) % themes.length;
     setTheme(themes[nextIndex].name);
   };
@@ -72,9 +72,10 @@ const ThemeToggle: React.FC = () => {
         onClick={handleThemeChange}
         className={`
           relative w-10 h-10 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95
-          ${resolvedTheme === 'dark' 
-            ? `${currentTheme.bgDark} border border-zinc-700/50 shadow-lg hover:shadow-xl` 
-            : `${currentTheme.bgLight} border border-white/50 shadow-lg hover:shadow-xl`
+          ${
+            resolvedTheme === 'dark'
+              ? `${currentTheme.bgDark} border border-zinc-700/50 shadow-lg hover:shadow-xl`
+              : `${currentTheme.bgLight} border border-white/50 shadow-lg hover:shadow-xl`
           }
           group-hover:shadow-2xl backdrop-blur-sm
         `}
@@ -82,56 +83,69 @@ const ThemeToggle: React.FC = () => {
         title={currentTheme.label}
       >
         {/* Animated Background Glow */}
-        <div className={`
+        <div
+          className={`
           absolute inset-0 rounded-xl bg-gradient-to-r ${currentTheme.gradient} 
           opacity-0 group-hover:opacity-20 transition-opacity duration-300
-        `} />
-        
+        `}
+        />
+
         {/* Icon */}
-        <Icon 
+        <Icon
           className={`
             relative z-10 w-5 h-5 transition-all duration-300
             ${resolvedTheme === 'dark' ? currentTheme.textDark : currentTheme.textLight}
             group-hover:scale-110
-          `} 
+          `}
         />
 
         {/* Sparkle Effect on Hover */}
-        <Sparkles className={`
+        <Sparkles
+          className={`
           absolute top-0 right-0 w-3 h-3 transition-all duration-300 opacity-0 
           ${resolvedTheme === 'dark' ? 'text-cyan-400' : 'text-amber-400'}
           group-hover:opacity-100 group-hover:scale-110 group-hover:animate-pulse
-        `} />
+        `}
+        />
       </button>
 
       {/* Tooltip */}
-      <div className={`
+      <div
+        className={`
         absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 
         text-xs font-medium rounded-lg opacity-0 pointer-events-none transition-all duration-300
         group-hover:opacity-100 group-hover:translate-y-0 translate-y-1
-        ${resolvedTheme === 'dark' 
-          ? 'bg-zinc-800/95 text-zinc-200 border border-zinc-700/50' 
-          : 'bg-white/95 text-zinc-700 border border-zinc-200/50'
+        ${
+          resolvedTheme === 'dark'
+            ? 'bg-zinc-800/95 text-zinc-200 border border-zinc-700/50'
+            : 'bg-white/95 text-zinc-700 border border-zinc-200/50'
         }
         backdrop-blur-sm shadow-lg whitespace-nowrap z-50
-      `}>
+      `}
+      >
         {currentTheme.label}
-        <div className={`
+        <div
+          className={`
           absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45
           ${resolvedTheme === 'dark' ? 'bg-zinc-800/95 border-r border-b border-zinc-700/50' : 'bg-white/95 border-r border-b border-zinc-200/50'}
-        `} />
+        `}
+        />
       </div>
 
       {/* System Theme Indicator */}
       {theme === 'system' && (
-        <div className={`
+        <div
+          className={`
           absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse
           ${resolvedTheme === 'dark' ? 'bg-emerald-400' : 'bg-emerald-500'}
-        `}>
-          <div className={`
+        `}
+        >
+          <div
+            className={`
             absolute inset-0 rounded-full animate-ping
             ${resolvedTheme === 'dark' ? 'bg-emerald-400' : 'bg-emerald-500'}
-          `} />
+          `}
+          />
         </div>
       )}
     </div>

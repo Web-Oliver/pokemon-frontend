@@ -17,7 +17,11 @@ import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
-export type TabType = 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
+export type TabType =
+  | 'psa-graded'
+  | 'raw-cards'
+  | 'sealed-products'
+  | 'sold-items';
 
 export interface TabConfig {
   id: TabType;
@@ -36,7 +40,10 @@ export interface CollectionTabsProps {
   loading: boolean;
   error: string | null;
   onAddNewItem: () => void;
-  onViewItemDetail: (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => void;
+  onViewItemDetail: (
+    item: CollectionItem,
+    type: 'psa' | 'raw' | 'sealed'
+  ) => void;
   onMarkAsSold: (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => void;
 }
 
@@ -84,9 +91,15 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
   const getTabData = () => {
     switch (activeTab) {
       case 'psa-graded':
-        return { data: psaCards, emptyMessage: 'No PSA graded cards in your collection yet.' };
+        return {
+          data: psaCards,
+          emptyMessage: 'No PSA graded cards in your collection yet.',
+        };
       case 'raw-cards':
-        return { data: rawCards, emptyMessage: 'No raw cards in your collection yet.' };
+        return {
+          data: rawCards,
+          emptyMessage: 'No raw cards in your collection yet.',
+        };
       case 'sealed-products':
         return {
           data: sealedProducts,
@@ -100,7 +113,10 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   // Determine item type based on tab and item properties
-  const getItemType = (item: any, activeTab: string): 'psa' | 'raw' | 'sealed' => {
+  const getItemType = (
+    item: any,
+    activeTab: string
+  ): 'psa' | 'raw' | 'sealed' => {
     if (activeTab === 'psa-graded') {
       return 'psa';
     }
@@ -138,23 +154,25 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
   const renderTabContent = () => {
     if (loading) {
       return (
-        <div className='flex justify-center items-center py-12'>
-          <LoadingSpinner size='lg' />
+        <div className="flex justify-center items-center py-12">
+          <LoadingSpinner size="lg" />
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className='text-center py-12'>
-          <div className='text-red-500 mb-4'>
-            <Package className='mx-auto w-12 h-12' />
+        <div className="text-center py-12">
+          <div className="text-red-500 mb-4">
+            <Package className="mx-auto w-12 h-12" />
           </div>
-          <h3 className='text-lg font-medium text-zinc-100 mb-2'>Error Loading Collection</h3>
-          <p className='text-zinc-400 mb-4'>{error}</p>
+          <h3 className="text-lg font-medium text-zinc-100 mb-2">
+            Error Loading Collection
+          </h3>
+          <p className="text-zinc-400 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors'
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Retry
           </button>
@@ -166,19 +184,24 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
     if (data.length === 0) {
       return (
-        <div className='text-center py-12'>
-          <div className='text-gray-400 mb-4'>
-            {React.createElement(tabs.find(tab => tab.id === activeTab)?.icon || Package, {
-              className: 'mx-auto w-12 h-12',
-            })}
+        <div className="text-center py-12">
+          <div className="text-gray-400 dark:text-zinc-600 dark:text-zinc-500 mb-4">
+            {React.createElement(
+              tabs.find((tab) => tab.id === activeTab)?.icon || Package,
+              {
+                className: 'mx-auto w-12 h-12',
+              }
+            )}
           </div>
-          <h3 className='text-lg font-medium text-zinc-100 mb-2'>No Items Found</h3>
-          <p className='text-zinc-400 mb-4'>{emptyMessage}</p>
+          <h3 className="text-lg font-medium text-zinc-100 mb-2">
+            No Items Found
+          </h3>
+          <p className="text-zinc-400 mb-4">{emptyMessage}</p>
           <button
             onClick={onAddNewItem}
-            className='bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center'
+            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center"
           >
-            <Plus className='w-4 h-4 mr-2' />
+            <Plus className="w-4 h-4 mr-2" />
             Add First Item
           </button>
         </div>
@@ -216,9 +239,9 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
     // Render collection items grid with guaranteed unique keys and futuristic animations
     return (
       <motion.div
-        className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-8xl mx-auto'
-        initial='hidden'
-        animate='show'
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-8xl mx-auto"
+        initial="hidden"
+        animate="show"
         variants={{
           hidden: { opacity: 0 },
           show: {
@@ -271,7 +294,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
                 },
               }}
               viewport={{ once: true, margin: '-50px' }}
-              className='mx-auto w-full max-w-sm'
+              className="mx-auto w-full max-w-sm"
             >
               <CollectionItemCard
                 item={item}
@@ -288,40 +311,32 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   return (
-    <div className='bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden'>
-      <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5'></div>
+    <div className="bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
 
-      <div className='relative z-10'>
+      <div className="relative z-10">
         {/* Tab Navigation */}
-        <div className='border-b border-zinc-700/50 px-8 pt-8'>
-          <nav className='-mb-px flex space-x-1'>
-            {tabs.map(tab => {
+        <div className="border-b border-zinc-700/50 px-8 pt-8">
+          <nav className="-mb-px flex space-x-1">
+            {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${
-                    isActive
-                      ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg'
-                      : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'
-                  }`}
+                  className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${isActive ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg' : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'}`}
                 >
-                  <div className='flex items-center space-x-3'>
+                  <div className="flex items-center space-x-3">
                     <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        isActive
-                          ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110'
-                          : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'
-                      }`}
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'}`}
                     >
-                      <Icon className='w-4 h-4' />
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <span className='tracking-wide'>{tab.name}</span>
+                    <span className="tracking-wide">{tab.name}</span>
                   </div>
                   {isActive && (
-                    <div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse'></div>
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse"></div>
                   )}
                 </button>
               );
@@ -330,7 +345,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className='p-10'>{renderTabContent()}</div>
+        <div className="p-10">{renderTabContent()}</div>
       </div>
     </div>
   );

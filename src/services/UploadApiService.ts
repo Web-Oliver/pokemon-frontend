@@ -4,8 +4,8 @@
  * Concrete implementation of IUploadApiService using existing API modules
  */
 
-import { IUploadApiService } from '../interfaces/api/IUploadApiService';
 import { uploadMultipleImages } from '../api/uploadApi';
+import { IUploadApiService } from '../interfaces/api/IUploadApiService';
 
 /**
  * Concrete implementation of Upload API Service

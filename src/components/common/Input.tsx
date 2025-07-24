@@ -77,20 +77,27 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <PremiumWrapper fullWidth={fullWidth} error={!!error}>
         {label && <PremiumLabel htmlFor={inputId}>{label}</PremiumLabel>}
 
-        <div className={`${inputWithIconClasses} ${fullWidth ? 'w-full' : ''} relative`}>
+        <div
+          className={`${inputWithIconClasses} ${fullWidth ? 'w-full' : ''} relative`}
+        >
           {startIcon && (
-            <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10'>
-              <div className='h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+              <div className="h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm">
                 {startIcon}
               </div>
             </div>
           )}
 
-          <input ref={ref} id={inputId} className={finalInputClassName} {...props} />
+          <input
+            ref={ref}
+            id={inputId}
+            className={finalInputClassName}
+            {...props}
+          />
 
           {endIcon && (
-            <div className='absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-10'>
-              <div className='h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'>
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-10">
+              <div className="h-5 w-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110 group-focus-within:drop-shadow-sm">
                 {endIcon}
               </div>
             </div>

@@ -23,8 +23,15 @@ export interface UseAuctionActions {
   createAuction: (_data: Partial<IAuction>) => Promise<IAuction>;
   updateAuction: (_id: string, _data: Partial<IAuction>) => Promise<void>;
   deleteAuction: (_id: string) => Promise<void>;
-  addItemToAuction: (_id: string, _itemData: auctionsApi.AddItemToAuctionData) => Promise<void>;
-  removeItemFromAuction: (_id: string, _itemId: string, _itemCategory?: string) => Promise<void>;
+  addItemToAuction: (
+    _id: string,
+    _itemData: auctionsApi.AddItemToAuctionData
+  ) => Promise<void>;
+  removeItemFromAuction: (
+    _id: string,
+    _itemId: string,
+    _itemCategory?: string
+  ) => Promise<void>;
   markAuctionItemSold: (
     _id: string,
     _saleData: { itemId: string; itemCategory: string; soldPrice: number }
@@ -50,20 +57,23 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Fetch all auctions with optional filters
    */
-  const fetchAuctions = useCallback(async (params?: auctionsApi.AuctionsParams) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const fetchedAuctions = await auctionsApi.getAuctions(params);
-      setAuctions(fetchedAuctions);
-    } catch (err) {
-      const errorMessage = 'Failed to fetch auctions';
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchAuctions = useCallback(
+    async (params?: auctionsApi.AuctionsParams) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const fetchedAuctions = await auctionsApi.getAuctions(params);
+        setAuctions(fetchedAuctions);
+      } catch (err) {
+        const errorMessage = 'Failed to fetch auctions';
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Fetch auction by ID
@@ -86,22 +96,25 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Create new auction
    */
-  const createAuction = useCallback(async (data: Partial<IAuction>): Promise<IAuction> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const newAuction = await auctionsApi.createAuction(data);
-      setAuctions(prev => [...prev, newAuction]);
-      return newAuction;
-    } catch (err) {
-      const errorMessage = 'Failed to create auction';
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const createAuction = useCallback(
+    async (data: Partial<IAuction>): Promise<IAuction> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const newAuction = await auctionsApi.createAuction(data);
+        setAuctions((prev) => [...prev, newAuction]);
+        return newAuction;
+      } catch (err) {
+        const errorMessage = 'Failed to create auction';
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Update auction
@@ -140,7 +153,9 @@ export const useAuction = (): UseAuctionHook => {
         console.log('[useAuction] Deleting auction with ID:', id);
         await auctionsApi.deleteAuction(id);
 
-        console.log('[useAuction] Auction deleted successfully, refetching all auctions...');
+        console.log(
+          '[useAuction] Auction deleted successfully, refetching all auctions...'
+        );
 
         // Clear current auction if it's the one being deleted
         if ((currentAuction?.id || currentAuction?._id) === id) {
@@ -194,9 +209,15 @@ export const useAuction = (): UseAuctionHook => {
       try {
         setLoading(true);
         setError(null);
-        console.log('[useAuction] Removing item:', { id, itemId, itemCategory });
+        console.log('[useAuction] Removing item:', {
+          id,
+          itemId,
+          itemCategory,
+        });
         await auctionsApi.removeItemFromAuction(id, itemId, itemCategory);
-        console.log('[useAuction] Item removed successfully, refetching all auction data...');
+        console.log(
+          '[useAuction] Item removed successfully, refetching all auction data...'
+        );
 
         // CRITICAL FIX: Refetch both current auction AND auctions list to invalidate cache
         await Promise.all([
@@ -206,7 +227,9 @@ export const useAuction = (): UseAuctionHook => {
       } catch (err: any) {
         // CRITICAL FIX: If we get 404, the item is already gone, so still refresh the cache
         if (err?.response?.status === 404) {
-          console.log('[useAuction] Item already removed (404), refreshing cache...');
+          console.log(
+            '[useAuction] Item already removed (404), refreshing cache...'
+          );
           await Promise.all([
             fetchAuctionById(id), // Update current auction
             fetchAuctions(), // Update auctions list cache
@@ -227,7 +250,10 @@ export const useAuction = (): UseAuctionHook => {
    * Mark auction item as sold
    */
   const markAuctionItemSold = useCallback(
-    async (id: string, saleData: { itemId: string; itemCategory: string; soldPrice: number }) => {
+    async (
+      id: string,
+      saleData: { itemId: string; itemCategory: string; soldPrice: number }
+    ) => {
       try {
         setLoading(true);
         setError(null);
@@ -268,7 +294,9 @@ export const useAuction = (): UseAuctionHook => {
 
         // Update the current auction with the generated post
         if ((currentAuction?.id || currentAuction?._id) === id) {
-          setCurrentAuction(prev => (prev ? { ...prev, generatedFacebookPost: postText } : null));
+          setCurrentAuction((prev) =>
+            prev ? { ...prev, generatedFacebookPost: postText } : null
+          );
         }
 
         return postText;
@@ -287,40 +315,46 @@ export const useAuction = (): UseAuctionHook => {
   /**
    * Download auction text file
    */
-  const downloadAuctionTextFile = useCallback(async (id: string): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const blob = await exportApi.getAuctionFacebookTextFile(id);
-      const filename = `auction-${id}-facebook-post.txt`;
-      exportApi.downloadBlob(blob, filename);
-    } catch (err) {
-      const errorMessage = `Failed to download text file for auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const downloadAuctionTextFile = useCallback(
+    async (id: string): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const blob = await exportApi.getAuctionFacebookTextFile(id);
+        const filename = `auction-${id}-facebook-post.txt`;
+        exportApi.downloadBlob(blob, filename);
+      } catch (err) {
+        const errorMessage = `Failed to download text file for auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Download auction images zip
    */
-  const downloadAuctionImagesZip = useCallback(async (id: string): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const blob = await exportApi.zipAuctionImages(id);
-      const filename = `auction-${id}-images.zip`;
-      exportApi.downloadBlob(blob, filename);
-    } catch (err) {
-      const errorMessage = `Failed to download images zip for auction with ID: ${id}`;
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const downloadAuctionImagesZip = useCallback(
+    async (id: string): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const blob = await exportApi.zipAuctionImages(id);
+        const filename = `auction-${id}-images.zip`;
+        exportApi.downloadBlob(blob, filename);
+      } catch (err) {
+        const errorMessage = `Failed to download images zip for auction with ID: ${id}`;
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Clear error state

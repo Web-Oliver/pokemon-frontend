@@ -8,7 +8,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
-import { getSalesData, getSalesSummary, getSalesGraphData } from '../api/salesApi';
+import {
+  getSalesData,
+  getSalesSummary,
+  getSalesGraphData,
+} from '../api/salesApi';
 import {
   calculateKPIs,
   processGraphData,
@@ -84,7 +88,9 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       // Process and set the data
       setSales(Array.isArray(salesData) ? salesData : []);
       setSummary(summaryData);
-      setGraphData(processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : []));
+      setGraphData(
+        processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : [])
+      );
 
       log('Sales analytics data loaded successfully', {
         salesCount: salesData.length,
@@ -92,7 +98,8 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
         graphDataCount: graphDataRaw.length,
       });
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch sales data';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to fetch sales data';
       setError(errorMessage);
       log('Error fetching sales analytics data:', err);
     } finally {
@@ -117,12 +124,13 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       const safeSales = Array.isArray(sales) ? sales : [];
 
       // Prepare data with computed values for CSV export
-      const exportData = safeSales.map(sale => ({
+      const exportData = safeSales.map((sale) => ({
         ...sale,
         profit: (sale.actualSoldPrice || 0) - (sale.myPrice || 0),
         profitMargin:
           sale.myPrice && sale.myPrice > 0
-            ? (((sale.actualSoldPrice || 0) - sale.myPrice) / sale.myPrice) * 100
+            ? (((sale.actualSoldPrice || 0) - sale.myPrice) / sale.myPrice) *
+              100
             : 0,
       }));
 
@@ -141,7 +149,10 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
         includeHeaders: true,
       });
 
-      log('CSV export successful', { recordCount: exportData.length, filename });
+      log('CSV export successful', {
+        recordCount: exportData.length,
+        filename,
+      });
     } catch (error) {
       log('CSV export failed:', error);
       throw new Error('Failed to export sales data to CSV');
@@ -166,8 +177,12 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
 
   // Computed values based on current data
   const kpis = calculateKPIs(Array.isArray(sales) ? sales : []);
-  const categoryBreakdown = aggregateByCategory(Array.isArray(sales) ? sales : []);
-  const trendAnalysis = calculateTrendAnalysis(Array.isArray(graphData) ? graphData : []);
+  const categoryBreakdown = aggregateByCategory(
+    Array.isArray(sales) ? sales : []
+  );
+  const trendAnalysis = calculateTrendAnalysis(
+    Array.isArray(graphData) ? graphData : []
+  );
 
   return {
     // Data State

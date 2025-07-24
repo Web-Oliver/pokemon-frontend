@@ -68,8 +68,15 @@ const mapCardIds = (card: unknown): unknown => {
     return card.map(mapCardIds);
   }
 
-  if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
-    (card as Record<string, unknown>).id = (card as Record<string, unknown>)._id;
+  if (
+    typeof card === 'object' &&
+    card !== null &&
+    '_id' in card &&
+    !('id' in card)
+  ) {
+    (card as Record<string, unknown>).id = (
+      card as Record<string, unknown>
+    )._id;
   }
 
   return card;
@@ -108,7 +115,9 @@ export const searchCardsOptimized = async (
     }
   });
 
-  const response = (await unifiedApiClient.get(`/search/cards?${queryParams.toString()}`)) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/cards?${queryParams.toString()}`
+  )) as any;
   const data = response.data || response;
 
   // Map the response data
@@ -140,7 +149,9 @@ export const getCardSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/suggest?${queryParams.toString()}`
+  )) as any;
   const data = response.data || response;
 
   // Extract card suggestions from the response
@@ -188,7 +199,11 @@ export const searchCardsInSet = async (
     return [];
   }
 
-  console.log('[CARDS API] searchCardsInSet called with:', { query, setName, limit });
+  console.log('[CARDS API] searchCardsInSet called with:', {
+    query,
+    setName,
+    limit,
+  });
 
   const params: OptimizedSearchParams = {
     query: query.trim(),
@@ -287,7 +302,9 @@ export const searchSetsOptimized = async (
     }
   });
 
-  const response = (await unifiedApiClient.get(`/search/sets?${queryParams.toString()}`)) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/sets?${queryParams.toString()}`
+  )) as any;
 
   return {
     success: response.success || true,
@@ -315,7 +332,9 @@ export const getSetSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/suggest?${queryParams.toString()}`
+  )) as any;
 
   // Extract set suggestions from the response
   const setSuggestions = response.suggestions?.sets?.data || [];
@@ -326,7 +345,9 @@ export const getSetSuggestionsOptimized = async (
  * Get best match set using optimized search with limit=1
  * EXACT copy from setsApi.ts - preserves all functionality
  */
-export const getBestMatchSetOptimized = async (query: string): Promise<ISet | null> => {
+export const getBestMatchSetOptimized = async (
+  query: string
+): Promise<ISet | null> => {
   if (!query.trim()) {
     return null;
   }
@@ -494,7 +515,9 @@ export const getProductSuggestionsOptimized = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(`/search/suggest?${queryParams.toString()}`)) as any;
+  const response = (await unifiedApiClient.get(
+    `/search/suggest?${queryParams.toString()}`
+  )) as any;
 
   // Extract product suggestions from the response
   const productSuggestions = response.suggestions?.products?.data || [];

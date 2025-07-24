@@ -12,7 +12,11 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import { createResourceOperations, CARD_CONFIG, idMapper } from './genericApiOperations';
+import {
+  createResourceOperations,
+  CARD_CONFIG,
+  idMapper,
+} from './genericApiOperations';
 import { ICard } from '../domain/models/card';
 import { searchCardsOptimized } from './consolidatedSearch';
 
@@ -71,13 +75,14 @@ interface ICardUpdatePayload extends Partial<ICardCreatePayload> {}
  * Core CRUD operations for cards using createResourceOperations
  * Eliminates boilerplate patterns and ensures consistency with other API files
  */
-const cardOperations = createResourceOperations<ICard, ICardCreatePayload, ICardUpdatePayload>(
-  CARD_CONFIG,
-  {
-    includeExportOperations: true,
-    includeBatchOperations: true,
-  }
-);
+const cardOperations = createResourceOperations<
+  ICard,
+  ICardCreatePayload,
+  ICardUpdatePayload
+>(CARD_CONFIG, {
+  includeExportOperations: true,
+  includeBatchOperations: true,
+});
 
 // ========== EXPORTED API OPERATIONS ==========
 
@@ -86,7 +91,9 @@ const cardOperations = createResourceOperations<ICard, ICardCreatePayload, ICard
  * @param params - Optional filter parameters
  * @returns Promise<ICard[]> - Array of cards
  */
-export const getCards = async (params?: CardsSearchParams): Promise<ICard[]> => {
+export const getCards = async (
+  params?: CardsSearchParams
+): Promise<ICard[]> => {
   // If specific search parameters provided, use search instead
   if (params?.cardName || params?.baseName) {
     const searchParams: OptimizedSearchParams = {

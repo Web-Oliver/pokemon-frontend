@@ -23,16 +23,13 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
   const formData = new FormData();
   formData.append('image', image);
 
-  const response = await unifiedApiClient.apiCreate<{ success: boolean; data: any } | any>(
-    '/upload/image',
-    formData,
-    'image upload',
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
+  const response = await unifiedApiClient.apiCreate<
+    { success: boolean; data: any } | any
+  >('/upload/image', formData, 'image upload', {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
   // Handle wrapped response format {success: true, data: {...}} or direct response
   const uploadedFile = response.data || response;
@@ -46,22 +43,22 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
  * @param images - Array of image files to upload
  * @returns Promise<string[]> - Array of URLs of uploaded images
  */
-export const uploadMultipleImages = async (images: File[]): Promise<string[]> => {
+export const uploadMultipleImages = async (
+  images: File[]
+): Promise<string[]> => {
   const formData = new FormData();
-  images.forEach(image => {
+  images.forEach((image) => {
     formData.append(`images`, image);
   });
 
-  const response = await unifiedApiClient.apiCreate<{ success: boolean; data: any[] }>(
-    '/upload/images',
-    formData,
-    'multiple image upload',
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
+  const response = await unifiedApiClient.apiCreate<{
+    success: boolean;
+    data: any[];
+  }>('/upload/images', formData, 'multiple image upload', {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
   // Handle wrapped response format {success: true, data: [...]}
   // Extract the actual data array from the response
@@ -93,5 +90,8 @@ export const cleanupImages = async (imageUrls: string[]): Promise<void> => {
  * @returns Promise<void>
  */
 export const cleanupAllOrphanedImages = async (): Promise<void> => {
-  await unifiedApiClient.apiDelete<void>('/upload/cleanup-all', 'orphaned images');
+  await unifiedApiClient.apiDelete<void>(
+    '/upload/cleanup-all',
+    'orphaned images'
+  );
 };

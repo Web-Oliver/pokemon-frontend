@@ -4,11 +4,11 @@
  * Concrete implementation of ICollectionApiService using existing API modules
  */
 
-import { IPsaGradedCard, IRawCard } from '../domain/models/card';
-import { ISealedProduct } from '../domain/models/sealedProduct';
-import { ISaleDetails } from '../domain/models/common';
-import { ICollectionApiService } from '../interfaces/api/ICollectionApiService';
 import * as collectionApi from '../api/collectionApi';
+import { IPsaGradedCard, IRawCard } from '../domain/models/card';
+import { ISaleDetails } from '../domain/models/common';
+import { ISealedProduct } from '../domain/models/sealedProduct';
+import { ICollectionApiService } from '../interfaces/api/ICollectionApiService';
 
 /**
  * Concrete implementation of Collection API Service
@@ -16,7 +16,9 @@ import * as collectionApi from '../api/collectionApi';
  */
 export class CollectionApiService implements ICollectionApiService {
   // PSA Card operations
-  async getPsaGradedCards(filters?: { sold?: boolean }): Promise<IPsaGradedCard[]> {
+  async getPsaGradedCards(filters?: {
+    sold?: boolean;
+  }): Promise<IPsaGradedCard[]> {
     return await collectionApi.getPsaGradedCards(filters);
   }
 
@@ -24,11 +26,16 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.getPsaGradedCardById(id);
   }
 
-  async createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+  async createPsaCard(
+    cardData: Partial<IPsaGradedCard>
+  ): Promise<IPsaGradedCard> {
     return await collectionApi.createPsaGradedCard(cardData);
   }
 
-  async updatePsaCard(id: string, cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+  async updatePsaCard(
+    id: string,
+    cardData: Partial<IPsaGradedCard>
+  ): Promise<IPsaGradedCard> {
     return await collectionApi.updatePsaGradedCard(id, cardData);
   }
 
@@ -36,7 +43,10 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.deletePsaGradedCard(id);
   }
 
-  async markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard> {
+  async markPsaCardSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<IPsaGradedCard> {
     return await collectionApi.markPsaGradedCardSold(id, saleDetails);
   }
 
@@ -53,7 +63,10 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.createRawCard(cardData);
   }
 
-  async updateRawCard(id: string, cardData: Partial<IRawCard>): Promise<IRawCard> {
+  async updateRawCard(
+    id: string,
+    cardData: Partial<IRawCard>
+  ): Promise<IRawCard> {
     return await collectionApi.updateRawCard(id, cardData);
   }
 
@@ -61,12 +74,17 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.deleteRawCard(id);
   }
 
-  async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
+  async markRawCardSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<IRawCard> {
     return await collectionApi.markRawCardSold(id, saleDetails);
   }
 
   // Sealed Product operations
-  async getSealedProducts(filters?: { sold?: boolean }): Promise<ISealedProduct[]> {
+  async getSealedProducts(filters?: {
+    sold?: boolean;
+  }): Promise<ISealedProduct[]> {
     return await collectionApi.getSealedProductCollection(filters);
   }
 
@@ -74,7 +92,9 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.getSealedProductById(id);
   }
 
-  async createSealedProduct(productData: Partial<ISealedProduct>): Promise<ISealedProduct> {
+  async createSealedProduct(
+    productData: Partial<ISealedProduct>
+  ): Promise<ISealedProduct> {
     return await collectionApi.createSealedProduct(productData);
   }
 
@@ -89,7 +109,10 @@ export class CollectionApiService implements ICollectionApiService {
     return await collectionApi.deleteSealedProduct(id);
   }
 
-  async markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> {
+  async markSealedProductSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<ISealedProduct> {
     return await collectionApi.markSealedProductSold(id, saleDetails);
   }
 }

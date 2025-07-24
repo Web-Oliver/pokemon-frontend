@@ -9,7 +9,14 @@
  * - DRY: Consolidates all search-related operations
  */
 
-import { SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
+import {
+  CardResult,
+  CategoryResult,
+  ProductResult,
+  SetResult,
+} from '../api/searchApi';
+import { SEARCH_CONFIG } from '../utils/constants';
+import { formatDisplayNameWithNumber } from '../utils/formatting';
 // Import only if needed - these functions are used internally but not exported from this service
 
 // ===== INTERFACES =====
@@ -63,8 +70,6 @@ export interface ISearchService {
 export type HierarchicalSearchConfig = SearchServiceConfig;
 export type HierarchicalSearchState = SearchState;
 export type IHierarchicalSearchService = ISearchService;
-import { SEARCH_CONFIG } from '../utils/constants';
-import { formatDisplayNameWithNumber } from '../utils/formatting';
 
 /**
  * Search Service
@@ -73,8 +78,10 @@ import { formatDisplayNameWithNumber } from '../utils/formatting';
 export class SearchService implements ISearchService {
   private config: SearchServiceConfig;
   private state: SearchState;
-  private cache: Map<string, { data: SearchSuggestion[]; timestamp: number; ttl: number }> =
-    new Map();
+  private cache: Map<
+    string,
+    { data: SearchSuggestion[]; timestamp: number; ttl: number }
+  > = new Map();
   private pendingRequests: Map<string, Promise<SearchSuggestion[]>> = new Map();
 
   constructor(config: SearchServiceConfig) {
@@ -228,18 +235,58 @@ export class SearchService implements ISearchService {
    */
   private async searchCategories(query: string): Promise<SearchSuggestion[]> {
     const allCategories = [
-      { category: 'Blisters', productCount: 100, isExactMatch: false, searchScore: 0 },
-      { category: 'Booster-Boxes', productCount: 200, isExactMatch: false, searchScore: 0 },
-      { category: 'Boosters', productCount: 150, isExactMatch: false, searchScore: 0 },
-      { category: 'Box-Sets', productCount: 50, isExactMatch: false, searchScore: 0 },
-      { category: 'Elite-Trainer-Boxes', productCount: 75, isExactMatch: false, searchScore: 0 },
-      { category: 'Theme-Decks', productCount: 120, isExactMatch: false, searchScore: 0 },
-      { category: 'Tins', productCount: 80, isExactMatch: false, searchScore: 0 },
-      { category: 'Trainer-Kits', productCount: 30, isExactMatch: false, searchScore: 0 },
+      {
+        category: 'Blisters',
+        productCount: 100,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Booster-Boxes',
+        productCount: 200,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Boosters',
+        productCount: 150,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Box-Sets',
+        productCount: 50,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Elite-Trainer-Boxes',
+        productCount: 75,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Theme-Decks',
+        productCount: 120,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Tins',
+        productCount: 80,
+        isExactMatch: false,
+        searchScore: 0,
+      },
+      {
+        category: 'Trainer-Kits',
+        productCount: 30,
+        isExactMatch: false,
+        searchScore: 0,
+      },
     ];
 
     const filteredCategories = allCategories
-      .filter(cat => cat.category.toLowerCase().includes(query.toLowerCase()))
+      .filter((cat) => cat.category.toLowerCase().includes(query.toLowerCase()))
       .slice(0, this.config.maxSuggestions!);
 
     return filteredCategories.map(this.mapCategoryResultToSuggestion);
@@ -280,7 +327,9 @@ export class SearchService implements ISearchService {
       );
 
       const baseUrl = 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}${endpoint}?${params.toString()}`);
+      const response = await fetch(
+        `${baseUrl}${endpoint}?${params.toString()}`
+      );
       const data = await response.json();
 
       console.log('[SEARCH SERVICE] Card/Product API response:', data);
@@ -311,12 +360,14 @@ export class SearchService implements ISearchService {
 
     switch (fieldType) {
       case 'set':
-        newState.selectedSet = suggestion.metadata.setName || suggestion.displayName;
+        newState.selectedSet =
+          suggestion.metadata.setName || suggestion.displayName;
         newState.activeField = null;
         break;
 
       case 'category':
-        newState.selectedCategory = suggestion.metadata.category || suggestion.displayName;
+        newState.selectedCategory =
+          suggestion.metadata.category || suggestion.displayName;
         newState.activeField = null;
         break;
 
@@ -449,8 +500,13 @@ export class SearchService implements ISearchService {
   });
 
   // For SEALED PRODUCTS: Maps CardMarketReferenceProduct set names
-  private mapCardMarketSetToSuggestion = (result: SetResult): SearchSuggestion => {
-    console.log('[SEARCH SERVICE] mapCardMarketSetToSuggestion - input:', result);
+  private mapCardMarketSetToSuggestion = (
+    result: SetResult
+  ): SearchSuggestion => {
+    console.log(
+      '[SEARCH SERVICE] mapCardMarketSetToSuggestion - input:',
+      result
+    );
 
     // CardMarket API returns: { setName, productCount, totalAvailable, averagePrice, etc. }
     const setName = result.setName || 'Unknown Set';
@@ -473,7 +529,9 @@ export class SearchService implements ISearchService {
     };
   };
 
-  private mapCategoryResultToSuggestion = (result: CategoryResult): SearchSuggestion => ({
+  private mapCategoryResultToSuggestion = (
+    result: CategoryResult
+  ): SearchSuggestion => ({
     id: result.category,
     displayName: result.category,
     metadata: {
@@ -484,15 +542,20 @@ export class SearchService implements ISearchService {
   });
 
   // For UNIFIED API: Maps unified search API card results
-  private mapUnifiedCardToSuggestion = (result: CardResult): SearchSuggestion => {
+  private mapUnifiedCardToSuggestion = (
+    result: CardResult
+  ): SearchSuggestion => {
     console.log('[SEARCH SERVICE] mapUnifiedCardToSuggestion - input:', result);
 
     const cardName = result.cardName || result.baseName || 'Unknown Card';
-    const pokemonNumber = result.pokemonNumber ? `#${result.pokemonNumber}` : '';
+    const pokemonNumber = result.pokemonNumber
+      ? `#${result.pokemonNumber}`
+      : '';
     const setName = result.setInfo?.setName || 'Unknown Set';
     const variety = result.variety ? ` (${result.variety})` : '';
 
-    const displayName = `${pokemonNumber} ${cardName}${variety} - ${setName}`.trim();
+    const displayName =
+      `${pokemonNumber} ${cardName}${variety} - ${setName}`.trim();
 
     return {
       id: result._id || result.id,
@@ -506,8 +569,13 @@ export class SearchService implements ISearchService {
   };
 
   // For UNIFIED API: Maps unified search API product results
-  private mapUnifiedProductToSuggestion = (result: ProductResult): SearchSuggestion => {
-    console.log('[SEARCH SERVICE] mapUnifiedProductToSuggestion - input:', result);
+  private mapUnifiedProductToSuggestion = (
+    result: ProductResult
+  ): SearchSuggestion => {
+    console.log(
+      '[SEARCH SERVICE] mapUnifiedProductToSuggestion - input:',
+      result
+    );
 
     const productName = result.name || 'Unknown Product';
     const setName = result.setName || 'Unknown Set';
@@ -527,9 +595,14 @@ export class SearchService implements ISearchService {
     };
   };
 
-  private mapCardResultToSuggestion = (result: CardResult): SearchSuggestion => ({
+  private mapCardResultToSuggestion = (
+    result: CardResult
+  ): SearchSuggestion => ({
     id: result._id,
-    displayName: formatDisplayNameWithNumber(result.cardName, result.pokemonNumber),
+    displayName: formatDisplayNameWithNumber(
+      result.cardName,
+      result.pokemonNumber
+    ),
     metadata: {
       setName: result.setInfo?.setName,
       category: undefined,
@@ -540,7 +613,9 @@ export class SearchService implements ISearchService {
     data: result,
   });
 
-  private mapProductResultToSuggestion = (result: ProductResult): SearchSuggestion => ({
+  private mapProductResultToSuggestion = (
+    result: ProductResult
+  ): SearchSuggestion => ({
     id: result._id,
     displayName: result.name,
     metadata: {
@@ -567,8 +642,15 @@ export class SearchService implements ISearchService {
     return null;
   }
 
-  private cacheResults(cacheKey: string, suggestions: SearchSuggestion[], fieldType: string): void {
-    const ttl = fieldType === 'set' ? SEARCH_CONFIG.CACHE_TTL_SETS : SEARCH_CONFIG.CACHE_TTL_OTHERS;
+  private cacheResults(
+    cacheKey: string,
+    suggestions: SearchSuggestion[],
+    fieldType: string
+  ): void {
+    const ttl =
+      fieldType === 'set'
+        ? SEARCH_CONFIG.CACHE_TTL_SETS
+        : SEARCH_CONFIG.CACHE_TTL_OTHERS;
     this.cache.set(cacheKey, {
       data: suggestions,
       timestamp: Date.now(),
@@ -580,7 +662,9 @@ export class SearchService implements ISearchService {
 /**
  * Factory function to create search service instances
  */
-export function createSearchService(config: SearchServiceConfig): SearchService {
+export function createSearchService(
+  config: SearchServiceConfig
+): SearchService {
   console.log('[SEARCH SERVICE] Creating service with config:', config);
   return new SearchService(config);
 }
@@ -590,7 +674,9 @@ export function createSearchService(config: SearchServiceConfig): SearchService 
 /**
  * Legacy factory function name for backward compatibility
  */
-export function createHierarchicalSearchService(config: HierarchicalSearchConfig): SearchService {
+export function createHierarchicalSearchService(
+  config: HierarchicalSearchConfig
+): SearchService {
   console.log(
     '[SEARCH SERVICE] Creating service with legacy factory (using SearchService):',
     config

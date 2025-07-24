@@ -42,7 +42,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     if (lastCollectionSize.current !== collectionSize) {
       lastCollectionSize.current = collectionSize;
 
-      setMetrics(prev => ({
+      setMetrics((prev) => ({
         ...prev,
         renderCount: renderCountRef.current,
         collectionSize,
@@ -70,51 +70,57 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   };
 
   return (
-    <div className='fixed bottom-4 right-4 z-50 bg-black/80 backdrop-blur-sm text-white rounded-lg p-3 text-xs font-mono space-y-2 max-w-xs'>
-      <div className='flex items-center space-x-2 border-b border-gray-600 pb-2'>
-        <Activity className='w-4 h-4' />
-        <span className='font-bold'>{componentName}</span>
+    <div className="fixed bottom-4 right-4 z-50 bg-black/80 backdrop-blur-sm text-white rounded-lg p-3 text-xs font-mono space-y-2 max-w-xs">
+      <div className="flex items-center space-x-2 border-b border-gray-600 pb-2">
+        <Activity className="w-4 h-4" />
+        <span className="font-bold">{componentName}</span>
       </div>
 
-      <div className='space-y-1'>
-        <div className='flex justify-between'>
+      <div className="space-y-1">
+        <div className="flex justify-between">
           <span>Renders:</span>
-          <span className='font-bold'>{renderCountRef.current}</span>
+          <span className="font-bold">{renderCountRef.current}</span>
         </div>
 
-        <div className='flex justify-between'>
+        <div className="flex justify-between">
           <span>Collection size:</span>
-          <span className={`font-bold ${getStatusColor()}`}>{metrics.collectionSize}</span>
+          <span className={`font-bold ${getStatusColor()}`}>
+            {metrics.collectionSize}
+          </span>
         </div>
 
         {metrics.memoryUsage && (
-          <div className='flex justify-between'>
+          <div className="flex justify-between">
             <span>Memory:</span>
-            <span className='font-bold'>{formatMemory(metrics.memoryUsage)}</span>
+            <span className="font-bold">
+              {formatMemory(metrics.memoryUsage)}
+            </span>
           </div>
         )}
 
-        <div className='flex justify-between'>
+        <div className="flex justify-between">
           <span>Uptime:</span>
-          <span className='font-bold'>{((performance.now() - startTime) / 1000).toFixed(1)}s</span>
+          <span className="font-bold">
+            {((performance.now() - startTime) / 1000).toFixed(1)}s
+          </span>
         </div>
       </div>
 
-      <div className='border-t border-gray-600 pt-2'>
-        <div className='flex items-center space-x-1 text-xs text-gray-300'>
+      <div className="border-t border-gray-600 pt-2">
+        <div className="flex items-center space-x-1 text-xs text-gray-300 dark:text-zinc-700">
           {metrics.collectionSize <= 50 ? (
             <>
-              <Zap className='w-3 h-3 text-green-400' />
+              <Zap className="w-3 h-3 text-green-400" />
               <span>Optimal</span>
             </>
           ) : metrics.collectionSize <= 100 ? (
             <>
-              <Clock className='w-3 h-3 text-yellow-400' />
+              <Clock className="w-3 h-3 text-yellow-400" />
               <span>Virtualized</span>
             </>
           ) : (
             <>
-              <Activity className='w-3 h-3 text-red-400' />
+              <Activity className="w-3 h-3 text-red-400" />
               <span>Large collection</span>
             </>
           )}

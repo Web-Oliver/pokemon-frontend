@@ -61,7 +61,10 @@ export interface BatchRequest<T> {
  * Generic batch processor interface
  */
 export interface BatchProcessor<TInput, TOutput> {
-  process(items: TInput[], options?: BatchOptions): Promise<BatchResult<TOutput>>;
+  process(
+    items: TInput[],
+    options?: BatchOptions
+  ): Promise<BatchResult<TOutput>>;
 }
 
 // ========== GENERIC BATCH UTILITIES ==========
@@ -70,7 +73,9 @@ export interface BatchProcessor<TInput, TOutput> {
  * Generic batch processing utility
  * Provides reusable batch processing logic with common structures and generic types
  */
-export class GenericBatchProcessor<TInput, TOutput> implements BatchProcessor<TInput, TOutput> {
+export class GenericBatchProcessor<TInput, TOutput>
+  implements BatchProcessor<TInput, TOutput>
+{
   private static readonly DEFAULT_BATCH_SIZE = 5;
   private static readonly DEFAULT_BATCH_DELAY = 200; // 200ms between batches
 
@@ -79,7 +84,10 @@ export class GenericBatchProcessor<TInput, TOutput> implements BatchProcessor<TI
     private options: BatchOptions = {}
   ) {}
 
-  async process(items: TInput[], options: BatchOptions = {}): Promise<BatchResult<TOutput>> {
+  async process(
+    items: TInput[],
+    options: BatchOptions = {}
+  ): Promise<BatchResult<TOutput>> {
     const {
       batchSize = GenericBatchProcessor.DEFAULT_BATCH_SIZE,
       batchDelay = GenericBatchProcessor.DEFAULT_BATCH_DELAY,
@@ -105,7 +113,8 @@ export class GenericBatchProcessor<TInput, TOutput> implements BatchProcessor<TI
             data: result,
           };
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorMsg =
+            error instanceof Error ? error.message : 'Unknown error';
           errors.push({
             id: itemId,
             error: errorMsg,
@@ -130,12 +139,12 @@ export class GenericBatchProcessor<TInput, TOutput> implements BatchProcessor<TI
 
       // Add delay between batches (except for the last batch)
       if (i + batchSize < items.length) {
-        await new Promise(resolve => setTimeout(resolve, batchDelay));
+        await new Promise((resolve) => setTimeout(resolve, batchDelay));
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const errorCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
 
     return {
       success: errorCount === 0,
@@ -151,7 +160,10 @@ export class GenericBatchProcessor<TInput, TOutput> implements BatchProcessor<TI
  * Generic API batch processor
  * Handles batch API requests with unified client
  */
-export class ApiBatchProcessor<TInput, TOutput> extends GenericBatchProcessor<TInput, TOutput> {
+export class ApiBatchProcessor<TInput, TOutput> extends GenericBatchProcessor<
+  TInput,
+  TOutput
+> {
   constructor(
     private endpoint: string,
     private method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'POST',
@@ -178,7 +190,10 @@ export class ApiBatchProcessor<TInput, TOutput> extends GenericBatchProcessor<TI
           );
         case 'GET':
         default:
-          return unifiedApiClient.apiGet<TOutput>(this.endpoint, `${this.method} ${this.endpoint}`);
+          return unifiedApiClient.apiGet<TOutput>(
+            this.endpoint,
+            `${this.method} ${this.endpoint}`
+          );
       }
     }, options);
   }
@@ -261,7 +276,8 @@ export class BatchCollectionOperations {
         // Handle batch error
         batch.forEach((_, index) => {
           const requestId = batchRequests[index].id;
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorMsg =
+            error instanceof Error ? error.message : 'Unknown error';
 
           results.push({
             id: requestId,
@@ -281,12 +297,12 @@ export class BatchCollectionOperations {
 
       // Add delay between batches (except for the last batch)
       if (i + batchSize < cards.length) {
-        await new Promise(resolve => setTimeout(resolve, batchDelay));
+        await new Promise((resolve) => setTimeout(resolve, batchDelay));
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const errorCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
 
     return {
       success: errorCount === 0,
@@ -301,7 +317,11 @@ export class BatchCollectionOperations {
    * Batch update collection items
    */
   static async batchUpdateItems<T>(
-    updates: Array<{ id: string; data: Partial<T>; type: 'psa' | 'raw' | 'sealed' }>,
+    updates: Array<{
+      id: string;
+      data: Partial<T>;
+      type: 'psa' | 'raw' | 'sealed';
+    }>,
     options: BatchOptions = {}
   ): Promise<BatchResult<T>> {
     const {
@@ -315,9 +335,9 @@ export class BatchCollectionOperations {
 
     // Group updates by type for efficient processing
     const groupedUpdates = {
-      psa: updates.filter(u => u.type === 'psa'),
-      raw: updates.filter(u => u.type === 'raw'),
-      sealed: updates.filter(u => u.type === 'sealed'),
+      psa: updates.filter((u) => u.type === 'psa'),
+      raw: updates.filter((u) => u.type === 'raw'),
+      sealed: updates.filter((u) => u.type === 'sealed'),
     };
 
     // Process each type separately
@@ -333,13 +353,17 @@ export class BatchCollectionOperations {
         const batch = items.slice(i, i + batchSize);
 
         // Execute updates in parallel within batch
-        const batchPromises = batch.map(async item => {
+        const batchPromises = batch.map(async (item) => {
           try {
-            const response = await unifiedApiClient.put<T>(`${endpoint}/${item.id}`, item.data, {
-              optimization: {
-                enableDeduplication: true,
-              },
-            });
+            const response = await unifiedApiClient.put<T>(
+              `${endpoint}/${item.id}`,
+              item.data,
+              {
+                optimization: {
+                  enableDeduplication: true,
+                },
+              }
+            );
 
             return {
               id: item.id,
@@ -347,7 +371,8 @@ export class BatchCollectionOperations {
               data: response,
             };
           } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+            const errorMsg =
+              error instanceof Error ? error.message : 'Unknown error';
             errors.push({
               id: item.id,
               error: errorMsg,
@@ -372,13 +397,13 @@ export class BatchCollectionOperations {
 
         // Add delay between batches
         if (i + batchSize < items.length) {
-          await new Promise(resolve => setTimeout(resolve, batchDelay));
+          await new Promise((resolve) => setTimeout(resolve, batchDelay));
         }
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const errorCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
 
     return {
       success: errorCount === 0,
@@ -393,7 +418,11 @@ export class BatchCollectionOperations {
    * Batch mark items as sold
    */
   static async batchMarkSold(
-    items: Array<{ id: string; type: 'psa' | 'raw' | 'sealed'; saleDetails: ISaleDetails }>,
+    items: Array<{
+      id: string;
+      type: 'psa' | 'raw' | 'sealed';
+      saleDetails: ISaleDetails;
+    }>,
     options: BatchOptions = {}
   ): Promise<BatchResult<unknown>> {
     const {
@@ -410,15 +439,19 @@ export class BatchCollectionOperations {
       const batch = items.slice(i, i + batchSize);
 
       // Execute mark-sold operations in parallel within batch
-      const batchPromises = batch.map(async item => {
+      const batchPromises = batch.map(async (item) => {
         try {
           const endpoint = `/collection/${item.type === 'psa' ? 'psa-cards' : item.type === 'raw' ? 'raw-cards' : 'sealed-products'}/${item.id}/mark-sold`;
 
-          const response = await unifiedApiClient.put(endpoint, item.saleDetails, {
-            optimization: {
-              enableDeduplication: true,
-            },
-          });
+          const response = await unifiedApiClient.put(
+            endpoint,
+            item.saleDetails,
+            {
+              optimization: {
+                enableDeduplication: true,
+              },
+            }
+          );
 
           return {
             id: item.id,
@@ -426,7 +459,8 @@ export class BatchCollectionOperations {
             data: response,
           };
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorMsg =
+            error instanceof Error ? error.message : 'Unknown error';
           errors.push({
             id: item.id,
             error: errorMsg,
@@ -451,12 +485,12 @@ export class BatchCollectionOperations {
 
       // Add delay between batches
       if (i + batchSize < items.length) {
-        await new Promise(resolve => setTimeout(resolve, batchDelay));
+        await new Promise((resolve) => setTimeout(resolve, batchDelay));
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const errorCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
 
     return {
       success: errorCount === 0,
@@ -488,7 +522,7 @@ export class BatchCollectionOperations {
       const batch = items.slice(i, i + batchSize);
 
       // Execute delete operations in parallel within batch
-      const batchPromises = batch.map(async item => {
+      const batchPromises = batch.map(async (item) => {
         try {
           const endpoint = `/collection/${item.type === 'psa' ? 'psa-cards' : item.type === 'raw' ? 'raw-cards' : 'sealed-products'}/${item.id}`;
 
@@ -503,7 +537,8 @@ export class BatchCollectionOperations {
             success: true,
           };
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          const errorMsg =
+            error instanceof Error ? error.message : 'Unknown error';
           errors.push({
             id: item.id,
             error: errorMsg,
@@ -528,12 +563,12 @@ export class BatchCollectionOperations {
 
       // Add delay between batches
       if (i + batchSize < items.length) {
-        await new Promise(resolve => setTimeout(resolve, batchDelay));
+        await new Promise((resolve) => setTimeout(resolve, batchDelay));
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const errorCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
 
     return {
       success: errorCount === 0,
@@ -560,14 +595,16 @@ export class BatchCollectionOperations {
       const batch = itemIds.slice(i, i + batchSize);
 
       // Prefetch each item in the batch
-      const prefetchPromises = batch.map(id => unifiedApiClient.prefetch(`${endpoint}/${id}`));
+      const prefetchPromises = batch.map((id) =>
+        unifiedApiClient.prefetch(`${endpoint}/${id}`)
+      );
 
       // Execute prefetch operations in parallel
       await Promise.all(prefetchPromises);
 
       // Small delay between batches to be server-friendly
       if (i + batchSize < itemIds.length) {
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     }
   }

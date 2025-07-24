@@ -43,7 +43,8 @@ export const useMarkSold = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const { updatePsaCard, updateRawCard, updateSealedProduct } = useCollectionOperations();
+  const { updatePsaCard, updateRawCard, updateSealedProduct } =
+    useCollectionOperations();
 
   const markAsSold = useCallback(
     async (saleDetails: ISaleDetails): Promise<void> => {
@@ -75,14 +76,23 @@ export const useMarkSold = ({
         // Call success callback if provided
         onSuccess?.();
       } catch (err) {
-        const error = err instanceof Error ? err : new Error('Failed to mark item as sold');
+        const error =
+          err instanceof Error ? err : new Error('Failed to mark item as sold');
         setError(error);
         onError?.(error);
       } finally {
         setIsProcessing(false);
       }
     },
-    [itemType, itemId, updatePsaCard, updateRawCard, updateSealedProduct, onSuccess, onError]
+    [
+      itemType,
+      itemId,
+      updatePsaCard,
+      updateRawCard,
+      updateSealedProduct,
+      onSuccess,
+      onError,
+    ]
   );
 
   const clearError = useCallback((): void => {

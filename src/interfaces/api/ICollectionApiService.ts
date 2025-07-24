@@ -19,9 +19,15 @@ export interface IPsaCardApiService {
 
   // Write operations
   createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
-  updatePsaCard(id: string, cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
+  updatePsaCard(
+    id: string,
+    cardData: Partial<IPsaGradedCard>
+  ): Promise<IPsaGradedCard>;
   deletePsaCard(id: string): Promise<void>;
-  markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>;
+  markPsaCardSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<IPsaGradedCard>;
 }
 
 /**
@@ -50,10 +56,18 @@ export interface ISealedProductApiService {
   getSealedProductById(id: string): Promise<ISealedProduct>;
 
   // Write operations
-  createSealedProduct(productData: Partial<ISealedProduct>): Promise<ISealedProduct>;
-  updateSealedProduct(id: string, productData: Partial<ISealedProduct>): Promise<ISealedProduct>;
+  createSealedProduct(
+    productData: Partial<ISealedProduct>
+  ): Promise<ISealedProduct>;
+  updateSealedProduct(
+    id: string,
+    productData: Partial<ISealedProduct>
+  ): Promise<ISealedProduct>;
   deleteSealedProduct(id: string): Promise<void>;
-  markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct>;
+  markSealedProductSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<ISealedProduct>;
 }
 
 /**

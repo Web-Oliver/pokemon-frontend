@@ -6,7 +6,13 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ICard } from '../domain/models/card';
-import { searchApi, SetResult, CardResult, ProductResult, CategoryResult } from '../api/searchApi';
+import {
+  searchApi,
+  SetResult,
+  CardResult,
+  ProductResult,
+  CategoryResult,
+} from '../api/searchApi';
 import * as cardsApi from '../api/cardsApi';
 import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
 import * as setsApi from '../api/setsApi';
@@ -94,7 +100,11 @@ export const useSearch = (): UseSearchReturn => {
     Map<
       string,
       {
-        results: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[];
+        results:
+          | SetResult[]
+          | CardResult[]
+          | ProductResult[]
+          | CategoryResult[];
         timestamp: number;
         score: number;
         ttl: number;
@@ -109,14 +119,14 @@ export const useSearch = (): UseSearchReturn => {
    * Set loading state
    */
   const setLoading = useCallback((loading: boolean) => {
-    setState(prev => ({ ...prev, loading }));
+    setState((prev) => ({ ...prev, loading }));
   }, []);
 
   /**
    * Set error state
    */
   const setError = useCallback((error: string | null) => {
-    setState(prev => ({ ...prev, error }));
+    setState((prev) => ({ ...prev, error }));
   }, []);
 
   /**
@@ -130,7 +140,7 @@ export const useSearch = (): UseSearchReturn => {
    * Clear all search state
    */
   const clearSearch = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       searchTerm: '',
       searchResults: [],
@@ -164,7 +174,7 @@ export const useSearch = (): UseSearchReturn => {
           limit: 50,
         });
 
-        const results: CardResult[] = searchResponse.data.map(card => ({
+        const results: CardResult[] = searchResponse.data.map((card) => ({
           _id: card._id,
           cardName: card.cardName,
           baseName: card.baseName,
@@ -183,7 +193,7 @@ export const useSearch = (): UseSearchReturn => {
         }));
 
         // Convert CardResult[] to ICard[] for compatibility
-        const cardResults: ICard[] = results.map(result => ({
+        const cardResults: ICard[] = results.map((result) => ({
           _id: result._id,
           id: result._id, // Add missing id field
           cardName: result.cardName,
@@ -194,7 +204,7 @@ export const useSearch = (): UseSearchReturn => {
           // Add other required ICard properties as needed
         }));
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           searchTerm: query,
           searchResults: cardResults,
@@ -213,7 +223,13 @@ export const useSearch = (): UseSearchReturn => {
         setLoading(false);
       }
     },
-    [state.selectedSet, state.selectedCategory, clearSearch, setLoading, setError]
+    [
+      state.selectedSet,
+      state.selectedCategory,
+      clearSearch,
+      setLoading,
+      setError,
+    ]
   );
 
   /**
@@ -232,7 +248,7 @@ export const useSearch = (): UseSearchReturn => {
       const processedQuery = query.trim().toLowerCase();
       if (!processedQuery || processedQuery.length < 2) {
         console.log(`[SEARCH DEBUG] Query too short, clearing suggestions`);
-        setState(prev => ({ ...prev, suggestions: [] }));
+        setState((prev) => ({ ...prev, suggestions: [] }));
         return;
       }
 
@@ -246,8 +262,11 @@ export const useSearch = (): UseSearchReturn => {
         const isExpired = Date.now() - timestamp > ttl;
 
         if (!isExpired) {
-          console.log(`[SEARCH DEBUG] Using cached suggestions:`, results.length);
-          setState(prev => ({ ...prev, suggestions: results }));
+          console.log(
+            `[SEARCH DEBUG] Using cached suggestions:`,
+            results.length
+          );
+          setState((prev) => ({ ...prev, suggestions: results }));
           return;
         } else {
           // Clean expired cache entry
@@ -260,7 +279,7 @@ export const useSearch = (): UseSearchReturn => {
         console.log(`[SEARCH DEBUG] Request already pending for: ${cacheKey}`);
         try {
           const results = await pendingRequestsRef.current.get(cacheKey)!;
-          setState(prev => ({ ...prev, suggestions: results }));
+          setState((prev) => ({ ...prev, suggestions: results }));
           return;
         } catch (error) {
           console.error(`[SEARCH DEBUG] Pending request failed:`, error);
@@ -276,11 +295,17 @@ export const useSearch = (): UseSearchReturn => {
       const signal = abortControllerRef.current.signal;
 
       try {
-        console.log(`[SEARCH DEBUG] Making API call for ${fieldType} suggestions`);
+        console.log(
+          `[SEARCH DEBUG] Making API call for ${fieldType} suggestions`
+        );
 
         // Create request promise for deduplication
         const requestPromise = (async () => {
-          let suggestions: SetResult[] | CardResult[] | ProductResult[] | CategoryResult[] = [];
+          let suggestions:
+            | SetResult[]
+            | CardResult[]
+            | ProductResult[]
+            | CategoryResult[] = [];
 
           // Always use NEW unified search endpoints
           if (fieldType === 'set') {
@@ -291,7 +316,7 @@ export const useSearch = (): UseSearchReturn => {
               query: processedQuery,
               limit: 15,
             });
-            suggestions = setResponse.data.map(set => ({
+            suggestions = setResponse.data.map((set) => ({
               setName: set.setName,
               year: set.year,
               score: set.relevanceScore || set.searchScore || 0,
@@ -303,32 +328,77 @@ export const useSearch = (): UseSearchReturn => {
               searchMetadata: set.searchMetadata,
               highlights: set.highlights,
             }));
-            console.log(`[SEARCH DEBUG] NEW unified set search returned:`, suggestions);
+            console.log(
+              `[SEARCH DEBUG] NEW unified set search returned:`,
+              suggestions
+            );
           } else if (fieldType === 'category') {
             console.log(
               `[SEARCH DEBUG] Getting predefined categories for query: "${processedQuery}"`
             );
             // Use predefined categories since searchCategories was removed
             const allCategories = [
-              { category: 'Blisters', productCount: 100, isExactMatch: false, searchScore: 0 },
-              { category: 'Booster-Boxes', productCount: 200, isExactMatch: false, searchScore: 0 },
-              { category: 'Boosters', productCount: 150, isExactMatch: false, searchScore: 0 },
-              { category: 'Box-Sets', productCount: 50, isExactMatch: false, searchScore: 0 },
+              {
+                category: 'Blisters',
+                productCount: 100,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              {
+                category: 'Booster-Boxes',
+                productCount: 200,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              {
+                category: 'Boosters',
+                productCount: 150,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              {
+                category: 'Box-Sets',
+                productCount: 50,
+                isExactMatch: false,
+                searchScore: 0,
+              },
               {
                 category: 'Elite-Trainer-Boxes',
                 productCount: 75,
                 isExactMatch: false,
                 searchScore: 0,
               },
-              { category: 'Theme-Decks', productCount: 120, isExactMatch: false, searchScore: 0 },
-              { category: 'Tins', productCount: 80, isExactMatch: false, searchScore: 0 },
-              { category: 'Trainer-Kits', productCount: 30, isExactMatch: false, searchScore: 0 },
+              {
+                category: 'Theme-Decks',
+                productCount: 120,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              {
+                category: 'Tins',
+                productCount: 80,
+                isExactMatch: false,
+                searchScore: 0,
+              },
+              {
+                category: 'Trainer-Kits',
+                productCount: 30,
+                isExactMatch: false,
+                searchScore: 0,
+              },
             ];
 
             suggestions = allCategories
-              .filter(cat => cat.category.toLowerCase().includes(processedQuery.toLowerCase()))
+              .filter((cat) =>
+                cat.category
+                  .toLowerCase()
+                  .includes(processedQuery.toLowerCase())
+              )
               .slice(0, 15);
-            console.log(`[SEARCH DEBUG] Filtered categories returned:`, suggestions);
+            console.log(
+              `[SEARCH DEBUG] Filtered categories returned:`,
+              suggestions
+            );
           } else if (fieldType === 'cardProduct') {
             if (searchMode === 'products') {
               console.log(
@@ -340,7 +410,7 @@ export const useSearch = (): UseSearchReturn => {
                 category: state.selectedCategory || undefined,
                 limit: 15,
               });
-              suggestions = productResponse.data.map(product => ({
+              suggestions = productResponse.data.map((product) => ({
                 _id: product._id,
                 name: product.name,
                 setName: product.setName,
@@ -348,13 +418,17 @@ export const useSearch = (): UseSearchReturn => {
                 available: product.available,
                 price: product.price,
                 searchScore: product.relevanceScore || product.searchScore,
-                isExactMatch: product.searchMetadata?.confidence === 'very-high',
+                isExactMatch:
+                  product.searchMetadata?.confidence === 'very-high',
                 relevanceScore: product.relevanceScore,
                 fuseScore: product.fuseScore,
                 searchMetadata: product.searchMetadata,
                 highlights: product.highlights,
               }));
-              console.log(`[SEARCH DEBUG] NEW unified product search returned:`, suggestions);
+              console.log(
+                `[SEARCH DEBUG] NEW unified product search returned:`,
+                suggestions
+              );
             } else {
               console.log(
                 `[SEARCH DEBUG] Calling NEW unified card search with query: "${processedQuery}"`
@@ -364,7 +438,7 @@ export const useSearch = (): UseSearchReturn => {
                 setName: state.selectedSet || undefined,
                 limit: 15,
               });
-              suggestions = cardResponse.data.map(card => ({
+              suggestions = cardResponse.data.map((card) => ({
                 _id: card._id,
                 cardName: card.cardName,
                 baseName: card.baseName,
@@ -381,15 +455,22 @@ export const useSearch = (): UseSearchReturn => {
                 searchMetadata: card.searchMetadata,
                 highlights: card.highlights,
               }));
-              console.log(`[SEARCH DEBUG] NEW unified card search returned:`, suggestions);
+              console.log(
+                `[SEARCH DEBUG] NEW unified card search returned:`,
+                suggestions
+              );
             }
           }
 
           // Context7 Result Optimization & Scoring
           const optimizedSuggestions = suggestions
-            .map(suggestion => ({
+            .map((suggestion) => ({
               ...suggestion,
-              relevanceScore: calculateRelevanceScore(suggestion, processedQuery, fieldType),
+              relevanceScore: calculateRelevanceScore(
+                suggestion,
+                processedQuery,
+                fieldType
+              ),
             }))
             .sort((a, b) => b.relevanceScore - a.relevanceScore)
             .slice(0, 15); // Context7 optimal result limit
@@ -398,7 +479,10 @@ export const useSearch = (): UseSearchReturn => {
           const cacheEntry = {
             results: optimizedSuggestions,
             timestamp: Date.now(),
-            score: optimizedSuggestions.length > 0 ? optimizedSuggestions[0].relevanceScore : 0,
+            score:
+              optimizedSuggestions.length > 0
+                ? optimizedSuggestions[0].relevanceScore
+                : 0,
             ttl: fieldType === 'set' ? 300000 : 180000, // 5min for sets, 3min for others
           };
           suggestionsCacheRef.current.set(cacheKey, cacheEntry);
@@ -417,12 +501,14 @@ export const useSearch = (): UseSearchReturn => {
           return;
         }
 
-        setState(prev => ({ ...prev, suggestions }));
+        setState((prev) => ({ ...prev, suggestions }));
 
         console.log(
           `[SEARCH DEBUG] Successfully set ${suggestions.length} suggestions for ${fieldType}: ${processedQuery}`
         );
-        log(`Got ${suggestions.length} optimized suggestions for ${fieldType}: ${processedQuery}`);
+        log(
+          `Got ${suggestions.length} optimized suggestions for ${fieldType}: ${processedQuery}`
+        );
       } catch (error) {
         if (error.name === 'AbortError') {
           console.log(`[SEARCH DEBUG] Request aborted for: ${cacheKey}`);
@@ -430,11 +516,14 @@ export const useSearch = (): UseSearchReturn => {
         }
         console.error(`[SEARCH DEBUG] Failed to get suggestions:`, error);
         log(`Failed to get suggestions: ${error}`);
-        setState(prev => ({ ...prev, suggestions: [] }));
+        setState((prev) => ({ ...prev, suggestions: [] }));
       } finally {
         // Clean up request tracking
         pendingRequestsRef.current.delete(cacheKey);
-        if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+        if (
+          abortControllerRef.current &&
+          !abortControllerRef.current.signal.aborted
+        ) {
           abortControllerRef.current = null;
         }
       }
@@ -450,12 +539,15 @@ export const useSearch = (): UseSearchReturn => {
       suggestion: SetResult | CardResult | ProductResult | CategoryResult,
       fieldType: 'set' | 'category' | 'cardProduct'
     ) => {
-      console.log(`[SEARCH DEBUG] handleSuggestionSelect called:`, { suggestion, fieldType });
+      console.log(`[SEARCH DEBUG] handleSuggestionSelect called:`, {
+        suggestion,
+        fieldType,
+      });
 
       if (fieldType === 'set') {
         // Context7 pattern: Set selection affects subsequent searches
         const setName = suggestion.setName || suggestion.name || suggestion;
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           setName,
           selectedSet: setName,
@@ -467,11 +559,14 @@ export const useSearch = (): UseSearchReturn => {
           selectedCardData: null,
         }));
 
-        log(`Set selected: ${setName}. Card/product searches will be filtered to this set.`);
+        log(
+          `Set selected: ${setName}. Card/product searches will be filtered to this set.`
+        );
       } else if (fieldType === 'category') {
         // Context7 pattern: Category selection affects subsequent product searches
-        const categoryName = suggestion.category || suggestion.name || suggestion;
-        setState(prev => ({
+        const categoryName =
+          suggestion.category || suggestion.name || suggestion;
+        setState((prev) => ({
           ...prev,
           categoryName,
           selectedCategory: categoryName,
@@ -507,7 +602,7 @@ export const useSearch = (): UseSearchReturn => {
           setName: suggestion.setName,
         };
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           cardProductName: itemName,
           suggestions: [],
@@ -518,40 +613,51 @@ export const useSearch = (): UseSearchReturn => {
 
         // Auto-fill set information from product data (for sealed products)
         if (suggestion.setName) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             setName: suggestion.setName,
             selectedSet: suggestion.setName,
           }));
           log(`Auto-filled set: ${suggestion.setName} from product selection`);
         } else if (suggestion.setInfo && suggestion.setInfo.setName) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             setName: suggestion.setInfo.setName,
             selectedSet: suggestion.setInfo.setName,
           }));
-          log(`Auto-filled set: ${suggestion.setInfo.setName} from card selection`);
+          log(
+            `Auto-filled set: ${suggestion.setInfo.setName} from card selection`
+          );
         }
 
         // Auto-fill category information if available
         if (suggestion.category) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             categoryName: suggestion.category,
             selectedCategory: suggestion.category,
           }));
-          log(`Auto-filled category: ${suggestion.category} from product selection`);
-        } else if (suggestion.categoryInfo && suggestion.categoryInfo.category) {
-          setState(prev => ({
+          log(
+            `Auto-filled category: ${suggestion.category} from product selection`
+          );
+        } else if (
+          suggestion.categoryInfo &&
+          suggestion.categoryInfo.category
+        ) {
+          setState((prev) => ({
             ...prev,
             categoryName: suggestion.categoryInfo.category,
             selectedCategory: suggestion.categoryInfo.category,
           }));
-          log(`Auto-filled category: ${suggestion.categoryInfo.category} from product selection`);
+          log(
+            `Auto-filled category: ${suggestion.categoryInfo.category} from product selection`
+          );
         }
 
         console.log(`[SEARCH DEBUG] Item data stored for autofill:`, itemData);
-        log(`Card/product selected: ${itemName} with complete data for autofill`);
+        log(
+          `Card/product selected: ${itemName} with complete data for autofill`
+        );
       }
     },
     []
@@ -586,7 +692,7 @@ export const useSearch = (): UseSearchReturn => {
     (value: string) => {
       console.log(`[SEARCH DEBUG] updateSetName called with: "${value}"`);
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         setName: value,
         selectedSet: value.trim() ? prev.selectedSet : null, // Clear selectedSet if field is empty
@@ -597,7 +703,9 @@ export const useSearch = (): UseSearchReturn => {
         cardProductName: value.trim() ? prev.cardProductName : '',
       }));
 
-      console.log(`[SEARCH DEBUG] selectedSet will be: ${value.trim() ? 'kept' : 'cleared'}`);
+      console.log(
+        `[SEARCH DEBUG] selectedSet will be: ${value.trim() ? 'kept' : 'cleared'}`
+      );
 
       // Debounced suggestions
       if (debounceRef.current) {
@@ -616,7 +724,7 @@ export const useSearch = (): UseSearchReturn => {
    */
   const updateCardProductName = useCallback(
     (value: string) => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         cardProductName: value,
         activeField: 'cardProduct',
@@ -641,7 +749,7 @@ export const useSearch = (): UseSearchReturn => {
    */
   const updateCategoryName = useCallback(
     (value: string) => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         categoryName: value,
         activeField: 'category',
@@ -665,7 +773,7 @@ export const useSearch = (): UseSearchReturn => {
    * Clear selected set
    */
   const clearSelectedSet = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedSet: null,
       setName: '',
@@ -676,7 +784,7 @@ export const useSearch = (): UseSearchReturn => {
    * Clear selected category
    */
   const clearSelectedCategory = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedCategory: null,
       categoryName: '',
@@ -686,14 +794,17 @@ export const useSearch = (): UseSearchReturn => {
   /**
    * Set active field for suggestion display
    */
-  const setActiveField = useCallback((field: 'set' | 'category' | 'cardProduct' | null) => {
-    setState(prev => ({
-      ...prev,
-      activeField: field,
-      // Clear suggestions when field changes
-      suggestions: field !== prev.activeField ? [] : prev.suggestions,
-    }));
-  }, []);
+  const setActiveField = useCallback(
+    (field: 'set' | 'category' | 'cardProduct' | null) => {
+      setState((prev) => ({
+        ...prev,
+        activeField: field,
+        // Clear suggestions when field changes
+        suggestions: field !== prev.activeField ? [] : prev.suggestions,
+      }));
+    },
+    []
+  );
 
   /**
    * Context7 Relevance Scoring Algorithm
@@ -744,7 +855,8 @@ export const useSearch = (): UseSearchReturn => {
       // 6. Context relevance boost
       if (suggestion.setInfo && state.selectedSet) {
         const setMatch =
-          suggestion.setInfo.setName?.toLowerCase() === state.selectedSet.toLowerCase();
+          suggestion.setInfo.setName?.toLowerCase() ===
+          state.selectedSet.toLowerCase();
         if (setMatch) {
           score += 15;
         }

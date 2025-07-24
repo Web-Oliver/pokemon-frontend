@@ -25,7 +25,7 @@ export const ButtonLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   className = '',
 }) => (
   <>
-    <LoadingSpinner size='sm' className={`mr-2 ${className}`} />
+    <LoadingSpinner size="sm" className={`mr-2 ${className}`} />
     {text}
   </>
 );
@@ -52,7 +52,7 @@ export const ContentLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   className = '',
 }) => (
   <div className={`flex items-center justify-center py-16 ${className}`}>
-    <LoadingSpinner size='lg' text={text} />
+    <LoadingSpinner size="lg" text={text} />
   </div>
 );
 
@@ -65,8 +65,12 @@ export const InlineLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   className = '',
 }) => (
   <div className={`flex items-center ${className}`}>
-    <LoadingSpinner size='sm' className='mr-2' />
-    {text && <span className='text-sm text-slate-600'>{text}</span>}
+    <LoadingSpinner size="sm" className="mr-2" />
+    {text && (
+      <span className="text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300">
+        {text}
+      </span>
+    )}
   </div>
 );
 
@@ -92,6 +96,6 @@ export const CardLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   className = '',
 }) => (
   <div className={`flex items-center justify-center py-6 ${className}`}>
-    <LoadingSpinner size='md' text={text} />
+    <LoadingSpinner size="md" text={text} />
   </div>
 );

@@ -43,13 +43,13 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
       {readOnlyFields.pokemonNumber && (
         <div>
           <Input
-            label='Pokemon Number'
+            label="Pokemon Number"
             {...register('pokemonNumber')}
             error={errors.pokemonNumber?.message}
-            placeholder='e.g., 006, 025, 150'
+            placeholder="e.g., 006, 025, 150"
             disabled={true}
             value={watch('pokemonNumber') || ''}
-            className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
+            className="text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed"
           />
         </div>
       )}
@@ -58,28 +58,28 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
       {readOnlyFields.baseName && (
         <div>
           <Input
-            label='Base Name'
+            label="Base Name"
             {...register('baseName')}
             error={errors.baseName?.message}
-            placeholder='e.g., Charizard, Pikachu, Mew'
+            placeholder="e.g., Charizard, Pikachu, Mew"
             disabled={true}
             value={watch('baseName') || ''}
-            className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
+            className="text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed"
           />
         </div>
       )}
 
       {/* Variety */}
       {readOnlyFields.variety && (
-        <div className='md:col-span-2'>
+        <div className="md:col-span-2">
           <Input
-            label='Variety'
+            label="Variety"
             {...register('variety')}
             error={errors.variety?.message}
-            placeholder='e.g., Holo, Shadowless, 1st Edition'
+            placeholder="e.g., Holo, Shadowless, 1st Edition"
             disabled={true}
             value={watch('variety') || ''}
-            className='text-center bg-gray-50 text-gray-500 cursor-not-allowed'
+            className="text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed"
           />
         </div>
       )}

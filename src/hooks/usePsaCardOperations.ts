@@ -17,9 +17,15 @@ export interface UsePsaCardOperationsReturn {
   loading: boolean;
   error: string | null;
   addPsaCard: (cardData: Partial<IPsaGradedCard>) => Promise<IPsaGradedCard>;
-  updatePsaCard: (id: string, cardData: Partial<IPsaGradedCard>) => Promise<IPsaGradedCard>;
+  updatePsaCard: (
+    id: string,
+    cardData: Partial<IPsaGradedCard>
+  ) => Promise<IPsaGradedCard>;
   deletePsaCard: (id: string) => Promise<void>;
-  markPsaCardSold: (id: string, saleDetails: ISaleDetails) => Promise<IPsaGradedCard>;
+  markPsaCardSold: (
+    id: string,
+    saleDetails: ISaleDetails
+  ) => Promise<IPsaGradedCard>;
   clearError: () => void;
 }
 

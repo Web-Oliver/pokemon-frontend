@@ -9,18 +9,18 @@
  * - Layer 4: Application Screen - orchestrates Layer 3 components and Layer 2 hooks
  */
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Download, FileText } from 'lucide-react';
-import { PageLayout } from '../components/layouts/PageLayout';
-import { navigationHelper } from '../utils/navigation';
+import { Download, FileText, Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
-import CollectionStats from '../components/lists/CollectionStats';
-import CollectionTabs, { TabType } from '../components/lists/CollectionTabs';
+import { PageLayout } from '../components/layouts/PageLayout';
 import CollectionExportModal from '../components/lists/CollectionExportModal';
 import { CollectionItem } from '../components/lists/CollectionItemCard';
-import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import CollectionStats from '../components/lists/CollectionStats';
+import CollectionTabs, { TabType } from '../components/lists/CollectionTabs';
 import { useCollectionExport } from '../hooks/useCollectionExport';
+import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import { navigationHelper } from '../utils/navigation';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
@@ -32,8 +32,15 @@ const Collection: React.FC = () => {
     name: string;
   } | null>(null);
 
-  const { psaCards, rawCards, sealedProducts, soldItems, loading, error, refreshCollection } =
-    useCollectionOperations();
+  const {
+    psaCards,
+    rawCards,
+    sealedProducts,
+    soldItems,
+    loading,
+    error,
+    refreshCollection,
+  } = useCollectionOperations();
 
   const {
     isExporting,
@@ -66,12 +73,18 @@ const Collection: React.FC = () => {
   };
 
   // Handle navigation to item detail page
-  const handleViewItemDetail = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
+  const handleViewItemDetail = (
+    item: CollectionItem,
+    type: 'psa' | 'raw' | 'sealed'
+  ) => {
     navigationHelper.navigateToItemDetail(type, item.id);
   };
 
   // Handle mark as sold button click
-  const handleMarkAsSold = (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
+  const handleMarkAsSold = (
+    item: CollectionItem,
+    type: 'psa' | 'raw' | 'sealed'
+  ) => {
     setSelectedItem({
       id: item.id,
       type,
@@ -122,28 +135,28 @@ const Collection: React.FC = () => {
   };
 
   const headerActions = (
-    <div className='flex items-center space-x-3'>
+    <div className="flex items-center space-x-3">
       <button
         onClick={handleExportAllItems}
         disabled={isExporting || loading}
-        className='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <FileText className='w-5 h-5 mr-2' />
+        <FileText className="w-5 h-5 mr-2" />
         {isExporting ? 'Exporting...' : 'Export All'}
       </button>
       <button
         onClick={handleOpenExportModal}
         disabled={isExporting || loading}
-        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Download className='w-5 h-5 mr-2' />
+        <Download className="w-5 h-5 mr-2" />
         Export Selected
       </button>
       <button
         onClick={handleAddNewItem}
-        className='bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20'
+        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20"
       >
-        <Plus className='w-5 h-5 mr-2' />
+        <Plus className="w-5 h-5 mr-2" />
         Add New Item
       </button>
     </div>
@@ -151,12 +164,12 @@ const Collection: React.FC = () => {
 
   return (
     <PageLayout
-      title='My Premium Collection'
-      subtitle='Manage your Pokémon cards and sealed products with award-winning style'
+      title="My Premium Collection"
+      subtitle="Manage your Pokémon cards and sealed products with award-winning style"
       loading={loading}
       error={error}
       actions={headerActions}
-      variant='default'
+      variant="default"
     >
       {/* Collection Statistics */}
       <CollectionStats
@@ -200,7 +213,7 @@ const Collection: React.FC = () => {
         isOpen={isMarkSoldModalOpen}
         onClose={handleModalClose}
         title={`Mark "${selectedItem?.name}" as Sold`}
-        maxWidth='2xl'
+        maxWidth="2xl"
       >
         {selectedItem && (
           <MarkSoldForm

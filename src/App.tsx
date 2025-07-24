@@ -128,10 +128,10 @@ function App() {
     <>
       <MainLayout>{renderPage()}</MainLayout>
       <Toaster
-        position='top-right'
+        position="top-right"
         reverseOrder={false}
         gutter={8}
-        containerClassName=''
+        containerClassName=""
         containerStyle={{}}
         toastOptions={{
           // Global default options for all toasts
@@ -142,7 +142,8 @@ function App() {
             fontSize: '14px',
             fontWeight: '500',
             borderRadius: '8px',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            boxShadow:
+              '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
           },
           success: {
             duration: 4000,

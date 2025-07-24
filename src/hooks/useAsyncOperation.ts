@@ -30,22 +30,26 @@ export const useAsyncOperation = <T = any>(
     setError(null);
   }, []);
 
-  const execute = useCallback(async (operation: () => Promise<T>): Promise<T | undefined> => {
-    setLoading(true);
-    setError(null);
+  const execute = useCallback(
+    async (operation: () => Promise<T>): Promise<T | undefined> => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await operation();
-      setData(result);
-      setLoading(false);
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      setError(errorMessage);
-      setLoading(false);
-      throw err;
-    }
-  }, []);
+      try {
+        const result = await operation();
+        setData(result);
+        setLoading(false);
+        return result;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'An error occurred';
+        setError(errorMessage);
+        setLoading(false);
+        throw err;
+      }
+    },
+    []
+  );
 
   return {
     loading,

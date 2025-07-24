@@ -6,12 +6,12 @@
 
 import { ICollectionApiService } from '../interfaces/api/ICollectionApiService';
 import { IExportApiService } from '../interfaces/api/IExportApiService';
-import { IUploadApiService } from '../interfaces/api/IUploadApiService';
 import { ISearchApiService } from '../interfaces/api/ISearchApiService';
+import { IUploadApiService } from '../interfaces/api/IUploadApiService';
 import { collectionApiService } from './CollectionApiService';
 import { exportApiService } from './ExportApiService';
-import { uploadApiService } from './UploadApiService';
 import { searchApiService } from './SearchApiService';
+import { uploadApiService } from './UploadApiService';
 
 /**
  * Service Registry for dependency injection
@@ -82,8 +82,11 @@ export const serviceRegistry = ServiceRegistry.getInstance();
 export const getCollectionApiService = (): ICollectionApiService =>
   serviceRegistry.collectionApiService;
 
-export const getExportApiService = (): IExportApiService => serviceRegistry.exportApiService;
+export const getExportApiService = (): IExportApiService =>
+  serviceRegistry.exportApiService;
 
-export const getUploadApiService = (): IUploadApiService => serviceRegistry.uploadApiService;
+export const getUploadApiService = (): IUploadApiService =>
+  serviceRegistry.uploadApiService;
 
-export const getSearchApiService = (): ISearchApiService => serviceRegistry.searchApiService;
+export const getSearchApiService = (): ISearchApiService =>
+  serviceRegistry.searchApiService;

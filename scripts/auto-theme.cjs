@@ -5,9 +5,9 @@
  * WITHOUT breaking existing functionality
  */
 
-import fs from 'fs';
-import path from 'path';
-import { glob } from 'glob';
+const fs = require('fs');
+const path = require('path');
+const { glob } = require('glob');
 
 // Smart color mappings for light -> dark conversion
 const COLOR_MAPPINGS = {

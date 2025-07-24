@@ -103,8 +103,8 @@ export const useDataTable = <T extends { id: string }>(
     // Apply search query
     if (searchQuery.trim() && searchFields.length > 0) {
       const query = searchQuery.toLowerCase().trim();
-      result = result.filter(item =>
-        searchFields.some(field => {
+      result = result.filter((item) =>
+        searchFields.some((field) => {
           const value = item[field];
           return value && value.toString().toLowerCase().includes(query);
         })
@@ -112,8 +112,8 @@ export const useDataTable = <T extends { id: string }>(
     }
 
     // Apply filters
-    filters.forEach(filter => {
-      result = result.filter(item => {
+    filters.forEach((filter) => {
+      result = result.filter((item) => {
         const value = (item as any)[filter.field];
         if (!value) {
           return false;
@@ -167,8 +167,8 @@ export const useDataTable = <T extends { id: string }>(
 
   // Filter operations
   const addFilter = useCallback((filter: DataTableFilter) => {
-    setFilters(prev => {
-      const existing = prev.findIndex(f => f.field === filter.field);
+    setFilters((prev) => {
+      const existing = prev.findIndex((f) => f.field === filter.field);
       if (existing >= 0) {
         // Replace existing filter
         const newFilters = [...prev];
@@ -183,7 +183,7 @@ export const useDataTable = <T extends { id: string }>(
   }, []);
 
   const removeFilter = useCallback((field: string) => {
-    setFilters(prev => prev.filter(f => f.field !== field));
+    setFilters((prev) => prev.filter((f) => f.field !== field));
     setCurrentPage(1);
   }, []);
 
@@ -199,7 +199,7 @@ export const useDataTable = <T extends { id: string }>(
   }, []);
 
   const toggleSort = useCallback((field: string) => {
-    setSort(prev => {
+    setSort((prev) => {
       if (!prev || prev.field !== field) {
         return { field, direction: 'asc' };
       } else if (prev.direction === 'asc') {
@@ -212,8 +212,8 @@ export const useDataTable = <T extends { id: string }>(
 
   // Selection operations
   const selectItem = useCallback((item: T) => {
-    setSelectedItems(prev => {
-      if (prev.find(i => i.id === item.id)) {
+    setSelectedItems((prev) => {
+      if (prev.find((i) => i.id === item.id)) {
         return prev;
       }
       return [...prev, item];
@@ -221,7 +221,7 @@ export const useDataTable = <T extends { id: string }>(
   }, []);
 
   const deselectItem = useCallback((item: T) => {
-    setSelectedItems(prev => prev.filter(i => i.id !== item.id));
+    setSelectedItems((prev) => prev.filter((i) => i.id !== item.id));
   }, []);
 
   const selectAll = useCallback(() => {
@@ -234,7 +234,7 @@ export const useDataTable = <T extends { id: string }>(
 
   const isItemSelected = useCallback(
     (item: T) => {
-      return selectedItems.some(i => i.id === item.id);
+      return selectedItems.some((i) => i.id === item.id);
     },
     [selectedItems]
   );

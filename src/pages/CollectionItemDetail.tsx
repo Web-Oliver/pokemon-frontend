@@ -4,34 +4,36 @@
  * Following CLAUDE.md principles for detailed information display
  */
 
-import React, { useState, useEffect } from 'react';
 import {
-  ArrowLeft,
-  Edit,
-  Trash2,
-  Star,
-  Package,
   Archive,
-  DollarSign,
-  Image as ImageIcon,
-  TrendingUp,
+  ArrowLeft,
   CheckCircle,
-  Info,
+  DollarSign,
   Download,
+  Edit,
+  Image as ImageIcon,
+  Info,
+  Package,
+  Star,
+  Trash2,
+  TrendingUp,
 } from 'lucide-react';
-import { PageLayout } from '../components/layouts/PageLayout';
-import { navigationHelper } from '../utils/navigation';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import React, { useEffect, useState } from 'react';
 import Button from '../components/common/Button';
 import ConfirmModal from '../components/common/ConfirmModal';
-import { ImageSlideshow } from '../components/common/ImageSlideshow';
 import { ImageProductView } from '../components/common/ImageProductView';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { PageLayout } from '../components/layouts/PageLayout';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
-import { getCollectionApiService, getExportApiService } from '../services/ServiceRegistry';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
+import {
+  getCollectionApiService,
+  getExportApiService,
+} from '../services/ServiceRegistry';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
+import { navigationHelper } from '../utils/navigation';
 
 type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
@@ -82,7 +84,10 @@ const CollectionItemDetail: React.FC = () => {
 
       exportApi.downloadBlob(zipBlob, filename);
       showSuccessToast('Images downloaded successfully!');
-      log('[CollectionItemDetail] Images zip downloaded successfully', { itemId: id, type });
+      log('[CollectionItemDetail] Images zip downloaded successfully', {
+        itemId: id,
+        type,
+      });
     } catch (err: any) {
       const errorMessage = 'Failed to download images';
       setError(errorMessage);
@@ -135,8 +140,13 @@ const CollectionItemDetail: React.FC = () => {
 
       // Update local state with fresh data from server
       setItem(updatedItem);
-      showSuccessToast('Price updated successfully! My Price synced to latest entry.');
-      log('[CollectionItemDetail] Price updated successfully', { newPrice, itemId: id });
+      showSuccessToast(
+        'Price updated successfully! My Price synced to latest entry.'
+      );
+      log('[CollectionItemDetail] Price updated successfully', {
+        newPrice,
+        itemId: id,
+      });
     } catch (err: any) {
       const errorMessage = 'Failed to update price';
       setError(errorMessage);
@@ -315,61 +325,65 @@ const CollectionItemDetail: React.FC = () => {
       // PSA Graded Card
       const psaCard = item as IPsaGradedCard;
       return (
-        <div className='space-y-6'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <div className='bg-blue-50 p-6 rounded-2xl'>
-              <h3 className='text-lg font-semibold text-blue-800 mb-4 flex items-center'>
-                <Star className='w-5 h-5 mr-2' />
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-6 rounded-2xl">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+                <Star className="w-5 h-5 mr-2" />
                 PSA Grading Information
               </h3>
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-blue-600'>Grade:</span>
-                  <span className='font-bold text-blue-800'>{psaCard.grade}</span>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-blue-600">Grade:</span>
+                  <span className="font-bold text-blue-800">
+                    {psaCard.grade}
+                  </span>
                 </div>
-                <div className='flex justify-between'>
-                  <span className='text-blue-600'>Card Name:</span>
-                  <span className='font-medium text-blue-800'>
+                <div className="flex justify-between">
+                  <span className="text-blue-600">Card Name:</span>
+                  <span className="font-medium text-blue-800">
                     {psaCard.cardName || psaCard.cardId?.cardName || 'N/A'}
                   </span>
                 </div>
-                <div className='flex justify-between'>
-                  <span className='text-blue-600'>Base Name:</span>
-                  <span className='font-medium text-blue-800'>
+                <div className="flex justify-between">
+                  <span className="text-blue-600">Base Name:</span>
+                  <span className="font-medium text-blue-800">
                     {psaCard.cardId?.baseName || 'N/A'}
                   </span>
                 </div>
-                <div className='flex justify-between'>
-                  <span className='text-blue-600'>Pokemon #:</span>
-                  <span className='font-medium text-blue-800'>
+                <div className="flex justify-between">
+                  <span className="text-blue-600">Pokemon #:</span>
+                  <span className="font-medium text-blue-800">
                     {psaCard.cardId?.pokemonNumber || 'N/A'}
                   </span>
                 </div>
-                <div className='flex justify-between'>
-                  <span className='text-blue-600'>Variety:</span>
-                  <span className='font-medium text-blue-800'>
+                <div className="flex justify-between">
+                  <span className="text-blue-600">Variety:</span>
+                  <span className="font-medium text-blue-800">
                     {psaCard.cardId?.variety || 'Standard'}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className='bg-green-50 p-6 rounded-2xl'>
-              <h3 className='text-lg font-semibold text-green-800 mb-4 flex items-center'>
-                <TrendingUp className='w-5 h-5 mr-2' />
+            <div className="bg-green-50 p-6 rounded-2xl">
+              <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2" />
                 Population Data
               </h3>
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-green-600'>Total PSA Population:</span>
-                  <span className='font-bold text-green-800'>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-green-600">Total PSA Population:</span>
+                  <span className="font-bold text-green-800">
                     {psaCard.cardId?.psaTotalGradedForCard || 'N/A'}
                   </span>
                 </div>
                 {psaCard.cardId?.psaGrades && (
-                  <div className='mt-4'>
-                    <p className='text-sm text-green-600 mb-2'>Grade Distribution:</p>
-                    <div className='grid grid-cols-2 gap-2 text-xs'>
+                  <div className="mt-4">
+                    <p className="text-sm text-green-600 mb-2">
+                      Grade Distribution:
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
                       {Object.entries(psaCard.cardId.psaGrades)
                         .filter(([grade, count]) => count > 0) // Only show grades with population > 0
                         .map(([grade, count]) => {
@@ -385,15 +399,15 @@ const CollectionItemDetail: React.FC = () => {
                               }`}
                             >
                               <span>Grade {gradeNumber}:</span>
-                              <span className='font-medium'>{count}</span>
+                              <span className="font-medium">{count}</span>
                             </div>
                           );
                         })}
                     </div>
 
                     {/* Show total population */}
-                    <div className='mt-3 pt-2 border-t border-green-200'>
-                      <div className='flex justify-between text-sm font-semibold'>
+                    <div className="mt-3 pt-2 border-t border-green-200">
+                      <div className="flex justify-between text-sm font-semibold">
                         <span>Total Population:</span>
                         <span>
                           {Object.values(psaCard.cardId.psaGrades).reduce(
@@ -416,31 +430,33 @@ const CollectionItemDetail: React.FC = () => {
       // Raw Card
       const rawCard = item as IRawCard;
       return (
-        <div className='bg-emerald-50 p-6 rounded-2xl'>
-          <h3 className='text-lg font-semibold text-emerald-800 mb-4 flex items-center'>
-            <Package className='w-5 h-5 mr-2' />
+        <div className="bg-emerald-50 p-6 rounded-2xl">
+          <h3 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
+            <Package className="w-5 h-5 mr-2" />
             Raw Card Information
           </h3>
-          <div className='space-y-3'>
-            <div className='flex justify-between'>
-              <span className='text-emerald-600'>Condition:</span>
-              <span className='font-bold text-emerald-800'>{rawCard.condition}</span>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-emerald-600">Condition:</span>
+              <span className="font-bold text-emerald-800">
+                {rawCard.condition}
+              </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-emerald-600'>Card Name:</span>
-              <span className='font-medium text-emerald-800'>
+            <div className="flex justify-between">
+              <span className="text-emerald-600">Card Name:</span>
+              <span className="font-medium text-emerald-800">
                 {rawCard.cardName || rawCard.cardId?.cardName || 'N/A'}
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-emerald-600'>Base Name:</span>
-              <span className='font-medium text-emerald-800'>
+            <div className="flex justify-between">
+              <span className="text-emerald-600">Base Name:</span>
+              <span className="font-medium text-emerald-800">
                 {rawCard.cardId?.baseName || 'N/A'}
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-emerald-600'>Pokemon #:</span>
-              <span className='font-medium text-emerald-800'>
+            <div className="flex justify-between">
+              <span className="text-emerald-600">Pokemon #:</span>
+              <span className="font-medium text-emerald-800">
                 {rawCard.cardId?.pokemonNumber || 'N/A'}
               </span>
             </div>
@@ -453,25 +469,27 @@ const CollectionItemDetail: React.FC = () => {
       // Sealed Product
       const sealedProduct = item as ISealedProduct;
       return (
-        <div className='bg-purple-50 p-6 rounded-2xl'>
-          <h3 className='text-lg font-semibold text-purple-800 mb-4 flex items-center'>
-            <Archive className='w-5 h-5 mr-2' />
+        <div className="bg-purple-50 p-6 rounded-2xl">
+          <h3 className="text-lg font-semibold text-purple-800 mb-4 flex items-center">
+            <Archive className="w-5 h-5 mr-2" />
             Sealed Product Information
           </h3>
-          <div className='space-y-3'>
-            <div className='flex justify-between'>
-              <span className='text-purple-600'>Category:</span>
-              <span className='font-bold text-purple-800'>{sealedProduct.category}</span>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-purple-600">Category:</span>
+              <span className="font-bold text-purple-800">
+                {sealedProduct.category}
+              </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-purple-600'>Availability:</span>
-              <span className='font-medium text-purple-800'>
+            <div className="flex justify-between">
+              <span className="text-purple-600">Availability:</span>
+              <span className="font-medium text-purple-800">
                 {sealedProduct.availability || 'N/A'}
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-purple-600'>CardMarket Price:</span>
-              <span className='font-medium text-purple-800'>
+            <div className="flex justify-between">
+              <span className="text-purple-600">CardMarket Price:</span>
+              <span className="font-medium text-purple-800">
                 {sealedProduct.cardMarketPrice || 'N/A'} kr.
               </span>
             </div>
@@ -489,50 +507,56 @@ const CollectionItemDetail: React.FC = () => {
     }
 
     return (
-      <div className='bg-green-50 p-6 rounded-2xl'>
-        <h3 className='text-lg font-semibold text-green-800 mb-4 flex items-center'>
-          <CheckCircle className='w-5 h-5 mr-2' />
+      <div className="bg-green-50 p-6 rounded-2xl">
+        <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
+          <CheckCircle className="w-5 h-5 mr-2" />
           Sale Information
         </h3>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div className='space-y-3'>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Sale Price:</span>
-              <span className='font-bold text-green-800'>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-green-600">Sale Price:</span>
+              <span className="font-bold text-green-800">
                 {item.saleDetails.actualSoldPrice} kr.
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Payment Method:</span>
-              <span className='font-medium text-green-800'>{item.saleDetails.paymentMethod}</span>
+            <div className="flex justify-between">
+              <span className="text-green-600">Payment Method:</span>
+              <span className="font-medium text-green-800">
+                {item.saleDetails.paymentMethod}
+              </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Delivery:</span>
-              <span className='font-medium text-green-800'>{item.saleDetails.deliveryMethod}</span>
+            <div className="flex justify-between">
+              <span className="text-green-600">Delivery:</span>
+              <span className="font-medium text-green-800">
+                {item.saleDetails.deliveryMethod}
+              </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Source:</span>
-              <span className='font-medium text-green-800'>{item.saleDetails.source}</span>
+            <div className="flex justify-between">
+              <span className="text-green-600">Source:</span>
+              <span className="font-medium text-green-800">
+                {item.saleDetails.source}
+              </span>
             </div>
           </div>
-          <div className='space-y-3'>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Date Sold:</span>
-              <span className='font-medium text-green-800'>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-green-600">Date Sold:</span>
+              <span className="font-medium text-green-800">
                 {item.saleDetails.dateSold
                   ? new Date(item.saleDetails.dateSold).toLocaleDateString()
                   : 'N/A'}
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Buyer:</span>
-              <span className='font-medium text-green-800'>
+            <div className="flex justify-between">
+              <span className="text-green-600">Buyer:</span>
+              <span className="font-medium text-green-800">
                 {item.saleDetails.buyerFullName || 'N/A'}
               </span>
             </div>
-            <div className='flex justify-between'>
-              <span className='text-green-600'>Tracking:</span>
-              <span className='font-medium text-green-800'>
+            <div className="flex justify-between">
+              <span className="text-green-600">Tracking:</span>
+              <span className="font-medium text-green-800">
                 {item.saleDetails.trackingNumber || 'N/A'}
               </span>
             </div>
@@ -543,16 +567,16 @@ const CollectionItemDetail: React.FC = () => {
   };
 
   const headerActions = (
-    <div className='flex items-center space-x-3'>
+    <div className="flex items-center space-x-3">
       <button
         onClick={handleEdit}
-        className='bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
       >
         Edit Item
       </button>
       <button
         onClick={handleBackToCollection}
-        className='bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105'
+        className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
       >
         Back to Collection
       </button>
@@ -562,42 +586,51 @@ const CollectionItemDetail: React.FC = () => {
   return (
     <PageLayout
       title={getItemTitle()}
-      subtitle='View and manage your collection item'
+      subtitle="View and manage your collection item"
       loading={loading}
       error={error || (!item ? 'Item not found' : null)}
       actions={headerActions}
-      variant='default'
+      variant="default"
     >
       <>
         {!item ? (
-          <div className='flex items-center justify-center min-h-64'>
-            <div className='text-center'>
-              <p className='text-zinc-400 mb-4'>Loading item details...</p>
+          <div className="flex items-center justify-center min-h-64">
+            <div className="text-center">
+              <p className="text-zinc-400 mb-4">Loading item details...</p>
             </div>
           </div>
         ) : (
-          <div className='max-w-6xl mx-auto p-8'>
+          <div className="max-w-6xl mx-auto p-8">
             {/* Header */}
-            <div className='mb-8'>
-              <Button variant='outline' size='sm' onClick={handleBackToCollection} className='mb-4'>
-                <ArrowLeft className='w-4 h-4 mr-2' />
+            <div className="mb-8">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBackToCollection}
+                className="mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Collection
               </Button>
 
-              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8'>
-                <div className='flex items-start justify-between'>
+              <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8">
+                <div className="flex items-start justify-between">
                   <div>
-                    <h1 className='text-3xl font-bold text-zinc-100 mb-2'>{getItemTitle()}</h1>
-                    <p className='text-xl text-zinc-300 mb-2'>{getItemSubtitle()}</p>
-                    <p className='text-lg text-zinc-400'>Set: {getSetName()}</p>
+                    <h1 className="text-3xl font-bold text-zinc-100 mb-2">
+                      {getItemTitle()}
+                    </h1>
+                    <p className="text-xl text-zinc-300 mb-2">
+                      {getItemSubtitle()}
+                    </p>
+                    <p className="text-lg text-zinc-400">Set: {getSetName()}</p>
                   </div>
-                  <div className='flex items-center space-x-3'>
-                    <Button variant='outline' size='sm' onClick={handleEdit}>
-                      <Edit className='w-4 h-4 mr-2' />
+                  <div className="flex items-center space-x-3">
+                    <Button variant="outline" size="sm" onClick={handleEdit}>
+                      <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
-                    <Button variant='danger' size='sm' onClick={handleDelete}>
-                      <Trash2 className='w-4 h-4 mr-2' />
+                    <Button variant="danger" size="sm" onClick={handleDelete}>
+                      <Trash2 className="w-4 h-4 mr-2" />
                       Delete
                     </Button>
                   </div>
@@ -606,28 +639,32 @@ const CollectionItemDetail: React.FC = () => {
             </div>
 
             {/* Main Content - Details */}
-            <div className='space-y-6 mb-8'>
+            <div className="space-y-6 mb-8">
               {/* Basic Information */}
-              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
-                <h2 className='text-xl font-semibold text-zinc-100 mb-4 flex items-center'>
-                  <Info className='w-5 h-5 mr-2' />
+              <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6">
+                <h2 className="text-xl font-semibold text-zinc-100 mb-4 flex items-center">
+                  <Info className="w-5 h-5 mr-2" />
                   Basic Information
                 </h2>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  <div className='space-y-3'>
-                    <div className='flex justify-between'>
-                      <span className='text-zinc-300'>My Price:</span>
-                      <span className='font-bold text-zinc-100'>{item.myPrice || '0'} kr.</span>
-                    </div>
-                    <div className='flex justify-between'>
-                      <span className='text-zinc-300'>Date Added:</span>
-                      <span className='font-medium text-zinc-100'>
-                        {item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() : 'N/A'}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-300">My Price:</span>
+                      <span className="font-bold text-zinc-100">
+                        {item.myPrice || '0'} kr.
                       </span>
                     </div>
-                    <div className='flex justify-between'>
-                      <span className='text-zinc-300'>Status:</span>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-300">Date Added:</span>
+                      <span className="font-medium text-zinc-100">
+                        {item.dateAdded
+                          ? new Date(item.dateAdded).toLocaleDateString()
+                          : 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-300">Status:</span>
                       <span
                         className={`font-medium ${item.sold ? 'text-green-600' : 'text-blue-600'}`}
                       >
@@ -636,10 +673,10 @@ const CollectionItemDetail: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className='space-y-3'>
-                    <div className='flex justify-between'>
-                      <span className='text-zinc-300'>Item Type:</span>
-                      <span className='font-medium text-zinc-100'>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-300">Item Type:</span>
+                      <span className="font-medium text-zinc-100">
                         {(() => {
                           const { type } = getUrlParams();
                           return type === 'psa'
@@ -650,9 +687,11 @@ const CollectionItemDetail: React.FC = () => {
                         })()}
                       </span>
                     </div>
-                    <div className='flex justify-between'>
-                      <span className='text-zinc-300'>Images:</span>
-                      <span className='font-medium text-zinc-100'>{item.images?.length || 0}</span>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-300">Images:</span>
+                      <span className="font-medium text-zinc-100">
+                        {item.images?.length || 0}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -662,9 +701,9 @@ const CollectionItemDetail: React.FC = () => {
               {renderItemSpecificInfo()}
 
               {/* Price History */}
-              <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
-                <h2 className='text-xl font-semibold text-zinc-100 mb-4 flex items-center'>
-                  <DollarSign className='w-5 h-5 mr-2' />
+              <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6">
+                <h2 className="text-xl font-semibold text-zinc-100 mb-4 flex items-center">
+                  <DollarSign className="w-5 h-5 mr-2" />
                   Price History
                 </h2>
 
@@ -680,35 +719,37 @@ const CollectionItemDetail: React.FC = () => {
             </div>
 
             {/* Images Section - Using Standardized ImageProductView */}
-            <div className='bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-xl font-semibold text-zinc-100 flex items-center'>
-                  <ImageIcon className='w-5 h-5 mr-2' />
+            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-zinc-100 flex items-center">
+                  <ImageIcon className="w-5 h-5 mr-2" />
                   Images
                 </h2>
 
                 {/* ZIP Download Button */}
                 {item.images && item.images.length > 0 && (
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={handleDownloadImages}
                     disabled={downloadingZip}
-                    className='flex items-center space-x-2'
+                    className="flex items-center space-x-2"
                   >
                     {downloadingZip ? (
-                      <LoadingSpinner size='sm' />
+                      <LoadingSpinner size="sm" />
                     ) : (
-                      <Download className='w-4 h-4' />
+                      <Download className="w-4 h-4" />
                     )}
-                    <span>{downloadingZip ? 'Downloading...' : 'Download ZIP'}</span>
+                    <span>
+                      {downloadingZip ? 'Downloading...' : 'Download ZIP'}
+                    </span>
                   </Button>
                 )}
               </div>
 
               {/* Standardized Image Product View */}
-              <div className='w-full flex justify-center'>
-                <div className='w-full max-w-[400px]'>
+              <div className="w-full flex justify-center">
+                <div className="w-full max-w-[400px]">
                   <ImageProductView
                     images={item.images || []}
                     title={getItemTitle()}
@@ -723,9 +764,9 @@ const CollectionItemDetail: React.FC = () => {
                     category={'category' in item ? item.category : undefined}
                     sold={item.sold}
                     saleDate={item.saleDetails?.dateSold}
-                    variant='detail'
-                    size='xl'
-                    aspectRatio='card'
+                    variant="detail"
+                    size="xl"
+                    aspectRatio="card"
                     showBadge={true}
                     showPrice={true}
                     showActions={true}
@@ -733,7 +774,7 @@ const CollectionItemDetail: React.FC = () => {
                     onDownload={handleDownloadImages}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    className='mx-auto'
+                    className="mx-auto"
                   />
                 </div>
               </div>
@@ -746,11 +787,11 @@ const CollectionItemDetail: React.FC = () => {
           isOpen={showDeleteConfirm}
           onClose={handleCancelDelete}
           onConfirm={handleConfirmDelete}
-          title='Delete Collection Item'
-          description='Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection.'
-          confirmText='Delete Item'
-          variant='danger'
-          icon='trash'
+          title="Delete Collection Item"
+          description="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
+          confirmText="Delete Item"
+          variant="danger"
+          icon="trash"
           isLoading={deleting}
         />
       </>

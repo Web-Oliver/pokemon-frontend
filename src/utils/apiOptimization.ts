@@ -61,7 +61,11 @@ export function getCachedData<T>(cacheKey: string): T | null {
 /**
  * Set cache data with TTL
  */
-export function setCacheData<T>(cacheKey: string, data: T, ttl: number = 5 * 60 * 1000): void {
+export function setCacheData<T>(
+  cacheKey: string,
+  data: T,
+  ttl: number = 5 * 60 * 1000
+): void {
   requestCache.set(cacheKey, {
     data,
     timestamp: Date.now(),

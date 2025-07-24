@@ -30,7 +30,9 @@ export interface UseFormValidationReturn {
  * Hook for form validation logic
  * Follows SRP - only handles validation rules and logic
  */
-export const useFormValidation = (rules: ValidationRules): UseFormValidationReturn => {
+export const useFormValidation = (
+  rules: ValidationRules
+): UseFormValidationReturn => {
   const validateField = useCallback(
     (fieldName: string, value: any): string | undefined => {
       const rule = rules[fieldName];
@@ -39,7 +41,10 @@ export const useFormValidation = (rules: ValidationRules): UseFormValidationRetu
       }
 
       // Required validation
-      if (rule.required && (!value || (typeof value === 'string' && value.trim() === ''))) {
+      if (
+        rule.required &&
+        (!value || (typeof value === 'string' && value.trim() === ''))
+      ) {
         return `${fieldName} is required`;
       }
 
@@ -49,7 +54,11 @@ export const useFormValidation = (rules: ValidationRules): UseFormValidationRetu
       }
 
       // Pattern validation
-      if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
+      if (
+        rule.pattern &&
+        typeof value === 'string' &&
+        !rule.pattern.test(value)
+      ) {
         return `${fieldName} format is invalid`;
       }
 
@@ -87,7 +96,7 @@ export const useFormValidation = (rules: ValidationRules): UseFormValidationRetu
     (formData: Record<string, any>): Record<string, string> => {
       const errors: Record<string, string> = {};
 
-      Object.keys(rules).forEach(fieldName => {
+      Object.keys(rules).forEach((fieldName) => {
         const error = validateField(fieldName, formData[fieldName]);
         if (error) {
           errors[fieldName] = error;

@@ -4,15 +4,17 @@
  * Concrete implementation of ISearchApiService using existing API modules
  */
 
-import { ISearchApiService } from '../interfaces/api/ISearchApiService';
 import { getProductCategories } from '../api/searchApi';
+import { ISearchApiService } from '../interfaces/api/ISearchApiService';
 
 /**
  * Concrete implementation of Search API Service
  * Adapts existing searchApi module to the interface contract
  */
 export class SearchApiService implements ISearchApiService {
-  async getProductCategories(): Promise<Array<{ value: string; label: string }>> {
+  async getProductCategories(): Promise<
+    Array<{ value: string; label: string }>
+  > {
     return await getProductCategories();
   }
 }

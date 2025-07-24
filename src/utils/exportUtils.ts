@@ -9,7 +9,10 @@
  * - Reusability: Functions can be used across different export contexts
  */
 
-import { ExportItemType, ExportFormat } from '../interfaces/api/IExportApiService';
+import {
+  ExportItemType,
+  ExportFormat,
+} from '../interfaces/api/IExportApiService';
 
 /**
  * Export configuration interface
@@ -103,7 +106,10 @@ export const getExportConfig = (configKey: string): ExportConfig => {
  * Generate export configuration key from item type and format
  * Consolidates key generation logic
  */
-export const getExportConfigKey = (itemType: ExportItemType, format: ExportFormat): string => {
+export const getExportConfigKey = (
+  itemType: ExportItemType,
+  format: ExportFormat
+): string => {
   if (format === 'zip') {
     return `${itemType}-zip`;
   } else if (format === 'facebook-text') {
@@ -141,7 +147,9 @@ export const validateExportRequest = (
   try {
     getExportConfigKey(itemType, format);
   } catch (error) {
-    throw new Error(`Unsupported export combination: ${itemType} with ${format}`);
+    throw new Error(
+      `Unsupported export combination: ${itemType} with ${format}`
+    );
   }
 };
 
@@ -217,7 +225,10 @@ export const getRecommendedBatchSize = (format: ExportFormat): number => {
  * Determine if export should be processed in chunks
  * Helps manage large export operations
  */
-export const shouldChunkExport = (itemCount: number, format: ExportFormat): boolean => {
+export const shouldChunkExport = (
+  itemCount: number,
+  format: ExportFormat
+): boolean => {
   const batchSize = getRecommendedBatchSize(format);
   return itemCount > batchSize;
 };

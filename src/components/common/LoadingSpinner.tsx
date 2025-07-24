@@ -57,9 +57,9 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   const SpinnerElement = (
     <div className={containerClasses}>
-      <div className='flex flex-col items-center'>
+      <div className="flex flex-col items-center">
         {/* Context7 Premium Loading Container */}
-        <div className='relative'>
+        <div className="relative">
           {/* Multi-layer rotating rings */}
           <div
             className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 animate-spin ${sizeClasses[size]}`}

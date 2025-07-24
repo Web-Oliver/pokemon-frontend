@@ -14,7 +14,10 @@
  * Only enables debug logging in development environment
  */
 const isApiLoggingEnabled = (): boolean => {
-  return process.env.NODE_ENV === 'development' || process.env.REACT_APP_DEBUG_API === 'true';
+  return (
+    process.env.NODE_ENV === 'development' ||
+    process.env.REACT_APP_DEBUG_API === 'true'
+  );
 };
 
 /**
@@ -55,7 +58,11 @@ export class ApiLogger {
    * Log extracted/processed data
    * Only logs in development environment
    */
-  logProcessedData(methodName: string, data: any, label: string = 'processed data'): void {
+  logProcessedData(
+    methodName: string,
+    data: any,
+    label: string = 'processed data'
+  ): void {
     if (isApiLoggingEnabled()) {
       console.log(`${this.prefix} ${methodName} ${label}:`, data);
     }
@@ -74,15 +81,25 @@ export class ApiLogger {
    * Always logs warnings regardless of environment
    */
   logWarning(methodName: string, message: string, data?: any): void {
-    console.warn(`${this.prefix} ${methodName} warning: ${message}`, data || '');
+    console.warn(
+      `${this.prefix} ${methodName} warning: ${message}`,
+      data || ''
+    );
   }
 
   /**
    * Log performance metrics
    * Only logs in development environment with performance debugging enabled
    */
-  logPerformance(methodName: string, startTime: number, endTime?: number): void {
-    if (isApiLoggingEnabled() && process.env.REACT_APP_DEBUG_PERFORMANCE === 'true') {
+  logPerformance(
+    methodName: string,
+    startTime: number,
+    endTime?: number
+  ): void {
+    if (
+      isApiLoggingEnabled() &&
+      process.env.REACT_APP_DEBUG_PERFORMANCE === 'true'
+    ) {
       const duration = (endTime || Date.now()) - startTime;
       console.log(`${this.prefix} ${methodName} completed in ${duration}ms`);
     }

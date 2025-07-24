@@ -137,7 +137,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
     if (sold && saleDate) {
       return (
         <>
-          <CheckCircle className='w-3 h-3 mr-1 text-green-500' />
+          <CheckCircle className="w-3 h-3 mr-1 text-green-500" />
           Sold {new Date(saleDate).toLocaleDateString()}
         </>
       );
@@ -147,21 +147,21 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
       case 'psa':
         return (
           <>
-            <Star className='w-3 h-3 mr-1 text-yellow-500' />
+            <Star className="w-3 h-3 mr-1 text-yellow-500" />
             Grade {grade || 'N/A'}
           </>
         );
       case 'raw':
         return (
           <>
-            <Package className='w-3 h-3 mr-1 text-emerald-500' />
+            <Package className="w-3 h-3 mr-1 text-emerald-500" />
             {condition || 'N/A'}
           </>
         );
       case 'sealed':
         return (
           <>
-            <Archive className='w-3 h-3 mr-1 text-purple-500' />
+            <Archive className="w-3 h-3 mr-1 text-purple-500" />
             {category || 'N/A'}
           </>
         );
@@ -186,44 +186,54 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
     const actions = [
       { icon: Eye, label: 'View', onClick: onView, show: !!onView },
       { icon: Edit, label: 'Edit', onClick: onEdit, show: !!onEdit },
-      { icon: Download, label: 'Download', onClick: onDownload, show: !!onDownload },
+      {
+        icon: Download,
+        label: 'Download',
+        onClick: onDownload,
+        show: !!onDownload,
+      },
       { icon: Share, label: 'Share', onClick: onShare, show: !!onShare },
-      { icon: Heart, label: 'Favorite', onClick: onFavorite, show: !!onFavorite },
+      {
+        icon: Heart,
+        label: 'Favorite',
+        onClick: onFavorite,
+        show: !!onFavorite,
+      },
       { icon: Trash2, label: 'Delete', onClick: onDelete, show: !!onDelete },
-    ].filter(action => action.show);
+    ].filter((action) => action.show);
 
     if (actions.length === 0) {
       return null;
     }
 
     return (
-      <div className='absolute top-3 right-3 z-50'>
-        <div className='relative'>
+      <div className="absolute top-3 right-3 z-50">
+        <div className="relative">
           <button
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               setIsActionsOpen(!isActionsOpen);
             }}
-            className='w-8 h-8 bg-black/70 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors'
+            className="w-8 h-8 bg-black/70 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
           >
-            <MoreHorizontal className='w-4 h-4' />
+            <MoreHorizontal className="w-4 h-4" />
           </button>
 
           {isActionsOpen && (
-            <div className='absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-lg shadow-2xl border border-zinc-700/40 p-2 min-w-[120px]'>
+            <div className="absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-lg shadow-2xl border border-zinc-700/40 p-2 min-w-[120px]">
               {actions.map((action, index) => {
                 const Icon = action.icon;
                 return (
                   <button
                     key={index}
-                    onClick={e => {
+                    onClick={(e) => {
                       e.stopPropagation();
                       action.onClick?.();
                       setIsActionsOpen(false);
                     }}
-                    className='w-full flex items-center px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800/60 rounded transition-colors'
+                    className="w-full flex items-center px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800/60 rounded transition-colors"
                   >
-                    <Icon className='w-4 h-4 mr-2' />
+                    <Icon className="w-4 h-4 mr-2" />
                     {action.label}
                   </button>
                 );
@@ -263,22 +273,24 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
       }}
     >
       {/* Main Image Container - Much bigger */}
-      <div className={`relative w-full ${variant === 'detail' ? 'min-h-[500px]' : 'flex-1'}`}>
-        <div className='w-full h-full rounded-t-xl overflow-hidden relative'>
+      <div
+        className={`relative w-full ${variant === 'detail' ? 'min-h-[500px]' : 'flex-1'}`}
+      >
+        <div className="w-full h-full rounded-t-xl overflow-hidden relative">
           <ImageSlideshow
             images={images}
-            fallbackIcon={<Package className='w-8 h-8 text-indigo-600' />}
+            fallbackIcon={<Package className="w-8 h-8 text-indigo-600" />}
             autoplay={false}
             autoplayDelay={4000}
-            className='w-full h-full'
+            className="w-full h-full"
             showThumbnails={variant === 'detail'}
           />
 
           {/* Enhanced multi-layer text overlay shadow for better visibility */}
-          <div className='absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/95 via-black/80 via-black/60 to-transparent z-10 pointer-events-none' />
-          <div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/98 via-black/85 to-transparent z-15 pointer-events-none' />
-          <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/95 to-transparent z-20 pointer-events-none' />
-          <div className='absolute bottom-0 left-0 right-0 h-8 bg-black/90 z-25 pointer-events-none' />
+          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/95 via-black/80 via-black/60 to-transparent z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/98 via-black/85 to-transparent z-15 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/95 to-transparent z-20 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/90 z-25 pointer-events-none" />
         </div>
 
         {/* Action buttons */}
@@ -292,9 +304,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
         {/* Badge */}
         {showBadge && (
           <div
-            className={`inline-flex items-center justify-center px-2 py-1 rounded-full ${sizeConfig.badge} font-bold mb-1 self-start pointer-events-auto ${
-              sold ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-600 text-white shadow-lg'
-            }`}
+            className={`inline-flex items-center justify-center px-2 py-1 rounded-full ${sizeConfig.badge} font-bold mb-1 self-start pointer-events-auto ${sold ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-600 text-white shadow-lg'}`}
             style={{
               textShadow: '0 1px 3px rgba(0,0,0,0.8)',
               backgroundColor: sold ? '#059669' : '#2563eb',
@@ -333,7 +343,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
       {/* Price in Bottom Right Corner */}
       {showPrice && price && (
         <div
-          className={`absolute bottom-2 right-2 px-2 py-1 rounded-lg ${sizeConfig.badge} font-bold bg-cyan-400 text-black pointer-events-auto z-40 shadow-xl`}
+          className={`absolute bottom-2 right-2 px-2 py-1 rounded-lg ${sizeConfig.badge} font-bold bg-cyan-400 text-black dark:text-white dark:text-white pointer-events-auto z-40 shadow-xl`}
           style={{
             textShadow: '0 1px 2px rgba(0,0,0,0.3)',
           }}

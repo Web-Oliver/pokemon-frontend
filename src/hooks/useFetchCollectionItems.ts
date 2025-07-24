@@ -64,7 +64,9 @@ export const useFetchCollectionItems = <T = any>(
 
   const refreshItems = useCallback(async (): Promise<T[] | undefined> => {
     if (!lastFetchFnRef.current) {
-      throw new Error('No fetch function available for refresh. Call fetchItems first.');
+      throw new Error(
+        'No fetch function available for refresh. Call fetchItems first.'
+      );
     }
     return await execute(lastFetchFnRef.current);
   }, [execute]);

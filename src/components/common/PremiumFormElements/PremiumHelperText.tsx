@@ -23,7 +23,11 @@ export const PremiumHelperText: React.FC<PremiumHelperTextProps> = ({
     return null;
   }
 
-  return <p className={`mt-2 text-sm text-zinc-400 font-medium pl-1 ${className}`}>{helperText}</p>;
+  return (
+    <p className={`mt-2 text-sm text-zinc-400 font-medium pl-1 ${className}`}>
+      {helperText}
+    </p>
+  );
 };
 
 export default PremiumHelperText;

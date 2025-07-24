@@ -26,7 +26,10 @@ export interface UseCollectionOperationsReturn extends CollectionState {
 
   // PSA Card operations
   addPsaCard: (cardData: Partial<IPsaGradedCard>) => Promise<void>;
-  updatePsaCard: (id: string, cardData: Partial<IPsaGradedCard>) => Promise<void>;
+  updatePsaCard: (
+    id: string,
+    cardData: Partial<IPsaGradedCard>
+  ) => Promise<void>;
   deletePsaCard: (id: string) => Promise<void>;
   markPsaCardSold: (id: string, saleDetails: ISaleDetails) => Promise<void>;
 
@@ -38,9 +41,15 @@ export interface UseCollectionOperationsReturn extends CollectionState {
 
   // Sealed Product operations
   addSealedProduct: (productData: Partial<ISealedProduct>) => Promise<void>;
-  updateSealedProduct: (id: string, productData: Partial<ISealedProduct>) => Promise<void>;
+  updateSealedProduct: (
+    id: string,
+    productData: Partial<ISealedProduct>
+  ) => Promise<void>;
   deleteSealedProduct: (id: string) => Promise<void>;
-  markSealedProductSold: (id: string, saleDetails: ISaleDetails) => Promise<void>;
+  markSealedProductSold: (
+    id: string,
+    saleDetails: ISaleDetails
+  ) => Promise<void>;
 
   // Image Export operations
   downloadPsaCardImagesZip: (cardIds?: string[]) => Promise<void>;
@@ -93,21 +102,27 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
       log('Fetching collection data...');
 
       // Fetch all collection items in parallel
-      const [psaCardsResponse, rawCardsResponse, sealedProductsResponse] = await Promise.all([
-        collectionApi.getPsaGradedCards({ sold: false }),
-        collectionApi.getRawCards({ sold: false }),
-        collectionApi.getSealedProducts({ sold: false }),
-      ]);
+      const [psaCardsResponse, rawCardsResponse, sealedProductsResponse] =
+        await Promise.all([
+          collectionApi.getPsaGradedCards({ sold: false }),
+          collectionApi.getRawCards({ sold: false }),
+          collectionApi.getSealedProducts({ sold: false }),
+        ]);
 
       // Fetch sold items separately
-      const [soldPsaCards, soldRawCards, soldSealedProducts] = await Promise.all([
-        collectionApi.getPsaGradedCards({ sold: true }),
-        collectionApi.getRawCards({ sold: true }),
-        collectionApi.getSealedProducts({ sold: true }),
-      ]);
+      const [soldPsaCards, soldRawCards, soldSealedProducts] =
+        await Promise.all([
+          collectionApi.getPsaGradedCards({ sold: true }),
+          collectionApi.getRawCards({ sold: true }),
+          collectionApi.getSealedProducts({ sold: true }),
+        ]);
 
       // Combine all sold items
-      const soldItems = [...soldPsaCards, ...soldRawCards, ...soldSealedProducts];
+      const soldItems = [
+        ...soldPsaCards,
+        ...soldRawCards,
+        ...soldSealedProducts,
+      ];
 
       setCollectionState({
         psaCards: psaCardsResponse,
@@ -241,7 +256,10 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const updateSealedProduct = useCallback(
     async (id: string, productData: Partial<ISealedProduct>) => {
       try {
-        const updatedProduct = await sealedOperations.updateSealedProduct(id, productData);
+        const updatedProduct = await sealedOperations.updateSealedProduct(
+          id,
+          productData
+        );
         updateSealedProductInState(id, updatedProduct);
       } catch (error) {
         // Error already handled by sealedOperations
@@ -265,7 +283,10 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const markSealedProductSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
-        const soldProduct = await sealedOperations.markSealedProductSold(id, saleDetails);
+        const soldProduct = await sealedOperations.markSealedProductSold(
+          id,
+          saleDetails
+        );
         moveSealedProductToSold(id, soldProduct);
       } catch (error) {
         // Error already handled by sealedOperations
@@ -282,7 +303,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {
       sessionStorage.removeItem('collectionNeedsRefresh');
-      log('Collection refresh requested via sessionStorage, fetching fresh data...');
+      log(
+        'Collection refresh requested via sessionStorage, fetching fresh data...'
+      );
       // Small delay to ensure any pending operations complete
       setTimeout(() => {
         fetchAllCollectionData();

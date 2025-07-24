@@ -114,7 +114,8 @@ export default {
       boxShadow: {
         glow: '0 0 20px rgba(99, 102, 241, 0.4)',
         'glow-lg': '0 0 30px rgba(99, 102, 241, 0.6)',
-        premium: '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        premium:
+          '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
         glass: '0 8px 32px rgba(31, 38, 135, 0.37)',
         float: '0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.2)',
       },
@@ -158,7 +159,8 @@ export default {
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
         '.shimmer': {
-          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+          background:
+            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
           animation: 'shimmer 2s infinite',
         },
         '.gradient-border': {
@@ -167,10 +169,12 @@ export default {
           border: '2px solid transparent',
         },
         '.premium-shadow': {
-          'box-shadow': '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+          'box-shadow':
+            '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
         },
         '.premium-glow': {
-          'box-shadow': '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(31, 38, 135, 0.37)',
+          'box-shadow':
+            '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(31, 38, 135, 0.37)',
         },
       };
       addUtilities(newUtilities);

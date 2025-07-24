@@ -83,15 +83,21 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setSelectedIndex(prev => (prev + 1) % suggestions.length);
+          setSelectedIndex((prev) => (prev + 1) % suggestions.length);
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+          setSelectedIndex(
+            (prev) => (prev - 1 + suggestions.length) % suggestions.length
+          );
           break;
         case 'Enter':
           e.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < suggestions.length && activeField) {
+          if (
+            selectedIndex >= 0 &&
+            selectedIndex < suggestions.length &&
+            activeField
+          ) {
             onSuggestionSelect(suggestions[selectedIndex], activeField);
           }
           break;
@@ -104,7 +110,14 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isVisible, suggestions, selectedIndex, activeField, onSuggestionSelect, onClose]);
+  }, [
+    isVisible,
+    suggestions,
+    selectedIndex,
+    activeField,
+    onSuggestionSelect,
+    onClose,
+  ]);
 
   // Reset selected index when suggestions change
   useEffect(() => {
@@ -115,7 +128,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     activeField,
     suggestionsCount: suggestions.length,
     searchTerm,
-    suggestions: suggestions.map(s => ({
+    suggestions: suggestions.map((s) => ({
       name: s.cardName || s.name || s.setName || s.category,
       id: s._id || s.id,
       setInfo: s.setInfo,
@@ -137,20 +150,20 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   const renderSuggestionIcon = (suggestion?: SearchSuggestion) => {
     if (activeField === 'set') {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
-          <Package className='w-5 h-5 text-white' />
+        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+          <Package className="w-5 h-5 text-white" />
         </div>
       );
     } else if (activeField === 'category') {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
-          <Hash className='w-5 h-5 text-white' />
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+          <Hash className="w-5 h-5 text-white" />
         </div>
       );
     } else {
       return (
-        <div className='w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300'>
-          <Search className='w-5 h-5 text-white' />
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+          <Search className="w-5 h-5 text-white" />
         </div>
       );
     }
@@ -163,10 +176,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     if (suggestion.setInfo?.setName) {
       metadata.push(
         <div
-          key='set'
-          className='inline-flex items-center px-2 py-0.5 bg-green-50 border border-green-200 rounded text-xs text-green-700 font-medium'
+          key="set"
+          className="inline-flex items-center px-2 py-0.5 bg-green-50 border border-green-200 rounded text-xs text-green-700 font-medium"
         >
-          <Package className='w-3 h-3 mr-1' />
+          <Package className="w-3 h-3 mr-1" />
           {suggestion.setInfo.setName}
         </div>
       );
@@ -175,10 +188,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     if (suggestion.categoryInfo?.category) {
       metadata.push(
         <div
-          key='category'
-          className='inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium'
+          key="category"
+          className="inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium"
         >
-          <Hash className='w-3 h-3 mr-1' />
+          <Hash className="w-3 h-3 mr-1" />
           {suggestion.categoryInfo.category}
         </div>
       );
@@ -187,10 +200,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     if (suggestion.variety) {
       metadata.push(
         <div
-          key='variety'
-          className='inline-flex items-center px-2 py-0.5 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700 font-medium'
+          key="variety"
+          className="inline-flex items-center px-2 py-0.5 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700 font-medium"
         >
-          <Star className='w-3 h-3 mr-1' />
+          <Star className="w-3 h-3 mr-1" />
           {suggestion.variety}
         </div>
       );
@@ -199,8 +212,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     if (suggestion.year) {
       metadata.push(
         <div
-          key='year'
-          className='inline-flex items-center px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 font-medium'
+          key="year"
+          className="inline-flex items-center px-2 py-0.5 bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-700 dark:border-zinc-700 rounded text-xs text-gray-700 dark:text-zinc-300 dark:text-zinc-200 font-medium"
         >
           {suggestion.year}
         </div>
@@ -211,22 +224,25 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       const totalItems = suggestion.counts.cards + suggestion.counts.products;
       metadata.push(
         <div
-          key='counts'
-          className='inline-flex items-center px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 font-medium'
+          key="counts"
+          className="inline-flex items-center px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 font-medium"
         >
-          <TrendingUp className='w-3 h-3 mr-1' />
+          <TrendingUp className="w-3 h-3 mr-1" />
           {totalItems} items
         </div>
       );
     }
 
-    if (suggestion.psaTotalGradedForCard && suggestion.psaTotalGradedForCard > 0) {
+    if (
+      suggestion.psaTotalGradedForCard &&
+      suggestion.psaTotalGradedForCard > 0
+    ) {
       metadata.push(
         <div
-          key='psa'
-          className='inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium'
+          key="psa"
+          className="inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium"
         >
-          <TrendingUp className='w-3 h-3 mr-1' />
+          <TrendingUp className="w-3 h-3 mr-1" />
           {suggestion.psaTotalGradedForCard.toLocaleString()} PSA
         </div>
       );
@@ -261,7 +277,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       return (
         <>
           {text.substring(0, matchIndex)}
-          <span className='bg-blue-100 text-blue-800 px-1 rounded font-medium'>
+          <span className="bg-blue-100 text-blue-800 px-1 rounded font-medium">
             {text.substring(matchIndex, matchIndex + searchTerm.length)}
           </span>
           {text.substring(matchIndex + searchTerm.length)}
@@ -270,15 +286,18 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
 
     // Context7 Order-Independent Word Matching
-    const searchWords = searchTerm.split(/\s+/).filter(w => w.length > 1);
+    const searchWords = searchTerm.split(/\s+/).filter((w) => w.length > 1);
     if (searchWords.length === 0) {
       return text;
     }
 
     // Find all words that match (regardless of order)
     const matches = [];
-    searchWords.forEach(word => {
-      const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi');
+    searchWords.forEach((word) => {
+      const wordRegex = new RegExp(
+        `\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+        'gi'
+      );
       let match;
       while ((match = wordRegex.exec(text)) !== null) {
         matches.push({
@@ -310,7 +329,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
         // Add highlighted match
         result.push(
-          <span key={index} className='bg-blue-100 text-blue-800 px-1 rounded font-medium'>
+          <span
+            key={index}
+            className="bg-blue-100 text-blue-800 px-1 rounded font-medium"
+          >
             {match.word}
           </span>
         );
@@ -328,31 +350,41 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   };
 
   return (
-    <div className='absolute top-full left-0 right-0 z-[9999] mt-2'>
+    <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
       {/* Context7 Clean Overlay */}
-      <div className='fixed inset-0 z-40 bg-black/20' onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
 
       {/* Context7 Clean Dropdown Container */}
-      <div className='relative z-[9999]'>
-        <div className='bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl max-h-[480px] overflow-hidden'>
+      <div className="relative z-[9999]">
+        <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl max-h-[480px] overflow-hidden">
           {/* Context7 Header */}
-          <div className='p-4 border-b border-zinc-700/30 bg-zinc-800/60 backdrop-blur-xl'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center space-x-3'>
-                <div className='w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center'>
-                  {activeField === 'set' && <Package className='w-4 h-4 text-white' />}
-                  {activeField === 'category' && <Hash className='w-4 h-4 text-white' />}
-                  {activeField === 'cardProduct' && <Search className='w-4 h-4 text-white' />}
+          <div className="p-4 border-b border-zinc-700/30 bg-zinc-800/60 backdrop-blur-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  {activeField === 'set' && (
+                    <Package className="w-4 h-4 text-white" />
+                  )}
+                  {activeField === 'category' && (
+                    <Hash className="w-4 h-4 text-white" />
+                  )}
+                  {activeField === 'cardProduct' && (
+                    <Search className="w-4 h-4 text-white" />
+                  )}
                 </div>
                 <div>
-                  <h3 className='text-sm font-semibold text-zinc-100'>
+                  <h3 className="text-sm font-semibold text-zinc-100">
                     {activeField === 'set' && 'Pokémon Sets'}
                     {activeField === 'category' && 'Product Categories'}
                     {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
-                  <p className='text-xs text-zinc-400'>
-                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "
-                    {searchTerm.length > 20 ? `${searchTerm.substring(0, 20)}...` : searchTerm}"
+                  <p className="text-xs text-zinc-400">
+                    {suggestions.length} suggestion
+                    {suggestions.length !== 1 ? 's' : ''} for "
+                    {searchTerm.length > 20
+                      ? `${searchTerm.substring(0, 20)}...`
+                      : searchTerm}
+                    "
                   </p>
                 </div>
               </div>
@@ -360,30 +392,34 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
               {/* Context7 Close Button */}
               <button
                 onClick={onClose}
-                className='w-8 h-8 bg-zinc-800/80 border border-zinc-700/40 rounded-lg flex items-center justify-center hover:bg-zinc-700/80 transition-colors'
+                className="w-8 h-8 bg-zinc-800/80 border border-zinc-700/40 rounded-lg flex items-center justify-center hover:bg-zinc-700/80 transition-colors"
               >
-                <span className='text-zinc-300 text-sm'>×</span>
+                <span className="text-zinc-300 text-sm">×</span>
               </button>
             </div>
           </div>
 
           {/* Context7 Optimized Suggestions List */}
-          <div className='max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-800'>
+          <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-800">
             {loading ? (
-              <div className='p-6 text-center'>
-                <div className='w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3'></div>
-                <p className='text-zinc-300 text-sm'>Searching collection...</p>
+              <div className="p-6 text-center">
+                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-zinc-300 text-sm">Searching collection...</p>
               </div>
             ) : suggestions.length === 0 ? (
-              <div className='p-6 text-center'>
-                <div className='w-12 h-12 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto mb-3'>
-                  <Search className='w-6 h-6 text-gray-400' />
+              <div className="p-6 text-center">
+                <div className="w-12 h-12 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Search className="w-6 h-6 text-gray-400 dark:text-zinc-600 dark:text-zinc-500" />
                 </div>
-                <p className='text-gray-600 text-sm mb-1'>No results found</p>
-                <p className='text-gray-500 text-xs'>Try different keywords or check spelling</p>
+                <p className="text-gray-600 dark:text-zinc-400 dark:text-zinc-300 text-sm mb-1">
+                  No results found
+                </p>
+                <p className="text-gray-500 dark:text-zinc-500 dark:text-zinc-400 text-xs">
+                  Try different keywords or check spelling
+                </p>
               </div>
             ) : (
-              <div className='divide-y divide-gray-100'>
+              <div className="divide-y divide-gray-100">
                 {suggestions.map((suggestion, index) => {
                   const displayName = getDisplayName(suggestion);
                   const metadata = renderSuggestionMetadata(suggestion);
@@ -391,59 +427,65 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
                   return (
                     <button
-                      key={suggestion._id || suggestion.id || `${activeField}-${index}`}
+                      key={
+                        suggestion._id ||
+                        suggestion.id ||
+                        `${activeField}-${index}`
+                      }
                       onClick={() => {
-                        console.log(`[SEARCH DROPDOWN DEBUG] Suggestion clicked:`, {
-                          suggestion,
-                          activeField,
-                          displayName: getDisplayName(suggestion),
-                        });
+                        console.log(
+                          `[SEARCH DROPDOWN DEBUG] Suggestion clicked:`,
+                          {
+                            suggestion,
+                            activeField,
+                            displayName: getDisplayName(suggestion),
+                          }
+                        );
                         onSuggestionSelect(suggestion, activeField);
                       }}
                       onMouseEnter={() => setSelectedIndex(index)}
-                      className={`w-full text-left p-3 transition-colors duration-150 focus:outline-none ${
-                        isSelected
-                          ? 'bg-blue-50 border-l-4 border-blue-500'
-                          : 'hover:bg-gray-50 border-l-4 border-transparent'
-                      }`}
+                      className={`w-full text-left p-3 transition-colors duration-150 focus:outline-none ${isSelected ? 'bg-blue-50 border-l-4 border-blue-500' : 'hover:bg-gray-50 border-l-4 border-transparent'}`}
                     >
-                      <div className='flex items-center space-x-3'>
-                        <div className='w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center flex-shrink-0'>
-                          {activeField === 'set' && <Package className='w-3 h-3 text-white' />}
-                          {activeField === 'category' && <Hash className='w-3 h-3 text-white' />}
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center flex-shrink-0">
+                          {activeField === 'set' && (
+                            <Package className="w-3 h-3 text-white" />
+                          )}
+                          {activeField === 'category' && (
+                            <Hash className="w-3 h-3 text-white" />
+                          )}
                           {activeField === 'cardProduct' && (
-                            <Search className='w-3 h-3 text-white' />
+                            <Search className="w-3 h-3 text-white" />
                           )}
                         </div>
 
-                        <div className='flex-1 min-w-0'>
+                        <div className="flex-1 min-w-0">
                           <h4
-                            className={`text-sm font-medium ${
-                              isSelected ? 'text-blue-900' : 'text-gray-900'
-                            }`}
+                            className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}
                           >
                             {highlightSearchTerm(displayName, searchTerm)}
                           </h4>
 
                           {/* Context7 Metadata */}
                           {metadata.length > 0 && (
-                            <div className='flex flex-wrap items-center gap-1 mt-1'>{metadata}</div>
+                            <div className="flex flex-wrap items-center gap-1 mt-1">
+                              {metadata}
+                            </div>
                           )}
 
                           {/* Additional Context */}
-                          {activeField === 'cardProduct' && suggestion.pokemonNumber && (
-                            <p className='text-xs text-gray-500 mt-1'>
-                              Pokémon #{suggestion.pokemonNumber}
-                            </p>
-                          )}
+                          {activeField === 'cardProduct' &&
+                            suggestion.pokemonNumber && (
+                              <p className="text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 mt-1">
+                                Pokémon #{suggestion.pokemonNumber}
+                              </p>
+                            )}
                         </div>
 
                         {/* Selection indicator */}
-                        <div className='flex items-center'>
+                        <div className="flex items-center">
                           <div
-                            className={`w-2 h-2 rounded-full transition-colors ${
-                              isSelected ? 'bg-blue-500' : 'bg-gray-300'
-                            }`}
+                            className={`w-2 h-2 rounded-full transition-colors ${isSelected ? 'bg-blue-500' : 'bg-gray-300'}`}
                           ></div>
                         </div>
                       </div>
@@ -455,22 +497,22 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
           </div>
 
           {/* Context7 Footer with shortcuts */}
-          <div className='p-3 bg-zinc-800/60 backdrop-blur-xl border-t border-zinc-700/30'>
-            <div className='flex items-center justify-center space-x-4 text-xs text-zinc-400'>
-              <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
+          <div className="p-3 bg-zinc-800/60 backdrop-blur-xl border-t border-zinc-700/30">
+            <div className="flex items-center justify-center space-x-4 text-xs text-zinc-400">
+              <div className="flex items-center space-x-1">
+                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
                   ↑↓
                 </kbd>
                 <span>Navigate</span>
               </div>
-              <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
+              <div className="flex items-center space-x-1">
+                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
                   Enter
                 </kbd>
                 <span>Select</span>
               </div>
-              <div className='flex items-center space-x-1'>
-                <kbd className='px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200'>
+              <div className="flex items-center space-x-1">
+                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
                   Esc
                 </kbd>
                 <span>Close</span>
@@ -481,7 +523,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       </div>
 
       {/* Context7 Optimized Styles */}
-      <style jsx='true'>{`
+      <style jsx="true">{`
         .scrollbar-thin::-webkit-scrollbar {
           width: 4px;
         }

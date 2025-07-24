@@ -47,7 +47,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {readOnlyFields.category && (
         <div>
           <Select
-            label='Category'
+            label="Category"
             {...register('category', { required: 'Category is required' })}
             error={errors.category?.message}
             options={productCategories}
@@ -61,16 +61,17 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {readOnlyFields.availability && (
         <div>
           <Input
-            label='Availability'
-            type='number'
-            min='0'
+            label="Availability"
+            type="number"
+            min="0"
             {...register('availability', {
               required: 'Availability is required',
               min: { value: 0, message: 'Availability must be 0 or greater' },
-              validate: value => !isNaN(Number(value)) || 'Must be a valid number',
+              validate: (value) =>
+                !isNaN(Number(value)) || 'Must be a valid number',
             })}
             error={errors.availability?.message}
-            placeholder='0'
+            placeholder="0"
             disabled={isDisabled}
             value={watch('availability') || ''}
           />

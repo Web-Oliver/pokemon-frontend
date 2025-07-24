@@ -13,7 +13,10 @@
  * Phase 10: Auction Management - Export Features
  */
 
-import { createResourceOperations, EXPORT_CONFIG } from './genericApiOperations';
+import {
+  createResourceOperations,
+  EXPORT_CONFIG,
+} from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 
 // ========== INTERFACES (ISP Compliance) ==========
@@ -35,7 +38,8 @@ interface IExport {
 /**
  * Export creation payload interface
  */
-interface IExportCreatePayload extends Omit<IExport, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+interface IExportCreatePayload
+  extends Omit<IExport, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
 
 /**
  * Export update payload interface
@@ -151,7 +155,9 @@ export const batchExportOperation = exportOperations.batchOperation;
  * @param auctionId - Auction ID
  * @returns Promise<string> - Generated Facebook post text
  */
-export const generateAuctionFacebookPost = async (auctionId: string): Promise<string> => {
+export const generateAuctionFacebookPost = async (
+  auctionId: string
+): Promise<string> => {
   // First, get the auction data
   const auction = (await unifiedApiClient.get(`/auctions/${auctionId}`)) as any;
   const auctionData = (auction.data || auction) as any;
@@ -167,7 +173,10 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
   };
 
   // Call the existing backend endpoint
-  const response = (await unifiedApiClient.post('/generate-facebook-post', requestData)) as any;
+  const response = (await unifiedApiClient.post(
+    '/generate-facebook-post',
+    requestData
+  )) as any;
   return response.data?.facebookPost || response.facebookPost || response;
 };
 
@@ -176,7 +185,9 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
  * @param auctionId - Auction ID
  * @returns Promise<Blob> - Text file blob for download
  */
-export const getAuctionFacebookTextFile = async (auctionId: string): Promise<Blob> => {
+export const getAuctionFacebookTextFile = async (
+  auctionId: string
+): Promise<Blob> => {
   // Generate the Facebook post content
   const facebookPost = await generateAuctionFacebookPost(auctionId);
 
@@ -200,63 +211,71 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
 
   auction.items.forEach((item: any) => {
     if ((item.itemData as any) && (item.itemData as any).images) {
-      (item.itemData as any).images.forEach((imagePath: string, imageIndex: number) => {
-        if (imagePath) {
-          // Convert relative path to full URL
-          const imageUrl = imagePath.startsWith('http')
-            ? imagePath
-            : `http://localhost:3000${imagePath}`;
-          imageUrls.push(imageUrl);
+      (item.itemData as any).images.forEach(
+        (imagePath: string, imageIndex: number) => {
+          if (imagePath) {
+            // Convert relative path to full URL
+            const imageUrl = imagePath.startsWith('http')
+              ? imagePath
+              : `http://localhost:3000${imagePath}`;
+            imageUrls.push(imageUrl);
 
-          // Generate improved filename based on best practices
-          const category =
-            item.itemCategory === 'PsaGradedCard'
-              ? 'PSA'
-              : item.itemCategory === 'RawCard'
-                ? 'RAW'
-                : 'SEALED';
+            // Generate improved filename based on best practices
+            const category =
+              item.itemCategory === 'PsaGradedCard'
+                ? 'PSA'
+                : item.itemCategory === 'RawCard'
+                  ? 'RAW'
+                  : 'SEALED';
 
-          let itemName = '';
+            let itemName = '';
 
-          if (item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') {
-            const cardName = (
-              (item.itemData as any).cardId?.cardName ||
-              (item.itemData as any).cardId?.baseName ||
-              'Unknown'
-            )
-              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
-              .replace(/\s+/g, '_') // Replace spaces with underscores
-              .toLowerCase();
-            const setName = ((item.itemData as any).cardId?.setId?.setName || 'Unknown')
-              .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
-              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
-              .replace(/\s+/g, '_') // Replace spaces with underscores
-              .toLowerCase();
-            const number = (item.itemData as any).cardId?.pokemonNumber || '000';
+            if (
+              item.itemCategory === 'PsaGradedCard' ||
+              item.itemCategory === 'RawCard'
+            ) {
+              const cardName = (
+                (item.itemData as any).cardId?.cardName ||
+                (item.itemData as any).cardId?.baseName ||
+                'Unknown'
+              )
+                .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '_') // Replace spaces with underscores
+                .toLowerCase();
+              const setName = (
+                (item.itemData as any).cardId?.setId?.setName || 'Unknown'
+              )
+                .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
+                .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '_') // Replace spaces with underscores
+                .toLowerCase();
+              const number =
+                (item.itemData as any).cardId?.pokemonNumber || '000';
 
-            if (item.itemCategory === 'PsaGradedCard') {
-              const grade = (item.itemData as any).grade || '0';
-              itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
+              if (item.itemCategory === 'PsaGradedCard') {
+                const grade = (item.itemData as any).grade || '0';
+                itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
+              } else {
+                const condition = ((item.itemData as any).condition || 'NM')
+                  .replace(/\s+/g, '')
+                  .toUpperCase();
+                itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
+              }
             } else {
-              const condition = ((item.itemData as any).condition || 'NM')
-                .replace(/\s+/g, '')
-                .toUpperCase();
-              itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
+              // Sealed product
+              const productName = ((item.itemData as any).name || 'Unknown')
+                .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+                .replace(/\s+/g, '_') // Replace spaces with underscores
+                .toLowerCase();
+              itemName = `${category}_${productName}`;
             }
-          } else {
-            // Sealed product
-            const productName = ((item.itemData as any).name || 'Unknown')
-              .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
-              .replace(/\s+/g, '_') // Replace spaces with underscores
-              .toLowerCase();
-            itemName = `${category}_${productName}`;
-          }
 
-          const extension = imagePath.split('.').pop() || 'jpg';
-          const imageNumber = String(imageIndex + 1).padStart(2, '0');
-          itemNames.push(`${itemName}_img${imageNumber}.${extension}`);
+            const extension = imagePath.split('.').pop() || 'jpg';
+            const imageNumber = String(imageIndex + 1).padStart(2, '0');
+            itemNames.push(`${itemName}_img${imageNumber}.${extension}`);
+          }
         }
-      });
+      );
     }
   });
 
@@ -328,7 +347,9 @@ export const zipPsaCardImages = async (cardIds?: string[]): Promise<Blob> => {
  * @param productIds - Array of Sealed Product IDs (optional, if empty - zip all sealed products)
  * @returns Promise<Blob> - Zip file blob for download
  */
-export const zipSealedProductImages = async (productIds?: string[]): Promise<Blob> => {
+export const zipSealedProductImages = async (
+  productIds?: string[]
+): Promise<Blob> => {
   // Get sealed products data from export endpoint
   const endpoint =
     productIds && productIds.length > 0
@@ -367,10 +388,18 @@ const createImageZip = async (
           // Generate improved filename based on best practices
           let itemName = '';
           const category =
-            itemType === 'psa-card' ? 'PSA' : itemType === 'raw-card' ? 'RAW' : 'SEALED';
+            itemType === 'psa-card'
+              ? 'PSA'
+              : itemType === 'raw-card'
+                ? 'RAW'
+                : 'SEALED';
 
           if (itemType === 'psa-card' || itemType === 'raw-card') {
-            const cardName = (item.cardId?.cardName || item.cardId?.baseName || 'Unknown')
+            const cardName = (
+              item.cardId?.cardName ||
+              item.cardId?.baseName ||
+              'Unknown'
+            )
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
@@ -384,7 +413,9 @@ const createImageZip = async (
             if (itemType === 'psa-card' && item.grade) {
               itemName = `${category}_${setName}_${cardName}_${number}_PSA${item.grade}`;
             } else if (itemType === 'raw-card' && item.condition) {
-              const condition = item.condition.replace(/\s+/g, '').toUpperCase();
+              const condition = item.condition
+                .replace(/\s+/g, '')
+                .toUpperCase();
               itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
             } else {
               itemName = `${category}_${setName}_${cardName}_${number}`;
@@ -441,7 +472,9 @@ const createImageZip = async (
  * @param selectedItemIds - Array of selected item IDs
  * @returns Promise<Blob> - Text file blob for download
  */
-export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): Promise<Blob> => {
+export const getCollectionFacebookTextFile = async (
+  selectedItemIds: string[]
+): Promise<Blob> => {
   const response = await unifiedApiClient.apiCreate<Blob>(
     '/collection/facebook-text-file',
     { itemIds: selectedItemIds },
@@ -451,7 +484,9 @@ export const getCollectionFacebookTextFile = async (selectedItemIds: string[]): 
   return response;
 };
 
-export const exportToDba = async (exportRequest: DbaExportRequest): Promise<DbaExportResponse> => {
+export const exportToDba = async (
+  exportRequest: DbaExportRequest
+): Promise<DbaExportResponse> => {
   const response = await unifiedApiClient.apiCreate<DbaExportResponse>(
     '/export/dba',
     exportRequest,

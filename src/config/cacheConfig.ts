@@ -100,7 +100,9 @@ export const API_CACHE_CONFIG = {
  * Helper function to get cache TTL for specific API operations
  * Provides operation-specific cache durations
  */
-export const getApiCacheTTL = (operation: keyof typeof API_CACHE_CONFIG): number => {
+export const getApiCacheTTL = (
+  operation: keyof typeof API_CACHE_CONFIG
+): number => {
   return API_CACHE_CONFIG[operation];
 };
 
@@ -134,7 +136,9 @@ export const DEV_CACHE_TTL = {
  * Get cache TTL based on environment
  * Uses shorter TTLs in development for better debugging
  */
-export const getEnvironmentCacheTTL = (dataType: keyof typeof CACHE_TTL): number => {
+export const getEnvironmentCacheTTL = (
+  dataType: keyof typeof CACHE_TTL
+): number => {
   if (process.env.NODE_ENV === 'development' && dataType in DEV_CACHE_TTL) {
     return DEV_CACHE_TTL[dataType as keyof typeof DEV_CACHE_TTL];
   }

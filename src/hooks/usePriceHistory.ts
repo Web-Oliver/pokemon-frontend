@@ -32,7 +32,8 @@ export const usePriceHistory = (
   initialHistory: PriceHistoryEntry[] = [],
   initialPrice: number = 0
 ): UsePriceHistoryReturn => {
-  const [priceHistory, setPriceHistory] = useState<PriceHistoryEntry[]>(initialHistory);
+  const [priceHistory, setPriceHistory] =
+    useState<PriceHistoryEntry[]>(initialHistory);
   const [currentPrice, setCurrentPrice] = useState<number>(initialPrice);
 
   const addPriceEntry = useCallback((price: number, source?: string) => {
@@ -42,12 +43,12 @@ export const usePriceHistory = (
       source,
     };
 
-    setPriceHistory(prev => [...prev, newEntry]);
+    setPriceHistory((prev) => [...prev, newEntry]);
     setCurrentPrice(price);
   }, []);
 
   const removePriceEntry = useCallback((index: number) => {
-    setPriceHistory(prev => prev.filter((_, i) => i !== index));
+    setPriceHistory((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const updateCurrentPrice = useCallback((price: number) => {

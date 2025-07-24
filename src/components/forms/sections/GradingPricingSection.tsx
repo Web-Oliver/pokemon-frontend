@@ -90,13 +90,13 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
       };
 
   return (
-    <div className='bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden'>
+    <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
       <div
         className={`absolute inset-0 bg-gradient-to-br from-zinc-800/50 ${isPsaCard ? 'to-blue-900/50' : 'to-emerald-900/50'}`}
       ></div>
 
-      <h4 className='text-xl font-bold text-zinc-100 mb-6 flex items-center justify-center relative z-10'>
-        <Banknote className='w-6 h-6 mr-3 text-zinc-300' />
+      <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center justify-center relative z-10">
+        <Banknote className="w-6 h-6 mr-3 text-zinc-300" />
         {isEditing
           ? 'Update Price (kr.)'
           : isPsaCard
@@ -104,7 +104,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             : 'Condition & Pricing (kr.)'}
       </h4>
 
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10'>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
         {/* Grade/Condition Selection */}
         <div>
           <Select
@@ -120,17 +120,23 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             <div
               className={`mt-3 p-3 bg-gradient-to-r ${colorScheme.bg} ${colorScheme.border} border rounded-xl backdrop-blur-sm`}
             >
-              <div className='flex items-center'>
-                <IconComponent className={`w-4 h-4 ${colorScheme.accent} mr-2`} />
+              <div className="flex items-center">
+                <IconComponent
+                  className={`w-4 h-4 ${colorScheme.accent} mr-2`}
+                />
                 <span className={`text-sm ${colorScheme.text} font-bold`}>
                   Selected:{' '}
-                  {options.find(option => option.value === currentGradeOrCondition)?.label}
+                  {
+                    options.find(
+                      (option) => option.value === currentGradeOrCondition
+                    )?.label
+                  }
                 </span>
               </div>
             </div>
           )}
           {disableGradeConditionEdit && (
-            <p className='mt-1 text-xs text-gray-500'>
+            <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400">
               {isPsaCard ? 'Grade' : 'Condition'} cannot be changed after adding
             </p>
           )}
@@ -139,16 +145,16 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         {/* Price Input */}
         <div>
           <Input
-            label='My Price (kr.)'
-            type='text'
-            inputMode='numeric'
+            label="My Price (kr.)"
+            type="text"
+            inputMode="numeric"
             {...register('myPrice', {
               required: 'Price is required',
               pattern: {
                 value: /^\d+$/,
                 message: 'Price must be a whole number only',
               },
-              validate: value => {
+              validate: (value) => {
                 const num = parseInt(value, 10);
                 if (isNaN(num) || num < 0) {
                   return 'Price must be a positive whole number';
@@ -157,17 +163,19 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
               },
             })}
             error={errors.myPrice?.message}
-            placeholder='0'
-            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+            placeholder="0"
+            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 dark:text-zinc-500 cursor-not-allowed' : ''}`}
             disabled={isEditing}
           />
           {currentPrice && (
-            <div className={`mt-2 text-sm ${colorScheme.accent} font-semibold text-center`}>
+            <div
+              className={`mt-2 text-sm ${colorScheme.accent} font-semibold text-center`}
+            >
               Current: {parseFloat(currentPrice || '0')} kr.
             </div>
           )}
           {isEditing && (
-            <p className='mt-1 text-xs text-gray-500 text-center'>
+            <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 text-center">
               Use price history below to update price
             </p>
           )}
@@ -176,17 +184,17 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         {/* Date Added */}
         <div>
           <Input
-            label='Date Added'
-            type='date'
+            label="Date Added"
+            type="date"
             {...register('dateAdded', {
               required: isEditing ? false : 'Date added is required',
             })}
             error={errors.dateAdded?.message}
             disabled={isEditing}
-            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+            className={`text-center ${isEditing ? 'bg-gray-50 text-gray-500 dark:text-zinc-500 cursor-not-allowed' : ''}`}
           />
           {isEditing && (
-            <p className='mt-1 text-xs text-gray-500 text-center'>
+            <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 text-center">
               Date cannot be changed after adding
             </p>
           )}
@@ -195,7 +203,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
       {/* Price History Section (for editing existing cards) */}
       {isEditing && priceHistory.length > 0 && onPriceUpdate && (
-        <div className='mt-8 pt-8 border-t border-slate-200/50'>
+        <div className="mt-8 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50">
           <PriceHistoryDisplay
             priceHistory={priceHistory}
             currentPrice={currentPriceNumber}

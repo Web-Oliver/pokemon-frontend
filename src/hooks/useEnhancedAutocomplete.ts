@@ -67,7 +67,10 @@ export function useEnhancedAutocomplete({
   onSelectionChange,
   onError,
 }: UseEnhancedAutocompleteProps): UseEnhancedAutocompleteReturn {
-  console.log('[ENHANCED AUTOCOMPLETE] useEnhancedAutocomplete called with config:', config);
+  console.log(
+    '[ENHANCED AUTOCOMPLETE] useEnhancedAutocomplete called with config:',
+    config
+  );
 
   // Create service instance (memoized) - ensure config is properly passed
   const serviceRef = useRef<HierarchicalSearchService>();
@@ -80,7 +83,10 @@ export function useEnhancedAutocomplete({
     serviceRef.current = createHierarchicalSearchService(config);
   } else {
     // Update existing service config to ensure searchMode is correct
-    console.log('[ENHANCED AUTOCOMPLETE] Updating existing service config:', config);
+    console.log(
+      '[ENHANCED AUTOCOMPLETE] Updating existing service config:',
+      config
+    );
     serviceRef.current.updateConfig(config);
   }
   const service = serviceRef.current;
@@ -113,7 +119,7 @@ export function useEnhancedAutocomplete({
       const currentField = state.fields[fieldId];
 
       // Update field value immediately
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         fields: {
           ...prev.fields,
@@ -137,28 +143,41 @@ export function useEnhancedAutocomplete({
               : config.minQueryLength || SEARCH_CONFIG.DEFAULT_MIN_QUERY_LENGTH;
 
         if (value.trim().length >= minLength) {
-          setState(prev => ({ ...prev, isLoading: true, error: null }));
+          setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
           try {
-            console.log('[ENHANCED AUTOCOMPLETE] Calling getSuggestions with:', {
+            console.log(
+              '[ENHANCED AUTOCOMPLETE] Calling getSuggestions with:',
+              {
+                value,
+                fieldType: currentField.type,
+                fieldId,
+              }
+            );
+
+            const suggestions = await service.getSuggestions(
               value,
-              fieldType: currentField.type,
-              fieldId,
-            });
+              currentField.type
+            );
 
-            const suggestions = await service.getSuggestions(value, currentField.type);
+            console.log(
+              '[ENHANCED AUTOCOMPLETE] Got suggestions:',
+              suggestions
+            );
 
-            console.log('[ENHANCED AUTOCOMPLETE] Got suggestions:', suggestions);
-
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               suggestions,
               isLoading: false,
             }));
           } catch (error) {
-            console.error('[ENHANCED AUTOCOMPLETE] Error getting suggestions:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Search failed';
-            setState(prev => ({
+            console.error(
+              '[ENHANCED AUTOCOMPLETE] Error getting suggestions:',
+              error
+            );
+            const errorMessage =
+              error instanceof Error ? error.message : 'Search failed';
+            setState((prev) => ({
               ...prev,
               error: errorMessage,
               isLoading: false,
@@ -167,7 +186,7 @@ export function useEnhancedAutocomplete({
             onError?.(errorMessage);
           }
         } else {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             suggestions: [],
             isLoading: false,
@@ -183,14 +202,17 @@ export function useEnhancedAutocomplete({
    */
   const handleSuggestionSelect = useCallback(
     (suggestion: SearchSuggestion, fieldId: string) => {
-      console.log('[ENHANCED AUTOCOMPLETE] handleSuggestionSelect called with:', {
-        suggestion,
-        fieldId,
-        fieldType: state.fields[fieldId]?.type,
-      });
+      console.log(
+        '[ENHANCED AUTOCOMPLETE] handleSuggestionSelect called with:',
+        {
+          suggestion,
+          fieldId,
+          fieldType: state.fields[fieldId]?.type,
+        }
+      );
 
       // Update field value
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         fields: {
           ...prev.fields,
@@ -203,41 +225,62 @@ export function useEnhancedAutocomplete({
 
       // Update service state with hierarchical logic
       const field = state.fields[fieldId];
-      const newServiceState = service.handleSuggestionSelect(suggestion, field.type);
+      const newServiceState = service.handleSuggestionSelect(
+        suggestion,
+        field.type
+      );
 
-      console.log('[ENHANCED AUTOCOMPLETE] About to call onSelectionChange with:', suggestion.data);
+      console.log(
+        '[ENHANCED AUTOCOMPLETE] About to call onSelectionChange with:',
+        suggestion.data
+      );
 
       // Auto-fill related fields based on hierarchical context
       if (newServiceState.selectedSet) {
-        const setField = Object.values(state.fields).find(f => f.type === 'set');
+        const setField = Object.values(state.fields).find(
+          (f) => f.type === 'set'
+        );
         if (setField) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             fields: {
               ...prev.fields,
-              [setField.id]: { ...setField, value: newServiceState.selectedSet! },
+              [setField.id]: {
+                ...setField,
+                value: newServiceState.selectedSet!,
+              },
             },
           }));
         }
       }
 
       if (newServiceState.selectedCategory) {
-        const categoryField = Object.values(state.fields).find(f => f.type === 'category');
+        const categoryField = Object.values(state.fields).find(
+          (f) => f.type === 'category'
+        );
         if (categoryField) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             fields: {
               ...prev.fields,
-              [categoryField.id]: { ...categoryField, value: newServiceState.selectedCategory! },
+              [categoryField.id]: {
+                ...categoryField,
+                value: newServiceState.selectedCategory!,
+              },
             },
           }));
         }
       }
 
       // Notify parent of selection
-      console.log('[ENHANCED AUTOCOMPLETE] Calling onSelectionChange with:', suggestion.data);
+      console.log(
+        '[ENHANCED AUTOCOMPLETE] Calling onSelectionChange with:',
+        suggestion.data
+      );
       onSelectionChange?.(suggestion.data);
-      console.log('[ENHANCED AUTOCOMPLETE] onSelectionChange called successfully');
+      console.log(
+        '[ENHANCED AUTOCOMPLETE] onSelectionChange called successfully'
+      );
     },
     [service, state.fields, onSelectionChange]
   );
@@ -247,7 +290,7 @@ export function useEnhancedAutocomplete({
    */
   const handleFieldFocus = useCallback(
     (fieldId: string) => {
-      setState(prev => ({ ...prev, activeField: fieldId }));
+      setState((prev) => ({ ...prev, activeField: fieldId }));
 
       // Update service state
       const field = state.fields[fieldId];
@@ -262,7 +305,7 @@ export function useEnhancedAutocomplete({
   const handleFieldBlur = useCallback((fieldId: string) => {
     // Delay clearing to allow for suggestion selection
     setTimeout(() => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         activeField: prev.activeField === fieldId ? null : prev.activeField,
         suggestions: prev.activeField === fieldId ? [] : prev.suggestions,
@@ -278,7 +321,7 @@ export function useEnhancedAutocomplete({
       const field = state.fields[fieldId];
 
       // Clear field value
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         fields: {
           ...prev.fields,
@@ -302,7 +345,7 @@ export function useEnhancedAutocomplete({
    * Update fields configuration
    */
   const updateFields = useCallback((newFields: AutocompleteField[]) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       fields: newFields.reduce(
         (acc, field) => {
@@ -378,7 +421,10 @@ export function useCardAutocomplete(
     onError?: (error: string) => void;
   }
 ): UseEnhancedAutocompleteReturn {
-  console.log('[CARD AUTOCOMPLETE] useCardAutocomplete called with options:', options);
+  console.log(
+    '[CARD AUTOCOMPLETE] useCardAutocomplete called with options:',
+    options
+  );
 
   return useEnhancedAutocomplete({
     config: createAutocompleteConfig('cards'),

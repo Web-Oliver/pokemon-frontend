@@ -12,7 +12,11 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import { createResourceOperations, SET_CONFIG, idMapper } from './genericApiOperations';
+import {
+  createResourceOperations,
+  SET_CONFIG,
+  idMapper,
+} from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
 import { searchSetsOptimized } from './consolidatedSearch';
@@ -69,13 +73,14 @@ interface ISetUpdatePayload extends Partial<ISetCreatePayload> {}
  * Core CRUD operations for sets using createResourceOperations
  * Eliminates boilerplate patterns and ensures consistency with other API files
  */
-const setOperations = createResourceOperations<ISet, ISetCreatePayload, ISetUpdatePayload>(
-  SET_CONFIG,
-  {
-    includeExportOperations: true,
-    includeBatchOperations: true,
-  }
-);
+const setOperations = createResourceOperations<
+  ISet,
+  ISetCreatePayload,
+  ISetUpdatePayload
+>(SET_CONFIG, {
+  includeExportOperations: true,
+  includeBatchOperations: true,
+});
 
 // ========== EXPORTED API OPERATIONS ==========
 

@@ -12,7 +12,13 @@
  * - Stunning animations and hover effects
  */
 
-import React, { useState, useRef, DragEvent, ChangeEvent, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  DragEvent,
+  ChangeEvent,
+  useEffect,
+} from 'react';
 import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
 import ConfirmModal from './common/ConfirmModal';
 import {
@@ -61,7 +67,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     // Initialize with existing images
     return existingImageUrls.map((url, index) => {
       // Convert relative URLs to full URLs
-      const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+      const fullUrl = url.startsWith('http')
+        ? url
+        : `http://localhost:3000${url}`;
       return {
         id: `existing-${index}`,
         url: fullUrl,
@@ -72,9 +80,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [imageToRemove, setImageToRemove] = useState<{ id: string; isExisting: boolean } | null>(
-    null
-  );
+  const [imageToRemove, setImageToRemove] = useState<{
+    id: string;
+    isExisting: boolean;
+  } | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -89,21 +98,28 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       setIsAnalyzing(true);
       try {
         const aspectPromises = existingImageUrls.map(async (url, index) => {
-          const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+          const fullUrl = url.startsWith('http')
+            ? url
+            : `http://localhost:3000${url}`;
           const aspectInfo = await detectImageAspectRatio(fullUrl);
           return { index, aspectInfo };
         });
 
         const aspectResults = await Promise.all(aspectPromises);
 
-        setPreviews(prev => {
+        setPreviews((prev) => {
           return prev.map((preview, index) => {
-            const result = aspectResults.find(r => r.index === index);
-            return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+            const result = aspectResults.find((r) => r.index === index);
+            return result
+              ? { ...preview, aspectInfo: result.aspectInfo }
+              : preview;
           });
         });
       } catch (error) {
-        console.warn('[ImageUploader] Failed to analyze existing image aspects:', error);
+        console.warn(
+          '[ImageUploader] Failed to analyze existing image aspects:',
+          error
+        );
       } finally {
         setIsAnalyzing(false);
       }
@@ -134,8 +150,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const fileArray = Array.from(_files);
 
     // Check total file count
-    const currentFileCount = previews.filter(p => !p.isExisting).length;
-    const totalNewFiles = Math.min(fileArray.length, maxFiles - currentFileCount);
+    const currentFileCount = previews.filter((p) => !p.isExisting).length;
+    const totalNewFiles = Math.min(
+      fileArray.length,
+      maxFiles - currentFileCount
+    );
 
     if (fileArray.length + currentFileCount > maxFiles) {
       errorMessage = `Maximum ${maxFiles} files allowed. ${fileArray.length + currentFileCount - maxFiles} files will be ignored.`;
@@ -170,13 +189,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
 
     // Update previews first without aspect info
-    setPreviews(prev => [...prev, ...newPreviews]);
+    setPreviews((prev) => [...prev, ...newPreviews]);
 
     // Analyze aspect ratios for new images if enabled
     if (enableAspectRatioDetection && newPreviews.length > 0) {
       setIsAnalyzing(true);
       try {
-        const aspectPromises = newPreviews.map(async preview => {
+        const aspectPromises = newPreviews.map(async (preview) => {
           const aspectInfo = await detectImageAspectRatio(preview.url);
           return { id: preview.id, aspectInfo };
         });
@@ -184,14 +203,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const aspectResults = await Promise.all(aspectPromises);
 
         // Update previews with aspect info
-        setPreviews(prev => {
-          return prev.map(preview => {
-            const result = aspectResults.find(r => r.id === preview.id);
-            return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+        setPreviews((prev) => {
+          return prev.map((preview) => {
+            const result = aspectResults.find((r) => r.id === preview.id);
+            return result
+              ? { ...preview, aspectInfo: result.aspectInfo }
+              : preview;
           });
         });
       } catch (error) {
-        console.warn('[ImageUploader] Failed to analyze new image aspects:', error);
+        console.warn(
+          '[ImageUploader] Failed to analyze new image aspects:',
+          error
+        );
       } finally {
         setIsAnalyzing(false);
       }
@@ -199,12 +223,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     // Update parent component with all current files and remaining existing URLs
     const allFiles = [
-      ...previews.filter(p => !p.isExisting && p.file).map(p => p.file!),
+      ...previews.filter((p) => !p.isExisting && p.file).map((p) => p.file!),
       ...newFiles,
     ];
     const remainingExistingUrls = previews
-      .filter(p => p.isExisting)
-      .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+      .filter((p) => p.isExisting)
+      .map((p) => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
     onImagesChange(allFiles, remainingExistingUrls);
   };
 
@@ -256,7 +280,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       return;
     }
 
-    const preview = previews.find(p => p.id === id);
+    const preview = previews.find((p) => p.id === id);
     if (preview) {
       setImageToRemove({ id, isExisting: preview.isExisting || false });
       setShowRemoveConfirm(true);
@@ -272,20 +296,22 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     setIsRemoving(true);
 
     try {
-      const preview = previews.find(p => p.id === imageToRemove.id);
+      const preview = previews.find((p) => p.id === imageToRemove.id);
       if (preview && !preview.isExisting && preview.url) {
         // Clean up object URL to prevent memory leaks
         URL.revokeObjectURL(preview.url);
       }
 
-      const updatedPreviews = previews.filter(p => p.id !== imageToRemove.id);
+      const updatedPreviews = previews.filter((p) => p.id !== imageToRemove.id);
       setPreviews(updatedPreviews);
 
       // Update parent component with remaining files and existing URLs
-      const remainingFiles = updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!);
+      const remainingFiles = updatedPreviews
+        .filter((p) => !p.isExisting && p.file)
+        .map((p) => p.file!);
       const remainingExistingUrls = updatedPreviews
-        .filter(p => p.isExisting)
-        .map(p => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+        .filter((p) => p.isExisting)
+        .map((p) => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
       onImagesChange(remainingFiles, remainingExistingUrls);
     } finally {
       // Always reset state, even if there's an error
@@ -313,7 +339,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   // Clean up object URLs on unmount
   React.useEffect(() => {
     return () => {
-      previews.forEach(preview => {
+      previews.forEach((preview) => {
         if (!preview.isExisting && preview.url) {
           URL.revokeObjectURL(preview.url);
         }
@@ -322,13 +348,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   }, [previews]);
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {/* Context7 Premium Analysis Indicator */}
       {isAnalyzing && enableAspectRatioDetection && (
-        <div className='mb-6 flex items-center justify-center py-3'>
-          <div className='flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/50 shadow-lg backdrop-blur-sm'>
-            <Sparkles className='w-5 h-5 text-indigo-600 animate-spin' />
-            <span className='text-sm font-bold text-indigo-700 tracking-wide'>
+        <div className="mb-6 flex items-center justify-center py-3">
+          <div className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/50 shadow-lg backdrop-blur-sm">
+            <Sparkles className="w-5 h-5 text-indigo-600 animate-spin" />
+            <span className="text-sm font-bold text-indigo-700 tracking-wide">
               Analyzing image layouts...
             </span>
           </div>
@@ -337,24 +363,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       {/* Context7 Premium Error Message */}
       {error && (
-        <div className='mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/60 rounded-2xl flex items-center backdrop-blur-sm shadow-lg relative overflow-hidden'>
-          <div className='absolute inset-0 bg-gradient-to-r from-red-500/5 to-rose-500/5'></div>
-          <div className='w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center mr-3 shadow-lg'>
-            <AlertCircle className='w-4 h-4 text-white' />
+        <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/60 rounded-2xl flex items-center backdrop-blur-sm shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-rose-500/5"></div>
+          <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+            <AlertCircle className="w-4 h-4 text-white" />
           </div>
-          <p className='text-sm text-red-700 font-medium relative z-10'>{error}</p>
+          <p className="text-sm text-red-700 font-medium relative z-10">
+            {error}
+          </p>
         </div>
       )}
 
       {/* Context7 Premium Upload Area */}
       <div
-        className={`relative border-2 border-dashed rounded-3xl transition-all duration-500 ease-out group overflow-hidden ${
-          dragActive
-            ? 'border-indigo-400 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 shadow-2xl scale-105'
-            : disabled
-              ? 'border-zinc-700/40 bg-zinc-800/50'
-              : 'border-slate-300 hover:border-indigo-300 hover:bg-gradient-to-br hover:from-indigo-50/30 hover:via-blue-50/30 hover:to-purple-50/30 hover:shadow-xl hover:scale-102'
-        } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} backdrop-blur-sm`}
+        className={`relative border-2 border-dashed rounded-3xl transition-all duration-500 ease-out group overflow-hidden ${dragActive ? 'border-indigo-400 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 shadow-2xl scale-105' : disabled ? 'border-zinc-700/40 bg-zinc-800/50' : 'border-slate-300 hover:border-indigo-300 hover:bg-gradient-to-br hover:from-indigo-50/30 hover:via-blue-50/30 hover:to-purple-50/30 hover:shadow-xl hover:scale-102'} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} backdrop-blur-sm`}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
@@ -362,9 +384,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         onClick={openFileDialog}
       >
         {/* Context7 Premium Background Pattern */}
-        <div className='absolute inset-0 opacity-30'>
+        <div className="absolute inset-0 opacity-30">
           <div
-            className='w-full h-full'
+            className="w-full h-full"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             }}
@@ -373,50 +395,36 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
         {/* Premium floating particles */}
         {dragActive && (
-          <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-            <div className='absolute top-1/4 left-1/4 w-2 h-2 bg-indigo-300/40 rounded-full animate-bounce'></div>
-            <div className='absolute top-3/4 right-1/3 w-1.5 h-1.5 bg-blue-300/30 rounded-full animate-pulse delay-100'></div>
-            <div className='absolute bottom-1/4 left-1/3 w-1 h-1 bg-purple-300/25 rounded-full animate-ping delay-200'></div>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-indigo-300/40 rounded-full animate-bounce"></div>
+            <div className="absolute top-3/4 right-1/3 w-1.5 h-1.5 bg-blue-300/30 rounded-full animate-pulse delay-100"></div>
+            <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-purple-300/25 rounded-full animate-ping delay-200"></div>
           </div>
         )}
 
-        <div className='p-10 text-center relative z-10'>
+        <div className="p-10 text-center relative z-10">
           {/* Context7 Premium Upload Icon */}
           <div
-            className={`mx-auto w-20 h-20 mb-6 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-              disabled
-                ? 'bg-slate-100 text-slate-300'
-                : dragActive
-                  ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-2xl scale-110 rotate-3'
-                  : 'bg-gradient-to-br from-zinc-800/60 to-zinc-900/80 text-zinc-400 group-hover:from-cyan-900/30 group-hover:to-blue-900/30 group-hover:text-cyan-400 group-hover:scale-110 group-hover:shadow-xl border border-zinc-700/40 group-hover:border-cyan-600/40'
-            }`}
+            className={`mx-auto w-20 h-20 mb-6 rounded-2xl flex items-center justify-center transition-all duration-500 ${disabled ? 'bg-slate-100 text-slate-300' : dragActive ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-2xl scale-110 rotate-3' : 'bg-gradient-to-br from-zinc-800/60 to-zinc-900/80 text-zinc-400 group-hover:from-cyan-900/30 group-hover:to-blue-900/30 group-hover:text-cyan-400 group-hover:scale-110 group-hover:shadow-xl border border-zinc-700/40 group-hover:border-cyan-600/40'}`}
           >
             {dragActive ? (
-              <Sparkles className='w-10 h-10 animate-pulse' />
+              <Sparkles className="w-10 h-10 animate-pulse" />
             ) : (
-              <div className='relative'>
-                <Camera className='w-8 h-8' />
-                <Upload className='w-4 h-4 absolute -top-1 -right-1' />
+              <div className="relative">
+                <Camera className="w-8 h-8" />
+                <Upload className="w-4 h-4 absolute -top-1 -right-1" />
               </div>
             )}
           </div>
 
           <p
-            className={`text-xl font-bold mb-3 tracking-wide ${
-              disabled
-                ? 'text-slate-400'
-                : dragActive
-                  ? 'text-indigo-700'
-                  : 'text-slate-700 group-hover:text-indigo-700'
-            } transition-colors duration-300`}
+            className={`text-xl font-bold mb-3 tracking-wide ${disabled ? 'text-slate-400' : dragActive ? 'text-indigo-700' : 'text-slate-700 group-hover:text-indigo-700'} transition-colors duration-300`}
           >
             {dragActive ? '✨ Drop your images here!' : 'Upload Premium Images'}
           </p>
 
           <p
-            className={`text-sm mb-6 font-medium ${
-              disabled ? 'text-slate-300' : 'text-slate-500 group-hover:text-slate-600'
-            } transition-colors duration-300`}
+            className={`text-sm mb-6 font-medium ${disabled ? 'text-slate-300' : 'text-slate-500 group-hover:text-slate-600'} transition-colors duration-300`}
           >
             {dragActive
               ? 'Release to add your beautiful images'
@@ -425,19 +433,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
           {/* Context7 Premium Specs */}
           <div
-            className={`inline-flex items-center space-x-4 px-6 py-3 rounded-2xl text-xs font-semibold tracking-wide transition-all duration-300 ${
-              disabled
-                ? 'bg-slate-100 text-slate-300'
-                : 'bg-zinc-800/80 backdrop-blur-sm text-zinc-400 border border-zinc-700/40 shadow-lg group-hover:bg-cyan-900/30 group-hover:text-cyan-400 group-hover:border-cyan-600/40'
-            }`}
+            className={`inline-flex items-center space-x-4 px-6 py-3 rounded-2xl text-xs font-semibold tracking-wide transition-all duration-300 ${disabled ? 'bg-slate-100 text-slate-300' : 'bg-zinc-800/80 backdrop-blur-sm text-zinc-400 border border-zinc-700/40 shadow-lg group-hover:bg-cyan-900/30 group-hover:text-cyan-400 group-hover:border-cyan-600/40'}`}
           >
-            <div className='flex items-center space-x-1'>
-              <Image className='w-3 h-3' />
+            <div className="flex items-center space-x-1">
+              <Image className="w-3 h-3" />
               <span>JPEG, PNG, WebP</span>
             </div>
-            <div className='w-1 h-1 bg-slate-300 rounded-full'></div>
+            <div className="w-1 h-1 bg-slate-300 dark:bg-zinc-700 dark:bg-zinc-700 rounded-full"></div>
             <span>Max {maxFileSize}MB</span>
-            <div className='w-1 h-1 bg-slate-300 rounded-full'></div>
+            <div className="w-1 h-1 bg-slate-300 dark:bg-zinc-700 dark:bg-zinc-700 rounded-full"></div>
             <span>Up to {maxFiles} files</span>
           </div>
         </div>
@@ -445,34 +449,38 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
-          type='file'
+          type="file"
           accept={acceptedTypes.join(',')}
           multiple={multiple}
           onChange={handleFileChange}
           disabled={disabled}
-          className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           style={{ display: 'none' }}
         />
       </div>
 
       {/* Context7 Premium Image Previews */}
       {previews.length > 0 && (
-        <div className='mt-8'>
-          <div className='flex items-center justify-between mb-6'>
-            <h4 className='text-lg font-bold text-slate-800 tracking-wide'>Selected Images</h4>
-            <div className='px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl border border-indigo-200/50 shadow-lg'>
-              <span className='text-sm font-bold text-indigo-700'>
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h4 className="text-lg font-bold text-slate-800 dark:text-zinc-200 dark:text-zinc-100 tracking-wide">
+              Selected Images
+            </h4>
+            <div className="px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl border border-indigo-200/50 shadow-lg">
+              <span className="text-sm font-bold text-indigo-700">
                 {previews.length} {previews.length === 1 ? 'Image' : 'Images'}
               </span>
             </div>
           </div>
 
           <div
-            className={`grid ${getOptimalGridLayout(previews.map(p => p.aspectInfo).filter(Boolean) as ImageAspectInfo[])}`}
+            className={`grid ${getOptimalGridLayout(previews.map((p) => p.aspectInfo).filter(Boolean) as ImageAspectInfo[])}`}
           >
-            {previews.map(preview => {
+            {previews.map((preview) => {
               const aspectInfo = preview.aspectInfo;
-              const previewConfig = aspectInfo ? getResponsiveImageConfig(aspectInfo) : null;
+              const previewConfig = aspectInfo
+                ? getResponsiveImageConfig(aspectInfo)
+                : null;
 
               // Determine container aspect ratio class
               const getContainerAspectClass = () => {
@@ -510,14 +518,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 : 'w-full h-full object-cover transition-all duration-500 group-hover:scale-110';
 
               return (
-                <div key={preview.id} className='relative group'>
+                <div key={preview.id} className="relative group">
                   {/* Context7 Premium Responsive Image Container */}
-                  <div className={`${containerAspectClass} ${containerClasses}`}>
+                  <div
+                    className={`${containerAspectClass} ${containerClasses}`}
+                  >
                     <img
                       src={preview.url}
-                      alt='Preview'
+                      alt="Preview"
                       className={imageClasses}
-                      onError={e => {
+                      onError={(e) => {
                         // Handle broken image
                         const target = e.target as HTMLImageElement;
                         target.src =
@@ -527,7 +537,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
                     {/* Context7 Premium Glass Overlay */}
                     {aspectInfo && (
-                      <div className={getContext7GlassOverlay(aspectInfo.orientation)}></div>
+                      <div
+                        className={getContext7GlassOverlay(
+                          aspectInfo.orientation
+                        )}
+                      ></div>
                     )}
 
                     {/* Context7 Premium Shimmer Effect */}
@@ -537,39 +551,35 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                   {/* Context7 Premium Remove Button */}
                   {!disabled && (
                     <button
-                      onClick={e => {
+                      onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         handleRemoveImage(preview.id);
                       }}
-                      onDoubleClick={e => {
+                      onDoubleClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                       disabled={isRemoving || showRemoveConfirm}
-                      className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-zinc-600 backdrop-blur-sm ${
-                        isRemoving || showRemoveConfirm
-                          ? 'cursor-not-allowed opacity-50'
-                          : 'cursor-pointer'
-                      }`}
-                      aria-label='Remove image'
+                      className={`absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl flex items-center justify-center transition-all duration-300 opacity-75 group-hover:opacity-100 hover:opacity-100 shadow-lg hover:shadow-xl hover:scale-110 border-2 border-zinc-600 backdrop-blur-sm ${isRemoving || showRemoveConfirm ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                      aria-label="Remove image"
                     >
-                      <X className='w-4 h-4' />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
 
                   {/* Context7 Premium Existing Image Badge */}
                   {preview.isExisting && (
-                    <div className='absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-zinc-600/20 backdrop-blur-sm'>
-                      <div className='flex items-center space-x-1'>
-                        <div className='w-2 h-2 bg-zinc-200 rounded-full animate-pulse'></div>
+                    <div className="absolute bottom-2 left-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg border border-zinc-600/20 backdrop-blur-sm">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-zinc-200 rounded-full animate-pulse"></div>
                         <span>Existing</span>
                       </div>
                     </div>
                   )}
 
                   {/* Context7 Premium Hover Effects */}
-                  <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'></div>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
               );
             })}
@@ -582,15 +592,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         isOpen={showRemoveConfirm}
         onClose={handleCancelRemoveImage}
         onConfirm={confirmRemoveImage}
-        title='Remove Image'
+        title="Remove Image"
         description={`Are you sure you want to remove this image? ${
           imageToRemove?.isExisting
             ? 'This will permanently remove the image from your collection.'
             : 'This will remove the image from the upload queue.'
         }`}
-        confirmText='Remove Image'
+        confirmText="Remove Image"
         variant={imageToRemove?.isExisting ? 'danger' : 'warning'}
-        icon='trash'
+        icon="trash"
         isLoading={isRemoving}
       />
     </div>

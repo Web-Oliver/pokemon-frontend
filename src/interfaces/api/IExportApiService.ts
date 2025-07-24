@@ -7,7 +7,11 @@
 /**
  * Export item type enumeration
  */
-export type ExportItemType = 'psa-card' | 'raw-card' | 'sealed-product' | 'auction';
+export type ExportItemType =
+  | 'psa-card'
+  | 'raw-card'
+  | 'sealed-product'
+  | 'auction';
 
 /**
  * Export format enumeration
@@ -63,7 +67,9 @@ export interface IDataExportApiService {
  * Combined Export API Service Interface
  * Follows Interface Segregation Principle with unified operations
  */
-export interface IExportApiService extends IImageExportApiService, IDataExportApiService {
+export interface IExportApiService
+  extends IImageExportApiService,
+    IDataExportApiService {
   // Unified export method that handles all export types
   export(request: ExportRequest): Promise<ExportResult>;
 }

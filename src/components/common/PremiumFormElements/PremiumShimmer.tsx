@@ -14,7 +14,9 @@ interface PremiumShimmerProps {
   className?: string;
 }
 
-export const PremiumShimmer: React.FC<PremiumShimmerProps> = ({ className = '' }) => {
+export const PremiumShimmer: React.FC<PremiumShimmerProps> = ({
+  className = '',
+}) => {
   return (
     <div
       className={`absolute inset-0 bg-gradient-to-r from-transparent via-cyan-200/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out ${className}`}

@@ -68,7 +68,8 @@ interface ICardMarketRefProductCreatePayload
 /**
  * CardMarket reference product update payload interface
  */
-interface ICardMarketRefProductUpdatePayload extends Partial<ICardMarketRefProductCreatePayload> {}
+interface ICardMarketRefProductUpdatePayload
+  extends Partial<ICardMarketRefProductCreatePayload> {}
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 
@@ -156,21 +157,24 @@ export const removeCardMarketRefProduct = cardMarketRefProductOperations.remove;
  * @param searchParams - Product search parameters
  * @returns Promise<ICardMarketReferenceProduct[]> - Search results
  */
-export const searchCardMarketRefProducts = cardMarketRefProductOperations.search;
+export const searchCardMarketRefProducts =
+  cardMarketRefProductOperations.search;
 
 /**
  * Bulk create CardMarket reference products
  * @param productsData - Array of product creation data
  * @returns Promise<ICardMarketReferenceProduct[]> - Created products
  */
-export const bulkCreateCardMarketRefProducts = cardMarketRefProductOperations.bulkCreate;
+export const bulkCreateCardMarketRefProducts =
+  cardMarketRefProductOperations.bulkCreate;
 
 /**
  * Export CardMarket reference products data
  * @param exportParams - Export parameters
  * @returns Promise<Blob> - Export file blob
  */
-export const exportCardMarketRefProducts = cardMarketRefProductOperations.export;
+export const exportCardMarketRefProducts =
+  cardMarketRefProductOperations.export;
 
 /**
  * Batch operation on CardMarket reference products
@@ -179,7 +183,8 @@ export const exportCardMarketRefProducts = cardMarketRefProductOperations.export
  * @param operationData - Operation-specific data
  * @returns Promise<ICardMarketReferenceProduct[]> - Operation results
  */
-export const batchCardMarketRefProductOperation = cardMarketRefProductOperations.batchOperation;
+export const batchCardMarketRefProductOperation =
+  cardMarketRefProductOperations.batchOperation;
 
 // ========== CARDMARKET-SPECIFIC OPERATIONS ==========
 
@@ -191,7 +196,14 @@ export const batchCardMarketRefProductOperation = cardMarketRefProductOperations
 export const getPaginatedCardMarketRefProducts = async (
   params?: CardMarketRefProductsParams
 ): Promise<PaginatedCardMarketRefProductsResponse> => {
-  const { page = 1, limit = 20, category, setName, available, search } = params || {};
+  const {
+    page = 1,
+    limit = 20,
+    category,
+    setName,
+    available,
+    search,
+  } = params || {};
 
   if (search && search.trim()) {
     // Use optimized search when there's a search term
@@ -226,11 +238,12 @@ export const getPaginatedCardMarketRefProducts = async (
       ...(available !== undefined && { available: available.toString() }),
     };
 
-    const response = await unifiedApiClient.apiGet<PaginatedCardMarketRefProductsResponse>(
-      '/cardmarket-ref-products',
-      'paginated CardMarket reference products',
-      { params: queryParams }
-    );
+    const response =
+      await unifiedApiClient.apiGet<PaginatedCardMarketRefProductsResponse>(
+        '/cardmarket-ref-products',
+        'paginated CardMarket reference products',
+        { params: queryParams }
+      );
 
     return {
       products: response.products || [],

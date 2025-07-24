@@ -55,7 +55,7 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
   const handleSearch = useCallback(
     async (query: string) => {
       if (!query.trim()) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           searchTerm: '',
           searchResults: [],
@@ -72,7 +72,7 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         searchTerm: query,
         loading: true,
@@ -102,7 +102,7 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
         }
 
         if (!abortController.signal.aborted) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             searchResults: results,
             loading: false,
@@ -114,7 +114,7 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
           const errorMessage = 'Search failed. Please try again.';
           handleApiError(error, errorMessage);
 
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             error: errorMessage,
             loading: false,
@@ -126,24 +126,27 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
     [state.searchMode]
   );
 
-  const getBestMatch = useCallback(async (query: string): Promise<ICard | null> => {
-    try {
-      log(`[BASIC SEARCH] Getting best match for: ${query}`);
+  const getBestMatch = useCallback(
+    async (query: string): Promise<ICard | null> => {
+      try {
+        log(`[BASIC SEARCH] Getting best match for: ${query}`);
 
-      const results = await searchApi.searchCards({
-        query,
-        limit: 1,
-      });
+        const results = await searchApi.searchCards({
+          query,
+          limit: 1,
+        });
 
-      return results && results.length > 0 ? results[0] : null;
-    } catch (error) {
-      log(`[BASIC SEARCH] Best match search failed: ${error}`);
-      return null;
-    }
-  }, []);
+        return results && results.length > 0 ? results[0] : null;
+      } catch (error) {
+        log(`[BASIC SEARCH] Best match search failed: ${error}`);
+        return null;
+      }
+    },
+    []
+  );
 
   const setSearchMode = useCallback((mode: 'cards' | 'products') => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       searchMode: mode,
       searchResults: [], // Clear results when changing modes
@@ -165,7 +168,7 @@ export const useBasicSearch = (): UseBasicSearchReturn => {
   }, [state.searchMode]);
 
   const clearError = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       error: null,
     }));

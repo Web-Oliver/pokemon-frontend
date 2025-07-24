@@ -5,7 +5,12 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { useForm, UseFormReturn, FieldValues, DefaultValues } from 'react-hook-form';
+import {
+  useForm,
+  UseFormReturn,
+  FieldValues,
+  DefaultValues,
+} from 'react-hook-form';
 import { useFormValidation, ValidationRules } from './useFormValidation';
 import { useImageUpload } from './useImageUpload';
 import { usePriceHistory } from './usePriceHistory';
@@ -97,7 +102,7 @@ export const useBaseForm = <T extends FieldValues>(
 
   const setFormData = useCallback(
     (data: Partial<T>) => {
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         if (data[key] !== undefined) {
           form.setValue(key as any, data[key]);
         }

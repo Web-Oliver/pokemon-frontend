@@ -13,8 +13,16 @@ import { useState, useCallback } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { exportApiService } from '../services/ExportApiService';
-import { ExportRequest, ExportItemType, ExportFormat } from '../interfaces/api/IExportApiService';
-import { showSuccessToast, showWarningToast, handleApiError } from '../utils/errorHandler';
+import {
+  ExportRequest,
+  ExportItemType,
+  ExportFormat,
+} from '../interfaces/api/IExportApiService';
+import {
+  showSuccessToast,
+  showWarningToast,
+  handleApiError,
+} from '../utils/errorHandler';
 import {
   formatExportSuccessMessage,
   formatExportErrorMessage,
@@ -30,8 +38,14 @@ export interface UseCollectionExportReturn {
 
   // Unified export functions
   exportItems: (request: ExportRequest) => Promise<void>;
-  exportAllItems: (items: CollectionItem[], format?: ExportFormat) => Promise<void>;
-  exportSelectedItems: (selectedIds: string[], format?: ExportFormat) => Promise<void>;
+  exportAllItems: (
+    items: CollectionItem[],
+    format?: ExportFormat
+  ) => Promise<void>;
+  exportSelectedItems: (
+    selectedIds: string[],
+    format?: ExportFormat
+  ) => Promise<void>;
 
   // Specialized export functions (legacy support)
   exportFacebookText: (itemIds?: string[]) => Promise<void>;
@@ -45,7 +59,9 @@ export interface UseCollectionExportReturn {
 
 export const useCollectionExport = (): UseCollectionExportReturn => {
   const [isExporting, setIsExporting] = useState(false);
-  const [selectedItemsForExport, setSelectedItemsForExport] = useState<string[]>([]);
+  const [selectedItemsForExport, setSelectedItemsForExport] = useState<
+    string[]
+  >([]);
 
   // Unified export function - consolidates all export operations
   const exportItems = useCallback(async (request: ExportRequest) => {
@@ -95,7 +111,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         return;
       }
 
-      const itemIds = items.map(item => item.id);
+      const itemIds = items.map((item) => item.id);
       await exportItems({
         itemType: 'psa-card', // Default, but format determines actual behavior
         format,
@@ -148,14 +164,16 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
 
   // Toggle individual item selection
   const toggleItemSelection = useCallback((itemId: string) => {
-    setSelectedItemsForExport(prev =>
-      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
+    setSelectedItemsForExport((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
     );
   }, []);
 
   // Select all items
   const selectAllItems = useCallback((items: CollectionItem[]) => {
-    const allIds = items.map(item => item.id);
+    const allIds = items.map((item) => item.id);
     setSelectedItemsForExport(allIds);
   }, []);
 

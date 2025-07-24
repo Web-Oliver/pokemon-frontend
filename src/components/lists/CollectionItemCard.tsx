@@ -22,8 +22,14 @@ export interface CollectionItemCardProps {
   itemType: 'psa' | 'raw' | 'sealed';
   activeTab: 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items';
   showMarkAsSoldButton?: boolean;
-  onViewDetails: (item: CollectionItem, itemType: 'psa' | 'raw' | 'sealed') => void;
-  onMarkAsSold?: (item: CollectionItem, itemType: 'psa' | 'raw' | 'sealed') => void;
+  onViewDetails: (
+    item: CollectionItem,
+    itemType: 'psa' | 'raw' | 'sealed'
+  ) => void;
+  onMarkAsSold?: (
+    item: CollectionItem,
+    itemType: 'psa' | 'raw' | 'sealed'
+  ) => void;
 }
 
 const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
@@ -37,7 +43,8 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   // Memoized item display name calculation
   const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
-    const cardName = ((itemRecord.cardId as Record<string, unknown>)?.cardName ||
+    const cardName = ((itemRecord.cardId as Record<string, unknown>)
+      ?.cardName ||
       itemRecord.cardName ||
       itemRecord.name ||
       'Unknown Item') as string;
@@ -69,19 +76,27 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       price={item.myPrice}
       type={itemType}
       grade={activeTab === 'psa-graded' ? (item as any).grade : undefined}
-      condition={activeTab === 'raw-cards' ? (item as any).condition : undefined}
-      category={activeTab === 'sealed-products' ? (item as any).category : undefined}
+      condition={
+        activeTab === 'raw-cards' ? (item as any).condition : undefined
+      }
+      category={
+        activeTab === 'sealed-products' ? (item as any).category : undefined
+      }
       sold={activeTab === 'sold-items'}
-      saleDate={activeTab === 'sold-items' ? (item as any).saleDetails?.dateSold : undefined}
-      variant='card'
-      size='md'
-      aspectRatio='card'
+      saleDate={
+        activeTab === 'sold-items'
+          ? (item as any).saleDetails?.dateSold
+          : undefined
+      }
+      variant="card"
+      size="md"
+      aspectRatio="card"
       showBadge={true}
       showPrice={true}
       showActions={false}
       enableInteractions={true}
       onView={handleClick}
-      className='mx-auto w-full max-w-sm min-h-[550px]'
+      className="mx-auto w-full max-w-sm min-h-[550px]"
     />
   );
 };
@@ -107,7 +122,8 @@ const arePropsEqual = (
       prevItem.myPrice !== nextItem.myPrice ||
       prevItem.images !== nextItem.images ||
       JSON.stringify(prevItem.cardId) !== JSON.stringify(nextItem.cardId) ||
-      JSON.stringify(prevItem.saleDetails) !== JSON.stringify(nextItem.saleDetails)
+      JSON.stringify(prevItem.saleDetails) !==
+        JSON.stringify(nextItem.saleDetails)
     ) {
       return false;
     }
@@ -128,6 +144,9 @@ const arePropsEqual = (
  * Prevents unnecessary re-renders when props haven't changed
  * Optimizes performance for large collection grids with hundreds of cards
  */
-export const CollectionItemCard = memo(CollectionItemCardComponent, arePropsEqual);
+export const CollectionItemCard = memo(
+  CollectionItemCardComponent,
+  arePropsEqual
+);
 
 export default CollectionItemCard;
