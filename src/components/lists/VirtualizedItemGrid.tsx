@@ -4,7 +4,7 @@
  * High-performance grid for large collections using virtual scrolling
  */
 
-import React, { memo, useMemo, useEffect, useState, useRef } from 'react';
+import React, { memo, useMemo } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import { Package, CheckCircle, Circle } from 'lucide-react';
 

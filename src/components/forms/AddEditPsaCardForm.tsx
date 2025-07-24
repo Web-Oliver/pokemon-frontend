@@ -73,7 +73,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+    typeof initialData?.cardId === 'string' ? initialData.cardId : (initialData?.cardId as any)?.id || null
   );
 
   const {
@@ -138,7 +138,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       console.log('[PSA FORM] Updating form with initialData:', initialData);
 
       // Access card data from nested cardId object (populated by backend API)
-      const cardData = initialData.cardId;
+      const cardData = initialData.cardId as any;
       const setName = cardData?.setId?.setName || initialData.setName || '';
       const cardName = cardData?.cardName || initialData.cardName || '';
       const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
@@ -329,8 +329,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     } catch (error) {
       console.error('[PSA FORM SUBMIT] ===== SUBMIT FAILED =====');
       console.error('[PSA FORM SUBMIT] Error details:', error);
-      console.error('[PSA FORM SUBMIT] Error message:', error?.message);
-      console.error('[PSA FORM SUBMIT] Error stack:', error?.stack);
+      console.error('[PSA FORM SUBMIT] Error message:', (error as any)?.message);
+      console.error('[PSA FORM SUBMIT] Error stack:', (error as any)?.stack);
       // Error handling is done by useCollection hook
     } finally {
       setIsSubmitting(false);
@@ -537,8 +537,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       {/* Grading & Pricing Section - Hidden for sold items */}
       <GradingPricingSection
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         cardType='psa'
         currentGradeOrCondition={watchedGrade}
         currentPrice={watchedPrice}
@@ -562,9 +562,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       {/* Sold Item Edit Section - Only for sold items */}
       <SaleDetailsSection
-        register={register}
-        errors={errors}
-        watch={watch}
+        register={register as any}
+        errors={errors as any}
+        watch={watch as any}
         isVisible={isEditing && initialData?.sold}
         itemName='card'
       />

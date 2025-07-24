@@ -147,7 +147,7 @@ export const getPsaGradedCards = async (
 ): Promise<IPsaGradedCard[]> => {
   const response = await apiClient.get('/psa-graded-cards', { params });
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IPsaGradedCard[];
 };
 
 /**
@@ -158,7 +158,7 @@ export const getPsaGradedCards = async (
 export const getPsaGradedCardById = async (id: string): Promise<IPsaGradedCard> => {
   const response = await apiClient.get(`/psa-graded-cards/${id}`);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IPsaGradedCard;
 };
 
 /**
@@ -171,7 +171,7 @@ export const createPsaGradedCard = async (
 ): Promise<IPsaGradedCard> => {
   const response = await apiClient.post('/psa-graded-cards', data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IPsaGradedCard;
 };
 
 /**
@@ -186,7 +186,7 @@ export const updatePsaGradedCard = async (
 ): Promise<IPsaGradedCard> => {
   const response = await apiClient.put(`/psa-graded-cards/${id}`, data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IPsaGradedCard;
 };
 
 /**
@@ -210,7 +210,7 @@ export const markPsaGradedCardSold = async (
 ): Promise<IPsaGradedCard> => {
   const response = await apiClient.post(`/psa-graded-cards/${id}/mark-sold`, saleDetails);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IPsaGradedCard;
 };
 
 // Raw Cards Collection APIs
@@ -229,7 +229,7 @@ export interface RawCardsParams {
 export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> => {
   const response = await apiClient.get('/raw-cards', { params });
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IRawCard[];
 };
 
 /**
@@ -240,7 +240,7 @@ export const getRawCards = async (params?: RawCardsParams): Promise<IRawCard[]> 
 export const getRawCardById = async (id: string): Promise<IRawCard> => {
   const response = await apiClient.get(`/raw-cards/${id}`);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IRawCard;
 };
 
 /**
@@ -251,7 +251,7 @@ export const getRawCardById = async (id: string): Promise<IRawCard> => {
 export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> => {
   const response = await apiClient.post('/raw-cards', data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IRawCard;
 };
 
 /**
@@ -263,7 +263,7 @@ export const createRawCard = async (data: Partial<IRawCard>): Promise<IRawCard> 
 export const updateRawCard = async (id: string, data: Partial<IRawCard>): Promise<IRawCard> => {
   const response = await apiClient.put(`/raw-cards/${id}`, data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IRawCard;
 };
 
 /**
@@ -284,7 +284,7 @@ export const deleteRawCard = async (id: string): Promise<void> => {
 export const markRawCardSold = async (id: string, saleDetails: ISaleDetails): Promise<IRawCard> => {
   const response = await apiClient.post(`/raw-cards/${id}/mark-sold`, saleDetails);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as IRawCard;
 };
 
 // Sealed Products Collection APIs
@@ -305,7 +305,7 @@ export const getSealedProductCollection = async (
 ): Promise<ISealedProduct[]> => {
   const response = await apiClient.get('/sealed-products', { params });
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as ISealedProduct[];
 };
 
 /**
@@ -316,7 +316,7 @@ export const getSealedProductCollection = async (
 export const getSealedProductById = async (id: string): Promise<ISealedProduct> => {
   const response = await apiClient.get(`/sealed-products/${id}`);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as ISealedProduct;
 };
 
 /**
@@ -329,7 +329,7 @@ export const createSealedProduct = async (
 ): Promise<ISealedProduct> => {
   const response = await apiClient.post('/sealed-products', data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as ISealedProduct;
 };
 
 /**
@@ -344,7 +344,7 @@ export const updateSealedProduct = async (
 ): Promise<ISealedProduct> => {
   const response = await apiClient.put(`/sealed-products/${id}`, data);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as ISealedProduct;
 };
 
 /**
@@ -368,5 +368,5 @@ export const markSealedProductSold = async (
 ): Promise<ISealedProduct> => {
   const response = await apiClient.post(`/sealed-products/${id}/mark-sold`, saleDetails);
   const responseData = response.data.data || response.data;
-  return mapItemIds(responseData);
+  return mapItemIds(responseData) as ISealedProduct;
 };

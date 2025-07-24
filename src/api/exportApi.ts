@@ -18,7 +18,7 @@ export const generateAuctionFacebookPost = async (auctionId: string): Promise<st
 
   // Prepare the request body for the existing backend endpoint
   const requestData = {
-    items: auction.items.map((item: Record<string, unknown>) => ({
+    items: auction.items.map((item: any) => ({
       itemId: item.itemId || item.itemData?._id,
       itemCategory: item.itemCategory,
     })),
@@ -59,7 +59,7 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  auction.items.forEach((item: Record<string, unknown>, index: number) => {
+  auction.items.forEach((item: any) => {
     if (item.itemData && item.itemData.images) {
       item.itemData.images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {
@@ -76,27 +76,27 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
           let itemName = '';
           
           if (item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') {
-            const cardName = (item.itemData.cardId?.cardName || item.itemData.cardId?.baseName || 'Unknown')
+            const cardName = ((item.itemData as any).cardId?.cardName || (item.itemData as any).cardId?.baseName || 'Unknown')
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
-            const setName = (item.itemData.cardId?.setId?.setName || 'Unknown')
+            const setName = ((item.itemData as any).cardId?.setId?.setName || 'Unknown')
               .replace(/^(pokemon\s+)?(japanese\s+)?/i, '') // Remove prefixes
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
-            const number = item.itemData.cardId?.pokemonNumber || '000';
+            const number = (item.itemData as any).cardId?.pokemonNumber || '000';
             
             if (item.itemCategory === 'PsaGradedCard') {
-              const grade = item.itemData.grade || '0';
+              const grade = (item.itemData as any).grade || '0';
               itemName = `${category}_${setName}_${cardName}_${number}_PSA${grade}`;
             } else {
-              const condition = (item.itemData.condition || 'NM').replace(/\s+/g, '').toUpperCase();
+              const condition = ((item.itemData as any).condition || 'NM').replace(/\s+/g, '').toUpperCase();
               itemName = `${category}_${setName}_${cardName}_${number}_${condition}`;
             }
           } else {
             // Sealed product
-            const productName = (item.itemData.name || 'Unknown')
+            const productName = ((item.itemData as any).name || 'Unknown')
               .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
               .replace(/\s+/g, '_') // Replace spaces with underscores
               .toLowerCase();
@@ -205,7 +205,7 @@ const createImageZip = async (
   const imageUrls: string[] = [];
   const itemNames: string[] = [];
 
-  items.forEach((item: Record<string, unknown>, index: number) => {
+  items.forEach((item: any, index: number) => {
     if (item.images && item.images.length > 0) {
       item.images.forEach((imagePath: string, imageIndex: number) => {
         if (imagePath) {

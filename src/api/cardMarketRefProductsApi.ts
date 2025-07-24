@@ -375,7 +375,7 @@ export const getCardMarketSetNames = async (
   totalAvailable: number;
   categoryCount: number;
   averagePrice: number;
-  score?: number;
+  score: number;
 }>> => {
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
@@ -388,7 +388,12 @@ export const getCardMarketSetNames = async (
   const response = await apiClient.get(`/cardmarket-ref-products/set-names?${queryParams.toString()}`);
   const data = response.data;
 
-  return data.data || [];
+  const result = data.data || [];
+  // Ensure score is always provided
+  return result.map((item: any) => ({
+    ...item,
+    score: item.score || 0,
+  }));
 };
 
 /**

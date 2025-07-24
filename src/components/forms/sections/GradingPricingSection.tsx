@@ -145,7 +145,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 message: 'Price must be a whole number only',
               },
               validate: (value) => {
-                const num = parseInt(value, 10);
+                const num = parseInt(value as string, 10);
                 if (isNaN(num) || num < 0) {
                   return 'Price must be a positive whole number';
                 }

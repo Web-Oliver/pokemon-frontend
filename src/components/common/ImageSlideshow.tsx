@@ -10,7 +10,6 @@ import {
   getContext7ImageClasses,
   getContext7GlassOverlay,
   getContext7ShimmerEffect,
-  getOptimalGridLayout,
   type ImageAspectInfo,
 } from '../../utils/imageUtils';
 

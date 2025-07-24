@@ -36,10 +36,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      paymentMethod: initialData?.paymentMethod || '', // Empty string for placeholder
+      paymentMethod: initialData?.paymentMethod || undefined, // Empty string for placeholder
       actualSoldPrice: initialData?.actualSoldPrice,
-      deliveryMethod: initialData?.deliveryMethod || '', // Empty string for placeholder
-      source: initialData?.source || '', // Empty string for placeholder
+      deliveryMethod: initialData?.deliveryMethod || undefined, // Empty string for placeholder
+      source: initialData?.source || undefined, // Empty string for placeholder
       dateSold: initialData?.dateSold || new Date().toISOString().split('T')[0], // Default to today
       buyerFullName: initialData?.buyerFullName || '',
       buyerAddress: {
@@ -107,7 +107,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
         <p className='text-gray-600'>Enter the sale details for this item.</p>
       </div>
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className='space-y-6'>
+      <form onSubmit={handleSubmit(onFormSubmit as any)} className='space-y-6'>
         {/* Sale Information Section */}
         <div className='bg-gray-50 p-4 rounded-lg'>
           <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center'>

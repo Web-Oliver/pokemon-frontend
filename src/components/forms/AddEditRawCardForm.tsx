@@ -61,7 +61,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   const [priceHistory, setPriceHistory] = useState(initialData?.priceHistory || []);
   const [currentPrice, setCurrentPrice] = useState(initialData?.myPrice || 0);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(
-    typeof initialData?.cardId === 'string' ? initialData.cardId : initialData?.cardId?.id || null
+    typeof initialData?.cardId === 'string' ? initialData.cardId : (initialData?.cardId as any)?.id || null
   );
 
   const {
@@ -112,7 +112,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       console.log('[RAW FORM] Updating form with initialData:', initialData);
 
       // Access card data from nested cardId object (populated by backend API)
-      const cardData = initialData.cardId;
+      const cardData = initialData.cardId as any;
       const setName = cardData?.setId?.setName || initialData.setName || '';
       const cardName = cardData?.cardName || initialData.cardName || '';
       const pokemonNumber = cardData?.pokemonNumber || initialData.pokemonNumber || '';
@@ -274,8 +274,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     } catch (error) {
       console.error('[RAW FORM SUBMIT] ===== SUBMIT FAILED =====');
       console.error('[RAW FORM SUBMIT] Error details:', error);
-      console.error('[RAW FORM SUBMIT] Error message:', error?.message);
-      console.error('[RAW FORM SUBMIT] Error stack:', error?.stack);
+      console.error('[RAW FORM SUBMIT] Error message:', (error as any)?.message);
+      console.error('[RAW FORM SUBMIT] Error stack:', (error as any)?.stack);
     } finally {
       setIsSubmitting(false);
       console.log('[RAW FORM SUBMIT] Submit process finished, isSubmitting set to false');
@@ -483,8 +483,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
       {/* Condition & Pricing Section */}
       <GradingPricingSection
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         cardType='raw'
         currentGradeOrCondition={watchedCondition}
         currentPrice={watchedPrice}

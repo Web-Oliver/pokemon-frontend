@@ -219,10 +219,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       // Prepare product data - must include productId reference to CardMarketReferenceProduct
       const productData: Partial<ISealedProduct> = {
-        productId: selectedProductData?._id, // Required: Reference to CardMarketReferenceProduct
+        productId: (selectedProductData?._id as string) || '', // Required: Reference to CardMarketReferenceProduct
         setName: data.setName.trim(),
         name: data.productName.trim(),
-        category: data.category,
+        category: data.category as any,
         availability: Number(data.availability), // Convert to number as required by backend
         cardMarketPrice: data.cardMarketPrice ? parseFloat(data.cardMarketPrice) : undefined,
         myPrice: parseFloat(data.myPrice),
@@ -440,7 +440,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             />
             {selectedProductData && (
               <div className='mt-2 text-sm text-purple-600 font-semibold'>
-                Auto-filled from CardMarket: {selectedProductData.available} available
+                Auto-filled from CardMarket: {(selectedProductData as any).available} available
               </div>
             )}
           </div>
@@ -479,9 +479,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 Market: {parseFloat(watchedCardMarketPrice || '0')} kr.
               </div>
             )}
-            {selectedProductData && selectedProductData.price && (
+            {selectedProductData && (selectedProductData as any).price && (
               <div className='mt-2 text-sm text-green-600 font-semibold'>
-                CardMarket Price: {Math.round(parseFloat(selectedProductData.price))} kr.
+                CardMarket Price: {Math.round(parseFloat((selectedProductData as any).price))} kr.
               </div>
             )}
           </div>

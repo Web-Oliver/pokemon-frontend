@@ -100,8 +100,9 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
           <SearchDropdown
             suggestions={suggestions}
             isVisible={showSuggestions && activeField === 'set'}
-            activeField={activeField}
-            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion, fieldType)}
+            activeField={activeField as any}
+            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion as any, fieldType as any)}
+            onClose={() => setShowSuggestions(false)}
             searchTerm={setName}
           />
         </div>
@@ -137,8 +138,9 @@ const CardInformationSection: React.FC<CardInformationSectionProps> = ({
           <SearchDropdown
             suggestions={suggestions}
             isVisible={showSuggestions && activeField === 'cardProduct'}
-            activeField={activeField}
-            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion, fieldType)}
+            activeField={activeField as any}
+            onSuggestionSelect={(suggestion, fieldType) => onSuggestionClick(suggestion as any, fieldType as any)}
+            onClose={() => setShowSuggestions(false)}
             searchTerm={setName}
           />
         </div>

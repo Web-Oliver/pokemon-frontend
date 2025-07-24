@@ -18,7 +18,6 @@ import ConfirmModal from './common/ConfirmModal';
 import {
   detectImageAspectRatio,
   getResponsiveImageConfig,
-  buildResponsiveImageClasses,
   getContext7ContainerClasses,
   getContext7ImageClasses,
   getContext7GlassOverlay,

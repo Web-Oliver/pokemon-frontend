@@ -7,7 +7,7 @@
  * Following CLAUDE.md principles for beautiful, award-winning design.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   TrendingUp,
   DollarSign,
@@ -17,22 +17,10 @@ import {
   RefreshCcw,
   Download,
   Filter,
-  ArrowUp,
-  ArrowDown,
-  Minus,
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import MemoizedRevenueChart from '../components/charts/MemoizedRevenueChart';
+import MemoizedPieChart from '../components/charts/MemoizedPieChart';
+import MemoizedKPICard from '../components/cards/MemoizedKPICard';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
@@ -58,86 +46,75 @@ const SalesAnalytics: React.FC = () => {
     endDate: dateRange?.endDate || '',
   });
 
-  // Chart colors
-  const chartColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+  // Chart colors - memoized to prevent recreation on every render
+  const chartColors = useMemo(() => ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'], []);
 
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('da-DK', {
-      style: 'currency',
-      currency: 'DKK',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(Math.round(amount));
-  };
+  // Format currency - memoized formatter to prevent recreation
+  const currencyFormatter = useMemo(() => new Intl.NumberFormat('da-DK', {
+    style: 'currency',
+    currency: 'DKK',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }), []);
 
-  // Handle CSV export with error handling and user feedback
-  const handleExportCSV = async () => {
+  const formatCurrency = useCallback((amount: number) => {
+    return currencyFormatter.format(Math.round(amount));
+  }, [currencyFormatter]);
+
+  // Handle CSV export with error handling and user feedback - memoized callback
+  const handleExportCSV = useCallback(async () => {
     try {
       exportSalesCSV();
       showSuccessToast('Sales data exported successfully!');
     } catch (error) {
       handleApiError(error, 'Failed to export sales data');
     }
-  };
+  }, [exportSalesCSV]);
 
-  // Format percentage
-  const _formatPercentage = (value: number) => {
-    return `${value.toFixed(1)}%`;
-  };
 
-  // Format date range filter
-  const handleDateRangeSubmit = () => {
+  // Format date range filter - memoized callbacks
+  const handleDateRangeSubmit = useCallback(() => {
     setDateRange({
       startDate: dateRangeInput.startDate || undefined,
       endDate: dateRangeInput.endDate || undefined,
     });
-  };
+  }, [dateRangeInput.startDate, dateRangeInput.endDate, setDateRange]);
 
-  const clearDateRange = () => {
+  const clearDateRange = useCallback(() => {
     setDateRangeInput({ startDate: '', endDate: '' });
     setDateRange({});
-  };
+  }, [setDateRange]);
 
-  // Prepare pie chart data
-  const pieChartData = categoryBreakdown
-    ? Object.entries(categoryBreakdown)
-        .map(([category, data]) => {
-          let displayName = category;
-          // Shorten category names for better display
-          switch (category) {
-            case 'psaGradedCard':
-              displayName = 'PSA Cards';
-              break;
-            case 'rawCard':
-              displayName = 'Raw Cards';
-              break;
-            case 'sealedProduct':
-              displayName = 'Sealed';
-              break;
-            default:
-              displayName = category.replace(/([A-Z])/g, ' $1').trim();
-          }
-          return {
-            name: displayName,
-            value: data?.revenue || 0,
-            count: data?.count || 0,
-          };
-        })
-        .filter(item => item.value > 0)
-    : [];
+  // Prepare pie chart data - memoized expensive calculation
+  const pieChartData = useMemo(() => {
+    if (!categoryBreakdown) return [];
+    
+    return Object.entries(categoryBreakdown)
+      .map(([category, data]) => {
+        let displayName = category;
+        // Shorten category names for better display
+        switch (category) {
+          case 'psaGradedCard':
+            displayName = 'PSA Cards';
+            break;
+          case 'rawCard':
+            displayName = 'Raw Cards';
+            break;
+          case 'sealedProduct':
+            displayName = 'Sealed';
+            break;
+          default:
+            displayName = category.replace(/([A-Z])/g, ' $1').trim();
+        }
+        return {
+          name: displayName,
+          value: data?.revenue || 0,
+          count: data?.count || 0,
+        };
+      })
+      .filter(item => item.value > 0);
+  }, [categoryBreakdown]);
 
-  // Get trend icon
-  const _getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <ArrowUp className='w-4 h-4 text-green-500' />;
-      case 'down':
-        return <ArrowDown className='w-4 h-4 text-red-500' />;
-      default:
-        return <Minus className='w-4 h-4 text-gray-500' />;
-    }
-  };
 
   if (loading && (!sales || sales.length === 0)) {
     return (
@@ -155,7 +132,7 @@ const SalesAnalytics: React.FC = () => {
             <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-12 relative overflow-hidden'>
               <div className='absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5'></div>
               <div className='relative z-10'>
-                <LoadingSpinner size='large' />
+                <LoadingSpinner size='lg' />
               </div>
             </div>
           </div>
@@ -250,79 +227,51 @@ const SalesAnalytics: React.FC = () => {
             <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out'></div>
           </div>
 
-          {/* Context7 Premium KPI Summary Cards */}
+          {/* Context7 Premium KPI Summary Cards - Optimized with memoized components */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20'>
-              <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'></div>
-              <div className='flex items-center relative z-10'>
-                <div className='w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                  <DollarSign className='w-8 h-8 text-white' />
-                </div>
-                <div className='ml-6 flex-1'>
-                  <p className='text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1'>
-                    Revenue
-                  </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300'>
-                    {formatCurrency(kpis?.totalRevenue || 0)}
-                  </p>
-                  <p className='text-xs text-slate-500 mt-1 font-medium'>Total earned</p>
-                </div>
-              </div>
-            </div>
-
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20'>
-              <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5'></div>
-              <div className='flex items-center relative z-10'>
-                <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                  <TrendingUp className='w-8 h-8 text-white' />
-                </div>
-                <div className='ml-6 flex-1'>
-                  <p className='text-sm font-bold text-blue-600 tracking-wide uppercase mb-1'>
-                    Facebook
-                  </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300'>
-                    {sales.filter(sale => sale.source === 'Facebook').length}
-                  </p>
-                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
-                </div>
-              </div>
-            </div>
-
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20'>
-              <div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5'></div>
-              <div className='flex items-center relative z-10'>
-                <div className='w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                  <BarChart3 className='w-8 h-8 text-white' />
-                </div>
-                <div className='ml-6 flex-1'>
-                  <p className='text-sm font-bold text-purple-600 tracking-wide uppercase mb-1'>
-                    DBA
-                  </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors duration-300'>
-                    {sales.filter(sale => sale.source === 'DBA').length}
-                  </p>
-                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
-                </div>
-              </div>
-            </div>
-
-            <div className='group bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-white/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20'>
-              <div className='absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5'></div>
-              <div className='flex items-center relative z-10'>
-                <div className='w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500'>
-                  <PieChart className='w-8 h-8 text-white' />
-                </div>
-                <div className='ml-6 flex-1'>
-                  <p className='text-sm font-bold text-amber-600 tracking-wide uppercase mb-1'>
-                    Total Items
-                  </p>
-                  <p className='text-3xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors duration-300'>
-                    {kpis?.totalItems || 0}
-                  </p>
-                  <p className='text-xs text-slate-500 mt-1 font-medium'>Items sold</p>
-                </div>
-              </div>
-            </div>
+            <MemoizedKPICard
+              title="Revenue"
+              value={formatCurrency(kpis?.totalRevenue || 0)}
+              subtitle="Total earned"
+              icon={DollarSign}
+              gradientFrom="from-emerald-500/5"
+              gradientTo="to-teal-500/5"
+              textColor="text-emerald-600"
+              hoverShadow="hover:shadow-emerald-500/20"
+            />
+            
+            <MemoizedKPICard
+              title="Facebook"
+              value={useMemo(() => Array.isArray(sales) ? sales.filter(sale => sale.source === 'Facebook').length : 0, [sales])}
+              subtitle="Items sold"
+              icon={TrendingUp}
+              gradientFrom="from-blue-500/5"
+              gradientTo="to-indigo-500/5"
+              textColor="text-blue-600"
+              hoverShadow="hover:shadow-blue-500/20"
+            />
+            
+            <MemoizedKPICard
+              title="DBA"
+              value={useMemo(() => Array.isArray(sales) ? sales.filter(sale => sale.source === 'DBA').length : 0, [sales])}
+              subtitle="Items sold"
+              icon={BarChart3}
+              gradientFrom="from-purple-500/5"
+              gradientTo="to-violet-500/5"
+              textColor="text-purple-600"
+              hoverShadow="hover:shadow-purple-500/20"
+            />
+            
+            <MemoizedKPICard
+              title="Total Items"
+              value={kpis?.totalItems || 0}
+              subtitle="Items sold"
+              icon={PieChart}
+              gradientFrom="from-amber-500/5"
+              gradientTo="to-orange-500/5"
+              textColor="text-amber-600"
+              hoverShadow="hover:shadow-amber-500/20"
+            />
           </div>
 
           {/* Charts Section */}
@@ -340,55 +289,10 @@ const SalesAnalytics: React.FC = () => {
                   </p>
                 </div>
                 {graphData && graphData.length > 0 ? (
-                  <ResponsiveContainer width='100%' height={350}>
-                    <BarChart data={graphData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <defs>
-                        <linearGradient id='revenueGradient' x1='0' y1='0' x2='0' y2='1'>
-                          <stop offset='0%' stopColor='#3B82F6' stopOpacity={0.8} />
-                          <stop offset='100%' stopColor='#1E40AF' stopOpacity={0.3} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray='3 3' stroke='#E2E8F0' opacity={0.6} />
-                      <XAxis
-                        dataKey='date'
-                        tickFormatter={value =>
-                          new Date(value).toLocaleDateString('da-DK', {
-                            month: 'short',
-                            day: 'numeric',
-                          })
-                        }
-                        tick={{ fill: '#64748B', fontSize: 12 }}
-                        axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
-                      />
-                      <YAxis
-                        tick={{ fill: '#64748B', fontSize: 12 }}
-                        axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
-                        tickFormatter={value => {
-                          if (value >= 1000) {
-                            return `${Math.round(value / 1000)}k kr.`;
-                          }
-                          return `${Math.round(value)} kr.`;
-                        }}
-                      />
-                      <Tooltip
-                        labelFormatter={value => new Date(value).toLocaleDateString('da-DK')}
-                        formatter={(value: number) => [formatCurrency(value), 'Revenue']}
-                        contentStyle={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                          backdropFilter: 'blur(12px)',
-                          border: '1px solid rgba(226, 232, 240, 0.5)',
-                          borderRadius: '12px',
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                        }}
-                      />
-                      <Bar
-                        dataKey='revenue'
-                        fill='url(#revenueGradient)'
-                        radius={[4, 4, 0, 0]}
-                        name='Revenue'
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <MemoizedRevenueChart 
+                    graphData={graphData} 
+                    formatCurrency={formatCurrency} 
+                  />
                 ) : (
                   <div className='text-center py-16'>
                     <div className='w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center'>
@@ -410,30 +314,11 @@ const SalesAnalytics: React.FC = () => {
               </div>
               <div className='p-6'>
                 {pieChartData.length > 0 ? (
-                  <ResponsiveContainer width='100%' height={300}>
-                    <RechartsPieChart>
-                      <Pie
-                        dataKey='value'
-                        data={pieChartData}
-                        cx='50%'
-                        cy='50%'
-                        outerRadius={80}
-                        stroke='none'
-                        strokeWidth={0}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {pieChartData.map((_, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={chartColors[index % chartColors.length]}
-                            stroke='none'
-                            strokeWidth={0}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
+                  <MemoizedPieChart 
+                    data={pieChartData} 
+                    colors={chartColors} 
+                    formatCurrency={formatCurrency} 
+                  />
                 ) : (
                   <div className='text-center py-12'>
                     <PieChart className='mx-auto w-12 h-12 text-gray-400' />

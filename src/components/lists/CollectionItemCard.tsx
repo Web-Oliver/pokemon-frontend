@@ -37,7 +37,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
 }) => {
   // Get item display name
   const getItemName = () => {
-    const itemRecord = item as Record<string, unknown>;
+    const itemRecord = item as unknown as Record<string, unknown>;
     const cardName = (
       (itemRecord.cardId as Record<string, unknown>)?.cardName ||
       itemRecord.cardName ||
@@ -51,7 +51,7 @@ export const CollectionItemCard: React.FC<CollectionItemCardProps> = ({
 
   // Get item badge content based on type and tab
   const getBadgeContent = () => {
-    const itemRecord = item as Record<string, unknown>;
+    const itemRecord = item as unknown as Record<string, unknown>;
     switch (activeTab) {
       case 'psa-graded':
         return (

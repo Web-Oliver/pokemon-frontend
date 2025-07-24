@@ -192,11 +192,11 @@ export const searchApi = {
     const cacheKey = createCacheKey({ query: processedQuery, types, limit, page, filters });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as UnifiedSearchResult;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as UnifiedSearchResult;
     }
 
     const requestPromise = (async () => {
@@ -262,11 +262,11 @@ export const searchApi = {
     const cacheKey = createCacheKey({ query: processedQuery, types, limit, endpoint: 'suggest' });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as SuggestionsResult;
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as SuggestionsResult;
     }
 
     const requestPromise = (async () => {
@@ -340,11 +340,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as { success: boolean; query: string; count: number; data: CardResult[]; };
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as { success: boolean; query: string; count: number; data: CardResult[]; };
     }
 
     const requestPromise = (async () => {
@@ -424,11 +424,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as { success: boolean; query: string; count: number; data: ProductResult[]; };
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as { success: boolean; query: string; count: number; data: ProductResult[]; };
     }
 
     const requestPromise = (async () => {
@@ -508,11 +508,11 @@ export const searchApi = {
     });
     const cachedEntry = searchCache.get(cacheKey);
     if (cachedEntry && isValidCacheEntry(cachedEntry)) {
-      return cachedEntry.data;
+      return cachedEntry.data as { success: boolean; query: string; count: number; data: SetResult[]; };
     }
 
     if (pendingRequests.has(cacheKey)) {
-      return await pendingRequests.get(cacheKey)!;
+      return await pendingRequests.get(cacheKey)! as { success: boolean; query: string; count: number; data: SetResult[]; };
     }
 
     const requestPromise = (async () => {
@@ -602,11 +602,11 @@ export const searchApi = {
     score += Math.max(0, 20 - lengthDiff);
 
     // Type-specific bonuses
-    if (type === 'sets' && result.year) {
+    if (type === 'sets' && 'year' in result && result.year) {
       score += 5; // Recent sets are more relevant
     }
 
-    if (type === 'products' && result.available) {
+    if (type === 'products' && 'available' in result && result.available) {
       score += 10; // Available products are more relevant
     }
 

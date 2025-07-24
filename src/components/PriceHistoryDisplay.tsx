@@ -96,10 +96,10 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
     const latest = sortedHistory[0]?.price || currentPrice;
     const previous = sortedHistory[1]?.price || currentPrice;
 
-    if (latest > previous) {
+    if (latest && previous && latest > previous) {
       const percentage = ((latest - previous) / previous) * 100;
       return { trend: 'up', percentage };
-    } else if (latest < previous) {
+    } else if (latest && previous && latest < previous) {
       const percentage = ((previous - latest) / previous) * 100;
       return { trend: 'down', percentage };
     }
