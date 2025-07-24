@@ -34,6 +34,7 @@ import { ISaleDetails } from '../domain/models/common';
 import { showWarningToast, showSuccessToast, handleApiError } from '../utils/errorHandler';
 import { navigationHelper } from '../utils/navigation';
 import { PageLayout } from '../components/layouts/PageLayout';
+import { ImageProductView } from '../components/common/ImageProductView';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -835,25 +836,33 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                         <div className='absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
                         <div className='relative z-10'>
                           <div className='flex items-start space-x-6'>
-                            {/* Card Image */}
+                            {/* Standardized Image Product View */}
                             <div className='flex-shrink-0'>
-                              {displayData.itemImage ? (
-                                <div className='w-32 h-44 rounded-xl overflow-hidden shadow-lg bg-slate-100 group-hover:shadow-2xl transition-shadow duration-300'>
-                                  <img
-                                    src={displayData.itemImage}
-                                    alt={displayData.itemName || 'Card image'}
-                                    className='w-full h-full object-cover'
-                                    onError={e => {
-                                      e.currentTarget.src =
-                                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjE3NiIgdmlld0JveD0iMCAwIDEyOCAxNzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTc2IiBmaWxsPSIjRjFGNUY5Ii8+CjxwYXRoIGQ9Ik00NCA2NEg4NFY4MEg0NFY2NFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHN2Zz4K';
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <div className='w-32 h-44 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-lg'>
-                                  <Package className='w-12 h-12 text-slate-400' />
-                                </div>
-                              )}
+                              <ImageProductView
+                                images={displayData.itemImage ? [displayData.itemImage] : []}
+                                title={displayData.itemName}
+                                subtitle={displayData.setName}
+                                price={displayData.price}
+                                type={
+                                  item.itemCategory === 'PsaGradedCard' 
+                                    ? 'psa' 
+                                    : item.itemCategory === 'RawCard' 
+                                      ? 'raw' 
+                                      : 'sealed'
+                                }
+                                grade={displayData.grade}
+                                condition={displayData.condition}
+                                category={item.itemCategory}
+                                sold={isItemSold(item)}
+                                variant='auction'
+                                size='sm'
+                                aspectRatio='card'
+                                showBadge={true}
+                                showPrice={true}
+                                showActions={false}
+                                enableInteractions={false}
+                                className='w-32 h-44'
+                              />
                             </div>
 
                             {/* Card Details */}

@@ -1,19 +1,29 @@
 /**
- * Collection Export Hook
+ * Unified Collection Export Hook
  *
- * Business logic for collection export functionality
+ * Consolidated business logic for all export functionality
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles export-related logic
  * - Dependency Inversion: Depends on abstractions (API layer)
- * - DRY: Reusable export logic across components
+ * - DRY: Unified export logic eliminating duplication
  * - Layer 2: Business Logic & Data Orchestration
  */
 
 import { useState, useCallback } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { getCollectionFacebookTextFile, downloadBlob } from '../api/exportApi';
+import { exportApiService } from '../services/ExportApiService';
+import {
+  ExportRequest,
+  ExportItemType,
+  ExportFormat,
+} from '../interfaces/api/IExportApiService';
 import { showSuccessToast, showWarningToast, handleApiError } from '../utils/errorHandler';
+import {
+  formatExportSuccessMessage,
+  formatExportErrorMessage,
+  validateExportRequest,
+} from '../utils/exportUtils';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
@@ -22,9 +32,14 @@ export interface UseCollectionExportReturn {
   isExporting: boolean;
   selectedItemsForExport: string[];
 
-  // Export functions
-  exportAllItems: (items: CollectionItem[]) => Promise<void>;
-  exportSelectedItems: (selectedIds: string[]) => Promise<void>;
+  // Unified export functions
+  exportItems: (request: ExportRequest) => Promise<void>;
+  exportAllItems: (items: CollectionItem[], format?: ExportFormat) => Promise<void>;
+  exportSelectedItems: (selectedIds: string[], format?: ExportFormat) => Promise<void>;
+
+  // Specialized export functions (legacy support)
+  exportFacebookText: (itemIds?: string[]) => Promise<void>;
+  exportImages: (itemType: ExportItemType, itemIds?: string[]) => Promise<void>;
 
   // Selection management
   toggleItemSelection: (itemId: string) => void;
@@ -36,49 +51,104 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   const [isExporting, setIsExporting] = useState(false);
   const [selectedItemsForExport, setSelectedItemsForExport] = useState<string[]>([]);
 
-  // Export all items in collection
-  const exportAllItems = useCallback(async (items: CollectionItem[]) => {
-    if (items.length === 0) {
-      showWarningToast('No items in collection to export');
+  // Unified export function - consolidates all export operations
+  const exportItems = useCallback(async (request: ExportRequest) => {
+    if (request.itemIds && request.itemIds.length === 0) {
+      showWarningToast('No items selected for export');
       return;
     }
 
     setIsExporting(true);
     try {
-      const itemIds = items.map(item => item.id);
-      const blob = await getCollectionFacebookTextFile(itemIds);
-      const filename = `collection-facebook-export-${new Date().toISOString().split('T')[0]}.txt`;
-      downloadBlob(blob, filename);
-      showSuccessToast(`Successfully exported ${itemIds.length} items to Facebook text file!`);
-    } catch (error) {
-      handleApiError(error, 'Failed to export collection to Facebook text file');
-    } finally {
-      setIsExporting(false);
-    }
-  }, []);
+      // Validate request using consolidated utilities
+      validateExportRequest(request.itemType, request.format, request.itemIds);
 
-  // Export selected items
-  const exportSelectedItems = useCallback(async (selectedIds: string[]) => {
-    if (selectedIds.length === 0) {
-      showWarningToast('Please select items to export');
-      return;
-    }
+      const result = await exportApiService.export(request);
+      exportApiService.downloadBlob(result.blob, result.filename);
 
-    setIsExporting(true);
-    try {
-      const blob = await getCollectionFacebookTextFile(selectedIds);
-      const filename = `collection-selected-export-${new Date().toISOString().split('T')[0]}.txt`;
-      downloadBlob(blob, filename);
-      showSuccessToast(`Successfully exported ${selectedIds.length} selected items!`);
+      // Use consolidated success message formatting
+      const successMessage = formatExportSuccessMessage(
+        result.itemCount,
+        request.format,
+        request.itemType
+      );
+      showSuccessToast(successMessage);
 
       // Clear selection after successful export
-      setSelectedItemsForExport([]);
+      if (request.itemIds && request.itemIds.length > 0) {
+        setSelectedItemsForExport([]);
+      }
     } catch (error) {
-      handleApiError(error, 'Failed to export selected items');
+      // Use consolidated error message formatting
+      const errorMessage = formatExportErrorMessage(
+        request.format,
+        request.itemType,
+        error instanceof Error ? error.message : undefined
+      );
+      handleApiError(error, errorMessage);
     } finally {
       setIsExporting(false);
     }
   }, []);
+
+  // Export all items in collection with specified format
+  const exportAllItems = useCallback(
+    async (items: CollectionItem[], format: ExportFormat = 'facebook-text') => {
+      if (items.length === 0) {
+        showWarningToast('No items in collection to export');
+        return;
+      }
+
+      const itemIds = items.map(item => item.id);
+      await exportItems({
+        itemType: 'psa-card', // Default, but format determines actual behavior
+        format,
+        itemIds,
+      });
+    },
+    [exportItems]
+  );
+
+  // Export selected items with specified format
+  const exportSelectedItems = useCallback(
+    async (selectedIds: string[], format: ExportFormat = 'facebook-text') => {
+      if (selectedIds.length === 0) {
+        showWarningToast('Please select items to export');
+        return;
+      }
+
+      await exportItems({
+        itemType: 'psa-card', // Default, but format determines actual behavior
+        format,
+        itemIds: selectedIds,
+      });
+    },
+    [exportItems]
+  );
+
+  // Specialized export for Facebook text (legacy support)
+  const exportFacebookText = useCallback(
+    async (itemIds?: string[]) => {
+      await exportItems({
+        itemType: 'psa-card',
+        format: 'facebook-text',
+        itemIds,
+      });
+    },
+    [exportItems]
+  );
+
+  // Specialized export for images (legacy support)
+  const exportImages = useCallback(
+    async (itemType: ExportItemType, itemIds?: string[]) => {
+      await exportItems({
+        itemType,
+        format: 'zip',
+        itemIds,
+      });
+    },
+    [exportItems]
+  );
 
   // Toggle individual item selection
   const toggleItemSelection = useCallback((itemId: string) => {
@@ -103,9 +173,14 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
     isExporting,
     selectedItemsForExport,
 
-    // Export functions
+    // Unified export functions
+    exportItems,
     exportAllItems,
     exportSelectedItems,
+
+    // Specialized export functions (legacy support)
+    exportFacebookText,
+    exportImages,
 
     // Selection management
     toggleItemSelection,

@@ -25,6 +25,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 import ConfirmModal from '../components/common/ConfirmModal';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
+import { ImageProductView } from '../components/common/ImageProductView';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import { getCollectionApiService, getExportApiService } from '../services/ServiceRegistry';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
@@ -678,7 +679,7 @@ const CollectionItemDetail: React.FC = () => {
               {renderSaleInfo()}
             </div>
 
-            {/* Images Section - Adaptive Layout Based on Image Orientation */}
+            {/* Images Section - Using Standardized ImageProductView */}
             <div className='bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6'>
               <div className='flex items-center justify-between mb-4'>
                 <h2 className='text-xl font-semibold text-slate-900 flex items-center'>
@@ -705,19 +706,34 @@ const CollectionItemDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Auto-sizing Container Based on Image Orientation */}
+              {/* Standardized Image Product View */}
               <div className='w-full flex justify-center'>
-                {/* Highly constrained container for PSA card optimal viewing */}
-                <div className='w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px] xl:max-w-[440px]'>
-                  <ImageSlideshow
+                <div className='w-full max-w-[400px]'>
+                  <ImageProductView
                     images={item.images || []}
-                    fallbackIcon={<ImageIcon className='w-8 h-8 text-gray-400' />}
-                    autoplay={true}
-                    autoplayDelay={5000}
-                    showThumbnails={true}
-                    adaptiveLayout={true}
-                    enableAspectRatioDetection={true}
-                    className='w-full'
+                    title={getItemTitle()}
+                    subtitle={getSetName()}
+                    price={item.myPrice}
+                    type={(() => {
+                      const { type } = getUrlParams();
+                      return type as 'psa' | 'raw' | 'sealed';
+                    })()}
+                    grade={('grade' in item) ? item.grade : undefined}
+                    condition={('condition' in item) ? item.condition : undefined}
+                    category={('category' in item) ? item.category : undefined}
+                    sold={item.sold}
+                    saleDate={item.saleDetails?.dateSold}
+                    variant='detail'
+                    size='xl'
+                    aspectRatio='card'
+                    showBadge={true}
+                    showPrice={true}
+                    showActions={true}
+                    enableInteractions={true}
+                    onDownload={handleDownloadImages}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    className='mx-auto'
                   />
                 </div>
               </div>

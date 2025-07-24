@@ -28,6 +28,7 @@ import { ButtonLoading } from '../components/common/LoadingStates';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import { ImageSlideshow } from '../components/common/ImageSlideshow';
+import { ImageProductView } from '../components/common/ImageProductView';
 import { formatCardNameForDisplay } from '../utils/formatting';
 import * as exportApi from '../api/exportApi';
 import * as dbaSelectionApi from '../api/dbaSelectionApi';
@@ -602,17 +603,26 @@ const DbaExport: React.FC = () => {
           </div>
         )}
 
-        {/* Item Image Slideshow */}
-        <div className='w-full mb-3'>
-          <ImageSlideshow
+        {/* Standardized Image Product View */}
+        <div className='w-full mb-3 pointer-events-none'>
+          <ImageProductView
             images={item.images || []}
-            fallbackIcon={getItemIcon(type)}
-            autoplay={false}
-            autoplayDelay={3000}
-            className='w-full'
-            showThumbnails={false}
-            adaptiveLayout={true}
-            enableAspectRatioDetection={true}
+            title={displayName}
+            subtitle={subtitle}
+            price={price}
+            type={type}
+            grade={type === 'psa' ? item.grade : undefined}
+            condition={type === 'raw' ? item.condition : undefined}
+            category={type === 'sealed' ? item.category : undefined}
+            sold={false}
+            variant='minimal'
+            size='sm'
+            aspectRatio='card'
+            showBadge={false}
+            showPrice={false}
+            showActions={false}
+            enableInteractions={false}
+            className='w-full h-72'
           />
         </div>
 

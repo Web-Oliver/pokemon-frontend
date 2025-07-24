@@ -1,14 +1,49 @@
 /**
- * Export API Service Interface
+ * Unified Export API Service Interface
  * Layer 1: Core/Foundation/API Client
- * Follows Dependency Inversion Principle - defines abstractions for export operations
+ * Follows SOLID principles with consolidated export operations
  */
 
 /**
+ * Export item type enumeration
+ */
+export type ExportItemType = 'psa-card' | 'raw-card' | 'sealed-product' | 'auction';
+
+/**
+ * Export format enumeration
+ */
+export type ExportFormat = 'zip' | 'facebook-text' | 'dba' | 'json';
+
+/**
+ * Generic export request interface
+ */
+export interface ExportRequest {
+  itemType: ExportItemType;
+  format: ExportFormat;
+  itemIds?: string[];
+  options?: {
+    includeMetadata?: boolean;
+    customDescription?: string;
+    filename?: string;
+  };
+}
+
+/**
+ * Export result interface
+ */
+export interface ExportResult {
+  blob: Blob;
+  filename: string;
+  itemCount: number;
+  metadata?: Record<string, unknown>;
+}
+
+/**
  * Interface for image export operations
- * Abstracts the concrete implementation details
+ * Consolidated to eliminate duplication
  */
 export interface IImageExportApiService {
+  exportImages(request: ExportRequest): Promise<ExportResult>;
   zipPsaCardImages(cardIds?: string[]): Promise<Blob>;
   zipRawCardImages(cardIds?: string[]): Promise<Blob>;
   zipSealedProductImages(productIds?: string[]): Promise<Blob>;
@@ -17,14 +52,18 @@ export interface IImageExportApiService {
 
 /**
  * Interface for data export operations
- * Abstracts the concrete implementation details
+ * Consolidated with unified export pattern
  */
 export interface IDataExportApiService {
-  getCollectionFacebookTextFile(): Promise<Blob>;
+  exportData(request: ExportRequest): Promise<ExportResult>;
+  getCollectionFacebookTextFile(itemIds?: string[]): Promise<Blob>;
 }
 
 /**
  * Combined Export API Service Interface
- * Follows Interface Segregation Principle - clients can depend on specific interfaces
+ * Follows Interface Segregation Principle with unified operations
  */
-export interface IExportApiService extends IImageExportApiService, IDataExportApiService {}
+export interface IExportApiService extends IImageExportApiService, IDataExportApiService {
+  // Unified export method that handles all export types
+  export(request: ExportRequest): Promise<ExportResult>;
+}

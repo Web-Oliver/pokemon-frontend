@@ -1,19 +1,20 @@
 /**
- * Collection Export Modal Component
+ * Unified Collection Export Modal Component
  *
- * Modal for selecting and exporting collection items
+ * Modal for selecting and exporting collection items with multiple format support
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles export modal UI and interactions
- * - Open/Closed: Extensible for different export types
- * - DRY: Reusable modal pattern with export-specific logic
+ * - Open/Closed: Extensible for different export types and formats
+ * - DRY: Consolidated export modal eliminating format-specific duplicates
  * - Layer 3: UI Building Block component
  */
 
-import React from 'react';
-import { Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Image, FileText, Package } from 'lucide-react';
 import Modal from '../common/Modal';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { CollectionItem } from './CollectionItemCard';
+import { ExportFormat } from '../../interfaces/api/IExportApiService';
 
 export interface CollectionExportModalProps {
   isOpen: boolean;
@@ -24,7 +25,7 @@ export interface CollectionExportModalProps {
   onToggleItemSelection: (itemId: string) => void;
   onSelectAllItems: () => void;
   onClearSelection: () => void;
-  onExportSelected: () => void;
+  onExportSelected: (format: ExportFormat) => void;
 }
 
 export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
@@ -38,6 +39,36 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
   onClearSelection,
   onExportSelected,
 }) => {
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('facebook-text');
+
+  // Export format options with metadata
+  const exportFormats = [
+    {
+      value: 'facebook-text' as ExportFormat,
+      label: 'Facebook Text',
+      icon: FileText,
+      description: 'Text file for Facebook marketplace posts',
+      extension: '.txt',
+    },
+    {
+      value: 'zip' as ExportFormat,
+      label: 'Image Archive',
+      icon: Image,
+      description: 'ZIP file containing all item images',
+      extension: '.zip',
+    },
+    {
+      value: 'dba' as ExportFormat,
+      label: 'DBA Export',
+      icon: Package,
+      description: 'JSON export for DBA.dk integration',
+      extension: '.json',
+    },
+  ];
+
+  const handleExport = () => {
+    onExportSelected(selectedFormat);
+  };
   // Get item type for display
   const getItemType = (item: CollectionItem): string => {
     if ((item as any).grade !== undefined) {
@@ -83,11 +114,55 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
           </div>
         </div>
 
-        {/* Selected count */}
-        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-          <p className='text-blue-800 font-medium'>
-            {selectedItemIds.length} items selected for export
-          </p>
+        {/* Export format selection */}
+        <div className='space-y-4'>
+          <div className='bg-gray-50 border border-gray-200 rounded-lg p-4'>
+            <h3 className='text-sm font-medium text-gray-900 mb-3'>Export Format</h3>
+            <div className='grid grid-cols-1 gap-3'>
+              {exportFormats.map(format => {
+                const Icon = format.icon;
+                return (
+                  <label
+                    key={format.value}
+                    className={`flex items-start p-3 border rounded-lg cursor-pointer transition-colors ${
+                      selectedFormat === format.value
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <input
+                      type='radio'
+                      name='exportFormat'
+                      value={format.value}
+                      checked={selectedFormat === format.value}
+                      onChange={e => setSelectedFormat(e.target.value as ExportFormat)}
+                      className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 mt-0.5'
+                    />
+                    <div className='ml-3 flex-1'>
+                      <div className='flex items-center'>
+                        <Icon className='w-4 h-4 text-gray-500 mr-2' />
+                        <span className='text-sm font-medium text-gray-900'>
+                          {format.label}
+                        </span>
+                        <span className='ml-2 text-xs text-gray-500'>
+                          {format.extension}
+                        </span>
+                      </div>
+                      <p className='text-xs text-gray-600 mt-1'>{format.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Selected count */}
+          <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+            <p className='text-blue-800 font-medium'>
+              {selectedItemIds.length} items selected for export as{' '}
+              {exportFormats.find(f => f.value === selectedFormat)?.label}
+            </p>
+          </div>
         </div>
 
         {/* Items list */}
@@ -149,7 +224,7 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             Cancel
           </button>
           <button
-            onClick={onExportSelected}
+            onClick={handleExport}
             disabled={selectedItemIds.length === 0 || isExporting}
             className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center'
           >
@@ -158,7 +233,9 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             ) : (
               <Download className='w-4 h-4 mr-2' />
             )}
-            Export Selected ({selectedItemIds.length})
+            Export as {exportFormats.find(f => f.value === selectedFormat)?.label} ({
+              selectedItemIds.length
+            })
           </button>
         </div>
       </div>
