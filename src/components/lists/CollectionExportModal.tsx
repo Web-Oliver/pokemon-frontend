@@ -10,11 +10,13 @@
  */
 
 import React, { useState } from 'react';
-import { Download, Image, FileText, Package } from 'lucide-react';
+import { Download, Image, FileText, Package, ArrowUpDown } from 'lucide-react';
 import Modal from '../common/Modal';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { CollectionItem } from './CollectionItemCard';
-import { ExportFormat } from '../../interfaces/api/IExportApiService';
+import { ExportFormat, OrderedExportRequest } from '../../interfaces/api/IExportApiService';
+import { ItemOrderingSection } from './ItemOrderingSection';
+import { ItemCategory, SortMethod } from '../../domain/models/ordering';
 
 export interface CollectionExportModalProps {
   isOpen: boolean;
@@ -26,6 +28,17 @@ export interface CollectionExportModalProps {
   onSelectAllItems: () => void;
   onClearSelection: () => void;
   onExportSelected: (format: ExportFormat) => void;
+  
+  // Ordering props
+  itemOrder?: string[];
+  lastSortMethod?: SortMethod;
+  onReorderItems?: (newOrder: string[]) => void;
+  onMoveItemUp?: (itemId: string) => void;
+  onMoveItemDown?: (itemId: string) => void;
+  onAutoSortByPrice?: (ascending?: boolean) => void;
+  onSortCategoryByPrice?: (category: ItemCategory, ascending?: boolean) => void;
+  onResetOrder?: () => void;
+  onExportOrderedItems?: (request: OrderedExportRequest) => void;
 }
 
 export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
@@ -38,9 +51,21 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
   onSelectAllItems,
   onClearSelection,
   onExportSelected,
+  
+  // Ordering props with defaults
+  itemOrder = [],
+  lastSortMethod = null,
+  onReorderItems,
+  onMoveItemUp,
+  onMoveItemDown,
+  onAutoSortByPrice,
+  onSortCategoryByPrice,
+  onResetOrder,
+  onExportOrderedItems,
 }) => {
   const [selectedFormat, setSelectedFormat] =
     useState<ExportFormat>('facebook-text');
+  const [activeTab, setActiveTab] = useState<'selection' | 'ordering'>('selection');
 
   // Export format options with metadata
   const exportFormats = [
@@ -68,7 +93,21 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
   ];
 
   const handleExport = () => {
-    onExportSelected(selectedFormat);
+    if (onExportOrderedItems && (itemOrder.length > 0 || lastSortMethod)) {
+      // Use ordered export if ordering is available
+      const orderedRequest: OrderedExportRequest = {
+        itemType: 'psa-card', // Generic, format determines behavior
+        format: selectedFormat,
+        itemIds: selectedItemIds,
+        itemOrder: itemOrder.length > 0 ? itemOrder : undefined,
+        sortByPrice: lastSortMethod === 'price_asc' || lastSortMethod === 'price_desc',
+        sortAscending: lastSortMethod === 'price_asc',
+      };
+      onExportOrderedItems(orderedRequest);
+    } else {
+      // Fallback to regular export
+      onExportSelected(selectedFormat);
+    }
   };
   // Get item type for display
   const getItemType = (item: CollectionItem): string => {
@@ -91,19 +130,52 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
     );
   };
 
+  const hasOrderingFeatures = onReorderItems && onMoveItemUp && onMoveItemDown;
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Select Items to Export"
-      maxWidth="2xl"
+      title="Export Collection Items"
+      maxWidth="6xl"
     >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <p className="text-gray-600 dark:text-zinc-400 dark:text-zinc-300">
-            Select items from your collection to include in the Facebook text
-            file export.
-          </p>
+        {/* Tab Navigation */}
+        {hasOrderingFeatures && (
+          <div className="border-b border-zinc-700">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('selection')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'selection'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600'
+                }`}
+              >
+                Item Selection
+              </button>
+              <button
+                onClick={() => setActiveTab('ordering')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'ordering'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600'
+                }`}
+              >
+                <ArrowUpDown className="w-4 h-4 mr-2 inline" />
+                Item Ordering
+              </button>
+            </nav>
+          </div>
+        )}
+
+        {/* Tab Content */}
+        {activeTab === 'selection' ? (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-zinc-300">
+                Select items from your collection to include in the export.
+              </p>
           <div className="flex items-center space-x-2">
             <button
               onClick={onSelectAllItems}
@@ -111,10 +183,10 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             >
               Select All
             </button>
-            <span className="text-gray-300 dark:text-zinc-700">|</span>
+            <span className="text-zinc-700">|</span>
             <button
               onClick={onClearSelection}
-              className="text-gray-600 dark:text-zinc-400 dark:text-zinc-300 hover:text-gray-700 dark:hover:text-zinc-300 text-sm font-medium"
+              className="text-zinc-300 hover:text-zinc-300 text-sm font-medium"
             >
               Clear All
             </button>
@@ -123,8 +195,8 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
 
         {/* Export format selection */}
         <div className="space-y-4">
-          <div className="bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-700 dark:border-zinc-700 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-zinc-100 dark:text-white mb-3">
+          <div className="bg-zinc-950 border border-zinc-700 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-white mb-3">
               Export Format
             </h3>
             <div className="grid grid-cols-1 gap-3">
@@ -133,7 +205,7 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
                 return (
                   <label
                     key={format.value}
-                    className={`flex items-start p-3 border rounded-lg cursor-pointer transition-colors ${selectedFormat === format.value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
+                    className={`flex items-start p-3 border rounded-lg cursor-pointer transition-colors ${selectedFormat === format.value ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
                   >
                     <input
                       type="radio"
@@ -143,19 +215,19 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
                       onChange={(e) =>
                         setSelectedFormat(e.target.value as ExportFormat)
                       }
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-zinc-600 dark:border-zinc-600 mt-0.5"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 mt-0.5"
                     />
                     <div className="ml-3 flex-1">
                       <div className="flex items-center">
-                        <Icon className="w-4 h-4 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-zinc-100 dark:text-white">
+                        <Icon className="w-4 h-4 text-zinc-400 mr-2" />
+                        <span className="text-sm font-medium text-white">
                           {format.label}
                         </span>
-                        <span className="ml-2 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400">
+                        <span className="ml-2 text-xs text-zinc-400">
                           {format.extension}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-zinc-400 dark:text-zinc-300 mt-1">
+                      <p className="text-xs text-zinc-300 mt-1">
                         {format.description}
                       </p>
                     </div>
@@ -166,8 +238,8 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
           </div>
 
           {/* Selected count */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-blue-800 font-medium">
+          <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
+            <p className="text-blue-300 font-medium">
               {selectedItemIds.length} items selected for export as{' '}
               {exportFormats.find((f) => f.value === selectedFormat)?.label}
             </p>
@@ -185,7 +257,7 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             return (
               <div
                 key={itemId}
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
+                className={`p-4 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
                 onClick={() => onToggleItemSelection(itemId)}
               >
                 <div className="flex items-center justify-between">
@@ -194,13 +266,13 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => onToggleItemSelection(itemId)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-zinc-600 dark:border-zinc-600 rounded mr-3"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 rounded mr-3"
                     />
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-zinc-100 dark:text-white">
+                      <h4 className="font-medium text-white">
                         {itemName}
                       </h4>
-                      <p className="text-sm text-gray-500 dark:text-zinc-500 dark:text-zinc-400">
+                      <p className="text-sm text-zinc-400">
                         {itemType} • {item.myPrice || '0'} kr.
                       </p>
                     </div>
@@ -216,11 +288,32 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
           })}
         </div>
 
+            </>
+        ) : (
+          /* Ordering Tab */
+          hasOrderingFeatures && onReorderItems && onMoveItemUp && onMoveItemDown && (
+            <ItemOrderingSection
+              items={items.filter(item => selectedItemIds.includes(item.id))}
+              itemOrder={itemOrder}
+              selectedItemIds={selectedItemIds}
+              lastSortMethod={lastSortMethod}
+              onReorderItems={onReorderItems}
+              onMoveItemUp={onMoveItemUp}
+              onMoveItemDown={onMoveItemDown}
+              onAutoSortByPrice={onAutoSortByPrice || (() => {})}
+              onSortCategoryByPrice={onSortCategoryByPrice || (() => {})}
+              onResetOrder={onResetOrder || (() => {})}
+              onToggleItemSelection={onToggleItemSelection}
+              showSelection={false}
+            />
+          )
+        )}
+
         {/* Export actions */}
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-zinc-700 dark:border-zinc-700">
+        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-zinc-700">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 dark:text-zinc-300 dark:text-zinc-200 bg-gray-100 dark:bg-zinc-900 dark:bg-zinc-900 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-zinc-200 bg-zinc-900 hover:bg-zinc-800 rounded-lg transition-colors"
           >
             Cancel
           </button>

@@ -155,8 +155,40 @@ export const VirtualizedItemGrid: React.FC<VirtualizedItemGridProps> = ({
   containerHeight = 600,
   columns = 3,
 }) => {
-  // Calculate the total width: 3 columns of 280px = 840px (fits well in most screens)
-  const gridWidth = columns * itemWidth;
+  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
+  const [availableWidth, setAvailableWidth] = useState(0);
+
+  // Measure container width and adjust grid accordingly
+  useEffect(() => {
+    if (!containerRef) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setAvailableWidth(entry.contentRect.width);
+      }
+    });
+    
+    resizeObserver.observe(containerRef);
+    return () => resizeObserver.disconnect();
+  }, [containerRef]);
+
+  // Calculate responsive width - ensure grid fits within container with some padding
+  const gridWidth = useMemo(() => {
+    if (availableWidth === 0) return columns * itemWidth; // Fallback
+    
+    const padding = 32; // Account for padding, margins, borders, and potential scrollbar
+    const maxAvailableWidth = availableWidth - padding;
+    const calculatedWidth = columns * itemWidth;
+    
+    // If calculated width exceeds available width, use available width
+    return Math.min(calculatedWidth, maxAvailableWidth);
+  }, [availableWidth, columns, itemWidth]);
+
+  // Adjust item width to fit perfectly within container
+  const adjustedItemWidth = useMemo(() => {
+    return Math.floor(gridWidth / columns);
+  }, [gridWidth, columns]);
 
   const gridData = useMemo(
     () => ({
@@ -185,11 +217,14 @@ export const VirtualizedItemGrid: React.FC<VirtualizedItemGridProps> = ({
   }
 
   return (
-    <div className="w-full flex justify-center overflow-hidden">
+    <div 
+      ref={setContainerRef}
+      className="w-full flex justify-center overflow-hidden"
+    >
       <div style={{ width: gridWidth }}>
         <Grid
           columnCount={columns}
-          columnWidth={itemWidth}
+          columnWidth={adjustedItemWidth}
           height={containerHeight}
           rowCount={rowCount}
           rowHeight={itemHeight}

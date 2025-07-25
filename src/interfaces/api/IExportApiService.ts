@@ -33,6 +33,17 @@ export interface ExportRequest {
 }
 
 /**
+ * Enhanced export request with ordering capabilities
+ * Extends base ExportRequest for item ordering functionality
+ */
+export interface OrderedExportRequest extends ExportRequest {
+  itemOrder?: string[]; // Specific order for items
+  sortByPrice?: boolean; // Auto-sort by price
+  sortAscending?: boolean; // Sort direction (default: false for highest to lowest)
+  maintainCategoryGrouping?: boolean; // Keep items grouped by category
+}
+
+/**
  * Export result interface
  */
 export interface ExportResult {

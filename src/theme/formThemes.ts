@@ -64,13 +64,13 @@ export interface FormThemeConfig {
 export const formThemes: Record<ThemeColor, FormThemeConfig> = {
   purple: {
     header: {
-      background: 'from-purple-50/80 to-violet-50/80',
-      border: 'border-purple-200/50',
+      background: 'from-zinc-900/80 to-zinc-800/80',
+      border: 'border-zinc-700/50',
       topBorder: 'from-purple-500 to-violet-500',
-      overlay: 'from-purple-500/5 to-violet-500/5',
+      overlay: 'from-purple-500/10 to-violet-500/10',
       iconBackground: 'from-purple-500 to-violet-600',
-      titleText: 'from-purple-800 to-violet-800',
-      descriptionText: 'text-purple-700',
+      titleText: 'from-purple-400 to-violet-400',
+      descriptionText: 'text-zinc-300',
     },
     button: {
       primary: 'bg-gradient-to-r from-purple-600 to-violet-600',
@@ -80,18 +80,18 @@ export const formThemes: Record<ThemeColor, FormThemeConfig> = {
       gradient: 'from-purple-500/10 via-violet-500/10 to-purple-500/10',
       glow: 'from-purple-500/20 via-violet-500/20 to-purple-500/20',
       focus: 'focus:ring-purple-500/50 focus:border-purple-300',
-      border: 'border-purple-200/50',
+      border: 'border-zinc-700/50',
     },
   },
   blue: {
     header: {
-      background: 'from-blue-50/80 to-cyan-50/80',
-      border: 'border-blue-200/50',
+      background: 'from-zinc-900/80 to-zinc-800/80',
+      border: 'border-zinc-700/50',
       topBorder: 'from-blue-500 to-cyan-500',
-      overlay: 'from-blue-500/5 to-cyan-500/5',
+      overlay: 'from-blue-500/10 to-cyan-500/10',
       iconBackground: 'from-blue-500 to-cyan-600',
-      titleText: 'from-blue-800 to-cyan-800',
-      descriptionText: 'text-blue-700',
+      titleText: 'from-blue-400 to-cyan-400',
+      descriptionText: 'text-zinc-300',
     },
     button: {
       primary: 'bg-gradient-to-r from-blue-600 to-cyan-600',
@@ -127,13 +127,13 @@ export const formThemes: Record<ThemeColor, FormThemeConfig> = {
   },
   amber: {
     header: {
-      background: 'from-amber-50/80 to-orange-50/80',
-      border: 'border-amber-200/50',
+      background: 'from-zinc-900/80 to-zinc-800/80',
+      border: 'border-zinc-700/50',
       topBorder: 'from-amber-500 to-orange-500',
-      overlay: 'from-amber-500/5 to-orange-500/5',
+      overlay: 'from-amber-500/10 to-orange-500/10',
       iconBackground: 'from-amber-500 to-orange-600',
-      titleText: 'from-amber-800 to-orange-800',
-      descriptionText: 'text-amber-700',
+      titleText: 'from-amber-400 to-orange-400',
+      descriptionText: 'text-zinc-300',
     },
     button: {
       primary: 'bg-gradient-to-r from-amber-600 to-orange-600',
@@ -143,7 +143,7 @@ export const formThemes: Record<ThemeColor, FormThemeConfig> = {
       gradient: 'from-amber-500/10 via-orange-500/10 to-amber-500/10',
       glow: 'from-amber-500/20 via-orange-500/20 to-amber-500/20',
       focus: 'focus:ring-amber-500/50 focus:border-amber-300',
-      border: 'border-amber-200/50',
+      border: 'border-zinc-700/50',
     },
   },
   rose: {

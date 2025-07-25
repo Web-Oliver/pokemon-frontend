@@ -9,13 +9,17 @@ import {
   ExportRequest,
   ExportResult,
   IExportApiService,
+  OrderedExportRequest,
 } from '../interfaces/api/IExportApiService';
 import {
   generateExportFilename,
   getExportConfig,
   getExportConfigKey,
   validateExportRequest,
+  prepareItemsForOrderedExport,
+  generateOrderedExportFilename,
 } from '../utils/exportUtils';
+import { CollectionItem } from '../domain/models/ordering';
 
 /**
  * Unified Export API Service
@@ -23,6 +27,80 @@ import {
  * Follows Single Responsibility and Open/Closed principles
  */
 export class ExportApiService implements IExportApiService {
+  /**
+   * Enhanced export method with ordering support
+   * Handles OrderedExportRequest with item ordering capabilities
+   */
+  async exportOrdered(
+    request: OrderedExportRequest,
+    items: CollectionItem[]
+  ): Promise<ExportResult> {
+    const { itemType, format, itemIds, options, itemOrder, sortByPrice, sortAscending } = request;
+
+    // Prepare items with ordering applied
+    const { orderedItems, validation, orderingApplied } = prepareItemsForOrderedExport(items, request);
+
+    if (!validation.exportValid) {
+      throw new Error(validation.exportError || 'Export validation failed');
+    }
+
+    // Create base export request with ordered item IDs
+    const baseRequest: ExportRequest = {
+      itemType,
+      format,
+      itemIds: orderedItems.map(item => item.id),
+      options,
+    };
+
+    // Get standardized configuration
+    const configKey = getExportConfigKey(itemType, format);
+    const config = getExportConfig(configKey);
+
+    let result: ExportResult;
+
+    // Route to appropriate export method based on format
+    switch (format) {
+      case 'zip':
+        result = await this.exportImages(baseRequest, config);
+        break;
+      case 'facebook-text':
+      case 'dba':
+      case 'json':
+        result = await this.exportData(baseRequest, config);
+        break;
+      default:
+        throw new Error(`Unsupported export format: ${format}`);
+    }
+
+    // Update filename to reflect ordering if applied
+    if (orderingApplied) {
+      const orderingInfo = {
+        sorted: true,
+        sortByPrice: !!sortByPrice,
+        ascending: !!sortAscending,
+      };
+      
+      result.filename = generateOrderedExportFilename(
+        config,
+        result.itemCount,
+        options?.filename,
+        orderingInfo
+      );
+    }
+
+    // Add ordering metadata
+    result.metadata = {
+      ...result.metadata,
+      orderingApplied,
+      itemOrder: itemOrder?.slice(), // Copy array
+      sortByPrice,
+      sortAscending,
+      orderingValidation: validation,
+    };
+
+    return result;
+  }
+
   /**
    * Unified export method - handles all export types and formats
    * Eliminates duplication by routing to appropriate specialized methods

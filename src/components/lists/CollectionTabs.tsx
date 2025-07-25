@@ -9,7 +9,7 @@
  * - Layer 3: UI Building Block component
  */
 
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -74,7 +74,7 @@ const tabs: TabConfig[] = [
   },
 ];
 
-export const CollectionTabs: React.FC<CollectionTabsProps> = ({
+export const CollectionTabs: React.FC<CollectionTabsProps> = memo(({
   activeTab,
   onTabChange,
   psaCards,
@@ -236,22 +236,44 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
       );
     }
 
-    // Render collection items grid with guaranteed unique keys and futuristic animations
+    // Optimized: Static animation variants to prevent constant prop changes
+    const containerVariants = useMemo(() => ({
+      hidden: { opacity: 0 },
+      show: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.05, // Reduced from 0.1 for faster animation
+          delayChildren: 0.1, // Reduced from 0.2
+        },
+      },
+    }), []);
+
+    const itemVariants = useMemo(() => ({
+      hidden: {
+        opacity: 0,
+        y: 30, // Reduced from 60 for less dramatic effect
+        scale: 0.95, // Reduced from 0.8
+      },
+      show: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+          type: 'spring',
+          stiffness: 300, // Increased for faster animation
+          damping: 25, // Slightly increased for less bounce
+          duration: 0.3, // Reduced from 0.6
+        },
+      },
+    }), []);
+
+    // Optimized: Remove whileInView to prevent intersection observer overhead
     return (
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-8xl mx-auto"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
         initial="hidden"
         animate="show"
-        variants={{
-          hidden: { opacity: 0 },
-          show: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.1,
-              delayChildren: 0.2,
-            },
-          },
-        }}
+        variants={containerVariants}
       >
         {data.map((item: CollectionItem, index: number) => {
           const itemType = getItemType(item, activeTab);
@@ -264,36 +286,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
           return (
             <motion.div
               key={uniqueKey}
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: 60,
-                  scale: 0.8,
-                  rotateX: -15,
-                },
-                show: {
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  rotateX: 0,
-                  transition: {
-                    type: 'spring',
-                    stiffness: 200,
-                    damping: 20,
-                    duration: 0.6,
-                  },
-                },
-              }}
-              whileInView={{
-                opacity: 1,
-                y: 0,
-                transition: {
-                  type: 'spring',
-                  stiffness: 100,
-                  damping: 15,
-                },
-              }}
-              viewport={{ once: true, margin: '-50px' }}
+              variants={itemVariants}
               className="mx-auto w-full max-w-sm"
             >
               <CollectionItemCard
@@ -349,6 +342,8 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = ({
       </div>
     </div>
   );
-};
+});
+
+CollectionTabs.displayName = 'CollectionTabs';
 
 export default CollectionTabs;

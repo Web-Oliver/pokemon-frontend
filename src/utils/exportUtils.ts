@@ -12,7 +12,20 @@
 import {
   ExportItemType,
   ExportFormat,
+  OrderedExportRequest,
 } from '../interfaces/api/IExportApiService';
+import {
+  CollectionItem,
+  ItemCategory,
+  OrderValidationResult,
+} from '../domain/models/ordering';
+import {
+  sortItemsByPrice,
+  sortCategoriesByPrice,
+  applyItemOrder,
+  validateItemOrder,
+  generateOrderFromItems,
+} from './orderingUtils';
 
 /**
  * Export configuration interface
@@ -231,4 +244,187 @@ export const shouldChunkExport = (
 ): boolean => {
   const batchSize = getRecommendedBatchSize(format);
   return itemCount > batchSize;
+};
+
+// ========================================
+// ORDERING-RELATED EXPORT UTILITIES
+// ========================================
+
+/**
+ * Enhanced export request validation with ordering support
+ * Extends existing validation with ordering-specific checks
+ */
+export const validateOrderedExportRequest = (
+  request: OrderedExportRequest,
+  items?: CollectionItem[]
+): OrderValidationResult & { exportValid: boolean; exportError?: string } => {
+  let exportValid = true;
+  let exportError: string | undefined;
+
+  // First, validate the base export request
+  try {
+    validateExportRequest(request.itemType, request.format, request.itemIds);
+  } catch (error) {
+    exportValid = false;
+    exportError = error instanceof Error ? error.message : 'Export validation failed';
+  }
+
+  // If no items provided or no ordering specified, return basic validation
+  if (!items || !request.itemOrder) {
+    return {
+      isValid: exportValid,
+      errors: [],
+      exportValid,
+      exportError,
+    };
+  }
+
+  // Validate the ordering
+  const orderValidation = validateItemOrder(request.itemOrder, items);
+
+  return {
+    ...orderValidation,
+    exportValid: exportValid && orderValidation.isValid,
+    exportError: exportError || (orderValidation.errors.length > 0 ? 'Invalid item ordering' : undefined),
+  };
+};
+
+/**
+ * Apply ordering to items based on export request
+ * Handles both manual ordering and automatic sorting
+ */
+export const applyExportOrdering = (
+  items: CollectionItem[],
+  request: OrderedExportRequest
+): CollectionItem[] => {
+  // If no ordering specified, return items as-is
+  if (!request.itemOrder && !request.sortByPrice) {
+    return items;
+  }
+
+  let orderedItems = [...items];
+
+  // Apply automatic price sorting if requested
+  if (request.sortByPrice) {
+    if (request.maintainCategoryGrouping) {
+      orderedItems = sortCategoriesByPrice(orderedItems, request.sortAscending);
+    } else {
+      orderedItems = sortItemsByPrice(orderedItems, request.sortAscending);
+    }
+  }
+
+  // Apply manual ordering if specified (takes precedence over sorting)
+  if (request.itemOrder && request.itemOrder.length > 0) {
+    orderedItems = applyItemOrder(orderedItems, request.itemOrder);
+  }
+
+  return orderedItems;
+};
+
+/**
+ * Generate filename with ordering information
+ * Extends existing filename generation to include ordering details
+ */
+export const generateOrderedExportFilename = (
+  config: ExportConfig,
+  itemCount?: number,
+  customName?: string,
+  orderingInfo?: {
+    sorted?: boolean;
+    sortByPrice?: boolean;
+    ascending?: boolean;
+  }
+): string => {
+  let suffix = '';
+  
+  if (orderingInfo?.sorted) {
+    if (orderingInfo.sortByPrice) {
+      suffix = orderingInfo.ascending ? '_price_asc' : '_price_desc';
+    } else {
+      suffix = '_custom_order';
+    }
+  }
+
+  const baseName = customName || config.defaultFilename;
+  const timestamp = new Date().toISOString().split('T')[0];
+  const countSuffix = itemCount !== undefined ? `_${itemCount}` : '';
+
+  return `${baseName}${suffix}${countSuffix}_${timestamp}${config.fileExtension}`;
+};
+
+/**
+ * Prepare items for ordered export
+ * Combines validation, ordering, and preparation steps
+ */
+export const prepareItemsForOrderedExport = (
+  items: CollectionItem[],
+  request: OrderedExportRequest
+): {
+  orderedItems: CollectionItem[];
+  validation: OrderValidationResult & { exportValid: boolean; exportError?: string };
+  orderingApplied: boolean;
+} => {
+  // Validate the request
+  const validation = validateOrderedExportRequest(request, items);
+
+  // If validation failed, return original items
+  if (!validation.exportValid) {
+    return {
+      orderedItems: items,
+      validation,
+      orderingApplied: false,
+    };
+  }
+
+  // Apply ordering
+  const orderedItems = applyExportOrdering(items, request);
+  const orderingApplied = request.itemOrder !== undefined || request.sortByPrice === true;
+
+  return {
+    orderedItems,
+    validation,
+    orderingApplied,
+  };
+};
+
+/**
+ * Get ordering summary for export success message
+ * Provides user-friendly description of applied ordering
+ */
+export const getOrderingSummary = (request: OrderedExportRequest): string => {
+  if (!request.itemOrder && !request.sortByPrice) {
+    return 'default order';
+  }
+
+  if (request.sortByPrice) {
+    const direction = request.sortAscending ? 'lowest to highest' : 'highest to lowest';
+    const grouping = request.maintainCategoryGrouping ? ' (grouped by category)' : '';
+    return `sorted by price ${direction}${grouping}`;
+  }
+
+  if (request.itemOrder) {
+    return 'custom order';
+  }
+
+  return 'default order';
+};
+
+/**
+ * Enhanced success message for ordered exports
+ * Extends existing success message with ordering information
+ */
+export const formatOrderedExportSuccessMessage = (
+  itemCount: number,
+  format: ExportFormat,
+  request: OrderedExportRequest,
+  itemType?: ExportItemType
+): string => {
+  const baseMessage = formatExportSuccessMessage(itemCount, format, itemType);
+  const orderingSummary = getOrderingSummary(request);
+  
+  if (orderingSummary !== 'default order') {
+    return `${baseMessage} Items arranged in ${orderingSummary}.`;
+  }
+
+  return baseMessage;
 };

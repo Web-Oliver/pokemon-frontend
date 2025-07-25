@@ -943,9 +943,9 @@ const CreateAuction: React.FC = () => {
 
                   {/* Selection Preview Panel */}
                   {showPreview && selectedItemIds.size > 0 && (
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 p-6 shadow-lg">
+                    <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 rounded-2xl border-2 border-blue-800 p-6 shadow-lg">
                       <div className="flex items-center justify-between mb-6">
-                        <h4 className="text-lg font-bold text-amber-900 flex items-center">
+                        <h4 className="text-lg font-bold text-blue-100 flex items-center">
                           <Star className="w-5 h-5 mr-2" />
                           Auction Preview ({allSelectedItems.length} items)
                         </h4>
@@ -1030,7 +1030,7 @@ const CreateAuction: React.FC = () => {
                                   >
                                     <div className="flex items-center space-x-3">
                                       <GripVertical className="w-4 h-4 text-zinc-500 group-hover:text-teal-600" />
-                                      <div className="w-6 h-6 bg-gradient-to-br from-teal-100 to-teal-200 rounded-lg flex items-center justify-center font-bold text-teal-700 text-xs">
+                                      <div className="w-6 h-6 bg-gradient-to-br from-teal-800 to-teal-900 rounded-lg flex items-center justify-center font-bold text-teal-100 text-xs">
                                         {index + 1}
                                       </div>
                                     </div>
@@ -1081,7 +1081,7 @@ const CreateAuction: React.FC = () => {
                                         }
                                         variant="outline"
                                         size="sm"
-                                        className="text-red-600 border-red-300 hover:bg-red-50"
+                                        className="text-red-400 border-red-800 hover:bg-red-900/20"
                                       >
                                         <X className="w-3 h-3" />
                                       </Button>
@@ -1192,7 +1192,7 @@ const CreateAuction: React.FC = () => {
                                         }
                                         variant="outline"
                                         size="sm"
-                                        className="text-red-600 border-red-300 hover:bg-red-50"
+                                        className="text-red-400 border-red-800 hover:bg-red-900/20"
                                       >
                                         <X className="w-3 h-3" />
                                       </Button>
@@ -1304,7 +1304,7 @@ const CreateAuction: React.FC = () => {
                                         }
                                         variant="outline"
                                         size="sm"
-                                        className="text-red-600 border-red-300 hover:bg-red-50"
+                                        className="text-red-400 border-red-800 hover:bg-red-900/20"
                                       >
                                         <X className="w-3 h-3" />
                                       </Button>
@@ -1316,9 +1316,9 @@ const CreateAuction: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <div className="mt-4 p-4 bg-emerald-900/20 rounded-xl border border-emerald-800">
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-emerald-800">
+                            <span className="font-semibold text-emerald-100">
                               Total Auction Value
                             </span>
                             <span className="text-xl font-bold text-emerald-600">
@@ -1427,7 +1427,7 @@ const CreateAuction: React.FC = () => {
                               onClick={() => setShowPreview(true)}
                               variant="outline"
                               size="sm"
-                              className="text-amber-700 border-amber-300 hover:bg-amber-100"
+                              className="text-blue-300 border-blue-800 hover:bg-blue-900/20"
                             >
                               <Eye className="w-4 h-4 mr-2" />
                               View & Order

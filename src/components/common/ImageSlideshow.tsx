@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, memo, useMemo } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
@@ -12,7 +12,7 @@ interface ImageSlideshowProps {
   showThumbnails?: boolean;
 }
 
-export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
+export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(({
   images,
   fallbackIcon = <Package className="w-8 h-8 text-indigo-600" />,
   autoplay = false,
@@ -21,16 +21,24 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
   showThumbnails = false,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  
+  // Optimize: Memoize autoplay plugins to prevent re-creation
+  const autoplayPlugins = useMemo(() => 
+    autoplay ? [Autoplay({ delay: autoplayDelay, stopOnInteraction: false })] : []
+  , [autoplay, autoplayDelay]);
+  
   const [emblaMainRef, emblaMainApi] = useEmblaCarousel(
     { loop: true, duration: 25 },
-    autoplay
-      ? [Autoplay({ delay: autoplayDelay, stopOnInteraction: false })]
-      : []
+    autoplayPlugins
   );
-  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
+  
+  // Optimize: Memoize thumbs config to prevent re-creation
+  const thumbsConfig = useMemo(() => ({
     containScroll: 'keepSnaps',
     dragFree: true,
-  });
+  }), []);
+  
+  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel(thumbsConfig);
 
   const onThumbClick = useCallback(
     (index: number) => {
@@ -42,21 +50,34 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
     [emblaMainApi, emblaThumbsApi]
   );
 
+  // Optimize: Stable callback to prevent infinite useEffect loops
   const onSelect = useCallback(() => {
     if (!emblaMainApi || !emblaThumbsApi) {
       return;
     }
-    setSelectedIndex(emblaMainApi.selectedScrollSnap());
-    emblaThumbsApi.scrollTo(emblaMainApi.selectedScrollSnap());
-  }, [emblaMainApi, emblaThumbsApi, setSelectedIndex]);
+    const currentIndex = emblaMainApi.selectedScrollSnap();
+    setSelectedIndex(currentIndex);
+    emblaThumbsApi.scrollTo(currentIndex);
+  }, [emblaMainApi, emblaThumbsApi]);
 
+  // Optimize: Separate effect setup to prevent callback dependency issues
   useEffect(() => {
     if (!emblaMainApi) {
       return;
     }
+    
+    // Set initial selection
     onSelect();
+    
+    // Add event listeners
     emblaMainApi.on('select', onSelect);
     emblaMainApi.on('reInit', onSelect);
+    
+    // Cleanup
+    return () => {
+      emblaMainApi.off('select', onSelect);
+      emblaMainApi.off('reInit', onSelect);
+    };
   }, [emblaMainApi, onSelect]);
 
   const scrollPrev = useCallback(
@@ -81,7 +102,9 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
     [emblaMainApi]
   );
 
-  const hasImages = images && images.length > 0;
+  // Optimize: Memoize computed values
+  const hasImages = useMemo(() => images && images.length > 0, [images]);
+  const hasMultipleImages = useMemo(() => images && images.length > 1, [images]);
 
   if (!hasImages) {
     return (
@@ -105,7 +128,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
       {/* Main Slideshow */}
       <div className="relative w-full group">
         {/* Futuristic Dark Navigation Buttons - Cursor.com Style */}
-        {images.length > 1 && (
+        {hasMultipleImages && (
           <>
             <button
               className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-30 border border-zinc-700/50 hover:border-zinc-600 backdrop-blur-xl group"
@@ -176,7 +199,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
       </div>
 
       {/* Futuristic Dark Dots Indicator - Cursor.com Style */}
-      {images.length > 1 && !showThumbnails && (
+      {hasMultipleImages && !showThumbnails && (
         <div className="flex justify-center items-center py-3 sm:py-4">
           <div className="flex space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-700/50 shadow-2xl">
             {images.map((_, index) => {
@@ -217,7 +240,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
       )}
 
       {/* Futuristic Dark Thumbnail Navigation - Cursor.com Style */}
-      {showThumbnails && images.length > 1 && (
+      {showThumbnails && hasMultipleImages && (
         <div className="embla-thumbs px-2 sm:px-0">
           <div
             className="embla-thumbs__viewport overflow-hidden"
@@ -302,4 +325,6 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = ({
       )}
     </div>
   );
-};
+});
+
+ImageSlideshow.displayName = 'ImageSlideshow';
