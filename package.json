@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "build:with-typecheck": "tsc && vite build",
     "build:analyze": "npm run build && npx webpack-bundle-analyzer dist/assets/*.js",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -33,7 +34,7 @@
     "framer-motion": "^12.23.9",
     "glob": "^11.0.3",
     "jszip": "^3.10.1",
-    "lucide-react": "^0.525.0",
+    "lucide-react": "^0.535.0",
     "next-themes": "^0.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

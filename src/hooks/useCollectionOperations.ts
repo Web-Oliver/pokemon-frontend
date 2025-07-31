@@ -76,6 +76,34 @@ export interface UseCollectionOperationsReturn {
  * - ISP: Clients can use specific interfaces instead of fat interface
  * - DIP: Depends on abstractions (specialized hooks)
  */
+/**
+ * Validate collection response arrays for new API format
+ */
+const validateCollectionResponse = (data: any[], type: string): any[] => {
+  if (!Array.isArray(data)) {
+    log(`[COLLECTION OPERATIONS] ${type} response is not an array`, { data });
+    return [];
+  }
+
+  return data.filter((item) => {
+    if (!item || typeof item !== 'object') {
+      log(`[COLLECTION OPERATIONS] Invalid ${type} item filtered out`, {
+        item,
+      });
+      return false;
+    }
+
+    if (!('id' in item) && !('_id' in item)) {
+      log(`[COLLECTION OPERATIONS] ${type} item missing ID filtered out`, {
+        item,
+      });
+      return false;
+    }
+
+    return true;
+  });
+};
+
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const queryClient = useQueryClient();
   const psaOperations = usePsaCardOperations();
@@ -138,34 +166,6 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
       ];
     },
   });
-
-  /**
-   * Validate collection response arrays for new API format
-   */
-  const validateCollectionResponse = (data: any[], type: string): any[] => {
-    if (!Array.isArray(data)) {
-      log(`[COLLECTION OPERATIONS] ${type} response is not an array`, { data });
-      return [];
-    }
-
-    return data.filter((item) => {
-      if (!item || typeof item !== 'object') {
-        log(`[COLLECTION OPERATIONS] Invalid ${type} item filtered out`, {
-          item,
-        });
-        return false;
-      }
-
-      if (!('id' in item) && !('_id' in item)) {
-        log(`[COLLECTION OPERATIONS] ${type} item missing ID filtered out`, {
-          item,
-        });
-        return false;
-      }
-
-      return true;
-    });
-  };
 
   /**
    * Refresh collection data using React Query
