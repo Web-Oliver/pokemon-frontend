@@ -10,7 +10,7 @@
  */
 
 import { Download, FileText, Plus } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
@@ -68,20 +68,20 @@ const Collection: React.FC = () => {
   };
 
   // Handle navigation to add new item
-  const handleAddNewItem = () => {
+  const handleAddNewItem = useCallback(() => {
     navigationHelper.navigateToCreate.item();
-  };
+  }, []);
 
   // Handle navigation to item detail page
-  const handleViewItemDetail = (
+  const handleViewItemDetail = useCallback((
     item: CollectionItem,
     type: 'psa' | 'raw' | 'sealed'
   ) => {
     navigationHelper.navigateToItemDetail(type, item.id);
-  };
+  }, []);
 
   // Handle mark as sold button click
-  const handleMarkAsSold = (
+  const handleMarkAsSold = useCallback((
     item: CollectionItem,
     type: 'psa' | 'raw' | 'sealed'
   ) => {
@@ -95,46 +95,46 @@ const Collection: React.FC = () => {
         'Unknown Item',
     });
     setIsMarkSoldModalOpen(true);
-  };
+  }, []);
 
   // Handle successful mark as sold operation
-  const handleMarkSoldSuccess = () => {
+  const handleMarkSoldSuccess = useCallback(() => {
     // Close modal and reset selected item
     setIsMarkSoldModalOpen(false);
     setSelectedItem(null);
-  };
+  }, []);
 
   // Handle modal close
-  const handleModalClose = () => {
+  const handleModalClose = useCallback(() => {
     setIsMarkSoldModalOpen(false);
     setSelectedItem(null);
-  };
+  }, []);
 
   // Export functionality handlers
-  const handleExportAllItems = async () => {
+  const handleExportAllItems = useCallback(async () => {
     const allItems = getAllCollectionItems();
     await exportAllItems(allItems);
-  };
+  }, [exportAllItems, psaCards, rawCards, sealedProducts]);
 
-  const handleExportSelectedItems = async () => {
+  const handleExportSelectedItems = useCallback(async () => {
     await exportSelectedItems(selectedItemsForExport);
     setIsExportModalOpen(false);
-  };
+  }, [exportSelectedItems, selectedItemsForExport]);
 
-  const handleOpenExportModal = () => {
+  const handleOpenExportModal = useCallback(() => {
     const allItems = getAllCollectionItems();
     if (allItems.length === 0) {
       return; // useCollectionExport hook will handle the warning
     }
     setIsExportModalOpen(true);
-  };
+  }, [psaCards, rawCards, sealedProducts]);
 
-  const handleSelectAllItems = () => {
+  const handleSelectAllItems = useCallback(() => {
     const allItems = getAllCollectionItems();
     selectAllItems(allItems);
-  };
+  }, [selectAllItems, psaCards, rawCards, sealedProducts]);
 
-  const headerActions = (
+  const headerActions = useMemo(() => (
     <div className="flex items-center space-x-3">
       <button
         onClick={handleExportAllItems}
@@ -160,7 +160,7 @@ const Collection: React.FC = () => {
         Add New Item
       </button>
     </div>
-  );
+  ), [handleExportAllItems, handleOpenExportModal, handleAddNewItem, isExporting, loading]);
 
   return (
     <PageLayout

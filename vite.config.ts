@@ -15,4 +15,24 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React vendor chunk
+          react: ['react', 'react-dom'],
+          // UI vendor chunk  
+          ui: ['lucide-react', 'framer-motion'],
+          // Charts vendor chunk
+          charts: ['recharts'],
+          // Utility vendor chunk
+          utils: ['axios', 'react-hot-toast', 'jszip'],
+          // Query vendor chunk
+          query: ['@tanstack/react-query', '@tanstack/react-query-devtools'],
+        },
+      },
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+  },
 });

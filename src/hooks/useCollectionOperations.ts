@@ -5,21 +5,27 @@
  */
 
 import { useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
+import { queryKeys } from '../lib/queryClient';
 
-import { useCollectionState, CollectionState } from './useCollectionState';
 import { usePsaCardOperations } from './usePsaCardOperations';
 import { useRawCardOperations } from './useRawCardOperations';
 import { useSealedProductOperations } from './useSealedProductOperations';
 import { useCollectionImageExport } from './useCollectionImageExport';
-import { useAsyncOperation } from './useAsyncOperation';
 
-export interface UseCollectionOperationsReturn extends CollectionState {
+export interface UseCollectionOperationsReturn {
+  // Collection data
+  psaCards: IPsaGradedCard[];
+  rawCards: IRawCard[];
+  sealedProducts: ISealedProduct[];
+  soldItems: (IPsaGradedCard | IRawCard | ISealedProduct)[];
+  
   // Loading states
   loading: boolean;
   error: string | null;
@@ -62,7 +68,7 @@ export interface UseCollectionOperationsReturn extends CollectionState {
 }
 
 /**
- * Main collection operations hook that composes specialized hooks
+ * Main collection operations hook using React Query for performance
  * Follows SOLID principles:
  * - SRP: Each composed hook has single responsibility
  * - OCP: Extensible through composition
@@ -71,28 +77,67 @@ export interface UseCollectionOperationsReturn extends CollectionState {
  * - DIP: Depends on abstractions (specialized hooks)
  */
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
-  const collectionState = useCollectionState();
-  const {
-    setCollectionState,
-    addPsaCardToState,
-    updatePsaCardInState,
-    removePsaCardFromState,
-    movePsaCardToSold,
-    addRawCardToState,
-    updateRawCardInState,
-    removeRawCardFromState,
-    moveRawCardToSold,
-    addSealedProductToState,
-    updateSealedProductInState,
-    removeSealedProductFromState,
-    moveSealedProductToSold,
-  } = collectionState;
+  const queryClient = useQueryClient();
   const psaOperations = usePsaCardOperations();
   const rawOperations = useRawCardOperations();
   const sealedOperations = useSealedProductOperations();
   const imageExport = useCollectionImageExport();
-  const { loading, error, execute, clearError } = useAsyncOperation();
   const collectionApi = getCollectionApiService();
+
+  // React Query for PSA Cards
+  const { 
+    data: psaCards = [], 
+    isLoading: psaLoading,
+    error: psaError 
+  } = useQuery({
+    queryKey: queryKeys.psaCards(),
+    queryFn: () => collectionApi.getPsaGradedCards({ sold: false }),
+    select: (data) => validateCollectionResponse(data, 'PSA cards'),
+  });
+
+  // React Query for Raw Cards
+  const { 
+    data: rawCards = [], 
+    isLoading: rawLoading,
+    error: rawError 
+  } = useQuery({
+    queryKey: queryKeys.rawCards(),
+    queryFn: () => collectionApi.getRawCards({ sold: false }),
+    select: (data) => validateCollectionResponse(data, 'raw cards'),
+  });
+
+  // React Query for Sealed Products
+  const { 
+    data: sealedProducts = [], 
+    isLoading: sealedLoading,
+    error: sealedError 
+  } = useQuery({
+    queryKey: queryKeys.sealedProducts(),
+    queryFn: () => collectionApi.getSealedProducts({ sold: false }),
+    select: (data) => validateCollectionResponse(data, 'sealed products'),
+  });
+
+  // React Query for Sold Items
+  const { 
+    data: soldItems = [], 
+    isLoading: soldLoading,
+    error: soldError 
+  } = useQuery({
+    queryKey: queryKeys.soldItems(),
+    queryFn: async () => {
+      const [soldPsaCards, soldRawCards, soldSealedProducts] = await Promise.all([
+        collectionApi.getPsaGradedCards({ sold: true }),
+        collectionApi.getRawCards({ sold: true }),
+        collectionApi.getSealedProducts({ sold: true }),
+      ]);
+      
+      return [
+        ...validateCollectionResponse(soldPsaCards, 'sold PSA cards'),
+        ...validateCollectionResponse(soldRawCards, 'sold raw cards'),
+        ...validateCollectionResponse(soldSealedProducts, 'sold sealed products'),
+      ];
+    },
+  });
 
   /**
    * Validate collection response arrays for new API format
@@ -123,216 +168,144 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   };
 
   /**
-   * Fetch all collection data from the backend with enhanced error handling
-   */
-  const fetchAllCollectionData = useCallback(async () => {
-    return await execute(async () => {
-      log('[COLLECTION OPERATIONS] Fetching collection data...');
-
-      try {
-        // Fetch all collection items in parallel
-        const [psaCardsResponse, rawCardsResponse, sealedProductsResponse] =
-          await Promise.all([
-            collectionApi.getPsaGradedCards({ sold: false }),
-            collectionApi.getRawCards({ sold: false }),
-            collectionApi.getSealedProducts({ sold: false }),
-          ]);
-
-        // Validate and clean responses
-        const psaCards = validateCollectionResponse(
-          psaCardsResponse,
-          'PSA cards'
-        );
-        const rawCards = validateCollectionResponse(
-          rawCardsResponse,
-          'raw cards'
-        );
-        const sealedProducts = validateCollectionResponse(
-          sealedProductsResponse,
-          'sealed products'
-        );
-
-        // Fetch sold items separately
-        const [soldPsaCards, soldRawCards, soldSealedProducts] =
-          await Promise.all([
-            collectionApi.getPsaGradedCards({ sold: true }),
-            collectionApi.getRawCards({ sold: true }),
-            collectionApi.getSealedProducts({ sold: true }),
-          ]);
-
-        // Validate and combine all sold items
-        const validSoldPsaCards = validateCollectionResponse(
-          soldPsaCards,
-          'sold PSA cards'
-        );
-        const validSoldRawCards = validateCollectionResponse(
-          soldRawCards,
-          'sold raw cards'
-        );
-        const validSoldSealedProducts = validateCollectionResponse(
-          soldSealedProducts,
-          'sold sealed products'
-        );
-
-        const soldItems = [
-          ...validSoldPsaCards,
-          ...validSoldRawCards,
-          ...validSoldSealedProducts,
-        ];
-
-        setCollectionState({
-          psaCards,
-          rawCards,
-          sealedProducts,
-          soldItems,
-        });
-
-        log('[COLLECTION OPERATIONS] Collection data fetched successfully', {
-          psaCards: psaCards.length,
-          rawCards: rawCards.length,
-          sealedProducts: sealedProducts.length,
-          soldItems: soldItems.length,
-        });
-
-        // Return the collection data for useAsyncOperation validation
-        return {
-          psaCards: psaCards.length,
-          rawCards: rawCards.length,
-          sealedProducts: sealedProducts.length,
-          soldItems: soldItems.length,
-        };
-      } catch (error) {
-        log('[COLLECTION OPERATIONS] Error fetching collection data', {
-          error,
-        });
-        // Set empty arrays as fallbacks to prevent undefined access
-        setCollectionState({
-          psaCards: [],
-          rawCards: [],
-          sealedProducts: [],
-          soldItems: [],
-        });
-        throw error;
-      }
-    });
-  }, [execute, setCollectionState, collectionApi]);
-
-  /**
-   * Refresh collection data
+   * Refresh collection data using React Query
    */
   const refreshCollection = useCallback(async () => {
-    await fetchAllCollectionData();
-  }, [fetchAllCollectionData]);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() }),
+    ]);
+  }, [queryClient]);
 
-  // PSA Card operations with state integration
+  // PSA Card operations with cache invalidation
   const addPsaCard = useCallback(
     async (cardData: Partial<IPsaGradedCard>) => {
       try {
         const newCard = await psaOperations.addPsaCard(cardData);
-        addPsaCardToState(newCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        return newCard;
       } catch (error) {
         // Error already handled by psaOperations
+        throw error;
       }
     },
-    [psaOperations, addPsaCardToState]
+    [psaOperations, queryClient]
   );
 
   const updatePsaCard = useCallback(
     async (id: string, cardData: Partial<IPsaGradedCard>) => {
       try {
         const updatedCard = await psaOperations.updatePsaCard(id, cardData);
-        updatePsaCardInState(id, updatedCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        return updatedCard;
       } catch (error) {
         // Error already handled by psaOperations
+        throw error;
       }
     },
-    [psaOperations, updatePsaCardInState]
+    [psaOperations, queryClient]
   );
 
   const deletePsaCard = useCallback(
     async (id: string) => {
       try {
         await psaOperations.deletePsaCard(id);
-        removePsaCardFromState(id);
+        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
       } catch (error) {
         // Error already handled by psaOperations
+        throw error;
       }
     },
-    [psaOperations, removePsaCardFromState]
+    [psaOperations, queryClient]
   );
 
   const markPsaCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
         const soldCard = await psaOperations.markPsaCardSold(id, saleDetails);
-        movePsaCardToSold(id, soldCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        return soldCard;
       } catch (error) {
         // Error already handled by psaOperations
+        throw error;
       }
     },
-    [psaOperations, movePsaCardToSold]
+    [psaOperations, queryClient]
   );
 
-  // Raw Card operations with state integration
+  // Raw Card operations with cache invalidation
   const addRawCard = useCallback(
     async (cardData: Partial<IRawCard>) => {
       try {
         const newCard = await rawOperations.addRawCard(cardData);
-        addRawCardToState(newCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        return newCard;
       } catch (error) {
         // Error already handled by rawOperations
+        throw error;
       }
     },
-    [rawOperations, addRawCardToState]
+    [rawOperations, queryClient]
   );
 
   const updateRawCard = useCallback(
     async (id: string, cardData: Partial<IRawCard>) => {
       try {
         const updatedCard = await rawOperations.updateRawCard(id, cardData);
-        updateRawCardInState(id, updatedCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        return updatedCard;
       } catch (error) {
         // Error already handled by rawOperations
+        throw error;
       }
     },
-    [rawOperations, updateRawCardInState]
+    [rawOperations, queryClient]
   );
 
   const deleteRawCard = useCallback(
     async (id: string) => {
       try {
         await rawOperations.deleteRawCard(id);
-        removeRawCardFromState(id);
+        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
       } catch (error) {
         // Error already handled by rawOperations
+        throw error;
       }
     },
-    [rawOperations, removeRawCardFromState]
+    [rawOperations, queryClient]
   );
 
   const markRawCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
         const soldCard = await rawOperations.markRawCardSold(id, saleDetails);
-        moveRawCardToSold(id, soldCard);
+        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        return soldCard;
       } catch (error) {
         // Error already handled by rawOperations
+        throw error;
       }
     },
-    [rawOperations, moveRawCardToSold]
+    [rawOperations, queryClient]
   );
 
-  // Sealed Product operations with state integration
+  // Sealed Product operations with cache invalidation
   const addSealedProduct = useCallback(
     async (productData: Partial<ISealedProduct>) => {
       try {
         const newProduct = await sealedOperations.addSealedProduct(productData);
-        addSealedProductToState(newProduct);
+        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        return newProduct;
       } catch (error) {
         // Error already handled by sealedOperations
+        throw error;
       }
     },
-    [sealedOperations, addSealedProductToState]
+    [sealedOperations, queryClient]
   );
 
   const updateSealedProduct = useCallback(
@@ -342,24 +315,27 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
           id,
           productData
         );
-        updateSealedProductInState(id, updatedProduct);
+        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        return updatedProduct;
       } catch (error) {
         // Error already handled by sealedOperations
+        throw error;
       }
     },
-    [sealedOperations, updateSealedProductInState]
+    [sealedOperations, queryClient]
   );
 
   const deleteSealedProduct = useCallback(
     async (id: string) => {
       try {
         await sealedOperations.deleteSealedProduct(id);
-        removeSealedProductFromState(id);
+        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
       } catch (error) {
         // Error already handled by sealedOperations
+        throw error;
       }
     },
-    [sealedOperations, removeSealedProductFromState]
+    [sealedOperations, queryClient]
   );
 
   const markSealedProductSold = useCallback(
@@ -369,31 +345,30 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
           id,
           saleDetails
         );
-        moveSealedProductToSold(id, soldProduct);
+        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        return soldProduct;
       } catch (error) {
         // Error already handled by sealedOperations
+        throw error;
       }
     },
-    [sealedOperations, moveSealedProductToSold]
+    [sealedOperations, queryClient]
   );
 
-  // Load collection data on hook initialization
+  // Handle refresh requests from session storage
   useEffect(() => {
-    fetchAllCollectionData();
-
-    // Check if collection needs refresh after returning from add-item page
     const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {
       sessionStorage.removeItem('collectionNeedsRefresh');
       log(
-        'Collection refresh requested via sessionStorage, fetching fresh data...'
+        'Collection refresh requested via sessionStorage, invalidating queries...'
       );
-      // Small delay to ensure any pending operations complete
       setTimeout(() => {
-        fetchAllCollectionData();
+        refreshCollection();
       }, 200);
     }
-  }, [fetchAllCollectionData]);
+  }, [refreshCollection]);
 
   // Listen for collection update events (triggered when items are added from other pages)
   useEffect(() => {
@@ -412,32 +387,41 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
 
   // Determine overall loading state
   const isLoading =
-    loading ||
+    psaLoading ||
+    rawLoading ||
+    sealedLoading ||
+    soldLoading ||
     psaOperations.loading ||
     rawOperations.loading ||
     sealedOperations.loading ||
     imageExport.loading;
 
-  // Determine overall error state (prioritize operation errors over general errors)
+  // Determine overall error state
   const overallError =
+    psaError?.message ||
+    rawError?.message ||
+    sealedError?.message ||
+    soldError?.message ||
     psaOperations.error ||
     rawOperations.error ||
     sealedOperations.error ||
-    imageExport.error ||
-    error;
+    imageExport.error;
 
   // Combined clear error function
   const clearAllErrors = useCallback(() => {
-    clearError();
+    queryClient.resetQueries({ queryKey: queryKeys.collection });
     psaOperations.clearError();
     rawOperations.clearError();
     sealedOperations.clearError();
     imageExport.clearError();
-  }, [clearError, psaOperations, rawOperations, sealedOperations, imageExport]);
+  }, [queryClient, psaOperations, rawOperations, sealedOperations, imageExport]);
 
   return {
-    // State
-    ...collectionState,
+    // Collection data from React Query
+    psaCards,
+    rawCards,
+    sealedProducts,
+    soldItems,
     loading: isLoading,
     error: overallError,
 

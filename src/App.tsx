@@ -7,25 +7,31 @@
  * Phase 4.2: Basic routing implementation with MainLayout integration
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { log } from './utils/logger';
 import { Toaster } from 'react-hot-toast';
+import LoadingSpinner from './components/common/LoadingSpinner';
+import { queryClient } from './lib/queryClient';
 
-// Layout and Pages
+// Layout
 import MainLayout from './components/layouts/MainLayout';
-import Dashboard from './pages/Dashboard';
-import Collection from './pages/Collection';
-import CollectionItemDetail from './pages/CollectionItemDetail';
-import SetSearch from './pages/SetSearch';
-import SealedProductSearch from './pages/SealedProductSearch';
-import Auctions from './pages/Auctions';
-import AuctionDetail from './pages/AuctionDetail';
-import CreateAuction from './pages/CreateAuction';
-import AuctionEdit from './pages/AuctionEdit';
-import SalesAnalytics from './pages/SalesAnalytics';
-import Activity from './pages/Activity';
-import AddEditItem from './pages/AddEditItem';
-import DbaExport from './pages/DbaExport';
+
+// Lazy loaded pages for code splitting
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Collection = lazy(() => import('./pages/Collection'));
+const CollectionItemDetail = lazy(() => import('./pages/CollectionItemDetail'));
+const SetSearch = lazy(() => import('./pages/SetSearch'));
+const SealedProductSearch = lazy(() => import('./pages/SealedProductSearch'));
+const Auctions = lazy(() => import('./pages/Auctions'));
+const AuctionDetail = lazy(() => import('./pages/AuctionDetail'));
+const CreateAuction = lazy(() => import('./pages/CreateAuction'));
+const AuctionEdit = lazy(() => import('./pages/AuctionEdit'));
+const SalesAnalytics = lazy(() => import('./pages/SalesAnalytics'));
+const Activity = lazy(() => import('./pages/Activity'));
+const AddEditItem = lazy(() => import('./pages/AddEditItem'));
+const DbaExport = lazy(() => import('./pages/DbaExport'));
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -125,8 +131,19 @@ function App() {
   };
 
   return (
-    <>
-      <MainLayout>{renderPage()}</MainLayout>
+    <QueryClientProvider client={queryClient}>
+      <MainLayout>
+        <Suspense 
+          fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <LoadingSpinner size="lg" />
+            </div>
+          }
+        >
+          {renderPage()}
+        </Suspense>
+      </MainLayout>
+      <ReactQueryDevtools initialIsOpen={false} />
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -161,7 +178,7 @@ function App() {
           },
         }}
       />
-    </>
+    </QueryClientProvider>
   );
 }
 
