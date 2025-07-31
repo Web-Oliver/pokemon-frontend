@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { APIResponse } from './responseTransformer';
 
 /**
- * Enhanced API Error class for new API format
+ * Standard API Error class for new API format
  * Stores structured error information for better debugging and error handling
  */
 export class APIError extends Error {
@@ -78,7 +78,7 @@ const isValidApiErrorResponse = (responseData: any): boolean => {
 };
 
 /**
- * Enhanced global error handler for API errors - NEW FORMAT ONLY
+ * Standard global error handler for API errors - NEW FORMAT ONLY
  * Simplified to handle only the new standardized API format
  * @param error - The error object (typically from Axios or transformApiResponse)
  * @param userMessage - Optional user-friendly message to display
@@ -188,7 +188,7 @@ export const getLastApiError = (): APIError | null => {
 };
 
 /**
- * Enhanced error handler specifically for new API format errors
+ * Standard error handler specifically for new API format errors
  * Can be used when you need more control over error processing
  */
 export const handleEnhancedApiError = (
@@ -198,7 +198,7 @@ export const handleEnhancedApiError = (
   const displayMessage = customMessage || error.getDisplayMessage();
 
   // Log detailed error information
-  logError('Enhanced API Error Details:', error.getDebugInfo());
+  logError('Standard API Error Details:', error.getDebugInfo());
 
   // Show appropriate toast based on error status
   const toastConfig = {

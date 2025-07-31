@@ -69,7 +69,7 @@ const Modal: React.FC<ModalProps> = ({
           onClick={onClose}
         />
 
-        {/* Enhanced gradient overlay for depth */}
+        {/* Standard gradient overlay for depth */}
         <div className="fixed inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none" />
 
         {/* Premium Animated Particles Background */}
@@ -94,7 +94,7 @@ const Modal: React.FC<ModalProps> = ({
           {/* Premium Gradient Border Effect */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
-          {/* Enhanced glow effect */}
+          {/* Standard glow effect */}
           <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-cyan-500/30 via-blue-500/30 to-cyan-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10 pointer-events-none"></div>
 
           {/* Content Container */}

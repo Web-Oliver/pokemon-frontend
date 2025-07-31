@@ -33,7 +33,7 @@ export interface ExportRequest {
 }
 
 /**
- * Enhanced export request with ordering capabilities
+ * Standard export request with ordering capabilities
  * Extends base ExportRequest for item ordering functionality
  */
 export interface OrderedExportRequest extends ExportRequest {

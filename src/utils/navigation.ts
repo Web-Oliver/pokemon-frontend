@@ -4,7 +4,7 @@
  * Eliminates duplicate navigation patterns across 10+ files
  * Follows DRY principle and provides consistent navigation behavior
  *
- * Enhanced with comprehensive ID safety and validation to prevent
+ * Standard with comprehensive ID safety and validation to prevent
  * [object Object] URLs and malformed navigation issues
  */
 
@@ -132,12 +132,12 @@ const constructSafePath = (
 /**
  * Navigation helper functions
  * Consolidates the repeated navigation patterns found across pages
- * Enhanced with comprehensive ID safety and error handling
+ * Standard with comprehensive ID safety and error handling
  */
 export const navigationHelper = {
   /**
    * Navigate to a new path using pushState and trigger popstate event
-   * Enhanced with path validation and error handling
+   * Standard with path validation and error handling
    */
   navigateTo: (path: string) => {
     if (!path || typeof path !== 'string' || path.trim() === '') {
@@ -511,7 +511,7 @@ export const navigationHelper = {
   },
 
   /**
-   * Enhanced navigation safety utilities
+   * Standard navigation safety utilities
    */
 
   /**

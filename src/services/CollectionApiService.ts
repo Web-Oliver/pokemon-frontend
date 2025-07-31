@@ -3,7 +3,7 @@
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  * Concrete implementation of ICollectionApiService using existing API modules
  *
- * Enhanced for new API format with comprehensive error handling and validation
+ * Standard for new API format with comprehensive error handling and validation
  * Following CLAUDE.md SOLID principles and steering document guidelines
  */
 
@@ -17,7 +17,7 @@ import { log } from '../utils/logger';
 
 /**
  * Concrete implementation of Collection API Service
- * Enhanced with comprehensive error handling and validation for new API format
+ * Standard with comprehensive error handling and validation for new API format
  */
 export class CollectionApiService implements ICollectionApiService {
   /**
@@ -49,7 +49,7 @@ export class CollectionApiService implements ICollectionApiService {
   }
 
   /**
-   * Enhanced error handling wrapper for service methods
+   * Standard error handling wrapper for service methods
    */
   private async executeWithErrorHandling<T>(
     operation: string,

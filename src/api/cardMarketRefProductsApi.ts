@@ -18,7 +18,7 @@ import {
   idMapper,
 } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
-import { searchProductsOptimized } from './consolidatedSearch';
+import { searchProducts } from './searchApi';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 
 // ========== INTERFACES (ISP Compliance) ==========
@@ -41,7 +41,7 @@ export interface PaginatedCardMarketRefProductsResponse {
   hasPrevPage: boolean;
 }
 
-export interface OptimizedProductSearchParams {
+export interface ProductSearchParams {
   query: string;
   category?: string;
   setName?: string;
@@ -98,7 +98,7 @@ export const getCardMarketRefProducts = async (
 ): Promise<ICardMarketReferenceProduct[]> => {
   if (params?.search && params.search.trim()) {
     // Use optimized search when there's a search term
-    const optimizedParams: OptimizedProductSearchParams = {
+    const searchParams: ProductSearchParams = {
       query: params.search.trim(),
       category: params?.category,
       setName: params?.setName,
@@ -107,7 +107,7 @@ export const getCardMarketRefProducts = async (
       page: params?.page || 1,
     };
 
-    const response = await searchProductsOptimized(optimizedParams);
+    const response = await searchProducts(searchParams);
     return response.data;
   } else {
     // Use generic getAll operation with ID mapping
@@ -153,12 +153,14 @@ export const updateCardMarketRefProduct = cardMarketRefProductOperations.update;
 export const removeCardMarketRefProduct = cardMarketRefProductOperations.remove;
 
 /**
- * Search CardMarket reference products with parameters
+ * Search CardMarket reference products with parameters - consolidated implementation
  * @param searchParams - Product search parameters
  * @returns Promise<ICardMarketReferenceProduct[]> - Search results
  */
-export const searchCardMarketRefProducts =
-  cardMarketRefProductOperations.search;
+export const searchCardMarketRefProducts = async (searchParams: any): Promise<ICardMarketReferenceProduct[]> => {
+  const result = await searchProducts(searchParams);
+  return result.data;
+};
 
 /**
  * Bulk create CardMarket reference products
@@ -207,7 +209,7 @@ export const getPaginatedCardMarketRefProducts = async (
 
   if (search && search.trim()) {
     // Use optimized search when there's a search term
-    const optimizedParams: OptimizedProductSearchParams = {
+    const searchParams: ProductSearchParams = {
       query: search.trim(),
       page,
       limit,
@@ -216,7 +218,7 @@ export const getPaginatedCardMarketRefProducts = async (
       availableOnly: available,
     };
 
-    const response = await searchProductsOptimized(optimizedParams);
+    const response = await searchProducts(searchParams);
 
     // Calculate pagination for optimized search
     const totalPages = Math.ceil(response.count / limit);
@@ -258,13 +260,13 @@ export const getPaginatedCardMarketRefProducts = async (
 
 // Import consolidated search functions for CardMarket-specific search operations
 export {
-  searchProductsOptimized,
-  getProductSuggestionsOptimized,
-  getBestMatchProductOptimized,
+  searchProducts,
+  getProductSuggestions,
+  getBestMatchProduct,
   searchProductsInSet,
   searchProductsByCategory,
   searchProductsByPriceRange,
   searchAvailableProducts,
   getCardMarketSetNames,
   searchCardMarketSetNames,
-} from './consolidatedSearch';
+} from './searchApi';

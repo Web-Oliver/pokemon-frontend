@@ -16,10 +16,8 @@ import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import {
-  AutocompleteField,
-  createAutocompleteConfig,
-} from '../../hooks/useEnhancedAutocomplete';
+import { SearchResult } from '../../hooks/useSearch';
+import { ProductSearchSection } from './ProductSearchSection';
 import Button from '../common/Button';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Input from '../common/Input';
@@ -28,7 +26,6 @@ import FormHeader from '../common/FormHeader';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
-import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
 import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
 
 interface AddEditPsaCardFormProps {
@@ -151,26 +148,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     return transformedData.cardId || null;
   });
 
-  // Configure autocomplete fields for reusable search (after useForm hook)
-  const autocompleteFields: AutocompleteField[] = [
-    {
-      id: 'setName',
-      value: watch('setName') || '',
-      placeholder: 'Set Name',
-      type: 'set',
-      required: true,
-    },
-    {
-      id: 'cardName',
-      value: watch('cardName') || '',
-      placeholder: 'Card Name',
-      type: 'cardProduct',
-      required: true,
-    },
-  ];
-
-  // Create config for enhanced autocomplete
-  const autocompleteConfig = createAutocompleteConfig('cards');
+  // Removed over-engineered autocomplete configuration
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
@@ -227,9 +205,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     }
   }, [isEditing, initialData, setValue]);
 
-  // Form values are managed by the Enhanced Autocomplete component
+  // Form values are managed by the Standard Autocomplete component
 
-  // Auto-fill logic is now handled by Enhanced Autocomplete component
+  // Auto-fill logic is now handled by Standard Autocomplete component
 
   // Watch form fields for validation
   const watchedGrade = watch('grade');
@@ -447,7 +425,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         primaryColorClass="blue"
       />
 
-      {/* Card Information Section - Enhanced Autocomplete Integration */}
+      {/* Card Information Section - Standard Autocomplete Integration */}
       {!(isEditing && initialData?.sold) && (
         <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
@@ -464,21 +442,24 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
             )}
           </h4>
 
-          {/* Enhanced Autocomplete for Hierarchical Search */}
+          {/* Card Search Section - Maintains ALL existing functionality */}
           <div className="mb-6 relative z-10">
-            <EnhancedAutocomplete
-              config={autocompleteConfig}
-              fields={autocompleteFields}
+            <ProductSearchSection
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              watch={watch}
+              clearErrors={clearErrors}
               onSelectionChange={(selectedData) => {
                 console.log(
-                  '[PSA CARD] ===== ENHANCED AUTOCOMPLETE SELECTION ====='
+                  '[PSA CARD] ===== CARD SELECTION ====='
                 );
                 console.log(
-                  '[PSA CARD] Enhanced autocomplete selection:',
+                  '[PSA CARD] Card selection:',
                   selectedData
                 );
 
-                // Auto-fill form fields based on selection
+                // Auto-fill form fields based on selection (EXACT same logic as before)
                 if (selectedData) {
                   // The selectedData contains the raw card data from the search API
                   console.log('[PSA CARD] Raw selected data:', selectedData);
@@ -576,8 +557,11 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                 }
               }}
               onError={(error) => {
-                console.error('[PSA CARD] Enhanced autocomplete error:', error);
+                console.error('[PSA CARD] Card search error:', error);
               }}
+              sectionTitle=""
+              sectionIcon={Award}
+              formType="card"
               variant="premium"
               showMetadata={true}
               allowClear={true}

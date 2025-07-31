@@ -28,7 +28,7 @@ import { CollectionItem } from '../domain/models/ordering';
  */
 export class ExportApiService implements IExportApiService {
   /**
-   * Enhanced export method with ordering support
+   * Standard export method with ordering support
    * Handles OrderedExportRequest with item ordering capabilities
    */
   async exportOrdered(

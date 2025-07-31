@@ -286,7 +286,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
             showThumbnails={variant === 'detail'}
           />
 
-          {/* Enhanced multi-layer text overlay shadow for better visibility */}
+          {/* Standard multi-layer text overlay shadow for better visibility */}
           <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/95 via-black/80 via-black/60 to-transparent z-10 pointer-events-none" />
           <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/98 via-black/85 to-transparent z-15 pointer-events-none" />
           <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/95 to-transparent z-20 pointer-events-none" />
@@ -297,7 +297,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
         {renderActions()}
       </div>
 
-      {/* Text Layer - Enhanced shadows for better visibility */}
+      {/* Text Layer - Standard shadows for better visibility */}
       <div
         className={`absolute bottom-0 left-0 right-0 ${sizeConfig.textHeight} flex flex-col justify-end p-2 pointer-events-none z-30`}
       >

@@ -18,7 +18,7 @@ import {
   idMapper,
 } from './genericApiOperations';
 import { ICard } from '../domain/models/card';
-import { searchCardsOptimized } from './consolidatedSearch';
+import { searchCards as searchCardsApi } from './searchApi';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -40,7 +40,7 @@ export interface SearchResponse {
   };
 }
 
-export interface OptimizedSearchParams {
+export interface CardSearchParams {
   query: string;
   setId?: string;
   setName?: string;
@@ -52,7 +52,7 @@ export interface OptimizedSearchParams {
   page?: number;
 }
 
-export interface OptimizedSearchResponse {
+export interface SearchResponse {
   success: boolean;
   query: string;
   count: number;
@@ -113,12 +113,12 @@ export const getCards = async (
 ): Promise<ICard[]> => {
   // If specific search parameters provided, use search instead
   if (params?.cardName || params?.baseName) {
-    const searchParams: OptimizedSearchParams = {
+    const searchParams: CardSearchParams = {
       query: params.cardName || params.baseName || '*',
       setId: params.setId,
       limit: 50,
     };
-    const response = await searchCardsOptimized(searchParams);
+    const response = await searchCardsApi(searchParams);
     return response.data;
   }
 
@@ -162,11 +162,14 @@ export const updateCard = cardOperations.update;
 export const removeCard = cardOperations.remove;
 
 /**
- * Search cards with parameters
- * @param searchParams - Card search parameters
+ * Search cards with parameters - consolidated implementation
+ * @param searchParams - Card search parameters  
  * @returns Promise<ICard[]> - Search results
  */
-export const searchCards = cardOperations.search;
+export const searchCards = async (searchParams: any): Promise<ICard[]> => {
+  const result = await searchCardsApi(searchParams);
+  return result.data;
+};
 
 /**
  * Bulk create cards
@@ -204,10 +207,10 @@ export const getCardMetrics = async (): Promise<CardMetrics> => {
 
 // Import consolidated search functions for card-specific search operations
 export {
-  searchCardsOptimized,
-  getCardSuggestionsOptimized,
-  getBestMatchCardOptimized,
+  searchCardsApi,
+  getCardSuggestions,
+  getBestMatchCard,
   searchCardsInSet,
   searchCardsByPokemonNumber,
   searchCardsByVariety,
-} from './consolidatedSearch';
+} from './searchApi';

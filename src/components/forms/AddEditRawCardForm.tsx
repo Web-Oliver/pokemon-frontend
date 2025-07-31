@@ -16,14 +16,11 @@ import { IRawCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import {
-  AutocompleteField,
-  createAutocompleteConfig,
-} from '../../hooks/useEnhancedAutocomplete';
+import { SearchResult } from '../../hooks/useSearch';
+import { ProductSearchSection } from './ProductSearchSection';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
-import CardProductInformationSection from './CardProductInformationSection';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
@@ -101,27 +98,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     return transformedData.cardId || null;
   });
 
-  // Configure autocomplete fields for reusable search (after useForm hook)
-  const autocompleteFields: AutocompleteField[] = [
-    {
-      id: 'setName',
-      value: watch('setName') || '',
-      placeholder: 'Set Name',
-      type: 'set',
-      required: true,
-    },
-    {
-      id: 'cardName',
-      value: watch('cardName') || '',
-      placeholder: 'Card Name',
-      type: 'cardProduct',
-      required: true,
-    },
-  ];
-
-  // Initialize enhanced autocomplete for cards
-  // Create config for enhanced autocomplete
-  const autocompleteConfig = createAutocompleteConfig('cards');
+  // Removed over-engineered autocomplete configuration
 
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
@@ -339,24 +316,21 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         primaryColorClass="emerald"
       />
 
-      {/* Reusable Card Information Section */}
-      <CardProductInformationSection
-        register={register as any}
-        errors={errors as any}
+      {/* Card Information Section - Maintains ALL existing functionality */}
+      <ProductSearchSection
+        register={register}
+        errors={errors}
         setValue={setValue}
         watch={watch}
         clearErrors={clearErrors}
-        control={form.control}
-        autocompleteConfig={autocompleteConfig}
-        autocompleteFields={autocompleteFields}
-        onSelectionChange={(selectedData: any) => {
-          console.log('[RAW CARD] ===== ENHANCED AUTOCOMPLETE SELECTION =====');
+        onSelectionChange={(selectedData) => {
+          console.log('[RAW CARD] ===== CARD SELECTION =====');
           console.log(
-            '[RAW CARD] Enhanced autocomplete selection:',
+            '[RAW CARD] Card selection:',
             selectedData
           );
 
-          // Auto-fill form fields based on selection
+          // Auto-fill form fields based on selection (EXACT same logic as before)
           if (selectedData) {
             // Store the selected card ID for backend submission
             // Transform ObjectId to string to prevent buffer objects from being stored
@@ -405,18 +379,12 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             clearErrors('variety');
           }
         }}
-        onError={(error: any) => {
-          console.error('[RAW CARD] Enhanced autocomplete error:', error);
+        onError={(error) => {
+          console.error('[RAW CARD] Card search error:', error);
         }}
         sectionTitle="Card Information"
         sectionIcon={Calendar}
         formType="card"
-        readOnlyFields={{
-          pokemonNumber: true,
-          baseName: true,
-          variety: true,
-        }}
-        isDisabled={isEditing}
       />
 
       {/* Condition & Pricing Section */}

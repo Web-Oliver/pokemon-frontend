@@ -26,7 +26,7 @@ export type ItemCategory = 'PSA_CARD' | 'RAW_CARD' | 'SEALED_PRODUCT';
 export type SortMethod = 'manual' | 'price_desc' | 'price_asc' | null;
 
 /**
- * Enhanced collection item with ordering metadata
+ * Standard collection item with ordering metadata
  */
 export type OrderedCollectionItem = CollectionItem & {
   orderIndex: number;

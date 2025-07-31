@@ -274,7 +274,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
     }
   }, []);
 
-  // Enhanced export function with ordering support
+  // Standard export function with ordering support
   const exportOrderedItems = useCallback(
     async (request: OrderedExportRequest, items: CollectionItem[]) => {
       if (request.itemIds && request.itemIds.length === 0) {

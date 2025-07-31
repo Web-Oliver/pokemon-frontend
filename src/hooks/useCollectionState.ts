@@ -3,7 +3,7 @@
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  * Follows Single Responsibility Principle - only manages collection state
  *
- * Enhanced for new API format with comprehensive array safety and validation
+ * Standard for new API format with comprehensive array safety and validation
  * Following CLAUDE.md SOLID principles and steering document guidelines
  */
 

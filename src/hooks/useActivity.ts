@@ -121,7 +121,7 @@ export const useActivity = (
 
         const response = await activityApi.getActivities(filters);
 
-        // Enhanced null safety: Ensure we always have valid arrays and metadata
+        // Standard null safety: Ensure we always have valid arrays and metadata
         const safeData = Array.isArray(response?.data) ? response.data : [];
         const safeMeta = response?.meta || {
           hasMore: false,
@@ -174,7 +174,7 @@ export const useActivity = (
 
         const response = await activityApi.getRecentActivities(limit);
 
-        // Enhanced null safety: Ensure we always return a valid array
+        // Standard null safety: Ensure we always return a valid array
         const safeActivities = response?.data ?? [];
 
         // Additional validation: Ensure each item is a valid activity object
@@ -246,7 +246,7 @@ export const useActivity = (
           entityType: state.filters.entityType,
         });
 
-        // Enhanced null safety for search results
+        // Standard null safety for search results
         const safeData = Array.isArray(response?.data) ? response.data : [];
 
         // Validate search result activity objects
@@ -368,7 +368,7 @@ export const useActivity = (
           entityId
         );
 
-        // Enhanced null safety for entity activities
+        // Standard null safety for entity activities
         const safeData = Array.isArray(response?.data) ? response.data : [];
 
         // Validate entity activity objects
@@ -397,7 +397,7 @@ export const useActivity = (
       try {
         const response = await activityApi.getActivityById(id);
 
-        // Enhanced null safety for single activity
+        // Standard null safety for single activity
         const activity = response?.data;
 
         // Validate activity object
@@ -483,7 +483,7 @@ export const useRecentActivities = (limit: number = 10) => {
       setLoading(true);
       const response = await activityApi.getRecentActivities(limit);
 
-      // Enhanced null safety: Ensure we always have a valid array
+      // Standard null safety: Ensure we always have a valid array
       const safeActivities = response?.data ?? [];
 
       // Additional validation: Ensure each item is a valid activity object

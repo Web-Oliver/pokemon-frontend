@@ -167,7 +167,7 @@ const Analytics: React.FC = () => {
 
   const analyticsData = processAnalyticsData();
 
-  // Context7 Activity Type Colors - Enhanced for all activity types
+  // Context7 Activity Type Colors - Standard for all activity types
   const getActivityColor = (type: string) => {
     const colorMap = {
       [ACTIVITY_TYPES.CARD_ADDED]: 'emerald',
@@ -188,7 +188,7 @@ const Analytics: React.FC = () => {
     return colorMap[type as keyof typeof colorMap] || 'indigo';
   };
 
-  // Context7 Activity Type Icons - Enhanced for all activity types
+  // Context7 Activity Type Icons - Standard for all activity types
   const getActivityIcon = (type: string) => {
     const iconMap = {
       [ACTIVITY_TYPES.CARD_ADDED]: Plus,

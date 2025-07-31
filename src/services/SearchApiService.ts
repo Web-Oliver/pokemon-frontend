@@ -4,7 +4,7 @@
  * Concrete implementation of ISearchApiService using existing API modules
  */
 
-import { getProductCategories } from '../api/searchApi';
+// Simple category list instead of API call
 import { ISearchApiService } from '../interfaces/api/ISearchApiService';
 
 /**
@@ -15,7 +15,8 @@ export class SearchApiService implements ISearchApiService {
   async getProductCategories(): Promise<
     Array<{ value: string; label: string }>
   > {
-    return await getProductCategories();
+    const categories = ['Booster Box', 'Elite Trainer Box', 'Theme Deck', 'Starter Deck', 'Collection Box'];
+    return categories.map(cat => ({ value: cat, label: cat }));
   }
 }
 

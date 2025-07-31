@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
+import { searchProducts } from '../api/searchApi';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
@@ -52,7 +53,7 @@ const SealedProductSearch: React.FC = () => {
     'Tins',
   ];
 
-  // Fetch CardMarket reference products with pagination using optimized search
+  // Fetch CardMarket reference products with pagination using standard search
   const fetchProducts = async (page: number = 1) => {
     try {
       setLoading(true);
@@ -77,25 +78,21 @@ const SealedProductSearch: React.FC = () => {
       };
 
       if (searchTerm.trim()) {
-        // Use optimized search when there's a search term
-        const optimizedParams: cardMarketRefProductsApi.OptimizedProductSearchParams =
-          {
-            query: searchTerm.trim(),
-            page,
-            limit: itemsPerPage,
-            ...(categoryFilter && { category: categoryFilter }),
-            ...(setNameFilter && { setName: setNameFilter }),
-            ...(availableOnly && { availableOnly: true }),
-          };
+        // Use consolidated search API when there's a search term
+        const searchParams = {
+          query: searchTerm.trim(),
+          page,
+          limit: itemsPerPage,
+          ...(categoryFilter && { category: categoryFilter }),
+          ...(setNameFilter && { setName: setNameFilter }),
+          ...(availableOnly && { availableOnly: true }),
+        };
 
-        const optimizedResponse =
-          await cardMarketRefProductsApi.searchProductsOptimized(
-            optimizedParams
-          );
-        fetchedProducts = optimizedResponse.data;
+        const searchResponse = await searchProducts(searchParams);
+        fetchedProducts = searchResponse.data;
 
-        // Calculate pagination for optimized search
-        const totalResults = optimizedResponse.count;
+        // Calculate pagination for search results
+        const totalResults = searchResponse.count;
         const totalPages = Math.ceil(totalResults / itemsPerPage);
         paginationData = {
           currentPage: page,

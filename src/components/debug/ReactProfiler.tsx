@@ -86,7 +86,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
   const lastUpdateRef = useRef<number>(0);
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Context7: Enhanced onRender callback with aggregation and analysis
+  // Context7: Standard onRender callback with aggregation and analysis
   const onRenderCallback: ProfilerOnRenderCallback = useCallback(
     (
       profileId: string,

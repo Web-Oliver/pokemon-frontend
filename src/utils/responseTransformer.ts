@@ -98,9 +98,9 @@ const METADATA_PROPERTIES = [
 ] as const;
 
 /**
- * Validate that response data follows the new API format
+ * Validate that response data follows the backend API format
  * @param responseData - Response data to validate
- * @returns true if response follows new API format
+ * @returns true if response follows backend API format
  */
 const validateApiResponse = (
   responseData: any
@@ -109,22 +109,23 @@ const validateApiResponse = (
     return false;
   }
 
-  // Check required fields
+  // Check required fields - 'status' is optional since backend doesn't include it
   if (
     !('success' in responseData) ||
-    !('status' in responseData) ||
     !('data' in responseData)
   ) {
     return false;
   }
 
-  // Check meta object structure
-  if (!('meta' in responseData) || typeof responseData.meta !== 'object') {
-    return false;
+  // Meta object is optional but if present should have basic structure
+  if ('meta' in responseData && typeof responseData.meta === 'object') {
+    const meta = responseData.meta;
+    // At least one of these should be present if meta exists
+    return 'timestamp' in meta || 'version' in meta || 'duration' in meta || 'query' in meta || 'totalResults' in meta;
   }
 
-  const meta = responseData.meta;
-  return 'timestamp' in meta && 'version' in meta && 'duration' in meta;
+  // Response is valid even without meta object
+  return true;
 };
 
 /**
@@ -369,15 +370,17 @@ export const transformResponse = <T>(
 };
 
 /**
- * Transform API response - NEW FORMAT ONLY
- * Simplified transformer that handles only the new standardized API format
- * Removes problematic hybrid logic that was causing production issues
+ * Transform API response - Backend Format Handler
+ * Handles the actual backend response format with enhanced error handling
  */
 export const transformApiResponse = <T>(responseData: any): T => {
+  console.log('[TRANSFORM API RESPONSE] Input:', responseData);
+
   // Validate response structure
   if (!validateApiResponse(responseData)) {
+    console.error('[TRANSFORM API RESPONSE] Validation failed for:', responseData);
     const error = new Error(
-      'Invalid API response format - expected new standardized format'
+      'Invalid API response format - expected backend standardized format'
     );
     (error as any).statusCode = 500;
     (error as any).details = { receivedFormat: typeof responseData };
@@ -395,7 +398,13 @@ export const transformApiResponse = <T>(responseData: any): T => {
   }
 
   // Extract and transform data with ID mapping
-  return mapMongoIds(responseData.data) as T;
+  const extractedData = responseData.data;
+  console.log('[TRANSFORM API RESPONSE] Extracted data:', extractedData);
+  
+  const transformedData = mapMongoIds(extractedData) as T;
+  console.log('[TRANSFORM API RESPONSE] Final result:', transformedData);
+  
+  return transformedData;
 };
 
 /**

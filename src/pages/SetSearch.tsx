@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import * as setsApi from '../api/setsApi';
+import { searchSets } from '../api/searchApi';
 import Input from '../components/common/Input';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
@@ -68,16 +69,15 @@ const SetSearch: React.FC = () => {
       };
 
       if (params.search?.trim()) {
-        // Use optimized search when there's a search term
-        const optimizedParams: setsApi.OptimizedSetSearchParams = {
+        // Use consolidated search API when there's a search term
+        const searchParams = {
           query: params.search.trim(),
           page,
           limit,
           ...(params.year && { year: params.year }),
         };
 
-        const optimizedResponse =
-          await setsApi.searchSetsOptimized(optimizedParams);
+        const optimizedResponse = await searchSets(searchParams);
         fetchedSets = optimizedResponse.data;
 
         // Calculate pagination for optimized search

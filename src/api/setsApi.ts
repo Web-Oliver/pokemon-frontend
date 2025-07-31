@@ -19,7 +19,7 @@ import {
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
-import { searchSetsOptimized } from './consolidatedSearch';
+import { searchSets as searchSetsApi, type SetSearchParams, type SearchResponse } from './searchApi';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -39,23 +39,6 @@ export interface PaginatedSetsResponse {
   hasPrevPage: boolean;
 }
 
-export interface OptimizedSetSearchParams {
-  query: string;
-  year?: number;
-  minYear?: number;
-  maxYear?: number;
-  minPsaPopulation?: number;
-  minCardCount?: number;
-  limit?: number;
-  page?: number;
-}
-
-export interface OptimizedSetSearchResponse {
-  success: boolean;
-  query: string;
-  count: number;
-  data: ISet[];
-}
 
 /**
  * Set creation payload interface
@@ -134,11 +117,14 @@ export const updateSet = setOperations.update;
 export const removeSet = setOperations.remove;
 
 /**
- * Search sets with parameters
+ * Search sets with parameters - consolidated implementation
  * @param searchParams - Set search parameters
  * @returns Promise<ISet[]> - Search results
  */
-export const searchSets = setOperations.search;
+export const searchSets = async (searchParams: any): Promise<ISet[]> => {
+  const result = await searchSetsApi(searchParams);
+  return result.data;
+};
 
 /**
  * Bulk create sets
@@ -176,17 +162,17 @@ export const getPaginatedSets = async (
   const { page = 1, limit = 20, year, search } = params || {};
 
   if (search && search.trim()) {
-    // Use optimized search when there's a search term
-    const optimizedParams: OptimizedSetSearchParams = {
+    // Use search API when there's a search term
+    const searchParams: SetSearchParams = {
       query: search.trim(),
       page,
       limit,
       ...(year && { year }),
     };
 
-    const response = await searchSetsOptimized(optimizedParams);
+    const response = await searchSetsApi(searchParams);
 
-    // Calculate pagination for optimized search
+    // Calculate pagination for search results
     const totalPages = Math.ceil(response.count / limit);
     return {
       sets: response.data,
@@ -223,11 +209,10 @@ export const getPaginatedSets = async (
 
 // Import consolidated search functions for set-specific search operations
 export {
-  searchSetsOptimized,
-  getSetSuggestionsOptimized,
-  getBestMatchSetOptimized,
+  getSetSuggestions,
+  getBestMatchSet,
   searchSetsByYear,
   searchSetsByYearRange,
   searchSetsByPsaPopulation,
   searchSetsByCardCount,
-} from './consolidatedSearch';
+} from './searchApi';

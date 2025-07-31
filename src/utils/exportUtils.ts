@@ -249,7 +249,7 @@ export const shouldChunkExport = (
 // ========================================
 
 /**
- * Enhanced export request validation with ordering support
+ * Standard export request validation with ordering support
  * Extends existing validation with ordering-specific checks
  */
 export const validateOrderedExportRequest = (
@@ -419,7 +419,7 @@ export const getOrderingSummary = (request: OrderedExportRequest): string => {
 };
 
 /**
- * Enhanced success message for ordered exports
+ * Standard success message for ordered exports
  * Extends existing success message with ordering information
  */
 export const formatOrderedExportSuccessMessage = (

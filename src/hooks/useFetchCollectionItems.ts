@@ -4,7 +4,7 @@
  * Abstracts data fetching patterns using useAsyncOperation
  * Follows DRY principle - eliminates duplicate data fetching patterns
  *
- * Enhanced for new API format with comprehensive error handling and array validation
+ * Standard for new API format with comprehensive error handling and array validation
  * Following CLAUDE.md SOLID principles and steering document guidelines
  */
 
@@ -78,7 +78,7 @@ const validateCollectionItems = <T>(items: T[]): boolean => {
 
 /**
  * Generic hook for fetching collection items
- * Enhanced with comprehensive error handling and array validation for new API format
+ * Standard with comprehensive error handling and array validation for new API format
  * Used by: Collection, SetSearch, SealedProductSearch, Auctions, etc.
  */
 export const useFetchCollectionItems = <T = any>(

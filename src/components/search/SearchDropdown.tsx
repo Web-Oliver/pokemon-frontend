@@ -13,6 +13,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
+import { getSearchIconConfig, getDisplayName as getDisplayNameHelper, getResultMetadata } from '../../utils/searchHelpers';
 
 interface SearchSuggestion {
   _id?: string;
@@ -169,7 +170,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
   };
 
-  // Context7 Optimized: Clean metadata rendering for better readability
+  // Clean metadata rendering for better readability
   const renderSuggestionMetadata = (suggestion: SearchSuggestion) => {
     const metadata = [];
 
@@ -251,18 +252,17 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     return metadata;
   };
 
-  // Context7 Award-Winning Design: Get display name with intelligent fallbacks
+  // Get display name using DRY helper
   const getDisplayName = (suggestion: SearchSuggestion) => {
-    return (
-      suggestion.cardName ||
-      suggestion.name ||
-      suggestion.setName ||
-      suggestion.category ||
-      'Unknown'
-    );
+    return getDisplayNameHelper({
+      _id: suggestion._id || suggestion.id || '',
+      displayName: '',
+      data: suggestion,
+      type: activeField === 'set' ? 'set' : activeField === 'category' ? 'category' : 'card'
+    } as any);
   };
 
-  // Context7 Optimized: Order-independent word matching with intelligent highlighting
+  // Order-independent word matching with intelligent highlighting
   const highlightSearchTerm = (text: string, term: string) => {
     if (!term.trim()) {
       return text;
@@ -285,7 +285,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       );
     }
 
-    // Context7 Order-Independent Word Matching
+    // Order-Independent Word Matching
     const searchWords = searchTerm.split(/\s+/).filter((w) => w.length > 1);
     if (searchWords.length === 0) {
       return text;
@@ -351,13 +351,13 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
   return (
     <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
-      {/* Context7 Clean Overlay */}
+      {/* Clean Overlay */}
       <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
 
-      {/* Context7 Clean Dropdown Container */}
+      {/* Clean Dropdown Container */}
       <div className="relative z-[9999]">
         <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl max-h-[480px] overflow-hidden">
-          {/* Context7 Header */}
+          {/* Header */}
           <div className="p-4 border-b border-zinc-700/30 bg-zinc-800/60 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -389,7 +389,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                 </div>
               </div>
 
-              {/* Context7 Close Button */}
+              {/* Close Button */}
               <button
                 onClick={onClose}
                 className="w-8 h-8 bg-zinc-800/80 border border-zinc-700/40 rounded-lg flex items-center justify-center hover:bg-zinc-700/80 transition-colors"
@@ -399,7 +399,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
             </div>
           </div>
 
-          {/* Context7 Optimized Suggestions List */}
+          {/* Suggestions List */}
           <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-800">
             {loading ? (
               <div className="p-6 text-center">

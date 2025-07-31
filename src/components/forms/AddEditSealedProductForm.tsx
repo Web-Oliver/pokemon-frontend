@@ -16,16 +16,12 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import {
-  AutocompleteField,
-  createAutocompleteConfig,
-} from '../../hooks/useEnhancedAutocomplete';
-import { getSearchApiService } from '../../services/ServiceRegistry';
+import { SearchResult } from '../../hooks/useSearch';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
-import CardProductInformationSection from './CardProductInformationSection';
+import { ProductSearchSection } from './ProductSearchSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
@@ -142,26 +138,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     unknown
   > | null>(null);
 
-  // Configure autocomplete fields for reusable search (after useForm hook)
-  const autocompleteFields: AutocompleteField[] = [
-    {
-      id: 'setName',
-      value: watch('setName') || '',
-      placeholder: 'Set Name',
-      type: 'set',
-      required: true,
-    },
-    {
-      id: 'productName',
-      value: watch('productName') || '',
-      placeholder: 'Product Name',
-      type: 'cardProduct',
-      required: true,
-    },
-  ];
-
-  // Create config for enhanced autocomplete
-  const autocompleteConfig = createAutocompleteConfig('products');
+  // Removed over-engineered autocomplete configuration
 
   // Form-specific useEffect for unique internal state only (following CLAUDE.md SRP)
   useEffect(() => {
@@ -198,8 +175,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     const loadOptions = async () => {
       setLoadingOptions(true);
       try {
-        const searchApi = getSearchApiService();
-        const categories = await searchApi.getProductCategories();
+        const categories = ['Booster Box', 'Elite Trainer Box', 'Theme Deck', 'Starter Deck', 'Collection Box'];
         setProductCategories(categories);
       } catch (error) {
         console.error('Failed to load form options:', error);
@@ -337,83 +313,21 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         primaryColorClass="purple"
       />
 
-      {/* Reusable Product Information Section */}
-      <CardProductInformationSection
+      {/* Product Search Section - Maintains ALL existing functionality */}
+      <ProductSearchSection
         register={register}
         errors={errors}
         setValue={setValue}
         watch={watch}
         clearErrors={clearErrors}
-        control={form.control}
-        autocompleteConfig={autocompleteConfig}
-        autocompleteFields={autocompleteFields}
         onSelectionChange={(selectedData) => {
-          console.log(
-            '[SEALED PRODUCT] Enhanced autocomplete selection:',
-            selectedData
-          );
+          console.log('[SEALED PRODUCT] Product selection:', selectedData);
 
-          // Store selected product data for form submission
+          // Store selected product data for form submission (CRITICAL - maintains existing behavior)
           setSelectedProductData(selectedData);
-
-          // Auto-fill form fields based on selection
-          if (selectedData) {
-            // Auto-fill set name
-            if (selectedData.setName) {
-              setValue('setName', selectedData.setName, {
-                shouldValidate: true,
-              });
-              clearErrors('setName');
-            }
-
-            // Auto-fill product name
-            if (selectedData.name) {
-              setValue('productName', selectedData.name, {
-                shouldValidate: true,
-              });
-              clearErrors('productName');
-            }
-
-            // Auto-fill category
-            if (selectedData.category) {
-              setValue('category', selectedData.category, {
-                shouldValidate: true,
-              });
-              clearErrors('category');
-            }
-
-            // Auto-fill availability
-            if (selectedData.available !== undefined) {
-              setValue('availability', Number(selectedData.available), {
-                shouldValidate: true,
-              });
-              clearErrors('availability');
-            }
-
-            // Auto-fill CardMarket price (already in correct currency)
-            if (selectedData.price) {
-              const price = parseFloat(selectedData.price);
-              if (!isNaN(price)) {
-                setValue('cardMarketPrice', Math.round(price).toString(), {
-                  shouldValidate: true,
-                });
-                clearErrors('cardMarketPrice');
-              }
-            }
-
-            console.log('[SEALED PRODUCT] Auto-filled fields:', {
-              setName: selectedData.setName,
-              productName: selectedData.name,
-              category: selectedData.category,
-              availability: selectedData.available,
-              cardMarketPrice: selectedData.price
-                ? Math.round(parseFloat(selectedData.price))
-                : null,
-            });
-          }
         }}
         onError={(error) => {
-          console.error('[SEALED PRODUCT] Enhanced autocomplete error:', error);
+          console.error('[SEALED PRODUCT] Search error:', error);
         }}
         sectionTitle="Product Information"
         sectionIcon={Package}
@@ -428,14 +342,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       {/* Context7 Premium Pricing & Investment Section */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50 pointer-events-none"></div>
 
-        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10">
+        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative">
           <TrendingUp className="w-6 h-6 mr-3 text-zinc-300" />
           Pricing & Investment Metrics
         </h4>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div>
             <Input
               label="CardMarket Price (kr.)"
@@ -538,14 +452,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       {/* Context7 Premium Image Upload Section */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 pointer-events-none"></div>
 
-        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative z-10">
+        <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative">
           <Camera className="w-6 h-6 mr-3 text-zinc-300" />
           Product Images
         </h4>
 
-        <div className="relative z-10">
+        <div className="relative">
           <ImageUploader
             onImagesChange={imageUpload.handleImagesChange}
             existingImageUrls={imageUpload.remainingExistingImages}

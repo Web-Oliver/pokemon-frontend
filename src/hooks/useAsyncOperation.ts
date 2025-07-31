@@ -3,7 +3,7 @@
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  * Follows DRY principle - eliminates duplicated loading/error state patterns
  *
- * Enhanced for new API format with comprehensive error handling and data validation
+ * Standard for new API format with comprehensive error handling and data validation
  * Following CLAUDE.md SOLID principles and steering document guidelines
  */
 
@@ -64,7 +64,7 @@ const validateApiResponse = <T>(data: T, context: string): boolean => {
 
 /**
  * Generic hook for managing async operations with loading and error states
- * Enhanced with comprehensive error handling and data validation for new API format
+ * Standard with comprehensive error handling and data validation for new API format
  */
 export const useAsyncOperation = <T = any>(
   initialData: T | null = null

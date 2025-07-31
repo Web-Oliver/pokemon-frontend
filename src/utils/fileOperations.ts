@@ -372,14 +372,14 @@ export const classifyAspectRatio = (ratio: number): ImageAspectInfo => {
 
 /**
  * Gets optimized responsive image configuration based on aspect ratio
- * Enhanced with Context7 patterns for both vertical and horizontal images
+ * Standard with Context7 patterns for both vertical and horizontal images
  */
 export const getResponsiveImageConfig = (
   aspectInfo: ImageAspectInfo
 ): ResponsiveImageConfig => {
   const { category, orientation } = aspectInfo;
 
-  // Enhanced responsive configuration based on Context7 Tailwind patterns
+  // Standard responsive configuration based on Context7 Tailwind patterns
   switch (category) {
     case 'ultra-wide':
       return {
@@ -527,13 +527,13 @@ export const getContext7ContainerClasses = (
 
 /**
  * Context7 premium image classes with object-fit optimization
- * Enhanced for better vertical and horizontal image handling
+ * Standard for better vertical and horizontal image handling
  */
 export const getContext7ImageClasses = (
   config: ResponsiveImageConfig,
   withHoverEffects: boolean = true
 ): string => {
-  // Enhanced object position handling
+  // Standard object position handling
   let objectPosClass = config.objectPosition;
   if (objectPosClass === 'center') {
     objectPosClass = 'center';
@@ -561,7 +561,7 @@ export const getContext7ImageClasses = (
 
 /**
  * Determines optimal grid layout based on mixed aspect ratios
- * Enhanced Context7 algorithm for vertical and horizontal image mixing
+ * Standard Context7 algorithm for vertical and horizontal image mixing
  */
 export const getOptimalGridLayout = (
   aspectInfos: ImageAspectInfo[]

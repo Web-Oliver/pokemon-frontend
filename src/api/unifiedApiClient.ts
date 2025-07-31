@@ -107,7 +107,7 @@ export interface OptimizationConfig {
 }
 
 /**
- * Enhanced request configuration with optimization options
+ * Standard request configuration with optimization options
  */
 export interface EnhancedRequestConfig extends ApiRequestConfig {
   optimization?: OptimizationConfig;

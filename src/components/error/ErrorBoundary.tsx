@@ -105,7 +105,7 @@ export class ErrorBoundary extends Component<
       errorMetrics.errorHistory.shift();
     }
 
-    // Context7: Enhanced error logging with performance context
+    // Context7: Standard error logging with performance context
     console.group(`🚨 [ERROR BOUNDARY] Error in ${componentName}`);
     console.error('Error:', error);
     console.error('Error ID:', errorId);
