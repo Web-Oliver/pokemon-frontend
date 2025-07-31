@@ -485,16 +485,28 @@ export const searchProductsOptimized = async (
     }
   });
 
-  const response = (await unifiedApiClient.get(
-    `/search/products?${queryParams.toString()}`
-  )) as any;
+  // unifiedApiClient.get() returns the transformed data array directly via transformApiResponse()
+  // We need the full response object to get meta information, so use axios directly
+  const response = await fetch(`http://localhost:3000/api/search/products?${queryParams.toString()}`);
+  const fullResponse = await response.json();
 
-  return {
-    success: response.success || true,
-    query: response.query || query,
-    count: response.count || 0,
-    data: response.data || [],
+  console.log('[PRODUCTS SEARCH] Full API response:', fullResponse);
+  console.log('[PRODUCTS SEARCH] Response.data:', fullResponse.data);
+  console.log('[PRODUCTS SEARCH] Response.meta:', fullResponse.meta);
+  console.log('[PRODUCTS SEARCH] Response.meta?.totalResults:', fullResponse.meta?.totalResults);
+
+  const result = {
+    success: fullResponse.success || true,
+    query: fullResponse.meta?.query || query,
+    count: fullResponse.meta?.totalResults || fullResponse.count || 0,
+    data: fullResponse.data || [],
   };
+
+  console.log('[PRODUCTS SEARCH] Final result:', result);
+  console.log('[PRODUCTS SEARCH] Final result.count:', result.count);
+  console.log('[PRODUCTS SEARCH] Final result.data.length:', result.data.length);
+
+  return result;
 };
 
 /**
