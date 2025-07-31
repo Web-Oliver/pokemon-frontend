@@ -11,7 +11,7 @@
  * - DIP: Depends on abstractions (unifiedApiClient)
  */
 
-import unifiedApiClient, { EnhancedRequestConfig } from './unifiedApiClient';
+import { unifiedApiClient, EnhancedRequestConfig } from './unifiedApiClient';
 
 // ========== INTERFACES ==========
 
@@ -544,7 +544,7 @@ export const EXPORT_CONFIG = createResourceConfig('/export', 'export');
 /**
  * Common configuration for activity resources
  */
-export const ACTIVITY_CONFIG = createResourceConfig('/activity', 'activity');
+export const ACTIVITY_CONFIG = createResourceConfig('/activities', 'activity');
 
 /**
  * Common configuration for collection resources

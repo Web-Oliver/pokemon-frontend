@@ -26,6 +26,7 @@ import FormActionButtons from '../common/FormActionButtons';
 import CardProductInformationSection from './CardProductInformationSection';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
+import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
 
 interface AddEditRawCardFormProps {
   onCancel: () => void;
@@ -92,11 +93,13 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   } = form;
 
   // State for card selection (separate from form hooks for business logic)
-  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
-    typeof initialData?.cardId === 'string'
-      ? initialData.cardId
-      : (initialData?.cardId as any)?._id || null
-  );
+  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(() => {
+    if (!initialData?.cardId) return null;
+    
+    // Use centralized ObjectId conversion for consistent string handling
+    const transformedData = transformRequestData({ cardId: initialData.cardId });
+    return transformedData.cardId || null;
+  });
 
   // Configure autocomplete fields for reusable search (after useForm hook)
   const autocompleteFields: AutocompleteField[] = [
@@ -143,9 +146,22 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       setValue('myPrice', initialData.myPrice?.toString() || '');
       setValue(
         'dateAdded',
-        initialData.dateAdded
-          ? new Date(initialData.dateAdded).toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0]
+        (() => {
+          if (!initialData.dateAdded || 
+              typeof initialData.dateAdded === 'object' && Object.keys(initialData.dateAdded).length === 0) {
+            return new Date().toISOString().split('T')[0];
+          }
+          
+          try {
+            const date = new Date(initialData.dateAdded);
+            if (isNaN(date.getTime())) {
+              return new Date().toISOString().split('T')[0];
+            }
+            return date.toISOString().split('T')[0];
+          } catch {
+            return new Date().toISOString().split('T')[0];
+          }
+        })()
       );
 
       // Legacy search functions removed - form values are sufficient
@@ -286,7 +302,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
 
       // Submit using collection operations hook
       if (isEditing && initialData?.id) {
-        await updateRawCard(initialData.id, cardData);
+        const cardId = convertObjectIdToString(initialData.id);
+        await updateRawCard(cardId, cardData);
       } else {
         await addRawCard(cardData);
       }
@@ -342,10 +359,12 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           // Auto-fill form fields based on selection
           if (selectedData) {
             // Store the selected card ID for backend submission
-            const cardId = selectedData._id || selectedData.id;
-            if (cardId) {
-              setSelectedCardId(cardId);
-              console.log('[RAW CARD] Selected card ID:', cardId);
+            // Transform ObjectId to string to prevent buffer objects from being stored
+            const rawCardId = selectedData._id || selectedData.id;
+            if (rawCardId) {
+              const transformedData = transformRequestData({ cardId: rawCardId });
+              setSelectedCardId(transformedData.cardId);
+              console.log('[RAW CARD] Selected card ID:', transformedData.cardId);
             } else {
               console.error(
                 '[RAW CARD] No ID found in selected data - card selection invalid'

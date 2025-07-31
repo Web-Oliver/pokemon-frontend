@@ -25,10 +25,10 @@ import {
   ItemOrderingState,
   SortMethod,
 } from '../domain/models/ordering';
-import { 
-  orderingPersistence, 
+import {
+  orderingPersistence,
   storageHelpers,
-  ExportSessionData 
+  ExportSessionData,
 } from '../utils/storageUtils';
 import {
   showSuccessToast,
@@ -66,7 +66,10 @@ export interface UseCollectionExportReturn {
 
   // Unified export functions
   exportItems: (request: ExportRequest) => Promise<void>;
-  exportOrderedItems: (request: OrderedExportRequest, items: CollectionItem[]) => Promise<void>;
+  exportOrderedItems: (
+    request: OrderedExportRequest,
+    items: CollectionItem[]
+  ) => Promise<void>;
   exportAllItems: (
     items: CollectionItem[],
     format?: ExportFormat
@@ -126,35 +129,35 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   useEffect(() => {
     if (!hasPersistenceLoaded.current) {
       hasPersistenceLoaded.current = true;
-      
+
       // Clean up expired sessions
       orderingPersistence.cleanupExpiredSessions();
-      
+
       // Migrate old format if needed
       storageHelpers.migrateOldFormat();
-      
+
       // Load persisted ordering state
       const savedOrderingState = storageHelpers.loadOrdering();
       if (savedOrderingState) {
         setOrderingState(savedOrderingState);
         setItemOrder(savedOrderingState.globalOrder);
-        
+
         console.log('Loaded persisted ordering state:', savedOrderingState);
       }
-      
+
       // Load session data
       const sessionData = orderingPersistence.getSessionData();
       if (sessionData && !orderingPersistence.isSessionExpired()) {
         setSelectedItemsForExport(sessionData.selectedItemIds);
-        
+
         // Only restore order if we haven't loaded from ordering state
         if (!savedOrderingState && sessionData.itemOrder.length > 0) {
           setItemOrder(sessionData.itemOrder);
         }
-        
+
         console.log('Restored session data:', sessionData);
       }
-      
+
       // Start auto-save
       orderingPersistence.startAutoSave(() => {
         try {
@@ -179,43 +182,46 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   }, [orderingState]); // Include orderingState to ensure auto-save callback has latest state
 
   // Save state changes to persistence
-  const saveStateToPersistence = useCallback((
-    newOrderingState?: ItemOrderingState,
-    newSelectedItems?: string[],
-    newItemOrder?: string[]
-  ) => {
-    try {
-      // Save ordering state
-      if (newOrderingState) {
-        const success = storageHelpers.saveOrdering(newOrderingState);
-        if (!success) {
-          console.warn('Failed to save ordering state to persistence');
+  const saveStateToPersistence = useCallback(
+    (
+      newOrderingState?: ItemOrderingState,
+      newSelectedItems?: string[],
+      newItemOrder?: string[]
+    ) => {
+      try {
+        // Save ordering state
+        if (newOrderingState) {
+          const success = storageHelpers.saveOrdering(newOrderingState);
+          if (!success) {
+            console.warn('Failed to save ordering state to persistence');
+          }
         }
-      }
-      
-      // Save session data
-      const sessionUpdate: Partial<ExportSessionData> = {};
-      if (newSelectedItems !== undefined) {
-        sessionUpdate.selectedItemIds = newSelectedItems;
-      }
-      if (newItemOrder !== undefined) {
-        sessionUpdate.itemOrder = newItemOrder;
-      }
-      if (newOrderingState?.lastSortMethod !== undefined) {
-        sessionUpdate.lastSortMethod = newOrderingState.lastSortMethod;
-      }
-      
-      if (Object.keys(sessionUpdate).length > 0) {
-        const success = orderingPersistence.saveSessionData(sessionUpdate);
-        if (!success) {
-          console.warn('Failed to save session data to persistence');
+
+        // Save session data
+        const sessionUpdate: Partial<ExportSessionData> = {};
+        if (newSelectedItems !== undefined) {
+          sessionUpdate.selectedItemIds = newSelectedItems;
         }
+        if (newItemOrder !== undefined) {
+          sessionUpdate.itemOrder = newItemOrder;
+        }
+        if (newOrderingState?.lastSortMethod !== undefined) {
+          sessionUpdate.lastSortMethod = newOrderingState.lastSortMethod;
+        }
+
+        if (Object.keys(sessionUpdate).length > 0) {
+          const success = orderingPersistence.saveSessionData(sessionUpdate);
+          if (!success) {
+            console.warn('Failed to save session data to persistence');
+          }
+        }
+      } catch (error) {
+        console.error('Error saving state to persistence:', error);
+        // Don't throw the error to avoid breaking the UI
       }
-    } catch (error) {
-      console.error('Error saving state to persistence:', error);
-      // Don't throw the error to avoid breaking the UI
-    }
-  }, []);
+    },
+    []
+  );
 
   // Unified export function - consolidates all export operations
   const exportItems = useCallback(async (request: ExportRequest) => {
@@ -279,8 +285,10 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
       setIsExporting(true);
       try {
         // Prepare items with ordering
-        const { orderedItems, validation } = 
-          prepareItemsForOrderedExport(items, request);
+        const { orderedItems, validation } = prepareItemsForOrderedExport(
+          items,
+          request
+        );
 
         if (!validation.exportValid) {
           throw new Error(validation.exportError || 'Export validation failed');
@@ -289,7 +297,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         // Update the request with the final item order
         const finalRequest: OrderedExportRequest = {
           ...request,
-          itemIds: orderedItems.map(item => item.id),
+          itemIds: orderedItems.map((item) => item.id),
         };
 
         const result = await exportApiService.export(finalRequest);
@@ -337,12 +345,13 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   // Export all items in collection with specified format
   const exportAllItems = useCallback(
     async (items: CollectionItem[], format: ExportFormat = 'facebook-text') => {
-      if (items.length === 0) {
+      const safeItems = items || [];
+      if (safeItems.length === 0) {
         showWarningToast('No items in collection to export');
         return;
       }
 
-      const itemIds = items.map((item) => item.id);
+      const itemIds = safeItems.map((item) => item.id);
       await exportItems({
         itemType: 'psa-card', // Default, but format determines actual behavior
         format,
@@ -394,32 +403,39 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   );
 
   // Toggle individual item selection
-  const toggleItemSelection = useCallback((itemId: string) => {
-    setSelectedItemsForExport((prev) => {
-      const newSelection = prev.includes(itemId)
-        ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId];
-      
-      // Save to persistence
-      saveStateToPersistence(undefined, newSelection);
-      
-      return newSelection;
-    });
-  }, [saveStateToPersistence]);
+  const toggleItemSelection = useCallback(
+    (itemId: string) => {
+      setSelectedItemsForExport((prev) => {
+        const newSelection = prev.includes(itemId)
+          ? prev.filter((id) => id !== itemId)
+          : [...prev, itemId];
+
+        // Save to persistence
+        saveStateToPersistence(undefined, newSelection);
+
+        return newSelection;
+      });
+    },
+    [saveStateToPersistence]
+  );
 
   // Select all items
-  const selectAllItems = useCallback((items: CollectionItem[]) => {
-    const allIds = items.map((item) => item.id);
-    setSelectedItemsForExport(allIds);
-    
-    // Save to persistence
-    saveStateToPersistence(undefined, allIds);
-  }, [saveStateToPersistence]);
+  const selectAllItems = useCallback(
+    (items: CollectionItem[]) => {
+      const safeItems = items || [];
+      const allIds = safeItems.map((item) => item.id);
+      setSelectedItemsForExport(allIds);
+
+      // Save to persistence
+      saveStateToPersistence(undefined, allIds);
+    },
+    [saveStateToPersistence]
+  );
 
   // Clear all selections
   const clearSelection = useCallback(() => {
     setSelectedItemsForExport([]);
-    
+
     // Save to persistence
     saveStateToPersistence(undefined, []);
   }, [saveStateToPersistence]);
@@ -429,145 +445,179 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   // ========================================
 
   // Update item order state and sync with ordering state
-  const updateOrderingState = useCallback((
-    newOrder: string[],
-    sortMethod: SortMethod,
-    items?: CollectionItem[]
-  ) => {
-    setItemOrder(newOrder);
-    
-    // Update category orders if items are provided
-    const categoryOrders = orderingState.categoryOrders;
-    if (items) {
-      const grouped = items.reduce((acc, item) => {
-        const category = getItemCategory(item);
-        if (!acc[category]) acc[category] = [];
-        if (newOrder.includes(item.id)) {
-          acc[category].push(item.id);
-        }
-        return acc;
-      }, {} as Record<ItemCategory, string[]>);
+  const updateOrderingState = useCallback(
+    (newOrder: string[], sortMethod: SortMethod, items?: CollectionItem[]) => {
+      setItemOrder(newOrder);
 
-      categoryOrders.PSA_CARD = grouped.PSA_CARD || [];
-      categoryOrders.RAW_CARD = grouped.RAW_CARD || [];
-      categoryOrders.SEALED_PRODUCT = grouped.SEALED_PRODUCT || [];
-    }
+      // Update category orders if items are provided
+      const categoryOrders = orderingState.categoryOrders;
+      if (items && Array.isArray(items)) {
+        const safeItems = items || [];
+        const grouped = safeItems.reduce(
+          (acc, item) => {
+            const category = getItemCategory(item);
+            if (!acc[category]) {
+              acc[category] = [];
+            }
+            if (newOrder.includes(item.id)) {
+              acc[category].push(item.id);
+            }
+            return acc;
+          },
+          {} as Record<ItemCategory, string[]>
+        );
 
-    const newOrderingState = {
-      globalOrder: newOrder,
-      categoryOrders,
-      lastSortMethod: sortMethod,
-      lastSortTimestamp: new Date(),
-    };
+        categoryOrders.PSA_CARD = grouped.PSA_CARD || [];
+        categoryOrders.RAW_CARD = grouped.RAW_CARD || [];
+        categoryOrders.SEALED_PRODUCT = grouped.SEALED_PRODUCT || [];
+      }
 
-    setOrderingState(newOrderingState);
-    
-    // Save to persistence
-    saveStateToPersistence(newOrderingState, undefined, newOrder);
-  }, [orderingState.categoryOrders, saveStateToPersistence]);
+      const newOrderingState = {
+        globalOrder: newOrder,
+        categoryOrders,
+        lastSortMethod: sortMethod,
+        lastSortTimestamp: new Date(),
+      };
+
+      setOrderingState(newOrderingState);
+
+      // Save to persistence
+      saveStateToPersistence(newOrderingState, undefined, newOrder);
+    },
+    [orderingState.categoryOrders, saveStateToPersistence]
+  );
 
   // Reorder items with custom order
-  const reorderItems = useCallback((newOrder: string[]) => {
-    updateOrderingState(newOrder, 'manual');
-  }, [updateOrderingState]);
+  const reorderItems = useCallback(
+    (newOrder: string[]) => {
+      updateOrderingState(newOrder, 'manual');
+    },
+    [updateOrderingState]
+  );
 
   // Move item up in order
-  const moveItemUpInOrder = useCallback((itemId: string) => {
-    const newOrder = moveItemUp(itemOrder, itemId);
-    if (newOrder !== itemOrder) {
-      updateOrderingState(newOrder, 'manual');
-    }
-  }, [itemOrder, updateOrderingState]);
+  const moveItemUpInOrder = useCallback(
+    (itemId: string) => {
+      const newOrder = moveItemUp(itemOrder, itemId);
+      if (newOrder !== itemOrder) {
+        updateOrderingState(newOrder, 'manual');
+      }
+    },
+    [itemOrder, updateOrderingState]
+  );
 
   // Move item down in order
-  const moveItemDownInOrder = useCallback((itemId: string) => {
-    const newOrder = moveItemDown(itemOrder, itemId);
-    if (newOrder !== itemOrder) {
-      updateOrderingState(newOrder, 'manual');
-    }
-  }, [itemOrder, updateOrderingState]);
+  const moveItemDownInOrder = useCallback(
+    (itemId: string) => {
+      const newOrder = moveItemDown(itemOrder, itemId);
+      if (newOrder !== itemOrder) {
+        updateOrderingState(newOrder, 'manual');
+      }
+    },
+    [itemOrder, updateOrderingState]
+  );
 
   // Auto-sort all items by price
-  const autoSortByPrice = useCallback((
-    items: CollectionItem[],
-    ascending: boolean = false
-  ) => {
-    const sortedItems = sortItemsByPrice(items, ascending);
-    const newOrder = generateOrderFromItems(sortedItems);
-    updateOrderingState(
-      newOrder,
-      ascending ? 'price_asc' : 'price_desc',
-      items
-    );
-  }, [updateOrderingState]);
+  const autoSortByPrice = useCallback(
+    (items: CollectionItem[], ascending: boolean = false) => {
+      const safeItems = items || [];
+      const sortedItems = sortItemsByPrice(safeItems, ascending);
+      const newOrder = generateOrderFromItems(sortedItems);
+      updateOrderingState(
+        newOrder,
+        ascending ? 'price_asc' : 'price_desc',
+        safeItems
+      );
+    },
+    [updateOrderingState]
+  );
 
   // Sort specific category by price
-  const sortCategoryByPrice = useCallback((
-    items: CollectionItem[],
-    category: ItemCategory,
-    ascending: boolean = false
-  ) => {
-    // Filter items by category
-    const categoryItems = items.filter(item => getItemCategory(item) === category);
-    const otherItems = items.filter(item => getItemCategory(item) !== category);
-    
-    // Sort category items by price
-    const sortedCategoryItems = sortItemsByPrice(categoryItems, ascending);
-    
-    // Rebuild the order maintaining other items' positions
-    const currentOrder = itemOrder.length > 0 ? itemOrder : items.map(item => item.id);
-    const newOrder: string[] = [];
-    
-    currentOrder.forEach(itemId => {
-      const item = items.find(i => i.id === itemId);
-      if (!item) return;
-      
-      if (getItemCategory(item) === category) {
-        // Skip - we'll add sorted category items later
-        return;
+  const sortCategoryByPrice = useCallback(
+    (
+      items: CollectionItem[],
+      category: ItemCategory,
+      ascending: boolean = false
+    ) => {
+      const safeItems = items || [];
+      // Filter items by category
+      const categoryItems = safeItems.filter(
+        (item) => getItemCategory(item) === category
+      );
+      const otherItems = safeItems.filter(
+        (item) => getItemCategory(item) !== category
+      );
+
+      // Sort category items by price
+      const sortedCategoryItems = sortItemsByPrice(categoryItems, ascending);
+
+      // Rebuild the order maintaining other items' positions
+      const currentOrder =
+        itemOrder.length > 0 ? itemOrder : safeItems.map((item) => item.id);
+      const newOrder: string[] = [];
+
+      currentOrder.forEach((itemId) => {
+        const item = safeItems.find((i) => i.id === itemId);
+        if (!item) {
+          return;
+        }
+
+        if (getItemCategory(item) === category) {
+          // Skip - we'll add sorted category items later
+          return;
+        } else {
+          newOrder.push(itemId);
+        }
+      });
+
+      // Insert sorted category items at appropriate positions
+      // For simplicity, add them in sorted order maintaining category grouping
+      const sortedCategoryIds = sortedCategoryItems.map((item) => item.id);
+
+      // Find where to insert the sorted category items
+      const existingCategoryIndex = newOrder.findIndex((id) => {
+        const item = safeItems.find((i) => i.id === id);
+        return item && getItemCategory(item) === category;
+      });
+
+      if (existingCategoryIndex >= 0) {
+        // Replace existing category items with sorted ones
+        newOrder.splice(existingCategoryIndex, 0, ...sortedCategoryIds);
       } else {
-        newOrder.push(itemId);
+        // Add at the end if no existing items found
+        newOrder.push(...sortedCategoryIds);
       }
-    });
-    
-    // Insert sorted category items at appropriate positions
-    // For simplicity, add them in sorted order maintaining category grouping
-    const sortedCategoryIds = sortedCategoryItems.map(item => item.id);
-    
-    // Find where to insert the sorted category items
-    const existingCategoryIndex = newOrder.findIndex(id => {
-      const item = items.find(i => i.id === id);
-      return item && getItemCategory(item) === category;
-    });
-    
-    if (existingCategoryIndex >= 0) {
-      // Replace existing category items with sorted ones
-      newOrder.splice(existingCategoryIndex, 0, ...sortedCategoryIds);
-    } else {
-      // Add at the end if no existing items found
-      newOrder.push(...sortedCategoryIds);
-    }
-    
-    updateOrderingState(
-      newOrder,
-      ascending ? 'price_asc' : 'price_desc',
-      items
-    );
-  }, [itemOrder, updateOrderingState]);
+
+      updateOrderingState(
+        newOrder,
+        ascending ? 'price_asc' : 'price_desc',
+        safeItems
+      );
+    },
+    [itemOrder, updateOrderingState]
+  );
 
   // Reset order to default (original item order)
-  const resetOrder = useCallback((items: CollectionItem[]) => {
-    const defaultOrder = resetToDefaultOrder(items);
-    updateOrderingState(defaultOrder, null, items);
-  }, [updateOrderingState]);
+  const resetOrder = useCallback(
+    (items: CollectionItem[]) => {
+      const safeItems = items || [];
+      const defaultOrder = resetToDefaultOrder(safeItems);
+      updateOrderingState(defaultOrder, null, safeItems);
+    },
+    [updateOrderingState]
+  );
 
   // Get items in current order
-  const getOrderedItems = useCallback((items: CollectionItem[]): CollectionItem[] => {
-    if (itemOrder.length === 0) {
-      return items;
-    }
-    return applyItemOrder(items, itemOrder);
-  }, [itemOrder]);
+  const getOrderedItems = useCallback(
+    (items: CollectionItem[]): CollectionItem[] => {
+      const safeItems = items || [];
+      if (itemOrder.length === 0) {
+        return safeItems;
+      }
+      return applyItemOrder(safeItems, itemOrder);
+    },
+    [itemOrder]
+  );
 
   return {
     // State

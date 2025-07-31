@@ -30,15 +30,21 @@ export const useCollectionStats = (): CollectionStats & {
     useCollectionOperations();
 
   const stats = useMemo((): CollectionStats => {
+    // Ensure arrays are safe for operations (prevent undefined access errors)
+    const safePsaCards = psaCards || [];
+    const safeRawCards = rawCards || [];
+    const safeSealedProducts = sealedProducts || [];
+    const safeSoldItems = soldItems || [];
+
     // Total items count (active collection only, not sold)
     const totalItems =
-      psaCards.length + rawCards.length + sealedProducts.length;
+      safePsaCards.length + safeRawCards.length + safeSealedProducts.length;
 
     // Calculate total collection value (myPrice for active items)
     const totalValue = [
-      ...psaCards.map((card) => card.myPrice || 0),
-      ...rawCards.map((card) => card.myPrice || 0),
-      ...sealedProducts.map((product) => product.myPrice || 0),
+      ...safePsaCards.map((card) => card.myPrice || 0),
+      ...safeRawCards.map((card) => card.myPrice || 0),
+      ...safeSealedProducts.map((product) => product.myPrice || 0),
     ].reduce((sum, price) => {
       // Handle both number and Decimal128 formats
       const numericPrice =
@@ -51,10 +57,10 @@ export const useCollectionStats = (): CollectionStats & {
     }, 0);
 
     // Total sales count from sold items
-    const totalSales = soldItems.length;
+    const totalSales = safeSoldItems.length;
 
     // Calculate average PSA grade
-    const psaGrades = psaCards
+    const psaGrades = safePsaCards
       .map((card) => parseFloat(card.grade))
       .filter((grade) => !isNaN(grade));
 
@@ -66,7 +72,7 @@ export const useCollectionStats = (): CollectionStats & {
         : null;
 
     // Count top graded cards (PSA 9+ and 10)
-    const topGradedCards = psaCards.filter((card) => {
+    const topGradedCards = safePsaCards.filter((card) => {
       const grade = parseFloat(card.grade);
       return grade >= 9;
     }).length;
@@ -74,9 +80,13 @@ export const useCollectionStats = (): CollectionStats & {
     // Count recently added items (last 7 days)
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const recentlyAdded = [
-      ...psaCards.filter((card) => new Date(card.dateAdded) >= sevenDaysAgo),
-      ...rawCards.filter((card) => new Date(card.dateAdded) >= sevenDaysAgo),
-      ...sealedProducts.filter(
+      ...safePsaCards.filter(
+        (card) => new Date(card.dateAdded) >= sevenDaysAgo
+      ),
+      ...safeRawCards.filter(
+        (card) => new Date(card.dateAdded) >= sevenDaysAgo
+      ),
+      ...safeSealedProducts.filter(
         (product) => new Date(product.dateAdded) >= sevenDaysAgo
       ),
     ].length;
@@ -90,9 +100,9 @@ export const useCollectionStats = (): CollectionStats & {
       topGradedCards,
       recentlyAdded,
       itemsByType: {
-        psaCards: psaCards.length,
-        rawCards: rawCards.length,
-        sealedProducts: sealedProducts.length,
+        psaCards: safePsaCards.length,
+        rawCards: safeRawCards.length,
+        sealedProducts: safeSealedProducts.length,
       },
     };
   }, [psaCards, rawCards, sealedProducts, soldItems]);

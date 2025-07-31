@@ -1,6 +1,6 @@
 /**
  * Vitest Configuration for Pokemon Collection Frontend
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Comprehensive test environment setup
  * - Mock configuration for external dependencies
@@ -16,13 +16,13 @@ export default defineConfig({
   test: {
     // Test environment
     environment: 'jsdom',
-    
+
     // Global setup
     globals: true,
-    
+
     // Setup files
     setupFiles: ['./src/test/setup.ts'],
-    
+
     // Coverage configuration
     coverage: {
       provider: 'v8',
@@ -46,7 +46,7 @@ export default defineConfig({
         },
       },
     },
-    
+
     // File patterns
     include: ['**/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
@@ -56,12 +56,14 @@ export default defineConfig({
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
     ],
-    
+
     // Mock configuration
-    deps: {
-      inline: ['@testing-library/jest-dom'],
+    server: {
+      deps: {
+        inline: ['@testing-library/jest-dom'],
+      },
     },
-    
+
     // Performance
     pool: 'threads',
     poolOptions: {
@@ -69,12 +71,12 @@ export default defineConfig({
         singleThread: false,
       },
     },
-    
+
     // Timeout configuration
     testTimeout: 10000,
     hookTimeout: 10000,
   },
-  
+
   // Resolve configuration
   resolve: {
     alias: {

@@ -1,6 +1,6 @@
 /**
  * Integration Tests for Item Ordering Workflow
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Tests complete end-to-end ordering workflows
  * - Tests integration between components, hooks, and services
@@ -9,7 +9,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import React from 'react';
 import { ItemOrderingSection } from '../components/lists/ItemOrderingSection';
 import { CollectionExportModal } from '../components/lists/CollectionExportModal';
@@ -60,7 +66,12 @@ vi.mock('../utils/storageUtils', () => ({
 // Mock @dnd-kit components for integration testing
 vi.mock('@dnd-kit/core', () => ({
   DndContext: ({ children, onDragEnd }: any) => (
-    <div data-testid="dnd-context" onDrop={(e) => onDragEnd?.({ active: { id: 'test' }, over: { id: 'test' } })}>
+    <div
+      data-testid="dnd-context"
+      onDrop={(e) =>
+        onDragEnd?.({ active: { id: 'test' }, over: { id: 'test' } })
+      }
+    >
       {children}
     </div>
   ),
@@ -102,9 +113,7 @@ vi.mock('@dnd-kit/sortable', () => ({
 
 // Test wrapper component that provides necessary context
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <DragDropProvider>
-    {children}
-  </DragDropProvider>
+  <DragDropProvider>{children}</DragDropProvider>
 );
 
 // Mock data for integration tests
@@ -148,7 +157,7 @@ const createLargeItemSet = (size: number): CollectionItem[] => {
 describe('Ordering Workflow Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock localStorage
     Object.defineProperty(window, 'localStorage', {
       value: {
@@ -180,38 +189,47 @@ describe('Ordering Workflow Integration Tests', () => {
       // Create test component that uses the hook
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => hook.selectAllItems(mockItems)}
                 data-testid="select-all"
               >
                 Select All
               </button>
-              
-              <button 
-                onClick={() => hook.reorderItems(['sealed-1', 'psa-1', 'raw-1', 'psa-2'])}
+
+              <button
+                onClick={() =>
+                  hook.reorderItems(['sealed-1', 'psa-1', 'raw-1', 'psa-2'])
+                }
                 data-testid="reorder"
               >
                 Reorder
               </button>
-              
-              <button 
-                onClick={() => hook.exportOrderedItems({
-                  itemType: 'psa-card',
-                  format: 'facebook-text',
-                  itemIds: hook.selectedItemsForExport,
-                  itemOrder: hook.itemOrder,
-                }, mockItems)}
+
+              <button
+                onClick={() =>
+                  hook.exportOrderedItems(
+                    {
+                      itemType: 'psa-card',
+                      format: 'facebook-text',
+                      itemIds: hook.selectedItemsForExport,
+                      itemOrder: hook.itemOrder,
+                    },
+                    mockItems
+                  )
+                }
                 data-testid="export"
               >
                 Export
               </button>
-              
+
               <div data-testid="order">{JSON.stringify(hook.itemOrder)}</div>
-              <div data-testid="selected">{JSON.stringify(hook.selectedItemsForExport)}</div>
+              <div data-testid="selected">
+                {JSON.stringify(hook.selectedItemsForExport)}
+              </div>
             </div>
           </TestWrapper>
         );
@@ -225,7 +243,7 @@ describe('Ordering Workflow Integration Tests', () => {
       });
 
       expect(screen.getByTestId('selected')).toHaveTextContent(
-        JSON.stringify(mockItems.map(item => item.id))
+        JSON.stringify(mockItems.map((item) => item.id))
       );
 
       // Step 2: Reorder items
@@ -247,14 +265,19 @@ describe('Ordering Workflow Integration Tests', () => {
         expect.objectContaining({
           itemType: 'psa-card',
           format: 'facebook-text',
-          itemIds: expect.arrayContaining(['psa-1', 'psa-2', 'raw-1', 'sealed-1']),
+          itemIds: expect.arrayContaining([
+            'psa-1',
+            'psa-2',
+            'raw-1',
+            'sealed-1',
+          ]),
           itemOrder: ['sealed-1', 'psa-1', 'raw-1', 'psa-2'],
         })
       );
     });
 
     it('should handle auto-sort workflow: select → auto-sort → export → verify price order', async () => {
-            const mockExport = vi.mocked(ExportApiService.prototype.export);
+      const mockExport = vi.mocked(ExportApiService.prototype.export);
       mockExport.mockResolvedValue({
         blob: new Blob(['test content']),
         filename: 'test-export.txt',
@@ -263,38 +286,45 @@ describe('Ordering Workflow Integration Tests', () => {
 
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => hook.selectAllItems(mockItems)}
                 data-testid="select-all"
               >
                 Select All
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => hook.autoSortByPrice(mockItems, false)}
                 data-testid="sort-desc"
               >
                 Sort by Price (High to Low)
               </button>
-              
-              <button 
-                onClick={() => hook.exportOrderedItems({
-                  itemType: 'psa-card',
-                  format: 'facebook-text',
-                  itemIds: hook.selectedItemsForExport,
-                  itemOrder: hook.itemOrder,
-                }, mockItems)}
+
+              <button
+                onClick={() =>
+                  hook.exportOrderedItems(
+                    {
+                      itemType: 'psa-card',
+                      format: 'facebook-text',
+                      itemIds: hook.selectedItemsForExport,
+                      itemOrder: hook.itemOrder,
+                    },
+                    mockItems
+                  )
+                }
                 data-testid="export"
               >
                 Export
               </button>
-              
+
               <div data-testid="order">{JSON.stringify(hook.itemOrder)}</div>
-              <div data-testid="sort-method">{hook.orderingState.lastSortMethod}</div>
+              <div data-testid="sort-method">
+                {hook.orderingState.lastSortMethod}
+              </div>
             </div>
           </TestWrapper>
         );
@@ -334,10 +364,9 @@ describe('Ordering Workflow Integration Tests', () => {
 
   describe('Drag & Drop Integration', () => {
     it('should handle drag and drop reordering with visual feedback', async () => {
-      
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <ItemOrderingSection
@@ -349,7 +378,7 @@ describe('Ordering Workflow Integration Tests', () => {
               onMoveItemUp={hook.moveItemUp}
               onMoveItemDown={hook.moveItemDown}
               onAutoSortByPrice={() => hook.autoSortByPrice(mockItems)}
-              onSortCategoryByPrice={(category, ascending) => 
+              onSortCategoryByPrice={(category, ascending) =>
                 hook.sortCategoryByPrice(mockItems, category, ascending)
               }
               onResetOrder={() => hook.resetOrder(mockItems)}
@@ -364,14 +393,16 @@ describe('Ordering Workflow Integration Tests', () => {
 
       // Verify drag & drop context is rendered (allow multiple contexts for different categories)
       expect(screen.getAllByTestId('dnd-context').length).toBeGreaterThan(0);
-      expect(screen.getAllByTestId('sortable-context').length).toBeGreaterThan(0);
+      expect(screen.getAllByTestId('sortable-context').length).toBeGreaterThan(
+        0
+      );
 
       // Verify drag instructions are shown
       expect(screen.getByText(/drag to reorder items/i)).toBeInTheDocument();
 
       // Test drag simulation (mocked) - get the first context
       const dragContext = screen.getAllByTestId('dnd-context')[0];
-      
+
       await act(async () => {
         fireEvent.drop(dragContext);
       });
@@ -383,13 +414,13 @@ describe('Ordering Workflow Integration Tests', () => {
     it('should enforce category constraints during drag operations', async () => {
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         // Set up initial order and selection
         React.useEffect(() => {
           hook.selectAllItems(mockItems);
           hook.reorderItems(['psa-1', 'psa-2', 'raw-1', 'sealed-1']);
         }, []);
-        
+
         return (
           <TestWrapper>
             <ItemOrderingSection
@@ -401,7 +432,7 @@ describe('Ordering Workflow Integration Tests', () => {
               onMoveItemUp={hook.moveItemUp}
               onMoveItemDown={hook.moveItemDown}
               onAutoSortByPrice={() => hook.autoSortByPrice(mockItems)}
-              onSortCategoryByPrice={(category, ascending) => 
+              onSortCategoryByPrice={(category, ascending) =>
                 hook.sortCategoryByPrice(mockItems, category, ascending)
               }
               onResetOrder={() => hook.resetOrder(mockItems)}
@@ -421,50 +452,55 @@ describe('Ordering Workflow Integration Tests', () => {
 
   describe('Mixed Operations Integration', () => {
     it('should handle combined manual reordering and auto-sorting', async () => {
-      
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => hook.selectAllItems(mockItems)}
                 data-testid="select-all"
               >
                 Select All
               </button>
-              
-              <button 
-                onClick={() => hook.reorderItems(['raw-1', 'psa-1', 'sealed-1', 'psa-2'])}
+
+              <button
+                onClick={() =>
+                  hook.reorderItems(['raw-1', 'psa-1', 'sealed-1', 'psa-2'])
+                }
                 data-testid="manual-reorder"
               >
                 Manual Reorder
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => hook.autoSortByPrice(mockItems, true)}
                 data-testid="auto-sort"
               >
                 Auto Sort (Ascending)
               </button>
-              
-              <button 
-                onClick={() => hook.sortCategoryByPrice(mockItems, 'PSA_CARD', false)}
+
+              <button
+                onClick={() =>
+                  hook.sortCategoryByPrice(mockItems, 'PSA_CARD', false)
+                }
                 data-testid="category-sort"
               >
                 Sort PSA Cards
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => hook.resetOrder(mockItems)}
                 data-testid="reset"
               >
                 Reset Order
               </button>
-              
+
               <div data-testid="order">{JSON.stringify(hook.itemOrder)}</div>
-              <div data-testid="sort-method">{hook.orderingState.lastSortMethod}</div>
+              <div data-testid="sort-method">
+                {hook.orderingState.lastSortMethod}
+              </div>
             </div>
           </TestWrapper>
         );
@@ -510,7 +546,7 @@ describe('Ordering Workflow Integration Tests', () => {
       expect(screen.getByTestId('sort-method')).toHaveTextContent('');
       // Should return to original item order
       expect(screen.getByTestId('order')).toHaveTextContent(
-        JSON.stringify(mockItems.map(item => item.id))
+        JSON.stringify(mockItems.map((item) => item.id))
       );
     });
   });
@@ -518,32 +554,32 @@ describe('Ordering Workflow Integration Tests', () => {
   describe('Large Dataset Performance Integration', () => {
     it('should handle large item collections efficiently', async () => {
       const largeItemSet = createLargeItemSet(1000);
-      
+
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => {
                   const startTime = performance.now();
                   hook.selectAllItems(largeItemSet);
                   hook.autoSortByPrice(largeItemSet, false);
                   const endTime = performance.now();
-                  console.log(`Large dataset sort time: ${endTime - startTime}ms`);
+                  console.log(
+                    `Large dataset sort time: ${endTime - startTime}ms`
+                  );
                 }}
                 data-testid="large-operation"
               >
                 Process Large Dataset
               </button>
-              
+
               <div data-testid="selected-count">
                 {hook.selectedItemsForExport.length}
               </div>
-              <div data-testid="order-count">
-                {hook.itemOrder.length}
-              </div>
+              <div data-testid="order-count">{hook.itemOrder.length}</div>
             </div>
           </TestWrapper>
         );
@@ -571,13 +607,13 @@ describe('Ordering Workflow Integration Tests', () => {
 
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         // Auto-select and order large dataset
         React.useEffect(() => {
           hook.selectAllItems(largeItemSet);
           hook.autoSortByPrice(largeItemSet, false);
         }, []);
-        
+
         return (
           <TestWrapper>
             <ItemOrderingSection
@@ -589,7 +625,7 @@ describe('Ordering Workflow Integration Tests', () => {
               onMoveItemUp={hook.moveItemUp}
               onMoveItemDown={hook.moveItemDown}
               onAutoSortByPrice={() => hook.autoSortByPrice(largeItemSet)}
-              onSortCategoryByPrice={(category, ascending) => 
+              onSortCategoryByPrice={(category, ascending) =>
                 hook.sortCategoryByPrice(largeItemSet, category, ascending)
               }
               onResetOrder={() => hook.resetOrder(largeItemSet)}
@@ -611,7 +647,7 @@ describe('Ordering Workflow Integration Tests', () => {
   describe('State Persistence Integration', () => {
     it('should integrate with localStorage persistence', async () => {
       const mockLoadOrdering = vi.mocked(storageHelpers.loadOrdering);
-      
+
       mockLoadOrdering.mockReturnValue({
         globalOrder: ['psa-1', 'raw-1'],
         categoryOrders: {
@@ -623,20 +659,21 @@ describe('Ordering Workflow Integration Tests', () => {
         lastSortTimestamp: new Date(),
       });
 
-      
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
-                onClick={() => hook.reorderItems(['sealed-1', 'psa-1', 'raw-1', 'psa-2'])}
+              <button
+                onClick={() =>
+                  hook.reorderItems(['sealed-1', 'psa-1', 'raw-1', 'psa-2'])
+                }
                 data-testid="reorder"
               >
                 Reorder
               </button>
-              
+
               <div data-testid="order">{JSON.stringify(hook.itemOrder)}</div>
             </div>
           </TestWrapper>
@@ -663,31 +700,35 @@ describe('Ordering Workflow Integration Tests', () => {
       const mockExport = vi.mocked(ExportApiService.prototype.export);
       mockExport.mockRejectedValue(new Error('Export failed'));
 
-      
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => hook.selectAllItems(mockItems)}
                 data-testid="select-all"
               >
                 Select All
               </button>
-              
-              <button 
-                onClick={() => hook.exportOrderedItems({
-                  itemType: 'psa-card',
-                  format: 'facebook-text',
-                  itemIds: hook.selectedItemsForExport,
-                }, mockItems)}
+
+              <button
+                onClick={() =>
+                  hook.exportOrderedItems(
+                    {
+                      itemType: 'psa-card',
+                      format: 'facebook-text',
+                      itemIds: hook.selectedItemsForExport,
+                    },
+                    mockItems
+                  )
+                }
                 data-testid="export"
               >
                 Export
               </button>
-              
+
               <div data-testid="exporting">
                 {hook.isExporting ? 'Exporting...' : 'Ready'}
               </div>
@@ -718,14 +759,13 @@ describe('Ordering Workflow Integration Tests', () => {
     });
 
     it('should handle invalid ordering data gracefully', async () => {
-      
       const TestComponent = () => {
         const hook = useCollectionExport();
-        
+
         return (
           <TestWrapper>
             <div>
-              <button 
+              <button
                 onClick={() => {
                   // Try to reorder with invalid data
                   hook.reorderItems(['nonexistent-1', 'invalid-2']);
@@ -734,14 +774,14 @@ describe('Ordering Workflow Integration Tests', () => {
               >
                 Invalid Reorder
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => hook.getOrderedItems(mockItems)}
                 data-testid="get-ordered"
               >
                 Get Ordered Items
               </button>
-              
+
               <div data-testid="order">{JSON.stringify(hook.itemOrder)}</div>
             </div>
           </TestWrapper>

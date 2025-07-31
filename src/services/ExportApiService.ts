@@ -35,10 +35,19 @@ export class ExportApiService implements IExportApiService {
     request: OrderedExportRequest,
     items: CollectionItem[]
   ): Promise<ExportResult> {
-    const { itemType, format, itemIds, options, itemOrder, sortByPrice, sortAscending } = request;
+    const {
+      itemType,
+      format,
+      itemIds,
+      options,
+      itemOrder,
+      sortByPrice,
+      sortAscending,
+    } = request;
 
     // Prepare items with ordering applied
-    const { orderedItems, validation, orderingApplied } = prepareItemsForOrderedExport(items, request);
+    const { orderedItems, validation, orderingApplied } =
+      prepareItemsForOrderedExport(items, request);
 
     if (!validation.exportValid) {
       throw new Error(validation.exportError || 'Export validation failed');
@@ -48,7 +57,7 @@ export class ExportApiService implements IExportApiService {
     const baseRequest: ExportRequest = {
       itemType,
       format,
-      itemIds: orderedItems.map(item => item.id),
+      itemIds: orderedItems.map((item) => item.id),
       options,
     };
 
@@ -79,7 +88,7 @@ export class ExportApiService implements IExportApiService {
         sortByPrice: !!sortByPrice,
         ascending: !!sortAscending,
       };
-      
+
       result.filename = generateOrderedExportFilename(
         config,
         result.itemCount,

@@ -52,9 +52,9 @@ export interface ItemOrderingState {
 /**
  * Ordering error enumeration
  */
-export type OrderingError = 
+export type OrderingError =
   | 'INVALID_ORDER_SEQUENCE'
-  | 'MISSING_ITEMS_IN_ORDER' 
+  | 'MISSING_ITEMS_IN_ORDER'
   | 'DUPLICATE_ITEMS_IN_ORDER'
   | 'CATEGORY_MISMATCH'
   | 'SORT_OPERATION_FAILED';

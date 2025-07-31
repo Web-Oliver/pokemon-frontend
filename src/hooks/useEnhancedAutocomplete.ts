@@ -67,26 +67,13 @@ export function useEnhancedAutocomplete({
   onSelectionChange,
   onError,
 }: UseEnhancedAutocompleteProps): UseEnhancedAutocompleteReturn {
-  console.log(
-    '[ENHANCED AUTOCOMPLETE] useEnhancedAutocomplete called with config:',
-    config
-  );
-
   // Create service instance (memoized) - ensure config is properly passed
   const serviceRef = useRef<HierarchicalSearchService>();
 
   if (!serviceRef.current) {
-    console.log(
-      '[ENHANCED AUTOCOMPLETE] Creating hierarchical search service with config:',
-      config
-    );
     serviceRef.current = createHierarchicalSearchService(config);
   } else {
     // Update existing service config to ensure searchMode is correct
-    console.log(
-      '[ENHANCED AUTOCOMPLETE] Updating existing service config:',
-      config
-    );
     serviceRef.current.updateConfig(config);
   }
   const service = serviceRef.current;

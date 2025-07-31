@@ -160,27 +160,31 @@ export const VirtualizedItemGrid: React.FC<VirtualizedItemGridProps> = ({
 
   // Measure container width and adjust grid accordingly
   useEffect(() => {
-    if (!containerRef) return;
-    
+    if (!containerRef) {
+      return;
+    }
+
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
       if (entry) {
         setAvailableWidth(entry.contentRect.width);
       }
     });
-    
+
     resizeObserver.observe(containerRef);
     return () => resizeObserver.disconnect();
   }, [containerRef]);
 
   // Calculate responsive width - ensure grid fits within container with some padding
   const gridWidth = useMemo(() => {
-    if (availableWidth === 0) return columns * itemWidth; // Fallback
-    
+    if (availableWidth === 0) {
+      return columns * itemWidth;
+    } // Fallback
+
     const padding = 32; // Account for padding, margins, borders, and potential scrollbar
     const maxAvailableWidth = availableWidth - padding;
     const calculatedWidth = columns * itemWidth;
-    
+
     // If calculated width exceeds available width, use available width
     return Math.min(calculatedWidth, maxAvailableWidth);
   }, [availableWidth, columns, itemWidth]);
@@ -217,7 +221,7 @@ export const VirtualizedItemGrid: React.FC<VirtualizedItemGridProps> = ({
   }
 
   return (
-    <div 
+    <div
       ref={setContainerRef}
       className="w-full flex justify-center overflow-hidden"
     >

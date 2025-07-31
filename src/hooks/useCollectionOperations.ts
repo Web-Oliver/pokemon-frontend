@@ -95,43 +95,125 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const collectionApi = getCollectionApiService();
 
   /**
-   * Fetch all collection data from the backend
+   * Validate collection response arrays for new API format
+   */
+  const validateCollectionResponse = (data: any[], type: string): any[] => {
+    if (!Array.isArray(data)) {
+      log(`[COLLECTION OPERATIONS] ${type} response is not an array`, { data });
+      return [];
+    }
+
+    return data.filter((item) => {
+      if (!item || typeof item !== 'object') {
+        log(`[COLLECTION OPERATIONS] Invalid ${type} item filtered out`, {
+          item,
+        });
+        return false;
+      }
+
+      if (!('id' in item) && !('_id' in item)) {
+        log(`[COLLECTION OPERATIONS] ${type} item missing ID filtered out`, {
+          item,
+        });
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  /**
+   * Fetch all collection data from the backend with enhanced error handling
    */
   const fetchAllCollectionData = useCallback(async () => {
     return await execute(async () => {
-      log('Fetching collection data...');
+      log('[COLLECTION OPERATIONS] Fetching collection data...');
 
-      // Fetch all collection items in parallel
-      const [psaCardsResponse, rawCardsResponse, sealedProductsResponse] =
-        await Promise.all([
-          collectionApi.getPsaGradedCards({ sold: false }),
-          collectionApi.getRawCards({ sold: false }),
-          collectionApi.getSealedProducts({ sold: false }),
-        ]);
+      try {
+        // Fetch all collection items in parallel
+        const [psaCardsResponse, rawCardsResponse, sealedProductsResponse] =
+          await Promise.all([
+            collectionApi.getPsaGradedCards({ sold: false }),
+            collectionApi.getRawCards({ sold: false }),
+            collectionApi.getSealedProducts({ sold: false }),
+          ]);
 
-      // Fetch sold items separately
-      const [soldPsaCards, soldRawCards, soldSealedProducts] =
-        await Promise.all([
-          collectionApi.getPsaGradedCards({ sold: true }),
-          collectionApi.getRawCards({ sold: true }),
-          collectionApi.getSealedProducts({ sold: true }),
-        ]);
+        // Validate and clean responses
+        const psaCards = validateCollectionResponse(
+          psaCardsResponse,
+          'PSA cards'
+        );
+        const rawCards = validateCollectionResponse(
+          rawCardsResponse,
+          'raw cards'
+        );
+        const sealedProducts = validateCollectionResponse(
+          sealedProductsResponse,
+          'sealed products'
+        );
 
-      // Combine all sold items
-      const soldItems = [
-        ...soldPsaCards,
-        ...soldRawCards,
-        ...soldSealedProducts,
-      ];
+        // Fetch sold items separately
+        const [soldPsaCards, soldRawCards, soldSealedProducts] =
+          await Promise.all([
+            collectionApi.getPsaGradedCards({ sold: true }),
+            collectionApi.getRawCards({ sold: true }),
+            collectionApi.getSealedProducts({ sold: true }),
+          ]);
 
-      setCollectionState({
-        psaCards: psaCardsResponse,
-        rawCards: rawCardsResponse,
-        sealedProducts: sealedProductsResponse,
-        soldItems,
-      });
+        // Validate and combine all sold items
+        const validSoldPsaCards = validateCollectionResponse(
+          soldPsaCards,
+          'sold PSA cards'
+        );
+        const validSoldRawCards = validateCollectionResponse(
+          soldRawCards,
+          'sold raw cards'
+        );
+        const validSoldSealedProducts = validateCollectionResponse(
+          soldSealedProducts,
+          'sold sealed products'
+        );
 
-      log('Collection data fetched successfully');
+        const soldItems = [
+          ...validSoldPsaCards,
+          ...validSoldRawCards,
+          ...validSoldSealedProducts,
+        ];
+
+        setCollectionState({
+          psaCards,
+          rawCards,
+          sealedProducts,
+          soldItems,
+        });
+
+        log('[COLLECTION OPERATIONS] Collection data fetched successfully', {
+          psaCards: psaCards.length,
+          rawCards: rawCards.length,
+          sealedProducts: sealedProducts.length,
+          soldItems: soldItems.length,
+        });
+
+        // Return the collection data for useAsyncOperation validation
+        return {
+          psaCards: psaCards.length,
+          rawCards: rawCards.length,
+          sealedProducts: sealedProducts.length,
+          soldItems: soldItems.length,
+        };
+      } catch (error) {
+        log('[COLLECTION OPERATIONS] Error fetching collection data', {
+          error,
+        });
+        // Set empty arrays as fallbacks to prevent undefined access
+        setCollectionState({
+          psaCards: [],
+          rawCards: [],
+          sealedProducts: [],
+          soldItems: [],
+        });
+        throw error;
+      }
     });
   }, [execute, setCollectionState, collectionApi]);
 

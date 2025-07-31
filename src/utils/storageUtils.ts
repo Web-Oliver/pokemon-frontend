@@ -1,6 +1,6 @@
 /**
  * Storage Utilities for State Persistence
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles storage operations
  * - Open/Closed: Extensible for different storage needs
@@ -97,10 +97,12 @@ class StorageManager {
 
     try {
       const item = this.storage.getItem(key);
-      if (!item) return null;
+      if (!item) {
+        return null;
+      }
 
       const parsed = JSON.parse(item);
-      
+
       // Version compatibility check
       if (!parsed.version || !parsed.data) {
         console.warn('Invalid storage format for key:', key);
@@ -171,7 +173,7 @@ export const sessionStorage = new StorageManager(window.sessionStorage);
 export class OrderingStatePersistence {
   private static instance: OrderingStatePersistence;
   private currentSessionId: string | null = null;
-  private autoSaveTimer: NodeJS.Timeout | null = null;
+  private autoSaveTimer: number | null = null;
 
   private constructor() {
     this.initSession();
@@ -196,11 +198,11 @@ export class OrderingStatePersistence {
    */
   saveOrderingState(state: ItemOrderingState): boolean {
     const success = localStorage.setItem(STORAGE_KEYS.ORDERING_STATE, state);
-    
+
     if (success) {
       this.updateSessionActivity();
     }
-    
+
     return success;
   }
 
@@ -223,10 +225,15 @@ export class OrderingStatePersistence {
     const sessionData: ExportSessionData = {
       sessionId: this.currentSessionId!,
       startTime: existingData?.startTime || Date.now(),
-      selectedItemIds: data.selectedItemIds || existingData?.selectedItemIds || [],
+      selectedItemIds:
+        data.selectedItemIds || existingData?.selectedItemIds || [],
       itemOrder: data.itemOrder || existingData?.itemOrder || [],
-      lastSortMethod: data.lastSortMethod || existingData?.lastSortMethod || null,
-      exportCount: data.exportCount !== undefined ? data.exportCount : (existingData?.exportCount || 0),
+      lastSortMethod:
+        data.lastSortMethod || existingData?.lastSortMethod || null,
+      exportCount:
+        data.exportCount !== undefined
+          ? data.exportCount
+          : existingData?.exportCount || 0,
       lastActivity: Date.now(),
     };
 
@@ -262,8 +269,10 @@ export class OrderingStatePersistence {
    * Load export preferences with defaults
    */
   loadExportPreferences(): ExportPreferences {
-    const saved = localStorage.getItem<ExportPreferences>(STORAGE_KEYS.EXPORT_PREFERENCES);
-    
+    const saved = localStorage.getItem<ExportPreferences>(
+      STORAGE_KEYS.EXPORT_PREFERENCES
+    );
+
     return {
       defaultSortMethod: saved?.defaultSortMethod || null,
       rememberOrderPerCategory: saved?.rememberOrderPerCategory ?? true,
@@ -281,7 +290,7 @@ export class OrderingStatePersistence {
     this.stopAutoSave();
 
     const preferences = this.loadExportPreferences();
-    
+
     this.autoSaveTimer = setInterval(() => {
       const state = saveCallback();
       if (state) {
@@ -305,10 +314,10 @@ export class OrderingStatePersistence {
    */
   clearAfterExport(): boolean {
     const preferences = this.loadExportPreferences();
-    
+
     if (preferences.clearOnExport) {
       const success = localStorage.removeItem(STORAGE_KEYS.ORDERING_STATE);
-      
+
       // Update session export count
       const sessionData = this.getSessionData();
       if (sessionData) {
@@ -316,10 +325,10 @@ export class OrderingStatePersistence {
         sessionData.lastActivity = Date.now();
         sessionStorage.setItem(STORAGE_KEYS.SESSION_DATA, sessionData);
       }
-      
+
       return success;
     }
-    
+
     return true;
   }
 
@@ -328,16 +337,16 @@ export class OrderingStatePersistence {
    */
   clearAllData(): boolean {
     this.stopAutoSave();
-    
+
     const results = [
       localStorage.removeItem(STORAGE_KEYS.ORDERING_STATE),
       localStorage.removeItem(STORAGE_KEYS.EXPORT_PREFERENCES),
       sessionStorage.removeItem(STORAGE_KEYS.SESSION_DATA),
     ];
-    
+
     this.initSession();
-    
-    return results.every(result => result);
+
+    return results.every((result) => result);
   }
 
   /**
@@ -345,10 +354,12 @@ export class OrderingStatePersistence {
    */
   isSessionExpired(): boolean {
     const sessionData = this.getSessionData();
-    if (!sessionData) return true;
+    if (!sessionData) {
+      return true;
+    }
 
     const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-    return (Date.now() - sessionData.lastActivity) > maxAge;
+    return Date.now() - sessionData.lastActivity > maxAge;
   }
 
   /**
@@ -372,7 +383,7 @@ export class OrderingStatePersistence {
     sessionAge: number;
   } {
     const sessionData = this.getSessionData();
-    
+
     return {
       localStorage: localStorage.getStorageInfo(),
       sessionStorage: sessionStorage.getStorageInfo(),

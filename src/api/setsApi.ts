@@ -17,7 +17,7 @@ import {
   SET_CONFIG,
   idMapper,
 } from './genericApiOperations';
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
 import { searchSetsOptimized } from './consolidatedSearch';
 

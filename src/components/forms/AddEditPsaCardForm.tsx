@@ -29,6 +29,7 @@ import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
 import { EnhancedAutocomplete } from '../search/EnhancedAutocomplete';
+import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -99,7 +100,22 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         initialData?.saleDetails?.actualSoldPrice?.toString() || '',
       deliveryMethod: initialData?.saleDetails?.deliveryMethod || '',
       source: initialData?.saleDetails?.source || '',
-      dateSold: initialData?.saleDetails?.dateSold?.split('T')[0] || '',
+      dateSold: (() => {
+        const dateSold = initialData?.saleDetails?.dateSold;
+        if (!dateSold) return '';
+        
+        if (typeof dateSold === 'string') {
+          return dateSold.split('T')[0];
+        }
+        
+        try {
+          const date = new Date(dateSold);
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0];
+        } catch {
+          return '';
+        }
+      })(),
       buyerFullName: initialData?.saleDetails?.buyerFullName || '',
       buyerPhoneNumber: initialData?.saleDetails?.buyerPhoneNumber || '',
       buyerEmail: initialData?.saleDetails?.buyerEmail || '',
@@ -127,11 +143,13 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   } = form;
 
   // State for card selection (separate from form hooks for business logic)
-  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
-    typeof initialData?.cardId === 'string'
-      ? initialData.cardId
-      : (initialData?.cardId as any)?._id || null
-  );
+  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(() => {
+    if (!initialData?.cardId) return null;
+    
+    // Use centralized ObjectId conversion for consistent string handling
+    const transformedData = transformRequestData({ cardId: initialData.cardId });
+    return transformedData.cardId || null;
+  });
 
   // Configure autocomplete fields for reusable search (after useForm hook)
   const autocompleteFields: AutocompleteField[] = [
@@ -177,9 +195,22 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       setValue('myPrice', initialData.myPrice?.toString() || '');
       setValue(
         'dateAdded',
-        initialData.dateAdded
-          ? new Date(initialData.dateAdded).toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0]
+        (() => {
+          if (!initialData.dateAdded || 
+              typeof initialData.dateAdded === 'object' && Object.keys(initialData.dateAdded).length === 0) {
+            return new Date().toISOString().split('T')[0];
+          }
+          
+          try {
+            const date = new Date(initialData.dateAdded);
+            if (isNaN(date.getTime())) {
+              return new Date().toISOString().split('T')[0];
+            }
+            return date.toISOString().split('T')[0];
+          } catch {
+            return new Date().toISOString().split('T')[0];
+          }
+        })()
       );
 
       // Data has been updated in form values above
@@ -282,11 +313,24 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           images: finalImages,
           priceHistory:
             priceHistory.priceHistory.length > 0
-              ? priceHistory.priceHistory.map((entry) => ({
-                  price: entry.price,
-                  dateUpdated:
-                    (entry as any).dateUpdated || new Date().toISOString(),
-                }))
+              ? priceHistory.priceHistory.map((entry, index) => {
+                  const dateValue = entry.date || entry.dateUpdated;
+                  let finalDate;
+                  
+                  if (dateValue && typeof dateValue === 'string') {
+                    finalDate = dateValue;
+                  } else if (dateValue instanceof Date) {
+                    finalDate = dateValue.toISOString();
+                  } else {
+                    finalDate = new Date().toISOString();
+                  }
+                  
+                  // Only return the fields the backend expects, no extra ObjectId fields
+                  return {
+                    price: entry.price,
+                    dateUpdated: finalDate,
+                  };
+                })
               : initialData?.priceHistory,
         };
       } else {
@@ -310,6 +354,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         });
 
         // Use the selected card reference (schema requires cardId)
+        console.log('[PSA FORM] Submitting with cardId:', selectedCardId, typeof selectedCardId);
         cardData = {
           cardId: selectedCardId,
           grade: data.grade,
@@ -318,11 +363,24 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           images: imageUrls,
           priceHistory:
             priceHistory.priceHistory.length > 0
-              ? priceHistory.priceHistory.map((entry) => ({
-                  price: entry.price,
-                  dateUpdated:
-                    (entry as any).dateUpdated || new Date().toISOString(),
-                }))
+              ? priceHistory.priceHistory.map((entry) => {
+                  const dateValue = entry.date || entry.dateUpdated;
+                  let finalDate;
+                  
+                  if (dateValue && typeof dateValue === 'string') {
+                    finalDate = dateValue;
+                  } else if (dateValue instanceof Date) {
+                    finalDate = dateValue.toISOString();
+                  } else {
+                    finalDate = new Date().toISOString();
+                  }
+                  
+                  // Only return the fields the backend expects, no extra ObjectId fields
+                  return {
+                    price: entry.price,
+                    dateUpdated: finalDate,
+                  };
+                })
               : [
                   {
                     price: parseFloat(data.myPrice),
@@ -332,11 +390,28 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         };
       }
 
+      // Data is already clean and properly formatted
+      const cleanedCardData = cardData;
+      
       // Submit using collection operations hook
+      console.log('[PSA FORM] Final cardData before API call:', JSON.stringify(cleanedCardData, null, 2));
+      
       if (isEditing && initialData?.id) {
-        await updatePsaCard(initialData.id, cardData);
+        console.log('[PSA FORM] Raw initialData.id:', initialData.id, typeof initialData.id);
+        
+        // Ensure ID is a string and validate MongoDB ObjectId format
+        const cardId = typeof initialData.id === 'string' ? initialData.id : String(initialData.id);
+        console.log('[PSA FORM] Processed cardId for update:', cardId, typeof cardId);
+        
+        // Validate MongoDB ObjectId format
+        if (!cardId || cardId.length !== 24 || !/^[a-f\d]{24}$/i.test(cardId)) {
+          throw new Error(`Invalid ObjectId format: ${cardId}. Expected 24 character hexadecimal string.`);
+        }
+        
+        await updatePsaCard(cardId, cleanedCardData);
       } else {
-        await addPsaCard(cardData);
+        console.log('[PSA FORM] Creating new PSA card');
+        await addPsaCard(cleanedCardData);
       }
 
       onSuccess();
@@ -409,10 +484,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   console.log('[PSA CARD] Raw selected data:', selectedData);
 
                   // Store the selected card ID for backend submission
-                  const cardId = selectedData._id || selectedData.id;
-                  if (cardId) {
-                    setSelectedCardId(cardId);
-                    console.log('[PSA CARD] Selected card ID:', cardId);
+                  // Transform ObjectId to string to prevent buffer objects from being stored
+                  const rawCardId = selectedData._id || selectedData.id;
+                  if (rawCardId) {
+                    const transformedData = transformRequestData({ cardId: rawCardId });
+                    setSelectedCardId(transformedData.cardId);
+                    console.log('[PSA CARD] Selected card ID:', transformedData.cardId);
                   } else {
                     console.error(
                       '[PSA CARD] No ID found in selected data - card selection invalid'
@@ -472,7 +549,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   console.log(
                     '[PSA CARD] Card selection complete - all fields populated from card reference:',
                     {
-                      cardId: selectedData.id,
+                      cardId: selectedCardId,
                       setName,
                       cardName: selectedData.cardName,
                       pokemonNumber,
@@ -604,7 +681,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         isEditing={isEditing}
         priceHistory={priceHistory.priceHistory.map((entry) => ({
           price: entry.price,
-          dateUpdated: (entry as any).dateUpdated || new Date().toISOString(),
+          dateUpdated: entry.date || entry.dateUpdated || new Date().toISOString(),
         }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}

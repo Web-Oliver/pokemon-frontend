@@ -1,6 +1,6 @@
 /**
  * Unit Tests for Ordering Utilities
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Single Responsibility: Each test focuses on one specific function
  * - Comprehensive coverage: Tests normal cases, edge cases, and error scenarios
@@ -39,7 +39,11 @@ const mockSealedProduct: CollectionItem = {
   category: 'booster-box',
 };
 
-const mockItems: CollectionItem[] = [mockPsaCard, mockRawCard, mockSealedProduct];
+const mockItems: CollectionItem[] = [
+  mockPsaCard,
+  mockRawCard,
+  mockSealedProduct,
+];
 
 describe('orderingUtils', () => {
   describe('getItemCategory', () => {
@@ -249,8 +253,14 @@ describe('orderingUtils', () => {
 
   describe('error scenarios', () => {
     it('should handle null/undefined items gracefully', () => {
-      const itemsWithNull = [mockPsaCard, null, mockRawCard] as CollectionItem[];
-      expect(() => sortItemsByPrice(itemsWithNull.filter(Boolean))).not.toThrow();
+      const itemsWithNull = [
+        mockPsaCard,
+        null,
+        mockRawCard,
+      ] as CollectionItem[];
+      expect(() =>
+        sortItemsByPrice(itemsWithNull.filter(Boolean))
+      ).not.toThrow();
     });
 
     it('should handle items without required properties', () => {
@@ -265,8 +275,10 @@ describe('orderingUtils', () => {
         { id: 'item1', myPrice: 100 },
         { id: 'item2', myPrice: 200 },
       ] as CollectionItem[];
-      
-      expect(() => validateItemOrder(circularOrder, circularItems)).not.toThrow();
+
+      expect(() =>
+        validateItemOrder(circularOrder, circularItems)
+      ).not.toThrow();
     });
   });
 
@@ -291,8 +303,8 @@ describe('orderingUtils', () => {
         id: `item-${i}`,
         myPrice: 100,
       })) as CollectionItem[];
-      
-      const largeOrder = largeItems.map(item => item.id);
+
+      const largeOrder = largeItems.map((item) => item.id);
 
       const startTime = performance.now();
       const validation = validateItemOrder(largeOrder, largeItems);

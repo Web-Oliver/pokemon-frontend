@@ -1,6 +1,6 @@
 /**
  * Drag & Drop Context Provider for Item Ordering
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles drag & drop context setup
  * - Open/Closed: Extensible for different drag & drop scenarios
@@ -113,9 +113,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({
       onDragEnd={onDragEnd}
     >
       {children}
-      <DragOverlay dropAnimation={dropAnimation}>
-        {dragOverlay}
-      </DragOverlay>
+      <DragOverlay dropAnimation={dropAnimation}>{dragOverlay}</DragOverlay>
     </DndContext>
   );
 };
@@ -173,12 +171,10 @@ export const reorderArray = <T,>(
   activeId: string | number,
   overId: string | number
 ): T[] => {
-  const oldIndex = array.findIndex((item: any) => 
-    (item.id || item) === activeId
+  const oldIndex = array.findIndex(
+    (item: any) => (item.id || item) === activeId
   );
-  const newIndex = array.findIndex((item: any) => 
-    (item.id || item) === overId
-  );
+  const newIndex = array.findIndex((item: any) => (item.id || item) === overId);
 
   if (oldIndex === -1 || newIndex === -1) {
     return array;
@@ -198,7 +194,9 @@ export const isDragAllowed = (
     allowedCategories?: string[];
   }
 ): boolean => {
-  if (!constraints) return true;
+  if (!constraints) {
+    return true;
+  }
 
   if (constraints.sameCategory) {
     // Extract category from ID (assuming format like "category-id")
@@ -222,17 +220,20 @@ export const isDragAllowed = (
 /**
  * Utility function to generate drag feedback styles
  */
-export const getDragFeedbackStyles = (isDragging: boolean, isOver?: boolean) => {
+export const getDragFeedbackStyles = (
+  isDragging: boolean,
+  isOver?: boolean
+) => {
   const baseStyles = 'transition-all duration-200';
-  
+
   if (isDragging) {
     return `${baseStyles} opacity-50 scale-95 shadow-lg ring-2 ring-blue-500`;
   }
-  
+
   if (isOver) {
     return `${baseStyles} scale-105 shadow-md ring-2 ring-blue-300`;
   }
-  
+
   return `${baseStyles} hover:shadow-md`;
 };
 

@@ -10,9 +10,9 @@
  */
 
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { 
-  ArrowUpDown, 
-  ArrowUp, 
+import {
+  ArrowUpDown,
+  ArrowUp,
   ArrowDown,
   RotateCcw,
   List,
@@ -21,11 +21,15 @@ import {
   SortDesc,
   Settings,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
 import { CategoryOrderingList } from './CategoryOrderingList';
 import { SortableCategoryOrderingList } from './SortableCategoryOrderingList';
-import { CollectionItem, ItemCategory, SortMethod } from '../../domain/models/ordering';
+import {
+  CollectionItem,
+  ItemCategory,
+  SortMethod,
+} from '../../domain/models/ordering';
 
 export interface ItemOrderingSectionProps {
   items: CollectionItem[];
@@ -67,8 +71,12 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
 
   // Determine current sort direction from last sort method
   const currentSortDirection: SortDirection = useMemo(() => {
-    if (lastSortMethod === 'price_asc') return 'asc';
-    if (lastSortMethod === 'price_desc') return 'desc';
+    if (lastSortMethod === 'price_asc') {
+      return 'asc';
+    }
+    if (lastSortMethod === 'price_desc') {
+      return 'desc';
+    }
     return null;
   }, [lastSortMethod]);
 
@@ -77,7 +85,8 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
     const totalItems = items.length;
     const selectedCount = selectedItemIds.length;
     const isCustomOrdered = itemOrder.length > 0 && lastSortMethod === 'manual';
-    const isPriceSorted = lastSortMethod === 'price_asc' || lastSortMethod === 'price_desc';
+    const isPriceSorted =
+      lastSortMethod === 'price_asc' || lastSortMethod === 'price_desc';
 
     return {
       totalItems,
@@ -89,9 +98,12 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
   }, [items.length, selectedItemIds.length, itemOrder.length, lastSortMethod]);
 
   // Event handlers
-  const handleGlobalSortByPrice = useCallback((ascending: boolean) => {
-    onAutoSortByPrice(ascending);
-  }, [onAutoSortByPrice]);
+  const handleGlobalSortByPrice = useCallback(
+    (ascending: boolean) => {
+      onAutoSortByPrice(ascending);
+    },
+    [onAutoSortByPrice]
+  );
 
   const handleResetOrder = useCallback(() => {
     onResetOrder();
@@ -102,7 +114,7 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
   }, []);
 
   const toggleAdvancedControls = useCallback(() => {
-    setShowAdvancedControls(prev => !prev);
+    setShowAdvancedControls((prev) => !prev);
   }, []);
 
   // Render global controls header
@@ -252,18 +264,15 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
             <div className="flex items-center space-x-4">
               {orderingStats.isPriceSorted && (
                 <span className="text-green-400">
-                  ✓ Sorted by price ({currentSortDirection === 'asc' ? 'ascending' : 'descending'})
+                  ✓ Sorted by price (
+                  {currentSortDirection === 'asc' ? 'ascending' : 'descending'})
                 </span>
               )}
               {orderingStats.isCustomOrdered && (
-                <span className="text-blue-400">
-                  ✓ Custom order applied
-                </span>
+                <span className="text-blue-400">✓ Custom order applied</span>
               )}
               {!orderingStats.hasOrdering && (
-                <span className="text-zinc-500">
-                  Using default order
-                </span>
+                <span className="text-zinc-500">Using default order</span>
               )}
             </div>
           </div>
@@ -292,7 +301,8 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
             No items to order
           </h3>
           <p className="text-zinc-400">
-            Items you select for export will appear here where you can reorder them.
+            Items you select for export will appear here where you can reorder
+            them.
           </p>
         </div>
       </div>
@@ -327,7 +337,8 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
         // List view - simplified single list (future implementation)
         <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-6">
           <p className="text-center text-zinc-400 py-8">
-            List view will be available in a future update. Use Categories view for now.
+            List view will be available in a future update. Use Categories view
+            for now.
           </p>
         </div>
       )}

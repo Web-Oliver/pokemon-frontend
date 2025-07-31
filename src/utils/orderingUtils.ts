@@ -1,7 +1,7 @@
 /**
  * Item Ordering Utilities
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Utility functions for item ordering operations
  * Following CLAUDE.md principles:
  * - DRY: Central utilities avoiding duplication
@@ -49,16 +49,16 @@ export const getItemDisplayName = (item: CollectionItem): string => {
  */
 export const getSortablePrice = (item: CollectionItem): number => {
   const price = item.myPrice;
-  
+
   if (typeof price === 'number') {
     return price;
   }
-  
+
   if (typeof price === 'string') {
     const parsed = parseFloat(price);
     return isNaN(parsed) ? 0 : parsed;
   }
-  
+
   return 0;
 };
 
@@ -169,16 +169,16 @@ export const validateItemOrder = (
   items: CollectionItem[]
 ): OrderValidationResult => {
   const errors: string[] = [];
-  
+
   // Handle edge cases
   if (!order || order.length === 0) {
     errors.push('Order array is empty');
   }
-  
+
   if (!items || items.length === 0) {
     errors.push('Items array is empty');
   }
-  
+
   if (errors.length > 0) {
     return {
       isValid: false,
@@ -214,7 +214,9 @@ export const validateItemOrder = (
 
   if (!isValid) {
     // Generate corrected order by removing duplicates and extra items, adding missing items
-    const validOrder = Array.from(new Set(order.filter((id) => itemIds.has(id))));
+    const validOrder = Array.from(
+      new Set(order.filter((id) => itemIds.has(id)))
+    );
     correctedOrder = [...validOrder, ...missingItems];
   }
 
@@ -228,19 +230,28 @@ export const validateItemOrder = (
 /**
  * Move item in array from one index to another
  */
-export const moveItemInArray = <T>(array: T[], fromIndex: number, toIndex: number): T[] => {
-  if (fromIndex < 0 || fromIndex >= array.length || toIndex < 0 || toIndex >= array.length) {
+export const moveItemInArray = <T>(
+  array: T[],
+  fromIndex: number,
+  toIndex: number
+): T[] => {
+  if (
+    fromIndex < 0 ||
+    fromIndex >= array.length ||
+    toIndex < 0 ||
+    toIndex >= array.length
+  ) {
     return [...array]; // Return copy if indices are out of bounds
   }
-  
+
   if (fromIndex === toIndex) {
     return [...array]; // No movement needed
   }
-  
+
   const newArray = [...array];
   const [movedItem] = newArray.splice(fromIndex, 1);
   newArray.splice(toIndex, 0, movedItem);
-  
+
   return newArray;
 };
 
@@ -249,10 +260,15 @@ export const moveItemInArray = <T>(array: T[], fromIndex: number, toIndex: numbe
  */
 export const moveItemUp = (order: string[], itemId: string): string[] => {
   const index = order.indexOf(itemId);
-  if (index <= 0) return order; // Already at top or not found
+  if (index <= 0) {
+    return order;
+  } // Already at top or not found
 
   const newOrder = [...order];
-  [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+  [newOrder[index - 1], newOrder[index]] = [
+    newOrder[index],
+    newOrder[index - 1],
+  ];
   return newOrder;
 };
 
@@ -261,10 +277,15 @@ export const moveItemUp = (order: string[], itemId: string): string[] => {
  */
 export const moveItemDown = (order: string[], itemId: string): string[] => {
   const index = order.indexOf(itemId);
-  if (index < 0 || index >= order.length - 1) return order; // Not found or already at bottom
+  if (index < 0 || index >= order.length - 1) {
+    return order;
+  } // Not found or already at bottom
 
   const newOrder = [...order];
-  [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+  [newOrder[index], newOrder[index + 1]] = [
+    newOrder[index + 1],
+    newOrder[index],
+  ];
   return newOrder;
 };
 

@@ -143,6 +143,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Process selected files
   const processFiles = async (_files: FileList | File[]) => {
+    console.log('[IMAGE UPLOADER] processFiles called with:', _files.length, 'files');
     const newFiles: File[] = [];
     const newPreviews: ImagePreview[] = [];
     let errorMessage = '';

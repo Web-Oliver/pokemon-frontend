@@ -1,6 +1,6 @@
 /**
  * Unit Tests for ExportApiService with Ordering
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Tests the enhanced export service with ordering capabilities
  * - Tests error handling and recovery scenarios
@@ -9,7 +9,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ExportApiService } from '../ExportApiService';
-import { OrderedExportRequest, ExportRequest } from '../../interfaces/api/IExportApiService';
+import {
+  OrderedExportRequest,
+  ExportRequest,
+} from '../../interfaces/api/IExportApiService';
 import { CollectionItem } from '../../domain/models/ordering';
 
 // Mock the export API
@@ -23,19 +26,44 @@ vi.mock('../../api/exportApi', () => ({
   downloadBlob: vi.fn(),
 }));
 
-// Mock export utilities
+// Mock export utilities - Fixed for new API format testing
 vi.mock('../../utils/exportUtils', () => ({
-  generateExportFilename: vi.fn((config, count) => `export_${count}_items.${config.extension}`),
-  generateOrderedExportFilename: vi.fn((config, count, customName, orderInfo) => 
-    `ordered_${customName || 'export'}_${count}_items${orderInfo.sorted ? '_ordered' : ''}.${config.extension}`
+  generateExportFilename: vi.fn((config, count) => {
+    const ext = config?.extension || 'zip';
+    const itemCount = count || 0;
+    return `export_${itemCount}_items.${ext}`;
+  }),
+  generateOrderedExportFilename: vi.fn(
+    (config, count, customName, orderInfo) => {
+      const ext = config?.extension || 'zip';
+      const itemCount = count || 0;
+      const name = customName || 'export';
+      const sorted = orderInfo?.sorted ? '_ordered' : '';
+      return `ordered_${name}_${itemCount}_items${sorted}.${ext}`;
+    }
   ),
   getExportConfig: vi.fn((key) => ({
-    extension: key.includes('zip') ? 'zip' : key.includes('json') ? 'json' : 'txt',
-    mimeType: key.includes('zip') ? 'application/zip' : key.includes('json') ? 'application/json' : 'text/plain',
+    extension:
+      key && key.includes('zip')
+        ? 'zip'
+        : key && key.includes('json')
+          ? 'json'
+          : 'txt',
+    mimeType:
+      key && key.includes('zip')
+        ? 'application/zip'
+        : key && key.includes('json')
+          ? 'application/json'
+          : 'text/plain',
   })),
-  getExportConfigKey: vi.fn((itemType, format) => `${itemType}-${format}`),
-  validateExportRequest: vi.fn(),
-  prepareItemsForOrderedExport: vi.fn(),
+  getExportConfigKey: vi.fn(
+    (itemType, format) => `${itemType || 'unknown'}-${format || 'unknown'}`
+  ),
+  validateExportRequest: vi.fn(() => true), // Default to valid
+  prepareItemsForOrderedExport: vi.fn((items, request) => ({
+    orderedItems: items || [],
+    validation: { exportValid: true, exportError: null },
+  })),
 }));
 
 // Mock react-hot-toast
@@ -73,7 +101,7 @@ const mockItems: CollectionItem[] = [
 
 describe('ExportApiService', () => {
   let exportService: ExportApiService;
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
     exportService = new ExportApiService();
@@ -99,12 +127,23 @@ describe('ExportApiService', () => {
 
     it('should export items with custom ordering', async () => {
       const mockBlob = new Blob(['test content'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
-      const result = await exportService.exportOrdered(mockOrderedRequest, mockItems);
+      const result = await exportService.exportOrdered(
+        mockOrderedRequest,
+        mockItems
+      );
 
-      expect(exportUtils.prepareItemsForOrderedExport).toHaveBeenCalledWith(mockItems, mockOrderedRequest);
-      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith(['psa-2', 'psa-1']);
+      expect(exportUtils.prepareItemsForOrderedExport).toHaveBeenCalledWith(
+        mockItems,
+        mockOrderedRequest
+      );
+      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith([
+        'psa-2',
+        'psa-1',
+      ]);
       expect(result.blob).toBe(mockBlob);
       expect(result.metadata.orderingApplied).toBe(true);
       expect(result.metadata.itemOrder).toEqual(['psa-2', 'psa-1']);
@@ -112,12 +151,19 @@ describe('ExportApiService', () => {
 
     it('should generate ordered filename when ordering is applied', async () => {
       const mockBlob = new Blob(['test content'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
-      
-      const expectedFilename = 'ordered_export_2_items_ordered.txt';
-      (exportUtils.generateOrderedExportFilename as any).mockReturnValue(expectedFilename);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
-      const result = await exportService.exportOrdered(mockOrderedRequest, mockItems);
+      const expectedFilename = 'ordered_export_2_items_ordered.txt';
+      (exportUtils.generateOrderedExportFilename as any).mockReturnValue(
+        expectedFilename
+      );
+
+      const result = await exportService.exportOrdered(
+        mockOrderedRequest,
+        mockItems
+      );
 
       expect(exportUtils.generateOrderedExportFilename).toHaveBeenCalledWith(
         expect.any(Object),
@@ -139,7 +185,10 @@ describe('ExportApiService', () => {
 
       const result = await exportService.exportOrdered(zipRequest, mockItems);
 
-      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith(['psa-2', 'psa-1']);
+      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith([
+        'psa-2',
+        'psa-1',
+      ]);
       expect(result.blob).toBe(mockBlob);
       expect(result.metadata.format).toBe('zip');
     });
@@ -165,9 +214,9 @@ describe('ExportApiService', () => {
     it('should throw error when validation fails', async () => {
       (exportUtils.prepareItemsForOrderedExport as any).mockReturnValue({
         orderedItems: [],
-        validation: { 
-          exportValid: false, 
-          exportError: 'Invalid item order' 
+        validation: {
+          exportValid: false,
+          exportError: 'Invalid item order',
         },
         orderingApplied: false,
       });
@@ -178,9 +227,9 @@ describe('ExportApiService', () => {
     });
 
     it('should handle unsupported export format', async () => {
-      const invalidRequest = { 
-        ...mockOrderedRequest, 
-        format: 'unsupported' as any 
+      const invalidRequest = {
+        ...mockOrderedRequest,
+        format: 'unsupported' as any,
       };
 
       await expect(
@@ -190,9 +239,14 @@ describe('ExportApiService', () => {
 
     it('should include metadata about ordering', async () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
-      const result = await exportService.exportOrdered(mockOrderedRequest, mockItems);
+      const result = await exportService.exportOrdered(
+        mockOrderedRequest,
+        mockItems
+      );
 
       expect(result.metadata).toMatchObject({
         orderingApplied: true,
@@ -208,11 +262,16 @@ describe('ExportApiService', () => {
         ...mockOrderedRequest,
         itemOrder: undefined,
       };
-      
-      const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
 
-      const result = await exportService.exportOrdered(requestWithoutOrder, mockItems);
+      const mockBlob = new Blob(['test'], { type: 'text/plain' });
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
+
+      const result = await exportService.exportOrdered(
+        requestWithoutOrder,
+        mockItems
+      );
 
       expect(result.metadata.itemOrder).toBeUndefined();
     });
@@ -227,7 +286,9 @@ describe('ExportApiService', () => {
 
     it('should perform regular export without ordering', async () => {
       const mockBlob = new Blob(['test content'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
       const result = await exportService.export(mockExportRequest);
 
@@ -236,7 +297,10 @@ describe('ExportApiService', () => {
         'facebook-text',
         ['psa-1', 'psa-2']
       );
-      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith(['psa-1', 'psa-2']);
+      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith([
+        'psa-1',
+        'psa-2',
+      ]);
       expect(result.blob).toBe(mockBlob);
     });
 
@@ -247,50 +311,61 @@ describe('ExportApiService', () => {
 
       const result = await exportService.export(zipRequest);
 
-      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith(['psa-1', 'psa-2']);
+      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith([
+        'psa-1',
+        'psa-2',
+      ]);
       expect(result.blob).toBe(mockBlob);
     });
 
     it('should handle different item types for ZIP export', async () => {
-      const rawCardRequest = { 
-        ...mockExportRequest, 
+      const rawCardRequest = {
+        ...mockExportRequest,
         format: 'zip' as const,
-        itemType: 'raw-card' as const 
+        itemType: 'raw-card' as const,
       };
       const mockBlob = new Blob(['zip content'], { type: 'application/zip' });
       (exportApi.zipRawCardImages as any).mockResolvedValue(mockBlob);
 
       await exportService.export(rawCardRequest);
 
-      expect(exportApi.zipRawCardImages).toHaveBeenCalledWith(['psa-1', 'psa-2']);
+      expect(exportApi.zipRawCardImages).toHaveBeenCalledWith([
+        'psa-1',
+        'psa-2',
+      ]);
     });
 
     it('should handle sealed product ZIP export', async () => {
-      const sealedRequest = { 
-        ...mockExportRequest, 
+      const sealedRequest = {
+        ...mockExportRequest,
         format: 'zip' as const,
-        itemType: 'sealed-product' as const 
+        itemType: 'sealed-product' as const,
       };
       const mockBlob = new Blob(['zip content'], { type: 'application/zip' });
       (exportApi.zipSealedProductImages as any).mockResolvedValue(mockBlob);
 
       await exportService.export(sealedRequest);
 
-      expect(exportApi.zipSealedProductImages).toHaveBeenCalledWith(['psa-1', 'psa-2']);
+      expect(exportApi.zipSealedProductImages).toHaveBeenCalledWith([
+        'psa-1',
+        'psa-2',
+      ]);
     });
 
     it('should handle auction ZIP export', async () => {
-      const auctionRequest = { 
-        ...mockExportRequest, 
+      const auctionRequest = {
+        ...mockExportRequest,
         format: 'zip' as const,
-        itemType: 'auction' as const 
+        itemType: 'auction' as const,
       };
       const mockBlob = new Blob(['zip content'], { type: 'application/zip' });
       (exportApi.zipAuctionImages as any).mockResolvedValue(mockBlob);
 
       await exportService.export(auctionRequest);
 
-      expect(exportApi.zipAuctionImages).toHaveBeenCalledWith(['psa-1', 'psa-2'][0]);
+      expect(exportApi.zipAuctionImages).toHaveBeenCalledWith(
+        ['psa-1', 'psa-2'][0]
+      );
     });
   });
 
@@ -302,7 +377,10 @@ describe('ExportApiService', () => {
       const result = await exportService.zipPsaCardImages(['psa-1', 'psa-2']);
 
       expect(result).toBe(mockBlob);
-      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith(['psa-1', 'psa-2']);
+      expect(exportApi.zipPsaCardImages).toHaveBeenCalledWith([
+        'psa-1',
+        'psa-2',
+      ]);
     });
 
     it('should support legacy zipRawCardImages method', async () => {
@@ -322,22 +400,30 @@ describe('ExportApiService', () => {
       const result = await exportService.zipSealedProductImages(['sealed-1']);
 
       expect(result).toBe(mockBlob);
-      expect(exportApi.zipSealedProductImages).toHaveBeenCalledWith(['sealed-1']);
+      expect(exportApi.zipSealedProductImages).toHaveBeenCalledWith([
+        'sealed-1',
+      ]);
     });
 
     it('should support legacy getCollectionFacebookTextFile method', async () => {
       const mockBlob = new Blob(['text content'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
-      const result = await exportService.getCollectionFacebookTextFile(['psa-1']);
+      const result = await exportService.getCollectionFacebookTextFile([
+        'psa-1',
+      ]);
 
       expect(result).toBe(mockBlob);
-      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith(['psa-1']);
+      expect(exportApi.getCollectionFacebookTextFile).toHaveBeenCalledWith([
+        'psa-1',
+      ]);
     });
 
     it('should support downloadBlob method', () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      
+
       exportService.downloadBlob(mockBlob, 'test.txt');
 
       expect(exportApi.downloadBlob).toHaveBeenCalledWith(mockBlob, 'test.txt');
@@ -347,8 +433,10 @@ describe('ExportApiService', () => {
   describe('error handling', () => {
     it('should handle API errors gracefully', async () => {
       const mockError = new Error('API Error');
-      (exportApi.getCollectionFacebookTextFile as any).mockRejectedValue(mockError);
-      
+      (exportApi.getCollectionFacebookTextFile as any).mockRejectedValue(
+        mockError
+      );
+
       const request: ExportRequest = {
         itemType: 'psa-card',
         format: 'facebook-text',
@@ -361,9 +449,9 @@ describe('ExportApiService', () => {
     it('should handle validation errors in ordered export', async () => {
       (exportUtils.prepareItemsForOrderedExport as any).mockReturnValue({
         orderedItems: [],
-        validation: { 
-          exportValid: false, 
-          exportError: 'Validation failed' 
+        validation: {
+          exportValid: false,
+          exportError: 'Validation failed',
         },
         orderingApplied: false,
       });
@@ -408,7 +496,9 @@ describe('ExportApiService', () => {
   describe('filename generation', () => {
     it('should use custom filename when provided', async () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
       const request: ExportRequest = {
         itemType: 'psa-card',
@@ -426,9 +516,13 @@ describe('ExportApiService', () => {
 
     it('should generate default filename when not provided', async () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
-      
-      (exportUtils.generateExportFilename as any).mockReturnValue('generated_export_1_items.txt');
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
+
+      (exportUtils.generateExportFilename as any).mockReturnValue(
+        'generated_export_1_items.txt'
+      );
 
       const request: ExportRequest = {
         itemType: 'psa-card',
@@ -446,7 +540,9 @@ describe('ExportApiService', () => {
   describe('metadata handling', () => {
     it('should include proper metadata in export results', async () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
 
       const request: ExportRequest = {
         itemType: 'psa-card',
@@ -470,8 +566,10 @@ describe('ExportApiService', () => {
 
     it('should include ordering metadata in ordered exports', async () => {
       const mockBlob = new Blob(['test'], { type: 'text/plain' });
-      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(mockBlob);
-      
+      (exportApi.getCollectionFacebookTextFile as any).mockResolvedValue(
+        mockBlob
+      );
+
       (exportUtils.prepareItemsForOrderedExport as any).mockReturnValue({
         orderedItems: mockItems,
         validation: { exportValid: true },

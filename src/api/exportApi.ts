@@ -17,7 +17,7 @@ import {
   createResourceOperations,
   EXPORT_CONFIG,
 } from './genericApiOperations';
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -158,8 +158,11 @@ export const batchExportOperation = exportOperations.batchOperation;
 export const generateAuctionFacebookPost = async (
   auctionId: string
 ): Promise<string> => {
-  // First, get the auction data
-  const auction = (await unifiedApiClient.get(`/auctions/${auctionId}`)) as any;
+  // First, get the auction data using ID-validated method
+  const auction = (await unifiedApiClient.getById(
+    '/auctions',
+    auctionId
+  )) as any;
   const auctionData = (auction.data || auction) as any;
 
   // Prepare the request body for the existing backend endpoint
@@ -202,8 +205,11 @@ export const getAuctionFacebookTextFile = async (
  * @returns Promise<Blob> - Zip file blob for download
  */
 export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
-  // Get auction data to extract image URLs
-  const auction = (await unifiedApiClient.get(`/auctions/${auctionId}`)) as any;
+  // Get auction data to extract image URLs using ID-validated method
+  const auction = (await unifiedApiClient.getById(
+    '/auctions',
+    auctionId
+  )) as any;
 
   // Extract all image URLs from auction items
   const imageUrls: string[] = [];

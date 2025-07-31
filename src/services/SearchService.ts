@@ -677,10 +677,6 @@ export function createSearchService(
 export function createHierarchicalSearchService(
   config: HierarchicalSearchConfig
 ): SearchService {
-  console.log(
-    '[SEARCH SERVICE] Creating service with legacy factory (using SearchService):',
-    config
-  );
   return new SearchService(config);
 }
 

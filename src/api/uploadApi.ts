@@ -20,6 +20,11 @@ import unifiedApiClient from './unifiedApiClient';
  * @returns Promise<string> - URL of uploaded image
  */
 export const uploadSingleImage = async (image: File): Promise<string> => {
+  // Validate that image file is provided
+  if (!image) {
+    throw new Error('No image file provided for upload');
+  }
+
   const formData = new FormData();
   formData.append('image', image);
 
@@ -46,11 +51,36 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
 export const uploadMultipleImages = async (
   images: File[]
 ): Promise<string[]> => {
+  console.log('[UPLOAD API] uploadMultipleImages called with:', {
+    images: images,
+    imageCount: images ? images.length : 0,
+    imageTypes: images ? images.map(img => img.type) : [],
+    imageSizes: images ? images.map(img => img.size) : []
+  });
+  
+  // Add stack trace to see where this is being called from
+  console.log('[UPLOAD API] Call stack:', new Error().stack);
+
+  // Return empty array immediately if no images to upload
+  if (!images || images.length === 0) {
+    console.log('[UPLOAD API] No images provided for upload, returning empty array');
+    return [];
+  }
+
+  console.log('[UPLOAD API] Creating FormData with images...');
   const formData = new FormData();
-  images.forEach((image) => {
+  images.forEach((image, index) => {
+    console.log(`[UPLOAD API] Appending image ${index}:`, image.name, image.size, 'bytes');
     formData.append(`images`, image);
   });
 
+  // Debug FormData contents
+  console.log('[UPLOAD API] FormData entries:');
+  for (const [key, value] of formData.entries()) {
+    console.log(`  ${key}:`, value);
+  }
+
+  console.log('[UPLOAD API] Making API call to /upload/images...');
   const response = await unifiedApiClient.apiCreate<{
     success: boolean;
     data: any[];

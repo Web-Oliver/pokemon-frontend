@@ -13,7 +13,7 @@
  * Following Context7 + CLAUDE.md principles for efficient bulk data processing
  */
 
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import { IPsaGradedCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 

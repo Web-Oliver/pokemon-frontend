@@ -313,67 +313,99 @@ const Dashboard: React.FC = () => {
             <div className="flex justify-center py-8">
               <LoadingSpinner size="md" text="Loading recent activities..." />
             </div>
-          ) : recentActivities.length > 0 ? (
+          ) : recentActivities &&
+            Array.isArray(recentActivities) &&
+            recentActivities.length > 0 ? (
             <div className="space-y-6">
-              {recentActivities.map((activity) => {
-                const IconComponent = getActivityIcon(activity.type);
-                const colors = getColorClasses(
-                  activity.metadata?.color || 'indigo'
-                );
+              {recentActivities
+                .filter(
+                  (activity) =>
+                    activity &&
+                    typeof activity === 'object' &&
+                    ('_id' in activity || 'id' in activity) &&
+                    activity.title &&
+                    activity.description
+                )
+                .map((activity) => {
+                  const IconComponent = getActivityIcon(
+                    activity.type || 'system'
+                  );
+                  const colors = getColorClasses(
+                    activity.metadata?.color || 'indigo'
+                  );
 
-                return (
-                  <div
-                    key={activity._id}
-                    className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-zinc-800/50 hover:to-zinc-700/50 rounded-2xl p-4 transition-all duration-300"
-                  >
-                    <div className="flex-shrink-0">
-                      <div
-                        className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                      >
-                        <IconComponent className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors duration-300">
-                          {activity.title}
-                        </p>
-                        <span className="text-xs text-zinc-400 font-medium">
-                          {getRelativeTime(activity.timestamp)}
-                        </span>
-                      </div>
-                      <p className="text-sm text-zinc-400 mt-1">
-                        {activity.description}
-                      </p>
-                      <div className="flex items-center mt-2 space-x-3">
-                        {activity.metadata?.badges?.map((badge, index) => (
-                          <span
-                            key={index}
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}
-                          >
-                            {badge}
-                          </span>
-                        ))}
-                        {(activity.metadata?.newPrice ||
-                          activity.metadata?.salePrice ||
-                          activity.metadata?.estimatedValue) && (
-                          <span className="text-xs text-zinc-400">
-                            {activity.metadata.newPrice &&
-                              displayPrice(activity.metadata.newPrice)}
-                            {activity.metadata.salePrice &&
-                              displayPrice(activity.metadata.salePrice)}
-                            {activity.metadata.estimatedValue &&
-                              `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                  // Generate safe key with fallback
+                  const activityKey =
+                    activity._id ||
+                    activity.id ||
+                    `activity-${Date.now()}-${Math.random()}`;
+
+                  return (
                     <div
-                      className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                    ></div>
-                  </div>
-                );
-              })}
+                      key={activityKey}
+                      className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-zinc-800/50 hover:to-zinc-700/50 rounded-2xl p-4 transition-all duration-300"
+                    >
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                        >
+                          <IconComponent className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors duration-300">
+                            {activity.title}
+                          </p>
+                          <span className="text-xs text-zinc-400 font-medium">
+                            {activity.timestamp
+                              ? getRelativeTime(activity.timestamp)
+                              : 'Unknown time'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-zinc-400 mt-1">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center mt-2 space-x-3">
+                          {Array.isArray(activity.metadata?.badges) &&
+                            activity.metadata.badges
+                              .filter(
+                                (badge) => badge && typeof badge === 'string'
+                              )
+                              .map((badge, index) => (
+                                <span
+                                  key={`badge-${activityKey}-${index}`}
+                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}
+                                >
+                                  {badge}
+                                </span>
+                              ))}
+                          {(activity.metadata?.newPrice ||
+                            activity.metadata?.salePrice ||
+                            activity.metadata?.estimatedValue) && (
+                            <span className="text-xs text-zinc-400">
+                              {activity.metadata?.newPrice &&
+                                typeof activity.metadata.newPrice ===
+                                  'number' &&
+                                displayPrice(activity.metadata.newPrice)}
+                              {activity.metadata?.salePrice &&
+                                typeof activity.metadata.salePrice ===
+                                  'number' &&
+                                displayPrice(activity.metadata.salePrice)}
+                              {activity.metadata?.estimatedValue &&
+                                typeof activity.metadata.estimatedValue ===
+                                  'number' &&
+                                `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                      ></div>
+                    </div>
+                  );
+                })}
             </div>
           ) : (
             <div className="text-center py-16">

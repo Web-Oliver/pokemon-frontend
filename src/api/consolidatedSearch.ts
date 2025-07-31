@@ -5,7 +5,7 @@
  * Preserves EXACT functionality while eliminating duplicate code patterns
  */
 
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import { ICard, ISet } from '../domain/models/card';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 

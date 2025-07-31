@@ -10,21 +10,21 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { 
-  ArrowUpDown, 
-  ArrowUp, 
+import {
+  ArrowUpDown,
+  ArrowUp,
   ArrowDown,
   Package,
   Star,
   Archive,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react';
 import { OrderableItemCard } from './OrderableItemCard';
 import { CollectionItem, ItemCategory } from '../../domain/models/ordering';
-import { 
-  getItemCategory, 
+import {
+  getItemCategory,
   groupItemsByCategory,
-  applyItemOrder 
+  applyItemOrder,
 } from '../../utils/orderingUtils';
 
 export interface CategoryOrderingListProps {
@@ -87,8 +87,9 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
   // Group items by category and apply ordering
   const categorizedItems = useMemo(() => {
     const grouped = groupItemsByCategory(items);
-    const orderedItems = itemOrder.length > 0 ? applyItemOrder(items, itemOrder) : items;
-    
+    const orderedItems =
+      itemOrder.length > 0 ? applyItemOrder(items, itemOrder) : items;
+
     // Re-group the ordered items to maintain order within categories
     const orderedGrouped: Record<ItemCategory, CollectionItem[]> = {
       PSA_CARD: [],
@@ -96,7 +97,7 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
       SEALED_PRODUCT: [],
     };
 
-    orderedItems.forEach(item => {
+    orderedItems.forEach((item) => {
       const category = getItemCategory(item);
       orderedGrouped[category].push(item);
     });
@@ -105,156 +106,187 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
   }, [items, itemOrder]);
 
   // Category collapse state
-  const [collapsedCategories, setCollapsedCategories] = React.useState<Set<ItemCategory>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = React.useState<
+    Set<ItemCategory>
+  >(new Set());
 
   // Toggle category collapse
-  const toggleCategoryCollapse = useCallback((category: ItemCategory) => {
-    if (!enableCategoryCollapse) return;
-    
-    setCollapsedCategories(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
+  const toggleCategoryCollapse = useCallback(
+    (category: ItemCategory) => {
+      if (!enableCategoryCollapse) {
+        return;
       }
-      return newSet;
-    });
-  }, [enableCategoryCollapse]);
+
+      setCollapsedCategories((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(category)) {
+          newSet.delete(category);
+        } else {
+          newSet.add(category);
+        }
+        return newSet;
+      });
+    },
+    [enableCategoryCollapse]
+  );
 
   // Get item index in global order
-  const getItemIndex = useCallback((itemId: string): number => {
-    if (itemOrder.length === 0) {
-      return items.findIndex(item => item.id === itemId);
-    }
-    return itemOrder.indexOf(itemId);
-  }, [itemOrder, items]);
+  const getItemIndex = useCallback(
+    (itemId: string): number => {
+      if (itemOrder.length === 0) {
+        return items.findIndex((item) => item.id === itemId);
+      }
+      return itemOrder.indexOf(itemId);
+    },
+    [itemOrder, items]
+  );
 
   // Category sort handlers
-  const handleSortCategory = useCallback((category: ItemCategory, ascending: boolean) => {
-    onSortCategoryByPrice(category, ascending);
-  }, [onSortCategoryByPrice]);
+  const handleSortCategory = useCallback(
+    (category: ItemCategory, ascending: boolean) => {
+      onSortCategoryByPrice(category, ascending);
+    },
+    [onSortCategoryByPrice]
+  );
 
   // Render category header
-  const renderCategoryHeader = useCallback((
-    category: ItemCategory,
-    categoryItems: CollectionItem[]
-  ) => {
-    const config = CATEGORY_CONFIGS[category];
-    const Icon = config.icon;
-    const isCollapsed = collapsedCategories.has(category);
-    const itemCount = categoryItems.length;
+  const renderCategoryHeader = useCallback(
+    (category: ItemCategory, categoryItems: CollectionItem[]) => {
+      const config = CATEGORY_CONFIGS[category];
+      const Icon = config.icon;
+      const isCollapsed = collapsedCategories.has(category);
+      const itemCount = categoryItems.length;
 
-    if (itemCount === 0) return null;
+      if (itemCount === 0) {
+        return null;
+      }
 
-    return (
-      <div className="flex items-center justify-between p-4 bg-zinc-900/50 border-b border-zinc-700 rounded-t-lg">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => toggleCategoryCollapse(category)}
-            className="flex items-center space-x-2 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
-            disabled={!enableCategoryCollapse}
-          >
-            <div className={`p-2 rounded-lg ${
-              config.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/50' :
-              config.color === 'green' ? 'bg-green-100 dark:bg-green-900/50' :
-              'bg-purple-100 dark:bg-purple-900/50'
-            }`}>
-              <Icon className={`w-5 h-5 ${
-                config.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
-                config.color === 'green' ? 'text-green-600 dark:text-green-400' :
-                'text-purple-600 dark:text-purple-400'
-              }`} />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {config.title}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-zinc-400">
-                {itemCount} {itemCount === 1 ? 'item' : 'items'} • {config.description}
-              </p>
-            </div>
-            {enableCategoryCollapse && (
-              <ArrowUpDown className={`w-4 h-4 text-gray-400 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
-            )}
-          </button>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* Sort by price controls */}
-          <div className="flex items-center space-x-1">
+      return (
+        <div className="flex items-center justify-between p-4 bg-zinc-900/50 border-b border-zinc-700 rounded-t-lg">
+          <div className="flex items-center space-x-3">
             <button
-              onClick={() => handleSortCategory(category, false)}
-              className="p-2 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800 rounded-lg transition-colors"
-              title="Sort by highest price first"
+              onClick={() => toggleCategoryCollapse(category)}
+              className="flex items-center space-x-2 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
+              disabled={!enableCategoryCollapse}
             >
-              <ArrowDown className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleSortCategory(category, true)}
-              className="p-2 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800 rounded-lg transition-colors"
-              title="Sort by lowest price first"
-            >
-              <ArrowUp className="w-4 h-4" />
+              <div
+                className={`p-2 rounded-lg ${
+                  config.color === 'blue'
+                    ? 'bg-blue-100 dark:bg-blue-900/50'
+                    : config.color === 'green'
+                      ? 'bg-green-100 dark:bg-green-900/50'
+                      : 'bg-purple-100 dark:bg-purple-900/50'
+                }`}
+              >
+                <Icon
+                  className={`w-5 h-5 ${
+                    config.color === 'blue'
+                      ? 'text-blue-600 dark:text-blue-400'
+                      : config.color === 'green'
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-purple-600 dark:text-purple-400'
+                  }`}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {config.title}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">
+                  {itemCount} {itemCount === 1 ? 'item' : 'items'} •{' '}
+                  {config.description}
+                </p>
+              </div>
+              {enableCategoryCollapse && (
+                <ArrowUpDown
+                  className={`w-4 h-4 text-gray-400 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+                />
+              )}
             </button>
           </div>
 
-          {/* Category stats */}
-          <div className="text-sm text-zinc-400 bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700">
-            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+          <div className="flex items-center space-x-2">
+            {/* Sort by price controls */}
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => handleSortCategory(category, false)}
+                className="p-2 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800 rounded-lg transition-colors"
+                title="Sort by highest price first"
+              >
+                <ArrowDown className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleSortCategory(category, true)}
+                className="p-2 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800 rounded-lg transition-colors"
+                title="Sort by lowest price first"
+              >
+                <ArrowUp className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Category stats */}
+            <div className="text-sm text-zinc-400 bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }, [collapsedCategories, enableCategoryCollapse, toggleCategoryCollapse, handleSortCategory]);
+      );
+    },
+    [
+      collapsedCategories,
+      enableCategoryCollapse,
+      toggleCategoryCollapse,
+      handleSortCategory,
+    ]
+  );
 
   // Render category items
-  const renderCategoryItems = useCallback((
-    category: ItemCategory,
-    categoryItems: CollectionItem[]
-  ) => {
-    const isCollapsed = collapsedCategories.has(category);
-    
-    if (isCollapsed || categoryItems.length === 0) {
-      return null;
-    }
+  const renderCategoryItems = useCallback(
+    (category: ItemCategory, categoryItems: CollectionItem[]) => {
+      const isCollapsed = collapsedCategories.has(category);
 
-    return (
-      <div className="p-4 space-y-4">
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {categoryItems.map((item) => {
-            const itemIndex = getItemIndex(item.id);
-            const isSelected = selectedItemIds.includes(item.id);
+      if (isCollapsed || categoryItems.length === 0) {
+        return null;
+      }
 
-            return (
-              <OrderableItemCard
-                key={item.id}
-                item={item}
-                index={itemIndex}
-                isSelected={isSelected}
-                onMoveUp={onMoveItemUp}
-                onMoveDown={onMoveItemDown}
-                onToggleSelection={onToggleItemSelection}
-                showMoveButtons={true}
-                showDragHandle={showDragHandles}
-                showSelection={showSelection}
-                className="w-full"
-              />
-            );
-          })}
+      return (
+        <div className="p-4 space-y-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {categoryItems.map((item) => {
+              const itemIndex = getItemIndex(item.id);
+              const isSelected = selectedItemIds.includes(item.id);
+
+              return (
+                <OrderableItemCard
+                  key={item.id}
+                  item={item}
+                  index={itemIndex}
+                  isSelected={isSelected}
+                  onMoveUp={onMoveItemUp}
+                  onMoveDown={onMoveItemDown}
+                  onToggleSelection={onToggleItemSelection}
+                  showMoveButtons={true}
+                  showDragHandle={showDragHandles}
+                  showSelection={showSelection}
+                  className="w-full"
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
-    );
-  }, [
-    collapsedCategories,
-    getItemIndex,
-    selectedItemIds,
-    onMoveItemUp,
-    onMoveItemDown,
-    onToggleItemSelection,
-    showDragHandles,
-    showSelection,
-  ]);
+      );
+    },
+    [
+      collapsedCategories,
+      getItemIndex,
+      selectedItemIds,
+      onMoveItemUp,
+      onMoveItemDown,
+      onToggleItemSelection,
+      showDragHandles,
+      showSelection,
+    ]
+  );
 
   // Get categories with items (in display order)
   const categoriesWithItems = useMemo(() => {
@@ -296,16 +328,16 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
       <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-medium text-blue-100">
-              Ordering Summary
-            </h4>
+            <h4 className="font-medium text-blue-100">Ordering Summary</h4>
             <p className="text-sm text-blue-300">
-              {items.length} items across {categoriesWithItems.length} categories
+              {items.length} items across {categoriesWithItems.length}{' '}
+              categories
             </p>
           </div>
           <div className="text-right">
             <p className="text-sm text-blue-600 dark:text-blue-400">
-              {selectedItemIds.length > 0 && `${selectedItemIds.length} selected • `}
+              {selectedItemIds.length > 0 &&
+                `${selectedItemIds.length} selected • `}
               Use the arrow buttons to reorder items within each category
             </p>
           </div>

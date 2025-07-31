@@ -41,6 +41,7 @@ import { PageLayout } from '../components/layouts/PageLayout';
 import { IAuctionItem } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
+import { transformRequestData } from '../utils/responseTransformer';
 import { useAuction } from '../hooks/useAuction';
 import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
 import { getCollectionApiService } from '../services/ServiceRegistry';
@@ -659,22 +660,32 @@ const CreateAuction: React.FC = () => {
       log('Selected items:', selectedItemIds);
 
       // Prepare selected items for auction (preserving category order)
+      // Transform all itemIds to ensure ObjectId objects are converted to strings
       const auctionItems: IAuctionItem[] = [
-        ...selectedItemsByType.PsaGradedCard.map((item) => ({
-          itemId: item.id,
-          itemCategory: item.itemType,
-          sold: false,
-        })),
-        ...selectedItemsByType.RawCard.map((item) => ({
-          itemId: item.id,
-          itemCategory: item.itemType,
-          sold: false,
-        })),
-        ...selectedItemsByType.SealedProduct.map((item) => ({
-          itemId: item.id,
-          itemCategory: item.itemType,
-          sold: false,
-        })),
+        ...selectedItemsByType.PsaGradedCard.map((item) => {
+          const transformedItem = transformRequestData({ itemId: item.id });
+          return {
+            itemId: transformedItem.itemId,
+            itemCategory: item.itemType,
+            sold: false,
+          };
+        }),
+        ...selectedItemsByType.RawCard.map((item) => {
+          const transformedItem = transformRequestData({ itemId: item.id });
+          return {
+            itemId: transformedItem.itemId,
+            itemCategory: item.itemType,
+            sold: false,
+          };
+        }),
+        ...selectedItemsByType.SealedProduct.map((item) => {
+          const transformedItem = transformRequestData({ itemId: item.id });
+          return {
+            itemId: transformedItem.itemId,
+            itemCategory: item.itemType,
+            sold: false,
+          };
+        }),
       ];
 
       // Prepare auction data

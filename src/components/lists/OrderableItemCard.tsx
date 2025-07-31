@@ -14,7 +14,11 @@ import { ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import { ImageProductView } from '../common/ImageProductView';
 import { formatCardNameForDisplay } from '../../utils/formatting';
 import { CollectionItem } from '../../domain/models/ordering';
-import { getItemCategory, getItemDisplayName, getSortablePrice } from '../../utils/orderingUtils';
+import {
+  getItemCategory,
+  getItemDisplayName,
+  getSortablePrice,
+} from '../../utils/orderingUtils';
 
 export interface OrderableItemCardProps {
   item: CollectionItem;
@@ -78,11 +82,12 @@ const OrderableItemCardComponent: React.FC<OrderableItemCardProps> = ({
   // Get item-specific display properties
   const itemDisplayProps = useMemo(() => {
     const category = getItemCategory(item);
-    
+
     return {
       grade: category === 'PSA_CARD' ? (item as any).grade : undefined,
       condition: category === 'RAW_CARD' ? (item as any).condition : undefined,
-      category: category === 'SEALED_PRODUCT' ? (item as any).category : undefined,
+      category:
+        category === 'SEALED_PRODUCT' ? (item as any).category : undefined,
     };
   }, [item]);
 
@@ -104,13 +109,13 @@ const OrderableItemCardComponent: React.FC<OrderableItemCardProps> = ({
   // Drag state styling
   const cardClassName = useMemo(() => {
     const baseClasses = `relative transition-all duration-200 ${className}`;
-    const draggingClasses = isDragging 
-      ? 'opacity-50 scale-95 shadow-lg ring-2 ring-blue-500' 
+    const draggingClasses = isDragging
+      ? 'opacity-50 scale-95 shadow-lg ring-2 ring-blue-500'
       : '';
-    const selectedClasses = isSelected 
-      ? 'ring-2 ring-blue-500 bg-blue-900/20' 
+    const selectedClasses = isSelected
+      ? 'ring-2 ring-blue-500 bg-blue-900/20'
       : '';
-    
+
     return `${baseClasses} ${draggingClasses} ${selectedClasses}`.trim();
   }, [className, isDragging, isSelected]);
 
@@ -182,9 +187,7 @@ const OrderableItemCardComponent: React.FC<OrderableItemCardProps> = ({
         condition={itemDisplayProps.condition}
         category={itemDisplayProps.category}
         sold={item.sold}
-        saleDate={
-          item.sold ? (item as any).saleDetails?.dateSold : undefined
-        }
+        saleDate={item.sold ? (item as any).saleDetails?.dateSold : undefined}
         variant="card"
         size="md"
         aspectRatio="card"

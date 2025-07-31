@@ -13,6 +13,33 @@ import React, { forwardRef } from 'react';
 import { Search, X, ChevronDown, Check } from 'lucide-react';
 import { useEnhancedAutocomplete } from '../../hooks/useEnhancedAutocomplete';
 
+/**
+ * Generate safe React key to prevent [object Object] issues
+ * Following CLAUDE.md DRY principles - reusable utility function
+ */
+const generateSafeReactKey = (
+  id: any,
+  fallbackIndex: number,
+  prefix: string = 'item'
+): string => {
+  if (id === null || id === undefined) {
+    return `${prefix}-${fallbackIndex}`;
+  }
+  if (typeof id === 'string' && id.trim() !== '') {
+    return id;
+  }
+  if (typeof id === 'number') {
+    return String(id);
+  }
+  if (typeof id === 'object' && id._id) {
+    return String(id._id);
+  }
+  if (typeof id === 'object' && id.id) {
+    return String(id.id);
+  }
+  return `${prefix}-${fallbackIndex}`;
+};
+
 export interface EnhancedAutocompleteProps {
   config: any;
   fields: any[];
@@ -179,55 +206,66 @@ export const EnhancedAutocomplete = forwardRef<
                   )}
 
                   {/* Suggestions List */}
-                  {state.suggestions.map((suggestion, index) => (
-                    <div
-                      key={suggestion.id || index}
-                      className={suggestionClasses}
-                      onClick={() =>
-                        callbacks.onSuggestionSelect(suggestion, field.id)
-                      }
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="font-medium text-zinc-100">
-                            {suggestion.displayName}
+                  {state.suggestions.map((suggestion, index) => {
+                    // Generate safe React key using reusable utility
+                    const safeKey = generateSafeReactKey(
+                      suggestion.id,
+                      index,
+                      'suggestion'
+                    );
+
+                    return (
+                      <div
+                        key={safeKey}
+                        className={suggestionClasses}
+                        onClick={() =>
+                          callbacks.onSuggestionSelect(suggestion, field.id)
+                        }
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="font-medium text-zinc-100">
+                              {suggestion.displayName}
+                            </div>
+
+                            {/* Metadata */}
+                            {showMetadata && (
+                              <div className="flex items-center space-x-4 mt-1 text-sm text-zinc-400">
+                                {suggestion.metadata.setName && (
+                                  <span className="flex items-center space-x-1">
+                                    <span>Set:</span>
+                                    <span className="font-medium">
+                                      {suggestion.metadata.setName}
+                                    </span>
+                                  </span>
+                                )}
+                                {suggestion.metadata.category && (
+                                  <span className="flex items-center space-x-1">
+                                    <span>Category:</span>
+                                    <span className="font-medium">
+                                      {suggestion.metadata.category}
+                                    </span>
+                                  </span>
+                                )}
+                                {suggestion.metadata.count !== undefined && (
+                                  <span className="flex items-center space-x-1">
+                                    <span>
+                                      {suggestion.metadata.count} items
+                                    </span>
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
 
-                          {/* Metadata */}
-                          {showMetadata && (
-                            <div className="flex items-center space-x-4 mt-1 text-sm text-zinc-400">
-                              {suggestion.metadata.setName && (
-                                <span className="flex items-center space-x-1">
-                                  <span>Set:</span>
-                                  <span className="font-medium">
-                                    {suggestion.metadata.setName}
-                                  </span>
-                                </span>
-                              )}
-                              {suggestion.metadata.category && (
-                                <span className="flex items-center space-x-1">
-                                  <span>Category:</span>
-                                  <span className="font-medium">
-                                    {suggestion.metadata.category}
-                                  </span>
-                                </span>
-                              )}
-                              {suggestion.metadata.count !== undefined && (
-                                <span className="flex items-center space-x-1">
-                                  <span>{suggestion.metadata.count} items</span>
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Selection Indicator */}
-                        <div className="ml-2 text-cyan-400">
-                          <Check size={16} />
+                          {/* Selection Indicator */}
+                          <div className="ml-2 text-cyan-400">
+                            <Check size={16} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Keyboard Shortcuts */}

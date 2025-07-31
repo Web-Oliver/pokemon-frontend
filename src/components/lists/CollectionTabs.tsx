@@ -74,275 +74,283 @@ const tabs: TabConfig[] = [
   },
 ];
 
-export const CollectionTabs: React.FC<CollectionTabsProps> = memo(({
-  activeTab,
-  onTabChange,
-  psaCards,
-  rawCards,
-  sealedProducts,
-  soldItems,
-  loading,
-  error,
-  onAddNewItem,
-  onViewItemDetail,
-  onMarkAsSold,
-}) => {
-  // Get data for the current tab
-  const getTabData = () => {
-    switch (activeTab) {
-      case 'psa-graded':
-        return {
-          data: psaCards,
-          emptyMessage: 'No PSA graded cards in your collection yet.',
-        };
-      case 'raw-cards':
-        return {
-          data: rawCards,
-          emptyMessage: 'No raw cards in your collection yet.',
-        };
-      case 'sealed-products':
-        return {
-          data: sealedProducts,
-          emptyMessage: 'No sealed products in your collection yet.',
-        };
-      case 'sold-items':
-        return { data: soldItems, emptyMessage: 'No sold items yet.' };
-      default:
-        return { data: [], emptyMessage: 'No items found.' };
-    }
-  };
+export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
+  ({
+    activeTab,
+    onTabChange,
+    psaCards,
+    rawCards,
+    sealedProducts,
+    soldItems,
+    loading,
+    error,
+    onAddNewItem,
+    onViewItemDetail,
+    onMarkAsSold,
+  }) => {
+    // Get data for the current tab
+    const getTabData = () => {
+      switch (activeTab) {
+        case 'psa-graded':
+          return {
+            data: psaCards,
+            emptyMessage: 'No PSA graded cards in your collection yet.',
+          };
+        case 'raw-cards':
+          return {
+            data: rawCards,
+            emptyMessage: 'No raw cards in your collection yet.',
+          };
+        case 'sealed-products':
+          return {
+            data: sealedProducts,
+            emptyMessage: 'No sealed products in your collection yet.',
+          };
+        case 'sold-items':
+          return { data: soldItems, emptyMessage: 'No sold items yet.' };
+        default:
+          return { data: [], emptyMessage: 'No items found.' };
+      }
+    };
 
-  // Determine item type based on tab and item properties
-  const getItemType = (
-    item: any,
-    activeTab: string
-  ): 'psa' | 'raw' | 'sealed' => {
-    if (activeTab === 'psa-graded') {
-      return 'psa';
-    }
-    if (activeTab === 'raw-cards') {
-      return 'raw';
-    }
-    if (activeTab === 'sealed-products') {
-      return 'sealed';
-    }
-
-    // For sold items, detect type based on item properties
-    if (activeTab === 'sold-items') {
-      if ('grade' in item || item.grade !== undefined) {
+    // Determine item type based on tab and item properties
+    const getItemType = (
+      item: any,
+      activeTab: string
+    ): 'psa' | 'raw' | 'sealed' => {
+      if (activeTab === 'psa-graded') {
         return 'psa';
       }
-      if ('condition' in item || item.condition !== undefined) {
+      if (activeTab === 'raw-cards') {
         return 'raw';
       }
-      if ('category' in item || item.category !== undefined) {
+      if (activeTab === 'sealed-products') {
         return 'sealed';
       }
 
-      // Fallback: check if item has cardId (PSA/Raw cards) or productId (sealed)
-      if (item.cardId || item.cardName) {
-        return item.grade ? 'psa' : 'raw';
+      // For sold items, detect type based on item properties
+      if (activeTab === 'sold-items') {
+        if ('grade' in item || item.grade !== undefined) {
+          return 'psa';
+        }
+        if ('condition' in item || item.condition !== undefined) {
+          return 'raw';
+        }
+        if ('category' in item || item.category !== undefined) {
+          return 'sealed';
+        }
+
+        // Fallback: check if item has cardId (PSA/Raw cards) or productId (sealed)
+        if (item.cardId || item.cardName) {
+          return item.grade ? 'psa' : 'raw';
+        }
+        if (item.productId || item.name) {
+          return 'sealed';
+        }
       }
-      if (item.productId || item.name) {
-        return 'sealed';
-      }
-    }
 
-    return 'sealed'; // Default fallback
-  };
+      return 'sealed'; // Default fallback
+    };
 
-  const renderTabContent = () => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center py-12">
-          <LoadingSpinner size="lg" />
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="text-center py-12">
-          <div className="text-red-500 mb-4">
-            <Package className="mx-auto w-12 h-12" />
+    const renderTabContent = () => {
+      if (loading) {
+        return (
+          <div className="flex justify-center items-center py-12">
+            <LoadingSpinner size="lg" />
           </div>
-          <h3 className="text-lg font-medium text-zinc-100 mb-2">
-            Error Loading Collection
-          </h3>
-          <p className="text-zinc-400 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
-
-    const { data, emptyMessage } = getTabData();
-
-    if (data.length === 0) {
-      return (
-        <div className="text-center py-12">
-          <div className="text-gray-400 dark:text-zinc-600 dark:text-zinc-500 mb-4">
-            {React.createElement(
-              tabs.find((tab) => tab.id === activeTab)?.icon || Package,
-              {
-                className: 'mx-auto w-12 h-12',
-              }
-            )}
-          </div>
-          <h3 className="text-lg font-medium text-zinc-100 mb-2">
-            No Items Found
-          </h3>
-          <p className="text-zinc-400 mb-4">{emptyMessage}</p>
-          <button
-            onClick={onAddNewItem}
-            className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add First Item
-          </button>
-        </div>
-      );
-    }
-
-    // Debug: Check for duplicate IDs
-    const usedKeys = new Set<string>();
-    const duplicateKeys: string[] = [];
-
-    data.forEach((item: CollectionItem, index: number) => {
-      const key = item.id || (item as any)._id || `fallback-${index}`;
-      if (usedKeys.has(key)) {
-        duplicateKeys.push(key);
-        console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
-          item,
-          index,
-          activeTab,
-          itemId: item.id,
-          itemMongoId: (item as any)._id,
-          cardId: (item as any).cardId,
-          productId: (item as any).productId,
-        });
+        );
       }
-      usedKeys.add(key);
-    });
 
-    if (duplicateKeys.length > 0) {
-      console.error(
-        `[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`,
-        duplicateKeys
-      );
-    }
-
-    // Optimized: Static animation variants to prevent constant prop changes
-    const containerVariants = useMemo(() => ({
-      hidden: { opacity: 0 },
-      show: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.05, // Reduced from 0.1 for faster animation
-          delayChildren: 0.1, // Reduced from 0.2
-        },
-      },
-    }), []);
-
-    const itemVariants = useMemo(() => ({
-      hidden: {
-        opacity: 0,
-        y: 30, // Reduced from 60 for less dramatic effect
-        scale: 0.95, // Reduced from 0.8
-      },
-      show: {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: {
-          type: 'spring',
-          stiffness: 300, // Increased for faster animation
-          damping: 25, // Slightly increased for less bounce
-          duration: 0.3, // Reduced from 0.6
-        },
-      },
-    }), []);
-
-    // Optimized: Remove whileInView to prevent intersection observer overhead
-    return (
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
-        initial="hidden"
-        animate="show"
-        variants={containerVariants}
-      >
-        {data.map((item: CollectionItem, index: number) => {
-          const itemType = getItemType(item, activeTab);
-          // Ensure absolutely unique key by combining ID with index as fallback
-          const uniqueKey =
-            item.id || (item as any)._id
-              ? `${item.id || (item as any)._id}-${index}`
-              : `fallback-${activeTab}-${index}`;
-
-          return (
-            <motion.div
-              key={uniqueKey}
-              variants={itemVariants}
-              className="mx-auto w-full max-w-sm"
+      if (error) {
+        return (
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4">
+              <Package className="mx-auto w-12 h-12" />
+            </div>
+            <h3 className="text-lg font-medium text-zinc-100 mb-2">
+              Error Loading Collection
+            </h3>
+            <p className="text-zinc-400 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
-              <CollectionItemCard
-                item={item}
-                itemType={itemType}
-                activeTab={activeTab}
-                onViewDetails={onViewItemDetail}
-                onMarkAsSold={onMarkAsSold}
-              />
-            </motion.div>
-          );
-        })}
-      </motion.div>
-    );
-  };
+              Retry
+            </button>
+          </div>
+        );
+      }
 
-  return (
-    <div className="bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
+      const { data, emptyMessage } = getTabData();
 
-      <div className="relative z-10">
-        {/* Tab Navigation */}
-        <div className="border-b border-zinc-700/50 px-8 pt-8">
-          <nav className="-mb-px flex space-x-1">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${isActive ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg' : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'}`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'}`}
-                    >
-                      <Icon className="w-4 h-4" />
+      if (data.length === 0) {
+        return (
+          <div className="text-center py-12">
+            <div className="text-gray-400 dark:text-zinc-600 dark:text-zinc-500 mb-4">
+              {React.createElement(
+                tabs.find((tab) => tab.id === activeTab)?.icon || Package,
+                {
+                  className: 'mx-auto w-12 h-12',
+                }
+              )}
+            </div>
+            <h3 className="text-lg font-medium text-zinc-100 mb-2">
+              No Items Found
+            </h3>
+            <p className="text-zinc-400 mb-4">{emptyMessage}</p>
+            <button
+              onClick={onAddNewItem}
+              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add First Item
+            </button>
+          </div>
+        );
+      }
+
+      // Debug: Check for duplicate IDs
+      const usedKeys = new Set<string>();
+      const duplicateKeys: string[] = [];
+
+      data.forEach((item: CollectionItem, index: number) => {
+        const key = item.id || (item as any)._id || `fallback-${index}`;
+        if (usedKeys.has(key)) {
+          duplicateKeys.push(key);
+          console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
+            item,
+            index,
+            activeTab,
+            itemId: item.id,
+            itemMongoId: (item as any)._id,
+            cardId: (item as any).cardId,
+            productId: (item as any).productId,
+          });
+        }
+        usedKeys.add(key);
+      });
+
+      if (duplicateKeys.length > 0) {
+        console.error(
+          `[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`,
+          duplicateKeys
+        );
+      }
+
+      // Optimized: Static animation variants to prevent constant prop changes
+      const containerVariants = useMemo(
+        () => ({
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.05, // Reduced from 0.1 for faster animation
+              delayChildren: 0.1, // Reduced from 0.2
+            },
+          },
+        }),
+        []
+      );
+
+      const itemVariants = useMemo(
+        () => ({
+          hidden: {
+            opacity: 0,
+            y: 30, // Reduced from 60 for less dramatic effect
+            scale: 0.95, // Reduced from 0.8
+          },
+          show: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+              type: 'spring',
+              stiffness: 300, // Increased for faster animation
+              damping: 25, // Slightly increased for less bounce
+              duration: 0.3, // Reduced from 0.6
+            },
+          },
+        }),
+        []
+      );
+
+      // Optimized: Remove whileInView to prevent intersection observer overhead
+      return (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
+          initial="hidden"
+          animate="show"
+          variants={containerVariants}
+        >
+          {data.map((item: CollectionItem, index: number) => {
+            const itemType = getItemType(item, activeTab);
+            // Ensure absolutely unique key by combining ID with index as fallback
+            const uniqueKey =
+              item.id || (item as any)._id
+                ? `${item.id || (item as any)._id}-${index}`
+                : `fallback-${activeTab}-${index}`;
+
+            return (
+              <motion.div
+                key={uniqueKey}
+                variants={itemVariants}
+                className="mx-auto w-full max-w-sm"
+              >
+                <CollectionItemCard
+                  item={item}
+                  itemType={itemType}
+                  activeTab={activeTab}
+                  onViewDetails={onViewItemDetail}
+                  onMarkAsSold={onMarkAsSold}
+                />
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      );
+    };
+
+    return (
+      <div className="bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
+
+        <div className="relative z-10">
+          {/* Tab Navigation */}
+          <div className="border-b border-zinc-700/50 px-8 pt-8">
+            <nav className="-mb-px flex space-x-1">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => onTabChange(tab.id)}
+                    className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${isActive ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg' : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'}`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'}`}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="tracking-wide">{tab.name}</span>
                     </div>
-                    <span className="tracking-wide">{tab.name}</span>
-                  </div>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse"></div>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse"></div>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
 
-        {/* Tab Content */}
-        <div className="p-10">{renderTabContent()}</div>
+          {/* Tab Content */}
+          <div className="p-10">{renderTabContent()}</div>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 CollectionTabs.displayName = 'CollectionTabs';
 

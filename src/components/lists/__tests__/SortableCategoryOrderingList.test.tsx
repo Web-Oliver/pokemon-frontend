@@ -1,6 +1,6 @@
 /**
  * Unit Tests for SortableCategoryOrderingList Component
- * 
+ *
  * Following CLAUDE.md testing principles:
  * - Tests drag & drop interactions and state updates
  * - Tests category constraints and visual feedback
@@ -50,7 +50,9 @@ vi.mock('@dnd-kit/sortable', () => ({
 vi.mock('@dnd-kit/utilities', () => ({
   CSS: {
     Transform: {
-      toString: vi.fn((transform) => transform ? 'transform(10px, 10px)' : ''),
+      toString: vi.fn((transform) =>
+        transform ? 'transform(10px, 10px)' : ''
+      ),
     },
   },
 }));
@@ -66,7 +68,7 @@ vi.mock('lucide-react', () => ({
 // Mock SortableItemCard
 vi.mock('../SortableItemCard', () => ({
   SortableItemCard: ({ id, item, onToggleSelection, className }: any) => (
-    <div 
+    <div
       data-testid={`sortable-item-${id}`}
       className={className}
       onClick={() => onToggleSelection?.(id)}
@@ -97,7 +99,11 @@ const mockSealedProduct: CollectionItem = {
   category: 'booster-box',
 };
 
-const mockItems: CollectionItem[] = [mockPsaCard, mockRawCard, mockSealedProduct];
+const mockItems: CollectionItem[] = [
+  mockPsaCard,
+  mockRawCard,
+  mockSealedProduct,
+];
 
 const defaultProps = {
   items: mockItems,
@@ -124,34 +130,38 @@ describe('SortableCategoryOrderingList', () => {
   describe('rendering', () => {
     it('should render drag context and sortable contexts', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByTestId('dnd-context')).toBeInTheDocument();
       expect(screen.getAllByTestId('sortable-context')).toHaveLength(3); // One per category with items
     });
 
     it('should render drag instructions', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByTestId('arrow-up-down')).toBeInTheDocument();
-      expect(screen.getByText('Drag to reorder items within categories')).toBeInTheDocument();
+      expect(
+        screen.getByText('Drag to reorder items within categories')
+      ).toBeInTheDocument();
     });
 
     it('should show cross-category instructions when enabled', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           dragConstraints={{ allowCrossCategoryDrag: true }}
         />
       );
-      
-      expect(screen.getByText('Drag to reorder items within and between categories')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Drag to reorder items within and between categories')
+      ).toBeInTheDocument();
     });
   });
 
   describe('category sections', () => {
     it('should render PSA card category with correct items', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByText('PSA Graded Cards (1)')).toBeInTheDocument();
       expect(screen.getByTestId('grid-icon')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-psa-1')).toBeInTheDocument();
@@ -160,7 +170,7 @@ describe('SortableCategoryOrderingList', () => {
 
     it('should render raw card category with correct items', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByText('Raw Cards (1)')).toBeInTheDocument();
       expect(screen.getByTestId('package-icon')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-raw-1')).toBeInTheDocument();
@@ -169,7 +179,7 @@ describe('SortableCategoryOrderingList', () => {
 
     it('should render sealed product category with correct items', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByText('Sealed Products (1)')).toBeInTheDocument();
       expect(screen.getByTestId('users-icon')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-sealed-1')).toBeInTheDocument();
@@ -178,12 +188,12 @@ describe('SortableCategoryOrderingList', () => {
 
     it('should not render empty categories', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           items={[mockPsaCard]} // Only PSA card
         />
       );
-      
+
       expect(screen.getByText('PSA Graded Cards (1)')).toBeInTheDocument();
       expect(screen.queryByText('Raw Cards')).not.toBeInTheDocument();
       expect(screen.queryByText('Sealed Products')).not.toBeInTheDocument();
@@ -193,27 +203,33 @@ describe('SortableCategoryOrderingList', () => {
   describe('category sort controls', () => {
     it('should render sort dropdown for each category', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const sortSelects = screen.getAllByDisplayValue('Manual Order');
       expect(sortSelects).toHaveLength(3); // One per category
     });
 
     it('should call onSortCategoryByPrice when sorting by price high to low', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const sortSelects = screen.getAllByDisplayValue('Manual Order');
       fireEvent.change(sortSelects[0], { target: { value: 'price-high' } });
-      
-      expect(defaultProps.onSortCategoryByPrice).toHaveBeenCalledWith('PSA_CARD', false);
+
+      expect(defaultProps.onSortCategoryByPrice).toHaveBeenCalledWith(
+        'PSA_CARD',
+        false
+      );
     });
 
     it('should call onSortCategoryByPrice when sorting by price low to high', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const sortSelects = screen.getAllByDisplayValue('Manual Order');
       fireEvent.change(sortSelects[1], { target: { value: 'price-low' } });
-      
-      expect(defaultProps.onSortCategoryByPrice).toHaveBeenCalledWith('RAW_CARD', true);
+
+      expect(defaultProps.onSortCategoryByPrice).toHaveBeenCalledWith(
+        'RAW_CARD',
+        true
+      );
     });
   });
 
@@ -221,12 +237,12 @@ describe('SortableCategoryOrderingList', () => {
     it('should respect custom item order', () => {
       const customOrder = ['sealed-1', 'psa-1', 'raw-1'];
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           itemOrder={customOrder}
         />
       );
-      
+
       // Items should be rendered in the custom order within their categories
       expect(screen.getByTestId('sortable-item-psa-1')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-raw-1')).toBeInTheDocument();
@@ -235,7 +251,7 @@ describe('SortableCategoryOrderingList', () => {
 
     it('should fall back to original order when no custom order provided', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       // Should render all items in their original order
       expect(screen.getByTestId('sortable-item-psa-1')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-raw-1')).toBeInTheDocument();
@@ -246,29 +262,23 @@ describe('SortableCategoryOrderingList', () => {
   describe('selection handling', () => {
     it('should call onToggleItemSelection when item is clicked', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
-          showSelection={true}
-        />
+        <SortableCategoryOrderingList {...defaultProps} showSelection={true} />
       );
-      
+
       const psaItem = screen.getByTestId('sortable-item-psa-1');
       fireEvent.click(psaItem);
-      
+
       expect(defaultProps.onToggleItemSelection).toHaveBeenCalledWith('psa-1');
     });
 
     it('should not call onToggleItemSelection when showSelection is false', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
-          showSelection={false}
-        />
+        <SortableCategoryOrderingList {...defaultProps} showSelection={false} />
       );
-      
+
       const psaItem = screen.getByTestId('sortable-item-psa-1');
       fireEvent.click(psaItem);
-      
+
       // Should still be called as the mock component always calls it
       expect(defaultProps.onToggleItemSelection).toHaveBeenCalledWith('psa-1');
     });
@@ -277,43 +287,44 @@ describe('SortableCategoryOrderingList', () => {
   describe('summary section', () => {
     it('should render ordering summary with correct counts', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       expect(screen.getByText('Ordering Summary')).toBeInTheDocument();
-      expect(screen.getByText('3 items across 3 categories')).toBeInTheDocument();
-      expect(screen.getByText('Within-category dragging enabled')).toBeInTheDocument();
+      expect(
+        screen.getByText('3 items across 3 categories')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Within-category dragging enabled')
+      ).toBeInTheDocument();
       expect(screen.getByText('0 items selected')).toBeInTheDocument();
     });
 
     it('should show cross-category dragging status when enabled', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           dragConstraints={{ allowCrossCategoryDrag: true }}
         />
       );
-      
-      expect(screen.getByText('Cross-category dragging enabled')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Cross-category dragging enabled')
+      ).toBeInTheDocument();
     });
 
     it('should show correct selected item count', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           selectedItemIds={['psa-1', 'raw-1']}
         />
       );
-      
+
       expect(screen.getByText('2 items selected')).toBeInTheDocument();
     });
 
     it('should not render summary when no items', () => {
-      render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
-          items={[]}
-        />
-      );
-      
+      render(<SortableCategoryOrderingList {...defaultProps} items={[]} />);
+
       expect(screen.queryByText('Ordering Summary')).not.toBeInTheDocument();
     });
   });
@@ -321,12 +332,12 @@ describe('SortableCategoryOrderingList', () => {
   describe('drag constraints', () => {
     it('should pass correct drag constraints to sortable items', () => {
       render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           dragConstraints={{ allowCrossCategoryDrag: false }}
         />
       );
-      
+
       // Should render sortable items (exact constraint testing would require deeper integration)
       expect(screen.getByTestId('sortable-item-psa-1')).toBeInTheDocument();
       expect(screen.getByTestId('sortable-item-raw-1')).toBeInTheDocument();
@@ -337,65 +348,69 @@ describe('SortableCategoryOrderingList', () => {
   describe('visual feedback', () => {
     it('should apply correct category colors to PSA cards', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const psaItem = screen.getByTestId('sortable-item-psa-1');
       expect(psaItem).toHaveClass('border-teal-200', 'hover:border-teal-300');
     });
 
     it('should apply correct category colors to raw cards', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const rawItem = screen.getByTestId('sortable-item-raw-1');
       expect(rawItem).toHaveClass('border-blue-200', 'hover:border-blue-300');
     });
 
     it('should apply correct category colors to sealed products', () => {
       render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       const sealedItem = screen.getByTestId('sortable-item-sealed-1');
-      expect(sealedItem).toHaveClass('border-purple-200', 'hover:border-purple-300');
+      expect(sealedItem).toHaveClass(
+        'border-purple-200',
+        'hover:border-purple-300'
+      );
     });
   });
 
   describe('performance optimization', () => {
     it('should memoize component properly', () => {
-      const { rerender } = render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+      const { rerender } = render(
+        <SortableCategoryOrderingList {...defaultProps} />
+      );
+
       // Re-render with same props
       rerender(<SortableCategoryOrderingList {...defaultProps} />);
-      
+
       // Component should still be rendered
       expect(screen.getByText('PSA Graded Cards (1)')).toBeInTheDocument();
     });
 
     it('should re-render when props change', () => {
-      const { rerender } = render(<SortableCategoryOrderingList {...defaultProps} />);
-      
+      const { rerender } = render(
+        <SortableCategoryOrderingList {...defaultProps} />
+      );
+
       expect(screen.getByText('0 items selected')).toBeInTheDocument();
-      
+
       // Re-render with different selected items
       rerender(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
+        <SortableCategoryOrderingList
+          {...defaultProps}
           selectedItemIds={['psa-1']}
         />
       );
-      
+
       expect(screen.getByText('1 items selected')).toBeInTheDocument();
     });
   });
 
   describe('error handling', () => {
     it('should handle empty items array gracefully', () => {
-      render(
-        <SortableCategoryOrderingList 
-          {...defaultProps} 
-          items={[]}
-        />
-      );
-      
+      render(<SortableCategoryOrderingList {...defaultProps} items={[]} />);
+
       expect(screen.getByTestId('dnd-context')).toBeInTheDocument();
-      expect(screen.getByText('Drag to reorder items within categories')).toBeInTheDocument();
+      expect(
+        screen.getByText('Drag to reorder items within categories')
+      ).toBeInTheDocument();
       expect(screen.queryByText('Ordering Summary')).not.toBeInTheDocument();
     });
 
@@ -404,7 +419,7 @@ describe('SortableCategoryOrderingList', () => {
         ...defaultProps,
         onToggleItemSelection: undefined,
       };
-      
+
       expect(() => {
         render(<SortableCategoryOrderingList {...propsWithoutCallbacks} />);
       }).not.toThrow();
@@ -415,11 +430,11 @@ describe('SortableCategoryOrderingList', () => {
         { id: 'incomplete-1' } as CollectionItem,
         { id: 'incomplete-2' } as CollectionItem,
       ];
-      
+
       expect(() => {
         render(
-          <SortableCategoryOrderingList 
-            {...defaultProps} 
+          <SortableCategoryOrderingList
+            {...defaultProps}
             items={incompleteItems}
           />
         );

@@ -12,7 +12,7 @@
  * DRY: Layers caching/throttling on top of consolidatedSearch.ts
  */
 
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import {
   searchCardsOptimized,
   searchSetsOptimized,

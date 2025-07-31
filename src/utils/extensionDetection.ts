@@ -43,13 +43,13 @@ export const detectAdBlock = (): Promise<boolean> => {
 export const detectRequestInterception = (): boolean => {
   // Check for common request interceptor signatures
   return (
-    // @ts-ignore - checking for extension globals
+    // @ts-expect-error - checking for extension globals
     (typeof window.chrome !== 'undefined' &&
-      // @ts-ignore
+      // @ts-expect-error - Chrome extension API may not be available
       (window.chrome.webRequest || window.chrome.declarativeNetRequest)) ||
-    // @ts-ignore - Requestly signature
+    // @ts-expect-error - Requestly signature
     typeof window.RQ !== 'undefined' ||
-    // @ts-ignore - Request Interceptor signature
+    // @ts-expect-error - Request Interceptor signature
     typeof window.requestInterceptor !== 'undefined'
   );
 };

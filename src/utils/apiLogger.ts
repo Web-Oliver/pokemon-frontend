@@ -15,8 +15,8 @@
  */
 const isApiLoggingEnabled = (): boolean => {
   return (
-    process.env.NODE_ENV === 'development' ||
-    process.env.REACT_APP_DEBUG_API === 'true'
+    import.meta.env.MODE === 'development' &&
+    import.meta.env.VITE_DEBUG_API !== 'false'
   );
 };
 
@@ -98,7 +98,7 @@ export class ApiLogger {
   ): void {
     if (
       isApiLoggingEnabled() &&
-      process.env.REACT_APP_DEBUG_PERFORMANCE === 'true'
+      import.meta.env.VITE_DEBUG_PERFORMANCE === 'true'
     ) {
       const duration = (endTime || Date.now()) - startTime;
       console.log(`${this.prefix} ${methodName} completed in ${duration}ms`);

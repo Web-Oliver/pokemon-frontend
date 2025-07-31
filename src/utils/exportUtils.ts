@@ -16,7 +16,6 @@ import {
 } from '../interfaces/api/IExportApiService';
 import {
   CollectionItem,
-  ItemCategory,
   OrderValidationResult,
 } from '../domain/models/ordering';
 import {
@@ -24,7 +23,6 @@ import {
   sortCategoriesByPrice,
   applyItemOrder,
   validateItemOrder,
-  generateOrderFromItems,
 } from './orderingUtils';
 
 /**
@@ -159,7 +157,7 @@ export const validateExportRequest = (
   // Check if combination is supported
   try {
     getExportConfigKey(itemType, format);
-  } catch (error) {
+  } catch (_error) {
     throw new Error(
       `Unsupported export combination: ${itemType} with ${format}`
     );
@@ -266,7 +264,8 @@ export const validateOrderedExportRequest = (
     validateExportRequest(request.itemType, request.format, request.itemIds);
   } catch (error) {
     exportValid = false;
-    exportError = error instanceof Error ? error.message : 'Export validation failed';
+    exportError =
+      error instanceof Error ? error.message : 'Export validation failed';
   }
 
   // If no items provided or no ordering specified, return basic validation
@@ -285,7 +284,9 @@ export const validateOrderedExportRequest = (
   return {
     ...orderValidation,
     exportValid: exportValid && orderValidation.isValid,
-    exportError: exportError || (orderValidation.errors.length > 0 ? 'Invalid item ordering' : undefined),
+    exportError:
+      exportError ||
+      (orderValidation.errors.length > 0 ? 'Invalid item ordering' : undefined),
   };
 };
 
@@ -336,7 +337,7 @@ export const generateOrderedExportFilename = (
   }
 ): string => {
   let suffix = '';
-  
+
   if (orderingInfo?.sorted) {
     if (orderingInfo.sortByPrice) {
       suffix = orderingInfo.ascending ? '_price_asc' : '_price_desc';
@@ -361,7 +362,10 @@ export const prepareItemsForOrderedExport = (
   request: OrderedExportRequest
 ): {
   orderedItems: CollectionItem[];
-  validation: OrderValidationResult & { exportValid: boolean; exportError?: string };
+  validation: OrderValidationResult & {
+    exportValid: boolean;
+    exportError?: string;
+  };
   orderingApplied: boolean;
 } => {
   // Validate the request
@@ -378,7 +382,8 @@ export const prepareItemsForOrderedExport = (
 
   // Apply ordering
   const orderedItems = applyExportOrdering(items, request);
-  const orderingApplied = request.itemOrder !== undefined || request.sortByPrice === true;
+  const orderingApplied =
+    request.itemOrder !== undefined || request.sortByPrice === true;
 
   return {
     orderedItems,
@@ -397,8 +402,12 @@ export const getOrderingSummary = (request: OrderedExportRequest): string => {
   }
 
   if (request.sortByPrice) {
-    const direction = request.sortAscending ? 'lowest to highest' : 'highest to lowest';
-    const grouping = request.maintainCategoryGrouping ? ' (grouped by category)' : '';
+    const direction = request.sortAscending
+      ? 'lowest to highest'
+      : 'highest to lowest';
+    const grouping = request.maintainCategoryGrouping
+      ? ' (grouped by category)'
+      : '';
     return `sorted by price ${direction}${grouping}`;
   }
 
@@ -421,7 +430,7 @@ export const formatOrderedExportSuccessMessage = (
 ): string => {
   const baseMessage = formatExportSuccessMessage(itemCount, format, itemType);
   const orderingSummary = getOrderingSummary(request);
-  
+
   if (orderingSummary !== 'default order') {
     return `${baseMessage} Items arranged in ${orderingSummary}.`;
   }

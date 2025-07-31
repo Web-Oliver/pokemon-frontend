@@ -6,162 +6,14 @@
  * Following CLAUDE.md principles - removed excessive debug logging
  */
 
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { createApiLogger } from '../utils/apiLogger';
-import { ResponseTransformers } from '../utils/responseTransformer';
 
 // Create logger instance for this API
 const logger = createApiLogger('COLLECTION API');
-
-/**
- * Helper function to extract data from wrapped API responses
- * Backend returns format: {success: true, count: number, data: Array}
- * @param responseData - Raw response from API
- * @returns The actual data array/object
- */
-const _extractResponseData = (responseData: any): any => {
-  if (
-    responseData &&
-    typeof responseData === 'object' &&
-    'data' in responseData
-  ) {
-    return responseData.data;
-  }
-  return responseData;
-};
-
-/**
- * Helper function to identify metadata objects that shouldn't be processed for IDs
- * @param key - The property key
- * @param value - The property value
- * @returns true if this is a metadata object that should be skipped
- */
-const isMetadataObject = (key: string, value: any): boolean => {
-  // Skip known metadata/property objects
-  const metadataKeys = [
-    'saleDetails',
-    'psaGrades',
-    'psaTotalGradedForCard',
-    'priceHistory',
-    'metadata',
-    'cardInfo',
-    'productInfo',
-    'setInfo',
-  ];
-
-  if (metadataKeys.includes(key)) {
-    return true;
-  }
-
-  // Skip objects with known metadata properties
-  if (typeof value === 'object' && value !== null) {
-    const hasMetadataProps = [
-      'paymentMethod',
-      'actualSoldPrice',
-      'deliveryMethod',
-      'dateSold',
-      'wasNew',
-      'isSaleUpdate',
-      'psa_1',
-      'psa_2',
-      'psa_3',
-      'psa_4',
-      'psa_5',
-      'psa_6',
-      'psa_7',
-      'psa_8',
-      'psa_9',
-      'psa_10',
-    ].some((prop) => prop in value);
-
-    if (hasMetadataProps) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-/**
- * Helper function to map _id to id for MongoDB compatibility
- * @param item - Item object or array of items
- * @returns Item(s) with id field mapped from _id
- */
-const _mapItemIds = (item: unknown): unknown => {
-  if (!item) {
-    return item;
-  }
-
-  if (Array.isArray(item)) {
-    const mappedArray = item.map(_mapItemIds);
-
-    // Debug: Check for duplicate IDs in arrays (collection items)
-    const ids = mappedArray
-      .filter((item) => item && typeof item === 'object')
-      .map((item) => (item as any).id)
-      .filter((id) => id !== undefined);
-
-    const uniqueIds = new Set(ids);
-    if (ids.length !== uniqueIds.size) {
-      const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
-      console.error(
-        '[COLLECTION API] Duplicate IDs detected in array:',
-        duplicates,
-        {
-          totalItems: ids.length,
-          uniqueItems: uniqueIds.size,
-          items: mappedArray,
-        }
-      );
-    }
-
-    return mappedArray;
-  }
-
-  if (typeof item === 'object') {
-    const newItem = { ...item } as Record<string, unknown>;
-
-    // Map _id to id for the current object, ensuring we always have an id field
-    if (newItem._id) {
-      newItem.id = newItem._id;
-      // Keep _id for debugging but ensure id is primary
-    } else if (!newItem.id) {
-      // Log warning for items without any ID - this shouldn't happen with valid MongoDB documents
-      console.warn(
-        '[COLLECTION API] Item found without _id or id field:',
-        newItem
-      );
-    }
-
-    // Only recursively process specific nested collection-related objects and arrays
-    // Avoid processing metadata objects like saleDetails, psaGrades, etc.
-    Object.keys(newItem).forEach((key) => {
-      const value = newItem[key];
-
-      if (Array.isArray(value)) {
-        // Process arrays (like images, priceHistory)
-        newItem[key] = value.map((arrayItem: unknown) =>
-          _mapItemIds(arrayItem)
-        );
-      } else if (
-        typeof value === 'object' &&
-        value !== null &&
-        // Only process objects that might contain collection items or nested collections
-        // Skip known metadata/property objects
-        !isMetadataObject(key, value)
-      ) {
-        newItem[key] = _mapItemIds(value);
-      }
-    });
-
-    return newItem;
-  }
-
-  return item;
-};
 
 // PSA Graded Cards Collection APIs
 export interface PsaGradedCardsParams {
@@ -180,31 +32,19 @@ export const getPsaGradedCards = async (
   params?: PsaGradedCardsParams
 ): Promise<IPsaGradedCard[]> => {
   logger.logApiCall('getPsaGradedCards', params);
-  const responseData = await unifiedApiClient.get('/psa-graded-cards', {
-    params: {
-      ...params,
-      _t: Date.now(), // Cache busting
-    },
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      Pragma: 'no-cache',
-      Expires: '0',
-    },
-    optimization: {
-      enableCache: false,
-      enableDeduplication: false,
-    },
-  });
-  logger.logResponse('getPsaGradedCards', responseData);
-  const mappedData =
-    ResponseTransformers.standard<IPsaGradedCard[]>(responseData);
-  logger.logProcessedData('getPsaGradedCards', mappedData, 'mapped data');
+  const data = await unifiedApiClient.get<IPsaGradedCard[]>(
+    '/psa-graded-cards',
+    {
+      params,
+    }
+  );
+  logger.logResponse('getPsaGradedCards', data);
   logger.logProcessedData(
     'getPsaGradedCards',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    Array.isArray(data) ? data.length : 'NOT_ARRAY',
     'returning array length'
   );
-  return mappedData as IPsaGradedCard[];
+  return data;
 };
 
 /**
@@ -215,8 +55,10 @@ export const getPsaGradedCards = async (
 export const getPsaGradedCardById = async (
   id: string
 ): Promise<IPsaGradedCard> => {
-  const responseData = await unifiedApiClient.get(`/psa-graded-cards/${id}`);
-  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
+  return await unifiedApiClient.getById<IPsaGradedCard>(
+    '/psa-graded-cards',
+    id
+  );
 };
 
 /**
@@ -227,8 +69,7 @@ export const getPsaGradedCardById = async (
 export const createPsaGradedCard = async (
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
-  const responseData = await unifiedApiClient.post('/psa-graded-cards', data);
-  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
+  return await unifiedApiClient.post<IPsaGradedCard>('/psa-graded-cards', data);
 };
 
 /**
@@ -241,11 +82,11 @@ export const updatePsaGradedCard = async (
   id: string,
   data: Partial<IPsaGradedCard>
 ): Promise<IPsaGradedCard> => {
-  const responseData = await unifiedApiClient.put(
-    `/psa-graded-cards/${id}`,
+  return await unifiedApiClient.putById<IPsaGradedCard>(
+    '/psa-graded-cards',
+    id,
     data
   );
-  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 /**
@@ -254,7 +95,7 @@ export const updatePsaGradedCard = async (
  * @returns Promise<void>
  */
 export const deletePsaGradedCard = async (id: string): Promise<void> => {
-  await unifiedApiClient.delete(`/psa-graded-cards/${id}`);
+  await unifiedApiClient.deleteById('/psa-graded-cards', id);
 };
 
 /**
@@ -267,11 +108,12 @@ export const markPsaGradedCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IPsaGradedCard> => {
-  const responseData = await unifiedApiClient.post(
-    `/psa-graded-cards/${id}/mark-sold`,
-    saleDetails
+  return await unifiedApiClient.putById<IPsaGradedCard>(
+    '/psa-graded-cards',
+    id,
+    saleDetails,
+    'mark-sold'
   );
-  return ResponseTransformers.standard<IPsaGradedCard>(responseData);
 };
 
 // Raw Cards Collection APIs
@@ -291,7 +133,7 @@ export const getRawCards = async (
   params?: RawCardsParams
 ): Promise<IRawCard[]> => {
   logger.logApiCall('getRawCards', params);
-  const responseData = await unifiedApiClient.get('/raw-cards', {
+  const data = await unifiedApiClient.get<IRawCard[]>('/raw-cards', {
     params: {
       ...params,
       _t: Date.now(), // Cache busting
@@ -306,14 +148,13 @@ export const getRawCards = async (
       enableDeduplication: false,
     },
   });
-  logger.logResponse('getRawCards', responseData);
-  const mappedData = ResponseTransformers.standard<IRawCard[]>(responseData);
+  logger.logResponse('getRawCards', data);
   logger.logProcessedData(
     'getRawCards',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    Array.isArray(data) ? data.length : 'NOT_ARRAY',
     'returning array length'
   );
-  return mappedData as IRawCard[];
+  return data;
 };
 
 /**
@@ -322,8 +163,7 @@ export const getRawCards = async (
  * @returns Promise<IRawCard> - Single raw card
  */
 export const getRawCardById = async (id: string): Promise<IRawCard> => {
-  const responseData = await unifiedApiClient.get(`/raw-cards/${id}`);
-  return ResponseTransformers.standard<IRawCard>(responseData);
+  return await unifiedApiClient.getById<IRawCard>('/raw-cards', id);
 };
 
 /**
@@ -334,8 +174,7 @@ export const getRawCardById = async (id: string): Promise<IRawCard> => {
 export const createRawCard = async (
   data: Partial<IRawCard>
 ): Promise<IRawCard> => {
-  const responseData = await unifiedApiClient.post('/raw-cards', data);
-  return ResponseTransformers.standard<IRawCard>(responseData);
+  return await unifiedApiClient.post<IRawCard>('/raw-cards', data);
 };
 
 /**
@@ -348,8 +187,7 @@ export const updateRawCard = async (
   id: string,
   data: Partial<IRawCard>
 ): Promise<IRawCard> => {
-  const responseData = await unifiedApiClient.put(`/raw-cards/${id}`, data);
-  return ResponseTransformers.standard<IRawCard>(responseData);
+  return await unifiedApiClient.putById<IRawCard>('/raw-cards', id, data);
 };
 
 /**
@@ -358,7 +196,7 @@ export const updateRawCard = async (
  * @returns Promise<void>
  */
 export const deleteRawCard = async (id: string): Promise<void> => {
-  await unifiedApiClient.delete(`/raw-cards/${id}`);
+  await unifiedApiClient.deleteById('/raw-cards', id);
 };
 
 /**
@@ -371,11 +209,12 @@ export const markRawCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IRawCard> => {
-  const responseData = await unifiedApiClient.post(
-    `/raw-cards/${id}/mark-sold`,
-    saleDetails
+  return await unifiedApiClient.putById<IRawCard>(
+    '/raw-cards',
+    id,
+    saleDetails,
+    'mark-sold'
   );
-  return ResponseTransformers.standard<IRawCard>(responseData);
 };
 
 // Sealed Products Collection APIs
@@ -395,22 +234,23 @@ export const getSealedProductCollection = async (
   params?: SealedProductCollectionParams
 ): Promise<ISealedProduct[]> => {
   logger.logApiCall('getSealedProductCollection', params);
-  const responseData = await unifiedApiClient.get('/sealed-products', {
-    params,
-    optimization: {
-      enableCache: false,
-      enableDeduplication: false,
-    },
-  });
-  logger.logResponse('getSealedProductCollection', responseData);
-  const mappedData =
-    ResponseTransformers.standard<ISealedProduct[]>(responseData);
+  const data = await unifiedApiClient.get<ISealedProduct[]>(
+    '/sealed-products',
+    {
+      params,
+      optimization: {
+        enableCache: false,
+        enableDeduplication: false,
+      },
+    }
+  );
+  logger.logResponse('getSealedProductCollection', data);
   logger.logProcessedData(
     'getSealedProductCollection',
-    Array.isArray(mappedData) ? mappedData.length : 'NOT_ARRAY',
+    Array.isArray(data) ? data.length : 'NOT_ARRAY',
     'returning array length'
   );
-  return mappedData as ISealedProduct[];
+  return data;
 };
 
 /**
@@ -421,8 +261,7 @@ export const getSealedProductCollection = async (
 export const getSealedProductById = async (
   id: string
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.get(`/sealed-products/${id}`);
-  return ResponseTransformers.standard<ISealedProduct>(responseData);
+  return await unifiedApiClient.getById<ISealedProduct>('/sealed-products', id);
 };
 
 /**
@@ -433,8 +272,7 @@ export const getSealedProductById = async (
 export const createSealedProduct = async (
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.post('/sealed-products', data);
-  return ResponseTransformers.standard<ISealedProduct>(responseData);
+  return await unifiedApiClient.post<ISealedProduct>('/sealed-products', data);
 };
 
 /**
@@ -447,11 +285,11 @@ export const updateSealedProduct = async (
   id: string,
   data: Partial<ISealedProduct>
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.put(
-    `/sealed-products/${id}`,
+  return await unifiedApiClient.putById<ISealedProduct>(
+    '/sealed-products',
+    id,
     data
   );
-  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };
 
 /**
@@ -460,7 +298,7 @@ export const updateSealedProduct = async (
  * @returns Promise<void>
  */
 export const deleteSealedProduct = async (id: string): Promise<void> => {
-  await unifiedApiClient.delete(`/sealed-products/${id}`);
+  await unifiedApiClient.deleteById('/sealed-products', id);
 };
 
 /**
@@ -473,9 +311,10 @@ export const markSealedProductSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<ISealedProduct> => {
-  const responseData = await unifiedApiClient.post(
-    `/sealed-products/${id}/mark-sold`,
-    saleDetails
+  return await unifiedApiClient.putById<ISealedProduct>(
+    '/sealed-products',
+    id,
+    saleDetails,
+    'mark-sold'
   );
-  return ResponseTransformers.standard<ISealedProduct>(responseData);
 };

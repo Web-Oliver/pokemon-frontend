@@ -28,6 +28,7 @@ import FormActionButtons from '../common/FormActionButtons';
 import CardProductInformationSection from './CardProductInformationSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
+import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -170,8 +171,11 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       // Set selectedProductData for existing products to maintain reference link
       // This is form-specific logic that cannot be centralized
       if (initialData.productId) {
+        // Use centralized ObjectId conversion
+        const transformedInitialData = transformRequestData(initialData);
+
         setSelectedProductData({
-          _id: initialData.productId,
+          _id: transformedInitialData.productId,
           setName: initialData.setName,
           name: initialData.name,
           category: initialData.category,
@@ -239,7 +243,18 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       }
 
       // Upload images using specialized hook
-      const imageUrls = await imageUpload.uploadImages();
+      console.log('[SEALED PRODUCT FORM] About to upload images, selected images count:', imageUpload.selectedImages.length);
+      console.log('[SEALED PRODUCT FORM] Selected images:', imageUpload.selectedImages);
+      
+      let imageUrls = [];
+      if (imageUpload.selectedImages.length > 0) {
+        console.log('[SEALED PRODUCT FORM] Calling imageUpload.uploadImages()...');
+        imageUrls = await imageUpload.uploadImages();
+      } else {
+        console.log('[SEALED PRODUCT FORM] No images selected, skipping upload API call');
+      }
+      
+      console.log('[SEALED PRODUCT FORM] Image upload completed, received URLs:', imageUrls);
 
       // Combine existing images with new uploaded images
       const allImageUrls = [
@@ -273,7 +288,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       // Submit using collection operations hook
       if (isEditing && initialData?.id) {
-        await updateSealedProduct(initialData.id, productData);
+        const productId = convertObjectIdToString(initialData.id);
+        await updateSealedProduct(productId, productData);
       } else {
         await addSealedProduct(productData);
       }

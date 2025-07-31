@@ -1,6 +1,6 @@
 /**
  * Sortable Item Card Component
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles sortable drag & drop functionality
  * - Open/Closed: Extensible wrapper for any item card component
@@ -10,11 +10,15 @@
 
 import React, { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
-import { createDragStyle, getDragFeedbackStyles } from '../../contexts/DragDropContext';
+import {
+  createDragStyle,
+  getDragFeedbackStyles,
+} from '../../contexts/DragDropContext';
 import { OrderableItemCard, OrderableItemCardProps } from './OrderableItemCard';
 import { CollectionItem } from '../../domain/models/ordering';
 
-export interface SortableItemCardProps extends Omit<OrderableItemCardProps, 'isDragging'> {
+export interface SortableItemCardProps
+  extends Omit<OrderableItemCardProps, 'isDragging'> {
   id: string;
   item: CollectionItem;
   // Drag & drop specific props
@@ -67,9 +71,9 @@ const SortableItemCardComponent: React.FC<SortableItemCardProps> = ({
 
   // Create drag styles using utility function
   const dragStyle = createDragStyle(transform, transition, isDragging);
-  
+
   // Get drag feedback styles
-  const feedbackStyles = showDragFeedback 
+  const feedbackStyles = showDragFeedback
     ? getDragFeedbackStyles(isDragging, isOver)
     : '';
 
@@ -77,17 +81,16 @@ const SortableItemCardComponent: React.FC<SortableItemCardProps> = ({
   const combinedClassName = `${className} ${feedbackStyles}`.trim();
 
   // Prepare drag handle props
-  const dragHandleProps = dragHandle && showDragHandle ? {
-    ...attributes,
-    ...listeners,
-  } : {};
+  const dragHandleProps =
+    dragHandle && showDragHandle
+      ? {
+          ...attributes,
+          ...listeners,
+        }
+      : {};
 
   return (
-    <div
-      ref={setNodeRef}
-      style={dragStyle}
-      className={combinedClassName}
-    >
+    <div ref={setNodeRef} style={dragStyle} className={combinedClassName}>
       <OrderableItemCard
         item={item}
         index={index}
@@ -130,7 +133,8 @@ const arePropsEqual = (
     prevProps.onToggleSelection === nextProps.onToggleSelection &&
     prevProps.onMoveUp === nextProps.onMoveUp &&
     prevProps.onMoveDown === nextProps.onMoveDown &&
-    JSON.stringify(prevProps.dragConstraints) === JSON.stringify(nextProps.dragConstraints)
+    JSON.stringify(prevProps.dragConstraints) ===
+      JSON.stringify(nextProps.dragConstraints)
   );
 };
 
@@ -138,9 +142,6 @@ const arePropsEqual = (
  * Memoized SortableItemCard component
  * Prevents unnecessary re-renders when props haven't changed
  */
-export const SortableItemCard = memo(
-  SortableItemCardComponent,
-  arePropsEqual
-);
+export const SortableItemCard = memo(SortableItemCardComponent, arePropsEqual);
 
 export default SortableItemCard;

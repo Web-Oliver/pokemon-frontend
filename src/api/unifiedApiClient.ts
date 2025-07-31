@@ -17,6 +17,68 @@ import { API_BASE_URL } from '../utils/constants';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { optimizedApiRequest, BatchProcessor } from '../utils/apiOptimization';
+import { transformApiResponse, transformRequestData } from '../utils/responseTransformer';
+
+// ========== UTILITY FUNCTIONS ==========
+
+/**
+ * Validate and sanitize ID parameters to prevent [object Object] URLs
+ * @param id - ID parameter to validate
+ * @param paramName - Parameter name for error messaging
+ * @returns Sanitized string ID
+ * @throws Error if ID is invalid
+ */
+export const validateAndSanitizeId = (
+  id: any,
+  paramName: string = 'id'
+): string => {
+  // Handle null, undefined, or empty values
+  if (id === null || id === undefined || id === '') {
+    throw new Error(
+      `Invalid ${paramName}: cannot be null, undefined, or empty`
+    );
+  }
+
+  // Convert to string and trim
+  const sanitizedId = String(id).trim();
+
+  // Check for problematic values
+  if (
+    sanitizedId === '' ||
+    sanitizedId === 'undefined' ||
+    sanitizedId === 'null' ||
+    sanitizedId === '[object Object]' ||
+    sanitizedId.includes('[object') ||
+    sanitizedId.length > 100
+  ) {
+    // Reasonable length limit
+    throw new Error(
+      `Invalid ${paramName}: "${sanitizedId}" is not a valid identifier`
+    );
+  }
+
+  return sanitizedId;
+};
+
+/**
+ * Build URL path with validated ID parameters
+ * @param basePath - Base URL path
+ * @param id - ID to append (will be validated)
+ * @param subPath - Optional sub-path after ID
+ * @returns Valid URL path
+ */
+export const buildUrlWithId = (
+  basePath: string,
+  id: any,
+  subPath?: string
+): string => {
+  const validId = validateAndSanitizeId(id);
+  let url = `${basePath}/${validId}`;
+  if (subPath) {
+    url += `/${subPath}`;
+  }
+  return url;
+};
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -166,7 +228,73 @@ export class UnifiedApiClient {
         log(successMessage);
       }
 
-      return response.data;
+      // Use simplified response transformer for new API format only
+      return transformApiResponse<T>(response.data);
+    } catch (error) {
+      if (logRequest) {
+        log(`${operation} failed:`, error);
+      }
+
+      handleApiError(error, errorMessage);
+      throw error;
+    }
+  }
+
+  /**
+   * Specialized request handler for DELETE operations
+   * DELETE operations often return simple responses that don't follow the full API format
+   */
+  private async makeDeleteRequest<T>(
+    requestFn: () => Promise<AxiosResponse<T>>,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    const {
+      operation = 'DELETE request',
+      successMessage,
+      errorMessage = `Failed to ${operation}`,
+      logRequest = true,
+      logResponse = true,
+      optimization = {},
+    } = config;
+
+    try {
+      if (logRequest) {
+        log(`Starting ${operation}...`);
+      }
+
+      // Apply optimization strategy
+      const response = await this.optimizationStrategy.optimize(
+        requestFn,
+        optimization
+      );
+
+      if (logResponse) {
+        log(`${operation} completed successfully`);
+      }
+
+      if (successMessage) {
+        log(successMessage);
+      }
+
+      // For DELETE operations, handle different response formats more gracefully
+      if (response.data === null || response.data === undefined || response.data === '') {
+        // Empty response is valid for DELETE operations
+        return undefined as T;
+      }
+
+      // Try to use the standard API format transformer, but fall back gracefully
+      try {
+        return transformApiResponse<T>(response.data);
+      } catch (transformError) {
+        // If standard transformation fails, check if it's a simple success response
+        if (response.status >= 200 && response.status < 300) {
+          // DELETE succeeded but response doesn't match new format
+          log(`${operation} completed with non-standard response format`, response.data);
+          return response.data as T;
+        }
+        // Re-throw transformation error if it's not a simple success case
+        throw transformError;
+      }
     } catch (error) {
       if (logRequest) {
         log(`${operation} failed:`, error);
@@ -215,7 +343,11 @@ export class UnifiedApiClient {
       ...optimization,
     };
 
-    return this.makeRequest(() => this.client.post<T>(url, data, axiosConfig), {
+    // Transform request data to convert ObjectId objects to strings
+    // Skip transformation for FormData objects (used in file uploads)
+    const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+
+    return this.makeRequest(() => this.client.post<T>(url, transformedData, axiosConfig), {
       ...config,
       operation: config.operation || `create ${url}`,
       optimization: defaultOptimization,
@@ -238,7 +370,11 @@ export class UnifiedApiClient {
       ...optimization,
     };
 
-    return this.makeRequest(() => this.client.put<T>(url, data, axiosConfig), {
+    // Transform request data to convert ObjectId objects to strings
+    // Skip transformation for FormData objects (used in file uploads)
+    const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+
+    return this.makeRequest(() => this.client.put<T>(url, transformedData, axiosConfig), {
       ...config,
       operation: config.operation || `update ${url}`,
       optimization: defaultOptimization,
@@ -247,6 +383,7 @@ export class UnifiedApiClient {
 
   /**
    * DELETE request with optimization support
+   * DELETE operations often return empty responses, so we handle them specially
    */
   async delete<T = void>(
     url: string,
@@ -260,11 +397,116 @@ export class UnifiedApiClient {
       ...optimization,
     };
 
-    return this.makeRequest(() => this.client.delete<T>(url, axiosConfig), {
+    // Special handling for DELETE operations
+    return this.makeDeleteRequest(() => this.client.delete<T>(url, axiosConfig), {
       ...config,
       operation: config.operation || `delete ${url}`,
       optimization: defaultOptimization,
     });
+  }
+
+  // ========== ID-VALIDATED CONVENIENCE METHODS ==========
+
+  /**
+   * GET request with ID validation (prevents [object Object] URLs)
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async getById<T>(
+    basePath: string,
+    id: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      return this.get<T>(url, {
+        ...config,
+        operation:
+          config.operation ||
+          `fetch ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      // Log ID validation errors for debugging
+      log(`ID validation failed for ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * PUT request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param data - Data to update
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async putById<T>(
+    basePath: string,
+    id: any,
+    data: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      // Transform request data to convert ObjectId objects to strings
+      // Skip transformation for FormData objects (used in file uploads)
+      const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      return this.put<T>(url, transformedData, {
+        ...config,
+        operation:
+          config.operation ||
+          `update ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for PUT ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * DELETE request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async deleteById<T = void>(
+    basePath: string,
+    id: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      return this.delete<T>(url, {
+        ...config,
+        operation:
+          config.operation ||
+          `delete ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for DELETE ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
   }
 
   // ========== BATCH OPERATIONS ==========

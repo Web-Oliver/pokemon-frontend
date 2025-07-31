@@ -16,7 +16,7 @@ import {
   createResourceOperations,
   AUCTION_CONFIG,
 } from './genericApiOperations';
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 import { IAuction } from '../domain/models/auction';
 
 // ========== INTERFACES (ISP Compliance) ==========
@@ -127,15 +127,17 @@ export const batchAuctionOperation = auctionOperations.batchOperation;
 
 /**
  * Add item to auction
- * Custom operation using unified client correctly
+ * Custom operation using ID-validated methods
  */
 export const addItemToAuction = async (
   id: string,
   itemData: AddItemToAuctionData
 ): Promise<IAuction> => {
-  return await unifiedApiClient.post<IAuction>(
-    `/auctions/${id}/items`,
+  return await unifiedApiClient.putById<IAuction>(
+    '/auctions',
+    id,
     itemData,
+    'items',
     {
       operation: 'add item to auction',
       successMessage: 'Item added to auction successfully!',
@@ -145,7 +147,7 @@ export const addItemToAuction = async (
 
 /**
  * Remove item from auction
- * Custom operation using unified client correctly
+ * Custom operation using ID-validated methods
  */
 export const removeItemFromAuction = async (
   id: string,
@@ -157,12 +159,13 @@ export const removeItemFromAuction = async (
     itemCategory: itemCategory || 'PsaGradedCard',
   };
 
-  return await unifiedApiClient.delete<IAuction>(
-    `/auctions/${id}/remove-item`,
+  return await unifiedApiClient.deleteById<IAuction>(
+    '/auctions',
+    id,
+    'remove-item',
     {
       operation: 'remove item from auction',
       successMessage: 'Item removed from auction successfully!',
-      // Pass data in config for DELETE request
       optimization: { enableCache: false },
       data: payload,
     }
@@ -171,15 +174,17 @@ export const removeItemFromAuction = async (
 
 /**
  * Mark auction item as sold
- * Custom operation using unified client correctly
+ * Custom operation using ID-validated methods
  */
 export const markAuctionItemSold = async (
   id: string,
   saleData: { itemId: string; itemCategory: string; soldPrice: number }
 ): Promise<IAuction> => {
-  return await unifiedApiClient.put<IAuction>(
-    `/auctions/${id}/items/sold`,
+  return await unifiedApiClient.putById<IAuction>(
+    '/auctions',
+    id,
     saleData,
+    'items/sold',
     {
       operation: 'mark auction item as sold',
       successMessage: 'Auction item marked as sold! 💰',

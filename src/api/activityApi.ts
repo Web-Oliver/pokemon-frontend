@@ -18,7 +18,7 @@ import {
   ACTIVITY_CONFIG,
   idMapper,
 } from './genericApiOperations';
-import unifiedApiClient from './unifiedApiClient';
+import { unifiedApiClient } from './unifiedApiClient';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -369,10 +369,26 @@ export const getActivitiesForEntity = async (
   entityType: string,
   entityId: string
 ): Promise<{ success: boolean; data: Activity[] }> => {
+  // Validate both entityType and entityId to prevent [object Object] URLs
+  const validEntityType = String(entityType).trim();
+  const validEntityId = String(entityId).trim();
+
+  if (
+    !validEntityType ||
+    !validEntityId ||
+    validEntityType === '[object Object]' ||
+    validEntityId === '[object Object]'
+  ) {
+    throw new Error('Invalid entityType or entityId provided');
+  }
+
   const response = await unifiedApiClient.apiGet<{
     success: boolean;
     data: Activity[];
-  }>(`/activities/entity/${entityType}/${entityId}`, 'activities for entity');
+  }>(
+    `/activities/entity/${validEntityType}/${validEntityId}`,
+    'activities for entity'
+  );
 
   return response;
 };
@@ -385,12 +401,16 @@ export const getActivitiesForEntity = async (
 export const markActivityAsRead = async (
   id: string
 ): Promise<{ success: boolean; data: Activity }> => {
-  const response = await unifiedApiClient.apiUpdate<{
-    success: boolean;
-    data: Activity;
-  }>(`/activities/${id}/read`, {}, 'activity read status');
-
-  return response;
+  return await unifiedApiClient.putById<{ success: boolean; data: Activity }>(
+    '/activities',
+    id,
+    {},
+    'read',
+    {
+      operation: 'mark activity as read',
+      successMessage: 'Activity marked as read',
+    }
+  );
 };
 
 /**
@@ -401,12 +421,13 @@ export const markActivityAsRead = async (
 export const archiveActivity = async (
   id: string
 ): Promise<{ success: boolean; message: string }> => {
-  const response = await unifiedApiClient.apiDelete<{
+  return await unifiedApiClient.deleteById<{
     success: boolean;
     message: string;
-  }>(`/activities/${id}`, 'activity');
-
-  return response;
+  }>('/activities', id, undefined, {
+    operation: 'archive activity',
+    successMessage: 'Activity archived successfully',
+  });
 };
 
 // Export all activity operations for convenience

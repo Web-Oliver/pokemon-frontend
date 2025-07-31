@@ -121,15 +121,33 @@ export const useActivity = (
 
         const response = await activityApi.getActivities(filters);
 
+        // Enhanced null safety: Ensure we always have valid arrays and metadata
+        const safeData = Array.isArray(response?.data) ? response.data : [];
+        const safeMeta = response?.meta || {
+          hasMore: false,
+          total: 0,
+          page: 1,
+        };
+
+        // Validate activity objects
+        const validatedActivities = safeData.filter(
+          (activity): activity is Activity =>
+            activity &&
+            typeof activity === 'object' &&
+            ('_id' in activity || 'id' in activity) &&
+            'title' in activity &&
+            'description' in activity
+        );
+
         setState((prev) => ({
           ...prev,
           activities:
             newFilters?.offset === 0
-              ? response.data
-              : [...prev.activities, ...response.data],
-          hasMore: response.meta.hasMore,
-          total: response.meta.total,
-          page: response.meta.page,
+              ? validatedActivities
+              : [...(prev.activities || []), ...validatedActivities],
+          hasMore: safeMeta.hasMore || false,
+          total: safeMeta.total || 0,
+          page: safeMeta.page || 1,
           loading: false,
         }));
 
@@ -155,8 +173,30 @@ export const useActivity = (
         log('[USE ACTIVITY] Fetching recent activities, limit:', limit);
 
         const response = await activityApi.getRecentActivities(limit);
-        return response.data;
+
+        // Enhanced null safety: Ensure we always return a valid array
+        const safeActivities = response?.data ?? [];
+
+        // Additional validation: Ensure each item is a valid activity object
+        const validatedActivities = Array.isArray(safeActivities)
+          ? safeActivities.filter(
+              (activity): activity is Activity =>
+                activity &&
+                typeof activity === 'object' &&
+                ('_id' in activity || 'id' in activity) &&
+                'title' in activity &&
+                'description' in activity
+            )
+          : [];
+
+        log('[USE ACTIVITY] Validated activities:', {
+          original: safeActivities.length,
+          validated: validatedActivities.length,
+        });
+
+        return validatedActivities;
       } catch (error) {
+        log('[USE ACTIVITY] Error in fetchRecentActivities:', error);
         handleApiError(error, 'Failed to fetch recent activities');
         return [];
       }
@@ -206,11 +246,24 @@ export const useActivity = (
           entityType: state.filters.entityType,
         });
 
+        // Enhanced null safety for search results
+        const safeData = Array.isArray(response?.data) ? response.data : [];
+
+        // Validate search result activity objects
+        const validatedActivities = safeData.filter(
+          (activity): activity is Activity =>
+            activity &&
+            typeof activity === 'object' &&
+            ('_id' in activity || 'id' in activity) &&
+            'title' in activity &&
+            'description' in activity
+        );
+
         setState((prev) => ({
           ...prev,
-          activities: response.data,
+          activities: validatedActivities,
           hasMore: false, // Search results don't support pagination
-          total: response.data.length,
+          total: validatedActivities.length,
           loading: false,
         }));
       } catch (error) {
@@ -261,14 +314,20 @@ export const useActivity = (
     try {
       await activityApi.markActivityAsRead(id);
 
-      // Optimistic update
+      // Optimistic update with safety checks
       setState((prev) => ({
         ...prev,
-        activities: prev.activities.map((activity) =>
-          activity._id === id
-            ? { ...activity, isRead: true, readAt: new Date().toISOString() }
-            : activity
-        ),
+        activities: Array.isArray(prev.activities)
+          ? prev.activities.map((activity) =>
+              activity && (activity._id === id || activity.id === id)
+                ? {
+                    ...activity,
+                    isRead: true,
+                    readAt: new Date().toISOString(),
+                  }
+                : activity
+            )
+          : [],
       }));
 
       showSuccessToast('Activity marked as read');
@@ -282,11 +341,16 @@ export const useActivity = (
     try {
       await activityApi.archiveActivity(id);
 
-      // Remove from list
+      // Remove from list with safety checks
       setState((prev) => ({
         ...prev,
-        activities: prev.activities.filter((activity) => activity._id !== id),
-        total: prev.total - 1,
+        activities: Array.isArray(prev.activities)
+          ? prev.activities.filter(
+              (activity) =>
+                activity && activity._id !== id && activity.id !== id
+            )
+          : [],
+        total: Math.max((prev.total || 0) - 1, 0),
       }));
 
       showSuccessToast('Activity archived');
@@ -303,8 +367,23 @@ export const useActivity = (
           entityType,
           entityId
         );
-        return response.data;
+
+        // Enhanced null safety for entity activities
+        const safeData = Array.isArray(response?.data) ? response.data : [];
+
+        // Validate entity activity objects
+        const validatedActivities = safeData.filter(
+          (activity): activity is Activity =>
+            activity &&
+            typeof activity === 'object' &&
+            ('_id' in activity || 'id' in activity) &&
+            'title' in activity &&
+            'description' in activity
+        );
+
+        return validatedActivities;
       } catch (error) {
+        log('[USE ACTIVITY] Error in getActivitiesForEntity:', error);
         handleApiError(error, 'Failed to fetch entity activities');
         return [];
       }
@@ -317,8 +396,24 @@ export const useActivity = (
     async (id: string): Promise<Activity | null> => {
       try {
         const response = await activityApi.getActivityById(id);
-        return response.data;
+
+        // Enhanced null safety for single activity
+        const activity = response?.data;
+
+        // Validate activity object
+        if (
+          activity &&
+          typeof activity === 'object' &&
+          ('_id' in activity || 'id' in activity) &&
+          'title' in activity &&
+          'description' in activity
+        ) {
+          return activity as Activity;
+        }
+
+        return null;
       } catch (error) {
+        log('[USE ACTIVITY] Error in getActivityById:', error);
         handleApiError(error, 'Failed to fetch activity');
         return null;
       }
@@ -387,9 +482,33 @@ export const useRecentActivities = (limit: number = 10) => {
     try {
       setLoading(true);
       const response = await activityApi.getRecentActivities(limit);
-      setActivities(response.data);
+
+      // Enhanced null safety: Ensure we always have a valid array
+      const safeActivities = response?.data ?? [];
+
+      // Additional validation: Ensure each item is a valid activity object
+      const validatedActivities = Array.isArray(safeActivities)
+        ? safeActivities.filter(
+            (activity): activity is Activity =>
+              activity &&
+              typeof activity === 'object' &&
+              ('_id' in activity || 'id' in activity) &&
+              'title' in activity &&
+              'description' in activity
+          )
+        : [];
+
+      log('[USE RECENT ACTIVITIES] Setting activities:', {
+        total: validatedActivities.length,
+        hasData: validatedActivities.length > 0,
+      });
+
+      setActivities(validatedActivities);
     } catch (error) {
+      log('[USE RECENT ACTIVITIES] Error fetching activities:', error);
       handleApiError(error, 'Failed to fetch recent activities');
+      // Ensure activities is always an empty array on error
+      setActivities([]);
     } finally {
       setLoading(false);
     }

@@ -673,7 +673,7 @@ export const preloadImageWithAspectRatio = async (
   try {
     const aspectInfo = await detectImageAspectRatio(imageUrl);
     return aspectInfo;
-  } catch (error) {
+  } catch (_error) {
     console.warn('[ImageUtils] Failed to detect aspect ratio for:', imageUrl);
     return classifyAspectRatio(1); // Default to square
   }
