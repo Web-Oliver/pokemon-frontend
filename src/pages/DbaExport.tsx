@@ -505,7 +505,7 @@ const DbaExport: React.FC = () => {
       const response = await exportApi.exportToDba(exportData);
 
       console.log('[DBA EXPORT] Export successful:', response);
-      setExportResult(response.data);
+      setExportResult(response);
 
       // FOURTH: Reload DBA selections to show updated countdown timers
       try {
@@ -524,8 +524,17 @@ const DbaExport: React.FC = () => {
         // Continue without DBA selection data - this is not critical for export functionality
       }
 
+      const itemCount = response?.itemCount || 0;
+      console.log('[DBA EXPORT] ItemCount debug:', {
+        response,
+        itemCount: response?.itemCount,
+        responseType: typeof response,
+        hasItemCount: 'itemCount' in (response || {}),
+        actualValue: response?.itemCount,
+        finalItemCount: itemCount
+      });
       showSuccessToast(
-        `DBA export generated successfully! ${response.data.itemCount} items exported and added to DBA tracking.`
+        `DBA export generated successfully! ${itemCount} items exported and added to DBA tracking.`
       );
     } catch (err) {
       handleApiError(err, 'Failed to export to DBA format');

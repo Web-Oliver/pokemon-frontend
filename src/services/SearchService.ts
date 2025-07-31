@@ -551,18 +551,21 @@ export class SearchService implements ISearchService {
     const pokemonNumber = result.pokemonNumber
       ? `#${result.pokemonNumber}`
       : '';
-    const setName = result.setInfo?.setName || 'Unknown Set';
+    // Use the new setDisplayName from backend (includes unique identifier for Unknown Sets)
+    const setName = result.setDisplayName || result.setInfo?.setName || 'Unknown Set';
     const variety = result.variety ? ` (${result.variety})` : '';
 
     const displayName =
       `${pokemonNumber} ${cardName}${variety} - ${setName}`.trim();
 
     return {
+      // Use _id for React key uniqueness
       id: result._id || result.id,
       displayName,
       metadata: {
         setName,
         source: 'unified-cards',
+        fallbackSetName: result.fallbackSetName || false,
       },
       data: result,
     };

@@ -299,6 +299,9 @@ export interface CardResult {
     setName: string;
     year?: number;
   };
+  // New backend fields for handling Unknown Sets
+  setDisplayName?: string; // Set name with unique identifier for Unknown Sets
+  fallbackSetName?: boolean; // Flag indicating if set name is a fallback
   searchScore?: number; // Context7 enhanced scoring
   isExactMatch?: boolean; // Context7 exact match detection
   relevanceScore?: number; // New backend relevance score
@@ -898,4 +901,98 @@ export const getAvailabilityOptions = async (): Promise<
     { value: 5, label: 'Medium Stock (5)' },
     { value: 10, label: 'High Stock (10+)' },
   ];
+};
+
+/**
+ * Get available search entity types
+ * Uses the enhanced /api/search/types endpoint
+ * @returns Promise<string[]> - Available search types
+ */
+export const getSearchTypes = async (): Promise<string[]> => {
+  const cacheKey = 'search-types';
+  const cached = searchCache.get(cacheKey);
+  if (cached && isValidCacheEntry(cached)) {
+    return cached.data as string[];
+  }
+
+  try {
+    const response = await unifiedApiClient.get('/search/types');
+    const types = response.data || response;
+    
+    // Cache for 1 hour (types don't change often)
+    searchCache.set(cacheKey, {
+      data: types,
+      timestamp: Date.now(),
+      ttl: 60 * 60 * 1000,
+    });
+
+    return types;
+  } catch (error) {
+    console.error('Search types API error:', error);
+    // Return fallback types
+    return ['Card', 'SealedProduct', 'Set', 'PsaGradedCard', 'RawCard'];
+  }
+};
+
+/**
+ * Search factory statistics interface
+ */
+export interface SearchStats {
+  totalQueries: number;
+  avgResponseTime: number;
+  cacheHitRate: number;
+  popularQueries: Array<{
+    query: string;
+    count: number;
+  }>;
+  queryTypes: Record<string, number>;
+  performanceMetrics: {
+    slowQueries: Array<{
+      query: string;
+      responseTime: number;
+      timestamp: string;
+    }>;
+    errorRate: number;
+  };
+}
+
+/**
+ * Get search factory statistics and performance metrics
+ * Uses the enhanced /api/search/stats endpoint
+ * @returns Promise<SearchStats> - Search statistics and performance data
+ */
+export const getSearchStats = async (): Promise<SearchStats> => {
+  const cacheKey = 'search-stats';
+  const cached = searchCache.get(cacheKey);
+  if (cached && isValidCacheEntry(cached)) {
+    return cached.data as SearchStats;
+  }
+
+  try {
+    const response = await unifiedApiClient.get('/search/stats');
+    const stats = response.data || response;
+    
+    // Cache for 5 minutes (stats change frequently)
+    searchCache.set(cacheKey, {
+      data: stats,
+      timestamp: Date.now(),
+      ttl: 5 * 60 * 1000,
+    });
+
+    return stats;
+  } catch (error) {
+    console.error('Search stats API error:', error);
+    // Return fallback stats
+    return {
+      totalQueries: 0,
+      avgResponseTime: 0,
+      cacheHitRate: 0,
+      popularQueries: [],
+      queryTypes: {},
+      performanceMetrics: {
+        slowQueries: [],
+        errorRate: 0,
+      },
+    };
+  }
 };

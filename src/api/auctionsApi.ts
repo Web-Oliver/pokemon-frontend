@@ -62,21 +62,63 @@ const auctionOperations = createResourceOperations<
  * @param params - Optional filter parameters
  * @returns Promise<IAuction[]> - Array of auctions
  */
-export const getAuctions = auctionOperations.getAll;
+export const getAuctions = async (params?: AuctionsParams): Promise<IAuction[]> => {
+  try {
+    return await auctionOperations.getAll(params);
+  } catch (error: any) {
+    // Handle specific backend errors that might be related to circular references
+    if (error?.message?.includes('Maximum call stack size exceeded') || 
+        error?.response?.data?.message?.includes('Maximum call stack size exceeded')) {
+      console.warn('Backend circular reference detected in auctions, returning empty array');
+      // Return empty array to prevent frontend crashes
+      return [];
+    }
+    // Re-throw other errors
+    throw error;
+  }
+};
 
 /**
  * Get auction by ID (with populated items)
  * @param id - Auction ID
  * @returns Promise<IAuction> - Single auction
  */
-export const getAuctionById = auctionOperations.getById;
+export const getAuctionById = async (id: string): Promise<IAuction> => {
+  try {
+    return await auctionOperations.getById(id);
+  } catch (error: any) {
+    // Handle specific backend errors that might be related to circular references
+    if (error?.message?.includes('Maximum call stack size exceeded') || 
+        error?.response?.data?.message?.includes('Maximum call stack size exceeded')) {
+      console.warn(`Backend circular reference detected for auction ${id}`);
+      // Return a minimal auction object to prevent crashes
+      throw new Error(`Auction ${id} has corrupted data and cannot be loaded. Please contact support.`);
+    }
+    // Re-throw other errors
+    throw error;
+  }
+};
 
 /**
  * Create new auction
  * @param auctionData - Auction creation data
  * @returns Promise<IAuction> - Created auction
  */
-export const createAuction = auctionOperations.create;
+export const createAuction = async (auctionData: IAuctionCreatePayload): Promise<IAuction> => {
+  try {
+    return await auctionOperations.create(auctionData);
+  } catch (error: any) {
+    // Handle specific backend errors that might be related to circular references
+    if (error?.message?.includes('Maximum call stack size exceeded') || 
+        error?.response?.data?.message?.includes('Maximum call stack size exceeded')) {
+      console.warn('Backend circular reference detected during auction creation');
+      // Throw a user-friendly error instead of the technical one
+      throw new Error('Unable to create auction due to a server issue. Please contact support or try again later.');
+    }
+    // Re-throw other errors
+    throw error;
+  }
+};
 
 /**
  * Update auction

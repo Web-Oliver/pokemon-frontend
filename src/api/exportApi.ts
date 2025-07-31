@@ -506,16 +506,15 @@ export const exportToDba = async (
  */
 export const downloadDbaZip = async (): Promise<void> => {
   try {
-    const response = await unifiedApiClient.apiGet<Blob>(
-      '/export/dba/download',
-      'DBA export ZIP download',
-      { responseType: 'blob' }
-    );
+    // Use direct axios call for binary download instead of standardized API wrapper
+    const response = await unifiedApiClient.getAxiosInstance().get('/export/dba/download', {
+      responseType: 'blob'
+    });
 
     const timestamp = new Date().toISOString().split('T')[0];
     const filename = `dba-export-${timestamp}.zip`;
 
-    downloadBlob(response, filename);
+    downloadBlob(response.data, filename);
   } catch (error) {
     console.error('[EXPORT API] Failed to download DBA ZIP:', error);
     throw error;
@@ -536,4 +535,194 @@ export const downloadBlob = (blob: Blob, filename: string): void => {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+};
+
+// ========== MISSING DBA INTEGRATION ENDPOINTS ==========
+
+/**
+ * DBA credentials interface
+ */
+export interface DbaCredentials {
+  username: string;
+  password: string;
+}
+
+/**
+ * DBA posting request interface
+ */
+export interface DbaPostRequest {
+  exportId: string;
+  credentials: DbaCredentials;
+}
+
+/**
+ * DBA posting response interface
+ */
+export interface DbaPostResponse {
+  success: boolean;
+  message: string;
+  data: {
+    itemsPosted: number;
+    postsCreated: number;
+    failedPosts: Array<{
+      itemId: string;
+      reason: string;
+    }>;
+    postUrls: string[];
+  };
+}
+
+/**
+ * DBA integration status interface
+ */
+export interface DbaIntegrationStatus {
+  success: boolean;
+  data: {
+    serviceEnabled: boolean;
+    lastPostDate?: string;
+    totalItemsPosted: number;
+    pendingItems: number;
+    failedPosts: number;
+    integrationHealth: 'healthy' | 'warning' | 'error';
+    lastError?: string;
+    apiLimits: {
+      dailyLimit: number;
+      dailyUsed: number;
+      rateLimitRemaining: number;
+    };
+  };
+}
+
+/**
+ * DBA test response interface
+ */
+export interface DbaTestResponse {
+  success: boolean;
+  message: string;
+  data: {
+    connectionTest: boolean;
+    authenticationTest: boolean;
+    apiLimitsCheck: boolean;
+    testPosting: boolean;
+    recommendations: string[];
+    warnings: string[];
+  };
+}
+
+/**
+ * Post directly to DBA marketplace
+ * Uses POST /api/export/dba/post endpoint as per API documentation
+ * @param request - DBA posting request with export ID and credentials
+ * @returns Promise<DbaPostResponse> - Posting results
+ */
+export const postToDbaMarketplace = async (
+  request: DbaPostRequest
+): Promise<DbaPostResponse> => {
+  return unifiedApiClient.post<DbaPostResponse>('/export/dba/post', request);
+};
+
+/**
+ * Get DBA integration status and statistics
+ * Uses GET /api/export/dba/status endpoint as per API documentation
+ * @returns Promise<DbaIntegrationStatus> - DBA integration status
+ */
+export const getDbaIntegrationStatus = async (): Promise<DbaIntegrationStatus> => {
+  return unifiedApiClient.get<DbaIntegrationStatus>('/export/dba/status');
+};
+
+/**
+ * Test DBA integration without posting
+ * Uses POST /api/export/dba/test endpoint as per API documentation
+ * @returns Promise<DbaTestResponse> - Test results and recommendations
+ */
+export const testDbaIntegration = async (): Promise<DbaTestResponse> => {
+  return unifiedApiClient.post<DbaTestResponse>('/export/dba/test');
+};
+
+// ========== DBA CONVENIENCE FUNCTIONS ==========
+
+/**
+ * Check if DBA integration is healthy and ready for posting
+ * @returns Promise<boolean> - True if DBA integration is ready
+ */
+export const isDbaIntegrationHealthy = async (): Promise<boolean> => {
+  try {
+    const status = await getDbaIntegrationStatus();
+    return (
+      status.success &&
+      status.data.serviceEnabled &&
+      status.data.integrationHealth === 'healthy'
+    );
+  } catch (error) {
+    console.error('DBA integration health check failed:', error);
+    return false;
+  }
+};
+
+/**
+ * Get DBA posting limits and usage
+ * @returns Promise<{dailyLimit: number, dailyUsed: number, remaining: number}> - API limits info
+ */
+export const getDbaApiLimits = async (): Promise<{
+  dailyLimit: number;
+  dailyUsed: number;
+  remaining: number;
+}> => {
+  try {
+    const status = await getDbaIntegrationStatus();
+    const limits = status.data.apiLimits;
+    return {
+      dailyLimit: limits.dailyLimit,
+      dailyUsed: limits.dailyUsed,
+      remaining: limits.dailyLimit - limits.dailyUsed,
+    };
+  } catch (error) {
+    console.error('Failed to get DBA API limits:', error);
+    return {
+      dailyLimit: 0,
+      dailyUsed: 0,
+      remaining: 0,
+    };
+  }
+};
+
+/**
+ * Export and post to DBA in one operation
+ * @param items - Items to export and post
+ * @param credentials - DBA credentials
+ * @param options - Export options
+ * @returns Promise<{exportResponse: DbaExportResponse, postResponse: DbaPostResponse}> - Combined results
+ */
+export const exportAndPostToDba = async (
+  items: DbaExportItem[],
+  credentials: DbaCredentials,
+  options: {
+    customDescription?: string;
+    includeMetadata?: boolean;
+  } = {}
+): Promise<{
+  exportResponse: DbaExportResponse;
+  postResponse: DbaPostResponse;
+}> => {
+  // First, export the items to DBA format
+  const exportResponse = await exportToDba({
+    items,
+    customDescription: options.customDescription,
+    includeMetadata: options.includeMetadata,
+  });
+
+  if (!exportResponse.success) {
+    throw new Error(`Export failed: ${exportResponse.message}`);
+  }
+
+  // Then, post to DBA marketplace
+  const postResponse = await postToDbaMarketplace({
+    exportId: exportResponse.data.jsonFilePath, // Use the generated export path as ID
+    credentials,
+  });
+
+  return {
+    exportResponse,
+    postResponse,
+  };
 };

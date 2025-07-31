@@ -91,6 +91,7 @@ export interface ApiRequestConfig extends AxiosRequestConfig {
   errorMessage?: string;
   logRequest?: boolean;
   logResponse?: boolean;
+  suppressErrorToast?: boolean;
 }
 
 /**
@@ -229,6 +230,7 @@ export class UnifiedApiClient {
       }
 
       // Use simplified response transformer for new API format only
+      // response.data already contains the full API response: {success, status, data, meta}
       return transformApiResponse<T>(response.data);
     } catch (error) {
       if (logRequest) {
@@ -468,6 +470,43 @@ export class UnifiedApiClient {
       });
     } catch (error) {
       log(`ID validation failed for PUT ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * POST request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param data - Data to send with the request
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async postById<T>(
+    basePath: string,
+    id: any,
+    data: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      // Transform request data to convert ObjectId objects to strings
+      // Skip transformation for FormData objects (used in file uploads)
+      const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      return this.post<T>(url, transformedData, {
+        ...config,
+        operation:
+          config.operation ||
+          `post ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for POST ${basePath}:`, {
         providedId: id,
         typeOfId: typeof id,
         stringValue: String(id),

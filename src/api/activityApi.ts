@@ -430,6 +430,127 @@ export const archiveActivity = async (
   });
 };
 
+// ========== MISSING ACTIVITY ARCHIVE FUNCTIONALITY ==========
+
+/**
+ * Archive old activities request interface
+ */
+export interface ArchiveOldActivitiesRequest {
+  days: number;
+}
+
+/**
+ * Archive old activities response interface
+ */
+export interface ArchiveOldActivitiesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    archivedCount: number;
+    oldestArchived: string;
+    newestArchived: string;
+    archiveDate: string;
+  };
+}
+
+/**
+ * Archive activities older than specified days
+ * Uses POST /api/activities/archive-old endpoint as per API documentation
+ * @param days - Number of days (activities older than this will be archived)
+ * @returns Promise<ArchiveOldActivitiesResponse> - Archive operation results
+ */
+export const archiveOldActivities = async (
+  days: number
+): Promise<ArchiveOldActivitiesResponse> => {
+  const request: ArchiveOldActivitiesRequest = { days };
+  
+  return unifiedApiClient.post<ArchiveOldActivitiesResponse>(
+    '/activities/archive-old',
+    request
+  );
+};
+
+/**
+ * Get estimated count of activities that would be archived
+ * Helper function to preview archive operation
+ * @param days - Number of days threshold
+ * @returns Promise<{count: number, oldestDate: string}> - Preview of archive operation
+ */
+export const getArchivePreview = async (
+  days: number
+): Promise<{ count: number; oldestDate: string }> => {
+  try {
+    // Calculate the cutoff date
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    // Get activities older than the cutoff date
+    const activities = await getActivities({
+      limit: 1000, // Get a large sample to estimate
+      offset: 0,
+    });
+    
+    const oldActivities = activities.data.filter(
+      (activity) => new Date(activity.createdAt) < cutoffDate
+    );
+    
+    const oldestDate = oldActivities.length > 0
+      ? Math.min(
+          ...oldActivities.map((a) => new Date(a.createdAt).getTime())
+        )
+      : Date.now();
+    
+    return {
+      count: oldActivities.length,
+      oldestDate: new Date(oldestDate).toISOString(),
+    };
+  } catch (error) {
+    console.error('Failed to get archive preview:', error);
+    return {
+      count: 0,
+      oldestDate: new Date().toISOString(),
+    };
+  }
+};
+
+/**
+ * Archive activities with confirmation
+ * Convenience function that includes preview and confirmation
+ * @param days - Number of days threshold
+ * @param confirm - Confirmation callback function
+ * @returns Promise<ArchiveOldActivitiesResponse | null> - Archive results or null if cancelled
+ */
+export const archiveOldActivitiesWithConfirmation = async (
+  days: number,
+  confirm: (preview: { count: number; oldestDate: string }) => Promise<boolean>
+): Promise<ArchiveOldActivitiesResponse | null> => {
+  // Get preview first
+  const preview = await getArchivePreview(days);
+  
+  if (preview.count === 0) {
+    return {
+      success: true,
+      message: 'No activities found older than the specified days',
+      data: {
+        archivedCount: 0,
+        oldestArchived: '',
+        newestArchived: '',
+        archiveDate: new Date().toISOString(),
+      },
+    };
+  }
+  
+  // Ask for confirmation
+  const confirmed = await confirm(preview);
+  
+  if (!confirmed) {
+    return null; // User cancelled
+  }
+  
+  // Proceed with archive
+  return archiveOldActivities(days);
+};
+
 // Export all activity operations for convenience
 export default {
   // Generic operations
@@ -452,4 +573,9 @@ export default {
   getActivitiesForEntity,
   markActivityAsRead,
   archiveActivity,
+  
+  // Archive functionality
+  archiveOldActivities,
+  getArchivePreview,
+  archiveOldActivitiesWithConfirmation,
 };

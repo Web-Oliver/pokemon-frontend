@@ -246,12 +246,12 @@ export const getPaginatedCardMarketRefProducts = async (
       );
 
     return {
-      products: response.products || [],
-      total: response.total || 0,
-      currentPage: response.currentPage || page,
-      totalPages: response.totalPages || 1,
-      hasNextPage: response.hasNextPage || false,
-      hasPrevPage: response.hasPrevPage || false,
+      products: response.data?.products || [],
+      total: response.data?.total || 0,
+      currentPage: response.data?.currentPage || page,
+      totalPages: response.data?.totalPages || 1,
+      hasNextPage: response.data?.hasNextPage || false,
+      hasPrevPage: response.data?.hasPrevPage || false,
     };
   }
 };

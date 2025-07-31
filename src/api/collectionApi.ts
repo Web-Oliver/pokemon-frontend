@@ -100,18 +100,19 @@ export const deletePsaGradedCard = async (id: string): Promise<void> => {
 
 /**
  * Mark PSA graded card as sold
+ * Uses POST /api/psa-graded-cards/:id/mark-sold endpoint as per API documentation
  * @param id - PSA graded card ID
- * @param saleDetails - Sale details
+ * @param saleDetails - Sale details matching API saleDetails format
  * @returns Promise<IPsaGradedCard> - Updated PSA graded card
  */
 export const markPsaGradedCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IPsaGradedCard> => {
-  return await unifiedApiClient.putById<IPsaGradedCard>(
+  return await unifiedApiClient.postById<IPsaGradedCard>(
     '/psa-graded-cards',
     id,
-    saleDetails,
+    { saleDetails }, // Wrap in saleDetails object as per API documentation
     'mark-sold'
   );
 };
@@ -201,18 +202,19 @@ export const deleteRawCard = async (id: string): Promise<void> => {
 
 /**
  * Mark raw card as sold
+ * Uses POST /api/raw-cards/:id/mark-sold endpoint as per API documentation
  * @param id - Raw card ID
- * @param saleDetails - Sale details
+ * @param saleDetails - Sale details matching API saleDetails format
  * @returns Promise<IRawCard> - Updated raw card
  */
 export const markRawCardSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<IRawCard> => {
-  return await unifiedApiClient.putById<IRawCard>(
+  return await unifiedApiClient.postById<IRawCard>(
     '/raw-cards',
     id,
-    saleDetails,
+    { saleDetails }, // Wrap in saleDetails object as per API documentation
     'mark-sold'
   );
 };
@@ -303,18 +305,19 @@ export const deleteSealedProduct = async (id: string): Promise<void> => {
 
 /**
  * Mark sealed product as sold
+ * Uses POST /api/sealed-products/:id/mark-sold endpoint as per API documentation
  * @param id - Sealed product ID
- * @param saleDetails - Sale details
+ * @param saleDetails - Sale details matching API saleDetails format
  * @returns Promise<ISealedProduct> - Updated sealed product
  */
 export const markSealedProductSold = async (
   id: string,
   saleDetails: ISaleDetails
 ): Promise<ISealedProduct> => {
-  return await unifiedApiClient.putById<ISealedProduct>(
+  return await unifiedApiClient.postById<ISealedProduct>(
     '/sealed-products',
     id,
-    saleDetails,
+    { saleDetails }, // Wrap in saleDetails object as per API documentation
     'mark-sold'
   );
 };

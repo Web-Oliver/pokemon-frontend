@@ -60,6 +60,23 @@ export interface OptimizedSearchResponse {
 }
 
 /**
+ * Card metrics response interface
+ */
+export interface CardMetrics {
+  totalCards: number;
+  cardsBySet: Record<string, number>;
+  gradeDistribution: Record<string, number>;
+  topPsaPopulations: Array<{
+    cardId: string;
+    cardName: string;
+    setName: string;
+    psaTotalGradedForCard: number;
+  }>;
+  recentlyAdded: ICard[];
+  averagePsaPopulation: number;
+}
+
+/**
  * Card creation payload interface
  */
 interface ICardCreatePayload extends Omit<ICard, 'id' | '_id'> {}
@@ -173,6 +190,15 @@ export const exportCards = cardOperations.export;
  * @returns Promise<ICard[]> - Operation results
  */
 export const batchCardOperation = cardOperations.batchOperation;
+
+/**
+ * Get comprehensive card metrics and statistics
+ * Uses the enhanced /api/cards/enhanced/metrics endpoint with 15-minute caching
+ * @returns Promise<CardMetrics> - Card metrics and statistics
+ */
+export const getCardMetrics = async (): Promise<CardMetrics> => {
+  return cardOperations.client.get('/cards/enhanced/metrics');
+};
 
 // ========== CARD-SPECIFIC OPERATIONS ==========
 

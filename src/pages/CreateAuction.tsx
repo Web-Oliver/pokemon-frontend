@@ -41,7 +41,6 @@ import { PageLayout } from '../components/layouts/PageLayout';
 import { IAuctionItem } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { transformRequestData } from '../utils/responseTransformer';
 import { useAuction } from '../hooks/useAuction';
 import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
 import { getCollectionApiService } from '../services/ServiceRegistry';
@@ -656,59 +655,59 @@ const CreateAuction: React.FC = () => {
 
     try {
       clearError();
-      log('Creating auction with data:', formData);
-      log('Selected items:', selectedItemIds);
 
       // Prepare selected items for auction (preserving category order)
-      // Transform all itemIds to ensure ObjectId objects are converted to strings
+      // Only include essential fields to avoid circular references
       const auctionItems: IAuctionItem[] = [
-        ...selectedItemsByType.PsaGradedCard.map((item) => {
-          const transformedItem = transformRequestData({ itemId: item.id });
-          return {
-            itemId: transformedItem.itemId,
-            itemCategory: item.itemType,
-            sold: false,
-          };
-        }),
-        ...selectedItemsByType.RawCard.map((item) => {
-          const transformedItem = transformRequestData({ itemId: item.id });
-          return {
-            itemId: transformedItem.itemId,
-            itemCategory: item.itemType,
-            sold: false,
-          };
-        }),
-        ...selectedItemsByType.SealedProduct.map((item) => {
-          const transformedItem = transformRequestData({ itemId: item.id });
-          return {
-            itemId: transformedItem.itemId,
-            itemCategory: item.itemType,
-            sold: false,
-          };
-        }),
+        ...selectedItemsByType.PsaGradedCard.map((item) => ({
+          itemId: String(item.id), // Ensure it's a string, not ObjectId
+          itemCategory: 'PsaGradedCard' as const,
+          sold: false,
+        })),
+        ...selectedItemsByType.RawCard.map((item) => ({
+          itemId: String(item.id), // Ensure it's a string, not ObjectId
+          itemCategory: 'RawCard' as const,
+          sold: false,
+        })),
+        ...selectedItemsByType.SealedProduct.map((item) => ({
+          itemId: String(item.id), // Ensure it's a string, not ObjectId
+          itemCategory: 'SealedProduct' as const,
+          sold: false,
+        })),
       ];
 
-      // Prepare auction data
+      // Prepare auction data - clean object without circular references
       const auctionData = {
         topText: formData.topText.trim(),
         bottomText: formData.bottomText.trim(),
         status: formData.status,
         items: auctionItems,
-        totalValue: selectedItemsValue,
+        totalValue: Number(selectedItemsValue), // Ensure it's a number
         ...(formData.auctionDate && { auctionDate: formData.auctionDate }),
       };
 
-      const createdAuction = await createAuction(auctionData);
-      log('Auction created successfully:', createdAuction);
+      // Log the clean data (avoid logging complex objects that might have circular refs)
+      log('Creating auction with clean data:', {
+        topText: auctionData.topText,
+        bottomText: auctionData.bottomText,
+        status: auctionData.status,
+        itemCount: auctionData.items.length,
+        totalValue: auctionData.totalValue,
+        hasAuctionDate: !!auctionData.auctionDate,
+      });
 
+      const createdAuction = await createAuction(auctionData);
+      
       // Navigate to auction detail page - handle both id and _id
       const auctionId = createdAuction.id || createdAuction._id;
       if (auctionId) {
+        // Show success message
+        alert('✅ Auction created successfully!');
         window.history.pushState({}, '', `/auctions/${auctionId}`);
         window.dispatchEvent(new PopStateEvent('popstate'));
       } else {
-        log('Error: No auction ID returned from API', createdAuction);
-        // Navigate back to auctions list as fallback
+        // Show success but navigate to list
+        alert('✅ Auction created successfully! Redirecting to auctions list.');
         window.history.pushState({}, '', '/auctions');
         window.dispatchEvent(new PopStateEvent('popstate'));
       }

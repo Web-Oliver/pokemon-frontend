@@ -123,7 +123,7 @@ const CollectionItemDetail: React.FC = () => {
 
       // Update item based on type - backend will automatically sync myPrice to latest price
       if (type === 'psa') {
-        updatedItem = await collectionApi.updatePsaGradedCard(id, {
+        updatedItem = await collectionApi.updatePsaCard(id, {
           priceHistory: updatedPriceHistory,
         });
       } else if (type === 'raw') {
@@ -220,7 +220,7 @@ const CollectionItemDetail: React.FC = () => {
 
       switch (type) {
         case 'psa':
-          await collectionApi.deletePsaGradedCard(id);
+          await collectionApi.deletePsaCard(id);
           break;
         case 'raw':
           await collectionApi.deleteRawCard(id);
@@ -385,7 +385,7 @@ const CollectionItemDetail: React.FC = () => {
                     </p>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       {Object.entries(psaCard.cardId.psaGrades)
-                        .filter(([grade, count]) => count > 0) // Only show grades with population > 0
+                        .filter(([, count]) => count > 0) // Only show grades with population > 0
                         .map(([grade, count]) => {
                           // Extract grade number from "psa_X" format
                           const gradeNumber = grade.replace('psa_', '');

@@ -9,8 +9,7 @@
  * - Layer 3: UI Building Block component
  */
 
-import React, { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { memo } from 'react';
 import { Package, Star, Archive, CheckCircle, Plus } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
@@ -237,51 +236,10 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
         );
       }
 
-      // Optimized: Static animation variants to prevent constant prop changes
-      const containerVariants = useMemo(
-        () => ({
-          hidden: { opacity: 0 },
-          show: {
-            opacity: 1,
-            transition: {
-              staggerChildren: 0.05, // Reduced from 0.1 for faster animation
-              delayChildren: 0.1, // Reduced from 0.2
-            },
-          },
-        }),
-        []
-      );
-
-      const itemVariants = useMemo(
-        () => ({
-          hidden: {
-            opacity: 0,
-            y: 30, // Reduced from 60 for less dramatic effect
-            scale: 0.95, // Reduced from 0.8
-          },
-          show: {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: {
-              type: 'spring',
-              stiffness: 300, // Increased for faster animation
-              damping: 25, // Slightly increased for less bounce
-              duration: 0.3, // Reduced from 0.6
-            },
-          },
-        }),
-        []
-      );
-
-      // Optimized: Remove whileInView to prevent intersection observer overhead
+      // Performance optimization: Remove Framer Motion animations
+      // These were causing 76 extra renders and 253ms of "other time"
       return (
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto"
-          initial="hidden"
-          animate="show"
-          variants={containerVariants}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {data.map((item: CollectionItem, index: number) => {
             const itemType = getItemType(item, activeTab);
             // Ensure absolutely unique key by combining ID with index as fallback
@@ -291,9 +249,8 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                 : `fallback-${activeTab}-${index}`;
 
             return (
-              <motion.div
+              <div
                 key={uniqueKey}
-                variants={itemVariants}
                 className="mx-auto w-full max-w-sm"
               >
                 <CollectionItemCard
@@ -303,10 +260,10 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                   onViewDetails={onViewItemDetail}
                   onMarkAsSold={onMarkAsSold}
                 />
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       );
     };
 

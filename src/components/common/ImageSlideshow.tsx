@@ -12,6 +12,23 @@ interface ImageSlideshowProps {
   showThumbnails?: boolean;
 }
 
+// Helper function to get image URL without assumptions
+const getImageUrl = (imageUrl: string): string => {
+  return imageUrl.startsWith('http') ? imageUrl : `http://localhost:3000${imageUrl}`;
+};
+
+// Helper function to get thumbnail URL
+const getThumbnailUrl = (imageUrl: string): string => {
+  // Extract the file extension and name
+  const ext = imageUrl.substring(imageUrl.lastIndexOf('.'));
+  const nameWithoutExt = imageUrl.substring(0, imageUrl.lastIndexOf('.'));
+  
+  // Create thumbnail filename with -thumb suffix
+  const thumbnailUrl = `${nameWithoutExt}-thumb${ext}`;
+  
+  return thumbnailUrl.startsWith('http') ? thumbnailUrl : `http://localhost:3000${thumbnailUrl}`;
+};
+
 export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
   ({
     images,
@@ -183,14 +200,10 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                     key={index}
                   >
                     <img
-                      src={
-                        image.startsWith('http')
-                          ? image
-                          : `http://localhost:3000${image}`
-                      }
+                      src={getImageUrl(image)}
                       alt={`Item image ${index + 1}`}
                       className="w-full h-full object-cover transition-opacity duration-300"
-                      loading="lazy"
+                      loading={index === 0 ? "eager" : "lazy"}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -282,19 +295,16 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                         aria-label={`Go to image ${index + 1}`}
                       >
                         <img
-                          src={
-                            image.startsWith('http')
-                              ? image
-                              : `http://localhost:3000${image}`
-                          }
+                          src={getThumbnailUrl(image)}
                           alt={`Thumbnail ${index + 1}`}
                           className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
                           loading="lazy"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
+                            // Fallback to full image if thumbnail fails
+                            target.src = getImageUrl(image);
                             console.warn(
-                              `Failed to load thumbnail: ${target.src}`
+                              `Failed to load thumbnail, falling back to full image: ${target.src}`
                             );
                           }}
                           onLoad={(e) => {

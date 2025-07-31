@@ -363,11 +363,9 @@ export const useAuction = (): UseAuctionHook => {
     setError(null);
   }, []);
 
-  // Fetch auctions on mount (restored to maintain hook order)
-  useEffect(() => {
-    // Always fetch on mount to ensure fresh data
-    fetchAuctions();
-  }, [fetchAuctions]);
+  // NOTE: Removed automatic fetch on mount to prevent circular reference errors
+  // Pages that need auction data should explicitly call fetchAuctions()
+  // This prevents unnecessary API calls on pages like CreateAuction that don't need existing auctions
 
   return {
     // State

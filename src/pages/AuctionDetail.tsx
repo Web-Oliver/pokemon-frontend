@@ -1081,11 +1081,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             title={`Mark "${selectedItem?.name}" as Sold`}
             maxWidth="2xl"
           >
-            <MarkSoldForm
-              onSubmit={handleMarkSoldSubmit}
-              onCancel={handleModalClose}
-              isLoading={collectionLoading}
-            />
+            {selectedItem && (
+              <MarkSoldForm
+                itemId={selectedItem.id}
+                itemType={selectedItem.type}
+                onSubmit={handleMarkSoldSubmit}
+                onCancel={handleModalClose}
+                isLoading={collectionLoading}
+              />
+            )}
           </Modal>
 
           {/* Delete Auction Confirmation Modal */}

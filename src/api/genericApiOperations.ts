@@ -508,7 +508,7 @@ export const AUCTION_CONFIG = createResourceConfig('/auctions', 'auction');
 /**
  * Common configuration for card resources
  */
-export const CARD_CONFIG = createResourceConfig('/cards', 'card');
+export const CARD_CONFIG = createResourceConfig('/cards/enhanced', 'card');
 
 /**
  * Common configuration for set resources
