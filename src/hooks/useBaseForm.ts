@@ -147,7 +147,7 @@ export const useBaseForm = <T extends FieldValues>(
         }
       });
     },
-    [form, fieldMapping]
+    [fieldMapping]
   );
 
   // Handle initialData on mount and when it changes (for async loading)
@@ -165,7 +165,7 @@ export const useBaseForm = <T extends FieldValues>(
         // This would need to be implemented in usePriceHistory if needed
       }
     }
-  }, [isEditing, initialData, updateWithInitialData, imageUpload.setRemainingExistingImages]);
+  }, [isEditing, initialData]);
 
   return {
     form,

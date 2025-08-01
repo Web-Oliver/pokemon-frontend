@@ -139,8 +139,16 @@ const SetSearch: React.FC = () => {
       page: 1,
       limit: itemsPerPage,
       ...(searchTerm && { search: searchTerm }),
-      ...(yearFilter && { year: parseInt(yearFilter) }),
     };
+
+    // Add year filter with validation
+    if (yearFilter) {
+      const year = parseInt(yearFilter);
+      if (year >= 1900 && year <= 2035) {
+        params.year = year;
+      }
+    }
+
     fetchSets(params);
   };
 
