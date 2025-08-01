@@ -19,7 +19,9 @@ export interface CollectionStatsProps {
   soldItemsCount: number;
   loading?: boolean;
   activeTab?: string;
-  onTabChange?: (tab: 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items') => void;
+  onTabChange?: (
+    tab: 'psa-graded' | 'raw-cards' | 'sealed-products' | 'sold-items'
+  ) => void;
 }
 
 interface StatCardProps {
@@ -52,30 +54,36 @@ const StatCard: React.FC<StatCardProps> = ({
   <div
     onClick={onClick}
     className={`group cursor-pointer relative overflow-hidden transition-all duration-300 ${
-      isActive 
-        ? 'bg-white/10 border-2 border-white/20 shadow-xl' 
+      isActive
+        ? 'bg-white/10 border-2 border-white/20 shadow-xl'
         : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20'
     } backdrop-blur-xl rounded-2xl p-6`}
   >
     {/* Main content layout */}
     <div className="flex flex-col items-center text-center space-y-4">
       {/* Icon */}
-      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradientFrom.replace('/10', '/20')} ${gradientTo.replace('/10', '/20')} flex items-center justify-center transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}>
+      <div
+        className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradientFrom.replace('/10', '/20')} ${gradientTo.replace('/10', '/20')} flex items-center justify-center transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}
+      >
         <Icon className="w-7 h-7 text-white" />
       </div>
-      
+
       {/* Count */}
       <div className="space-y-1">
-        <div className={`text-4xl font-black ${isActive ? textColor : 'text-white group-hover:' + textColor} transition-colors duration-300`}>
+        <div
+          className={`text-4xl font-black ${isActive ? textColor : `text-white group-hover:${textColor}`} transition-colors duration-300`}
+        >
           {loading ? (
             <div className="w-16 h-10 bg-white/10 rounded-lg animate-pulse"></div>
           ) : (
             count.toLocaleString()
           )}
         </div>
-        
+
         {/* Title */}
-        <div className={`text-sm font-semibold uppercase tracking-wider ${isActive ? textColor : 'text-white/70 group-hover:text-white'} transition-colors duration-300`}>
+        <div
+          className={`text-sm font-semibold uppercase tracking-wider ${isActive ? textColor : 'text-white/70 group-hover:text-white'} transition-colors duration-300`}
+        >
           {title}
         </div>
       </div>

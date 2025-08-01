@@ -447,12 +447,16 @@ export const transformApiResponse = <T>(responseData: any): T => {
 
   // Extract and transform data with ID mapping
   // Handle cases where data field might be missing (e.g., delete operations)
-  const extractedData = responseData.data !== undefined ? responseData.data : null;
+  const extractedData =
+    responseData.data !== undefined ? responseData.data : null;
   console.log('[TRANSFORM API RESPONSE] Extracted data:', extractedData);
 
   // For operations without data (like deletes), return the success message or status
   if (extractedData === null && responseData.message) {
-    console.log('[TRANSFORM API RESPONSE] Returning message for data-less operation:', responseData.message);
+    console.log(
+      '[TRANSFORM API RESPONSE] Returning message for data-less operation:',
+      responseData.message
+    );
     return { success: true, message: responseData.message } as T;
   }
 

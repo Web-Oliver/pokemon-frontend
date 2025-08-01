@@ -1,7 +1,7 @@
 /**
  * Pure TanStack Query Search API - Context7 Optimal Caching Strategy
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * CONTEXT7 PURE TANSTACK QUERY IMPLEMENTATION:
  * - Eliminates all UnifiedApiClient dependencies for pure native fetch
  * - Direct HTTP calls with optimal error handling
@@ -81,11 +81,22 @@ const pureFetch = async (url: string): Promise<any> => {
  * Context7 Pattern: Minimal transformation for performance
  */
 const mapCardIds = (card: unknown): unknown => {
-  if (!card) return card;
-  if (Array.isArray(card)) return card.map(mapCardIds);
+  if (!card) {
+    return card;
+  }
+  if (Array.isArray(card)) {
+    return card.map(mapCardIds);
+  }
 
-  if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
-    (card as Record<string, unknown>).id = (card as Record<string, unknown>)._id;
+  if (
+    typeof card === 'object' &&
+    card !== null &&
+    '_id' in card &&
+    !('id' in card)
+  ) {
+    (card as Record<string, unknown>).id = (
+      card as Record<string, unknown>
+    )._id;
   }
 
   return card;
@@ -126,7 +137,9 @@ export const getCardSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ICard[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -149,7 +162,9 @@ export const getBestMatchCard = async (
   query: string,
   setContext?: string
 ): Promise<ICard | null> => {
-  if (!query.trim()) return null;
+  if (!query.trim()) {
+    return null;
+  }
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -157,7 +172,9 @@ export const getBestMatchCard = async (
     page: 1,
   };
 
-  if (setContext) params.setName = setContext;
+  if (setContext) {
+    params.setName = setContext;
+  }
 
   const response = await searchCards(params);
   return response.data.length > 0 ? response.data[0] : null;
@@ -171,7 +188,9 @@ export const searchCardsInSet = async (
   setName: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -192,7 +211,9 @@ export const searchCardsByPokemonNumber = async (
   setName?: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!pokemonNumber.trim()) return [];
+  if (!pokemonNumber.trim()) {
+    return [];
+  }
 
   const params: CardSearchParams = {
     query: pokemonNumber.trim(),
@@ -201,7 +222,9 @@ export const searchCardsByPokemonNumber = async (
     page: 1,
   };
 
-  if (setName) params.setName = setName;
+  if (setName) {
+    params.setName = setName;
+  }
 
   const response = await searchCards(params);
   return response.data;
@@ -215,7 +238,9 @@ export const searchCardsByVariety = async (
   variety: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -256,7 +281,9 @@ export const getSetSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ISet[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -275,7 +302,9 @@ export const getSetSuggestions = async (
  * Pure TanStack Query Best Match Set
  */
 export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
-  if (!query.trim()) return null;
+  if (!query.trim()) {
+    return null;
+  }
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -323,7 +352,9 @@ export const getProductSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -346,7 +377,9 @@ export const getBestMatchProduct = async (
   setContext?: string,
   categoryContext?: string
 ): Promise<ICardMarketReferenceProduct | null> => {
-  if (!query.trim()) return null;
+  if (!query.trim()) {
+    return null;
+  }
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -354,8 +387,12 @@ export const getBestMatchProduct = async (
     page: 1,
   };
 
-  if (setContext) params.setName = setContext;
-  if (categoryContext) params.category = categoryContext;
+  if (setContext) {
+    params.setName = setContext;
+  }
+  if (categoryContext) {
+    params.category = categoryContext;
+  }
 
   const response = await searchProducts(params);
   return response.data.length > 0 ? response.data[0] : null;
@@ -369,7 +406,9 @@ export const searchProductsInSet = async (
   setName: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -390,7 +429,9 @@ export const searchProductsByCategory = async (
   category: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -412,7 +453,9 @@ export const searchProductsByPriceRange = async (
   maxPrice: number,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -433,7 +476,9 @@ export const searchAvailableProducts = async (
   query: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) return [];
+  if (!query.trim()) {
+    return [];
+  }
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -452,16 +497,20 @@ export const searchAvailableProducts = async (
 export const getCardMarketSetNames = async (
   query?: string,
   limit: number = 50
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score?: number;
-}>> => {
+): Promise<
+  Array<{
+    setName: string;
+    count: number;
+    totalAvailable: number;
+    categoryCount: number;
+    averagePrice: number;
+    score?: number;
+  }>
+> => {
   const queryParams = new URLSearchParams({ limit: limit.toString() });
-  if (query?.trim()) queryParams.append('search', query.trim());
+  if (query?.trim()) {
+    queryParams.append('search', query.trim());
+  }
 
   const response = await pureFetch(
     `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`
@@ -477,14 +526,18 @@ export const getCardMarketSetNames = async (
 export const searchCardMarketSetNames = async (
   query: string,
   limit: number = 15
-): Promise<Array<{
-  setName: string;
-  count: number;
-  totalAvailable: number;
-  categoryCount: number;
-  averagePrice: number;
-  score?: number;
-}>> => {
-  if (!query.trim()) return [];
+): Promise<
+  Array<{
+    setName: string;
+    count: number;
+    totalAvailable: number;
+    categoryCount: number;
+    averagePrice: number;
+    score?: number;
+  }>
+> => {
+  if (!query.trim()) {
+    return [];
+  }
   return getCardMarketSetNames(query, limit);
 };

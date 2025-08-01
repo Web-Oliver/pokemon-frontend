@@ -38,13 +38,15 @@ interface IExport {
 /**
  * Export creation payload interface
  */
-interface IExportCreatePayload
-  extends Omit<IExport, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+type IExportCreatePayload = Omit<
+  IExport,
+  'id' | '_id' | 'createdAt' | 'updatedAt'
+>;
 
 /**
  * Export update payload interface
  */
-interface IExportUpdatePayload extends Partial<IExportCreatePayload> {}
+type IExportUpdatePayload = Partial<IExportCreatePayload>;
 
 /**
  * Export collection items to DBA.dk format

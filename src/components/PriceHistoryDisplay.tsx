@@ -100,7 +100,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
         month: 'short',
         day: 'numeric',
       });
-    } catch (error) {
+    } catch (_error) {
       return 'Date not available';
     }
   };
@@ -272,7 +272,6 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
                 Update Price
               </Button>
             </div>
-
           </div>
         )}
       </div>

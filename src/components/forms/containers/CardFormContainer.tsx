@@ -1,10 +1,10 @@
 /**
  * Card Form Container Component
  * Layer 3: Components (UI Building Blocks) - Container Pattern
- * 
+ *
  * Template component for PSA and Raw card forms to eliminate 70% of boilerplate code
  * Provides unified structure and consistent behavior across card forms
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Provides card form structure and orchestration
  * - DRY: Eliminates duplicate form structure and common sections
@@ -14,7 +14,13 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch, UseFormClearErrors } from 'react-hook-form';
+import {
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+  UseFormClearErrors,
+} from 'react-hook-form';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
 import { ProductSearchSection } from '../ProductSearchSection';
@@ -28,46 +34,48 @@ interface CardFormContainerProps {
   cardType: 'psa' | 'raw';
   isEditing: boolean;
   isSubmitting: boolean;
-  
+
   /** Form Header Props */
   title: string;
   description: string;
   icon: LucideIcon;
   primaryColorClass: string;
-  
+
   /** React Hook Form Functions */
   register: UseFormRegister<any>;
   errors: FieldErrors<any>;
   setValue: UseFormSetValue<any>;
   watch: UseFormWatch<any>;
   clearErrors: UseFormClearErrors<any>;
-  handleSubmit: (onValid: (data: any) => void | Promise<void>) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  
+  handleSubmit: (
+    onValid: (data: any) => void | Promise<void>
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+
   /** Form Submission */
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
-  
+
   /** Card Selection */
   onSelectionChange: (selectedData: any) => void;
-  
+
   /** Conditional Rendering */
   showCardInformation?: boolean;
   showSaleDetails?: boolean;
   isSoldItem?: boolean;
-  
+
   /** Watch Values for Sections */
   currentGradeOrCondition?: string;
   currentPrice?: string;
   currentPriceNumber?: number;
-  
+
   /** Price History */
   priceHistory?: Array<{ price: number; dateUpdated: string }>;
   onPriceUpdate?: (newPrice: number, date: string) => void;
-  
+
   /** Image Upload */
   onImagesChange?: (files: File[], remainingUrls?: string[]) => void;
   existingImageUrls?: string[];
-  
+
   /** Customization Slots */
   additionalSections?: React.ReactNode;
   customButtons?: React.ReactNode;
@@ -110,9 +118,12 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
 }) => {
   // Get the appropriate icon and section title for card information
   const cardInfoIcon = icon;
-  const sectionIconClass = cardType === 'psa' ? 'text-blue-300' : 'text-emerald-300';
-  const sectionBgClass = cardType === 'psa' ? 'bg-blue-900/50' : 'bg-emerald-900/50';
-  const sectionBorderClass = cardType === 'psa' ? 'border-blue-600/30' : 'border-emerald-600/30';
+  const sectionIconClass =
+    cardType === 'psa' ? 'text-blue-300' : 'text-emerald-300';
+  const sectionBgClass =
+    cardType === 'psa' ? 'bg-blue-900/50' : 'bg-emerald-900/50';
+  const sectionBorderClass =
+    cardType === 'psa' ? 'border-blue-600/30' : 'border-emerald-600/30';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -128,14 +139,16 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
       {showCardInformation && !isSoldItem && (
         <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
-          
+
           <h4 className="text-xl font-medium text-zinc-100 mb-4 flex items-center justify-between relative z-10">
             <div className="flex items-center">
               <cardInfoIcon className="w-5 h-5 mr-2 text-zinc-300" />
               Card Information
             </div>
             {watch('setName') && (
-              <div className={`flex items-center text-sm ${sectionIconClass} ${sectionBgClass} px-3 py-1 rounded-full backdrop-blur-sm border ${sectionBorderClass}`}>
+              <div
+                className={`flex items-center text-sm ${sectionIconClass} ${sectionBgClass} px-3 py-1 rounded-full backdrop-blur-sm border ${sectionBorderClass}`}
+              >
                 <cardInfoIcon className="w-4 h-4 mr-1" />
                 Filtering by: {watch('setName')}
               </div>
@@ -152,7 +165,10 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
               clearErrors={clearErrors}
               onSelectionChange={onSelectionChange}
               onError={(error) => {
-                console.error(`[${cardType.toUpperCase()} CARD] Card search error:`, error);
+                console.error(
+                  `[${cardType.toUpperCase()} CARD] Card search error:`,
+                  error
+                );
               }}
               sectionTitle=""
               sectionIcon={icon}
@@ -219,7 +235,11 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
           onCancel={onCancel}
           isSubmitting={isSubmitting}
           isEditing={isEditing}
-          submitButtonText={isEditing ? `Update ${cardType.toUpperCase()} Card` : `Add ${cardType.toUpperCase()} Card`}
+          submitButtonText={
+            isEditing
+              ? `Update ${cardType.toUpperCase()} Card`
+              : `Add ${cardType.toUpperCase()} Card`
+          }
           loadingSubmitText={isEditing ? 'Updating...' : 'Adding...'}
           primaryButtonColorClass={primaryColorClass}
         />

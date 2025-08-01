@@ -33,12 +33,12 @@ export interface AddItemToAuctionData {
 /**
  * Auction creation payload interface
  */
-interface IAuctionCreatePayload extends Omit<IAuction, 'id' | '_id'> {}
+type IAuctionCreatePayload = Omit<IAuction, 'id' | '_id'>;
 
 /**
  * Auction update payload interface
  */
-interface IAuctionUpdatePayload extends Partial<IAuctionCreatePayload> {}
+type IAuctionUpdatePayload = Partial<IAuctionCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 

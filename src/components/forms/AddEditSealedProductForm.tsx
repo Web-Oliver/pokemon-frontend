@@ -16,7 +16,10 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { useFormSubmission, FormSubmissionPatterns } from './wrappers/FormSubmissionWrapper';
+import {
+  useFormSubmission,
+  FormSubmissionPatterns,
+} from './wrappers/FormSubmissionWrapper';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
@@ -215,7 +218,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   };
 
   // Standardized submission handling using FormSubmissionWrapper
-  const { handleSubmission } = useFormSubmission<FormData, Partial<ISealedProduct>>({
+  const { handleSubmission } = useFormSubmission<
+    FormData,
+    Partial<ISealedProduct>
+  >({
     setSubmitting,
     onSuccess,
     imageUpload,
@@ -223,11 +229,16 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     logContext: 'SEALED PRODUCT',
     validateBeforeSubmission: (data) => {
       if (!selectedProductData?._id) {
-        throw new Error('Please select a product from the suggestions to ensure reference data link');
+        throw new Error(
+          'Please select a product from the suggestions to ensure reference data link'
+        );
       }
     },
     prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
-      const allImageUrls = FormSubmissionPatterns.combineImages(imageUpload.remainingExistingImages, imageUrls);
+      const allImageUrls = FormSubmissionPatterns.combineImages(
+        imageUpload.remainingExistingImages,
+        imageUrls
+      );
 
       return {
         productId: selectedProductData?._id,
@@ -235,11 +246,16 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         name: formData.productName.trim(),
         category: formData.category,
         availability: Number(formData.availability),
-        cardMarketPrice: formData.cardMarketPrice ? parseFloat(formData.cardMarketPrice) : undefined,
+        cardMarketPrice: formData.cardMarketPrice
+          ? parseFloat(formData.cardMarketPrice)
+          : undefined,
         myPrice: parseFloat(formData.myPrice),
         dateAdded: formData.dateAdded,
         images: allImageUrls,
-        priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, parseFloat(formData.myPrice)),
+        priceHistory: FormSubmissionPatterns.transformPriceHistory(
+          priceHistory.priceHistory,
+          parseFloat(formData.myPrice)
+        ),
       };
     },
     submitToApi: async (productData, isEditing, itemId) => {
@@ -252,7 +268,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     },
   });
 
-  const onSubmit = (data: FormData) => handleSubmission(data, { isEditing, itemId: initialData?.id });
+  const onSubmit = (data: FormData) =>
+    handleSubmission(data, { isEditing, itemId: initialData?.id });
 
   if (loading && !isSubmitting) {
     return (
@@ -291,29 +308,29 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       {/* Product Search Section - Maintains ALL existing functionality */}
       <div className="mb-6 relative z-10">
         <ProductSearchSection
-        register={register}
-        errors={errors}
-        setValue={setValue}
-        watch={watch}
-        clearErrors={clearErrors}
-        onSelectionChange={(selectedData) => {
-          console.log('[SEALED PRODUCT] Product selection:', selectedData);
+          register={register}
+          errors={errors}
+          setValue={setValue}
+          watch={watch}
+          clearErrors={clearErrors}
+          onSelectionChange={(selectedData) => {
+            console.log('[SEALED PRODUCT] Product selection:', selectedData);
 
-          // Store selected product data for form submission (CRITICAL - maintains existing behavior)
-          setSelectedProductData(selectedData);
-        }}
-        onError={(error) => {
-          console.error('[SEALED PRODUCT] Search error:', error);
-        }}
-        sectionTitle="Product Information"
-        sectionIcon={Package}
-        formType="product"
-        readOnlyFields={{
-          category: true,
-          availability: true,
-        }}
-        productCategories={productCategories}
-        loadingOptions={loadingOptions}
+            // Store selected product data for form submission (CRITICAL - maintains existing behavior)
+            setSelectedProductData(selectedData);
+          }}
+          onError={(error) => {
+            console.error('[SEALED PRODUCT] Search error:', error);
+          }}
+          sectionTitle="Product Information"
+          sectionIcon={Package}
+          formType="product"
+          readOnlyFields={{
+            category: true,
+            availability: true,
+          }}
+          productCategories={productCategories}
+          loadingOptions={loadingOptions}
         />
       </div>
 

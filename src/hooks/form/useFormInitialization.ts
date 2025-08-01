@@ -1,10 +1,10 @@
 /**
  * useFormInitialization Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Centralizes form initialization logic across all item forms
  * Eliminates 80% duplication of initialization patterns
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Handles form initialization only
  * - DRY: Eliminates repeated initialization logic
@@ -39,19 +39,19 @@ interface CardDataExtraction {
 interface FormInitializationConfig {
   /** Form type for logging and field mapping */
   formType: 'psa' | 'raw' | 'sealed';
-  
+
   /** Whether in editing mode */
   isEditing: boolean;
-  
+
   /** Initial data to populate form */
   initialData?: BaseFormData;
-  
+
   /** React Hook Form setValue function */
   setValue: UseFormSetValue<any>;
-  
+
   /** Additional field mappings specific to form type */
   customFieldMappings?: Record<string, (data: BaseFormData) => any>;
-  
+
   /** Enable debug logging */
   debug?: boolean;
 }
@@ -62,7 +62,7 @@ interface FormInitializationConfig {
  */
 const extractCardData = (initialData: BaseFormData): CardDataExtraction => {
   const cardData = initialData.cardId as any;
-  
+
   return {
     setName: cardData?.setId?.setName || initialData.setName || '',
     cardName: cardData?.cardName || initialData.cardName || '',
@@ -77,7 +77,10 @@ const extractCardData = (initialData: BaseFormData): CardDataExtraction => {
  * Handles various date formats and provides fallback to current date
  */
 const formatDateForForm = (dateValue?: string | Date): string => {
-  if (!dateValue || (typeof dateValue === 'object' && Object.keys(dateValue).length === 0)) {
+  if (
+    !dateValue ||
+    (typeof dateValue === 'object' && Object.keys(dateValue).length === 0)
+  ) {
     return new Date().toISOString().split('T')[0];
   }
 
@@ -96,8 +99,17 @@ const formatDateForForm = (dateValue?: string | Date): string => {
  * useFormInitialization Hook
  * Centralizes initialization logic for PSA, Raw, and Sealed product forms
  */
-export const useFormInitialization = (config: FormInitializationConfig): void => {
-  const { formType, isEditing, initialData, setValue, customFieldMappings = {}, debug = false } = config;
+export const useFormInitialization = (
+  config: FormInitializationConfig
+): void => {
+  const {
+    formType,
+    isEditing,
+    initialData,
+    setValue,
+    customFieldMappings = {},
+    debug = false,
+  } = config;
 
   useEffect(() => {
     if (!isEditing || !initialData) {
@@ -105,12 +117,16 @@ export const useFormInitialization = (config: FormInitializationConfig): void =>
     }
 
     if (debug && process.env.NODE_ENV === 'development') {
-      console.log(`[${formType.toUpperCase()} FORM] Updating form with initialData:`, initialData);
+      console.log(
+        `[${formType.toUpperCase()} FORM] Updating form with initialData:`,
+        initialData
+      );
     }
 
     // Extract common card data (for PSA and Raw forms)
     if (formType === 'psa' || formType === 'raw') {
-      const { setName, cardName, pokemonNumber, baseName, variety } = extractCardData(initialData);
+      const { setName, cardName, pokemonNumber, baseName, variety } =
+        extractCardData(initialData);
 
       // Set common card fields
       setValue('setName', setName);
@@ -167,9 +183,11 @@ export const useFormInitialization = (config: FormInitializationConfig): void =>
         logData.availability = initialData.availability;
       }
 
-      console.log(`[${formType.toUpperCase()} FORM] Form values updated with:`, logData);
+      console.log(
+        `[${formType.toUpperCase()} FORM] Form values updated with:`,
+        logData
+      );
     }
-
   }, [isEditing, initialData, setValue, formType, customFieldMappings, debug]);
 };
 
@@ -177,7 +195,11 @@ export const useFormInitialization = (config: FormInitializationConfig): void =>
  * Preset configurations for common form types
  */
 export const formInitializationPresets = {
-  psa: (isEditing: boolean, initialData: any, setValue: UseFormSetValue<any>): FormInitializationConfig => ({
+  psa: (
+    isEditing: boolean,
+    initialData: any,
+    setValue: UseFormSetValue<any>
+  ): FormInitializationConfig => ({
     formType: 'psa' as const,
     isEditing,
     initialData,
@@ -185,7 +207,11 @@ export const formInitializationPresets = {
     debug: process.env.NODE_ENV === 'development',
   }),
 
-  raw: (isEditing: boolean, initialData: any, setValue: UseFormSetValue<any>): FormInitializationConfig => ({
+  raw: (
+    isEditing: boolean,
+    initialData: any,
+    setValue: UseFormSetValue<any>
+  ): FormInitializationConfig => ({
     formType: 'raw' as const,
     isEditing,
     initialData,
@@ -193,7 +219,11 @@ export const formInitializationPresets = {
     debug: process.env.NODE_ENV === 'development',
   }),
 
-  sealed: (isEditing: boolean, initialData: any, setValue: UseFormSetValue<any>): FormInitializationConfig => ({
+  sealed: (
+    isEditing: boolean,
+    initialData: any,
+    setValue: UseFormSetValue<any>
+  ): FormInitializationConfig => ({
     formType: 'sealed' as const,
     isEditing,
     initialData,

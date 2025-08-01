@@ -12,11 +12,7 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import {
-  createResourceOperations,
-  idMapper,
-  SET_CONFIG,
-} from './genericApiOperations';
+import { createResourceOperations, SET_CONFIG } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
 import { searchSets as searchSetsApi, type SetSearchParams } from './searchApi';
@@ -42,12 +38,12 @@ export interface PaginatedSetsResponse {
 /**
  * Set creation payload interface
  */
-interface ISetCreatePayload extends Omit<ISet, 'id' | '_id'> {}
+type ISetCreatePayload = Omit<ISet, 'id' | '_id'>;
 
 /**
  * Set update payload interface
  */
-interface ISetUpdatePayload extends Partial<ISetCreatePayload> {}
+type ISetUpdatePayload = Partial<ISetCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 
@@ -61,14 +57,18 @@ const setOperations = createResourceOperations<
   ISetUpdatePayload
 >(SET_CONFIG, {
   includeExportOperations: false, // DISABLED - Sets are read-only
-  includeBatchOperations: false,  // DISABLED - Sets are read-only
+  includeBatchOperations: false, // DISABLED - Sets are read-only
 });
 
 // DISABLE MODIFICATION OPERATIONS - Sets are reference data only
-setOperations.create = () => Promise.reject(new Error('Set creation disabled - reference data only'));
-setOperations.update = () => Promise.reject(new Error('Set updates disabled - reference data only'));
-setOperations.remove = () => Promise.reject(new Error('Set deletion disabled - reference data only'));
-setOperations.bulkCreate = () => Promise.reject(new Error('Bulk set creation disabled - reference data only'));
+setOperations.create = () =>
+  Promise.reject(new Error('Set creation disabled - reference data only'));
+setOperations.update = () =>
+  Promise.reject(new Error('Set updates disabled - reference data only'));
+setOperations.remove = () =>
+  Promise.reject(new Error('Set deletion disabled - reference data only'));
+setOperations.bulkCreate = () =>
+  Promise.reject(new Error('Bulk set creation disabled - reference data only'));
 
 // ========== EXPORTED API OPERATIONS ==========
 
@@ -149,7 +149,4 @@ export const getPaginatedSets = async (
 };
 
 // Import consolidated search functions for set-specific search operations
-export {
-  getSetSuggestions,
-  getBestMatchSet,
-} from './searchApi';
+export { getSetSuggestions, getBestMatchSet } from './searchApi';

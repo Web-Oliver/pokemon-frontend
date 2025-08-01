@@ -37,12 +37,12 @@ export interface SalesGraphDataParams {
 /**
  * Sale creation payload interface
  */
-interface ISaleCreatePayload extends Omit<ISale, 'id'> {}
+type ISaleCreatePayload = Omit<ISale, 'id'>;
 
 /**
  * Sale update payload interface
  */
-interface ISaleUpdatePayload extends Partial<ISaleCreatePayload> {}
+type ISaleUpdatePayload = Partial<ISaleCreatePayload>;
 
 // ========== DATA TRANSFORMATION UTILITIES ==========
 

@@ -71,14 +71,12 @@ export interface DbaSelectionParams {
 /**
  * DBA selection creation payload interface
  */
-interface IDbaSelectionCreatePayload
-  extends Omit<DbaSelection, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+type IDbaSelectionCreatePayload = Omit<DbaSelection, 'id' | '_id' | 'createdAt' | 'updatedAt'>;
 
 /**
  * DBA selection update payload interface
  */
-interface IDbaSelectionUpdatePayload
-  extends Partial<IDbaSelectionCreatePayload> {}
+type IDbaSelectionUpdatePayload = Partial<IDbaSelectionCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 

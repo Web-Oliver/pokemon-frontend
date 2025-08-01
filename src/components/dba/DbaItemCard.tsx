@@ -1,7 +1,7 @@
 /**
  * DBA Item Card Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for rendering individual DBA item cards
  * - OCP: Open for extension via props interface
@@ -48,8 +48,8 @@ const DbaItemCard: React.FC<DbaItemCardProps> = ({
     <div
       key={itemId}
       className={`relative p-3 border-2 rounded-xl cursor-pointer transition-all duration-300 flex flex-col h-full ${
-        isSelected 
-          ? 'border-cyan-500 bg-cyan-900/30' 
+        isSelected
+          ? 'border-cyan-500 bg-cyan-900/30'
           : 'border-zinc-600 bg-zinc-800 hover:border-cyan-400 hover:bg-cyan-900/20'
       }`}
       onClick={() => onToggle(item, type)}
@@ -61,8 +61,8 @@ const DbaItemCard: React.FC<DbaItemCardProps> = ({
         ) : (
           <div
             className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-              isSelected 
-                ? 'bg-indigo-500 border-indigo-500' 
+              isSelected
+                ? 'bg-indigo-500 border-indigo-500'
                 : 'border-slate-300'
             }`}
           >

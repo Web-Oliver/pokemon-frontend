@@ -1,7 +1,7 @@
 /**
  * CardMarket API Client
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Modern API client for CardMarket operations.
  * Separate from the hierarchical search system used for autosuggestion.
  */
@@ -44,17 +44,29 @@ const BASE_URL = 'http://localhost:3000/api/cardmarket';
 /**
  * Search CardMarket reference products with pagination
  */
-export const searchProducts = async (params: CardMarketSearchParams): Promise<CardMarketSearchResponse> => {
+export const searchProducts = async (
+  params: CardMarketSearchParams
+): Promise<CardMarketSearchResponse> => {
   const queryParams = new URLSearchParams();
-  
-  if (params.page) queryParams.append('page', params.page.toString());
-  if (params.limit) queryParams.append('limit', params.limit.toString());
-  if (params.category) queryParams.append('category', params.category);
-  if (params.setName) queryParams.append('setName', params.setName);
-  if (params.availableOnly) queryParams.append('availableOnly', 'true');
+
+  if (params.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+  if (params.category) {
+    queryParams.append('category', params.category);
+  }
+  if (params.setName) {
+    queryParams.append('setName', params.setName);
+  }
+  if (params.availableOnly) {
+    queryParams.append('availableOnly', 'true');
+  }
 
   const response = await fetch(`${BASE_URL}/search?${queryParams.toString()}`);
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
@@ -65,9 +77,11 @@ export const searchProducts = async (params: CardMarketSearchParams): Promise<Ca
 /**
  * Get all product categories with counts
  */
-export const getCategories = async (): Promise<Array<{ name: string; count: number }>> => {
+export const getCategories = async (): Promise<
+  Array<{ name: string; count: number }>
+> => {
   const response = await fetch(`${BASE_URL}/categories`);
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
@@ -79,9 +93,13 @@ export const getCategories = async (): Promise<Array<{ name: string; count: numb
 /**
  * Get detailed information about a specific category
  */
-export const getCategoryDetails = async (category: string): Promise<CategoryDetails> => {
-  const response = await fetch(`${BASE_URL}/categories/${encodeURIComponent(category)}`);
-  
+export const getCategoryDetails = async (
+  category: string
+): Promise<CategoryDetails> => {
+  const response = await fetch(
+    `${BASE_URL}/categories/${encodeURIComponent(category)}`
+  );
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }

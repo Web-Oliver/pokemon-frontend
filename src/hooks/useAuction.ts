@@ -49,7 +49,9 @@ export type UseAuctionHook = UseAuctionState & UseAuctionActions;
 /**
  * Custom hook for auction management with React Query caching
  */
-export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook => {
+export const useAuction = (
+  params?: auctionsApi.AuctionsParams
+): UseAuctionHook => {
   const queryClient = useQueryClient();
   const [currentAuction, setCurrentAuction] = useState<IAuction | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
     data: auctions = [],
     isLoading: loading,
     error: queryError,
-    refetch: refetchAuctions
+    refetch: refetchAuctions,
   } = useQuery({
     queryKey: queryKeys.auctionsList(params),
     queryFn: () => auctionsApi.getAuctions(params),
@@ -75,7 +77,9 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
       try {
         setError(null);
         // Invalidate and refetch with new params
-        await queryClient.invalidateQueries({ queryKey: queryKeys.auctionsList(newParams) });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.auctionsList(newParams),
+        });
       } catch (err) {
         const errorMessage = 'Failed to fetch auctions';
         setError(errorMessage);
@@ -88,21 +92,24 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
   /**
    * Fetch auction by ID with caching
    */
-  const fetchAuctionById = useCallback(async (id: string) => {
-    try {
-      setError(null);
-      const auction = await queryClient.fetchQuery({
-        queryKey: queryKeys.auctionDetail(id),
-        queryFn: () => auctionsApi.getAuctionById(id),
-        staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
-      });
-      setCurrentAuction(auction);
-    } catch (err) {
-      const errorMessage = 'Failed to fetch auction';
-      setError(errorMessage);
-      handleApiError(err, errorMessage);
-    }
-  }, [queryClient]);
+  const fetchAuctionById = useCallback(
+    async (id: string) => {
+      try {
+        setError(null);
+        const auction = await queryClient.fetchQuery({
+          queryKey: queryKeys.auctionDetail(id),
+          queryFn: () => auctionsApi.getAuctionById(id),
+          staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
+        });
+        setCurrentAuction(auction);
+      } catch (err) {
+        const errorMessage = 'Failed to fetch auction';
+        setError(errorMessage);
+        handleApiError(err, errorMessage);
+      }
+    },
+    [queryClient]
+  );
 
   // Create auction mutation
   const createAuctionMutation = useMutation({
@@ -112,9 +119,9 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
     },
   });
 
-  // Update auction mutation  
+  // Update auction mutation
   const updateAuctionMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<IAuction> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<IAuction> }) =>
       auctionsApi.updateAuction(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
@@ -132,8 +139,13 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
 
   // Add item to auction mutation
   const addItemToAuctionMutation = useMutation({
-    mutationFn: ({ id, itemData }: { id: string; itemData: auctionsApi.AddItemToAuctionData }) => 
-      auctionsApi.addItemToAuction(id, itemData),
+    mutationFn: ({
+      id,
+      itemData,
+    }: {
+      id: string;
+      itemData: auctionsApi.AddItemToAuctionData;
+    }) => auctionsApi.addItemToAuction(id, itemData),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -142,8 +154,15 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
 
   // Remove item from auction mutation
   const removeItemFromAuctionMutation = useMutation({
-    mutationFn: ({ id, itemId, itemCategory }: { id: string; itemId: string; itemCategory?: string }) => 
-      auctionsApi.removeItemFromAuction(id, itemId, itemCategory),
+    mutationFn: ({
+      id,
+      itemId,
+      itemCategory,
+    }: {
+      id: string;
+      itemId: string;
+      itemCategory?: string;
+    }) => auctionsApi.removeItemFromAuction(id, itemId, itemCategory),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -152,8 +171,13 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
 
   // Mark auction item sold mutation
   const markAuctionItemSoldMutation = useMutation({
-    mutationFn: ({ id, saleData }: { id: string; saleData: { itemId: string; itemCategory: string; soldPrice: number } }) => 
-      auctionsApi.markAuctionItemSold(id, saleData),
+    mutationFn: ({
+      id,
+      saleData,
+    }: {
+      id: string;
+      saleData: { itemId: string; itemCategory: string; soldPrice: number };
+    }) => auctionsApi.markAuctionItemSold(id, saleData),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -258,7 +282,11 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
           });
         }
 
-        await removeItemFromAuctionMutation.mutateAsync({ id, itemId, itemCategory });
+        await removeItemFromAuctionMutation.mutateAsync({
+          id,
+          itemId,
+          itemCategory,
+        });
 
         if (process.env.NODE_ENV === 'development') {
           console.log('[useAuction] Item removed successfully');
@@ -267,10 +295,14 @@ export const useAuction = (params?: auctionsApi.AuctionsParams): UseAuctionHook 
         // CRITICAL FIX: If we get 404, the item is already gone, so still refresh the cache
         if (err?.response?.status === 404) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('[useAuction] Item already removed (404), refreshing cache...');
+            console.log(
+              '[useAuction] Item already removed (404), refreshing cache...'
+            );
           }
           // The mutation onSuccess will handle cache invalidation
-          queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.auctionDetail(id),
+          });
           queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
         } else {
           const errorMessage = `Failed to remove item from auction with ID: ${id}`;

@@ -15,10 +15,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { searchCards, searchProducts, searchSets } from '../api/searchApi';
 import { log } from '../utils/logger';
 import { useDebouncedValue } from './useDebounce';
-import {
-  getDisplayName,
-  handleSearchError,
-} from '../utils/searchHelpers';
+import { getDisplayName, handleSearchError } from '../utils/searchHelpers';
 // Removed isValidSearchQuery - implementing lower tolerance search
 import { queryKeys } from '../lib/queryClient';
 
@@ -62,10 +59,19 @@ export interface UseSearchReturn {
   clearError: () => void;
 
   // Context7 TanStack Query caching methods
-  prefetchQuery: (type: 'sets' | 'products' | 'cards', query: string, filters?: any) => Promise<void>;
-  invalidateSearchCache: (type?: 'sets' | 'products' | 'cards') => Promise<void>;
-  getSearchCache: (type: 'sets' | 'products' | 'cards', query: string) => SearchResult[] | undefined;
-  
+  prefetchQuery: (
+    type: 'sets' | 'products' | 'cards',
+    query: string,
+    filters?: any
+  ) => Promise<void>;
+  invalidateSearchCache: (
+    type?: 'sets' | 'products' | 'cards'
+  ) => Promise<void>;
+  getSearchCache: (
+    type: 'sets' | 'products' | 'cards',
+    query: string
+  ) => SearchResult[] | undefined;
+
   // Pure TanStack Query status methods
   isStale: boolean;
   dataUpdatedAt: number;
@@ -88,7 +94,7 @@ export const useSearch = (): UseSearchReturn => {
   });
 
   const queryClient = useQueryClient();
-  
+
   // Context7 Pattern: Faster debounced query for real-time search
   const debouncedQuery = useDebouncedValue(searchConfig.currentQuery, 150); // Reduced from 300ms to 150ms for responsiveness
 
@@ -104,23 +110,29 @@ export const useSearch = (): UseSearchReturn => {
   } = useQuery({
     // Context7 Pattern: Stable hierarchical query keys - CRITICAL FIX for cache stability
     queryKey: (() => {
-      if (!searchConfig.currentType) return ['search', 'idle'];
-      
+      if (!searchConfig.currentType) {
+        return ['search', 'idle'];
+      }
+
       const baseQuery = debouncedQuery.trim() || '*';
       const { setName, category } = searchConfig.currentFilters;
-      
+
       switch (searchConfig.currentType) {
         case 'sets':
           return queryKeys.searchSets(baseQuery);
         case 'products':
-          return queryKeys.searchProducts(`${baseQuery}${setName ? `-${setName}` : ''}${category ? `-${category}` : ''}`);
+          return queryKeys.searchProducts(
+            `${baseQuery}${setName ? `-${setName}` : ''}${category ? `-${category}` : ''}`
+          );
         case 'cards':
-          return queryKeys.searchCards(`${baseQuery}${setName ? `-${setName}` : ''}`);
+          return queryKeys.searchCards(
+            `${baseQuery}${setName ? `-${setName}` : ''}`
+          );
         default:
           return ['search', 'idle'];
       }
     })(),
-    
+
     // Query function with proper error handling - CRITICAL FIX: Lower tolerance
     queryFn: async () => {
       if (!searchConfig.currentType) {
@@ -129,19 +141,24 @@ export const useSearch = (): UseSearchReturn => {
 
       // CRITICAL FIX: Allow empty queries with filters OR queries with any length (no minimum)
       const hasValidQuery = debouncedQuery.trim().length > 0;
-      const hasFilters = Object.keys(searchConfig.currentFilters).some(key => searchConfig.currentFilters[key]);
-      
+      const hasFilters = Object.keys(searchConfig.currentFilters).some(
+        (key) => searchConfig.currentFilters[key]
+      );
+
       if (!hasValidQuery && !hasFilters) {
         return { data: [], count: 0 };
       }
 
-      log(`[TANSTACK QUERY] Executing ${searchConfig.currentType} search: "${debouncedQuery}" with filters:`, searchConfig.currentFilters);
+      log(
+        `[TANSTACK QUERY] Executing ${searchConfig.currentType} search: "${debouncedQuery}" with filters:`,
+        searchConfig.currentFilters
+      );
 
       switch (searchConfig.currentType) {
         case 'sets':
-          return searchSets({ 
+          return searchSets({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
-            limit: 15 
+            limit: 15,
           });
         case 'products':
           return searchProducts({
@@ -160,7 +177,7 @@ export const useSearch = (): UseSearchReturn => {
           return { data: [], count: 0 };
       }
     },
-    
+
     // Context7 Optimal Configuration - CRITICAL FIX: Always enabled when currentType exists
     enabled: !!searchConfig.currentType, // Removed restrictive validation - let TanStack Query handle empty queries
     staleTime: 2 * 60 * 1000, // 2 minutes - Context7 recommended
@@ -169,18 +186,20 @@ export const useSearch = (): UseSearchReturn => {
     refetchOnMount: false, // Use cached data on mount
     retry: 1, // Single retry for search operations
     retryDelay: 1000, // 1 second delay
-    
+
     // Context7 Pattern: Structural sharing for performance
     structuralSharing: true,
-    
+
     // Context7 Pattern: Optimized network mode
     networkMode: 'online',
   });
 
   // Transform query results to SearchResult format
   const results: SearchResult[] = useMemo(() => {
-    if (!queryResults?.data) return [];
-    
+    if (!queryResults?.data) {
+      return [];
+    }
+
     return queryResults.data.map((item: any) => ({
       _id: item._id,
       displayName: getDisplayName({
@@ -190,7 +209,10 @@ export const useSearch = (): UseSearchReturn => {
         type: (searchConfig.currentType?.slice(0, -1) || 'set') as any,
       }),
       data: item,
-      type: (searchConfig.currentType?.slice(0, -1) || 'set') as 'set' | 'product' | 'card',
+      type: (searchConfig.currentType?.slice(0, -1) || 'set') as
+        | 'set'
+        | 'product'
+        | 'card',
     }));
   }, [queryResults?.data, searchConfig.currentType]);
 
@@ -201,21 +223,25 @@ export const useSearch = (): UseSearchReturn => {
   const clearError = useCallback(() => {
     // TanStack Query handles errors automatically, but we can reset queries if needed
     if (queryError) {
-      queryClient.resetQueries({ 
+      queryClient.resetQueries({
         queryKey: searchConfig.currentType
           ? searchConfig.currentType === 'sets'
             ? queryKeys.searchSets(debouncedQuery)
             : searchConfig.currentType === 'products'
-            ? queryKeys.searchProducts(`${debouncedQuery}${searchConfig.currentFilters.setName ? `-${searchConfig.currentFilters.setName}` : ''}`)
-            : queryKeys.searchCards(`${debouncedQuery}${searchConfig.currentFilters.setName ? `-${searchConfig.currentFilters.setName}` : ''}`)
-          : ['search', 'idle']
+              ? queryKeys.searchProducts(
+                  `${debouncedQuery}${searchConfig.currentFilters.setName ? `-${searchConfig.currentFilters.setName}` : ''}`
+                )
+              : queryKeys.searchCards(
+                  `${debouncedQuery}${searchConfig.currentFilters.setName ? `-${searchConfig.currentFilters.setName}` : ''}`
+                )
+          : ['search', 'idle'],
       });
     }
   }, [queryClient, queryError, searchConfig, debouncedQuery]);
 
   // Clear results
   const clearResults = useCallback(() => {
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       currentQuery: '',
       currentType: '',
@@ -226,7 +252,7 @@ export const useSearch = (): UseSearchReturn => {
   // Context7 Pattern: Optimized search handlers using TanStack Query state management
   const handleSearchSets = useCallback((query: string) => {
     log(`[TANSTACK QUERY] Initiating sets search: ${query}`);
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       currentQuery: query,
       currentType: 'sets',
@@ -234,19 +260,25 @@ export const useSearch = (): UseSearchReturn => {
     }));
   }, []);
 
-  const handleSearchProducts = useCallback((query: string, setName?: string, category?: string) => {
-    log(`[TANSTACK QUERY] Initiating products search: ${query}`, { setName, category });
-    setSearchConfig(prev => ({
-      ...prev,
-      currentQuery: query,
-      currentType: 'products',
-      currentFilters: { setName, category },
-    }));
-  }, []);
+  const handleSearchProducts = useCallback(
+    (query: string, setName?: string, category?: string) => {
+      log(`[TANSTACK QUERY] Initiating products search: ${query}`, {
+        setName,
+        category,
+      });
+      setSearchConfig((prev) => ({
+        ...prev,
+        currentQuery: query,
+        currentType: 'products',
+        currentFilters: { setName, category },
+      }));
+    },
+    []
+  );
 
   const handleSearchCards = useCallback((query: string, setName?: string) => {
     log(`[TANSTACK QUERY] Initiating cards search: ${query}`, { setName });
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       currentQuery: query,
       currentType: 'cards',
@@ -256,7 +288,7 @@ export const useSearch = (): UseSearchReturn => {
 
   // Selection management with TanStack Query integration
   const selectSet = useCallback((setName: string) => {
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       selectedSet: setName,
       currentQuery: '', // Reset search when changing filters
@@ -265,7 +297,7 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const selectCategory = useCallback((category: string) => {
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       selectedCategory: category,
       currentQuery: '', // Reset search when changing filters
@@ -274,7 +306,7 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const clearFilters = useCallback(() => {
-    setSearchConfig(prev => ({
+    setSearchConfig((prev) => ({
       ...prev,
       selectedSet: null,
       selectedCategory: null,
@@ -285,106 +317,123 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   // Context7 TanStack Query Enhanced Caching Methods with optimal configuration
-  const prefetchQuery = useCallback(async (
-    type: 'sets' | 'products' | 'cards', 
-    query: string, 
-    filters?: any
-  ) => {
-    try {
-      const queryKey = type === 'sets' 
-        ? queryKeys.searchSets(query)
-        : type === 'products'
-        ? queryKeys.searchProducts(`${query}${filters?.setName ? `-${filters.setName}` : ''}${filters?.category ? `-${filters.category}` : ''}`)
-        : queryKeys.searchCards(`${query}${filters?.setName ? `-${filters.setName}` : ''}`);
+  const prefetchQuery = useCallback(
+    async (
+      type: 'sets' | 'products' | 'cards',
+      query: string,
+      filters?: any
+    ) => {
+      try {
+        const queryKey =
+          type === 'sets'
+            ? queryKeys.searchSets(query)
+            : type === 'products'
+              ? queryKeys.searchProducts(
+                  `${query}${filters?.setName ? `-${filters.setName}` : ''}${filters?.category ? `-${filters.category}` : ''}`
+                )
+              : queryKeys.searchCards(
+                  `${query}${filters?.setName ? `-${filters.setName}` : ''}`
+                );
 
-      // Context7 Pattern: Prefetch with optimal timing and configuration
-      await queryClient.prefetchQuery({
-        queryKey,
-        queryFn: async () => {
-          switch (type) {
-            case 'sets':
-              return searchSets({ query: query.trim(), limit: 15 });
-            case 'products':
-              return searchProducts({
-                query: query.trim(),
-                setName: filters?.setName,
-                category: filters?.category,
-                limit: 15,
-              });
-            case 'cards':
-              return searchCards({
-                query: query.trim(),
-                setName: filters?.setName,
-                limit: 15,
-              });
-          }
-        },
-        // Context7 Optimal Configuration - matches main query configuration
-        staleTime: 2 * 60 * 1000, // 2 minutes
-        gcTime: 5 * 60 * 1000, // 5 minutes
-        retry: 1,
-        retryDelay: 1000,
-        networkMode: 'online',
-      });
-      
-      log(`[TANSTACK QUERY] Prefetched ${type} search for: "${query}"`);
-    } catch (error) {
-      console.warn(`[TANSTACK QUERY] Prefetch failed for ${type}:`, error);
-    }
-  }, [queryClient]);
+        // Context7 Pattern: Prefetch with optimal timing and configuration
+        await queryClient.prefetchQuery({
+          queryKey,
+          queryFn: async () => {
+            switch (type) {
+              case 'sets':
+                return searchSets({ query: query.trim(), limit: 15 });
+              case 'products':
+                return searchProducts({
+                  query: query.trim(),
+                  setName: filters?.setName,
+                  category: filters?.category,
+                  limit: 15,
+                });
+              case 'cards':
+                return searchCards({
+                  query: query.trim(),
+                  setName: filters?.setName,
+                  limit: 15,
+                });
+            }
+          },
+          // Context7 Optimal Configuration - matches main query configuration
+          staleTime: 2 * 60 * 1000, // 2 minutes
+          gcTime: 5 * 60 * 1000, // 5 minutes
+          retry: 1,
+          retryDelay: 1000,
+          networkMode: 'online',
+        });
+
+        log(`[TANSTACK QUERY] Prefetched ${type} search for: "${query}"`);
+      } catch (error) {
+        console.warn(`[TANSTACK QUERY] Prefetch failed for ${type}:`, error);
+      }
+    },
+    [queryClient]
+  );
 
   // Context7 Pattern: Optimized cache invalidation with hierarchical query keys
-  const invalidateSearchCache = useCallback(async (type?: 'sets' | 'products' | 'cards') => {
-    if (type) {
-      // Invalidate specific search type using proper hierarchical keys
-      await queryClient.invalidateQueries({
-        queryKey: ['search', type],
-        exact: false, // Invalidate all queries starting with this key
-      });
-      
-      log(`[TANSTACK QUERY] Invalidated ${type} search cache`);
-    } else {
-      // Invalidate all search caches
-      await queryClient.invalidateQueries({
-        queryKey: ['search'],
-        exact: false,
-      });
-      
-      log('[TANSTACK QUERY] Invalidated all search caches');
-    }
-  }, [queryClient]);
+  const invalidateSearchCache = useCallback(
+    async (type?: 'sets' | 'products' | 'cards') => {
+      if (type) {
+        // Invalidate specific search type using proper hierarchical keys
+        await queryClient.invalidateQueries({
+          queryKey: ['search', type],
+          exact: false, // Invalidate all queries starting with this key
+        });
+
+        log(`[TANSTACK QUERY] Invalidated ${type} search cache`);
+      } else {
+        // Invalidate all search caches
+        await queryClient.invalidateQueries({
+          queryKey: ['search'],
+          exact: false,
+        });
+
+        log('[TANSTACK QUERY] Invalidated all search caches');
+      }
+    },
+    [queryClient]
+  );
 
   // Context7 Pattern: Optimized cache retrieval with proper transformation
-  const getSearchCache = useCallback((
-    type: 'sets' | 'products' | 'cards', 
-    query: string
-  ): SearchResult[] | undefined => {
-    const queryKey = type === 'sets' 
-      ? queryKeys.searchSets(query)
-      : type === 'products'
-      ? queryKeys.searchProducts(query)
-      : queryKeys.searchCards(query);
+  const getSearchCache = useCallback(
+    (
+      type: 'sets' | 'products' | 'cards',
+      query: string
+    ): SearchResult[] | undefined => {
+      const queryKey =
+        type === 'sets'
+          ? queryKeys.searchSets(query)
+          : type === 'products'
+            ? queryKeys.searchProducts(query)
+            : queryKeys.searchCards(query);
 
-    const cachedData = queryClient.getQueryData(queryKey);
-    
-    if (cachedData) {
-      // Transform cached API response to SearchResult format
-      const response = cachedData as any;
-      return response.data?.map((item: any) => ({
-        _id: item._id,
-        displayName: getDisplayName({
-          _id: item._id,
-          displayName: '',
-          data: item,
-          type: type.slice(0, -1) as any,
-        }),
-        data: item,
-        type: type.slice(0, -1) as 'set' | 'product' | 'card',
-      })) || [];
-    }
-    
-    return undefined;
-  }, [queryClient]);
+      const cachedData = queryClient.getQueryData(queryKey);
+
+      if (cachedData) {
+        // Transform cached API response to SearchResult format
+        const response = cachedData as any;
+        return (
+          response.data?.map((item: any) => ({
+            _id: item._id,
+            displayName: getDisplayName({
+              _id: item._id,
+              displayName: '',
+              data: item,
+              type: type.slice(0, -1) as any,
+            }),
+            data: item,
+            type: type.slice(0, -1) as 'set' | 'product' | 'card',
+          })) || []
+        );
+      }
+
+      return undefined;
+    },
+    [queryClient]
+  );
 
   // Context7 Pattern: Memoized return object with stable references
   return useMemo(
@@ -415,7 +464,7 @@ export const useSearch = (): UseSearchReturn => {
       prefetchQuery,
       invalidateSearchCache,
       getSearchCache,
-      
+
       // Pure TanStack Query status methods
       isStale,
       dataUpdatedAt,

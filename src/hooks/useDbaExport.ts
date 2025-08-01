@@ -1,7 +1,7 @@
 /**
  * DBA Export Business Logic Hook
  * Layer 2: Services/Hooks/Store (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for DBA export business logic
  * - OCP: Open for extension via additional operations
@@ -67,9 +67,10 @@ const POKEMON_ABBREVIATIONS = {
 };
 
 export const useDbaExport = () => {
-  const { psaCards, rawCards, sealedProducts, loading } = useCollectionOperations();
+  const { psaCards, rawCards, sealedProducts, loading } =
+    useCollectionOperations();
   const queryClient = useQueryClient();
-  
+
   // State management (non-cached state)
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [customDescription, setCustomDescription] = useState('');
@@ -108,7 +109,10 @@ export const useDbaExport = () => {
 
   // Utility functions
   const formatCardNameForDisplay = (cardName: string): string => {
-    return cardName.replace(/-/g, ' ').replace(/\(#\d+\)$/, '').trim();
+    return cardName
+      .replace(/-/g, ' ')
+      .replace(/\(#\d+\)$/, '')
+      .trim();
   };
 
   const getItemDisplayName = (item: any, type: string): string => {
@@ -122,7 +126,8 @@ export const useDbaExport = () => {
 
   const getDbaInfo = (itemId: string, itemType: string) => {
     return dbaSelections?.find(
-      (selection) => selection.itemId === itemId && selection.itemType === itemType
+      (selection) =>
+        selection.itemId === itemId && selection.itemType === itemType
     );
   };
 
@@ -134,7 +139,8 @@ export const useDbaExport = () => {
     let processedName = originalName.trim();
 
     // Apply special rules
-    const corocoroPattern = /Pokemon Japanese Corocoro Comics? Promo \((\d+)\)/i;
+    const corocoroPattern =
+      /Pokemon Japanese Corocoro Comics? Promo \((\d+)\)/i;
     if (corocoroPattern.test(processedName)) {
       processedName = processedName.replace(corocoroPattern, 'Corocoro $1');
       return processedName;
@@ -155,12 +161,14 @@ export const useDbaExport = () => {
     processedName = processedName.replace(/^Pokemon\s+/i, '');
 
     // Apply abbreviations
-    Object.entries(POKEMON_ABBREVIATIONS).forEach(([fullForm, abbreviation]) => {
-      const regex = new RegExp(fullForm, 'gi');
-      if (regex.test(processedName)) {
-        processedName = processedName.replace(regex, abbreviation);
+    Object.entries(POKEMON_ABBREVIATIONS).forEach(
+      ([fullForm, abbreviation]) => {
+        const regex = new RegExp(fullForm, 'gi');
+        if (regex.test(processedName)) {
+          processedName = processedName.replace(regex, abbreviation);
+        }
       }
-    });
+    );
 
     // Clean up
     processedName = processedName
@@ -190,7 +198,8 @@ export const useDbaExport = () => {
       parts.push('Sealed');
     } else {
       const setName = item.cardId?.setId?.setName || item.setName || '';
-      const cardName = item.cardId?.cardName || item.cardName || item.name || '';
+      const cardName =
+        item.cardId?.cardName || item.cardName || item.name || '';
       const pokemonNumber = item.cardId?.pokemonNumber || '';
 
       const shortenedSet = shortenSetName(setName);
@@ -223,16 +232,18 @@ export const useDbaExport = () => {
     let fullTitle = parts.join(' ');
 
     if (fullTitle.length > 80) {
-      const shortenedSet = item.type === 'sealed'
-        ? shortenSetName(item.setName || '')
-        : shortenSetName(item.cardId?.setId?.setName || item.setName || '');
-      
+      const shortenedSet =
+        item.type === 'sealed'
+          ? shortenSetName(item.setName || '')
+          : shortenSetName(item.cardId?.setId?.setName || item.setName || '');
+
       const baseTitle = `Pokemon Kort ${shortenedSet} `;
       const remaining = 80 - baseTitle.length - 10;
 
-      const cardName = item.type === 'sealed'
-        ? item.name
-        : item.cardId?.cardName || item.cardName || item.name || '';
+      const cardName =
+        item.type === 'sealed'
+          ? item.name
+          : item.cardId?.cardName || item.cardName || item.name || '';
 
       const cardPart = `${cardName.substring(0, remaining)}...`;
       let suffix = '';
@@ -259,7 +270,8 @@ export const useDbaExport = () => {
     let description = '';
 
     const cleanSetName = item.cardId?.setId?.setName || item.setName || '';
-    const cleanCardName = item.cardId?.cardName || item.cardName || item.name || '';
+    const cleanCardName =
+      item.cardId?.cardName || item.cardName || item.name || '';
 
     if (cleanSetName && cleanCardName) {
       description += `${cleanSetName} ${cleanCardName}`;
@@ -273,7 +285,8 @@ export const useDbaExport = () => {
       description += ` (${item.condition})`;
     }
 
-    description += '\n\nFlotte pokemon kort i perfekt stand. Hurtig og sikker forsendelse.';
+    description +=
+      '\n\nFlotte pokemon kort i perfekt stand. Hurtig og sikker forsendelse.';
     return description;
   };
 
@@ -284,14 +297,19 @@ export const useDbaExport = () => {
 
     if (process.env.NODE_ENV === 'development') {
       console.log('[DBA EXPORT] Item toggle:', {
-        item, type, itemId, isSelected,
+        item,
+        type,
+        itemId,
+        isSelected,
         hasId: !!item.id,
         has_id: !!(item as any)._id,
       });
     }
 
     if (isSelected) {
-      setSelectedItems(selectedItems.filter((selected) => selected.id !== itemId));
+      setSelectedItems(
+        selectedItems.filter((selected) => selected.id !== itemId)
+      );
     } else {
       const selectedItem: SelectedItem = {
         id: itemId,
@@ -330,14 +348,16 @@ export const useDbaExport = () => {
     value: string
   ) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('[DBA EXPORT] updateItemCustomization called:', { itemId, field, value });
+      console.log('[DBA EXPORT] updateItemCustomization called:', {
+        itemId,
+        field,
+        value,
+      });
     }
-    
-    setSelectedItems((prevItems) => 
-      prevItems.map((item) => 
-        item.id === itemId 
-          ? { ...item, [field]: value }
-          : item
+
+    setSelectedItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId ? { ...item, [field]: value } : item
       )
     );
   };
@@ -353,7 +373,11 @@ export const useDbaExport = () => {
 
     try {
       if (process.env.NODE_ENV === 'development') {
-        console.log('[DBA EXPORT] Starting export for', selectedItems.length, 'items');
+        console.log(
+          '[DBA EXPORT] Starting export for',
+          selectedItems.length,
+          'items'
+        );
       }
 
       // Add items to DBA selection tracking
@@ -371,7 +395,10 @@ export const useDbaExport = () => {
           console.log('[DBA EXPORT] Items added to DBA selection tracking');
         }
       } catch (dbaAddError) {
-        console.warn('[DBA EXPORT] Could not add items to DBA selection tracking:', dbaAddError);
+        console.warn(
+          '[DBA EXPORT] Could not add items to DBA selection tracking:',
+          dbaAddError
+        );
       }
 
       // Prepare export data
@@ -390,16 +417,23 @@ export const useDbaExport = () => {
       // Invalidate DBA selections cache to show countdown timers
       try {
         if (process.env.NODE_ENV === 'development') {
-          console.log('[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...');
+          console.log(
+            '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
+          );
         }
-        await queryClient.invalidateQueries({ 
-          queryKey: queryKeys.dbaSelections({ active: true }) 
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.dbaSelections({ active: true }),
         });
         if (process.env.NODE_ENV === 'development') {
-          console.log('[DBA EXPORT] DBA selections cache invalidated successfully');
+          console.log(
+            '[DBA EXPORT] DBA selections cache invalidated successfully'
+          );
         }
       } catch (dbaError) {
-        console.warn('[DBA EXPORT] Could not invalidate DBA selections cache:', dbaError);
+        console.warn(
+          '[DBA EXPORT] Could not invalidate DBA selections cache:',
+          dbaError
+        );
       }
 
       const itemCount = response?.itemCount || 0;
@@ -437,7 +471,7 @@ export const useDbaExport = () => {
     rawCards,
     sealedProducts,
     loading,
-    
+
     // DBA state
     selectedItems,
     customDescription,
@@ -447,13 +481,13 @@ export const useDbaExport = () => {
     dbaSelections,
     error,
     loadingDbaSelections,
-    
+
     // Utility functions
     getDbaInfo,
     getItemDisplayName,
     generateDefaultTitle,
     generateDefaultDescription,
-    
+
     // Actions
     handleItemToggle,
     updateItemCustomization,

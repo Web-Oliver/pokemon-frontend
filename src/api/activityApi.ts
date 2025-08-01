@@ -145,13 +145,15 @@ export interface ActivityTypesResponse {
 /**
  * Activity creation payload interface
  */
-interface IActivityCreatePayload
-  extends Omit<Activity, 'id' | '_id' | 'createdAt' | 'updatedAt'> {}
+type IActivityCreatePayload = Omit<
+  Activity,
+  'id' | '_id' | 'createdAt' | 'updatedAt'
+>;
 
 /**
  * Activity update payload interface
  */
-interface IActivityUpdatePayload extends Partial<IActivityCreatePayload> {}
+type IActivityUpdatePayload = Partial<IActivityCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 

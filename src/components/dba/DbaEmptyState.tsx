@@ -1,7 +1,7 @@
 /**
  * DBA Empty State Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for displaying empty collection state
  * - OCP: Open for extension via props
@@ -31,11 +31,11 @@ const DbaEmptyState: React.FC<DbaEmptyStateProps> = ({
     <div className="relative group overflow-hidden">
       {/* Holographic background */}
       <div className="absolute inset-0 bg-gradient-to-r from-violet-500/15 via-purple-500/15 to-pink-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
-      
+
       <div className="relative bg-gradient-to-br from-violet-900/80 via-purple-900/70 to-pink-900/80 backdrop-blur-3xl rounded-3xl border border-violet-400/30 shadow-[0_0_80px_rgba(139,92,246,0.2)] p-20">
         {/* Shimmer effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-400/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-2000 ease-out rounded-3xl"></div>
-        
+
         <div className="relative z-10 text-center">
           {/* Cosmic icon */}
           <div className="relative mb-12">
@@ -51,7 +51,7 @@ const DbaEmptyState: React.FC<DbaEmptyStateProps> = ({
                       left: `${Math.random() * 100 - 50}px`,
                       top: `${Math.random() * 100 - 50}px`,
                       animationDelay: `${i * 0.3}s`,
-                      animationDuration: `${2 + Math.random() * 2}s`
+                      animationDuration: `${2 + Math.random() * 2}s`,
                     }}
                   ></div>
                 ))}
@@ -59,17 +59,17 @@ const DbaEmptyState: React.FC<DbaEmptyStateProps> = ({
             </div>
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/10 to-pink-500/10 blur-2xl animate-pulse"></div>
           </div>
-          
-          <h3 className="text-3xl font-bold text-white mb-4">
-            No Items Found
-          </h3>
+
+          <h3 className="text-3xl font-bold text-white mb-4">No Items Found</h3>
           <p className="text-lg text-zinc-400 max-w-md mx-auto mb-6">
             Add items to your collection to start exporting to DBA.dk
           </p>
-          
+
           <div className="inline-flex items-center px-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg">
             <Star className="w-4 h-4 text-zinc-400 mr-2" />
-            <span className="text-zinc-300 text-sm">Add items to get started</span>
+            <span className="text-zinc-300 text-sm">
+              Add items to get started
+            </span>
           </div>
         </div>
       </div>

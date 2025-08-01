@@ -9,7 +9,9 @@ export default defineConfig({
       babel: {
         plugins: [
           // React Compiler for automatic memoization (Context7 pattern)
-          process.env.NODE_ENV === 'production' && ['babel-plugin-react-compiler'],
+          process.env.NODE_ENV === 'production' && [
+            'babel-plugin-react-compiler',
+          ],
         ].filter(Boolean),
       },
     }),
@@ -37,45 +39,49 @@ export default defineConfig({
           if (id.includes('react') || id.includes('react-dom')) {
             return 'react-vendor';
           }
-          
+
           // UI libraries - lazy load candidates
           if (id.includes('lucide-react') || id.includes('framer-motion')) {
             return 'ui-vendor';
           }
-          
+
           // Heavy libraries - separate chunks for better caching
           if (id.includes('recharts')) {
             return 'charts-vendor';
           }
-          
+
           // Search and highlighting - lazy loadable
           if (id.includes('SearchDropdown') || id.includes('/search/')) {
             return 'search-features';
           }
-          
+
           // Forms - conditional loading
           if (id.includes('/forms/') || id.includes('react-hook-form')) {
             return 'form-features';
           }
-          
+
           // Utilities - tree-shakeable
-          if (id.includes('axios') || id.includes('react-hot-toast') || id.includes('jszip')) {
+          if (
+            id.includes('axios') ||
+            id.includes('react-hot-toast') ||
+            id.includes('jszip')
+          ) {
             return 'utils-vendor';
           }
-          
+
           // Data fetching - critical path
           if (id.includes('@tanstack/react-query')) {
             return 'query-vendor';
           }
-          
+
           // Node modules default
           if (id.includes('node_modules')) {
             return 'vendor';
           }
         },
-        
+
         // Context7 Performance Optimizations
-        chunkFileNames: (chunkInfo) => {
+        chunkFileNames: (_chunkInfo) => {
           // Add hash for better caching
           return `js/[name]-[hash].js`;
         },
@@ -91,7 +97,7 @@ export default defineConfig({
           return `assets/[name]-[hash][extname]`;
         },
       },
-      
+
       // Context7 Tree-shaking Optimizations
       treeshake: {
         moduleSideEffects: false, // Enable aggressive tree-shaking
@@ -99,25 +105,28 @@ export default defineConfig({
         tryCatchDeoptimization: false,
       },
     },
-    
+
     // Context7 Bundle Size Optimizations
     chunkSizeWarningLimit: 1000, // 1MB warning threshold
     reportCompressedSize: true, // Show gzipped sizes
-    
+
     // Minification settings for production
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: process.env.NODE_ENV === 'production', // Remove console.logs in production
         drop_debugger: true,
-        pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info'] : [],
+        pure_funcs:
+          process.env.NODE_ENV === 'production'
+            ? ['console.log', 'console.info']
+            : [],
       },
       mangle: {
         safari10: true, // Handle Safari 10 compatibility
       },
     },
   },
-  
+
   // Context7 Dependency Optimization
   optimizeDeps: {
     include: [
@@ -133,7 +142,7 @@ export default defineConfig({
       'framer-motion',
     ],
   },
-  
+
   // Context7 Module Resolution
   resolve: {
     alias: {

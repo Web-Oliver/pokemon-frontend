@@ -189,7 +189,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
       if (data.length === 0) {
         const activeTabConfig = tabs.find((tab) => tab.id === activeTab);
         const Icon = activeTabConfig?.icon || Package;
-        
+
         return (
           <div className="text-center py-16">
             <div className="mb-6">

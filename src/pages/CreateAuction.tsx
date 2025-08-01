@@ -197,7 +197,7 @@ const CreateAuction: React.FC = () => {
         }
 
         // Clean and build display name
-        let cleanCardName = cardName
+        const cleanCardName = cardName
           .replace(/^2025\s+/gi, '')
           .replace(/Japanese Pokemon Japanese\s+/gi, 'Japanese ')
           .replace(/Pokemon Japanese\s+/gi, 'Japanese ')
@@ -422,7 +422,13 @@ const CreateAuction: React.FC = () => {
 
     setSelectedItemIds(newSelection);
     setSelectedItemOrderByType(newOrderItemsByType);
-  }, [selectedItemIds, allCollectionItems, selectedItemOrderByType, filterType, searchTerm]);
+  }, [
+    selectedItemIds,
+    allCollectionItems,
+    selectedItemOrderByType,
+    filterType,
+    searchTerm,
+  ]);
 
   // Clear all selections
   const clearAllSelections = useCallback(() => {

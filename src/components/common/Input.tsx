@@ -12,12 +12,7 @@
  */
 
 import React, { forwardRef, InputHTMLAttributes } from 'react';
-import {
-  ErrorMessage,
-  HelperText,
-  Label,
-  FormWrapper,
-} from './FormElements';
+import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;

@@ -12,11 +12,7 @@
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
-import {
-  CARD_CONFIG,
-  createResourceOperations,
-  idMapper,
-} from './genericApiOperations';
+import { CARD_CONFIG, createResourceOperations } from './genericApiOperations';
 import { ICard } from '../domain/models/card';
 import { searchCards as searchCardsApi } from './searchApi';
 
@@ -52,7 +48,7 @@ export interface CardSearchParams {
   page?: number;
 }
 
-export interface SearchResponse {
+export interface CardSearchResponse {
   success: boolean;
   query: string;
   count: number;
@@ -79,12 +75,12 @@ export interface CardMetrics {
 /**
  * Card creation payload interface
  */
-interface ICardCreatePayload extends Omit<ICard, 'id' | '_id'> {}
+type ICardCreatePayload = Omit<ICard, 'id' | '_id'>;
 
 /**
  * Card update payload interface
  */
-interface ICardUpdatePayload extends Partial<ICardCreatePayload> {}
+type ICardUpdatePayload = Partial<ICardCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 

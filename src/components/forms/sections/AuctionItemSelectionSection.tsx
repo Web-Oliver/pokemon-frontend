@@ -1,10 +1,10 @@
 /**
  * Auction Item Selection Section Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Handles the selection and ordering of collection items for auctions
  * Uses proper form components and Context7 design patterns
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Item selection and ordering only
  * - DRY: Reusable item selection logic
@@ -12,19 +12,19 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { 
-  Package, 
-  Search, 
-  Filter, 
-  Hash, 
-  TrendingUp, 
-  Eye, 
-  CheckCircle, 
+import {
+  Package,
+  Search,
+  Filter,
+  Hash,
+  TrendingUp,
+  Eye,
+  CheckCircle,
   Circle,
   X,
   Grid3X3,
   Users,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 import Button from '../../common/Button';
 import Input from '../../common/Input';
@@ -49,22 +49,24 @@ interface AuctionItemSelectionSectionProps {
   items: UnifiedCollectionItem[];
   loading: boolean;
   error?: string;
-  
+
   /** Selection State */
   selectedItemIds: Set<string>;
   onToggleSelection: (itemId: string) => void;
   onSelectAll: () => void;
   onClearSelection: () => void;
-  
+
   /** Summary Information */
   selectedItemsValue: number;
-  
+
   /** Filter State */
   searchTerm: string;
   onSearchChange: (term: string) => void;
   filterType: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
-  onFilterChange: (filter: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct') => void;
-  
+  onFilterChange: (
+    filter: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'
+  ) => void;
+
   /** Preview */
   showPreview: boolean;
   onTogglePreview: () => void;
@@ -75,7 +77,9 @@ interface AuctionItemSelectionSectionProps {
   };
 }
 
-const AuctionItemSelectionSection: React.FC<AuctionItemSelectionSectionProps> = ({
+const AuctionItemSelectionSection: React.FC<
+  AuctionItemSelectionSectionProps
+> = ({
   items,
   loading,
   error,
@@ -119,7 +123,9 @@ const AuctionItemSelectionSection: React.FC<AuctionItemSelectionSectionProps> = 
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
-          <span className="ml-3 text-zinc-300">Loading collection items...</span>
+          <span className="ml-3 text-zinc-300">
+            Loading collection items...
+          </span>
         </div>
       </div>
     );
@@ -132,7 +138,9 @@ const AuctionItemSelectionSection: React.FC<AuctionItemSelectionSectionProps> = 
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="w-8 h-8 text-red-400" />
           </div>
-          <h4 className="text-lg font-bold text-red-400 mb-2">Error Loading Items</h4>
+          <h4 className="text-lg font-bold text-red-400 mb-2">
+            Error Loading Items
+          </h4>
           <p className="text-zinc-300">{error}</p>
         </div>
       </div>
@@ -222,7 +230,7 @@ const AuctionItemSelectionSection: React.FC<AuctionItemSelectionSectionProps> = 
       {/* Main Selection Interface */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
-        
+
         <div className="relative z-10 space-y-6">
           {/* Search and Filter Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -300,8 +308,8 @@ const AuctionItemSelectionSection: React.FC<AuctionItemSelectionSectionProps> = 
                     key={item.id}
                     onClick={() => onToggleSelection(item.id)}
                     className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col h-full hover:scale-102 ${
-                      isSelected 
-                        ? 'border-amber-400 bg-amber-50/10 shadow-lg transform scale-105' 
+                      isSelected
+                        ? 'border-amber-400 bg-amber-50/10 shadow-lg transform scale-105'
                         : 'border-zinc-700/40 bg-zinc-800/80 hover:border-amber-400/60 hover:shadow-md'
                     }`}
                   >

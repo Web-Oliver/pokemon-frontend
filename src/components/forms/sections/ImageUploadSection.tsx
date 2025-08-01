@@ -43,11 +43,14 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
       {/* Background Glass Effects */}
       <div className="absolute -inset-4 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
       <div className="absolute -inset-2 bg-gradient-to-r from-pink-400/5 via-purple-400/5 to-indigo-400/5 rounded-[2.5rem] blur-xl"></div>
-      
+
       <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
         {/* Floating Orbs */}
         <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div
+          className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse"
+          style={{ animationDelay: '1s' }}
+        ></div>
 
         {/* Context7 Premium Header */}
         <div className="mb-8 relative z-10 text-center">
@@ -82,7 +85,9 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
               <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10">
                 <Sparkles className="w-5 h-5 text-violet-400" />
               </div>
-              <span className="text-white font-semibold">Photography Guidelines</span>
+              <span className="text-white font-semibold">
+                Photography Guidelines
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -92,7 +97,9 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                   <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-600/20 backdrop-blur-xl border border-white/10">
                     <Upload className="w-4 h-4 text-blue-400" />
                   </div>
-                  <span className="text-white/80 font-semibold text-sm">Upload Specs</span>
+                  <span className="text-white/80 font-semibold text-sm">
+                    Upload Specs
+                  </span>
                 </div>
                 <div className="space-y-1 text-xs text-white/60">
                   <p>• Up to {maxFiles} images</p>
@@ -107,7 +114,9 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                   <div className="p-1.5 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-white/10">
                     <Image className="w-4 h-4 text-emerald-400" />
                   </div>
-                  <span className="text-white/80 font-semibold text-sm">Shot Types</span>
+                  <span className="text-white/80 font-semibold text-sm">
+                    Shot Types
+                  </span>
                 </div>
                 <div className="space-y-1 text-xs text-white/60">
                   <p>• Front & back views</p>
@@ -122,7 +131,9 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                   <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-600/20 backdrop-blur-xl border border-white/10">
                     <Sparkles className="w-4 h-4 text-amber-400" />
                   </div>
-                  <span className="text-white/80 font-semibold text-sm">Pro Tips</span>
+                  <span className="text-white/80 font-semibold text-sm">
+                    Pro Tips
+                  </span>
                 </div>
                 <div className="space-y-1 text-xs text-white/60">
                   <p>• Good lighting is key</p>
@@ -144,7 +155,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Breathing Animation */}
         <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 via-purple-500/5 to-indigo-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
       </div>

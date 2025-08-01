@@ -1,10 +1,10 @@
 /**
  * Auction Form Container Component
  * Layer 3: Components (UI Building Blocks) - Container Pattern
- * 
+ *
  * Provides unified structure for auction forms following SOLID and DRY principles
  * Eliminates custom form implementation in favor of standardized components
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Provides auction form structure and orchestration
  * - DRY: Eliminates duplicate form structure across auction forms
@@ -14,7 +14,12 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import {
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from 'react-hook-form';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
 import Input from '../../common/Input';
@@ -24,24 +29,26 @@ interface AuctionFormContainerProps {
   /** Form Configuration */
   isEditing: boolean;
   isSubmitting: boolean;
-  
+
   /** Form Header Props */
   title: string;
   description: string;
   icon: LucideIcon;
   primaryColorClass: string;
-  
+
   /** React Hook Form Functions */
   register: UseFormRegister<any>;
   errors: FieldErrors<any>;
   setValue: UseFormSetValue<any>;
   watch: UseFormWatch<any>;
-  handleSubmit: (onValid: (data: any) => void | Promise<void>) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  
+  handleSubmit: (
+    onValid: (data: any) => void | Promise<void>
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+
   /** Form Submission */
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
-  
+
   /** Additional Content Sections */
   itemSelectionSection?: React.ReactNode;
   customButtons?: React.ReactNode;
@@ -91,7 +98,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
       {/* Basic Auction Information */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
-        
+
         <div className="relative z-10 space-y-6">
           <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center">
             <icon className="w-6 h-6 mr-3 text-teal-400" />
@@ -114,13 +121,15 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
               Auction Footer Text
             </label>
             <textarea
-              {...register('bottomText', { required: 'Footer text is required' })}
+              {...register('bottomText', {
+                required: 'Footer text is required',
+              })}
               placeholder="Enter the auction footer/closing text"
               rows={4}
               disabled={isSubmitting}
               className={`w-full px-4 py-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-2xl shadow-lg placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 focus:bg-zinc-800/95 text-zinc-100 font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl resize-none ${
-                errors.bottomText 
-                  ? 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20' 
+                errors.bottomText
+                  ? 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20'
                   : 'border-zinc-700/50 focus:ring-cyan-500/50 focus:border-cyan-400'
               }`}
             />

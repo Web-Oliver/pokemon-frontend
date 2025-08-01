@@ -1,7 +1,7 @@
 /**
  * DBA Export Success Notification Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for displaying export success notification
  * - OCP: Open for extension via props interface
@@ -18,7 +18,9 @@ interface DbaExportSuccessProps {
   } | null;
 }
 
-const DbaExportSuccess: React.FC<DbaExportSuccessProps> = ({ exportResult }) => {
+const DbaExportSuccess: React.FC<DbaExportSuccessProps> = ({
+  exportResult,
+}) => {
   if (!exportResult) {
     return null;
   }

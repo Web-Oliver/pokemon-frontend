@@ -13,12 +13,7 @@
 
 import { forwardRef, SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
-import {
-  ErrorMessage,
-  HelperText,
-  Label,
-  FormWrapper,
-} from './FormElements';
+import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
 
 export interface SelectOption {
   value: string;

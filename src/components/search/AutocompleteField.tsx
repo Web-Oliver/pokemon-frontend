@@ -58,31 +58,40 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
   }, [value]); // Only depend on external value prop
 
   // Handle keyboard navigation - memoized for performance
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!autocomplete.isOpen) {
-      return;
-    }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!autocomplete.isOpen) {
+        return;
+      }
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        autocomplete.moveDown();
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        autocomplete.moveUp();
-        break;
-      case 'Enter':
-        e.preventDefault();
-        autocomplete.selectActive();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        autocomplete.close();
-        inputRef.current?.blur();
-        break;
-    }
-  }, [autocomplete.isOpen, autocomplete.moveDown, autocomplete.moveUp, autocomplete.selectActive, autocomplete.close]);
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          autocomplete.moveDown();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          autocomplete.moveUp();
+          break;
+        case 'Enter':
+          e.preventDefault();
+          autocomplete.selectActive();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          autocomplete.close();
+          inputRef.current?.blur();
+          break;
+      }
+    },
+    [
+      autocomplete.isOpen,
+      autocomplete.moveDown,
+      autocomplete.moveUp,
+      autocomplete.selectActive,
+      autocomplete.close,
+    ]
+  );
 
   return (
     <div className={`relative ${className}`}>
@@ -102,11 +111,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
         {/* Background Glass Effects */}
         <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 rounded-[1.5rem] blur-xl opacity-60"></div>
         <div className="absolute -inset-1 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-cyan-400/5 rounded-[1.2rem] blur-md"></div>
-        
+
         <div className="relative bg-black/40 backdrop-blur-3xl rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden group">
           {/* Floating Orbs */}
           <div className="absolute -top-2 -right-2 w-16 h-16 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-xl animate-pulse opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
-          <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-lg animate-pulse opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" style={{animationDelay: '0.5s'}}></div>
+          <div
+            className="absolute -bottom-2 -left-2 w-12 h-12 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-lg animate-pulse opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"
+            style={{ animationDelay: '0.5s' }}
+          ></div>
 
           {/* Premium Search Icon */}
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
@@ -121,14 +133,20 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
             type="text"
             value={autocomplete.value}
             onChange={(e) => autocomplete.setValue(e.target.value)}
-            onFocus={useCallback((e) => {
-              autocomplete.onFocus();
-              onFocusChange?.(true);
-            }, [autocomplete.onFocus, onFocusChange])}
-            onBlur={useCallback((e) => {
-              autocomplete.onBlur();
-              onFocusChange?.(false);
-            }, [autocomplete.onBlur, onFocusChange])}
+            onFocus={useCallback(
+              (e) => {
+                autocomplete.onFocus();
+                onFocusChange?.(true);
+              },
+              [autocomplete.onFocus, onFocusChange]
+            )}
+            onBlur={useCallback(
+              (e) => {
+                autocomplete.onBlur();
+                onFocusChange?.(false);
+              },
+              [autocomplete.onBlur, onFocusChange]
+            )}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
@@ -150,7 +168,12 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                 onSelect({
                   _id: '',
                   displayName: '',
-                  type: searchType === 'sets' ? 'set' : searchType === 'products' ? 'product' : 'card',
+                  type:
+                    searchType === 'sets'
+                      ? 'set'
+                      : searchType === 'products'
+                        ? 'product'
+                        : 'card',
                   data: {},
                 } as SearchResult);
               }, [autocomplete.clear, onSelect, searchType])}
@@ -184,7 +207,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
 
           {/* Shimmer Effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-focus-within:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"></div>
-          
+
           {/* Breathing Animation */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-cyan-500/5 rounded-2xl animate-pulse opacity-40 pointer-events-none group-focus-within:opacity-60 transition-opacity duration-300"></div>
         </div>
@@ -206,7 +229,9 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           <div className="p-1 rounded-lg bg-gradient-to-br from-orange-500/20 to-red-600/20 backdrop-blur-xl border border-white/10">
             <Zap className="w-3 h-3 text-orange-400" />
           </div>
-          <p className="text-sm text-orange-300 font-medium">{autocomplete.error}</p>
+          <p className="text-sm text-orange-300 font-medium">
+            {autocomplete.error}
+          </p>
         </div>
       )}
 
@@ -214,7 +239,9 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-2 p-2 bg-gradient-to-r from-slate-500/20 to-zinc-600/20 backdrop-blur-xl border border-slate-500/30 rounded-lg shadow-lg">
           <p className="text-xs text-slate-300 font-mono">
-            Debug: isOpen={String(autocomplete.isOpen)}, results={autocomplete.results.length}, loading={String(autocomplete.loading)}, error={autocomplete.error || 'none'}
+            Debug: isOpen={String(autocomplete.isOpen)}, results=
+            {autocomplete.results.length}, loading=
+            {String(autocomplete.loading)}, error={autocomplete.error || 'none'}
           </p>
         </div>
       )}
@@ -225,20 +252,26 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           {/* Background Glass Effects */}
           <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 rounded-[1.5rem] blur-xl opacity-60"></div>
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400/5 via-blue-400/5 to-purple-400/5 rounded-[1.2rem] blur-md"></div>
-          
+
           <div className="relative bg-black/40 backdrop-blur-3xl rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden max-h-80">
             {/* Floating Orbs */}
             <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div
+              className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-lg animate-pulse"
+              style={{ animationDelay: '1s' }}
+            ></div>
 
             <div className="p-2 space-y-1 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent relative z-10">
               {autocomplete.results.map((result, index) => (
                 <div
                   key={result._id}
-                  onMouseDown={useCallback((e) => {
-                    e.preventDefault();
-                    autocomplete.selectResult(result);
-                  }, [autocomplete.selectResult, result])}
+                  onMouseDown={useCallback(
+                    (e) => {
+                      e.preventDefault();
+                      autocomplete.selectResult(result);
+                    },
+                    [autocomplete.selectResult, result]
+                  )}
                   className={`group cursor-pointer select-none relative p-4 rounded-xl transition-all duration-300 transform hover:scale-102 overflow-hidden ${
                     index === autocomplete.activeIndex
                       ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 shadow-lg'
@@ -249,18 +282,22 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                   {index === autocomplete.activeIndex && (
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl"></div>
                   )}
-                  
+
                   {/* Shimmer Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
 
                   <div className="relative z-10 flex items-center justify-between">
                     <div className="flex-1 min-w-0 space-y-1">
-                      <span className={`block font-semibold text-lg truncate pr-4 ${
-                        index === autocomplete.activeIndex ? 'text-white' : 'text-white/90'
-                      }`}>
+                      <span
+                        className={`block font-semibold text-lg truncate pr-4 ${
+                          index === autocomplete.activeIndex
+                            ? 'text-white'
+                            : 'text-white/90'
+                        }`}
+                      >
                         {result.displayName}
                       </span>
-                      
+
                       {/* Premium Metadata */}
                       <div className="flex flex-wrap items-center gap-2">
                         {result.data?.setName && result.type !== 'set' && (
@@ -284,20 +321,22 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                     </div>
 
                     {/* Premium Type Badge */}
-                    <div className={`flex-shrink-0 ml-4 px-3 py-1.5 rounded-xl font-bold text-xs shadow-lg backdrop-blur-xl border ${
-                      result.type === 'set' 
-                        ? 'bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border-blue-500/30 text-blue-300'
-                        : result.type === 'product'
-                        ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
-                        : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
-                    }`}>
+                    <div
+                      className={`flex-shrink-0 ml-4 px-3 py-1.5 rounded-xl font-bold text-xs shadow-lg backdrop-blur-xl border ${
+                        result.type === 'set'
+                          ? 'bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border-blue-500/30 text-blue-300'
+                          : result.type === 'product'
+                            ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
+                            : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
+                      }`}
+                    >
                       {result.type}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {/* Breathing Animation */}
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-blue-500/5 to-purple-500/5 rounded-2xl animate-pulse opacity-40 pointer-events-none"></div>
           </div>
@@ -313,11 +352,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
             {/* Background Glass Effects */}
             <div className="absolute -inset-2 bg-gradient-to-r from-slate-500/10 via-gray-500/10 to-zinc-500/10 rounded-[1.5rem] blur-xl opacity-60"></div>
             <div className="absolute -inset-1 bg-gradient-to-r from-slate-400/5 via-gray-400/5 to-zinc-400/5 rounded-[1.2rem] blur-md"></div>
-            
+
             <div className="relative bg-black/40 backdrop-blur-3xl rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden">
               {/* Floating Orbs */}
               <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-slate-500/10 to-gray-500/10 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-zinc-500/10 to-slate-500/10 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div
+                className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-zinc-500/10 to-slate-500/10 rounded-full blur-lg animate-pulse"
+                style={{ animationDelay: '1s' }}
+              ></div>
 
               <div className="p-8 text-center relative z-10">
                 <div className="relative mb-6">
@@ -326,10 +368,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                   </div>
                   <div className="absolute -inset-2 bg-gradient-to-r from-slate-500/10 to-slate-600/10 rounded-3xl blur-xl opacity-50"></div>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No results found</h3>
-                <p className="text-white/60 text-sm font-medium">Try adjusting your search terms or check spelling</p>
+                <h3 className="text-lg font-bold text-white mb-2">
+                  No results found
+                </h3>
+                <p className="text-white/60 text-sm font-medium">
+                  Try adjusting your search terms or check spelling
+                </p>
               </div>
-              
+
               {/* Breathing Animation */}
               <div className="absolute inset-0 bg-gradient-to-r from-slate-500/5 via-gray-500/5 to-zinc-500/5 rounded-2xl animate-pulse opacity-40 pointer-events-none"></div>
             </div>

@@ -1,10 +1,10 @@
 /**
  * Card Information Display Section Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Reusable component for displaying read-only card information fields
  * Eliminates 95% duplication between PSA and Raw card forms
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Displays card information fields only
  * - DRY: Eliminates duplicate code across PSA/Raw forms
@@ -21,11 +21,11 @@ interface CardInformationDisplaySectionProps {
   register: UseFormRegister<any>;
   errors: FieldErrors<any>;
   watch: UseFormWatch<any>;
-  
+
   /** Display configuration */
   isVisible?: boolean;
   cardType: 'psa' | 'raw';
-  
+
   /** Optional styling overrides */
   className?: string;
   gridClassName?: string;
@@ -36,7 +36,9 @@ interface CardInformationDisplaySectionProps {
  * Renders read-only Pokemon Number, Base Name, and Variety fields
  * Used by both PSA and Raw card forms to eliminate duplication
  */
-const CardInformationDisplaySection: React.FC<CardInformationDisplaySectionProps> = ({
+const CardInformationDisplaySection: React.FC<
+  CardInformationDisplaySectionProps
+> = ({
   register,
   errors,
   watch,
@@ -50,7 +52,8 @@ const CardInformationDisplaySection: React.FC<CardInformationDisplaySectionProps
   }
 
   // Consistent styling for read-only fields across both form types
-  const readOnlyFieldClass = 'text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed';
+  const readOnlyFieldClass =
+    'text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed';
 
   return (
     <div className={`${className}`}>

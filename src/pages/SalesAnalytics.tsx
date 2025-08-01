@@ -140,38 +140,62 @@ const SalesAnalytics: React.FC = () => {
         <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
           <Calendar className="w-5 h-5 text-white" />
         </div>
-        
+
         {/* Start Date Input */}
         <div className="flex-1">
-          <label className="block text-xs font-medium text-zinc-400 mb-1">From</label>
+          <label className="block text-xs font-medium text-zinc-400 mb-1">
+            From
+          </label>
           <input
             type="date"
             value={localDateRange.startDate || ''}
-            onChange={(e) => setLocalDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-            onBlur={() => setDateRange({ startDate: localDateRange.startDate, endDate: localDateRange.endDate })}
+            onChange={(e) =>
+              setLocalDateRange((prev) => ({
+                ...prev,
+                startDate: e.target.value,
+              }))
+            }
+            onBlur={() =>
+              setDateRange({
+                startDate: localDateRange.startDate,
+                endDate: localDateRange.endDate,
+              })
+            }
             className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400"
           />
         </div>
-        
+
         {/* Separator */}
         <div className="flex flex-col items-center">
           <div className="w-6 h-0.5 bg-zinc-600 rounded-full mb-1"></div>
           <span className="text-xs text-zinc-400">to</span>
           <div className="w-6 h-0.5 bg-zinc-600 rounded-full mt-1"></div>
         </div>
-        
+
         {/* End Date Input */}
         <div className="flex-1">
-          <label className="block text-xs font-medium text-zinc-400 mb-1">Until</label>
+          <label className="block text-xs font-medium text-zinc-400 mb-1">
+            Until
+          </label>
           <input
             type="date"
             value={localDateRange.endDate || ''}
-            onChange={(e) => setLocalDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-            onBlur={() => setDateRange({ startDate: localDateRange.startDate, endDate: localDateRange.endDate })}
+            onChange={(e) =>
+              setLocalDateRange((prev) => ({
+                ...prev,
+                endDate: e.target.value,
+              }))
+            }
+            onBlur={() =>
+              setDateRange({
+                startDate: localDateRange.startDate,
+                endDate: localDateRange.endDate,
+              })
+            }
             className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400"
           />
         </div>
-        
+
         {/* Clear Button - Only show when dates are selected */}
         {(localDateRange.startDate || localDateRange.endDate) && (
           <button
@@ -185,13 +209,14 @@ const SalesAnalytics: React.FC = () => {
           </button>
         )}
       </div>
-      
+
       {/* Active Filter Indicator */}
       {(localDateRange.startDate || localDateRange.endDate) && (
         <div className="mt-3 pt-3 border-t border-zinc-700/40">
           <div className="flex items-center text-xs text-blue-300 font-medium">
             <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
-            Filtering: {localDateRange.startDate || 'Start'} → {localDateRange.endDate || 'End'}
+            Filtering: {localDateRange.startDate || 'Start'} →{' '}
+            {localDateRange.endDate || 'End'}
           </div>
         </div>
       )}
@@ -209,8 +234,6 @@ const SalesAnalytics: React.FC = () => {
     >
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-
-
           {/* Sales Overview Section */}
           <div className="relative mb-8">
             <div className="bg-zinc-900/95 rounded-2xl border border-zinc-700/50 p-8">
@@ -223,7 +246,9 @@ const SalesAnalytics: React.FC = () => {
                   <h2 className="text-3xl font-bold text-white mb-2">
                     Sales Overview
                   </h2>
-                  <p className="text-zinc-400">Track your collection's performance</p>
+                  <p className="text-zinc-400">
+                    Track your collection's performance
+                  </p>
                 </div>
 
                 {/* Error Display */}
@@ -244,7 +269,9 @@ const SalesAnalytics: React.FC = () => {
                             <span className="text-xl">🃏</span>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm text-emerald-400 font-medium mb-1">Total Cards</div>
+                            <div className="text-sm text-emerald-400 font-medium mb-1">
+                              Total Cards
+                            </div>
                             <div className="text-4xl font-bold text-white">
                               {sales.length}
                             </div>
@@ -267,11 +294,21 @@ const SalesAnalytics: React.FC = () => {
                             <DollarSign className="w-6 h-6 text-white" />
                           </div>
                           <div className="text-right">
-                            <div className="text-sm text-blue-400 font-medium mb-1">Total Revenue</div>
-                            <div className="text-4xl font-bold text-white">
-                              {displayPrice(sales.reduce((sum, sale) => sum + (Number(sale.actualSoldPrice) || 0), 0)).replace(' kr.', '')}
+                            <div className="text-sm text-blue-400 font-medium mb-1">
+                              Total Revenue
                             </div>
-                            <div className="text-sm text-blue-300 font-medium">kr.</div>
+                            <div className="text-4xl font-bold text-white">
+                              {displayPrice(
+                                sales.reduce(
+                                  (sum, sale) =>
+                                    sum + (Number(sale.actualSoldPrice) || 0),
+                                  0
+                                )
+                              ).replace(' kr.', '')}
+                            </div>
+                            <div className="text-sm text-blue-300 font-medium">
+                              kr.
+                            </div>
                           </div>
                         </div>
                         <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
@@ -291,43 +328,83 @@ const SalesAnalytics: React.FC = () => {
                         <h3 className="text-2xl font-bold text-white mb-2">
                           Category Breakdown
                         </h3>
-                        <p className="text-zinc-400">Sales performance by item type</p>
+                        <p className="text-zinc-400">
+                          Sales performance by item type
+                        </p>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(() => {
                           const categoryStats = {
-                            'PSA Graded Card': { count: 0, revenue: 0, icon: '🏆', color: 'bg-yellow-600', textColor: 'text-yellow-300', bgColor: 'bg-yellow-500/20', borderColor: 'border-yellow-400/30' },
-                            'Raw Card': { count: 0, revenue: 0, icon: '🃏', color: 'bg-blue-600', textColor: 'text-blue-300', bgColor: 'bg-blue-500/20', borderColor: 'border-blue-400/30' },
-                            'Sealed Product': { count: 0, revenue: 0, icon: '📦', color: 'bg-purple-600', textColor: 'text-purple-300', bgColor: 'bg-purple-500/20', borderColor: 'border-purple-400/30' }
+                            'PSA Graded Card': {
+                              count: 0,
+                              revenue: 0,
+                              icon: '🏆',
+                              color: 'bg-yellow-600',
+                              textColor: 'text-yellow-300',
+                              bgColor: 'bg-yellow-500/20',
+                              borderColor: 'border-yellow-400/30',
+                            },
+                            'Raw Card': {
+                              count: 0,
+                              revenue: 0,
+                              icon: '🃏',
+                              color: 'bg-blue-600',
+                              textColor: 'text-blue-300',
+                              bgColor: 'bg-blue-500/20',
+                              borderColor: 'border-blue-400/30',
+                            },
+                            'Sealed Product': {
+                              count: 0,
+                              revenue: 0,
+                              icon: '📦',
+                              color: 'bg-purple-600',
+                              textColor: 'text-purple-300',
+                              bgColor: 'bg-purple-500/20',
+                              borderColor: 'border-purple-400/30',
+                            },
                           };
 
-                          sales.forEach(sale => {
+                          sales.forEach((sale) => {
                             const category = sale.itemCategory;
                             if (categoryStats[category]) {
                               categoryStats[category].count += 1;
-                              categoryStats[category].revenue += Number(sale.actualSoldPrice) || 0;
+                              categoryStats[category].revenue +=
+                                Number(sale.actualSoldPrice) || 0;
                             }
                           });
 
-                          return Object.entries(categoryStats).map(([category, stats]) => (
-                            <div key={category} className="bg-zinc-800/60 rounded-xl border border-zinc-700/50 p-6">
-                              <div className="text-center">
-                                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stats.color} mb-4 text-xl`}>
-                                  {stats.icon}
-                                </div>
-                                <h4 className="text-lg font-bold text-white mb-2">{category}</h4>
-                                <div className="space-y-2">
-                                  <div className={`inline-flex items-center px-3 py-1 ${stats.bgColor} ${stats.textColor} rounded-full text-sm font-medium ${stats.borderColor} border`}>
-                                    {stats.count} cards
+                          return Object.entries(categoryStats).map(
+                            ([category, stats]) => (
+                              <div
+                                key={category}
+                                className="bg-zinc-800/60 rounded-xl border border-zinc-700/50 p-6"
+                              >
+                                <div className="text-center">
+                                  <div
+                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stats.color} mb-4 text-xl`}
+                                  >
+                                    {stats.icon}
                                   </div>
-                                  <div className={`text-2xl font-bold ${stats.textColor}`}>
-                                    {displayPrice(stats.revenue)}
+                                  <h4 className="text-lg font-bold text-white mb-2">
+                                    {category}
+                                  </h4>
+                                  <div className="space-y-2">
+                                    <div
+                                      className={`inline-flex items-center px-3 py-1 ${stats.bgColor} ${stats.textColor} rounded-full text-sm font-medium ${stats.borderColor} border`}
+                                    >
+                                      {stats.count} cards
+                                    </div>
+                                    <div
+                                      className={`text-2xl font-bold ${stats.textColor}`}
+                                    >
+                                      {displayPrice(stats.revenue)}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ));
+                            )
+                          );
                         })()}
                       </div>
                     </div>
@@ -341,7 +418,8 @@ const SalesAnalytics: React.FC = () => {
                       No Sales Data Yet
                     </h3>
                     <p className="text-zinc-400 max-w-md mx-auto">
-                      Your sales analytics will appear here once you start selling items from your collection.
+                      Your sales analytics will appear here once you start
+                      selling items from your collection.
                     </p>
                   </div>
                 )}
@@ -357,7 +435,9 @@ const SalesAnalytics: React.FC = () => {
                   <h2 className="text-2xl font-bold text-white mb-2">
                     Recent Sales
                   </h2>
-                  <p className="text-zinc-400">Your latest sold items with details</p>
+                  <p className="text-zinc-400">
+                    Your latest sold items with details
+                  </p>
                 </div>
                 {Array.isArray(sales) && sales.length > 0 && (
                   <Button
@@ -372,7 +452,7 @@ const SalesAnalytics: React.FC = () => {
                   </Button>
                 )}
               </div>
-              
+
               {/* Clean List View Layout */}
               <div className="p-0">
                 {Array.isArray(sales) && sales.length > 0 ? (
@@ -391,42 +471,61 @@ const SalesAnalytics: React.FC = () => {
                             <div className="flex-shrink-0 relative">
                               <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-zinc-700/40 to-zinc-800/40 border border-zinc-600/20 overflow-hidden">
                                 {sale.thumbnailUrl ? (
-                                  <img 
-                                    src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : '/' + sale.thumbnailUrl}`}
+                                  <img
+                                    src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : `/${sale.thumbnailUrl}`}`}
                                     alt={sale.itemName}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
                                       // Fallback to emoji if image fails to load
                                       const target = e.currentTarget;
                                       target.style.display = 'none';
-                                      const fallbackDiv = target.nextElementSibling as HTMLElement;
+                                      const fallbackDiv =
+                                        target.nextElementSibling as HTMLElement;
                                       if (fallbackDiv) {
                                         fallbackDiv.style.display = 'flex';
                                       }
                                     }}
                                   />
                                 ) : null}
-                                <div 
-                                  className="w-full h-full flex items-center justify-center text-zinc-400 text-lg" 
-                                  style={{ display: sale.thumbnailUrl ? 'none' : 'flex' }}
+                                <div
+                                  className="w-full h-full flex items-center justify-center text-zinc-400 text-lg"
+                                  style={{
+                                    display: sale.thumbnailUrl
+                                      ? 'none'
+                                      : 'flex',
+                                  }}
                                 >
                                   {(() => {
-                                    const category = sale.itemCategory || 'Unknown';
-                                    if (category.includes('PSA')) return '🏆';
-                                    if (category.includes('Sealed')) return '📦';
-                                    if (category.includes('Raw')) return '🃏';
+                                    const category =
+                                      sale.itemCategory || 'Unknown';
+                                    if (category.includes('PSA')) {
+                                      return '🏆';
+                                    }
+                                    if (category.includes('Sealed')) {
+                                      return '📦';
+                                    }
+                                    if (category.includes('Raw')) {
+                                      return '🃏';
+                                    }
                                     return '🎴';
                                   })()}
                                 </div>
                               </div>
-                              
+
                               {/* Category badge */}
                               <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-xs font-bold bg-blue-600/80 text-white border border-blue-500/30">
                                 {(() => {
-                                  const category = sale.itemCategory || 'Unknown';
-                                  if (category.includes('PSA')) return 'PSA';
-                                  if (category.includes('Sealed')) return 'Sealed';
-                                  if (category.includes('Raw')) return 'Raw';
+                                  const category =
+                                    sale.itemCategory || 'Unknown';
+                                  if (category.includes('PSA')) {
+                                    return 'PSA';
+                                  }
+                                  if (category.includes('Sealed')) {
+                                    return 'Sealed';
+                                  }
+                                  if (category.includes('Raw')) {
+                                    return 'Raw';
+                                  }
                                   return 'Card';
                                 })()}
                               </div>
@@ -439,16 +538,24 @@ const SalesAnalytics: React.FC = () => {
                               </h3>
                               <div className="flex items-center space-x-4 text-sm text-zinc-400">
                                 <span>
-                                  📅 {sale.dateSold
-                                    ? new Date(sale.dateSold).toLocaleDateString('da-DK', {
+                                  📅{' '}
+                                  {sale.dateSold
+                                    ? new Date(
+                                        sale.dateSold
+                                      ).toLocaleDateString('da-DK', {
                                         day: '2-digit',
                                         month: '2-digit',
-                                        year: 'numeric'
+                                        year: 'numeric',
                                       })
                                     : 'Unknown'}
                                 </span>
                                 <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-zinc-700/40 text-zinc-300">
-                                  {sale.source === 'Facebook' ? '📘' : sale.source === 'DBA' ? '🏪' : '🌐'} {sale.source || 'Unknown'}
+                                  {sale.source === 'Facebook'
+                                    ? '📘'
+                                    : sale.source === 'DBA'
+                                      ? '🏪'
+                                      : '🌐'}{' '}
+                                  {sale.source || 'Unknown'}
                                 </span>
                               </div>
                             </div>
@@ -456,13 +563,21 @@ const SalesAnalytics: React.FC = () => {
                             {/* Price Information */}
                             <div className="flex items-center space-x-8">
                               <div className="text-right">
-                                <div className="text-xs text-zinc-400 uppercase tracking-wide mb-1">My Price</div>
-                                <div className="text-sm font-semibold text-zinc-300">{displayPrice(myPrice)}</div>
+                                <div className="text-xs text-zinc-400 uppercase tracking-wide mb-1">
+                                  My Price
+                                </div>
+                                <div className="text-sm font-semibold text-zinc-300">
+                                  {displayPrice(myPrice)}
+                                </div>
                               </div>
-                              
+
                               <div className="text-right">
-                                <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">Sale Price</div>
-                                <div className="text-lg font-bold text-emerald-400">{displayPrice(actualPrice)}</div>
+                                <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">
+                                  Sale Price
+                                </div>
+                                <div className="text-lg font-bold text-emerald-400">
+                                  {displayPrice(actualPrice)}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -479,7 +594,8 @@ const SalesAnalytics: React.FC = () => {
                       No Sales Yet
                     </h3>
                     <p className="text-zinc-400 max-w-md mx-auto">
-                      Your recent sales will appear here once you start selling items.
+                      Your recent sales will appear here once you start selling
+                      items.
                     </p>
                   </div>
                 )}
@@ -498,8 +614,18 @@ const SalesAnalytics: React.FC = () => {
                     <button className="px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 hover:text-blue-200 font-semibold rounded-lg border border-blue-500/30 hover:border-blue-400/50 transition-all duration-200">
                       <span className="flex items-center">
                         View All Sales
-                        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        <svg
+                          className="w-4 h-4 ml-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
                         </svg>
                       </span>
                     </button>

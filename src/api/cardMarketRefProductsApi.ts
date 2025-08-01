@@ -62,14 +62,12 @@ export interface OptimizedProductSearchResponse {
 /**
  * CardMarket reference product creation payload interface
  */
-interface ICardMarketRefProductCreatePayload
-  extends Omit<ICardMarketReferenceProduct, 'id' | '_id'> {}
+type ICardMarketRefProductCreatePayload = Omit<ICardMarketReferenceProduct, 'id' | '_id'>;
 
 /**
  * CardMarket reference product update payload interface
  */
-interface ICardMarketRefProductUpdatePayload
-  extends Partial<ICardMarketRefProductCreatePayload> {}
+type ICardMarketRefProductUpdatePayload = Partial<ICardMarketRefProductCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 

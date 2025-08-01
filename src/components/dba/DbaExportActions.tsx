@@ -44,9 +44,7 @@ const DbaExportActions: React.FC<DbaExportActionsProps> = ({
           <div className="w-8 h-8 bg-gradient-to-r from-white/20 to-emerald-200/20 rounded-full flex items-center justify-center mr-3 group-hover/btn:animate-bounce">
             <FileDown className="w-5 h-5 text-white" />
           </div>
-          <span className="text-white">
-            Download Files
-          </span>
+          <span className="text-white">Download Files</span>
         </button>
       )}
     </div>

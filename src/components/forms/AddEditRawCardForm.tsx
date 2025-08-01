@@ -16,9 +16,18 @@ import { IRawCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { useFormInitialization, formInitializationPresets } from '../../hooks/form/useFormInitialization';
-import { useCardSelection, cardSelectionPresets } from '../../hooks/form/useCardSelection';
-import { useFormSubmission, FormSubmissionPatterns } from './wrappers/FormSubmissionWrapper';
+import {
+  useFormInitialization,
+  formInitializationPresets,
+} from '../../hooks/form/useFormInitialization';
+import {
+  useCardSelection,
+  cardSelectionPresets,
+} from '../../hooks/form/useCardSelection';
+import {
+  useFormSubmission,
+  FormSubmissionPatterns,
+} from './wrappers/FormSubmissionWrapper';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CardFormContainer from './containers/CardFormContainer';
 import {
@@ -135,7 +144,6 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     }
   }, [watchedPrice, priceHistory]);
 
-
   const handlePriceUpdate = (newPrice: number, _date: string) => {
     // Add new price to history using specialized hook
     priceHistory.addPriceEntry(newPrice, 'manual_update');
@@ -153,18 +161,31 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     logContext: 'RAW CARD',
     validateBeforeSubmission: (data) => {
       if (!selectedCardId) {
-        throw FormSubmissionPatterns.createSelectionRequiredError('raw cards', 'card');
+        throw FormSubmissionPatterns.createSelectionRequiredError(
+          'raw cards',
+          'card'
+        );
       }
     },
     prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
       if (isEditing) {
-        const priceToUse = priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(formData.myPrice);
-        const finalImages = FormSubmissionPatterns.combineImages(imageUpload.remainingExistingImages, imageUrls);
+        const priceToUse =
+          priceHistory.currentPrice > 0
+            ? priceHistory.currentPrice
+            : parseFloat(formData.myPrice);
+        const finalImages = FormSubmissionPatterns.combineImages(
+          imageUpload.remainingExistingImages,
+          imageUrls
+        );
 
         return {
           myPrice: priceToUse,
           images: finalImages,
-          priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, undefined) || initialData?.priceHistory,
+          priceHistory:
+            FormSubmissionPatterns.transformPriceHistory(
+              priceHistory.priceHistory,
+              undefined
+            ) || initialData?.priceHistory,
         };
       } else {
         return {
@@ -173,7 +194,10 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
           myPrice: parseFloat(formData.myPrice),
           dateAdded: formData.dateAdded,
           images: imageUrls,
-          priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, parseFloat(formData.myPrice)),
+          priceHistory: FormSubmissionPatterns.transformPriceHistory(
+            priceHistory.priceHistory,
+            parseFloat(formData.myPrice)
+          ),
         };
       }
     },
@@ -187,7 +211,8 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     },
   });
 
-  const onSubmit = (data: FormData) => handleSubmission(data, { isEditing, itemId: initialData?.id });
+  const onSubmit = (data: FormData) =>
+    handleSubmission(data, { isEditing, itemId: initialData?.id });
 
   if (loading && !isSubmitting) {
     return (

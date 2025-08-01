@@ -120,7 +120,7 @@ export const uploadMultipleImages = async (
 ): Promise<string[]> => {
   if (process.env.NODE_ENV === 'development') {
     console.log('[UPLOAD API] uploadMultipleImages called with:', {
-      images: images,
+      images,
       imageCount: images ? images.length : 0,
       imageTypes: images ? images.map((img) => img.type) : [],
       imageSizes: images ? images.map((img) => img.size) : [],

@@ -216,7 +216,7 @@ const AddEditItem: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.08),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(16,185,129,0.05),transparent_60%)]"></div>
-      
+
       {/* Premium Particle Background */}
       <div className="absolute inset-0 opacity-30">
         <div
@@ -234,14 +234,17 @@ const AddEditItem: React.FC = () => {
             {/* Background Glass Effects */}
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-green-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
             <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-green-400/5 rounded-[2.5rem] blur-xl"></div>
-            
+
             <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
               {/* Premium Gradient Border */}
               <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              
+
               {/* Floating Orbs */}
               <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-green-500/10 to-teal-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div
+                className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-green-500/10 to-teal-500/10 rounded-full blur-2xl animate-pulse"
+                style={{ animationDelay: '1s' }}
+              ></div>
 
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center space-x-6">
@@ -253,7 +256,7 @@ const AddEditItem: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                   </button>
-                  
+
                   <div>
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
                       {isEditing ? 'Edit Collection Item' : 'Add New Item'}
@@ -277,7 +280,7 @@ const AddEditItem: React.FC = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Breathing Animation */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-green-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
             </div>
@@ -318,18 +321,22 @@ const AddEditItem: React.FC = () => {
               {/* Background Glass Effects */}
               <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
               <div className="absolute -inset-2 bg-gradient-to-r from-indigo-400/5 via-purple-400/5 to-pink-400/5 rounded-[2.5rem] blur-xl"></div>
-              
+
               <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
                 {/* Floating Orbs */}
                 <div className="absolute -top-8 -left-8 w-40 h-40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
+                <div
+                  className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full blur-2xl animate-pulse"
+                  style={{ animationDelay: '1.5s' }}
+                ></div>
 
                 <div className="mb-12 relative z-10 text-center">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent mb-4 leading-tight">
                     Choose Your Collection Type
                   </h2>
                   <p className="text-xl text-white/60 font-medium max-w-2xl mx-auto">
-                    Select the type of precious item you want to add to your collection
+                    Select the type of precious item you want to add to your
+                    collection
                   </p>
                 </div>
 
@@ -359,9 +366,9 @@ const AddEditItem: React.FC = () => {
                         key={itemType.id}
                         onClick={() => setSelectedItemType(itemType.id)}
                         className={`group relative text-center p-8 bg-black/60 backdrop-blur-2xl rounded-3xl transition-all duration-500 hover:scale-105 hover:shadow-2xl ${shadowClasses[itemType.color as keyof typeof shadowClasses]} border border-white/10 ring-1 ring-white/5 hover:ring-2 ${glowClasses[itemType.color as keyof typeof glowClasses]} overflow-hidden transform hover:-translate-y-2`}
-                        style={{ 
+                        style={{
                           animationDelay: `${index * 200}ms`,
-                          animation: 'fadeInUp 0.8s ease-out forwards'
+                          animation: 'fadeInUp 0.8s ease-out forwards',
                         }}
                       >
                         {/* Premium Gradient Overlay */}
@@ -414,7 +421,7 @@ const AddEditItem: React.FC = () => {
                     );
                   })}
                 </div>
-                
+
                 {/* Breathing Animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
               </div>
@@ -427,11 +434,14 @@ const AddEditItem: React.FC = () => {
               {/* Background Glass Effects */}
               <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
               <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-cyan-400/5 rounded-[2.5rem] blur-xl"></div>
-              
+
               <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
                 {/* Floating Orbs */}
                 <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+                <div
+                  className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse"
+                  style={{ animationDelay: '2s' }}
+                ></div>
 
                 <div className="flex items-center justify-between mb-12 relative z-10">
                   <div className="flex items-center space-x-6">
@@ -445,7 +455,7 @@ const AddEditItem: React.FC = () => {
                         <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                       </button>
                     )}
-                    
+
                     <div>
                       <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent leading-tight">
                         {
@@ -477,7 +487,7 @@ const AddEditItem: React.FC = () => {
                 </div>
 
                 <div className="relative z-10">{renderForm()}</div>
-                
+
                 {/* Breathing Animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
               </div>

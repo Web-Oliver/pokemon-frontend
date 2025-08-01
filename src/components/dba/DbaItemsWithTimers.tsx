@@ -1,7 +1,7 @@
 /**
  * DBA Items With Timers Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for displaying items with active DBA timers
  * - OCP: Open for extension via props interface
@@ -16,7 +16,10 @@ interface DbaItemsWithTimersProps {
   rawCards: any[];
   sealedProducts: any[];
   getDbaInfo: (id: string, type: string) => any;
-  renderItemCard: (item: any, type: 'psa' | 'raw' | 'sealed') => React.ReactNode;
+  renderItemCard: (
+    item: any,
+    type: 'psa' | 'raw' | 'sealed'
+  ) => React.ReactNode;
 }
 
 const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
@@ -38,9 +41,7 @@ const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
   );
 
   const totalWithTimers =
-    psaWithTimers.length +
-    rawWithTimers.length +
-    sealedWithTimers.length;
+    psaWithTimers.length + rawWithTimers.length + sealedWithTimers.length;
 
   if (totalWithTimers === 0) {
     return null;
@@ -50,11 +51,11 @@ const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
     <div className="relative group overflow-hidden">
       {/* Holographic background */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-indigo-500/15 to-purple-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
-      
+
       <div className="relative bg-gradient-to-br from-blue-900/80 via-indigo-900/70 to-purple-900/80 backdrop-blur-3xl rounded-3xl border border-blue-400/30 shadow-[0_0_80px_rgba(59,130,246,0.2)] p-10">
         {/* Shimmer effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1800 ease-out rounded-3xl"></div>
-        
+
         <div className="relative z-10">
           {/* Cosmic header */}
           <div className="text-center mb-10">
@@ -67,11 +68,13 @@ const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
             <p className="text-lg text-zinc-400">
               Items with active DBA countdown timers
             </p>
-            
+
             {/* Statistics */}
             <div className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600/30 to-indigo-600/30 border border-blue-400/40 rounded-2xl backdrop-blur-sm">
               <Star className="w-5 h-5 text-blue-400 mr-2 animate-pulse" />
-              <span className="text-blue-300 font-bold text-lg">{totalWithTimers} items on countdown</span>
+              <span className="text-blue-300 font-bold text-lg">
+                {totalWithTimers} items on countdown
+              </span>
             </div>
           </div>
 
@@ -85,9 +88,7 @@ const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
                   PSA Graded Cards ({psaWithTimers.length})
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {psaWithTimers.map((card) =>
-                    renderItemCard(card, 'psa')
-                  )}
+                  {psaWithTimers.map((card) => renderItemCard(card, 'psa'))}
                 </div>
               </div>
             )}
@@ -100,9 +101,7 @@ const DbaItemsWithTimers: React.FC<DbaItemsWithTimersProps> = ({
                   Raw Cards ({rawWithTimers.length})
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {rawWithTimers.map((card) =>
-                    renderItemCard(card, 'raw')
-                  )}
+                  {rawWithTimers.map((card) => renderItemCard(card, 'raw'))}
                 </div>
               </div>
             )}

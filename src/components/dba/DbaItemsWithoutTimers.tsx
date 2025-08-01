@@ -1,7 +1,7 @@
 /**
  * DBA Items Without Timers Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for displaying items available for DBA selection
  * - OCP: Open for extension via props interface
@@ -16,7 +16,10 @@ interface DbaItemsWithoutTimersProps {
   rawCards: any[];
   sealedProducts: any[];
   getDbaInfo: (id: string, type: string) => any;
-  renderItemCard: (item: any, type: 'psa' | 'raw' | 'sealed') => React.ReactNode;
+  renderItemCard: (
+    item: any,
+    type: 'psa' | 'raw' | 'sealed'
+  ) => React.ReactNode;
 }
 
 const DbaItemsWithoutTimers: React.FC<DbaItemsWithoutTimersProps> = ({
@@ -50,11 +53,11 @@ const DbaItemsWithoutTimers: React.FC<DbaItemsWithoutTimersProps> = ({
     <div className="relative group overflow-hidden">
       {/* Holographic background */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
-      
+
       <div className="relative bg-gradient-to-br from-emerald-900/80 via-teal-900/70 to-cyan-900/80 backdrop-blur-3xl rounded-3xl border border-emerald-400/30 shadow-[0_0_80px_rgba(16,185,129,0.2)] p-10">
         {/* Shimmer effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1600 ease-out rounded-3xl"></div>
-        
+
         <div className="relative z-10">
           {/* Cosmic header */}
           <div className="text-center mb-10">
@@ -67,11 +70,13 @@ const DbaItemsWithoutTimers: React.FC<DbaItemsWithoutTimersProps> = ({
             <p className="text-lg text-zinc-400">
               Items available for DBA export
             </p>
-            
+
             {/* Statistics */}
             <div className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600/30 to-teal-600/30 border border-emerald-400/40 rounded-2xl backdrop-blur-sm">
               <Sparkles className="w-5 h-5 text-emerald-400 mr-2 animate-pulse" />
-              <span className="text-emerald-300 font-bold text-lg">{totalWithoutTimers} items available</span>
+              <span className="text-emerald-300 font-bold text-lg">
+                {totalWithoutTimers} items available
+              </span>
             </div>
           </div>
 
@@ -85,9 +90,7 @@ const DbaItemsWithoutTimers: React.FC<DbaItemsWithoutTimersProps> = ({
                   PSA Graded Cards ({psaWithoutTimers.length})
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {psaWithoutTimers.map((card) =>
-                    renderItemCard(card, 'psa')
-                  )}
+                  {psaWithoutTimers.map((card) => renderItemCard(card, 'psa'))}
                 </div>
               </div>
             )}
@@ -100,9 +103,7 @@ const DbaItemsWithoutTimers: React.FC<DbaItemsWithoutTimersProps> = ({
                   Raw Cards ({rawWithoutTimers.length})
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {rawWithoutTimers.map((card) =>
-                    renderItemCard(card, 'raw')
-                  )}
+                  {rawWithoutTimers.map((card) => renderItemCard(card, 'raw'))}
                 </div>
               </div>
             )}

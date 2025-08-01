@@ -1,7 +1,7 @@
 /**
  * DBA.dk Export Page
  * Layer 4: Application Screen (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Only handles DBA export page orchestration
  * - OCP: Open for extension via component composition
@@ -52,7 +52,7 @@ const DbaExport: React.FC = () => {
     const isSelected = selectedItems.some((selected) => selected.id === itemId);
     const displayName = getItemDisplayName(item, type);
     const dbaInfo = getDbaInfo(itemId, type);
-    
+
     let subtitle = '';
     if (type === 'psa' && item.grade) {
       subtitle = `PSA ${item.grade}`;
@@ -83,7 +83,9 @@ const DbaExport: React.FC = () => {
   };
 
   const headerActions = (
-    <DbaHeaderActions onExportAll={() => exportCollectionData(allItems, 'all')} />
+    <DbaHeaderActions
+      onExportAll={() => exportCollectionData(allItems, 'all')}
+    />
   );
 
   return (
@@ -100,7 +102,10 @@ const DbaExport: React.FC = () => {
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-12">
           {/* 🏆 AWARD-WINNING HEADER GALAXY */}
-          <DbaHeaderGalaxy dbaSelections={dbaSelections} selectedItems={selectedItems} />
+          <DbaHeaderGalaxy
+            dbaSelections={dbaSelections}
+            selectedItems={selectedItems}
+          />
 
           {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
           <DbaExportConfiguration
@@ -128,7 +133,7 @@ const DbaExport: React.FC = () => {
               getDbaInfo={getDbaInfo}
               renderItemCard={renderItemCard}
             />
-            
+
             {/* Section 2: Items without DBA Timers (Available for Selection) */}
             <DbaItemsWithoutTimers
               psaCards={psaCards}

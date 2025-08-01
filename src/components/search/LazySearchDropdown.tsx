@@ -1,6 +1,6 @@
 /**
  * Lazy Search Dropdown - Context7 Bundle Optimization
- * 
+ *
  * Following Context7 React documentation patterns:
  * - React.lazy for code splitting complex highlighting component
  * - Suspense boundary with loading fallback
@@ -44,7 +44,9 @@ const LazySearchDropdown: React.FC<LazySearchDropdownProps> = (props) => {
           <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl p-6">
             <div className="flex items-center justify-center">
               <LoadingSpinner size="sm" />
-              <span className="ml-3 text-sm text-zinc-300">Loading search...</span>
+              <span className="ml-3 text-sm text-zinc-300">
+                Loading search...
+              </span>
             </div>
           </div>
         </div>

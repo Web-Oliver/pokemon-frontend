@@ -6,7 +6,15 @@
 
 import React from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { Award, Banknote, Star, TrendingUp, DollarSign, Calendar, Target } from 'lucide-react';
+import {
+  Award,
+  Banknote,
+  Star,
+  TrendingUp,
+  DollarSign,
+  Calendar,
+  Target,
+} from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
@@ -108,11 +116,14 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         {/* Background Glass Effects */}
         <div className="absolute -inset-4 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-red-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
         <div className="absolute -inset-2 bg-gradient-to-r from-yellow-400/5 via-orange-400/5 to-red-400/5 rounded-[2.5rem] blur-xl"></div>
-        
+
         <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
           {/* Floating Orbs */}
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div
+            className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-full blur-2xl animate-pulse"
+            style={{ animationDelay: '1s' }}
+          ></div>
 
           {/* Header */}
           <div className="mb-8 relative z-10 text-center">
@@ -137,19 +148,27 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-xl border border-white/10">
                   <Target className="w-5 h-5 text-blue-400" />
                 </div>
-                <span className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Identity</span>
+                <span className="text-xs font-semibold text-blue-300 uppercase tracking-wider">
+                  Identity
+                </span>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-white/70 text-sm">Set Name</span>
-                  <span className="font-semibold text-white text-sm truncate max-w-32" title={cardInfo.setName}>
+                  <span
+                    className="font-semibold text-white text-sm truncate max-w-32"
+                    title={cardInfo.setName}
+                  >
                     {cardInfo.setName || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-white/70 text-sm">Card Name</span>
-                  <span className="font-semibold text-blue-300 text-sm truncate max-w-32" title={cardInfo.cardName}>
+                  <span
+                    className="font-semibold text-blue-300 text-sm truncate max-w-32"
+                    title={cardInfo.cardName}
+                  >
                     {cardInfo.cardName || 'N/A'}
                   </span>
                 </div>
@@ -168,9 +187,11 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-white/10">
                   <IconComponent className="w-5 h-5 text-purple-400" />
                 </div>
-                <span className="text-xs font-semibold text-purple-300 uppercase tracking-wider">Quality</span>
+                <span className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
+                  Quality
+                </span>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <Select
@@ -183,13 +204,17 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                     disabled={disableGradeConditionEdit}
                   />
                 </div>
-                
+
                 {currentGradeOrCondition && (
                   <div className="p-3 bg-gradient-to-r from-purple-500/20 to-violet-500/20 rounded-xl border border-purple-500/30">
                     <div className="flex items-center justify-center">
                       <IconComponent className="w-4 h-4 text-purple-400 mr-2" />
                       <span className="text-sm text-purple-200 font-bold">
-                        {options.find(option => option.value === currentGradeOrCondition)?.label}
+                        {
+                          options.find(
+                            (option) => option.value === currentGradeOrCondition
+                          )?.label
+                        }
                       </span>
                     </div>
                   </div>
@@ -203,9 +228,11 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 <div className="p-2 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-white/10">
                   <DollarSign className="w-5 h-5 text-green-400" />
                 </div>
-                <span className="text-xs font-semibold text-green-300 uppercase tracking-wider">Valuation</span>
+                <span className="text-xs font-semibold text-green-300 uppercase tracking-wider">
+                  Valuation
+                </span>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <Input
@@ -231,7 +258,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                     className="text-center"
                   />
                 </div>
-                
+
                 <div>
                   <Input
                     label="Date Added"
@@ -260,33 +287,43 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-white/60">Base Name</span>
-                    <span className="text-white font-medium">{cardInfo.baseName || 'N/A'}</span>
+                    <span className="text-white font-medium">
+                      {cardInfo.baseName || 'N/A'}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Variety</span>
-                    <span className="text-white font-medium">{cardInfo.variety || 'Standard'}</span>
+                    <span className="text-white font-medium">
+                      {cardInfo.variety || 'Standard'}
+                    </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-xl p-4 border border-white/10">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-white/10">
                     <TrendingUp className="w-4 h-4 text-emerald-400" />
                   </div>
-                  <span className="text-white font-semibold">Investment Status</span>
+                  <span className="text-white font-semibold">
+                    Investment Status
+                  </span>
                 </div>
                 <div className="text-sm">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-green-300 font-medium">Ready for Collection</span>
+                    <span className="text-green-300 font-medium">
+                      Ready for Collection
+                    </span>
                   </div>
-                  <p className="text-white/60 mt-1">Card data auto-verified from database</p>
+                  <p className="text-white/60 mt-1">
+                    Card data auto-verified from database
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-          
+
           {/* Breathing Animation */}
           <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-red-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
         </div>
@@ -298,20 +335,32 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
   return (
     <div className="relative">
       {/* Background Glass Effects */}
-      <div className={`absolute -inset-4 ${isPsaCard ? 'bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10' : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-green-500/10'} rounded-[3rem] blur-2xl opacity-60`}></div>
-      <div className={`absolute -inset-2 ${isPsaCard ? 'bg-gradient-to-r from-blue-400/5 via-indigo-400/5 to-purple-400/5' : 'bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-green-400/5'} rounded-[2.5rem] blur-xl`}></div>
-      
+      <div
+        className={`absolute -inset-4 ${isPsaCard ? 'bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10' : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-green-500/10'} rounded-[3rem] blur-2xl opacity-60`}
+      ></div>
+      <div
+        className={`absolute -inset-2 ${isPsaCard ? 'bg-gradient-to-r from-blue-400/5 via-indigo-400/5 to-purple-400/5' : 'bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-green-400/5'} rounded-[2.5rem] blur-xl`}
+      ></div>
+
       <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
         {/* Floating Orbs */}
-        <div className={`absolute -top-6 -right-6 w-32 h-32 ${isPsaCard ? 'bg-gradient-to-br from-blue-500/10 to-indigo-500/10' : 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10'} rounded-full blur-3xl animate-pulse`}></div>
+        <div
+          className={`absolute -top-6 -right-6 w-32 h-32 ${isPsaCard ? 'bg-gradient-to-br from-blue-500/10 to-indigo-500/10' : 'bg-gradient-to-br from-emerald-500/10 to-teal-500/10'} rounded-full blur-3xl animate-pulse`}
+        ></div>
 
         <div className="mb-8 relative z-10 text-center">
           <div className="flex items-center justify-center mb-4">
-            <div className={`p-3 rounded-2xl ${isPsaCard ? 'bg-gradient-to-br from-blue-500/20 to-indigo-600/20' : 'bg-gradient-to-br from-emerald-500/20 to-teal-600/20'} backdrop-blur-xl border border-white/10 shadow-lg`}>
-              <Banknote className={`w-8 h-8 ${isPsaCard ? 'text-blue-400' : 'text-emerald-400'}`} />
+            <div
+              className={`p-3 rounded-2xl ${isPsaCard ? 'bg-gradient-to-br from-blue-500/20 to-indigo-600/20' : 'bg-gradient-to-br from-emerald-500/20 to-teal-600/20'} backdrop-blur-xl border border-white/10 shadow-lg`}
+            >
+              <Banknote
+                className={`w-8 h-8 ${isPsaCard ? 'text-blue-400' : 'text-emerald-400'}`}
+              />
             </div>
           </div>
-          <h3 className={`text-2xl font-bold bg-gradient-to-r ${isPsaCard ? 'from-white via-blue-100 to-indigo-100' : 'from-white via-emerald-100 to-teal-100'} bg-clip-text text-transparent leading-tight mb-2`}>
+          <h3
+            className={`text-2xl font-bold bg-gradient-to-r ${isPsaCard ? 'from-white via-blue-100 to-indigo-100' : 'from-white via-emerald-100 to-teal-100'} bg-clip-text text-transparent leading-tight mb-2`}
+          >
             {isEditing
               ? 'Update Price (kr.)'
               : isPsaCard
@@ -353,7 +402,8 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             )}
             {disableGradeConditionEdit && (
               <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400">
-                {isPsaCard ? 'Grade' : 'Condition'} cannot be changed after adding
+                {isPsaCard ? 'Grade' : 'Condition'} cannot be changed after
+                adding
               </p>
             )}
           </div>
@@ -427,9 +477,11 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
             />
           </div>
         )}
-        
+
         {/* Breathing Animation */}
-        <div className={`absolute inset-0 ${isPsaCard ? 'bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5' : 'bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-green-500/5'} rounded-[2rem] animate-pulse opacity-40 pointer-events-none`}></div>
+        <div
+          className={`absolute inset-0 ${isPsaCard ? 'bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5' : 'bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-green-500/5'} rounded-[2rem] animate-pulse opacity-40 pointer-events-none`}
+        ></div>
       </div>
     </div>
   );

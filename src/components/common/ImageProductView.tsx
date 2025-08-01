@@ -85,7 +85,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   onView,
   onEdit,
   onDelete,
-  onMarkSold,
+  _onMarkSold,
   onDownload,
   onShare,
   onFavorite,
@@ -288,15 +288,13 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
             <h3 className="text-white font-bold text-xl leading-tight mb-1">
               {title}
             </h3>
-            
+
             {/* Set name - more visible */}
             {subtitle && (
-              <p className="text-white font-medium text-sm">
-                {subtitle}
-              </p>
+              <p className="text-white font-medium text-sm">{subtitle}</p>
             )}
           </div>
-          
+
           {/* Grade and Price stacked on right */}
           <div className="flex flex-col items-end space-y-1 flex-shrink-0 ml-3">
             {showBadge && (
@@ -305,9 +303,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
               </div>
             )}
             {showPrice && price && (
-              <div className="text-white font-bold text-sm">
-                {price} kr
-              </div>
+              <div className="text-white font-bold text-sm">{price} kr</div>
             )}
           </div>
         </div>
@@ -315,9 +311,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
       {/* Action buttons only when explicitly enabled */}
       {showActions && (
-        <div className="absolute top-2 left-2 z-30">
-          {renderActions()}
-        </div>
+        <div className="absolute top-2 left-2 z-30">{renderActions()}</div>
       )}
     </div>
   );

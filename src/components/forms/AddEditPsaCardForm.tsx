@@ -16,9 +16,18 @@ import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { useFormInitialization, formInitializationPresets } from '../../hooks/form/useFormInitialization';
-import { useCardSelection, cardSelectionPresets } from '../../hooks/form/useCardSelection';
-import { useFormSubmission, FormSubmissionPatterns } from './wrappers/FormSubmissionWrapper';
+import {
+  useFormInitialization,
+  formInitializationPresets,
+} from '../../hooks/form/useFormInitialization';
+import {
+  useCardSelection,
+  cardSelectionPresets,
+} from '../../hooks/form/useCardSelection';
+import {
+  useFormSubmission,
+  FormSubmissionPatterns,
+} from './wrappers/FormSubmissionWrapper';
 import LoadingSpinner from '../common/LoadingSpinner';
 import CardFormContainer from './containers/CardFormContainer';
 import { transformRequestData } from '../../utils/responseTransformer';
@@ -192,7 +201,10 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   };
 
   // Standardized submission handling using FormSubmissionWrapper
-  const { handleSubmission } = useFormSubmission<FormData, Partial<IPsaGradedCard>>({
+  const { handleSubmission } = useFormSubmission<
+    FormData,
+    Partial<IPsaGradedCard>
+  >({
     setSubmitting,
     onSuccess,
     imageUpload,
@@ -200,7 +212,10 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     logContext: 'PSA CARD',
     validateBeforeSubmission: (data) => {
       if (!selectedCardId && !isEditing) {
-        throw FormSubmissionPatterns.createSelectionRequiredError('PSA cards', 'card');
+        throw FormSubmissionPatterns.createSelectionRequiredError(
+          'PSA cards',
+          'card'
+        );
       }
     },
     prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
@@ -208,11 +223,22 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         return {
           saleDetails: {
             ...initialData.saleDetails,
-            paymentMethod: formData.paymentMethod as 'CASH' | 'Mobilepay' | 'BankTransfer' | undefined,
-            actualSoldPrice: formData.actualSoldPrice ? parseFloat(formData.actualSoldPrice) : undefined,
-            deliveryMethod: formData.deliveryMethod as 'Sent' | 'Local Meetup' | undefined,
+            paymentMethod: formData.paymentMethod as
+              | 'CASH'
+              | 'Mobilepay'
+              | 'BankTransfer'
+              | undefined,
+            actualSoldPrice: formData.actualSoldPrice
+              ? parseFloat(formData.actualSoldPrice)
+              : undefined,
+            deliveryMethod: formData.deliveryMethod as
+              | 'Sent'
+              | 'Local Meetup'
+              | undefined,
             source: formData.source as 'Facebook' | 'DBA' | undefined,
-            dateSold: formData.dateSold ? new Date(formData.dateSold).toISOString() : undefined,
+            dateSold: formData.dateSold
+              ? new Date(formData.dateSold).toISOString()
+              : undefined,
             buyerFullName: formData.buyerFullName?.trim() || '',
             buyerPhoneNumber: formData.buyerPhoneNumber?.trim() || '',
             buyerEmail: formData.buyerEmail?.trim() || '',
@@ -225,13 +251,23 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           },
         };
       } else if (isEditing) {
-        const priceToUse = priceHistory.currentPrice > 0 ? priceHistory.currentPrice : parseFloat(formData.myPrice);
-        const finalImages = FormSubmissionPatterns.combineImages(imageUpload.remainingExistingImages, imageUrls);
+        const priceToUse =
+          priceHistory.currentPrice > 0
+            ? priceHistory.currentPrice
+            : parseFloat(formData.myPrice);
+        const finalImages = FormSubmissionPatterns.combineImages(
+          imageUpload.remainingExistingImages,
+          imageUrls
+        );
 
         return {
           myPrice: priceToUse,
           images: finalImages,
-          priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, undefined) || initialData?.priceHistory,
+          priceHistory:
+            FormSubmissionPatterns.transformPriceHistory(
+              priceHistory.priceHistory,
+              undefined
+            ) || initialData?.priceHistory,
         };
       } else {
         return {
@@ -240,13 +276,19 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           myPrice: parseFloat(formData.myPrice),
           dateAdded: new Date(formData.dateAdded).toISOString(),
           images: imageUrls,
-          priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, parseFloat(formData.myPrice)),
+          priceHistory: FormSubmissionPatterns.transformPriceHistory(
+            priceHistory.priceHistory,
+            parseFloat(formData.myPrice)
+          ),
         };
       }
     },
     submitToApi: async (cardData, isEditing, itemId) => {
       if (isEditing && initialData?.id) {
-        const cardId = typeof initialData.id === 'string' ? initialData.id : String(initialData.id);
+        const cardId =
+          typeof initialData.id === 'string'
+            ? initialData.id
+            : String(initialData.id);
         FormSubmissionPatterns.validateObjectId(cardId, 'PSA card');
         await updatePsaCard(cardId, cardData);
       } else {
@@ -255,7 +297,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     },
   });
 
-  const onSubmit = (data: FormData) => handleSubmission(data, { isEditing, itemId: initialData?.id });
+  const onSubmit = (data: FormData) =>
+    handleSubmission(data, { isEditing, itemId: initialData?.id });
 
   if (loading && !isSubmitting) {
     return (
