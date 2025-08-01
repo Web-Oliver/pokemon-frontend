@@ -139,12 +139,7 @@ export const useSearch = (): UseSearchReturn => {
 
     // Query function with proper error handling - CRITICAL FIX: Lower tolerance
     queryFn: async () => {
-      console.log(`[SEALED PRODUCT DEBUG] TanStack Query queryFn called`);
-      console.log(`[SEALED PRODUCT DEBUG] currentType:`, searchConfig.currentType);
-      console.log(`[SEALED PRODUCT DEBUG] debouncedQuery:`, debouncedQuery);
-      
       if (!searchConfig.currentType) {
-        console.log(`[SEALED PRODUCT DEBUG] No currentType, returning empty data`);
         return { data: [], count: 0 };
       }
 
@@ -170,23 +165,16 @@ export const useSearch = (): UseSearchReturn => {
             limit: 15,
           });
         case 'cardmarket-sets':
-          console.log(`[SEALED PRODUCT DEBUG] Executing cardmarket-sets search`);
-          console.log(`[SEALED PRODUCT DEBUG] Debounced query:`, debouncedQuery);
-          console.log(`[SEALED PRODUCT DEBUG] Current query:`, searchConfig.currentQuery);
-          
-          // CRITICAL FIX: Use currentQuery instead of debouncedQuery for immediate search
+          // Use currentQuery instead of debouncedQuery for immediate search
           const queryToUse = searchConfig.currentQuery || debouncedQuery;
-          console.log(`[SEALED PRODUCT DEBUG] Using query:`, queryToUse);
           
           const cardMarketSets = await getCardMarketSetNames(
             queryToUse.trim(),
             15
           );
           
-          console.log(`[SEALED PRODUCT DEBUG] CardMarket API response:`, cardMarketSets);
-          
-          // FIXED: Transform CardMarket sets to match the expected SearchResponse format
-          const transformedData = {
+          // Transform CardMarket sets to match the expected SearchResponse format
+          return {
             success: true,
             query: queryToUse,
             count: cardMarketSets.length,
@@ -201,9 +189,6 @@ export const useSearch = (): UseSearchReturn => {
               score: set.score,
             })),
           };
-          
-          console.log(`[SEALED PRODUCT DEBUG] Transformed data:`, transformedData);
-          return transformedData;
         case 'products':
           return searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
@@ -223,13 +208,7 @@ export const useSearch = (): UseSearchReturn => {
     },
 
     // Context7 Optimal Configuration - CRITICAL FIX: Always enabled when currentType exists
-    enabled: (() => {
-      const isEnabled = !!searchConfig.currentType;
-      console.log(`[SEALED PRODUCT DEBUG] TanStack Query enabled:`, isEnabled);
-      console.log(`[SEALED PRODUCT DEBUG] Current search config:`, searchConfig);
-      console.log(`[SEALED PRODUCT DEBUG] Debounced query:`, debouncedQuery);
-      return isEnabled;
-    })(), // Removed restrictive validation - let TanStack Query handle empty queries
+    enabled: !!searchConfig.currentType, // Removed restrictive validation - let TanStack Query handle empty queries
     staleTime: 2 * 60 * 1000, // 2 minutes - Context7 recommended
     gcTime: 5 * 60 * 1000, // 5 minutes - Context7 recommended
     refetchOnWindowFocus: false, // Prevent unnecessary refetches
@@ -318,23 +297,14 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const handleSearchCardMarketSetNames = useCallback((query: string) => {
-    console.log(`[SEALED PRODUCT DEBUG] Starting CardMarket set names search`);
-    console.log(`[SEALED PRODUCT DEBUG] Query:`, query);
-    
     log(`[TANSTACK QUERY] Initiating CardMarket set names search: ${query}`);
-    setSearchConfig((prev) => {
-      const newConfig = {
-        ...prev,
-        currentQuery: query,
-        currentType: 'cardmarket-sets' as const,
-        currentFilters: {},
-      };
-      console.log(`[SEALED PRODUCT DEBUG] New search config:`, newConfig);
-      return newConfig;
-    });
-    
-    console.log(`[SEALED PRODUCT DEBUG] Set currentType to 'cardmarket-sets'`);
-  }, []); // FIXED: Remove searchConfig dependency to prevent infinite loop
+    setSearchConfig((prev) => ({
+      ...prev,
+      currentQuery: query,
+      currentType: 'cardmarket-sets' as const,
+      currentFilters: {},
+    }));
+  }, []);
 
   const handleSearchProducts = useCallback(
     (query: string, setName?: string, category?: string) => {

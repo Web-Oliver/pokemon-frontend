@@ -513,21 +513,11 @@ export const getCardMarketSetNames = async (
   }
 
   const url = `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`;
-  console.log(`[SEALED PRODUCT DEBUG] Fetching CardMarket set names from:`, url);
-
   const response = await pureFetch(url);
-  console.log(`[SEALED PRODUCT DEBUG] Raw API response:`, response);
-
-  // FIXED: Correct API response structure parsing
+  
   // Backend returns: {"success":true,"status":"success","data":[...]}
   const data = response.data || [];
-  console.log(`[SEALED PRODUCT DEBUG] Extracted data:`, data);
-  console.log(`[SEALED PRODUCT DEBUG] Is data array?`, Array.isArray(data));
-  
-  const result = Array.isArray(data) ? data : [];
-  console.log(`[SEALED PRODUCT DEBUG] Final result:`, result);
-  
-  return result;
+  return Array.isArray(data) ? data : [];
 };
 
 /**

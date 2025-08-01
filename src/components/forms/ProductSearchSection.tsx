@@ -93,26 +93,13 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
 
   // Sync search results to local suggestions state
   useEffect(() => {
-    console.log(
-      '[SEARCH SYNC] Updating suggestions from search.results:',
-      search.results
-    );
     setSuggestions(search.results || []);
     setIsLoading(search.isLoading);
   }, [search.results, search.isLoading]);
 
   // Centralized search effect - like the old autocomplete system
   useEffect(() => {
-    console.log('[CENTRALIZED SEARCH] Search effect called with:', {
-      activeField,
-      debouncedSetName,
-      debouncedProductName,
-      setName,
-      formType,
-    });
-
     if (!activeField) {
-      console.log('[CENTRALIZED SEARCH] No active field, clearing suggestions');
       setSuggestions([]);
       return;
     }
@@ -120,33 +107,17 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     const currentValue =
       activeField === 'setName' ? debouncedSetName : debouncedProductName;
 
-    console.log('[CENTRALIZED SEARCH] Current value for search:', currentValue);
-
     if (!currentValue || typeof currentValue !== 'string') {
-      console.log('[CENTRALIZED SEARCH] Invalid query, clearing suggestions');
       setSuggestions([]);
       return;
     }
 
-    console.log('[CENTRALIZED SEARCH] Starting search for:', currentValue);
     // Don't set loading here - it will be synced from search hook
     switch (activeField) {
       case 'setName':
         if (formType === 'product') {
-          console.log('[SEALED PRODUCT DEBUG] ProductSearchSection - calling searchCardMarketSetNames');
-          console.log('[SEALED PRODUCT DEBUG] Form type:', formType);
-          console.log('[SEALED PRODUCT DEBUG] Current value:', currentValue);
-          console.log('[SEALED PRODUCT DEBUG] Active field:', activeField);
-          console.log(
-            '[CENTRALIZED SEARCH] Calling search.searchCardMarketSetNames for sealed products:',
-            currentValue
-          );
           search.searchCardMarketSetNames(currentValue);
         } else {
-          console.log(
-            '[CENTRALIZED SEARCH] Calling search.searchSets for cards:',
-            currentValue
-          );
           search.searchSets(currentValue);
         }
         break;
@@ -159,35 +130,19 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
           // No query - show all from set if set is selected
           if (currentSetName && currentSetName.trim()) {
             searchQuery = '*';
-            console.log(
-              '[CENTRALIZED SEARCH] No query but set selected, showing all from set'
-            );
           } else {
             // No query and no set - don't search
-            console.log(
-              '[CENTRALIZED SEARCH] No query and no set - clearing results'
-            );
             setSuggestions([]);
             return;
           }
         }
 
         if (formType === 'product') {
-          console.log(
-            '[CENTRALIZED SEARCH] Calling search.searchProducts:',
-            searchQuery,
-            currentSetName?.trim()
-          );
           search.searchProducts(
             searchQuery,
             currentSetName?.trim() || undefined
           );
         } else {
-          console.log(
-            '[CENTRALIZED SEARCH] Calling search.searchCards:',
-            searchQuery,
-            currentSetName?.trim()
-          );
           search.searchCards(searchQuery, currentSetName?.trim() || undefined);
         }
         break;
@@ -218,8 +173,6 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
   // Context7 Pattern: Memoized event handler with stable dependencies
   const handleSetSelection = useCallback(
     (result: SearchResult) => {
-      console.log('[CENTRALIZED] Set selected:', result);
-
       // Handle clearing - if result is empty, clear the form field
       if (!result._id || !result.displayName) {
         setValue('setName', '');
@@ -251,8 +204,6 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
   // Context7 Pattern: Memoized selection handler for optimal re-render prevention
   const handleProductCardSelection = useCallback(
     (result: SearchResult) => {
-      console.log(`[CENTRALIZED] ${formType} selected:`, result);
-
       // Handle clearing - if result is empty, clear the form field
       if (!result._id || !result.displayName) {
         const fieldName = formType === 'product' ? 'productName' : 'cardName';
@@ -329,20 +280,11 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                     value={setName}
                     onChange={(e) => setValue('setName', e.target.value)}
                     onFocus={() => {
-                      console.log(
-                        '[CENTRALIZED SEARCH] Set Name field focused, setting activeField to setName'
-                      );
                       setActiveField('setName');
                     }}
                     onBlur={() => {
-                      console.log(
-                        '[CENTRALIZED SEARCH] Set Name field blurred'
-                      );
                       setTimeout(() => {
                         if (activeField === 'setName') {
-                          console.log(
-                            '[CENTRALIZED SEARCH] Clearing activeField from setName'
-                          );
                           setActiveField(null);
                         }
                       }, 150);
@@ -454,13 +396,10 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                       setValue(fieldName, e.target.value);
                     }}
                     onFocus={() => {
-                      console.log(
-                        '[CENTRALIZED SEARCH] Product Name field focused, setting activeField to productName'
-                      );
                       setActiveField('productName');
 
                       // AUTO-TRIGGER SEARCH: If set is selected but no product name yet, show suggestions immediately
-                      const currentSetName = watch('setName');
+                      const currentSetName = setName;
                       const currentProductName =
                         formType === 'product' ? productName : cardName;
 
@@ -469,10 +408,6 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                         currentSetName.trim() &&
                         (!currentProductName || currentProductName.trim() === '')
                       ) {
-                        console.log(
-                          '[AUTO-TRIGGER] Set selected, showing products/cards from set:',
-                          currentSetName
-                        );
                         // Trigger search with "*" as query to show all items from the set
                         if (formType === 'product') {
                           search.searchProducts('*', currentSetName.trim());
@@ -482,14 +417,8 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                       }
                     }}
                     onBlur={() => {
-                      console.log(
-                        '[CENTRALIZED SEARCH] Product Name field blurred'
-                      );
                       setTimeout(() => {
                         if (activeField === 'productName') {
-                          console.log(
-                            '[CENTRALIZED SEARCH] Clearing activeField from productName'
-                          );
                           setActiveField(null);
                         }
                       }, 150);
