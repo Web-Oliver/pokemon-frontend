@@ -207,7 +207,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         priceHistory.updateCurrentPrice(price);
       }
     }
-  }, [watchedPrice, priceHistory]);
+  }, [watchedPrice, priceHistory.updateCurrentPrice]);
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
     // Add new price to history using specialized hook

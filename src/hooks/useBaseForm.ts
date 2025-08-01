@@ -165,7 +165,7 @@ export const useBaseForm = <T extends FieldValues>(
         // This would need to be implemented in usePriceHistory if needed
       }
     }
-  }, [isEditing, initialData, updateWithInitialData, imageUpload]);
+  }, [isEditing, initialData, updateWithInitialData, imageUpload.setRemainingExistingImages]);
 
   return {
     form,
