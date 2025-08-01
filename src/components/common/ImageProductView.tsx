@@ -276,7 +276,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           autoplay={false}
           autoplayDelay={4000}
           className="w-full h-full rounded-2xl"
-          showThumbnails={true}
+          showThumbnails={variant === 'detail'}
         />
       </div>
 

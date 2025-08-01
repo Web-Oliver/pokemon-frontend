@@ -517,11 +517,11 @@ const CreateAuction: React.FC = () => {
             description="Start a new auction for your Pokémon collection"
             icon={Gavel}
             primaryColorClass="from-teal-600 via-cyan-600 to-blue-600"
-            register={baseForm.register}
-            errors={baseForm.errors}
-            setValue={baseForm.setValue}
-            watch={baseForm.watch}
-            handleSubmit={baseForm.handleSubmit}
+            register={baseForm.form.register}
+            errors={baseForm.form.formState.errors}
+            setValue={baseForm.form.setValue}
+            watch={baseForm.form.watch}
+            handleSubmit={baseForm.form.handleSubmit}
             onSubmit={handleSubmit}
             onCancel={navigateToAuctions}
             itemSelectionSection={
