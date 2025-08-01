@@ -162,7 +162,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   // Update form values when initialData changes (for async data loading)
   useEffect(() => {
     if (isEditing && initialData) {
-      console.log('[PSA FORM] Updating form with initialData:', initialData);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PSA FORM] Updating form with initialData:', initialData);
+      }
 
       // Access card data from nested cardId object (populated by backend API)
       const cardData = initialData.cardId as any;
@@ -205,15 +207,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       // Data has been updated in form values above
 
-      console.log('[PSA FORM] Form values updated with:', {
-        setName,
-        cardName,
-        pokemonNumber,
-        baseName,
-        variety,
-        grade: initialData.grade,
-        myPrice: initialData.myPrice,
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PSA FORM] Form values updated with:', {
+          setName,
+          cardName,
+          pokemonNumber,
+          baseName,
+          variety,
+          grade: initialData.grade,
+          myPrice: initialData.myPrice,
+        });
+      }
     }
   }, [isEditing, initialData, setValue]);
 
@@ -332,23 +336,27 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         }
 
         // Validate that the form data matches the selected card
-        console.log('[PSA FORM] Validating selected card data:', {
-          selectedCardId,
-          formData: {
-            setName: data.setName,
-            cardName: data.cardName,
-            pokemonNumber: data.pokemonNumber,
-            baseName: data.baseName,
-            variety: data.variety,
-          },
-        });
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[PSA FORM] Validating selected card data:', {
+            selectedCardId,
+            formData: {
+              setName: data.setName,
+              cardName: data.cardName,
+              pokemonNumber: data.pokemonNumber,
+              baseName: data.baseName,
+              variety: data.variety,
+            },
+          });
+        }
 
         // Use the selected card reference (schema requires cardId)
-        console.log(
-          '[PSA FORM] Submitting with cardId:',
-          selectedCardId,
-          typeof selectedCardId
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[PSA FORM] Submitting with cardId:',
+            selectedCardId,
+            typeof selectedCardId
+          );
+        }
         cardData = {
           cardId: selectedCardId,
           grade: data.grade,
@@ -388,28 +396,34 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       const cleanedCardData = cardData;
 
       // Submit using collection operations hook
-      console.log(
-        '[PSA FORM] Final cardData before API call:',
-        JSON.stringify(cleanedCardData, null, 2)
-      );
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '[PSA FORM] Final cardData before API call:',
+          JSON.stringify(cleanedCardData, null, 2)
+        );
+      }
 
       if (isEditing && initialData?.id) {
-        console.log(
-          '[PSA FORM] Raw initialData.id:',
-          initialData.id,
-          typeof initialData.id
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[PSA FORM] Raw initialData.id:',
+            initialData.id,
+            typeof initialData.id
+          );
+        }
 
         // Ensure ID is a string and validate MongoDB ObjectId format
         const cardId =
           typeof initialData.id === 'string'
             ? initialData.id
             : String(initialData.id);
-        console.log(
-          '[PSA FORM] Processed cardId for update:',
-          cardId,
-          typeof cardId
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[PSA FORM] Processed cardId for update:',
+            cardId,
+            typeof cardId
+          );
+        }
 
         // Validate MongoDB ObjectId format
         if (!cardId || cardId.length !== 24 || !/^[a-f\d]{24}$/i.test(cardId)) {
@@ -420,7 +434,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
         await updatePsaCard(cardId, cleanedCardData);
       } else {
-        console.log('[PSA FORM] Creating new PSA card');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[PSA FORM] Creating new PSA card');
+        }
         await addPsaCard(cleanedCardData);
       }
 
@@ -483,13 +499,17 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               watch={watch}
               clearErrors={clearErrors}
               onSelectionChange={(selectedData) => {
-                console.log('[PSA CARD] ===== CARD SELECTION =====');
-                console.log('[PSA CARD] Card selection:', selectedData);
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('[PSA CARD] ===== CARD SELECTION =====');
+                  console.log('[PSA CARD] Card selection:', selectedData);
+                }
 
                 // Auto-fill form fields based on selection (EXACT same logic as before)
                 if (selectedData) {
                   // The selectedData contains the raw card data from the search API
-                  console.log('[PSA CARD] Raw selected data:', selectedData);
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('[PSA CARD] Raw selected data:', selectedData);
+                  }
 
                   // Store the selected card ID for backend submission
                   // Transform ObjectId to string to prevent buffer objects from being stored
@@ -499,10 +519,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                       cardId: rawCardId,
                     });
                     setSelectedCardId(transformedData.cardId || rawCardId);
-                    console.log(
-                      '[PSA CARD] Selected card ID:',
-                      transformedData.cardId
-                    );
+                    if (process.env.NODE_ENV === 'development') {
+                      console.log(
+                        '[PSA CARD] Selected card ID:',
+                        transformedData.cardId
+                      );
+                    }
                   } else {
                     console.error(
                       '[PSA CARD] No ID found in selected data - card selection invalid'
@@ -537,10 +559,12 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   // Auto-fill pokemon number
                   const pokemonNumber =
                     selectedData.pokemonNumber?.toString() || '';
-                  console.log(
-                    '[PSA CARD] Setting Pokemon Number:',
-                    pokemonNumber
-                  );
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log(
+                      '[PSA CARD] Setting Pokemon Number:',
+                      pokemonNumber
+                    );
+                  }
                   setValue('pokemonNumber', pokemonNumber, {
                     shouldValidate: true,
                   });
@@ -549,27 +573,33 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   // Auto-fill base name (required)
                   const baseName =
                     selectedData.baseName || selectedData.cardName || '';
-                  console.log('[PSA CARD] Setting Base Name:', baseName);
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('[PSA CARD] Setting Base Name:', baseName);
+                  }
                   setValue('baseName', baseName, { shouldValidate: true });
                   clearErrors('baseName');
 
                   // Auto-fill variety (always set, even if empty)
                   const varietyValue = selectedData.variety || '';
-                  console.log('[PSA CARD] Setting Variety:', varietyValue);
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log('[PSA CARD] Setting Variety:', varietyValue);
+                  }
                   setValue('variety', varietyValue, { shouldValidate: true });
                   clearErrors('variety');
 
-                  console.log(
-                    '[PSA CARD] Card selection complete - all fields populated from card reference:',
-                    {
-                      cardId: selectedCardId,
-                      setName,
-                      cardName: selectedData.cardName,
-                      pokemonNumber,
-                      baseName,
-                      variety: varietyValue,
-                    }
-                  );
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log(
+                      '[PSA CARD] Card selection complete - all fields populated from card reference:',
+                      {
+                        cardId: selectedCardId,
+                        setName,
+                        cardName: selectedData.cardName,
+                        pokemonNumber,
+                        baseName,
+                        variety: varietyValue,
+                      }
+                    );
+                  }
 
                   // Validate that all required card data is present
                   if (

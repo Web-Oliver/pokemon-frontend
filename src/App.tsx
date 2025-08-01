@@ -7,7 +7,7 @@
  * Phase 4.2: Basic routing implementation with MainLayout integration
  */
 
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, useTransition, memo } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { log } from './utils/logger';
@@ -18,33 +18,69 @@ import { queryClient } from './lib/queryClient';
 // Layout
 import MainLayout from './components/layouts/MainLayout';
 
-// Lazy loaded pages for code splitting
+// Context7 Lazy Loading Strategy - Performance Optimized Code Splitting
+// Following React.dev patterns for optimal bundle performance
+// Critical path components (loaded immediately with Suspense boundaries)
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Collection = lazy(() => import('./pages/Collection'));
-const CollectionItemDetail = lazy(() => import('./pages/CollectionItemDetail'));
-const SetSearch = lazy(() => import('./pages/SetSearch'));
-const SealedProductSearch = lazy(() => import('./pages/SealedProductSearch'));
-const Auctions = lazy(() => import('./pages/Auctions'));
-const AuctionDetail = lazy(() => import('./pages/AuctionDetail'));
-const CreateAuction = lazy(() => import('./pages/CreateAuction'));
-const AuctionEdit = lazy(() => import('./pages/AuctionEdit'));
-const SalesAnalytics = lazy(() => import('./pages/SalesAnalytics'));
-const Activity = lazy(() => import('./pages/Activity'));
-const AddEditItem = lazy(() => import('./pages/AddEditItem'));
-const DbaExport = lazy(() => import('./pages/DbaExport'));
 
+// Secondary features (lazy loaded with prefetch hints)
+const CollectionItemDetail = lazy(() => 
+  import(/* webpackChunkName: "item-detail" */ './pages/CollectionItemDetail')
+);
+const AddEditItem = lazy(() => 
+  import(/* webpackChunkName: "forms" */ './pages/AddEditItem')
+);
+
+// Search features (bundled together for caching)
+const SetSearch = lazy(() => 
+  import(/* webpackChunkName: "search-features" */ './pages/SetSearch')
+);
+const SealedProductSearch = lazy(() => 
+  import(/* webpackChunkName: "search-features" */ './pages/SealedProductSearch')
+);
+
+// Auction features (bundled together for better caching)
+const Auctions = lazy(() => 
+  import(/* webpackChunkName: "auction-features" */ './pages/Auctions')
+);
+const AuctionDetail = lazy(() => 
+  import(/* webpackChunkName: "auction-features" */ './pages/AuctionDetail')
+);
+const CreateAuction = lazy(() => 
+  import(/* webpackChunkName: "auction-features" */ './pages/CreateAuction')
+);
+const AuctionEdit = lazy(() => 
+  import(/* webpackChunkName: "auction-features" */ './pages/AuctionEdit')
+);
+
+// Analytics and heavy features (separate chunks)
+const SalesAnalytics = lazy(() => 
+  import(/* webpackChunkName: "analytics" */ './pages/SalesAnalytics')
+);
+const Activity = lazy(() => 
+  import(/* webpackChunkName: "activity" */ './pages/Activity')
+);
+const DbaExport = lazy(() => 
+  import(/* webpackChunkName: "export" */ './pages/DbaExport')
+);
+
+// Context7 Pattern: Main App component with useTransition for smooth navigation
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [isPending, startTransition] = useTransition();
 
   // Test logger functionality
   log('App loaded!');
 
   // Test API client error handling removed for cleaner console
 
-  // Listen for navigation changes from MainLayout
+  // Context7 Pattern: Navigation with transition for better UX
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+      startTransition(() => {
+        setCurrentPath(window.location.pathname);
+      });
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -133,9 +169,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <MainLayout>
+        {/* Context7 Pattern: Suspense boundary with transition state */}
         <Suspense
           fallback={
-            <div className="flex items-center justify-center min-h-[60vh]">
+            <div className={`flex items-center justify-center min-h-[60vh] transition-opacity duration-200 ${
+              isPending ? 'opacity-50' : 'opacity-100'
+            }`}>
               <LoadingSpinner size="lg" />
             </div>
           }

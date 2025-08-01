@@ -326,9 +326,9 @@ export class UnifiedApiClient {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
-      enableCache: false, // Disable default caching
-      cacheTTL: 5 * 60 * 1000, // 5 minutes
-      enableDeduplication: false, // Disable default deduplication
+      enableCache: false, // ❌ DISABLED - Using pure TanStack Query caching strategy (Context7 best practice)
+      cacheTTL: 0, // No internal caching - TanStack Query handles all caching
+      enableDeduplication: false, // ❌ DISABLED - TanStack Query handles deduplication natively
       ...optimization,
     };
 

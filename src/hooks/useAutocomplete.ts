@@ -33,7 +33,7 @@ export const createAutocompleteConfig = (
   debounceMs: 300,
   cacheEnabled: true,
   maxSuggestions: 15,
-  minQueryLength: 2,
+  minQueryLength: 1,
 });
 
 export interface AutocompleteState {
@@ -122,7 +122,7 @@ export const useAutocomplete = (
         ...prev,
         value,
         activeIndex: -1,
-        isOpen: !disabled && value.trim().length >= 2,
+        isOpen: !disabled && value.trim().length >= 1,
       }));
     },
     [disabled]
@@ -132,7 +132,7 @@ export const useAutocomplete = (
   const onFocus = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      isOpen: !disabled && prev.value.trim().length >= 2,
+      isOpen: !disabled && prev.value.trim().length >= 1,
     }));
   }, [disabled]);
 

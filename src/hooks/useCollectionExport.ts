@@ -141,7 +141,9 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         setOrderingState(savedOrderingState);
         setItemOrder(savedOrderingState.globalOrder);
 
-        console.log('Loaded persisted ordering state:', savedOrderingState);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Loaded persisted ordering state:', savedOrderingState);
+        }
       }
 
       // Load session data
@@ -154,7 +156,9 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
           setItemOrder(sessionData.itemOrder);
         }
 
-        console.log('Restored session data:', sessionData);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Restored session data:', sessionData);
+        }
       }
 
       // Start auto-save
@@ -192,7 +196,9 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         if (newOrderingState) {
           const success = storageHelpers.saveOrdering(newOrderingState);
           if (!success) {
-            console.warn('Failed to save ordering state to persistence');
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to save ordering state to persistence');
+            }
           }
         }
 
@@ -211,7 +217,9 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         if (Object.keys(sessionUpdate).length > 0) {
           const success = orderingPersistence.saveSessionData(sessionUpdate);
           if (!success) {
-            console.warn('Failed to save session data to persistence');
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Failed to save session data to persistence');
+            }
           }
         }
       } catch (error) {

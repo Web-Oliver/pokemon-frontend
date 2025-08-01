@@ -124,43 +124,57 @@ export const uploadSingleImageWithThumbnails = async (
 export const uploadMultipleImages = async (
   images: File[]
 ): Promise<string[]> => {
-  console.log('[UPLOAD API] uploadMultipleImages called with:', {
-    images: images,
-    imageCount: images ? images.length : 0,
-    imageTypes: images ? images.map((img) => img.type) : [],
-    imageSizes: images ? images.map((img) => img.size) : [],
-  });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[UPLOAD API] uploadMultipleImages called with:', {
+      images: images,
+      imageCount: images ? images.length : 0,
+      imageTypes: images ? images.map((img) => img.type) : [],
+      imageSizes: images ? images.map((img) => img.size) : [],
+    });
+  }
 
   // Add stack trace to see where this is being called from
-  console.log('[UPLOAD API] Call stack:', new Error().stack);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[UPLOAD API] Call stack:', new Error().stack);
+  }
 
   // Return empty array immediately if no images to upload
   if (!images || images.length === 0) {
-    console.log(
-      '[UPLOAD API] No images provided for upload, returning empty array'
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '[UPLOAD API] No images provided for upload, returning empty array'
+      );
+    }
     return [];
   }
 
-  console.log('[UPLOAD API] Creating FormData with images...');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[UPLOAD API] Creating FormData with images...');
+  }
   const formData = new FormData();
   images.forEach((image, index) => {
-    console.log(
-      `[UPLOAD API] Appending image ${index}:`,
-      image.name,
-      image.size,
-      'bytes'
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `[UPLOAD API] Appending image ${index}:`,
+        image.name,
+        image.size,
+        'bytes'
+      );
+    }
     formData.append(`images`, image);
   });
 
   // Debug FormData contents
-  console.log('[UPLOAD API] FormData entries:');
-  for (const [key, value] of formData.entries()) {
-    console.log(`  ${key}:`, value);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[UPLOAD API] FormData entries:');
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}:`, value);
+    }
   }
 
-  console.log('[UPLOAD API] Making API call to /upload/images...');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[UPLOAD API] Making API call to /upload/images...');
+  }
   const response = await unifiedApiClient.apiCreate<{
     success: boolean;
     data: UploadResponse[];
@@ -176,7 +190,9 @@ export const uploadMultipleImages = async (
 
   // Ensure we have an array to work with
   if (!Array.isArray(uploadedFiles)) {
-    console.error('[UPLOAD API] Expected array but got:', uploadedFiles);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[UPLOAD API] Expected array but got:', uploadedFiles);
+    }
     throw new Error('Invalid response format from upload API');
   }
 

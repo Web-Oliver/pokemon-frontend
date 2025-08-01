@@ -6,7 +6,7 @@
  * Maintains ALL existing functionality with consolidated search
  */
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
   FieldErrors,
@@ -20,7 +20,7 @@ import { InformationFieldRenderer } from './fields';
 import {
   AutoFillConfig,
   autoFillFromSelection,
-} from '../../utils/searchHelpers';
+} from '../../utils/searchHelpers.optimized';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
 interface ProductSearchSectionProps {
@@ -53,7 +53,7 @@ interface ProductSearchSectionProps {
  * Product Search Section
  * Provides focused search functionality while maintaining all existing auto-fill behavior
  */
-export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
+const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
   register,
   errors,
   setValue,
@@ -122,11 +122,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
 
     console.log('[CENTRALIZED SEARCH] Current value for search:', currentValue);
 
-    if (
-      !currentValue ||
-      typeof currentValue !== 'string' ||
-      currentValue.trim().length < 2
-    ) {
+    if (!currentValue || typeof currentValue !== 'string') {
       console.log('[CENTRALIZED SEARCH] Invalid query, clearing suggestions');
       setSuggestions([]);
       return;
@@ -144,20 +140,36 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
         break;
       case 'productName': {
         const currentSetName = watch('setName');
+        
+        // SMART SEARCH: If no query but set selected, show all from set. If query exists, filter within set.
+        let searchQuery = currentValue;
+        if (!currentValue || currentValue.trim() === '') {
+          // No query - show all from set if set is selected
+          if (currentSetName && currentSetName.trim()) {
+            searchQuery = '*';
+            console.log('[CENTRALIZED SEARCH] No query but set selected, showing all from set');
+          } else {
+            // No query and no set - don't search
+            console.log('[CENTRALIZED SEARCH] No query and no set - clearing results');
+            setSuggestions([]);
+            return;
+          }
+        }
+        
         if (formType === 'product') {
           console.log(
             '[CENTRALIZED SEARCH] Calling search.searchProducts:',
-            currentValue,
+            searchQuery,
             currentSetName?.trim()
           );
-          search.searchProducts(currentValue, currentSetName?.trim() || undefined);
+          search.searchProducts(searchQuery, currentSetName?.trim() || undefined);
         } else {
           console.log(
             '[CENTRALIZED SEARCH] Calling search.searchCards:',
-            currentValue,
+            searchQuery,
             currentSetName?.trim()
           );
-          search.searchCards(currentValue, currentSetName?.trim() || undefined);
+          search.searchCards(searchQuery, currentSetName?.trim() || undefined);
         }
         break;
       }
@@ -173,14 +185,14 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     search.searchCards,
   ]);
 
-  // Create auto-fill configuration
+  // Context7 Pattern: Memoized configuration following React.dev best practices
   const autoFillConfig: AutoFillConfig = useMemo(() => ({
     setValue,
     clearErrors,
     formType,
   }), [setValue, clearErrors, formType]);
 
-  // Handle set selection using centralized system
+  // Context7 Pattern: Memoized event handler with stable dependencies
   const handleSetSelection = useCallback((result: SearchResult) => {
     console.log('[CENTRALIZED] Set selected:', result);
 
@@ -210,7 +222,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     setActiveField(null);
   }, [setValue, clearErrors, onSelectionChange, autoFillConfig]);
 
-  // Handle product/card selection using centralized system
+  // Context7 Pattern: Memoized selection handler for optimal re-render prevention
   const handleProductCardSelection = useCallback((result: SearchResult) => {
     console.log(`[CENTRALIZED] ${formType} selected:`, result);
 
@@ -244,7 +256,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
         {/* Set Name Autocomplete - Centralized */}
-        <div className="relative">
+        <div className="relative z-50">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Set Name
             <span className="text-red-500 ml-1">*</span>
@@ -285,7 +297,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
 
           {/* Set Name Dropdown */}
           {activeField === 'setName' && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-96 overflow-auto rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl">
+            <div className="absolute top-full left-0 right-0 z-[9999] mt-1 max-h-96 overflow-auto rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl">
               {suggestions.map((result) => (
                 <div
                   key={result._id}
@@ -310,10 +322,10 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
 
           {/* Set Name No Results */}
           {activeField === 'setName' &&
-            setName.trim().length >= 2 &&
+            setName.trim().length >= 1 &&
             suggestions.length === 0 &&
             !isLoading && (
-              <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
+              <div className="absolute top-full left-0 right-0 z-[9999] mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
                 <div className="text-center text-zinc-400 px-4">
                   <div className="font-medium mb-1">No results found</div>
                   <div className="text-sm">Try adjusting your search terms</div>
@@ -323,7 +335,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
         </div>
 
         {/* Product/Card Name Autocomplete - Centralized */}
-        <div className="relative">
+        <div className="relative z-50">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {formType === 'product' ? 'Product Name' : 'Card Name'}
             <span className="text-red-500 ml-1">*</span>
@@ -343,6 +355,20 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
                   '[CENTRALIZED SEARCH] Product Name field focused, setting activeField to productName'
                 );
                 setActiveField('productName');
+                
+                // AUTO-TRIGGER SEARCH: If set is selected but no product name yet, show suggestions immediately
+                const currentSetName = watch('setName');
+                const currentProductName = formType === 'product' ? productName : cardName;
+                
+                if (currentSetName && currentSetName.trim() && (!currentProductName || currentProductName.trim() === '')) {
+                  console.log('[AUTO-TRIGGER] Set selected, showing products/cards from set:', currentSetName);
+                  // Trigger search with "*" as query to show all items from the set
+                  if (formType === 'product') {
+                    search.searchProducts('*', currentSetName.trim());
+                  } else {
+                    search.searchCards('*', currentSetName.trim());
+                  }
+                }
               }}
               onBlur={() => {
                 console.log('[CENTRALIZED SEARCH] Product Name field blurred');
@@ -371,7 +397,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
 
           {/* Product Name Dropdown */}
           {activeField === 'productName' && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-96 overflow-auto rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl">
+            <div className="absolute top-full left-0 right-0 z-[9999] mt-1 max-h-96 overflow-auto rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl">
               {suggestions.map((result) => (
                 <div
                   key={result._id}
@@ -405,7 +431,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
               2 &&
             suggestions.length === 0 &&
             !isLoading && (
-              <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
+              <div className="absolute top-full left-0 right-0 z-[9999] mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
                 <div className="text-center text-zinc-400 px-4">
                   <div className="font-medium mb-1">No results found</div>
                   <div className="text-sm">Try adjusting your search terms</div>
@@ -432,3 +458,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     </div>
   );
 };
+
+// Context7 Performance: Memoized export with display name
+export const ProductSearchSection = memo(ProductSearchSectionComponent);
+ProductSearchSection.displayName = 'ProductSearchSection';

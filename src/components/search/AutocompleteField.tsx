@@ -5,7 +5,7 @@
  * Focused autocomplete component using consolidated search hook
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { ChevronDown, Search, X } from 'lucide-react';
 import { useAutocomplete } from '../../hooks/useAutocomplete';
 import { SearchResult } from '../../hooks/useSearch';
@@ -51,8 +51,8 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
     }
   }, [value]); // Only depend on external value prop
 
-  // Handle keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  // Handle keyboard navigation - memoized for performance
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!autocomplete.isOpen) {
       return;
     }
@@ -76,7 +76,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
         inputRef.current?.blur();
         break;
     }
-  };
+  }, [autocomplete.isOpen, autocomplete.moveDown, autocomplete.moveUp, autocomplete.selectActive, autocomplete.close]);
 
   return (
     <div className={`relative ${className}`}>
@@ -99,14 +99,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           type="text"
           value={autocomplete.value}
           onChange={(e) => autocomplete.setValue(e.target.value)}
-          onFocus={(e) => {
+          onFocus={useCallback((e) => {
             autocomplete.onFocus();
             onFocusChange?.(true);
-          }}
-          onBlur={(e) => {
+          }, [autocomplete.onFocus, onFocusChange])}
+          onBlur={useCallback((e) => {
             autocomplete.onBlur();
             onFocusChange?.(false);
-          }}
+          }, [autocomplete.onBlur, onFocusChange])}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
@@ -126,7 +126,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
         {autocomplete.value && !disabled && (
           <button
             type="button"
-            onClick={() => {
+            onClick={useCallback(() => {
               autocomplete.clear();
               // Notify parent that field was cleared by calling onSelect with null/empty
               onSelect({
@@ -140,7 +140,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                       : 'card',
                 data: {},
               } as SearchResult);
-            }}
+            }, [autocomplete.clear, onSelect, searchType])}
             className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600"
           >
             <X className="h-4 w-4 text-gray-400" />
@@ -189,10 +189,10 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           {autocomplete.results.map((result, index) => (
             <div
               key={result._id}
-              onMouseDown={(e) => {
+              onMouseDown={useCallback((e) => {
                 e.preventDefault(); // Prevent input from losing focus
                 autocomplete.selectResult(result);
-              }}
+              }, [autocomplete.selectResult, result])}
               className={`
                 cursor-pointer select-none relative py-4 pl-4 pr-20 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150
                 ${index === autocomplete.activeIndex ? 'bg-blue-50 dark:bg-blue-900/50 border-l-4 border-blue-500' : ''}
@@ -237,7 +237,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
 
       {/* No Results */}
       {autocomplete.isOpen &&
-        autocomplete.value.trim().length >= 2 &&
+        autocomplete.value.trim().length >= 1 &&
         autocomplete.results.length === 0 &&
         !autocomplete.loading && (
           <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-white py-4 text-base shadow-2xl ring-1 ring-black ring-opacity-5 dark:bg-gray-800 border border-gray-200 dark:border-gray-600">

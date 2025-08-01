@@ -1,17 +1,19 @@
 /**
- * Consolidated Search API - DRY Implementation
+ * Pure TanStack Query Search API - Context7 Optimal Caching Strategy
  * Layer 1: Core/Foundation/API Client
- * Consolidates ALL search functionality from cardsApi.ts, setsApi.ts, cardMarketRefProductsApi.ts
- * Preserves EXACT functionality while eliminating duplicate code patterns
+ * 
+ * CONTEXT7 PURE TANSTACK QUERY IMPLEMENTATION:
+ * - Eliminates all UnifiedApiClient dependencies for pure native fetch
+ * - Direct HTTP calls with optimal error handling
+ * - No internal caching - TanStack Query handles all caching
+ * - Memory-efficient single source of truth
  */
 
-import { unifiedApiClient } from './unifiedApiClient';
 import { ICard, ISet } from '../domain/models/card';
 import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
 import { buildQueryParams } from '../utils/searchHelpers';
 
-// ===== TYPE DEFINITIONS =====
-// Re-export all interfaces for backward compatibility
+// ===== PURE TANSTACK QUERY TYPE DEFINITIONS =====
 
 export interface CardSearchParams {
   query: string;
@@ -54,40 +56,46 @@ export interface SearchResponse<T> {
   data: T[];
 }
 
-// ===== HELPER FUNCTIONS =====
+// ===== CONTEXT7 PURE FETCH HELPERS =====
+
+/**
+ * Pure fetch with optimal error handling for TanStack Query
+ * No caching layers - TanStack Query handles all caching
+ */
+const pureFetch = async (url: string): Promise<any> => {
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json();
+};
 
 /**
  * Helper function to map _id to id for MongoDB compatibility
- * Copied from cardsApi.ts to preserve exact functionality
+ * Context7 Pattern: Minimal transformation for performance
  */
 const mapCardIds = (card: unknown): unknown => {
-  if (!card) {
-    return card;
-  }
+  if (!card) return card;
+  if (Array.isArray(card)) return card.map(mapCardIds);
 
-  if (Array.isArray(card)) {
-    return card.map(mapCardIds);
-  }
-
-  if (
-    typeof card === 'object' &&
-    card !== null &&
-    '_id' in card &&
-    !('id' in card)
-  ) {
-    (card as Record<string, unknown>).id = (
-      card as Record<string, unknown>
-    )._id;
+  if (typeof card === 'object' && card !== null && '_id' in card && !('id' in card)) {
+    (card as Record<string, unknown>).id = (card as Record<string, unknown>)._id;
   }
 
   return card;
 };
 
-// ===== CARDS SEARCH FUNCTIONS =====
+// ===== CONTEXT7 PURE TANSTACK QUERY CARDS API =====
 
 /**
- * Card Search using unified search endpoints
- * Preserves all functionality from cardsApi.ts
+ * Pure TanStack Query Card Search - No internal caching
+ * TanStack Query handles all caching, deduplication, and optimization
  */
 export const searchCards = async (
   params: CardSearchParams
@@ -95,55 +103,30 @@ export const searchCards = async (
   const { query } = params;
 
   if (!query.trim()) {
-    return {
-      success: true,
-      query,
-      count: 0,
-      data: [],
-    };
+    return { success: true, query, count: 0, data: [] };
   }
 
   const queryParams = buildQueryParams(params);
-
-  // Use direct fetch to get full response like searchProducts
-  const response = await fetch(
+  const fullResponse = await pureFetch(
     `http://localhost:3000/api/search/cards?${queryParams.toString()}`
   );
-  const fullResponse = await response.json();
 
-  console.log('[CARDS SEARCH] Full API response:', fullResponse);
-  console.log('[CARDS SEARCH] Response.data:', fullResponse.data);
-  console.log('[CARDS SEARCH] Response.meta:', fullResponse.meta);
-  console.log(
-    '[CARDS SEARCH] Response.meta?.totalResults:',
-    fullResponse.meta?.totalResults
-  );
-
-  const result = {
+  return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
     count: fullResponse.meta?.totalResults || fullResponse.count || 0,
     data: mapCardIds(fullResponse.data || []) as ICard[],
   };
-
-  console.log('[CARDS SEARCH] Final result:', result);
-  console.log('[CARDS SEARCH] Final result.count:', result.count);
-  console.log('[CARDS SEARCH] Final result.data.length:', result.data.length);
-
-  return result;
 };
 
 /**
- * Get Card Suggestions using suggest endpoint
- * Preserves all functionality from cardsApi.ts
+ * Pure TanStack Query Card Suggestions - No UnifiedApiClient dependency
  */
 export const getCardSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ICard[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -151,27 +134,22 @@ export const getCardSuggestions = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(
-    `/search/suggest?${queryParams.toString()}`
-  )) as any;
-  const data = response.data || response;
+  const response = await pureFetch(
+    `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
+  );
 
-  // Extract card suggestions from the response
-  const cardSuggestions = data.suggestions?.cards?.data || [];
+  const cardSuggestions = response.suggestions?.cards?.data || [];
   return mapCardIds(cardSuggestions) as ICard[];
 };
 
 /**
- * Get best match card using search with limit=1
- * Preserves all functionality from cardsApi.ts
+ * Pure TanStack Query Best Match Card
  */
 export const getBestMatchCard = async (
   query: string,
   setContext?: string
 ): Promise<ICard | null> => {
-  if (!query.trim()) {
-    return null;
-  }
+  if (!query.trim()) return null;
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -179,33 +157,21 @@ export const getBestMatchCard = async (
     page: 1,
   };
 
-  if (setContext) {
-    params.setName = setContext;
-  }
+  if (setContext) params.setName = setContext;
 
   const response = await searchCards(params);
-
   return response.data.length > 0 ? response.data[0] : null;
 };
 
 /**
- * Search cards within a specific set
- * Preserves all functionality from cardsApi.ts
+ * Pure TanStack Query Cards in Set Search
  */
 export const searchCardsInSet = async (
   query: string,
   setName: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!query.trim()) {
-    return [];
-  }
-
-  console.log('[CARDS API] searchCardsInSet called with:', {
-    query,
-    setName,
-    limit,
-  });
+  if (!query.trim()) return [];
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -214,32 +180,19 @@ export const searchCardsInSet = async (
     page: 1,
   };
 
-  console.log('[CARDS API] searchCardsInSet params:', params);
-
   const response = await searchCards(params);
-
-  console.log('[CARDS API] searchCardsInSet response:', {
-    success: response.success,
-    count: response.count,
-    dataLength: response.data.length,
-    firstResult: response.data[0] || null,
-  });
-
   return response.data;
 };
 
 /**
- * Search cards by Pokemon number
- * Preserves all functionality from cardsApi.ts
+ * Pure TanStack Query Cards by Pokemon Number
  */
 export const searchCardsByPokemonNumber = async (
   pokemonNumber: string,
   setName?: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!pokemonNumber.trim()) {
-    return [];
-  }
+  if (!pokemonNumber.trim()) return [];
 
   const params: CardSearchParams = {
     query: pokemonNumber.trim(),
@@ -248,26 +201,21 @@ export const searchCardsByPokemonNumber = async (
     page: 1,
   };
 
-  if (setName) {
-    params.setName = setName;
-  }
+  if (setName) params.setName = setName;
 
   const response = await searchCards(params);
   return response.data;
 };
 
 /**
- * Search cards by variety/rarity
- * Preserves functionality from cardsApi.ts - preserves all functionality
+ * Pure TanStack Query Cards by Variety
  */
 export const searchCardsByVariety = async (
   query: string,
   variety: string,
   limit: number = 15
 ): Promise<ICard[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: CardSearchParams = {
     query: query.trim(),
@@ -280,56 +228,35 @@ export const searchCardsByVariety = async (
   return response.data;
 };
 
-// ===== SETS SEARCH FUNCTIONS =====
+// ===== CONTEXT7 PURE TANSTACK QUERY SETS API =====
 
 /**
- * Standard Set Search using unified search endpoints
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Set Search - No internal caching
  */
 export const searchSets = async (
   params: SetSearchParams
 ): Promise<SearchResponse<ISet>> => {
   const queryParams = buildQueryParams(params);
-
-  // Use direct fetch to get full response like searchProducts
-  const response = await fetch(
+  const fullResponse = await pureFetch(
     `http://localhost:3000/api/search/sets?${queryParams.toString()}`
   );
-  const fullResponse = await response.json();
 
-  console.log('[SETS SEARCH] Full API response:', fullResponse);
-  console.log('[SETS SEARCH] Response.data:', fullResponse.data);
-  console.log('[SETS SEARCH] Response.meta:', fullResponse.meta);
-  console.log(
-    '[SETS SEARCH] Response.meta?.totalResults:',
-    fullResponse.meta?.totalResults
-  );
-
-  const result = {
+  return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
     count: fullResponse.meta?.totalResults || fullResponse.count || 0,
     data: fullResponse.data || [],
   };
-
-  console.log('[SETS SEARCH] Final result:', result);
-  console.log('[SETS SEARCH] Final result.count:', result.count);
-  console.log('[SETS SEARCH] Final result.data.length:', result.data.length);
-
-  return result;
 };
 
 /**
- * Standard Set Suggestions using new suggest endpoint
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Set Suggestions
  */
 export const getSetSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ISet[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -337,23 +264,18 @@ export const getSetSuggestions = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(
-    `/search/suggest?${queryParams.toString()}`
-  )) as any;
+  const response = await pureFetch(
+    `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
+  );
 
-  // Extract set suggestions from the response
-  const setSuggestions = response.suggestions?.sets?.data || [];
-  return setSuggestions;
+  return response.suggestions?.sets?.data || [];
 };
 
 /**
- * Get best match set using standard search with limit=1
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Best Match Set
  */
 export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
-  if (!query.trim()) {
-    return null;
-  }
+  if (!query.trim()) return null;
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -362,22 +284,18 @@ export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
   };
 
   const response = await searchSets(params);
-
   return response.data.length > 0 ? response.data[0] : null;
 };
 
 /**
- * Search sets by year using standard endpoint
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Sets by Year
  */
 export const searchSetsByYear = async (
   query: string,
   year: number,
   limit: number = 15
 ): Promise<ISet[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -391,8 +309,7 @@ export const searchSetsByYear = async (
 };
 
 /**
- * Search sets by year range using standard endpoint
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Sets by Year Range
  */
 export const searchSetsByYearRange = async (
   query: string,
@@ -400,9 +317,7 @@ export const searchSetsByYearRange = async (
   maxYear: number,
   limit: number = 15
 ): Promise<ISet[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -417,17 +332,14 @@ export const searchSetsByYearRange = async (
 };
 
 /**
- * Search sets by PSA population using standard endpoint
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Sets by PSA Population
  */
 export const searchSetsByPsaPopulation = async (
   query: string,
   minPsaPopulation: number,
   limit: number = 15
 ): Promise<ISet[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -441,17 +353,14 @@ export const searchSetsByPsaPopulation = async (
 };
 
 /**
- * Search sets by card count using standard endpoint
- * Preserves functionality from setsApi.ts - preserves all functionality
+ * Pure TanStack Query Sets by Card Count
  */
 export const searchSetsByCardCount = async (
   query: string,
   minCardCount: number,
   limit: number = 15
 ): Promise<ISet[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: SetSearchParams = {
     query: query.trim(),
@@ -464,60 +373,35 @@ export const searchSetsByCardCount = async (
   return response.data;
 };
 
-// ===== PRODUCTS SEARCH FUNCTIONS =====
+// ===== CONTEXT7 PURE TANSTACK QUERY PRODUCTS API =====
 
 /**
- * Standard Product Search using unified search endpoints
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Product Search - No internal caching
  */
 export const searchProducts = async (
   params: ProductSearchParams
 ): Promise<SearchResponse<ICardMarketReferenceProduct>> => {
   const queryParams = buildQueryParams(params);
-
-  // unifiedApiClient.get() returns the transformed data array directly via transformApiResponse()
-  // We need the full response object to get meta information, so use axios directly
-  const response = await fetch(
+  const fullResponse = await pureFetch(
     `http://localhost:3000/api/search/products?${queryParams.toString()}`
   );
-  const fullResponse = await response.json();
 
-  console.log('[PRODUCTS SEARCH] Full API response:', fullResponse);
-  console.log('[PRODUCTS SEARCH] Response.data:', fullResponse.data);
-  console.log('[PRODUCTS SEARCH] Response.meta:', fullResponse.meta);
-  console.log(
-    '[PRODUCTS SEARCH] Response.meta?.totalResults:',
-    fullResponse.meta?.totalResults
-  );
-
-  const result = {
+  return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
     count: fullResponse.meta?.totalResults || fullResponse.count || 0,
     data: fullResponse.data || [],
   };
-
-  console.log('[PRODUCTS SEARCH] Final result:', result);
-  console.log('[PRODUCTS SEARCH] Final result.count:', result.count);
-  console.log(
-    '[PRODUCTS SEARCH] Final result.data.length:',
-    result.data.length
-  );
-
-  return result;
 };
 
 /**
- * Standard Product Suggestions using new suggest endpoint
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Product Suggestions
  */
 export const getProductSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const queryParams = new URLSearchParams({
     query: query.trim(),
@@ -525,27 +409,22 @@ export const getProductSuggestions = async (
     limit: limit.toString(),
   });
 
-  const response = (await unifiedApiClient.get(
-    `/search/suggest?${queryParams.toString()}`
-  )) as any;
+  const response = await pureFetch(
+    `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
+  );
 
-  // Extract product suggestions from the response
-  const productSuggestions = response.suggestions?.products?.data || [];
-  return productSuggestions;
+  return response.suggestions?.products?.data || [];
 };
 
 /**
- * Get best match product using standard search with limit=1
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Best Match Product
  */
 export const getBestMatchProduct = async (
   query: string,
   setContext?: string,
   categoryContext?: string
 ): Promise<ICardMarketReferenceProduct | null> => {
-  if (!query.trim()) {
-    return null;
-  }
+  if (!query.trim()) return null;
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -553,31 +432,22 @@ export const getBestMatchProduct = async (
     page: 1,
   };
 
-  if (setContext) {
-    params.setName = setContext;
-  }
-
-  if (categoryContext) {
-    params.category = categoryContext;
-  }
+  if (setContext) params.setName = setContext;
+  if (categoryContext) params.category = categoryContext;
 
   const response = await searchProducts(params);
-
   return response.data.length > 0 ? response.data[0] : null;
 };
 
 /**
- * Search products within a specific set using standard endpoint
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Products in Set
  */
 export const searchProductsInSet = async (
   query: string,
   setName: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -591,17 +461,14 @@ export const searchProductsInSet = async (
 };
 
 /**
- * Search products by category using standard endpoint
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Products by Category
  */
 export const searchProductsByCategory = async (
   query: string,
   category: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -615,8 +482,7 @@ export const searchProductsByCategory = async (
 };
 
 /**
- * Search products by price range using standard endpoint
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Products by Price Range
  */
 export const searchProductsByPriceRange = async (
   query: string,
@@ -624,9 +490,7 @@ export const searchProductsByPriceRange = async (
   maxPrice: number,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -641,16 +505,13 @@ export const searchProductsByPriceRange = async (
 };
 
 /**
- * Search only available products using standard endpoint
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Available Products Only
  */
 export const searchAvailableProducts = async (
   query: string,
   limit: number = 15
 ): Promise<ICardMarketReferenceProduct[]> => {
-  if (!query.trim()) {
-    return [];
-  }
+  if (!query.trim()) return [];
 
   const params: ProductSearchParams = {
     query: query.trim(),
@@ -664,64 +525,44 @@ export const searchAvailableProducts = async (
 };
 
 /**
- * Get CardMarket reference set names
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query CardMarket Set Names
  */
 export const getCardMarketSetNames = async (
   query?: string,
   limit: number = 50
-): Promise<
-  Array<{
-    setName: string;
-    count: number;
-    totalAvailable: number;
-    categoryCount: number;
-    averagePrice: number;
-    score?: number;
-  }>
-> => {
-  const queryParams = new URLSearchParams({
-    limit: limit.toString(),
-  });
+): Promise<Array<{
+  setName: string;
+  count: number;
+  totalAvailable: number;
+  categoryCount: number;
+  averagePrice: number;
+  score?: number;
+}>> => {
+  const queryParams = new URLSearchParams({ limit: limit.toString() });
+  if (query?.trim()) queryParams.append('search', query.trim());
 
-  if (query && query.trim()) {
-    queryParams.append('search', query.trim());
-  }
+  const response = await pureFetch(
+    `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`
+  );
 
-  const response = (await unifiedApiClient.get(
-    `/cardmarket-ref-products/set-names?${queryParams.toString()}`
-  )) as any;
-
-  console.log('[CONSOLIDATED SEARCH] Raw API response:', response);
-  console.log('[CONSOLIDATED SEARCH] Response.data:', response.data);
-
-  // Handle wrapped response format {success: true, data: [...]}
   const data = response.data?.data || response.data || response;
-  console.log('[CONSOLIDATED SEARCH] Extracted data:', data);
-
   return Array.isArray(data) ? data : [];
 };
 
 /**
- * Search CardMarket reference set names
- * Preserves functionality from cardMarketRefProductsApi.ts - preserves all functionality
+ * Pure TanStack Query Search CardMarket Set Names
  */
 export const searchCardMarketSetNames = async (
   query: string,
   limit: number = 15
-): Promise<
-  Array<{
-    setName: string;
-    count: number;
-    totalAvailable: number;
-    categoryCount: number;
-    averagePrice: number;
-    score?: number;
-  }>
-> => {
-  if (!query.trim()) {
-    return [];
-  }
-
+): Promise<Array<{
+  setName: string;
+  count: number;
+  totalAvailable: number;
+  categoryCount: number;
+  averagePrice: number;
+  score?: number;
+}>> => {
+  if (!query.trim()) return [];
   return getCardMarketSetNames(query, limit);
 };

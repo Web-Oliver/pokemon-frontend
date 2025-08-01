@@ -335,7 +335,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       />
 
       {/* Product Search Section - Maintains ALL existing functionality */}
-      <ProductSearchSection
+      <div className="mb-6 relative z-10">
+        <ProductSearchSection
         register={register}
         errors={errors}
         setValue={setValue}
@@ -359,7 +360,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         }}
         productCategories={productCategories}
         loadingOptions={loadingOptions}
-      />
+        />
+      </div>
 
       {/* Context7 Premium Pricing & Investment Section */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">

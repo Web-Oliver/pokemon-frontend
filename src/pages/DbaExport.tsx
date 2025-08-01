@@ -51,14 +51,16 @@ const DbaExport: React.FC = () => {
 
   // Debug logging for collection data
   useEffect(() => {
-    console.log('[DBA EXPORT] Collection data loaded:', {
-      psaCards: psaCards.length,
-      rawCards: rawCards.length,
-      sealedProducts: sealedProducts.length,
-      samplePsaCard: psaCards[0],
-      sampleRawCard: rawCards[0],
-      sampleSealedProduct: sealedProducts[0],
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[DBA EXPORT] Collection data loaded:', {
+        psaCards: psaCards.length,
+        rawCards: rawCards.length,
+        sealedProducts: sealedProducts.length,
+        samplePsaCard: psaCards[0],
+        sampleRawCard: rawCards[0],
+        sampleSealedProduct: sealedProducts[0],
+      });
+    }
   }, [psaCards, rawCards, sealedProducts]);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [customDescription, setCustomDescription] = useState('');
@@ -75,29 +77,37 @@ const DbaExport: React.FC = () => {
   useEffect(() => {
     const loadDbaSelections = async (retryCount = 0) => {
       try {
-        console.log(
-          '[DBA EXPORT] Loading DBA selections...',
-          retryCount > 0 ? `(retry ${retryCount})` : ''
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[DBA EXPORT] Loading DBA selections...',
+            retryCount > 0 ? `(retry ${retryCount})` : ''
+          );
+        }
         const selections = await dbaSelectionApi.getDbaSelections(true); // Only active selections
-        console.log('[DBA EXPORT] Loaded DBA selections:', selections);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[DBA EXPORT] Loaded DBA selections:', selections);
+        }
         setDbaSelections(selections.data || []);
       } catch (err) {
         // Log for debugging but use centralized error handling
 
         // Retry once after a short delay if it's a network error
         if (retryCount === 0 && (err as any).code === 'ERR_NETWORK') {
-          console.log(
-            '[DBA EXPORT] Retrying DBA selections load in 1 second...'
-          );
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '[DBA EXPORT] Retrying DBA selections load in 1 second...'
+            );
+          }
           setTimeout(() => loadDbaSelections(1), 1000);
           return;
         }
 
         // After retry fails or for other errors, gracefully handle the failure
-        console.log(
-          '[DBA EXPORT] DBA selection API unavailable, continuing with empty data'
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[DBA EXPORT] DBA selection API unavailable, continuing with empty data'
+          );
+        }
         setDbaSelections([]);
         setError(null); // Clear error to allow page to function without DBA data
       } finally {
@@ -121,14 +131,16 @@ const DbaExport: React.FC = () => {
     const itemId = item.id || (item as any)._id;
     const isSelected = selectedItems.some((selected) => selected.id === itemId);
 
-    console.log('[DBA EXPORT] Item toggle:', {
-      item,
-      type,
-      itemId,
-      isSelected,
-      hasId: !!item.id,
-      has_id: !!(item as any)._id,
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[DBA EXPORT] Item toggle:', {
+        item,
+        type,
+        itemId,
+        isSelected,
+        hasId: !!item.id,
+        has_id: !!(item as any)._id,
+      });
+    }
 
     if (isSelected) {
       setSelectedItems(
@@ -157,7 +169,9 @@ const DbaExport: React.FC = () => {
           setName: item.setName,
         }),
       } as any;
-      console.log('[DBA EXPORT] Selected item:', selectedItem);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[DBA EXPORT] Selected item:', selectedItem);
+      }
       setSelectedItems([...selectedItems, selectedItem]);
     }
   };
@@ -463,15 +477,19 @@ const DbaExport: React.FC = () => {
     setIsExporting(true);
 
     try {
-      console.log(
-        '[DBA EXPORT] Starting export for',
-        selectedItems.length,
-        'items'
-      );
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '[DBA EXPORT] Starting export for',
+          selectedItems.length,
+          'items'
+        );
+      }
 
       // FIRST: Add items to DBA selection tracking to start countdown timers
       try {
-        console.log('[DBA EXPORT] Adding items to DBA selection tracking...');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[DBA EXPORT] Adding items to DBA selection tracking...');
+        }
         const itemsToAdd = selectedItems.map((item) => ({
           itemId: item.id,
           itemType: item.type,
@@ -479,7 +497,9 @@ const DbaExport: React.FC = () => {
         }));
 
         await dbaSelectionApi.addToDbaSelection(itemsToAdd);
-        console.log('[DBA EXPORT] Items added to DBA selection tracking');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[DBA EXPORT] Items added to DBA selection tracking');
+        }
       } catch (dbaAddError) {
         console.warn(
           '[DBA EXPORT] Could not add items to DBA selection tracking:',
@@ -504,35 +524,43 @@ const DbaExport: React.FC = () => {
       // THIRD: Call export API
       const response = await exportApi.exportToDba(exportData);
 
-      console.log('[DBA EXPORT] Export successful:', response);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[DBA EXPORT] Export successful:', response);
+      }
       setExportResult(response);
 
       // FOURTH: Reload DBA selections to show updated countdown timers
       try {
-        console.log(
-          '[DBA EXPORT] Reloading DBA selections to show countdown timers...'
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[DBA EXPORT] Reloading DBA selections to show countdown timers...'
+          );
+        }
         const updatedSelections = await dbaSelectionApi.getDbaSelections(true);
         setDbaSelections(updatedSelections);
-        console.log(
-          '[DBA EXPORT] Successfully reloaded DBA selections with',
-          updatedSelections.length,
-          'items'
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[DBA EXPORT] Successfully reloaded DBA selections with',
+            updatedSelections.length,
+            'items'
+          );
+        }
       } catch (dbaError) {
         console.warn('[DBA EXPORT] Could not reload DBA selections:', dbaError);
         // Continue without DBA selection data - this is not critical for export functionality
       }
 
       const itemCount = response?.itemCount || 0;
-      console.log('[DBA EXPORT] ItemCount debug:', {
-        response,
-        itemCount: response?.itemCount,
-        responseType: typeof response,
-        hasItemCount: 'itemCount' in (response || {}),
-        actualValue: response?.itemCount,
-        finalItemCount: itemCount,
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[DBA EXPORT] ItemCount debug:', {
+          response,
+          itemCount: response?.itemCount,
+          responseType: typeof response,
+          hasItemCount: 'itemCount' in (response || {}),
+          actualValue: response?.itemCount,
+          finalItemCount: itemCount,
+        });
+      }
       showSuccessToast(
         `DBA export generated successfully! ${itemCount} items exported and added to DBA tracking.`
       );

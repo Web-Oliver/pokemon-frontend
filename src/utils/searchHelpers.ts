@@ -315,14 +315,16 @@ export const getResultMetadata = (result: SearchResult) => {
 // ===== VALIDATION HELPERS =====
 
 /**
- * Validate search query
- * Centralized query validation logic
+ * Validate search query - CRITICAL FIX: Lower tolerance for immediate search
+ * Removed restrictive minLength requirement for real-time search experience
  */
 export const isValidSearchQuery = (
   query: string,
-  minLength: number = 2
+  minLength: number = 0 // Default to 0 for immediate search
 ): boolean => {
-  return query.trim().length >= minLength;
+  // CRITICAL FIX: Always return true for any string (including empty)
+  // Let the backend handle empty queries with wildcard "*"
+  return typeof query === 'string';
 };
 
 /**

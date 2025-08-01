@@ -11,9 +11,9 @@
  * Following CLAUDE.md principles for separation of concerns
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import { Hash, Package, Search, Star, TrendingUp } from 'lucide-react';
-import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers';
+import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers.optimized';
 
 interface SearchSuggestion {
   _id?: string;
@@ -52,7 +52,7 @@ interface SearchDropdownProps {
   loading?: boolean;
 }
 
-const SearchDropdown: React.FC<SearchDropdownProps> = ({
+const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdown({
   suggestions,
   isVisible,
   activeField,
@@ -124,26 +124,31 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
   useEffect(() => {
     setSelectedIndex(0);
   }, [suggestions]);
-  console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
-    isVisible,
-    activeField,
-    suggestionsCount: suggestions.length,
-    searchTerm,
-    suggestions: suggestions.map((s) => ({
-      name: s.cardName || s.name || s.setName || s.category,
-      id: s._id || s.id,
-      setInfo: s.setInfo,
-      categoryInfo: s.categoryInfo,
-    })),
-  });
-
-  if (!isVisible || !activeField || (!loading && suggestions.length === 0)) {
-    console.log(`[SEARCH DROPDOWN DEBUG] Not rendering dropdown:`, {
+  // Conditional debug logging for development only
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
       isVisible,
       activeField,
-      suggestionsLength: suggestions.length,
-      loading,
+      suggestionsCount: suggestions.length,
+      searchTerm,
+      suggestions: suggestions.map((s) => ({
+        name: s.cardName || s.name || s.setName || s.category,
+        id: s._id || s.id,
+        setInfo: s.setInfo,
+        categoryInfo: s.categoryInfo,
+      })),
     });
+  }
+
+  if (!isVisible || !activeField || (!loading && suggestions.length === 0)) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[SEARCH DROPDOWN DEBUG] Not rendering dropdown:`, {
+        isVisible,
+        activeField,
+        suggestionsLength: suggestions.length,
+        loading,
+      });
+    }
     return null;
   }
 
@@ -170,8 +175,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
   };
 
-  // Clean metadata rendering for better readability
-  const renderSuggestionMetadata = (suggestion: SearchSuggestion) => {
+  // Context7 Pattern: Memoized metadata rendering following React.dev patterns
+  const renderSuggestionMetadata = useCallback((suggestion: SearchSuggestion) => {
     const metadata = [];
 
     if (suggestion.setInfo?.setName) {
@@ -250,10 +255,10 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
 
     return metadata;
-  };
+  }, []);
 
-  // Get display name using DRY helper
-  const getDisplayName = (suggestion: SearchSuggestion) => {
+  // Context7 Pattern: Memoized display name calculation with stable dependencies
+  const getDisplayName = useCallback((suggestion: SearchSuggestion) => {
     return getDisplayNameHelper({
       _id: suggestion._id || suggestion.id || '',
       displayName: '',
@@ -265,11 +270,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
             ? 'category'
             : 'card',
     } as any);
-  };
+  }, [activeField]);
 
-  // Order-independent word matching with intelligent highlighting
-  const highlightSearchTerm = (text: string, term: string) => {
-    if (!term.trim()) {
+  // Context7 Pattern: Memoized highlighting function for performance
+  const highlightSearchTerm = useCallback((text: string, term: string) => {
+    if (!term) {
       return text;
     }
 
@@ -352,7 +357,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
     }
 
     return result.length > 0 ? result : text;
-  };
+  }, []);
 
   return (
     <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
@@ -438,14 +443,16 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
                         `${activeField}-${index}`
                       }
                       onClick={() => {
-                        console.log(
-                          `[SEARCH DROPDOWN DEBUG] Suggestion clicked:`,
-                          {
-                            suggestion,
-                            activeField,
-                            displayName: getDisplayName(suggestion),
-                          }
-                        );
+                        if (process.env.NODE_ENV === 'development') {
+                          console.log(
+                            `[SEARCH DROPDOWN DEBUG] Suggestion clicked:`,
+                            {
+                              suggestion,
+                              activeField,
+                              displayName: getDisplayName(suggestion),
+                            }
+                          );
+                        }
                         onSuggestionSelect(suggestion, activeField);
                       }}
                       onMouseEnter={() => setSelectedIndex(index)}
@@ -546,6 +553,8 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       `}</style>
     </div>
   );
-};
+});
 
+// Context7 Performance: Export memoized component with display name
+SearchDropdown.displayName = 'SearchDropdown';
 export default SearchDropdown;

@@ -149,12 +149,16 @@ export const useAuction = (): UseAuctionHook => {
       try {
         setLoading(true);
         setError(null);
-        console.log('[useAuction] Deleting auction with ID:', id);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[useAuction] Deleting auction with ID:', id);
+        }
         await auctionsApi.deleteAuction(id);
 
-        console.log(
-          '[useAuction] Auction deleted successfully, refetching all auctions...'
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[useAuction] Auction deleted successfully, refetching all auctions...'
+          );
+        }
 
         // Clear current auction if it's the one being deleted
         if ((currentAuction?.id || currentAuction?._id) === id) {
@@ -208,15 +212,19 @@ export const useAuction = (): UseAuctionHook => {
       try {
         setLoading(true);
         setError(null);
-        console.log('[useAuction] Removing item:', {
-          id,
-          itemId,
-          itemCategory,
-        });
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[useAuction] Removing item:', {
+            id,
+            itemId,
+            itemCategory,
+          });
+        }
         await auctionsApi.removeItemFromAuction(id, itemId, itemCategory);
-        console.log(
-          '[useAuction] Item removed successfully, refetching all auction data...'
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '[useAuction] Item removed successfully, refetching all auction data...'
+          );
+        }
 
         // CRITICAL FIX: Refetch both current auction AND auctions list to invalidate cache
         await Promise.all([
@@ -226,9 +234,11 @@ export const useAuction = (): UseAuctionHook => {
       } catch (err: any) {
         // CRITICAL FIX: If we get 404, the item is already gone, so still refresh the cache
         if (err?.response?.status === 404) {
-          console.log(
-            '[useAuction] Item already removed (404), refreshing cache...'
-          );
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '[useAuction] Item already removed (404), refreshing cache...'
+            );
+          }
           await Promise.all([
             fetchAuctionById(id), // Update current auction
             fetchAuctions(), // Update auctions list cache
