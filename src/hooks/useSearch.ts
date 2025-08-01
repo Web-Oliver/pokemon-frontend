@@ -309,7 +309,6 @@ export const useSearch = (): UseSearchReturn => {
   const handleSearchCardMarketSetNames = useCallback((query: string) => {
     console.log(`[SEALED PRODUCT DEBUG] Starting CardMarket set names search`);
     console.log(`[SEALED PRODUCT DEBUG] Query:`, query);
-    console.log(`[SEALED PRODUCT DEBUG] Current search config before:`, searchConfig);
     
     log(`[TANSTACK QUERY] Initiating CardMarket set names search: ${query}`);
     setSearchConfig((prev) => {
@@ -324,7 +323,7 @@ export const useSearch = (): UseSearchReturn => {
     });
     
     console.log(`[SEALED PRODUCT DEBUG] Set currentType to 'cardmarket-sets'`);
-  }, [searchConfig]);
+  }, []); // FIXED: Remove searchConfig dependency to prevent infinite loop
 
   const handleSearchProducts = useCallback(
     (query: string, setName?: string, category?: string) => {

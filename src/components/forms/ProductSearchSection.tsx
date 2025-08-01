@@ -151,7 +151,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
         }
         break;
       case 'productName': {
-        const currentSetName = watch('setName');
+        const currentSetName = setName;
 
         // SMART SEARCH: If no query but set selected, show all from set. If query exists, filter within set.
         let searchQuery = currentValue;
@@ -198,11 +198,8 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     debouncedSetName,
     debouncedProductName,
     formType,
-    watch,
-    search.searchSets,
-    search.searchCardMarketSetNames,
-    search.searchProducts,
-    search.searchCards,
+    // FIXED: Remove search functions from dependencies as they cause infinite loops
+    // The search functions are stable from useCallback
   ]);
 
   // Context7 Pattern: Memoized configuration following React.dev best practices
