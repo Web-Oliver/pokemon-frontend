@@ -114,7 +114,16 @@ export const autoFillSetData = (
   config: AutoFillConfig,
   result: SearchResult
 ) => {
-  const setName = result.data.setName || result.data.setInfo?.setName;
+  let setName: string | undefined;
+  
+  if (config.formType === 'product') {
+    // For sealed products: ONLY use CardMarketReferenceProduct.setName
+    setName = result.data.setName;
+  } else {
+    // For cards: Use Set->Card relationship
+    setName = result.data.setName || result.data.setInfo?.setName;
+  }
+  
   if (setName) {
     autoFillField(config, 'setName', setName);
   }

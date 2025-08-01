@@ -135,9 +135,20 @@ export const useBaseForm = <T extends FieldValues>(
           }
 
           // Handle common field transformations
-          if (key.includes('Date') && typeof value === 'string') {
-            // Date field transformation
-            processedValue = value.includes('T') ? value.split('T')[0] : value;
+          if ((key.includes('Date') || key.includes('date')) && typeof value === 'string') {
+            // Date field transformation - convert ISO timestamps to YYYY-MM-DD
+            if (value.includes('T')) {
+              processedValue = value.split('T')[0];
+            } else if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              // Already in correct format
+              processedValue = value;
+            } else {
+              // Try to parse and format the date
+              const date = new Date(value);
+              if (!isNaN(date.getTime())) {
+                processedValue = date.toISOString().split('T')[0];
+              }
+            }
           } else if (key.includes('Price') && typeof value === 'number') {
             // Price field transformation to string
             processedValue = value.toString();
