@@ -12,10 +12,12 @@
  * - Open/Closed: Extensible through configuration
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { UseFormSetValue } from 'react-hook-form';
 
 interface BaseFormData {
+  _id?: string;
+  id?: string;
   cardId?: any;
   setId?: any;
   setName?: string;
@@ -25,6 +27,11 @@ interface BaseFormData {
   variety?: string;
   myPrice?: number;
   dateAdded?: string | Date;
+  grade?: string;
+  condition?: string;
+  name?: string;
+  category?: string;
+  availability?: boolean;
   [key: string]: any;
 }
 
@@ -49,7 +56,7 @@ interface FormInitializationConfig {
   /** React Hook Form setValue function */
   setValue: UseFormSetValue<any>;
 
-  /** Additional field mappings specific to form type */
+  /** Custom field mappings for specialized forms */
   customFieldMappings?: Record<string, (data: BaseFormData) => any>;
 
   /** Enable debug logging */
@@ -57,35 +64,39 @@ interface FormInitializationConfig {
 }
 
 /**
- * Extracts card data from nested cardId object structure
- * Handles the common pattern where card data is nested in cardId.setId hierarchy
+ * Extracts card data from populated cardId object
  */
-const extractCardData = (initialData: BaseFormData): CardDataExtraction => {
-  const cardData = initialData.cardId as any;
+const extractCardData = (cardId: any): CardDataExtraction => {
+  if (!cardId || typeof cardId !== 'object') {
+    return {
+      setName: '',
+      cardName: '',
+      pokemonNumber: '',
+      baseName: '',
+      variety: '',
+    };
+  }
 
+  const setName = cardId.setId?.setName || '';
   return {
-    setName: cardData?.setId?.setName || initialData.setName || '',
-    cardName: cardData?.cardName || initialData.cardName || '',
-    pokemonNumber: cardData?.pokemonNumber || initialData.pokemonNumber || '',
-    baseName: cardData?.baseName || initialData.baseName || '',
-    variety: cardData?.variety || initialData.variety || '',
+    setName,
+    cardName: cardId.cardName || '',
+    pokemonNumber: cardId.pokemonNumber || '',
+    baseName: cardId.baseName || '',
+    variety: cardId.variety || '',
   };
 };
 
 /**
- * Safely formats date for form input
- * Handles various date formats and provides fallback to current date
+ * Formats date for form input (YYYY-MM-DD format)
  */
-const formatDateForForm = (dateValue?: string | Date): string => {
-  if (
-    !dateValue ||
-    (typeof dateValue === 'object' && Object.keys(dateValue).length === 0)
-  ) {
+const formatDateForForm = (dateInput?: string | Date): string => {
+  if (!dateInput) {
     return new Date().toISOString().split('T')[0];
   }
 
   try {
-    const date = new Date(dateValue);
+    const date = new Date(dateInput);
     if (isNaN(date.getTime())) {
       return new Date().toISOString().split('T')[0];
     }
@@ -98,6 +109,7 @@ const formatDateForForm = (dateValue?: string | Date): string => {
 /**
  * useFormInitialization Hook
  * Centralizes initialization logic for PSA, Raw, and Sealed product forms
+ * FIXED: No longer causes infinite loops by using ref to track initialization
  */
 export const useFormInitialization = (
   config: FormInitializationConfig
@@ -111,38 +123,44 @@ export const useFormInitialization = (
     debug = false,
   } = config;
 
+  // Use ref to track if initialization has already happened for this item
+  const initializedRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!isEditing || !initialData) {
       return;
     }
 
+    // Create a stable identifier for the current item
+    const itemId = initialData._id || initialData.id || 'no-id';
+    
+    // Skip if already initialized for this item
+    if (initializedRef.current === itemId) {
+      return;
+    }
+
+    // Mark as initialized
+    initializedRef.current = itemId;
+
     if (debug && process.env.NODE_ENV === 'development') {
       console.log(
-        `[${formType.toUpperCase()} FORM] Updating form with initialData:`,
-        initialData
+        `[${formType.toUpperCase()} FORM] Initializing form once for item:`,
+        itemId
       );
     }
 
-    // Extract common card data (for PSA and Raw forms)
-    if (formType === 'psa' || formType === 'raw') {
-      const { setName, cardName, pokemonNumber, baseName, variety } =
-        extractCardData(initialData);
-
-      // Set common card fields
-      setValue('setName', setName);
-      setValue('cardName', cardName);
-      setValue('pokemonNumber', pokemonNumber);
-      setValue('baseName', baseName);
-      setValue('variety', variety);
-
-      if (debug && process.env.NODE_ENV === 'development') {
-        console.log(`[${formType.toUpperCase()} FORM] Card data extracted:`, {
-          setName,
-          cardName,
-          pokemonNumber,
-          baseName,
-          variety,
-        });
+    // Extract card data if available (for PSA and Raw cards)
+    if (initialData.cardId && typeof initialData.cardId === 'object') {
+      const cardData = extractCardData(initialData.cardId);
+      
+      if (cardData.setName || cardData.cardName) {
+        const { setName, cardName, pokemonNumber, baseName, variety } =
+          cardData;
+        setValue('setName', setName);
+        setValue('cardName', cardName);
+        setValue('pokemonNumber', pokemonNumber);
+        setValue('baseName', baseName);
+        setValue('variety', variety);
       }
     }
 
@@ -168,27 +186,12 @@ export const useFormInitialization = (
     });
 
     if (debug && process.env.NODE_ENV === 'development') {
-      const logData: Record<string, any> = {
-        myPrice: initialData.myPrice,
-        dateAdded: initialData.dateAdded,
-      };
-
-      if (formType === 'psa') {
-        logData.grade = initialData.grade;
-      } else if (formType === 'raw') {
-        logData.condition = initialData.condition;
-      } else if (formType === 'sealed') {
-        logData.productName = initialData.name;
-        logData.category = initialData.category;
-        logData.availability = initialData.availability;
-      }
-
       console.log(
-        `[${formType.toUpperCase()} FORM] Form values updated with:`,
-        logData
+        `[${formType.toUpperCase()} FORM] Form initialized successfully for:`,
+        itemId
       );
     }
-  }, [isEditing, initialData, setValue, formType, customFieldMappings, debug]);
+  }, [isEditing, formType]); // FIXED: Removed initialData from dependencies to prevent infinite loop
 };
 
 /**
@@ -197,39 +200,37 @@ export const useFormInitialization = (
 export const formInitializationPresets = {
   psa: (
     isEditing: boolean,
-    initialData: any,
-    setValue: UseFormSetValue<any>
+    initialData?: BaseFormData,
+    setValue?: UseFormSetValue<any>
   ): FormInitializationConfig => ({
-    formType: 'psa' as const,
+    formType: 'psa',
     isEditing,
     initialData,
-    setValue,
-    debug: process.env.NODE_ENV === 'development',
+    setValue: setValue!,
+    debug: true,
   }),
 
   raw: (
     isEditing: boolean,
-    initialData: any,
-    setValue: UseFormSetValue<any>
+    initialData?: BaseFormData,
+    setValue?: UseFormSetValue<any>
   ): FormInitializationConfig => ({
-    formType: 'raw' as const,
+    formType: 'raw',
     isEditing,
     initialData,
-    setValue,
-    debug: process.env.NODE_ENV === 'development',
+    setValue: setValue!,
+    debug: true,
   }),
 
   sealed: (
     isEditing: boolean,
-    initialData: any,
-    setValue: UseFormSetValue<any>
+    initialData?: BaseFormData,
+    setValue?: UseFormSetValue<any>
   ): FormInitializationConfig => ({
-    formType: 'sealed' as const,
+    formType: 'sealed',
     isEditing,
     initialData,
-    setValue,
-    debug: process.env.NODE_ENV === 'development',
+    setValue: setValue!,
+    debug: true,
   }),
 };
-
-export default useFormInitialization;
