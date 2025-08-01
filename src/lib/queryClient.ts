@@ -1,6 +1,6 @@
 /**
  * React Query Client Configuration
- * 
+ *
  * Optimized configuration for caching and performance
  * Following CLAUDE.md principles for optimal performance
  */
@@ -38,20 +38,23 @@ export const queryKeys = {
   rawCards: () => [...queryKeys.collection, 'raw-cards'] as const,
   sealedProducts: () => [...queryKeys.collection, 'sealed-products'] as const,
   soldItems: () => [...queryKeys.collection, 'sold-items'] as const,
-  
+
   // Individual items
-  collectionItem: (type: string, id: string) => ['collection-item', type, id] as const,
-  
+  collectionItem: (type: string, id: string) =>
+    ['collection-item', type, id] as const,
+
   // Search data
   search: ['search'] as const,
-  searchCards: (query: string) => [...queryKeys.search, 'cards', query] as const,
+  searchCards: (query: string) =>
+    [...queryKeys.search, 'cards', query] as const,
   searchSets: (query: string) => [...queryKeys.search, 'sets', query] as const,
-  searchProducts: (query: string) => [...queryKeys.search, 'products', query] as const,
-  
+  searchProducts: (query: string) =>
+    [...queryKeys.search, 'products', query] as const,
+
   // Analytics
   analytics: ['analytics'] as const,
   salesAnalytics: () => [...queryKeys.analytics, 'sales'] as const,
-  
+
   // Activity
   activity: ['activity'] as const,
   activityFeed: () => [...queryKeys.activity, 'feed'] as const,

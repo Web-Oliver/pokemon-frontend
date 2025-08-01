@@ -1,7 +1,7 @@
 /**
  * Debounce Hook
  * Centralized debounce implementation for React components
- * 
+ *
  * Following CLAUDE.md DRY principles:
  * - Single implementation of debounce logic
  * - Consistent behavior across components

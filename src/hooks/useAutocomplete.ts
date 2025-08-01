@@ -1,7 +1,7 @@
 /**
  * Autocomplete Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Focused autocomplete using the consolidated search hook
  */
 
@@ -26,7 +26,9 @@ export interface AutocompleteConfig {
   minQueryLength?: number;
 }
 
-export const createAutocompleteConfig = (searchMode: 'cards' | 'products'): AutocompleteConfig => ({
+export const createAutocompleteConfig = (
+  searchMode: 'cards' | 'products'
+): AutocompleteConfig => ({
   searchMode,
   debounceMs: 300,
   cacheEnabled: true,
@@ -45,21 +47,21 @@ export interface UseAutocompleteReturn extends AutocompleteState {
   setValue: (value: string) => void;
   onFocus: () => void;
   onBlur: () => void;
-  
+
   // Results
   results: SearchResult[];
   loading: boolean;
   error: string | null;
-  
+
   // Selection
   selectResult: (result: SearchResult) => void;
   selectByIndex: (index: number) => void;
-  
+
   // Navigation
   moveUp: () => void;
   moveDown: () => void;
   selectActive: () => void;
-  
+
   // Utility
   close: () => void;
   clear: () => void;
@@ -76,7 +78,7 @@ export const useAutocomplete = (
   disabled?: boolean
 ): UseAutocompleteReturn => {
   const search = useSearch();
-  
+
   const [state, setState] = useState<AutocompleteState>({
     value: '',
     isOpen: false,
@@ -91,7 +93,11 @@ export const useAutocomplete = (
           search.searchSets(state.value);
           break;
         case 'products':
-          search.searchProducts(state.value, filters?.setName, filters?.category);
+          search.searchProducts(
+            state.value,
+            filters?.setName,
+            filters?.category
+          );
           break;
         case 'cards':
           search.searchCards(state.value, filters?.setName);
@@ -100,21 +106,31 @@ export const useAutocomplete = (
     } else {
       search.clearResults();
     }
-  }, [state.value, state.isOpen, searchType, filters?.setName, filters?.category, disabled]);
+  }, [
+    state.value,
+    state.isOpen,
+    searchType,
+    filters?.setName,
+    filters?.category,
+    disabled,
+  ]);
 
   // Set value and trigger search
-  const setValue = useCallback((value: string) => {
-    setState(prev => ({
-      ...prev,
-      value,
-      activeIndex: -1,
-      isOpen: !disabled && value.trim().length >= 2,
-    }));
-  }, [disabled]);
+  const setValue = useCallback(
+    (value: string) => {
+      setState((prev) => ({
+        ...prev,
+        value,
+        activeIndex: -1,
+        isOpen: !disabled && value.trim().length >= 2,
+      }));
+    },
+    [disabled]
+  );
 
   // Handle focus
   const onFocus = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isOpen: !disabled && prev.value.trim().length >= 2,
     }));
@@ -123,42 +139,50 @@ export const useAutocomplete = (
   // Handle blur with delay to allow selection
   const onBlur = useCallback(() => {
     setTimeout(() => {
-      setState(prev => ({ ...prev, isOpen: false, activeIndex: -1 }));
+      setState((prev) => ({ ...prev, isOpen: false, activeIndex: -1 }));
     }, 150);
   }, []);
 
   // Select a result
-  const selectResult = useCallback((result: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      value: result.displayName,
-      isOpen: false,
-      activeIndex: -1,
-    }));
-    onSelect?.(result);
-    search.clearResults();
-  }, [onSelect]);
+  const selectResult = useCallback(
+    (result: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        value: result.displayName,
+        isOpen: false,
+        activeIndex: -1,
+      }));
+      onSelect?.(result);
+      search.clearResults();
+    },
+    [onSelect]
+  );
 
   // Select by index
-  const selectByIndex = useCallback((index: number) => {
-    const result = search.results[index];
-    if (result) {
-      selectResult(result);
-    }
-  }, [search.results, selectResult]);
+  const selectByIndex = useCallback(
+    (index: number) => {
+      const result = search.results[index];
+      if (result) {
+        selectResult(result);
+      }
+    },
+    [search.results, selectResult]
+  );
 
   // Navigation
   const moveUp = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      activeIndex: prev.activeIndex > 0 ? prev.activeIndex - 1 : search.results.length - 1,
+      activeIndex:
+        prev.activeIndex > 0 ? prev.activeIndex - 1 : search.results.length - 1,
     }));
   }, [search.results.length]);
 
   const moveDown = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      activeIndex: prev.activeIndex < search.results.length - 1 ? prev.activeIndex + 1 : 0,
+      activeIndex:
+        prev.activeIndex < search.results.length - 1 ? prev.activeIndex + 1 : 0,
     }));
   }, [search.results.length]);
 
@@ -170,7 +194,7 @@ export const useAutocomplete = (
 
   // Close dropdown
   const close = useCallback(() => {
-    setState(prev => ({ ...prev, isOpen: false, activeIndex: -1 }));
+    setState((prev) => ({ ...prev, isOpen: false, activeIndex: -1 }));
   }, []);
 
   // Clear everything
@@ -187,26 +211,26 @@ export const useAutocomplete = (
   return {
     // State
     ...state,
-    
+
     // Input handling
     setValue,
     onFocus,
     onBlur,
-    
+
     // Results from search hook
     results: search.results,
     loading: search.loading,
     error: search.error,
-    
+
     // Selection
     selectResult,
     selectByIndex,
-    
+
     // Navigation
     moveUp,
     moveDown,
     selectActive,
-    
+
     // Utility
     close,
     clear,

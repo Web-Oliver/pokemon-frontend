@@ -249,10 +249,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                 : `fallback-${activeTab}-${index}`;
 
             return (
-              <div
-                key={uniqueKey}
-                className="mx-auto w-full max-w-sm"
-              >
+              <div key={uniqueKey} className="mx-auto w-full max-w-sm">
                 <CollectionItemCard
                   item={item}
                   itemType={itemType}

@@ -1,7 +1,7 @@
 /**
  * Product Search Section Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Focused replacement for CardProductInformationSection
  * Maintains ALL existing functionality with consolidated search
  */
@@ -18,7 +18,11 @@ import {
 import { AutocompleteField } from '../search/AutocompleteField';
 import { SearchResult, useSearch } from '../../hooks/useSearch';
 import { InformationFieldRenderer } from './fields';
-import { autoFillFromSelection, AutoFillConfig, mapSetNameForProducts } from '../../utils/searchHelpers';
+import {
+  autoFillFromSelection,
+  AutoFillConfig,
+  mapSetNameForProducts,
+} from '../../utils/searchHelpers';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
 interface ProductSearchSectionProps {
@@ -71,22 +75,30 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
   const productName = watch('productName') || '';
   const cardName = watch('cardName') || '';
   const category = watch('category') || '';
-  
+
   // Centralized state management like the old autocomplete system
-  const [activeField, setActiveField] = useState<'setName' | 'productName' | null>(null);
+  const [activeField, setActiveField] = useState<
+    'setName' | 'productName' | null
+  >(null);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Use centralized search hook
   const search = useSearch();
-  
+
   // Debounce search queries
   const debouncedSetName = useDebouncedValue(setName, 300);
-  const debouncedProductName = useDebouncedValue(formType === 'product' ? productName : cardName, 300);
+  const debouncedProductName = useDebouncedValue(
+    formType === 'product' ? productName : cardName,
+    300
+  );
 
   // Sync search results to local suggestions state
   useEffect(() => {
-    console.log('[SEARCH SYNC] Updating suggestions from search.results:', search.results);
+    console.log(
+      '[SEARCH SYNC] Updating suggestions from search.results:',
+      search.results
+    );
     setSuggestions(search.results || []);
     setIsLoading(search.loading);
   }, [search.results, search.loading]);
@@ -98,7 +110,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
       debouncedSetName,
       debouncedProductName,
       setName,
-      formType
+      formType,
     });
 
     if (!activeField) {
@@ -107,11 +119,16 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
       return;
     }
 
-    const currentValue = activeField === 'setName' ? debouncedSetName : debouncedProductName;
-    
+    const currentValue =
+      activeField === 'setName' ? debouncedSetName : debouncedProductName;
+
     console.log('[CENTRALIZED SEARCH] Current value for search:', currentValue);
-    
-    if (!currentValue || typeof currentValue !== 'string' || currentValue.trim().length < 2) {
+
+    if (
+      !currentValue ||
+      typeof currentValue !== 'string' ||
+      currentValue.trim().length < 2
+    ) {
       console.log('[CENTRALIZED SEARCH] Invalid query, clearing suggestions');
       setSuggestions([]);
       return;
@@ -121,20 +138,38 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     // Don't set loading here - it will be synced from search hook
     switch (activeField) {
       case 'setName':
-        console.log('[CENTRALIZED SEARCH] Calling search.searchSets:', currentValue);
+        console.log(
+          '[CENTRALIZED SEARCH] Calling search.searchSets:',
+          currentValue
+        );
         search.searchSets(currentValue);
         break;
       case 'productName':
         if (formType === 'product') {
-          console.log('[CENTRALIZED SEARCH] Calling search.searchProducts:', currentValue, setName?.trim());
+          console.log(
+            '[CENTRALIZED SEARCH] Calling search.searchProducts:',
+            currentValue,
+            setName?.trim()
+          );
           search.searchProducts(currentValue, setName?.trim() || undefined);
         } else {
-          console.log('[CENTRALIZED SEARCH] Calling search.searchCards:', currentValue, setName?.trim());
+          console.log(
+            '[CENTRALIZED SEARCH] Calling search.searchCards:',
+            currentValue,
+            setName?.trim()
+          );
           search.searchCards(currentValue, setName?.trim() || undefined);
         }
         break;
     }
-  }, [activeField, debouncedSetName, debouncedProductName, setName, formType, search]);
+  }, [
+    activeField,
+    debouncedSetName,
+    debouncedProductName,
+    setName,
+    formType,
+    search,
+  ]);
 
   // Create auto-fill configuration
   const autoFillConfig: AutoFillConfig = {
@@ -146,7 +181,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
   // Handle set selection using centralized system
   const handleSetSelection = (result: SearchResult) => {
     console.log('[CENTRALIZED] Set selected:', result);
-    
+
     // Handle clearing - if result is empty, clear the form field
     if (!result._id || !result.displayName) {
       setValue('setName', '');
@@ -157,7 +192,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
       setActiveField(null);
       return;
     }
-    
+
     autoFillFromSelection(autoFillConfig, result, (data) => {
       // Call parent callback (maintains existing behavior)
       onSelectionChange({
@@ -167,7 +202,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
         ...result.data,
       });
     });
-    
+
     // Clear suggestions after selection
     setSuggestions([]);
     setActiveField(null);
@@ -190,7 +225,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     }
 
     autoFillFromSelection(autoFillConfig, result, onSelectionChange);
-    
+
     // Clear suggestions after selection
     setSuggestions([]);
     setActiveField(null);
@@ -212,21 +247,25 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
             Set Name
             <span className="text-red-500 ml-1">*</span>
           </label>
-          
+
           <div className="relative">
             <input
               type="text"
               value={setName}
               onChange={(e) => setValue('setName', e.target.value)}
               onFocus={() => {
-                console.log('[CENTRALIZED SEARCH] Set Name field focused, setting activeField to setName');
+                console.log(
+                  '[CENTRALIZED SEARCH] Set Name field focused, setting activeField to setName'
+                );
                 setActiveField('setName');
               }}
               onBlur={() => {
                 console.log('[CENTRALIZED SEARCH] Set Name field blurred');
                 setTimeout(() => {
                   if (activeField === 'setName') {
-                    console.log('[CENTRALIZED SEARCH] Clearing activeField from setName');
+                    console.log(
+                      '[CENTRALIZED SEARCH] Clearing activeField from setName'
+                    );
                     setActiveField(null);
                   }
                 }, 150);
@@ -235,9 +274,11 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
               className="block w-full pl-3 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           {errors.setName && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.setName.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {errors.setName.message}
+            </p>
           )}
 
           {/* Set Name Dropdown */}
@@ -252,24 +293,31 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
                   }}
                   className="cursor-pointer select-none relative py-4 pl-4 pr-4 hover:bg-zinc-800/80 transition-colors duration-150 border-b border-zinc-700/30 last:border-b-0"
                 >
-                  <div className="font-medium text-zinc-100">{result.displayName}</div>
+                  <div className="font-medium text-zinc-100">
+                    {result.displayName}
+                  </div>
                   {result.data?.year && (
-                    <div className="text-sm text-zinc-400">Year: {result.data.year}</div>
+                    <div className="text-sm text-zinc-400">
+                      Year: {result.data.year}
+                    </div>
                   )}
                 </div>
               ))}
             </div>
           )}
-          
+
           {/* Set Name No Results */}
-          {activeField === 'setName' && setName.trim().length >= 2 && suggestions.length === 0 && !isLoading && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
-              <div className="text-center text-zinc-400 px-4">
-                <div className="font-medium mb-1">No results found</div>
-                <div className="text-sm">Try adjusting your search terms</div>
+          {activeField === 'setName' &&
+            setName.trim().length >= 2 &&
+            suggestions.length === 0 &&
+            !isLoading && (
+              <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
+                <div className="text-center text-zinc-400 px-4">
+                  <div className="font-medium mb-1">No results found</div>
+                  <div className="text-sm">Try adjusting your search terms</div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
 
         {/* Product/Card Name Autocomplete - Centralized */}
@@ -278,24 +326,29 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
             {formType === 'product' ? 'Product Name' : 'Card Name'}
             <span className="text-red-500 ml-1">*</span>
           </label>
-          
+
           <div className="relative">
             <input
               type="text"
               value={formType === 'product' ? productName : cardName}
               onChange={(e) => {
-                const fieldName = formType === 'product' ? 'productName' : 'cardName';
+                const fieldName =
+                  formType === 'product' ? 'productName' : 'cardName';
                 setValue(fieldName, e.target.value);
               }}
               onFocus={() => {
-                console.log('[CENTRALIZED SEARCH] Product Name field focused, setting activeField to productName');
+                console.log(
+                  '[CENTRALIZED SEARCH] Product Name field focused, setting activeField to productName'
+                );
                 setActiveField('productName');
               }}
               onBlur={() => {
                 console.log('[CENTRALIZED SEARCH] Product Name field blurred');
                 setTimeout(() => {
                   if (activeField === 'productName') {
-                    console.log('[CENTRALIZED SEARCH] Clearing activeField from productName');
+                    console.log(
+                      '[CENTRALIZED SEARCH] Clearing activeField from productName'
+                    );
                     setActiveField(null);
                   }
                 }, 150);
@@ -304,13 +357,16 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
               className="block w-full pl-3 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           {errors[formType === 'product' ? 'productName' : 'cardName'] && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-              {errors[formType === 'product' ? 'productName' : 'cardName']?.message}
+              {
+                errors[formType === 'product' ? 'productName' : 'cardName']
+                  ?.message
+              }
             </p>
           )}
-          
+
           {/* Product Name Dropdown */}
           {activeField === 'productName' && suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-96 overflow-auto rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl">
@@ -323,27 +379,37 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
                   }}
                   className="cursor-pointer select-none relative py-4 pl-4 pr-4 hover:bg-zinc-800/80 transition-colors duration-150 border-b border-zinc-700/30 last:border-b-0"
                 >
-                  <div className="font-medium text-zinc-100">{result.displayName}</div>
+                  <div className="font-medium text-zinc-100">
+                    {result.displayName}
+                  </div>
                   {result.data?.setName && result.type !== 'set' && (
-                    <div className="text-sm text-zinc-400">Set: {result.data.setName}</div>
+                    <div className="text-sm text-zinc-400">
+                      Set: {result.data.setName}
+                    </div>
                   )}
                   {result.data?.category && (
-                    <div className="text-sm text-zinc-400">Category: {result.data.category}</div>
+                    <div className="text-sm text-zinc-400">
+                      Category: {result.data.category}
+                    </div>
                   )}
                 </div>
               ))}
             </div>
           )}
-          
+
           {/* Product Name No Results */}
-          {activeField === 'productName' && (formType === 'product' ? productName : cardName).trim().length >= 2 && suggestions.length === 0 && !isLoading && (
-            <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
-              <div className="text-center text-zinc-400 px-4">
-                <div className="font-medium mb-1">No results found</div>
-                <div className="text-sm">Try adjusting your search terms</div>
+          {activeField === 'productName' &&
+            (formType === 'product' ? productName : cardName).trim().length >=
+              2 &&
+            suggestions.length === 0 &&
+            !isLoading && (
+              <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 shadow-2xl py-4">
+                <div className="text-center text-zinc-400 px-4">
+                  <div className="font-medium mb-1">No results found</div>
+                  <div className="text-sm">Try adjusting your search terms</div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 

@@ -15,8 +15,14 @@ export class SearchApiService implements ISearchApiService {
   async getProductCategories(): Promise<
     Array<{ value: string; label: string }>
   > {
-    const categories = ['Booster Box', 'Elite Trainer Box', 'Theme Deck', 'Starter Deck', 'Collection Box'];
-    return categories.map(cat => ({ value: cat, label: cat }));
+    const categories = [
+      'Booster Box',
+      'Elite Trainer Box',
+      'Theme Deck',
+      'Starter Deck',
+      'Collection Box',
+    ];
+    return categories.map((cat) => ({ value: cat, label: cat }));
   }
 }
 

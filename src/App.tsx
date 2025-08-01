@@ -133,7 +133,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <MainLayout>
-        <Suspense 
+        <Suspense
           fallback={
             <div className="flex items-center justify-center min-h-[60vh]">
               <LoadingSpinner size="lg" />

@@ -1,7 +1,7 @@
 /**
  * Autocomplete Field Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Focused autocomplete component using consolidated search hook
  */
 
@@ -51,10 +51,11 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
     }
   }, [value]); // Only depend on external value prop
 
-
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!autocomplete.isOpen) return;
+    if (!autocomplete.isOpen) {
+      return;
+    }
 
     switch (e.key) {
       case 'ArrowDown':
@@ -131,7 +132,12 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
               onSelect({
                 _id: '',
                 displayName: '',
-                type: searchType === 'sets' ? 'set' : searchType === 'products' ? 'product' : 'card',
+                type:
+                  searchType === 'sets'
+                    ? 'set'
+                    : searchType === 'products'
+                      ? 'product'
+                      : 'card',
                 data: {},
               } as SearchResult);
             }}
@@ -163,13 +169,17 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
 
       {/* Search Error */}
       {autocomplete.error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{autocomplete.error}</p>
+        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+          {autocomplete.error}
+        </p>
       )}
 
       {/* Debug Info */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-1 text-xs text-gray-500">
-          Debug: isOpen={String(autocomplete.isOpen)}, results={autocomplete.results.length}, loading={String(autocomplete.loading)}, error={autocomplete.error || 'none'}
+          Debug: isOpen={String(autocomplete.isOpen)}, results=
+          {autocomplete.results.length}, loading={String(autocomplete.loading)},
+          error={autocomplete.error || 'none'}
         </div>
       )}
 
@@ -210,12 +220,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
               </div>
 
               {/* Type Badge */}
-              <span className={`
+              <span
+                className={`
                 absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium
                 ${result.type === 'set' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : ''}
                 ${result.type === 'product' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}
                 ${result.type === 'card' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : ''}
-              `}>
+              `}
+              >
                 {result.type}
               </span>
             </div>
@@ -224,14 +236,17 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
       )}
 
       {/* No Results */}
-      {autocomplete.isOpen && autocomplete.value.trim().length >= 2 && autocomplete.results.length === 0 && !autocomplete.loading && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-white py-4 text-base shadow-2xl ring-1 ring-black ring-opacity-5 dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-          <div className="cursor-default select-none relative py-4 pl-4 pr-4 text-gray-500 dark:text-gray-400 text-center">
-            <div className="text-base font-medium mb-1">No results found</div>
-            <div className="text-sm">Try adjusting your search terms</div>
+      {autocomplete.isOpen &&
+        autocomplete.value.trim().length >= 2 &&
+        autocomplete.results.length === 0 &&
+        !autocomplete.loading && (
+          <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg bg-white py-4 text-base shadow-2xl ring-1 ring-black ring-opacity-5 dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
+            <div className="cursor-default select-none relative py-4 pl-4 pr-4 text-gray-500 dark:text-gray-400 text-center">
+              <div className="text-base font-medium mb-1">No results found</div>
+              <div className="text-sm">Try adjusting your search terms</div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

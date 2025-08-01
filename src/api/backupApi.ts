@@ -157,7 +157,7 @@ export const initializeBackupService = async (): Promise<{
   success: boolean;
   message: string;
 }> => {
-  return unifiedApiClient.post<{success: boolean; message: string}>(
+  return unifiedApiClient.post<{ success: boolean; message: string }>(
     '/backup/initialize'
   );
 };
@@ -171,7 +171,7 @@ export const startScheduledBackups = async (): Promise<{
   success: boolean;
   message: string;
 }> => {
-  return unifiedApiClient.post<{success: boolean; message: string}>(
+  return unifiedApiClient.post<{ success: boolean; message: string }>(
     '/backup/start-scheduled'
   );
 };
@@ -185,7 +185,7 @@ export const stopScheduledBackups = async (): Promise<{
   success: boolean;
   message: string;
 }> => {
-  return unifiedApiClient.post<{success: boolean; message: string}>(
+  return unifiedApiClient.post<{ success: boolean; message: string }>(
     '/backup/stop-scheduled'
   );
 };
@@ -243,7 +243,7 @@ export const getBackupHistory = async (
   params: BackupHistoryParams = {}
 ): Promise<BackupHistoryResponse> => {
   const queryParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       queryParams.append(key, value.toString());
@@ -323,20 +323,20 @@ export default {
   getBackupHealth,
   getBackupStatus,
   getBackupConfig,
-  
+
   // Service Management
   initializeBackupService,
   startScheduledBackups,
   stopScheduledBackups,
-  
+
   // Backup Operations
   triggerManualBackup,
   testBackupSystem,
-  
+
   // History and Details
   getBackupHistory,
   getBackupById,
-  
+
   // Convenience Functions
   isBackupSystemHealthy,
   getLatestBackup,

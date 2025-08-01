@@ -19,7 +19,11 @@ import {
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
-import { searchSets as searchSetsApi, type SetSearchParams, type SearchResponse } from './searchApi';
+import {
+  searchSets as searchSetsApi,
+  type SetSearchParams,
+  type SearchResponse,
+} from './searchApi';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -38,7 +42,6 @@ export interface PaginatedSetsResponse {
   hasNextPage: boolean;
   hasPrevPage: boolean;
 }
-
 
 /**
  * Set creation payload interface

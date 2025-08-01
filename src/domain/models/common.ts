@@ -26,7 +26,7 @@ export interface ISaleDetails {
   trackingUrl?: string;
   notes?: string;
   saleDate?: string; // ISO date string (backend uses Date)
-  
+
   // Legacy fields maintained for backwards compatibility
   paymentMethod?: 'CASH' | 'Mobilepay' | 'BankTransfer';
   actualSoldPrice?: number;

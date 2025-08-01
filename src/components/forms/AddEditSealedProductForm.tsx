@@ -24,7 +24,10 @@ import FormActionButtons from '../common/FormActionButtons';
 import { ProductSearchSection } from './ProductSearchSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
-import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
+import {
+  transformRequestData,
+  convertObjectIdToString,
+} from '../../utils/responseTransformer';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -175,7 +178,13 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     const loadOptions = async () => {
       setLoadingOptions(true);
       try {
-        const categories = ['Booster Box', 'Elite Trainer Box', 'Theme Deck', 'Starter Deck', 'Collection Box'];
+        const categories = [
+          'Booster Box',
+          'Elite Trainer Box',
+          'Theme Deck',
+          'Starter Deck',
+          'Collection Box',
+        ];
         setProductCategories(categories);
       } catch (error) {
         console.error('Failed to load form options:', error);
@@ -219,18 +228,31 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       }
 
       // Upload images using specialized hook
-      console.log('[SEALED PRODUCT FORM] About to upload images, selected images count:', imageUpload.selectedImages.length);
-      console.log('[SEALED PRODUCT FORM] Selected images:', imageUpload.selectedImages);
-      
+      console.log(
+        '[SEALED PRODUCT FORM] About to upload images, selected images count:',
+        imageUpload.selectedImages.length
+      );
+      console.log(
+        '[SEALED PRODUCT FORM] Selected images:',
+        imageUpload.selectedImages
+      );
+
       let imageUrls = [];
       if (imageUpload.selectedImages.length > 0) {
-        console.log('[SEALED PRODUCT FORM] Calling imageUpload.uploadImages()...');
+        console.log(
+          '[SEALED PRODUCT FORM] Calling imageUpload.uploadImages()...'
+        );
         imageUrls = await imageUpload.uploadImages();
       } else {
-        console.log('[SEALED PRODUCT FORM] No images selected, skipping upload API call');
+        console.log(
+          '[SEALED PRODUCT FORM] No images selected, skipping upload API call'
+        );
       }
-      
-      console.log('[SEALED PRODUCT FORM] Image upload completed, received URLs:', imageUrls);
+
+      console.log(
+        '[SEALED PRODUCT FORM] Image upload completed, received URLs:',
+        imageUrls
+      );
 
       // Combine existing images with new uploaded images
       const allImageUrls = [

@@ -1,7 +1,7 @@
 /**
  * Search Section Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Focused search section for forms using consolidated search
  */
 
@@ -61,7 +61,11 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         <AutocompleteField
           searchType={formType}
           label={formType === 'cards' ? 'Card Name' : 'Product Name'}
-          placeholder={formType === 'cards' ? 'Search for a card...' : 'Search for a product...'}
+          placeholder={
+            formType === 'cards'
+              ? 'Search for a card...'
+              : 'Search for a product...'
+          }
           value={selectedItem}
           onSelect={onItemSelection || (() => {})}
           filters={{ setName: selectedSet || undefined }}

@@ -163,7 +163,7 @@ export const removeCard = cardOperations.remove;
 
 /**
  * Search cards with parameters - consolidated implementation
- * @param searchParams - Card search parameters  
+ * @param searchParams - Card search parameters
  * @returns Promise<ICard[]> - Search results
  */
 export const searchCards = async (searchParams: any): Promise<ICard[]> => {

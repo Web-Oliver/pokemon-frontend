@@ -531,7 +531,7 @@ const DbaExport: React.FC = () => {
         responseType: typeof response,
         hasItemCount: 'itemCount' in (response || {}),
         actualValue: response?.itemCount,
-        finalItemCount: itemCount
+        finalItemCount: itemCount,
       });
       showSuccessToast(
         `DBA export generated successfully! ${itemCount} items exported and added to DBA tracking.`

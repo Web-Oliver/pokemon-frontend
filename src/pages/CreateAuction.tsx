@@ -697,7 +697,7 @@ const CreateAuction: React.FC = () => {
       });
 
       const createdAuction = await createAuction(auctionData);
-      
+
       // Navigate to auction detail page - handle both id and _id
       const auctionId = createdAuction.id || createdAuction._id;
       if (auctionId) {

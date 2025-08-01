@@ -4,7 +4,10 @@
  */
 
 export const log = (...args: unknown[]): void => {
-  if (import.meta.env.MODE !== 'production' && import.meta.env.VITE_DEBUG_APP !== 'false') {
+  if (
+    import.meta.env.MODE !== 'production' &&
+    import.meta.env.VITE_DEBUG_APP !== 'false'
+  ) {
     console.log('[APP]', ...args);
   }
 };

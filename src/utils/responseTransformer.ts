@@ -110,10 +110,7 @@ const validateApiResponse = (
   }
 
   // Check required fields - 'status' is optional since backend doesn't include it
-  if (
-    !('success' in responseData) ||
-    !('data' in responseData)
-  ) {
+  if (!('success' in responseData) || !('data' in responseData)) {
     return false;
   }
 
@@ -121,7 +118,13 @@ const validateApiResponse = (
   if ('meta' in responseData && typeof responseData.meta === 'object') {
     const meta = responseData.meta;
     // At least one of these should be present if meta exists
-    return 'timestamp' in meta || 'version' in meta || 'duration' in meta || 'query' in meta || 'totalResults' in meta;
+    return (
+      'timestamp' in meta ||
+      'version' in meta ||
+      'duration' in meta ||
+      'query' in meta ||
+      'totalResults' in meta
+    );
   }
 
   // Response is valid even without meta object
@@ -179,7 +182,10 @@ export const convertObjectIdToString = (objectId: any): string => {
 
   // If it's not an object, we can't convert it - log warning and return as string
   if (typeof objectId !== 'object') {
-    console.warn('[RESPONSE TRANSFORMER] Unable to convert non-object to ObjectId string:', objectId);
+    console.warn(
+      '[RESPONSE TRANSFORMER] Unable to convert non-object to ObjectId string:',
+      objectId
+    );
     return String(objectId);
   }
 
@@ -203,12 +209,21 @@ export const convertObjectIdToString = (objectId: any): string => {
   }
 
   // Check for MongoDB ObjectId with buffer property (Node.js ObjectId format)
-  if (typeof objectId === 'object' && objectId.buffer && typeof objectId.buffer === 'object') {
+  if (
+    typeof objectId === 'object' &&
+    objectId.buffer &&
+    typeof objectId.buffer === 'object'
+  ) {
     const buffer = objectId.buffer;
     const bufferKeys = Object.keys(buffer);
-    
+
     // Check if buffer has numeric keys 0-11 (12 bytes total)
-    if (bufferKeys.length === 12 && bufferKeys.every(key => !isNaN(Number(key)) && Number(key) >= 0 && Number(key) <= 11)) {
+    if (
+      bufferKeys.length === 12 &&
+      bufferKeys.every(
+        (key) => !isNaN(Number(key)) && Number(key) >= 0 && Number(key) <= 11
+      )
+    ) {
       const bytes = [];
       for (let i = 0; i < 12; i++) {
         if (buffer[i] !== undefined) {
@@ -216,15 +231,22 @@ export const convertObjectIdToString = (objectId: any): string => {
         }
       }
       if (bytes.length === 12) {
-        const hexString = bytes.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        const hexString = bytes
+          .map((byte) => byte.toString(16).padStart(2, '0'))
+          .join('');
         return hexString;
       }
     }
   }
 
   // Check for MongoDB ObjectId with numeric keys (direct Buffer-like representation)
-  if (typeof objectId === 'object' && Object.keys(objectId).length === 12 && 
-      Object.keys(objectId).every(key => !isNaN(Number(key)) && Number(key) >= 0 && Number(key) <= 11)) {
+  if (
+    typeof objectId === 'object' &&
+    Object.keys(objectId).length === 12 &&
+    Object.keys(objectId).every(
+      (key) => !isNaN(Number(key)) && Number(key) >= 0 && Number(key) <= 11
+    )
+  ) {
     // Convert buffer-like object to hex string
     const bytes = [];
     for (let i = 0; i < 12; i++) {
@@ -233,7 +255,9 @@ export const convertObjectIdToString = (objectId: any): string => {
       }
     }
     if (bytes.length === 12) {
-      const hexString = bytes.map(byte => byte.toString(16).padStart(2, '0')).join('');
+      const hexString = bytes
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
       return hexString;
     }
   }
@@ -241,7 +265,11 @@ export const convertObjectIdToString = (objectId: any): string => {
   // Check if it has valueOf method (another ObjectId pattern)
   if (typeof objectId === 'object' && typeof objectId.valueOf === 'function') {
     const valueOf = objectId.valueOf();
-    if (typeof valueOf === 'string' && valueOf !== '[object Object]' && valueOf.length === 24) {
+    if (
+      typeof valueOf === 'string' &&
+      valueOf !== '[object Object]' &&
+      valueOf.length === 24
+    ) {
       return valueOf;
     }
   }
@@ -250,15 +278,21 @@ export const convertObjectIdToString = (objectId: any): string => {
   if (typeof objectId === 'object' && typeof objectId.toString === 'function') {
     const stringRep = objectId.toString();
     // Make sure it's not the generic [object Object] string and looks like a valid ObjectId
-    if (stringRep !== '[object Object]' && stringRep.length === 24 && 
-        /^[a-f\d]{24}$/i.test(stringRep)) {
+    if (
+      stringRep !== '[object Object]' &&
+      stringRep.length === 24 &&
+      /^[a-f\d]{24}$/i.test(stringRep)
+    ) {
       return stringRep;
     }
   }
 
   // If we can't convert it, log error but return null to avoid passing invalid data
-  console.error('[RESPONSE TRANSFORMER] Unable to convert ObjectId to string:', objectId);
-  
+  console.error(
+    '[RESPONSE TRANSFORMER] Unable to convert ObjectId to string:',
+    objectId
+  );
+
   // Return null instead of the original object to avoid backend errors
   return null;
 };
@@ -269,10 +303,10 @@ export const convertObjectIdToString = (objectId: any): string => {
  */
 const OBJECT_ID_FIELDS = [
   '_id',
-  'id', 
+  'id',
   'productId',
   'setId',
-  'cardId', 
+  'cardId',
   'itemId',
 ] as const;
 
@@ -284,12 +318,12 @@ const isObjectIdField = (fieldName: string): boolean => {
   if (OBJECT_ID_FIELDS.includes(fieldName as any)) {
     return true;
   }
-  
+
   // Pattern match for fields ending with 'Id' (likely ObjectId references)
   if (fieldName.endsWith('Id') && fieldName.length > 2) {
     return true;
   }
-  
+
   return false;
 };
 
@@ -322,7 +356,12 @@ export const mapMongoIds = <T>(data: T): T => {
 
     // Then recursively process non-ObjectId fields
     for (const [key, value] of Object.entries(result)) {
-      if (!isObjectIdField(key) && !isMetadataObject(key, value) && typeof value === 'object' && value !== null) {
+      if (
+        !isObjectIdField(key) &&
+        !isMetadataObject(key, value) &&
+        typeof value === 'object' &&
+        value !== null
+      ) {
         result[key] = mapMongoIds(value);
       }
     }
@@ -378,7 +417,10 @@ export const transformApiResponse = <T>(responseData: any): T => {
 
   // Validate response structure
   if (!validateApiResponse(responseData)) {
-    console.error('[TRANSFORM API RESPONSE] Validation failed for:', responseData);
+    console.error(
+      '[TRANSFORM API RESPONSE] Validation failed for:',
+      responseData
+    );
     const error = new Error(
       'Invalid API response format - expected backend standardized format'
     );
@@ -400,10 +442,10 @@ export const transformApiResponse = <T>(responseData: any): T => {
   // Extract and transform data with ID mapping
   const extractedData = responseData.data;
   console.log('[TRANSFORM API RESPONSE] Extracted data:', extractedData);
-  
+
   const transformedData = mapMongoIds(extractedData) as T;
   console.log('[TRANSFORM API RESPONSE] Final result:', transformedData);
-  
+
   return transformedData;
 };
 
@@ -454,7 +496,11 @@ export const transformRequestData = <T>(requestData: T): T => {
           result[key] = convertObjectIdToString(value);
         }
         // If it's not a recognizable ObjectId format, leave it as is
-      } else if (typeof value === 'object' && value !== null && !isMetadataObject(key, value)) {
+      } else if (
+        typeof value === 'object' &&
+        value !== null &&
+        !isMetadataObject(key, value)
+      ) {
         // Recursively process nested objects
         result[key] = transformRequestData(value);
       }

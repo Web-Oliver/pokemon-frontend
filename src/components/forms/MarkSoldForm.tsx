@@ -211,15 +211,19 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                       type="date"
                       error={errors.dateSold?.message}
                       value={(() => {
-                        if (!field.value) return '';
-                        
+                        if (!field.value) {
+                          return '';
+                        }
+
                         if (typeof field.value === 'string') {
                           return field.value.split('T')[0];
                         }
-                        
+
                         try {
                           const date = new Date(field.value);
-                          if (isNaN(date.getTime())) return '';
+                          if (isNaN(date.getTime())) {
+                            return '';
+                          }
                           return date.toISOString().split('T')[0];
                         } catch {
                           return '';

@@ -106,13 +106,18 @@ export const searchCards = async (
   const queryParams = buildQueryParams(params);
 
   // Use direct fetch to get full response like searchProducts
-  const response = await fetch(`http://localhost:3000/api/search/cards?${queryParams.toString()}`);
+  const response = await fetch(
+    `http://localhost:3000/api/search/cards?${queryParams.toString()}`
+  );
   const fullResponse = await response.json();
 
   console.log('[CARDS SEARCH] Full API response:', fullResponse);
   console.log('[CARDS SEARCH] Response.data:', fullResponse.data);
   console.log('[CARDS SEARCH] Response.meta:', fullResponse.meta);
-  console.log('[CARDS SEARCH] Response.meta?.totalResults:', fullResponse.meta?.totalResults);
+  console.log(
+    '[CARDS SEARCH] Response.meta?.totalResults:',
+    fullResponse.meta?.totalResults
+  );
 
   const result = {
     success: fullResponse.success || true,
@@ -287,13 +292,18 @@ export const searchSets = async (
   const queryParams = buildQueryParams(params);
 
   // Use direct fetch to get full response like searchProducts
-  const response = await fetch(`http://localhost:3000/api/search/sets?${queryParams.toString()}`);
+  const response = await fetch(
+    `http://localhost:3000/api/search/sets?${queryParams.toString()}`
+  );
   const fullResponse = await response.json();
 
   console.log('[SETS SEARCH] Full API response:', fullResponse);
   console.log('[SETS SEARCH] Response.data:', fullResponse.data);
   console.log('[SETS SEARCH] Response.meta:', fullResponse.meta);
-  console.log('[SETS SEARCH] Response.meta?.totalResults:', fullResponse.meta?.totalResults);
+  console.log(
+    '[SETS SEARCH] Response.meta?.totalResults:',
+    fullResponse.meta?.totalResults
+  );
 
   const result = {
     success: fullResponse.success || true,
@@ -340,9 +350,7 @@ export const getSetSuggestions = async (
  * Get best match set using standard search with limit=1
  * Preserves functionality from setsApi.ts - preserves all functionality
  */
-export const getBestMatchSet = async (
-  query: string
-): Promise<ISet | null> => {
+export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
   if (!query.trim()) {
     return null;
   }
@@ -469,13 +477,18 @@ export const searchProducts = async (
 
   // unifiedApiClient.get() returns the transformed data array directly via transformApiResponse()
   // We need the full response object to get meta information, so use axios directly
-  const response = await fetch(`http://localhost:3000/api/search/products?${queryParams.toString()}`);
+  const response = await fetch(
+    `http://localhost:3000/api/search/products?${queryParams.toString()}`
+  );
   const fullResponse = await response.json();
 
   console.log('[PRODUCTS SEARCH] Full API response:', fullResponse);
   console.log('[PRODUCTS SEARCH] Response.data:', fullResponse.data);
   console.log('[PRODUCTS SEARCH] Response.meta:', fullResponse.meta);
-  console.log('[PRODUCTS SEARCH] Response.meta?.totalResults:', fullResponse.meta?.totalResults);
+  console.log(
+    '[PRODUCTS SEARCH] Response.meta?.totalResults:',
+    fullResponse.meta?.totalResults
+  );
 
   const result = {
     success: fullResponse.success || true,
@@ -486,7 +499,10 @@ export const searchProducts = async (
 
   console.log('[PRODUCTS SEARCH] Final result:', result);
   console.log('[PRODUCTS SEARCH] Final result.count:', result.count);
-  console.log('[PRODUCTS SEARCH] Final result.data.length:', result.data.length);
+  console.log(
+    '[PRODUCTS SEARCH] Final result.data.length:',
+    result.data.length
+  );
 
   return result;
 };

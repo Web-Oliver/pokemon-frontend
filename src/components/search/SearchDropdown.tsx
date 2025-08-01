@@ -13,7 +13,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
-import { getSearchIconConfig, getDisplayName as getDisplayNameHelper, getResultMetadata } from '../../utils/searchHelpers';
+import {
+  getSearchIconConfig,
+  getDisplayName as getDisplayNameHelper,
+  getResultMetadata,
+} from '../../utils/searchHelpers';
 
 interface SearchSuggestion {
   _id?: string;
@@ -258,7 +262,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({
       _id: suggestion._id || suggestion.id || '',
       displayName: '',
       data: suggestion,
-      type: activeField === 'set' ? 'set' : activeField === 'category' ? 'category' : 'card'
+      type:
+        activeField === 'set'
+          ? 'set'
+          : activeField === 'category'
+            ? 'category'
+            : 'card',
     } as any);
   };
 

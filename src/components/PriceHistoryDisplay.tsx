@@ -87,14 +87,14 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
     if (!dateString || dateString === 'null' || dateString === 'undefined') {
       return 'Date not available';
     }
-    
+
     try {
       const date = new Date(dateString);
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Date not available';
       }
-      
+
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',

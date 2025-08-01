@@ -1,7 +1,7 @@
 /**
  * Common Utility Functions
  * Centralized location for shared utility functions to eliminate duplication
- * 
+ *
  * Following CLAUDE.md DRY principles:
  * - Single source of truth for common operations
  * - Reusable functions across the application
@@ -68,7 +68,7 @@ export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   try {
     return JSON.parse(JSON.stringify(obj));
   } catch (error) {
@@ -84,19 +84,19 @@ export const isEmpty = (value: any): boolean => {
   if (value === null || value === undefined) {
     return true;
   }
-  
+
   if (typeof value === 'string') {
     return value.trim() === '';
   }
-  
+
   if (Array.isArray(value)) {
     return value.length === 0;
   }
-  
+
   if (typeof value === 'object') {
     return Object.keys(value).length === 0;
   }
-  
+
   return false;
 };
 
@@ -109,12 +109,12 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeoutId: NodeJS.Timeout | null = null;
-  
+
   return (...args: Parameters<T>) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    
+
     timeoutId = setTimeout(() => {
       func.apply(null, args);
     }, wait);
@@ -130,7 +130,7 @@ export const throttle = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle = false;
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func.apply(null, args);
@@ -189,10 +189,7 @@ export const toCamelCase = (str: string): string => {
 /**
  * Safe JSON parse with fallback
  */
-export const safeJsonParse = <T>(
-  jsonString: string,
-  fallback: T
-): T => {
+export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
   try {
     return JSON.parse(jsonString) as T;
   } catch (error) {
@@ -231,12 +228,12 @@ export const retry = async <T>(
       if (attempt === maxAttempts) {
         throw error;
       }
-      
+
       const delay = baseDelay * Math.pow(2, attempt - 1);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
-  
+
   throw new Error('Retry function should not reach this point');
 };
 
@@ -244,15 +241,17 @@ export const retry = async <T>(
  * Format bytes to human readable string
  */
 export const formatBytes = (bytes: number, decimals: number = 2): string => {
-  if (bytes === 0) return '0 Bytes';
-  
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
+
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  
+
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
 /**
@@ -270,12 +269,9 @@ export const createArray = <T>(
 /**
  * Remove duplicates from array based on key function
  */
-export const uniqueBy = <T>(
-  array: T[],
-  keyFn: (item: T) => any
-): T[] => {
+export const uniqueBy = <T>(array: T[], keyFn: (item: T) => any): T[] => {
   const seen = new Set();
-  return array.filter(item => {
+  return array.filter((item) => {
     const key = keyFn(item);
     if (seen.has(key)) {
       return false;
@@ -292,14 +288,17 @@ export const groupBy = <T>(
   array: T[],
   keyFn: (item: T) => string | number
 ): Record<string | number, T[]> => {
-  return array.reduce((groups, item) => {
-    const key = keyFn(item);
-    if (!groups[key]) {
-      groups[key] = [];
-    }
-    groups[key].push(item);
-    return groups;
-  }, {} as Record<string | number, T[]>);
+  return array.reduce(
+    (groups, item) => {
+      const key = keyFn(item);
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(item);
+      return groups;
+    },
+    {} as Record<string | number, T[]>
+  );
 };
 
 /**
@@ -313,9 +312,13 @@ export const sortBy = <T>(
     for (const sortFn of sortFns) {
       const aVal = sortFn(a);
       const bVal = sortFn(b);
-      
-      if (aVal < bVal) return -1;
-      if (aVal > bVal) return 1;
+
+      if (aVal < bVal) {
+        return -1;
+      }
+      if (aVal > bVal) {
+        return 1;
+      }
     }
     return 0;
   });

@@ -157,7 +157,9 @@ export const removeCardMarketRefProduct = cardMarketRefProductOperations.remove;
  * @param searchParams - Product search parameters
  * @returns Promise<ICardMarketReferenceProduct[]> - Search results
  */
-export const searchCardMarketRefProducts = async (searchParams: any): Promise<ICardMarketReferenceProduct[]> => {
+export const searchCardMarketRefProducts = async (
+  searchParams: any
+): Promise<ICardMarketReferenceProduct[]> => {
   const result = await searchProducts(searchParams);
   return result.data;
 };

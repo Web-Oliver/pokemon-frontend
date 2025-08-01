@@ -1,9 +1,9 @@
 /**
  * Optimized Image View Component
- * 
+ *
  * Performance-optimized image display component that implements lazy loading
  * and reduces unnecessary re-renders. Inspired by Pikawiz's simple approach.
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles optimized image display
  * - DRY: Reusable across all image display needs
@@ -96,7 +96,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
           <div className="animate-pulse">{fallbackIcon}</div>
         </div>
       )}
-      
+
       {/* Only render image when in view */}
       {isInView && (
         <img
@@ -116,12 +116,15 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
 };
 
 // Memoize with shallow comparison
-export const OptimizedImageView = memo(OptimizedImageViewComponent, (prev, next) => {
-  return (
-    prev.src === next.src &&
-    prev.alt === next.alt &&
-    prev.className === next.className
-  );
-});
+export const OptimizedImageView = memo(
+  OptimizedImageViewComponent,
+  (prev, next) => {
+    return (
+      prev.src === next.src &&
+      prev.alt === next.alt &&
+      prev.className === next.className
+    );
+  }
+);
 
 export default OptimizedImageView;

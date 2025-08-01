@@ -463,7 +463,7 @@ export const archiveOldActivities = async (
   days: number
 ): Promise<ArchiveOldActivitiesResponse> => {
   const request: ArchiveOldActivitiesRequest = { days };
-  
+
   return unifiedApiClient.post<ArchiveOldActivitiesResponse>(
     '/activities/archive-old',
     request
@@ -483,23 +483,22 @@ export const getArchivePreview = async (
     // Calculate the cutoff date
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
-    
+
     // Get activities older than the cutoff date
     const activities = await getActivities({
       limit: 1000, // Get a large sample to estimate
       offset: 0,
     });
-    
+
     const oldActivities = activities.data.filter(
       (activity) => new Date(activity.createdAt) < cutoffDate
     );
-    
-    const oldestDate = oldActivities.length > 0
-      ? Math.min(
-          ...oldActivities.map((a) => new Date(a.createdAt).getTime())
-        )
-      : Date.now();
-    
+
+    const oldestDate =
+      oldActivities.length > 0
+        ? Math.min(...oldActivities.map((a) => new Date(a.createdAt).getTime()))
+        : Date.now();
+
     return {
       count: oldActivities.length,
       oldestDate: new Date(oldestDate).toISOString(),
@@ -526,7 +525,7 @@ export const archiveOldActivitiesWithConfirmation = async (
 ): Promise<ArchiveOldActivitiesResponse | null> => {
   // Get preview first
   const preview = await getArchivePreview(days);
-  
+
   if (preview.count === 0) {
     return {
       success: true,
@@ -539,14 +538,14 @@ export const archiveOldActivitiesWithConfirmation = async (
       },
     };
   }
-  
+
   // Ask for confirmation
   const confirmed = await confirm(preview);
-  
+
   if (!confirmed) {
     return null; // User cancelled
   }
-  
+
   // Proceed with archive
   return archiveOldActivities(days);
 };
@@ -573,7 +572,7 @@ export default {
   getActivitiesForEntity,
   markActivityAsRead,
   archiveActivity,
-  
+
   // Archive functionality
   archiveOldActivities,
   getArchivePreview,

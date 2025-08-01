@@ -25,7 +25,7 @@ export interface UseCollectionOperationsReturn {
   rawCards: IRawCard[];
   sealedProducts: ISealedProduct[];
   soldItems: (IPsaGradedCard | IRawCard | ISealedProduct)[];
-  
+
   // Loading states
   loading: boolean;
   error: string | null;
@@ -113,10 +113,10 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const collectionApi = getCollectionApiService();
 
   // React Query for PSA Cards
-  const { 
-    data: psaCards = [], 
+  const {
+    data: psaCards = [],
     isLoading: psaLoading,
-    error: psaError 
+    error: psaError,
   } = useQuery({
     queryKey: queryKeys.psaCards(),
     queryFn: () => collectionApi.getPsaGradedCards({ sold: false }),
@@ -124,10 +124,10 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   });
 
   // React Query for Raw Cards
-  const { 
-    data: rawCards = [], 
+  const {
+    data: rawCards = [],
     isLoading: rawLoading,
-    error: rawError 
+    error: rawError,
   } = useQuery({
     queryKey: queryKeys.rawCards(),
     queryFn: () => collectionApi.getRawCards({ sold: false }),
@@ -135,10 +135,10 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   });
 
   // React Query for Sealed Products
-  const { 
-    data: sealedProducts = [], 
+  const {
+    data: sealedProducts = [],
     isLoading: sealedLoading,
-    error: sealedError 
+    error: sealedError,
   } = useQuery({
     queryKey: queryKeys.sealedProducts(),
     queryFn: () => collectionApi.getSealedProducts({ sold: false }),
@@ -146,23 +146,27 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   });
 
   // React Query for Sold Items
-  const { 
-    data: soldItems = [], 
+  const {
+    data: soldItems = [],
     isLoading: soldLoading,
-    error: soldError 
+    error: soldError,
   } = useQuery({
     queryKey: queryKeys.soldItems(),
     queryFn: async () => {
-      const [soldPsaCards, soldRawCards, soldSealedProducts] = await Promise.all([
-        collectionApi.getPsaGradedCards({ sold: true }),
-        collectionApi.getRawCards({ sold: true }),
-        collectionApi.getSealedProducts({ sold: true }),
-      ]);
-      
+      const [soldPsaCards, soldRawCards, soldSealedProducts] =
+        await Promise.all([
+          collectionApi.getPsaGradedCards({ sold: true }),
+          collectionApi.getRawCards({ sold: true }),
+          collectionApi.getSealedProducts({ sold: true }),
+        ]);
+
       return [
         ...validateCollectionResponse(soldPsaCards, 'sold PSA cards'),
         ...validateCollectionResponse(soldRawCards, 'sold raw cards'),
-        ...validateCollectionResponse(soldSealedProducts, 'sold sealed products'),
+        ...validateCollectionResponse(
+          soldSealedProducts,
+          'sold sealed products'
+        ),
       ];
     },
   });
@@ -414,7 +418,13 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     rawOperations.clearError();
     sealedOperations.clearError();
     imageExport.clearError();
-  }, [queryClient, psaOperations, rawOperations, sealedOperations, imageExport]);
+  }, [
+    queryClient,
+    psaOperations,
+    rawOperations,
+    sealedOperations,
+    imageExport,
+  ]);
 
   return {
     // Collection data from React Query

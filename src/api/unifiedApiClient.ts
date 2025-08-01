@@ -17,7 +17,10 @@ import { API_BASE_URL } from '../utils/constants';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { optimizedApiRequest, BatchProcessor } from '../utils/apiOptimization';
-import { transformApiResponse, transformRequestData } from '../utils/responseTransformer';
+import {
+  transformApiResponse,
+  transformRequestData,
+} from '../utils/responseTransformer';
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -279,7 +282,11 @@ export class UnifiedApiClient {
       }
 
       // For DELETE operations, handle different response formats more gracefully
-      if (response.data === null || response.data === undefined || response.data === '') {
+      if (
+        response.data === null ||
+        response.data === undefined ||
+        response.data === ''
+      ) {
         // Empty response is valid for DELETE operations
         return undefined as T;
       }
@@ -291,7 +298,10 @@ export class UnifiedApiClient {
         // If standard transformation fails, check if it's a simple success response
         if (response.status >= 200 && response.status < 300) {
           // DELETE succeeded but response doesn't match new format
-          log(`${operation} completed with non-standard response format`, response.data);
+          log(
+            `${operation} completed with non-standard response format`,
+            response.data
+          );
           return response.data as T;
         }
         // Re-throw transformation error if it's not a simple success case
@@ -347,13 +357,17 @@ export class UnifiedApiClient {
 
     // Transform request data to convert ObjectId objects to strings
     // Skip transformation for FormData objects (used in file uploads)
-    const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+    const transformedData =
+      data && !(data instanceof FormData) ? transformRequestData(data) : data;
 
-    return this.makeRequest(() => this.client.post<T>(url, transformedData, axiosConfig), {
-      ...config,
-      operation: config.operation || `create ${url}`,
-      optimization: defaultOptimization,
-    });
+    return this.makeRequest(
+      () => this.client.post<T>(url, transformedData, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `create ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
   }
 
   /**
@@ -374,13 +388,17 @@ export class UnifiedApiClient {
 
     // Transform request data to convert ObjectId objects to strings
     // Skip transformation for FormData objects (used in file uploads)
-    const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+    const transformedData =
+      data && !(data instanceof FormData) ? transformRequestData(data) : data;
 
-    return this.makeRequest(() => this.client.put<T>(url, transformedData, axiosConfig), {
-      ...config,
-      operation: config.operation || `update ${url}`,
-      optimization: defaultOptimization,
-    });
+    return this.makeRequest(
+      () => this.client.put<T>(url, transformedData, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `update ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
   }
 
   /**
@@ -400,11 +418,14 @@ export class UnifiedApiClient {
     };
 
     // Special handling for DELETE operations
-    return this.makeDeleteRequest(() => this.client.delete<T>(url, axiosConfig), {
-      ...config,
-      operation: config.operation || `delete ${url}`,
-      optimization: defaultOptimization,
-    });
+    return this.makeDeleteRequest(
+      () => this.client.delete<T>(url, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `delete ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
   }
 
   // ========== ID-VALIDATED CONVENIENCE METHODS ==========
@@ -461,7 +482,8 @@ export class UnifiedApiClient {
       const url = buildUrlWithId(basePath, id, subPath);
       // Transform request data to convert ObjectId objects to strings
       // Skip transformation for FormData objects (used in file uploads)
-      const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      const transformedData =
+        data && !(data instanceof FormData) ? transformRequestData(data) : data;
       return this.put<T>(url, transformedData, {
         ...config,
         operation:
@@ -498,7 +520,8 @@ export class UnifiedApiClient {
       const url = buildUrlWithId(basePath, id, subPath);
       // Transform request data to convert ObjectId objects to strings
       // Skip transformation for FormData objects (used in file uploads)
-      const transformedData = data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      const transformedData =
+        data && !(data instanceof FormData) ? transformRequestData(data) : data;
       return this.post<T>(url, transformedData, {
         ...config,
         operation:

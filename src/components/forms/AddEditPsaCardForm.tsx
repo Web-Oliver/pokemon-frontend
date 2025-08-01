@@ -26,7 +26,10 @@ import FormHeader from '../common/FormHeader';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
-import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
+import {
+  transformRequestData,
+  convertObjectIdToString,
+} from '../../utils/responseTransformer';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -99,15 +102,19 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       source: initialData?.saleDetails?.source || '',
       dateSold: (() => {
         const dateSold = initialData?.saleDetails?.dateSold;
-        if (!dateSold) return '';
-        
+        if (!dateSold) {
+          return '';
+        }
+
         if (typeof dateSold === 'string') {
           return dateSold.split('T')[0];
         }
-        
+
         try {
           const date = new Date(dateSold);
-          if (isNaN(date.getTime())) return '';
+          if (isNaN(date.getTime())) {
+            return '';
+          }
           return date.toISOString().split('T')[0];
         } catch {
           return '';
@@ -140,13 +147,19 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
   } = form;
 
   // State for card selection (separate from form hooks for business logic)
-  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(() => {
-    if (!initialData?.cardId) return null;
-    
-    // Use centralized ObjectId conversion for consistent string handling
-    const transformedData = transformRequestData({ cardId: initialData.cardId });
-    return transformedData.cardId || null;
-  });
+  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
+    () => {
+      if (!initialData?.cardId) {
+        return null;
+      }
+
+      // Use centralized ObjectId conversion for consistent string handling
+      const transformedData = transformRequestData({
+        cardId: initialData.cardId,
+      });
+      return transformedData.cardId || null;
+    }
+  );
 
   // Removed over-engineered autocomplete configuration
 
@@ -174,11 +187,14 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
       setValue(
         'dateAdded',
         (() => {
-          if (!initialData.dateAdded || 
-              typeof initialData.dateAdded === 'object' && Object.keys(initialData.dateAdded).length === 0) {
+          if (
+            !initialData.dateAdded ||
+            (typeof initialData.dateAdded === 'object' &&
+              Object.keys(initialData.dateAdded).length === 0)
+          ) {
             return new Date().toISOString().split('T')[0];
           }
-          
+
           try {
             const date = new Date(initialData.dateAdded);
             if (isNaN(date.getTime())) {
@@ -294,7 +310,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               ? priceHistory.priceHistory.map((entry, index) => {
                   const dateValue = entry.date || entry.dateUpdated;
                   let finalDate;
-                  
+
                   if (dateValue && typeof dateValue === 'string') {
                     finalDate = dateValue;
                   } else if (dateValue instanceof Date) {
@@ -302,7 +318,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   } else {
                     finalDate = new Date().toISOString();
                   }
-                  
+
                   // Only return the fields the backend expects, no extra ObjectId fields
                   return {
                     price: entry.price,
@@ -332,7 +348,11 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         });
 
         // Use the selected card reference (schema requires cardId)
-        console.log('[PSA FORM] Submitting with cardId:', selectedCardId, typeof selectedCardId);
+        console.log(
+          '[PSA FORM] Submitting with cardId:',
+          selectedCardId,
+          typeof selectedCardId
+        );
         cardData = {
           cardId: selectedCardId,
           grade: data.grade,
@@ -344,7 +364,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               ? priceHistory.priceHistory.map((entry) => {
                   const dateValue = entry.date || entry.dateUpdated;
                   let finalDate;
-                  
+
                   if (dateValue && typeof dateValue === 'string') {
                     finalDate = dateValue;
                   } else if (dateValue instanceof Date) {
@@ -352,7 +372,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   } else {
                     finalDate = new Date().toISOString();
                   }
-                  
+
                   // Only return the fields the backend expects, no extra ObjectId fields
                   return {
                     price: entry.price,
@@ -370,22 +390,38 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
 
       // Data is already clean and properly formatted
       const cleanedCardData = cardData;
-      
+
       // Submit using collection operations hook
-      console.log('[PSA FORM] Final cardData before API call:', JSON.stringify(cleanedCardData, null, 2));
-      
+      console.log(
+        '[PSA FORM] Final cardData before API call:',
+        JSON.stringify(cleanedCardData, null, 2)
+      );
+
       if (isEditing && initialData?.id) {
-        console.log('[PSA FORM] Raw initialData.id:', initialData.id, typeof initialData.id);
-        
+        console.log(
+          '[PSA FORM] Raw initialData.id:',
+          initialData.id,
+          typeof initialData.id
+        );
+
         // Ensure ID is a string and validate MongoDB ObjectId format
-        const cardId = typeof initialData.id === 'string' ? initialData.id : String(initialData.id);
-        console.log('[PSA FORM] Processed cardId for update:', cardId, typeof cardId);
-        
+        const cardId =
+          typeof initialData.id === 'string'
+            ? initialData.id
+            : String(initialData.id);
+        console.log(
+          '[PSA FORM] Processed cardId for update:',
+          cardId,
+          typeof cardId
+        );
+
         // Validate MongoDB ObjectId format
         if (!cardId || cardId.length !== 24 || !/^[a-f\d]{24}$/i.test(cardId)) {
-          throw new Error(`Invalid ObjectId format: ${cardId}. Expected 24 character hexadecimal string.`);
+          throw new Error(
+            `Invalid ObjectId format: ${cardId}. Expected 24 character hexadecimal string.`
+          );
         }
-        
+
         await updatePsaCard(cardId, cleanedCardData);
       } else {
         console.log('[PSA FORM] Creating new PSA card');
@@ -451,13 +487,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               watch={watch}
               clearErrors={clearErrors}
               onSelectionChange={(selectedData) => {
-                console.log(
-                  '[PSA CARD] ===== CARD SELECTION ====='
-                );
-                console.log(
-                  '[PSA CARD] Card selection:',
-                  selectedData
-                );
+                console.log('[PSA CARD] ===== CARD SELECTION =====');
+                console.log('[PSA CARD] Card selection:', selectedData);
 
                 // Auto-fill form fields based on selection (EXACT same logic as before)
                 if (selectedData) {
@@ -468,9 +499,14 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                   // Transform ObjectId to string to prevent buffer objects from being stored
                   const rawCardId = selectedData._id || selectedData.id;
                   if (rawCardId) {
-                    const transformedData = transformRequestData({ cardId: rawCardId });
+                    const transformedData = transformRequestData({
+                      cardId: rawCardId,
+                    });
                     setSelectedCardId(transformedData.cardId);
-                    console.log('[PSA CARD] Selected card ID:', transformedData.cardId);
+                    console.log(
+                      '[PSA CARD] Selected card ID:',
+                      transformedData.cardId
+                    );
                   } else {
                     console.error(
                       '[PSA CARD] No ID found in selected data - card selection invalid'
@@ -665,7 +701,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         isEditing={isEditing}
         priceHistory={priceHistory.priceHistory.map((entry) => ({
           price: entry.price,
-          dateUpdated: entry.date || entry.dateUpdated || new Date().toISOString(),
+          dateUpdated:
+            entry.date || entry.dateUpdated || new Date().toISOString(),
         }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}

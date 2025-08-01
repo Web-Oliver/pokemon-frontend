@@ -48,17 +48,23 @@ export const useImageUpload = (
   );
 
   const uploadImages = useCallback(async (): Promise<string[]> => {
-    log(`[IMAGE UPLOAD HOOK] uploadImages called with ${selectedImages.length} selected images`);
-    
+    log(
+      `[IMAGE UPLOAD HOOK] uploadImages called with ${selectedImages.length} selected images`
+    );
+
     return await execute(async () => {
       if (selectedImages.length === 0) {
-        log('[IMAGE UPLOAD HOOK] No new images to upload - returning empty array without API call');
+        log(
+          '[IMAGE UPLOAD HOOK] No new images to upload - returning empty array without API call'
+        );
         return [];
       }
 
       log(`[IMAGE UPLOAD HOOK] Uploading ${selectedImages.length} images...`);
       const uploadedUrls = await uploadApi.uploadMultipleImages(selectedImages);
-      log(`[IMAGE UPLOAD HOOK] Successfully uploaded ${uploadedUrls.length} images`);
+      log(
+        `[IMAGE UPLOAD HOOK] Successfully uploaded ${uploadedUrls.length} images`
+      );
       showSuccessToast(`Uploaded ${uploadedUrls.length} images successfully`);
 
       // Clear selected images after successful upload

@@ -507,9 +507,11 @@ export const exportToDba = async (
 export const downloadDbaZip = async (): Promise<void> => {
   try {
     // Use direct axios call for binary download instead of standardized API wrapper
-    const response = await unifiedApiClient.getAxiosInstance().get('/export/dba/download', {
-      responseType: 'blob'
-    });
+    const response = await unifiedApiClient
+      .getAxiosInstance()
+      .get('/export/dba/download', {
+        responseType: 'blob',
+      });
 
     const timestamp = new Date().toISOString().split('T')[0];
     const filename = `dba-export-${timestamp}.zip`;
@@ -626,9 +628,10 @@ export const postToDbaMarketplace = async (
  * Uses GET /api/export/dba/status endpoint as per API documentation
  * @returns Promise<DbaIntegrationStatus> - DBA integration status
  */
-export const getDbaIntegrationStatus = async (): Promise<DbaIntegrationStatus> => {
-  return unifiedApiClient.get<DbaIntegrationStatus>('/export/dba/status');
-};
+export const getDbaIntegrationStatus =
+  async (): Promise<DbaIntegrationStatus> => {
+    return unifiedApiClient.get<DbaIntegrationStatus>('/export/dba/status');
+  };
 
 /**
  * Test DBA integration without posting

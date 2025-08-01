@@ -23,7 +23,10 @@ import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
-import { transformRequestData, convertObjectIdToString } from '../../utils/responseTransformer';
+import {
+  transformRequestData,
+  convertObjectIdToString,
+} from '../../utils/responseTransformer';
 
 interface AddEditRawCardFormProps {
   onCancel: () => void;
@@ -90,13 +93,19 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
   } = form;
 
   // State for card selection (separate from form hooks for business logic)
-  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(() => {
-    if (!initialData?.cardId) return null;
-    
-    // Use centralized ObjectId conversion for consistent string handling
-    const transformedData = transformRequestData({ cardId: initialData.cardId });
-    return transformedData.cardId || null;
-  });
+  const [selectedCardId, setSelectedCardId] = React.useState<string | null>(
+    () => {
+      if (!initialData?.cardId) {
+        return null;
+      }
+
+      // Use centralized ObjectId conversion for consistent string handling
+      const transformedData = transformRequestData({
+        cardId: initialData.cardId,
+      });
+      return transformedData.cardId || null;
+    }
+  );
 
   // Removed over-engineered autocomplete configuration
 
@@ -124,11 +133,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
       setValue(
         'dateAdded',
         (() => {
-          if (!initialData.dateAdded || 
-              typeof initialData.dateAdded === 'object' && Object.keys(initialData.dateAdded).length === 0) {
+          if (
+            !initialData.dateAdded ||
+            (typeof initialData.dateAdded === 'object' &&
+              Object.keys(initialData.dateAdded).length === 0)
+          ) {
             return new Date().toISOString().split('T')[0];
           }
-          
+
           try {
             const date = new Date(initialData.dateAdded);
             if (isNaN(date.getTime())) {
@@ -325,10 +337,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         clearErrors={clearErrors}
         onSelectionChange={(selectedData) => {
           console.log('[RAW CARD] ===== CARD SELECTION =====');
-          console.log(
-            '[RAW CARD] Card selection:',
-            selectedData
-          );
+          console.log('[RAW CARD] Card selection:', selectedData);
 
           // Auto-fill form fields based on selection (EXACT same logic as before)
           if (selectedData) {
@@ -336,9 +345,14 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
             // Transform ObjectId to string to prevent buffer objects from being stored
             const rawCardId = selectedData._id || selectedData.id;
             if (rawCardId) {
-              const transformedData = transformRequestData({ cardId: rawCardId });
+              const transformedData = transformRequestData({
+                cardId: rawCardId,
+              });
               setSelectedCardId(transformedData.cardId);
-              console.log('[RAW CARD] Selected card ID:', transformedData.cardId);
+              console.log(
+                '[RAW CARD] Selected card ID:',
+                transformedData.cardId
+              );
             } else {
               console.error(
                 '[RAW CARD] No ID found in selected data - card selection invalid'

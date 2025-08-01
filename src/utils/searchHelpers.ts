@@ -1,7 +1,7 @@
 /**
  * Search Helper Utilities
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * DRY-compliant utilities for search functionality
  * Eliminates code duplication across search components
  */
@@ -55,7 +55,9 @@ export const mapSetNameForProducts = (setName: string): string => {
  */
 export const mapSetNameForSets = (setName: string): string => {
   // Reverse lookup
-  const reverseMapping = Object.entries(SET_NAME_MAPPING).find(([_, productName]) => productName === setName);
+  const reverseMapping = Object.entries(SET_NAME_MAPPING).find(
+    ([_, productName]) => productName === setName
+  );
   return reverseMapping ? reverseMapping[0] : setName;
 };
 
@@ -67,7 +69,7 @@ export const mapSetNameForSets = (setName: string): string => {
  */
 export const buildQueryParams = (params: SearchParams): URLSearchParams => {
   const { query, limit = 20, page = 1, ...filters } = params;
-  
+
   const queryParams = new URLSearchParams({
     query: query.trim(),
     limit: limit.toString(),
@@ -113,7 +115,7 @@ export const autoFillSetData = (
   if (setName) {
     autoFillField(config, 'setName', setName);
   }
-  
+
   if (result.data.year) {
     autoFillField(config, 'year', result.data.year);
   }
@@ -179,10 +181,10 @@ export const autoFillFromSelection = (
 ) => {
   // Auto-fill set data
   autoFillSetData(config, result);
-  
+
   // Auto-fill item data
   autoFillItemData(config, result);
-  
+
   // Call parent callback if provided (maintains existing behavior)
   if (onSelectionChange) {
     onSelectionChange({
@@ -194,10 +196,13 @@ export const autoFillFromSelection = (
   // Log auto-filled fields for debugging
   console.log('[SEARCH HELPERS] Auto-filled fields:', {
     setName: result.data.setName || result.data.setInfo?.setName,
-    itemName: config.formType === 'product' ? result.data.name : result.data.cardName,
+    itemName:
+      config.formType === 'product' ? result.data.name : result.data.cardName,
     category: result.data.category,
     availability: result.data.available,
-    cardMarketPrice: result.data.price ? Math.round(parseFloat(result.data.price)) : null,
+    cardMarketPrice: result.data.price
+      ? Math.round(parseFloat(result.data.price))
+      : null,
   });
 };
 
@@ -213,8 +218,10 @@ export const handleSearchError = (
   setError: (error: string | null) => void,
   setLoading: (loading: boolean) => void
 ) => {
-  if (error.name === 'AbortError') return;
-  
+  if (error.name === 'AbortError') {
+    return;
+  }
+
   console.error(`[SEARCH ERROR] ${context}:`, error);
   setError(`${context} failed. Please try again.`);
   setLoading(false);
@@ -291,10 +298,14 @@ export const getResultMetadata = (result: SearchResult) => {
   }
 
   if (result.data.counts) {
-    metadata.totalItems = result.data.counts.cards + result.data.counts.products;
+    metadata.totalItems =
+      result.data.counts.cards + result.data.counts.products;
   }
 
-  if (result.data.psaTotalGradedForCard && result.data.psaTotalGradedForCard > 0) {
+  if (
+    result.data.psaTotalGradedForCard &&
+    result.data.psaTotalGradedForCard > 0
+  ) {
     metadata.psaTotal = result.data.psaTotalGradedForCard;
   }
 
@@ -307,7 +318,10 @@ export const getResultMetadata = (result: SearchResult) => {
  * Validate search query
  * Centralized query validation logic
  */
-export const isValidSearchQuery = (query: string, minLength: number = 2): boolean => {
+export const isValidSearchQuery = (
+  query: string,
+  minLength: number = 2
+): boolean => {
   return query.trim().length >= minLength;
 };
 
@@ -320,7 +334,7 @@ export const createDebouncedSearch = <T extends any[]>(
   delay: number = 300
 ) => {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: T) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
