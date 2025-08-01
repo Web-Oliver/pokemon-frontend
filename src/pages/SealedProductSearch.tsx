@@ -89,10 +89,10 @@ const SealedProductSearch: React.FC = () => {
         };
 
         const searchResponse = await searchProducts(searchParams);
-        fetchedProducts = searchResponse.data;
+        fetchedProducts = searchResponse.data || [];
 
         // Calculate pagination for search results
-        const totalResults = searchResponse.count;
+        const totalResults = searchResponse.count || 0;
         const totalPages = Math.ceil(totalResults / itemsPerPage);
         paginationData = {
           currentPage: page,
@@ -102,26 +102,28 @@ const SealedProductSearch: React.FC = () => {
           total: totalResults,
         };
       } else {
-        // Use paginated API when no search term (browsing/filtering)
-        const params: cardMarketRefProductsApi.CardMarketRefProductsParams = {
+        // Use search API with wildcard when no search term (for consistency)
+        const searchParams = {
+          query: '*', // Wildcard to get all products
           page,
           limit: itemsPerPage,
           ...(categoryFilter && { category: categoryFilter }),
           ...(setNameFilter && { setName: setNameFilter }),
-          ...(availableOnly && { available: true }),
+          ...(availableOnly && { availableOnly: true }),
         };
 
-        const response: cardMarketRefProductsApi.PaginatedCardMarketRefProductsResponse =
-          await cardMarketRefProductsApi.getPaginatedCardMarketRefProducts(
-            params
-          );
-        fetchedProducts = response.products;
+        const searchResponse = await searchProducts(searchParams);
+        fetchedProducts = searchResponse.data || [];
+
+        // Calculate pagination for search results
+        const totalResults = searchResponse.count || 0;
+        const totalPages = Math.ceil(totalResults / itemsPerPage);
         paginationData = {
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          hasNextPage: response.hasNextPage,
-          hasPrevPage: response.hasPrevPage,
-          total: response.total,
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+          total: totalResults,
         };
       }
 
