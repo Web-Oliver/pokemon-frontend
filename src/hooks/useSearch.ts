@@ -121,6 +121,9 @@ export const useSearch = (): UseSearchReturn => {
       switch (searchConfig.currentType) {
         case 'sets':
           return queryKeys.searchSets(baseQuery);
+        case 'cardmarket-sets':
+          // CRITICAL FIX: Add CardMarket sets query key generation
+          return ['search', 'cardmarket-sets', baseQuery];
         case 'products':
           return queryKeys.searchProducts(
             `${baseQuery}${setName ? `-${setName}` : ''}${category ? `-${category}` : ''}`
