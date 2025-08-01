@@ -512,12 +512,20 @@ export const getCardMarketSetNames = async (
     queryParams.append('search', query.trim());
   }
 
-  const response = await pureFetch(
-    `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`
-  );
+  const url = `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`;
+  console.log(`[SEALED PRODUCT DEBUG] Fetching CardMarket set names from:`, url);
+
+  const response = await pureFetch(url);
+  console.log(`[SEALED PRODUCT DEBUG] Raw API response:`, response);
 
   const data = response.data?.data || response.data || response;
-  return Array.isArray(data) ? data : [];
+  console.log(`[SEALED PRODUCT DEBUG] Extracted data:`, data);
+  console.log(`[SEALED PRODUCT DEBUG] Is data array?`, Array.isArray(data));
+  
+  const result = Array.isArray(data) ? data : [];
+  console.log(`[SEALED PRODUCT DEBUG] Final result:`, result);
+  
+  return result;
 };
 
 /**

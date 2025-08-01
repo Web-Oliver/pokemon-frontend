@@ -114,22 +114,32 @@ export const autoFillSetData = (
   config: AutoFillConfig,
   result: SearchResult
 ) => {
+  console.log(`[SEALED PRODUCT DEBUG] Auto-filling set data for form type:`, config.formType);
+  console.log(`[SEALED PRODUCT DEBUG] Result:`, result);
+  console.log(`[SEALED PRODUCT DEBUG] Result.data:`, result.data);
+
   let setName: string | undefined;
   
   if (config.formType === 'product') {
     // For sealed products: ONLY use CardMarketReferenceProduct.setName
     setName = result.data.setName;
+    console.log(`[SEALED PRODUCT DEBUG] Sealed product - using setName:`, setName);
   } else {
     // For cards: Use Set->Card relationship
     setName = result.data.setName || result.data.setInfo?.setName;
+    console.log(`[SEALED PRODUCT DEBUG] Card product - using setName:`, setName);
   }
   
   if (setName) {
     autoFillField(config, 'setName', setName);
+    console.log(`[SEALED PRODUCT DEBUG] Set name filled:`, setName);
+  } else {
+    console.log(`[SEALED PRODUCT DEBUG] No setName found in result data`);
   }
 
   if (result.data.year) {
     autoFillField(config, 'year', result.data.year);
+    console.log(`[SEALED PRODUCT DEBUG] Year filled:`, result.data.year);
   }
 };
 

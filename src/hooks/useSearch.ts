@@ -162,12 +162,18 @@ export const useSearch = (): UseSearchReturn => {
             limit: 15,
           });
         case 'cardmarket-sets':
+          console.log(`[SEALED PRODUCT DEBUG] Executing cardmarket-sets search`);
+          console.log(`[SEALED PRODUCT DEBUG] Debounced query:`, debouncedQuery);
+          
           const cardMarketSets = await getCardMarketSetNames(
             debouncedQuery.trim(),
             15
           );
+          
+          console.log(`[SEALED PRODUCT DEBUG] CardMarket API response:`, cardMarketSets);
+          
           // Transform CardMarket sets to match the expected format
-          return {
+          const transformedData = {
             data: cardMarketSets.map(set => ({
               _id: set.setName,
               setName: set.setName,
@@ -179,6 +185,9 @@ export const useSearch = (): UseSearchReturn => {
             })),
             count: cardMarketSets.length,
           };
+          
+          console.log(`[SEALED PRODUCT DEBUG] Transformed data:`, transformedData);
+          return transformedData;
         case 'products':
           return searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
@@ -219,19 +228,26 @@ export const useSearch = (): UseSearchReturn => {
       return [];
     }
 
+    // Map search types to result types
+    const getResultType = (searchType: string): 'set' | 'product' | 'card' => {
+      if (searchType === 'cardmarket-sets') return 'set';
+      if (searchType === 'products') return 'product';
+      if (searchType === 'cards') return 'card';
+      return 'set';
+    };
+
+    const resultType = getResultType(searchConfig.currentType || 'sets');
+
     return queryResults.data.map((item: any) => ({
       _id: item._id,
       displayName: getDisplayName({
         _id: item._id,
         displayName: '',
         data: item,
-        type: (searchConfig.currentType?.slice(0, -1) || 'set') as any,
+        type: resultType,
       }),
       data: item,
-      type: (searchConfig.currentType?.slice(0, -1) || 'set') as
-        | 'set'
-        | 'product'
-        | 'card',
+      type: resultType,
     }));
   }, [queryResults?.data, searchConfig.currentType]);
 
@@ -280,6 +296,10 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const handleSearchCardMarketSetNames = useCallback((query: string) => {
+    console.log(`[SEALED PRODUCT DEBUG] Starting CardMarket set names search`);
+    console.log(`[SEALED PRODUCT DEBUG] Query:`, query);
+    console.log(`[SEALED PRODUCT DEBUG] Current search config before:`, searchConfig);
+    
     log(`[TANSTACK QUERY] Initiating CardMarket set names search: ${query}`);
     setSearchConfig((prev) => ({
       ...prev,
@@ -287,6 +307,8 @@ export const useSearch = (): UseSearchReturn => {
       currentType: 'cardmarket-sets',
       currentFilters: {},
     }));
+    
+    console.log(`[SEALED PRODUCT DEBUG] Set currentType to 'cardmarket-sets'`);
   }, []);
 
   const handleSearchProducts = useCallback(

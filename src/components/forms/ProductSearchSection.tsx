@@ -133,6 +133,10 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     switch (activeField) {
       case 'setName':
         if (formType === 'product') {
+          console.log('[SEALED PRODUCT DEBUG] ProductSearchSection - calling searchCardMarketSetNames');
+          console.log('[SEALED PRODUCT DEBUG] Form type:', formType);
+          console.log('[SEALED PRODUCT DEBUG] Current value:', currentValue);
+          console.log('[SEALED PRODUCT DEBUG] Active field:', activeField);
           console.log(
             '[CENTRALIZED SEARCH] Calling search.searchCardMarketSetNames for sealed products:',
             currentValue
@@ -196,6 +200,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     formType,
     watch,
     search.searchSets,
+    search.searchCardMarketSetNames,
     search.searchProducts,
     search.searchCards,
   ]);
