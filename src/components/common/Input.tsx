@@ -13,11 +13,11 @@
 
 import React, { forwardRef, InputHTMLAttributes } from 'react';
 import {
-  PremiumErrorMessage,
-  PremiumHelperText,
-  PremiumLabel,
-  PremiumWrapper,
-} from './PremiumFormElements';
+  ErrorMessage,
+  HelperText,
+  Label,
+  FormWrapper,
+} from './FormElements';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -74,8 +74,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       .join(' ');
 
     return (
-      <PremiumWrapper fullWidth={fullWidth} error={!!error}>
-        {label && <PremiumLabel htmlFor={inputId}>{label}</PremiumLabel>}
+      <FormWrapper fullWidth={fullWidth} error={!!error}>
+        {label && <Label htmlFor={inputId}>{label}</Label>}
 
         <div
           className={`${inputWithIconClasses} ${fullWidth ? 'w-full' : ''} relative`}
@@ -104,9 +104,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
 
-        <PremiumErrorMessage error={error} />
-        <PremiumHelperText helperText={helperText} />
-      </PremiumWrapper>
+        <ErrorMessage error={error} />
+        <HelperText helperText={helperText} />
+      </FormWrapper>
     );
   }
 );

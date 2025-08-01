@@ -52,7 +52,7 @@ interface SearchDropdownProps {
   loading?: boolean;
 }
 
-const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdown({
+const SearchDropdown: React.FC<SearchDropdownProps> = memo(({
   suggestions,
   isVisible,
   activeField,
@@ -175,7 +175,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
     }
   };
 
-  // Context7 Pattern: Memoized metadata rendering following React.dev patterns
+  // Context7 Premium: Award-winning metadata badges with glass morphism
   const renderSuggestionMetadata = useCallback((suggestion: SearchSuggestion) => {
     const metadata = [];
 
@@ -183,7 +183,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       metadata.push(
         <div
           key="set"
-          className="inline-flex items-center px-2 py-0.5 bg-green-50 border border-green-200 rounded text-xs text-green-700 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold shadow-lg"
         >
           <Package className="w-3 h-3 mr-1" />
           {suggestion.setInfo.setName}
@@ -195,7 +195,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       metadata.push(
         <div
           key="category"
-          className="inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 rounded-lg text-xs text-purple-300 font-semibold shadow-lg"
         >
           <Hash className="w-3 h-3 mr-1" />
           {suggestion.categoryInfo.category}
@@ -207,7 +207,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       metadata.push(
         <div
           key="variety"
-          className="inline-flex items-center px-2 py-0.5 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-amber-500/20 to-orange-600/20 backdrop-blur-xl border border-amber-500/30 rounded-lg text-xs text-amber-300 font-semibold shadow-lg"
         >
           <Star className="w-3 h-3 mr-1" />
           {suggestion.variety}
@@ -219,7 +219,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       metadata.push(
         <div
           key="year"
-          className="inline-flex items-center px-2 py-0.5 bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-700 dark:border-zinc-700 rounded text-xs text-gray-700 dark:text-zinc-300 dark:text-zinc-200 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-slate-500/20 to-zinc-600/20 backdrop-blur-xl border border-slate-500/30 rounded-lg text-xs text-slate-300 font-semibold shadow-lg"
         >
           {suggestion.year}
         </div>
@@ -231,7 +231,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       metadata.push(
         <div
           key="counts"
-          className="inline-flex items-center px-2 py-0.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-600/20 backdrop-blur-xl border border-blue-500/30 rounded-lg text-xs text-blue-300 font-semibold shadow-lg"
         >
           <TrendingUp className="w-3 h-3 mr-1" />
           {totalItems} items
@@ -239,14 +239,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       );
     }
 
-    if (
-      suggestion.psaTotalGradedForCard &&
-      suggestion.psaTotalGradedForCard > 0
-    ) {
+    if (suggestion.psaTotalGradedForCard && suggestion.psaTotalGradedForCard > 0) {
       metadata.push(
         <div
           key="psa"
-          className="inline-flex items-center px-2 py-0.5 bg-purple-50 border border-purple-200 rounded text-xs text-purple-700 font-medium"
+          className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-indigo-500/20 to-purple-600/20 backdrop-blur-xl border border-indigo-500/30 rounded-lg text-xs text-indigo-300 font-semibold shadow-lg"
         >
           <TrendingUp className="w-3 h-3 mr-1" />
           {suggestion.psaTotalGradedForCard.toLocaleString()} PSA
@@ -287,7 +284,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
       return (
         <>
           {text.substring(0, matchIndex)}
-          <span className="bg-blue-100 text-blue-800 px-1 rounded font-medium">
+          <span className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-200 px-2 py-0.5 rounded-lg font-bold backdrop-blur-xl shadow-lg border border-blue-500/30">
             {text.substring(matchIndex, matchIndex + searchTerm.length)}
           </span>
           {text.substring(matchIndex + searchTerm.length)}
@@ -337,11 +334,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
           result.push(text.substring(lastIndex, match.start));
         }
 
-        // Add highlighted match
+        // Add highlighted match with premium styling
         result.push(
           <span
             key={index}
-            className="bg-blue-100 text-blue-800 px-1 rounded font-medium"
+            className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-200 px-2 py-0.5 rounded-lg font-bold backdrop-blur-xl shadow-lg border border-blue-500/30"
           >
             {match.word}
           </span>
@@ -360,76 +357,86 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
   }, []);
 
   return (
-    <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
-      {/* Clean Overlay */}
-      <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
+    <div className="absolute top-full left-0 right-0 z-[9999] mt-3">
+      {/* Context7 Premium Overlay */}
+      <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Clean Dropdown Container */}
+      {/* Context7 Award-Winning Dropdown Container */}
       <div className="relative z-[9999]">
-        <div className="bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/40 rounded-lg shadow-2xl max-h-[480px] overflow-hidden">
-          {/* Header */}
-          <div className="p-4 border-b border-zinc-700/30 bg-zinc-800/60 backdrop-blur-xl">
+        {/* Background Glass Effects */}
+        <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 rounded-[2rem] blur-2xl opacity-60"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-cyan-400/5 rounded-[1.5rem] blur-xl"></div>
+        
+        <div className="relative bg-black/40 backdrop-blur-3xl rounded-[1.5rem] shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden max-h-[500px]">
+          {/* Floating Orbs */}
+          <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+
+          {/* Context7 Premium Header */}
+          <div className="p-6 border-b border-white/10 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-xl relative z-10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
                   {activeField === 'set' && (
-                    <Package className="w-4 h-4 text-white" />
+                    <Package className="w-6 h-6 text-blue-400" />
                   )}
                   {activeField === 'category' && (
-                    <Hash className="w-4 h-4 text-white" />
+                    <Hash className="w-6 h-6 text-purple-400" />
                   )}
                   {activeField === 'cardProduct' && (
-                    <Search className="w-4 h-4 text-white" />
+                    <Search className="w-6 h-6 text-cyan-400" />
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-100">
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
                     {activeField === 'set' && 'Pokémon Sets'}
                     {activeField === 'category' && 'Product Categories'}
                     {activeField === 'cardProduct' && 'Cards & Products'}
                   </h3>
-                  <p className="text-xs text-zinc-400">
-                    {suggestions.length} suggestion
-                    {suggestions.length !== 1 ? 's' : ''} for "
-                    {searchTerm.length > 20
-                      ? `${searchTerm.substring(0, 20)}...`
-                      : searchTerm}
-                    "
+                  <p className="text-sm text-white/60 font-medium">
+                    {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} for "{searchTerm.length > 20 ? `${searchTerm.substring(0, 20)}...` : searchTerm}"
                   </p>
                 </div>
               </div>
 
-              {/* Close Button */}
+              {/* Premium Close Button */}
               <button
                 onClick={onClose}
-                className="w-8 h-8 bg-zinc-800/80 border border-zinc-700/40 rounded-lg flex items-center justify-center hover:bg-zinc-700/80 transition-colors"
+                className="group relative overflow-hidden p-3 rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
               >
-                <span className="text-zinc-300 text-sm">×</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10 text-lg font-bold">×</span>
               </button>
             </div>
           </div>
 
-          {/* Suggestions List */}
-          <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600 scrollbar-track-zinc-800">
+          {/* Context7 Premium Suggestions List */}
+          <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent relative z-10">
             {loading ? (
-              <div className="p-6 text-center">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                <p className="text-zinc-300 text-sm">Searching collection...</p>
+              <div className="p-8 text-center">
+                <div className="relative mb-6">
+                  <div className="w-12 h-12 mx-auto">
+                    <div className="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                  <div className="absolute inset-0 w-12 h-12 mx-auto bg-blue-500/10 rounded-full animate-pulse"></div>
+                </div>
+                <p className="text-white font-semibold mb-2">Searching collection...</p>
+                <p className="text-white/60 text-sm">Finding the perfect matches</p>
               </div>
             ) : suggestions.length === 0 ? (
-              <div className="p-6 text-center">
-                <div className="w-12 h-12 bg-zinc-800/60 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Search className="w-6 h-6 text-gray-400 dark:text-zinc-600 dark:text-zinc-500" />
+              <div className="p-8 text-center">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-slate-800/60 to-slate-900/80 rounded-2xl flex items-center justify-center mx-auto border border-white/10 shadow-lg">
+                    <Search className="w-8 h-8 text-white/60" />
+                  </div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-slate-500/10 to-slate-600/10 rounded-3xl blur-xl opacity-50"></div>
                 </div>
-                <p className="text-gray-600 dark:text-zinc-400 dark:text-zinc-300 text-sm mb-1">
-                  No results found
-                </p>
-                <p className="text-gray-500 dark:text-zinc-500 dark:text-zinc-400 text-xs">
-                  Try different keywords or check spelling
-                </p>
+                <p className="text-white font-semibold mb-2">No results found</p>
+                <p className="text-white/60 text-sm">Try different keywords or check spelling</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="p-2 space-y-1">
                 {suggestions.map((suggestion, index) => {
                   const displayName = getDisplayName(suggestion);
                   const metadata = renderSuggestionMetadata(suggestion);
@@ -437,68 +444,73 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
 
                   return (
                     <button
-                      key={
-                        suggestion._id ||
-                        suggestion.id ||
-                        `${activeField}-${index}`
-                      }
+                      key={suggestion._id || suggestion.id || `${activeField}-${index}`}
                       onClick={() => {
                         if (process.env.NODE_ENV === 'development') {
-                          console.log(
-                            `[SEARCH DROPDOWN DEBUG] Suggestion clicked:`,
-                            {
-                              suggestion,
-                              activeField,
-                              displayName: getDisplayName(suggestion),
-                            }
-                          );
+                          console.log(`[SEARCH DROPDOWN DEBUG] Suggestion clicked:`, {
+                            suggestion,
+                            activeField,
+                            displayName: getDisplayName(suggestion),
+                          });
                         }
                         onSuggestionSelect(suggestion, activeField);
                       }}
                       onMouseEnter={() => setSelectedIndex(index)}
-                      className={`w-full text-left p-3 transition-colors duration-150 focus:outline-none ${isSelected ? 'bg-blue-50 border-l-4 border-blue-500' : 'hover:bg-gray-50 border-l-4 border-transparent'}`}
+                      className={`group w-full text-left p-4 rounded-xl transition-all duration-300 focus:outline-none transform hover:scale-102 relative overflow-hidden ${
+                        isSelected 
+                          ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 shadow-lg' 
+                          : 'hover:bg-white/5 border border-transparent hover:border-white/10'
+                      }`}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center flex-shrink-0">
-                          {activeField === 'set' && (
-                            <Package className="w-3 h-3 text-white" />
-                          )}
-                          {activeField === 'category' && (
-                            <Hash className="w-3 h-3 text-white" />
-                          )}
-                          {activeField === 'cardProduct' && (
-                            <Search className="w-3 h-3 text-white" />
-                          )}
+                      {/* Premium Gradient Overlay for Selected */}
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl"></div>
+                      )}
+                      
+                      {/* Shimmer Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+
+                      <div className="relative z-10 flex items-center space-x-4">
+                        {/* Premium Icon */}
+                        <div className={`p-2 rounded-xl shadow-lg transition-all duration-300 group-hover:scale-110 ${
+                          activeField === 'set' 
+                            ? 'bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30' 
+                            : activeField === 'category'
+                            ? 'bg-gradient-to-br from-purple-500/20 to-violet-600/20 border border-purple-500/30'
+                            : 'bg-gradient-to-br from-blue-500/20 to-cyan-600/20 border border-blue-500/30'
+                        }`}>
+                          {activeField === 'set' && <Package className="w-5 h-5 text-emerald-400" />}
+                          {activeField === 'category' && <Hash className="w-5 h-5 text-purple-400" />}
+                          {activeField === 'cardProduct' && <Search className="w-5 h-5 text-blue-400" />}
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <h4
-                            className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}
-                          >
+                          <h4 className={`text-sm font-semibold mb-1 ${isSelected ? 'text-white' : 'text-white/90'}`}>
                             {highlightSearchTerm(displayName, searchTerm)}
                           </h4>
 
-                          {/* Context7 Metadata */}
+                          {/* Context7 Premium Metadata */}
                           {metadata.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-1 mt-1">
+                            <div className="flex flex-wrap items-center gap-1 mb-1">
                               {metadata}
                             </div>
                           )}
 
                           {/* Additional Context */}
-                          {activeField === 'cardProduct' &&
-                            suggestion.pokemonNumber && (
-                              <p className="text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 mt-1">
-                                Pokémon #{suggestion.pokemonNumber}
-                              </p>
-                            )}
+                          {activeField === 'cardProduct' && suggestion.pokemonNumber && (
+                            <p className="text-xs text-white/60 font-medium">
+                              Pokémon #{suggestion.pokemonNumber}
+                            </p>
+                          )}
                         </div>
 
-                        {/* Selection indicator */}
+                        {/* Premium Selection Indicator */}
                         <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full transition-colors ${isSelected ? 'bg-blue-500' : 'bg-gray-300'}`}
-                          ></div>
+                          <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            isSelected 
+                              ? 'bg-blue-400 shadow-lg shadow-blue-400/50 animate-pulse' 
+                              : 'bg-white/20 group-hover:bg-white/40'
+                          }`}></div>
                         </div>
                       </div>
                     </button>
@@ -508,26 +520,26 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(function SearchDropdo
             )}
           </div>
 
-          {/* Context7 Footer with shortcuts */}
-          <div className="p-3 bg-zinc-800/60 backdrop-blur-xl border-t border-zinc-700/30">
-            <div className="flex items-center justify-center space-x-4 text-xs text-zinc-400">
-              <div className="flex items-center space-x-1">
-                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
+          {/* Context7 Premium Footer with shortcuts */}
+          <div className="p-4 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-xl border-t border-white/10 relative z-10">
+            <div className="flex items-center justify-center space-x-6 text-xs">
+              <div className="flex items-center space-x-2">
+                <kbd className="px-3 py-1.5 bg-gradient-to-br from-slate-700/80 to-slate-800/80 border border-white/20 rounded-lg text-xs text-white font-semibold shadow-lg">
                   ↑↓
                 </kbd>
-                <span>Navigate</span>
+                <span className="text-white/70 font-medium">Navigate</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
+              <div className="flex items-center space-x-2">
+                <kbd className="px-3 py-1.5 bg-gradient-to-br from-blue-600/80 to-purple-600/80 border border-white/20 rounded-lg text-xs text-white font-semibold shadow-lg">
                   Enter
                 </kbd>
-                <span>Select</span>
+                <span className="text-white/70 font-medium">Select</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <kbd className="px-2 py-1 bg-zinc-700/80 border border-zinc-600/40 rounded text-xs text-zinc-200">
+              <div className="flex items-center space-x-2">
+                <kbd className="px-3 py-1.5 bg-gradient-to-br from-red-600/80 to-pink-600/80 border border-white/20 rounded-lg text-xs text-white font-semibold shadow-lg">
                   Esc
                 </kbd>
-                <span>Close</span>
+                <span className="text-white/70 font-medium">Close</span>
               </div>
             </div>
           </div>

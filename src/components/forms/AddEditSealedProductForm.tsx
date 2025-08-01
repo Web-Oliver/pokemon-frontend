@@ -16,6 +16,7 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
+import { useFormSubmission, FormSubmissionPatterns } from './wrappers/FormSubmissionWrapper';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
@@ -213,92 +214,45 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     setValue('myPrice', newPrice.toString());
   };
 
-  // Removed legacy autocomplete event handlers - using enhanced autocomplete only
-
-  const onSubmit = async (data: FormData) => {
-    setSubmitting(true);
-
-    try {
-      // Ensure a product is selected from CardMarket reference data
+  // Standardized submission handling using FormSubmissionWrapper
+  const { handleSubmission } = useFormSubmission<FormData, Partial<ISealedProduct>>({
+    setSubmitting,
+    onSuccess,
+    imageUpload,
+    priceHistory,
+    logContext: 'SEALED PRODUCT',
+    validateBeforeSubmission: (data) => {
       if (!selectedProductData?._id) {
-        throw new Error(
-          'Please select a product from the suggestions to ensure reference data link'
-        );
+        throw new Error('Please select a product from the suggestions to ensure reference data link');
       }
+    },
+    prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
+      const allImageUrls = FormSubmissionPatterns.combineImages(imageUpload.remainingExistingImages, imageUrls);
 
-      // Upload images using specialized hook
-      console.log(
-        '[SEALED PRODUCT FORM] About to upload images, selected images count:',
-        imageUpload.selectedImages.length
-      );
-      console.log(
-        '[SEALED PRODUCT FORM] Selected images:',
-        imageUpload.selectedImages
-      );
-
-      let imageUrls = [];
-      if (imageUpload.selectedImages.length > 0) {
-        console.log(
-          '[SEALED PRODUCT FORM] Calling imageUpload.uploadImages()...'
-        );
-        imageUrls = await imageUpload.uploadImages();
-      } else {
-        console.log(
-          '[SEALED PRODUCT FORM] No images selected, skipping upload API call'
-        );
-      }
-
-      console.log(
-        '[SEALED PRODUCT FORM] Image upload completed, received URLs:',
-        imageUrls
-      );
-
-      // Combine existing images with new uploaded images
-      const allImageUrls = [
-        ...imageUpload.remainingExistingImages,
-        ...imageUrls,
-      ];
-
-      // Prepare product data - must include productId reference to CardMarketReferenceProduct
-      const productData: Partial<ISealedProduct> = {
-        productId: selectedProductData?._id, // Required: Reference to CardMarketReferenceProduct
-        setName: data.setName.trim(),
-        name: data.productName.trim(),
-        category: data.category,
-        availability: Number(data.availability), // Convert to number as required by backend
-        cardMarketPrice: data.cardMarketPrice
-          ? parseFloat(data.cardMarketPrice)
-          : undefined,
-        myPrice: parseFloat(data.myPrice),
-        dateAdded: data.dateAdded,
+      return {
+        productId: selectedProductData?._id,
+        setName: formData.setName.trim(),
+        name: formData.productName.trim(),
+        category: formData.category,
+        availability: Number(formData.availability),
+        cardMarketPrice: formData.cardMarketPrice ? parseFloat(formData.cardMarketPrice) : undefined,
+        myPrice: parseFloat(formData.myPrice),
+        dateAdded: formData.dateAdded,
         images: allImageUrls,
-        priceHistory:
-          priceHistory.priceHistory.length > 0
-            ? priceHistory.priceHistory
-            : [
-                {
-                  price: parseFloat(data.myPrice),
-                  dateUpdated: new Date().toISOString(),
-                },
-              ],
+        priceHistory: FormSubmissionPatterns.transformPriceHistory(priceHistory.priceHistory, parseFloat(formData.myPrice)),
       };
-
-      // Submit using collection operations hook
+    },
+    submitToApi: async (productData, isEditing, itemId) => {
       if (isEditing && initialData?.id) {
         const productId = convertObjectIdToString(initialData.id);
         await updateSealedProduct(productId, productData);
       } else {
         await addSealedProduct(productData);
       }
+    },
+  });
 
-      onSuccess();
-    } catch (error) {
-      // Error handling is done by specialized hooks
-      console.error('Form submission failed:', error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const onSubmit = (data: FormData) => handleSubmission(data, { isEditing, itemId: initialData?.id });
 
   if (loading && !isSubmitting) {
     return (

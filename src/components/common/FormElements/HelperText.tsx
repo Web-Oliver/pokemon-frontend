@@ -1,5 +1,5 @@
 /**
- * PremiumHelperText - Reusable helper text component
+ * HelperText - Reusable helper text component
  * Eliminates duplicate helper text styling across form components
  *
  * Following CLAUDE.md DRY principles:
@@ -10,12 +10,12 @@
 
 import React from 'react';
 
-interface PremiumHelperTextProps {
+interface HelperTextProps {
   helperText?: string;
   className?: string;
 }
 
-export const PremiumHelperText: React.FC<PremiumHelperTextProps> = ({
+export const HelperText: React.FC<HelperTextProps> = ({
   helperText,
   className = '',
 }) => {
@@ -30,4 +30,4 @@ export const PremiumHelperText: React.FC<PremiumHelperTextProps> = ({
   );
 };
 
-export default PremiumHelperText;
+export default HelperText;

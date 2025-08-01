@@ -1,5 +1,5 @@
 /**
- * PremiumLabel - Reusable premium label component
+ * Label - Reusable premium label component
  * Eliminates duplicate label styling across form components
  *
  * Following CLAUDE.md DRY principles:
@@ -10,13 +10,13 @@
 
 import React from 'react';
 
-interface PremiumLabelProps {
+interface LabelProps {
   htmlFor: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export const PremiumLabel: React.FC<PremiumLabelProps> = ({
+export const Label: React.FC<LabelProps> = ({
   htmlFor,
   children,
   className = '',
@@ -31,4 +31,4 @@ export const PremiumLabel: React.FC<PremiumLabelProps> = ({
   );
 };
 
-export default PremiumLabel;
+export default Label;

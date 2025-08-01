@@ -7,12 +7,12 @@
  * - Award-winning visual design with micro-interactions
  * - Premium gradients and shadow effects
  * - Context7 design system compliance
- * - Centralized premium effects through PremiumFormElements
+ * - Centralized premium effects through FormElements
  * - Eliminated duplicate styling code following SOLID principles
  */
 
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
-import { PremiumGlow, PremiumShimmer } from './PremiumFormElements';
+import { Glow, Shimmer } from './FormElements';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -84,10 +84,10 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {/* Context7 Premium Shimmer Effect */}
-      <PremiumShimmer />
+      <Shimmer />
 
       {/* Premium Glow Effect */}
-      <PremiumGlow variant={glowVariant} />
+      <Glow variant={glowVariant} />
 
       {/* Premium Loading Spinner */}
       {loading && (

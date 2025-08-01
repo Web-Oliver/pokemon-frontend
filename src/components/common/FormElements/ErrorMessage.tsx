@@ -1,5 +1,5 @@
 /**
- * PremiumErrorMessage - Reusable error message component
+ * ErrorMessage - Reusable error message component
  * Eliminates duplicate error styling across form components
  *
  * Following CLAUDE.md DRY principles:
@@ -10,12 +10,12 @@
 
 import React from 'react';
 
-interface PremiumErrorMessageProps {
+interface ErrorMessageProps {
   error?: string;
   className?: string;
 }
 
-export const PremiumErrorMessage: React.FC<PremiumErrorMessageProps> = ({
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   error,
   className = '',
 }) => {
@@ -33,4 +33,4 @@ export const PremiumErrorMessage: React.FC<PremiumErrorMessageProps> = ({
   );
 };
 
-export default PremiumErrorMessage;
+export default ErrorMessage;

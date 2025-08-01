@@ -1,5 +1,5 @@
 /**
- * PremiumShimmer - Reusable shimmer effect component
+ * Shimmer - Reusable shimmer effect component
  * Eliminates duplicate shimmer animations across Button and other components
  *
  * Following CLAUDE.md DRY principles:
@@ -10,11 +10,11 @@
 
 import React from 'react';
 
-interface PremiumShimmerProps {
+interface ShimmerProps {
   className?: string;
 }
 
-export const PremiumShimmer: React.FC<PremiumShimmerProps> = ({
+export const Shimmer: React.FC<ShimmerProps> = ({
   className = '',
 }) => {
   return (
@@ -24,4 +24,4 @@ export const PremiumShimmer: React.FC<PremiumShimmerProps> = ({
   );
 };
 
-export default PremiumShimmer;
+export default Shimmer;

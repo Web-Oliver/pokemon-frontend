@@ -1,5 +1,5 @@
 /**
- * PremiumGlow - Reusable glow effect component
+ * Glow - Reusable glow effect component
  * Eliminates duplicate glow effects across Button and other components
  *
  * Following CLAUDE.md DRY principles:
@@ -10,12 +10,12 @@
 
 import React from 'react';
 
-interface PremiumGlowProps {
+interface GlowProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'default';
   className?: string;
 }
 
-export const PremiumGlow: React.FC<PremiumGlowProps> = ({
+export const Glow: React.FC<GlowProps> = ({
   variant = 'default',
   className = '',
 }) => {
@@ -34,4 +34,4 @@ export const PremiumGlow: React.FC<PremiumGlowProps> = ({
   );
 };
 
-export default PremiumGlow;
+export default Glow;

@@ -14,11 +14,11 @@
 import { forwardRef, SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
-  PremiumErrorMessage,
-  PremiumHelperText,
-  PremiumLabel,
-  PremiumWrapper,
-} from './PremiumFormElements';
+  ErrorMessage,
+  HelperText,
+  Label,
+  FormWrapper,
+} from './FormElements';
 
 export interface SelectOption {
   value: string;
@@ -70,8 +70,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       .join(' ');
 
     return (
-      <PremiumWrapper fullWidth={fullWidth} error={!!error}>
-        {label && <PremiumLabel htmlFor={selectId}>{label}</PremiumLabel>}
+      <FormWrapper fullWidth={fullWidth} error={!!error}>
+        {label && <Label htmlFor={selectId}>{label}</Label>}
 
         <div className={`relative ${fullWidth ? 'w-full' : ''}`}>
           <select
@@ -105,9 +105,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
 
-        <PremiumErrorMessage error={error} />
-        <PremiumHelperText helperText={helperText} />
-      </PremiumWrapper>
+        <ErrorMessage error={error} />
+        <HelperText helperText={helperText} />
+      </FormWrapper>
     );
   }
 );

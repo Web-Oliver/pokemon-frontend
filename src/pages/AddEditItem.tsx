@@ -210,62 +210,76 @@ const AddEditItem: React.FC = () => {
   };
 
   return (
-    <PageLayout
-      title={isEditing ? 'Edit Item' : 'Add New Item'}
-      subtitle={
-        isEditing
-          ? 'Update your collection item'
-          : 'Add a new item to your collection'
-      }
-      loading={fetchLoading}
-      error={fetchError}
-      variant="blue"
-    >
-      {/* Modern Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Context7 Award-Winning Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.08),transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(16,185,129,0.05),transparent_60%)]"></div>
+      
+      {/* Premium Particle Background */}
+      <div className="absolute inset-0 opacity-30">
         <div
           className="w-full h-full"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.04'%3E%3Ccircle cx='50' cy='50' r='1.5'/%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3Ccircle cx='80' cy='30' r='0.8'/%3E%3Ccircle cx='30' cy='80' r='1.2'/%3E%3Ccircle cx='70' cy='70' r='0.9'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         ></div>
       </div>
 
-      <div className="relative z-10 p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Modern Header */}
-          <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-cyan-200/30 p-6 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500"></div>
-            <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-xl"></div>
+      <div className="relative z-10 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Context7 Award-Winning Hero Section */}
+          <div className="relative mb-12">
+            {/* Background Glass Effects */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-green-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
+            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-green-400/5 rounded-[2.5rem] blur-xl"></div>
+            
+            <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
+              {/* Premium Gradient Border */}
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              
+              {/* Floating Orbs */}
+              <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-green-500/10 to-teal-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
 
-            <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleBackToCollection}
-                  className="p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group"
-                  aria-label="Back to collection"
-                >
-                  <ArrowLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-zinc-100 mb-1">
-                    {isEditing ? 'Edit Item' : 'Add New Item'}
-                  </h1>
-                  <p className="text-zinc-400 text-sm">
-                    {isEditing
-                      ? 'Update your collection item details'
-                      : 'Add a new item to your collection'}
-                  </p>
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center space-x-6">
+                  <button
+                    onClick={handleBackToCollection}
+                    className="group relative overflow-hidden p-3 rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    aria-label="Back to collection"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                  </button>
+                  
+                  <div>
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+                      {isEditing ? 'Edit Collection Item' : 'Add New Item'}
+                    </h1>
+                    <p className="text-lg text-white/60 font-medium mt-2">
+                      {isEditing
+                        ? 'Update your precious collection item with care'
+                        : 'Expand your collection with a new treasure'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Premium Status Indicator */}
+                <div className="flex items-center space-x-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-2xl shadow-lg">
+                  <div className="relative">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
+                  </div>
+                  <span className="text-sm font-semibold text-green-300">
+                    Collection Active
+                  </span>
                 </div>
               </div>
-
-              {/* Status Indicator */}
-              <div className="flex items-center space-x-2 bg-green-900/30 px-3 py-1.5 rounded-full">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-xs font-medium text-green-300">
-                  Active
-                </span>
-              </div>
+              
+              {/* Breathing Animation */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-green-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
             </div>
           </div>
 
@@ -298,125 +312,180 @@ const AddEditItem: React.FC = () => {
             </div>
           )}
 
-          {/* Modern Item Type Selection */}
+          {/* Context7 Award-Winning Item Type Selection */}
           {!fetchLoading && !fetchError && !selectedItemType && (
-            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden">
-              <div className="absolute -top-4 -left-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"></div>
+            <div className="relative">
+              {/* Background Glass Effects */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-400/5 via-purple-400/5 to-pink-400/5 rounded-[2.5rem] blur-xl"></div>
+              
+              <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
+                {/* Floating Orbs */}
+                <div className="absolute -top-8 -left-8 w-40 h-40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
 
-              <div className="mb-8 relative z-10">
-                <h2 className="text-xl font-bold text-zinc-100 mb-2">
-                  Select Item Type
-                </h2>
-                <p className="text-zinc-400 text-sm">
-                  Choose the type of item you want to add to your collection
-                </p>
-              </div>
+                <div className="mb-12 relative z-10 text-center">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent mb-4 leading-tight">
+                    Choose Your Collection Type
+                  </h2>
+                  <p className="text-xl text-white/60 font-medium max-w-2xl mx-auto">
+                    Select the type of precious item you want to add to your collection
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                {itemTypes.map((itemType, index) => {
-                  const Icon = itemType.icon;
-                  const gradientClasses = {
-                    blue: 'from-cyan-500 to-blue-600',
-                    green: 'from-emerald-500 to-teal-600',
-                    purple: 'from-purple-500 to-violet-600',
-                  };
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
+                  {itemTypes.map((itemType, index) => {
+                    const Icon = itemType.icon;
+                    const gradientClasses = {
+                      blue: 'from-cyan-500 to-blue-600',
+                      green: 'from-emerald-500 to-teal-600',
+                      purple: 'from-purple-500 to-violet-600',
+                    };
 
-                  const hoverClasses = {
-                    blue: 'hover:shadow-cyan-500/20',
-                    green: 'hover:shadow-emerald-500/20',
-                    purple: 'hover:shadow-purple-500/20',
-                  };
+                    const shadowClasses = {
+                      blue: 'hover:shadow-cyan-500/25',
+                      green: 'hover:shadow-emerald-500/25',
+                      purple: 'hover:shadow-purple-500/25',
+                    };
 
-                  return (
-                    <button
-                      key={itemType.id}
-                      onClick={() => setSelectedItemType(itemType.id)}
-                      className={`group relative text-left p-6 bg-zinc-800/90 backdrop-blur-sm rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${hoverClasses[itemType.color as keyof typeof hoverClasses]} border border-zinc-700/50 hover:border-cyan-300/50 overflow-hidden`}
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      {/* Gradient overlay */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
-                      ></div>
+                    const glowClasses = {
+                      blue: 'hover:ring-cyan-500/30',
+                      green: 'hover:ring-emerald-500/30',
+                      purple: 'hover:ring-purple-500/30',
+                    };
 
-                      {/* Icon container */}
-                      <div className="relative z-10 mb-4">
+                    return (
+                      <button
+                        key={itemType.id}
+                        onClick={() => setSelectedItemType(itemType.id)}
+                        className={`group relative text-center p-8 bg-black/60 backdrop-blur-2xl rounded-3xl transition-all duration-500 hover:scale-105 hover:shadow-2xl ${shadowClasses[itemType.color as keyof typeof shadowClasses]} border border-white/10 ring-1 ring-white/5 hover:ring-2 ${glowClasses[itemType.color as keyof typeof glowClasses]} overflow-hidden transform hover:-translate-y-2`}
+                        style={{ 
+                          animationDelay: `${index * 200}ms`,
+                          animation: 'fadeInUp 0.8s ease-out forwards'
+                        }}
+                      >
+                        {/* Premium Gradient Overlay */}
                         <div
-                          className={`w-12 h-12 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-lg shadow-md flex items-center justify-center group-hover:scale-110 transition-all duration-300`}
-                        >
-                          <Icon className="w-6 h-6 text-white" />
+                          className={`absolute inset-0 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} opacity-0 group-hover:opacity-10 transition-all duration-500`}
+                        ></div>
+
+                        {/* Shimmer Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+
+                        {/* Icon Container with Multiple Layers */}
+                        <div className="relative z-10 mb-6">
+                          <div className="relative mx-auto w-fit">
+                            {/* Outer Glow Ring */}
+                            <div
+                              className={`absolute -inset-4 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                            ></div>
+                            {/* Inner Glow Ring */}
+                            <div
+                              className={`absolute -inset-2 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-full blur-md opacity-20 group-hover:opacity-50 transition-all duration-500`}
+                            ></div>
+                            {/* Main Icon Container */}
+                            <div
+                              className={`relative w-20 h-20 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-2xl shadow-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/20`}
+                            >
+                              <Icon className="w-10 h-10 text-white drop-shadow-lg" />
+                            </div>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="relative z-10">
-                        <h3 className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-zinc-200 transition-colors duration-300">
-                          {itemType.name}
-                        </h3>
-                        <p className="text-zinc-400 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors duration-300">
-                          {itemType.description}
-                        </p>
-                      </div>
+                        <div className="relative z-10">
+                          <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white transition-colors duration-300">
+                            {itemType.name}
+                          </h3>
+                          <p className="text-white/60 text-base leading-relaxed group-hover:text-white/80 transition-colors duration-300 font-medium">
+                            {itemType.description}
+                          </p>
+                        </div>
 
-                      {/* Arrow indicator */}
-                      <div className="absolute bottom-4 right-4 w-5 h-5 text-zinc-500 group-hover:text-zinc-300 group-hover:translate-x-1 transition-all duration-300 opacity-0 group-hover:opacity-100">
-                        <ArrowLeft className="w-5 h-5 rotate-180" />
-                      </div>
-                    </button>
-                  );
-                })}
+                        {/* Premium Arrow Indicator */}
+                        <div className="absolute bottom-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white/60 group-hover:text-white group-hover:bg-white/20 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                          <ArrowLeft className="w-4 h-4 rotate-180" />
+                        </div>
+
+                        {/* Bottom Glow Line */}
+                        <div
+                          className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientClasses[itemType.color as keyof typeof gradientClasses]} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                        ></div>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {/* Breathing Animation */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
               </div>
             </div>
           )}
 
-          {/* Modern Selected Form */}
+          {/* Context7 Award-Winning Selected Form */}
           {!fetchLoading && !fetchError && selectedItemType && (
-            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 relative overflow-hidden">
-              <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"></div>
+            <div className="relative">
+              {/* Background Glass Effects */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-cyan-400/5 rounded-[2.5rem] blur-xl"></div>
+              
+              <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
+                {/* Floating Orbs */}
+                <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
 
-              <div className="flex items-center justify-between mb-8 relative z-10">
-                <div className="flex items-center space-x-4">
-                  {!isEditing && (
-                    <button
-                      onClick={() => setSelectedItemType(null)}
-                      className="p-2.5 text-zinc-400 hover:text-cyan-400 hover:bg-cyan-900/30 rounded-xl transition-all duration-200 group"
-                      aria-label="Back to item type selection"
-                    >
-                      <ArrowLeft className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
-                    </button>
-                  )}
-                  <div>
-                    <h2 className="text-xl font-bold text-zinc-100 mb-1">
-                      {
-                        itemTypes.find((type) => type.id === selectedItemType)
-                          ?.name
-                      }
-                    </h2>
-                    <p className="text-zinc-400 text-sm">
-                      {
-                        itemTypes.find((type) => type.id === selectedItemType)
-                          ?.description
-                      }
-                    </p>
+                <div className="flex items-center justify-between mb-12 relative z-10">
+                  <div className="flex items-center space-x-6">
+                    {!isEditing && (
+                      <button
+                        onClick={() => setSelectedItemType(null)}
+                        className="group relative overflow-hidden p-3 rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        aria-label="Back to item type selection"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                      </button>
+                    )}
+                    
+                    <div>
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent leading-tight">
+                        {
+                          itemTypes.find((type) => type.id === selectedItemType)
+                            ?.name
+                        }
+                      </h2>
+                      <p className="text-lg text-white/60 font-medium mt-2">
+                        {
+                          itemTypes.find((type) => type.id === selectedItemType)
+                            ?.description
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Premium Progress Indicator */}
+                  <div className="flex items-center space-x-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-xl border border-emerald-500/30 px-6 py-3 rounded-2xl shadow-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-emerald-400 rounded-full shadow-lg"></div>
+                      <div className="w-3 h-3 bg-emerald-300 rounded-full shadow-lg"></div>
+                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                    </div>
+                    <div className="h-4 w-px bg-white/20"></div>
+                    <span className="text-sm font-semibold text-emerald-300">
+                      Step 2 of 3
+                    </span>
                   </div>
                 </div>
 
-                {/* Progress indicator */}
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-                  <div className="w-2 h-2 bg-cyan-300 rounded-full"></div>
-                  <div className="w-2 h-2 bg-zinc-600 rounded-full"></div>
-                  <span className="text-xs font-medium text-zinc-400 ml-2">
-                    Step 2 of 3
-                  </span>
-                </div>
+                <div className="relative z-10">{renderForm()}</div>
+                
+                {/* Breathing Animation */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
               </div>
-
-              <div className="relative z-10">{renderForm()}</div>
             </div>
           )}
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 };
 

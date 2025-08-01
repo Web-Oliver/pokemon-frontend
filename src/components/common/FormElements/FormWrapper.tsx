@@ -1,23 +1,23 @@
 /**
- * PremiumWrapper - Centralized Context7 Premium Form Element Wrapper
+ * FormWrapper - Centralized Form Element Wrapper
  * Eliminates 400+ lines of duplicate styling across Input, Select, Button components
  *
  * Following CLAUDE.md DRY principles:
- * - Single source of truth for premium gradients and effects
+ * - Single source of truth for form gradients and effects
  * - Reusable composition pattern for all form elements
  * - Centralized micro-interactions and animations
  */
 
 import React, { ReactNode } from 'react';
 
-interface PremiumWrapperProps {
+interface FormWrapperProps {
   children: ReactNode;
   fullWidth?: boolean;
   className?: string;
   error?: boolean;
 }
 
-export const PremiumWrapper: React.FC<PremiumWrapperProps> = ({
+export const FormWrapper: React.FC<FormWrapperProps> = ({
   children,
   fullWidth = false,
   className = '',
@@ -45,4 +45,4 @@ export const PremiumWrapper: React.FC<PremiumWrapperProps> = ({
   );
 };
 
-export default PremiumWrapper;
+export default FormWrapper;
