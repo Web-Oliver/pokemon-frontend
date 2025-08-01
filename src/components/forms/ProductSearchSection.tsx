@@ -132,11 +132,19 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     // Don't set loading here - it will be synced from search hook
     switch (activeField) {
       case 'setName':
-        console.log(
-          '[CENTRALIZED SEARCH] Calling search.searchSets:',
-          currentValue
-        );
-        search.searchSets(currentValue);
+        if (formType === 'product') {
+          console.log(
+            '[CENTRALIZED SEARCH] Calling search.searchCardMarketSetNames for sealed products:',
+            currentValue
+          );
+          search.searchCardMarketSetNames(currentValue);
+        } else {
+          console.log(
+            '[CENTRALIZED SEARCH] Calling search.searchSets for cards:',
+            currentValue
+          );
+          search.searchSets(currentValue);
+        }
         break;
       case 'productName': {
         const currentSetName = watch('setName');

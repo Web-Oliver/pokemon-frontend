@@ -12,7 +12,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { searchCards, searchProducts, searchSets } from '../api/searchApi';
+import { searchCards, searchProducts, searchSets, getCardMarketSetNames } from '../api/searchApi';
 import { log } from '../utils/logger';
 import { useDebouncedValue } from './useDebounce';
 import { getDisplayName, handleSearchError } from '../utils/searchHelpers';
@@ -46,6 +46,7 @@ export interface UseSearchReturn {
 
   // Core search operations with pure TanStack Query
   searchSets: (query: string) => void;
+  searchCardMarketSetNames: (query: string) => void;
   searchProducts: (query: string, setName?: string, category?: string) => void;
   searchCards: (query: string, setName?: string) => void;
 
