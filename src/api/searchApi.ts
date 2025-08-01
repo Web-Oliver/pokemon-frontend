@@ -287,91 +287,13 @@ export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
   return response.data.length > 0 ? response.data[0] : null;
 };
 
-/**
- * Pure TanStack Query Sets by Year
- */
-export const searchSetsByYear = async (
-  query: string,
-  year: number,
-  limit: number = 15
-): Promise<ISet[]> => {
-  if (!query.trim()) return [];
+// YEAR-SPECIFIC SEARCH DISABLED
 
-  const params: SetSearchParams = {
-    query: query.trim(),
-    year,
-    limit,
-    page: 1,
-  };
+// YEAR RANGE SEARCH DISABLED
 
-  const response = await searchSets(params);
-  return response.data;
-};
+// PSA POPULATION SEARCH DISABLED
 
-/**
- * Pure TanStack Query Sets by Year Range
- */
-export const searchSetsByYearRange = async (
-  query: string,
-  minYear: number,
-  maxYear: number,
-  limit: number = 15
-): Promise<ISet[]> => {
-  if (!query.trim()) return [];
-
-  const params: SetSearchParams = {
-    query: query.trim(),
-    minYear,
-    maxYear,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchSets(params);
-  return response.data;
-};
-
-/**
- * Pure TanStack Query Sets by PSA Population
- */
-export const searchSetsByPsaPopulation = async (
-  query: string,
-  minPsaPopulation: number,
-  limit: number = 15
-): Promise<ISet[]> => {
-  if (!query.trim()) return [];
-
-  const params: SetSearchParams = {
-    query: query.trim(),
-    minPsaPopulation,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchSets(params);
-  return response.data;
-};
-
-/**
- * Pure TanStack Query Sets by Card Count
- */
-export const searchSetsByCardCount = async (
-  query: string,
-  minCardCount: number,
-  limit: number = 15
-): Promise<ISet[]> => {
-  if (!query.trim()) return [];
-
-  const params: SetSearchParams = {
-    query: query.trim(),
-    minCardCount,
-    limit,
-    page: 1,
-  };
-
-  const response = await searchSets(params);
-  return response.data;
-};
+// CARD COUNT SEARCH DISABLED
 
 // ===== CONTEXT7 PURE TANSTACK QUERY PRODUCTS API =====
 

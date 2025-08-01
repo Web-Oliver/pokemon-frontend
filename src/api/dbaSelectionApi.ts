@@ -92,7 +92,7 @@ const dbaSelectionOperations = createResourceOperations<
   IDbaSelectionUpdatePayload
 >(DBA_SELECTION_CONFIG, {
   includeExportOperations: true,
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
@@ -118,40 +118,7 @@ export const getDbaSelections = async (
   });
 };
 
-/**
- * Get DBA selection by ID
- * @param id - DBA selection ID
- * @returns Promise<DbaSelection> - Single DBA selection
- */
-export const getDbaSelectionById = async (
-  id: string
-): Promise<DbaSelection> => {
-  return dbaSelectionOperations.getById(id, {
-    transform: idMapper,
-  });
-};
-
-/**
- * Create a new DBA selection
- * @param selectionData - DBA selection creation data
- * @returns Promise<DbaSelection> - Created DBA selection
- */
-export const createDbaSelection = dbaSelectionOperations.create;
-
-/**
- * Update existing DBA selection
- * @param id - DBA selection ID
- * @param selectionData - DBA selection update data
- * @returns Promise<DbaSelection> - Updated DBA selection
- */
-export const updateDbaSelection = dbaSelectionOperations.update;
-
-/**
- * Delete DBA selection
- * @param id - DBA selection ID
- * @returns Promise<void>
- */
-export const removeDbaSelection = dbaSelectionOperations.remove;
+// UNUSED DBA CRUD OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Search DBA selections with parameters
@@ -160,12 +127,7 @@ export const removeDbaSelection = dbaSelectionOperations.remove;
  */
 export const searchDbaSelections = dbaSelectionOperations.search;
 
-/**
- * Bulk create DBA selections
- * @param selectionsData - Array of DBA selection creation data
- * @returns Promise<DbaSelection[]> - Created DBA selections
- */
-export const bulkCreateDbaSelections = dbaSelectionOperations.bulkCreate;
+// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Export DBA selections data
@@ -173,15 +135,6 @@ export const bulkCreateDbaSelections = dbaSelectionOperations.bulkCreate;
  * @returns Promise<Blob> - Export file blob
  */
 export const exportDbaSelections = dbaSelectionOperations.export;
-
-/**
- * Batch operation on DBA selections
- * @param operation - Operation name
- * @param ids - DBA selection IDs
- * @param operationData - Operation-specific data
- * @returns Promise<DbaSelection[]> - Operation results
- */
-export const batchDbaSelectionOperation = dbaSelectionOperations.batchOperation;
 
 // ========== DBA-SPECIFIC OPERATIONS ==========
 
@@ -220,51 +173,4 @@ export const removeFromDbaSelection = async (
   return response;
 };
 
-/**
- * Get DBA selection for specific item
- * @param itemType - Type of item
- * @param itemId - Item ID
- * @returns Promise<DbaSelection>
- */
-export const getDbaSelectionByItem = async (
-  itemType: string,
-  itemId: string
-): Promise<DbaSelection> => {
-  const response = await unifiedApiClient.apiGet<DbaSelection>(
-    `/dba-selection/${itemType}/${itemId}`,
-    'DBA selection by item'
-  );
-  return idMapper(response) as DbaSelection;
-};
-
-/**
- * Update DBA selection notes
- * @param itemType - Type of item
- * @param itemId - Item ID
- * @param notes - Notes to update
- * @returns Promise<DbaSelection>
- */
-export const updateDbaSelectionNotes = async (
-  itemType: string,
-  itemId: string,
-  notes: string
-): Promise<DbaSelection> => {
-  const response = await unifiedApiClient.apiUpdate<DbaSelection>(
-    `/dba-selection/${itemType}/${itemId}/notes`,
-    { notes },
-    'DBA selection notes'
-  );
-  return idMapper(response) as DbaSelection;
-};
-
-/**
- * Get DBA selection statistics
- * @returns Promise<DbaSelectionStats>
- */
-export const getDbaSelectionStats = async (): Promise<DbaSelectionStats> => {
-  const response = await unifiedApiClient.apiGet<DbaSelectionStats>(
-    '/dba-selection/stats',
-    'DBA selection statistics'
-  );
-  return response;
-};
+// ALL DBA ITEM MANIPULATION FUNCTIONS REMOVED - Not used by any frontend components

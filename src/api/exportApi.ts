@@ -91,7 +91,7 @@ const exportOperations = createResourceOperations<
   IExportUpdatePayload
 >(EXPORT_CONFIG, {
   includeExportOperations: false, // Prevent circular dependency
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
@@ -139,14 +139,7 @@ export const removeExport = exportOperations.remove;
  */
 export const searchExports = exportOperations.search;
 
-/**
- * Batch operation on export jobs
- * @param operation - Operation name
- * @param ids - Export job IDs
- * @param operationData - Operation-specific data
- * @returns Promise<IExport[]> - Operation results
- */
-export const batchExportOperation = exportOperations.batchOperation;
+// BATCH EXPORT OPERATIONS REMOVED - Not used by any frontend components
 
 // ========== SPECIALIZED EXPORT OPERATIONS ==========
 

@@ -60,60 +60,22 @@ const setOperations = createResourceOperations<
   ISetCreatePayload,
   ISetUpdatePayload
 >(SET_CONFIG, {
-  includeExportOperations: true,
-  includeBatchOperations: true,
+  includeExportOperations: false, // DISABLED - Sets are read-only
+  includeBatchOperations: false,  // DISABLED - Sets are read-only
 });
+
+// DISABLE MODIFICATION OPERATIONS - Sets are reference data only
+setOperations.create = () => Promise.reject(new Error('Set creation disabled - reference data only'));
+setOperations.update = () => Promise.reject(new Error('Set updates disabled - reference data only'));
+setOperations.remove = () => Promise.reject(new Error('Set deletion disabled - reference data only'));
+setOperations.bulkCreate = () => Promise.reject(new Error('Bulk set creation disabled - reference data only'));
 
 // ========== EXPORTED API OPERATIONS ==========
 
-/**
- * Get all sets with optional parameters
- * @param params - Optional filter parameters
- * @returns Promise<ISet[]> - Array of sets
- */
-export const getSets = async (params?: { limit?: number }): Promise<ISet[]> => {
-  const { limit = 1000 } = params || {};
-  const response = await setOperations.getAll(
-    { limit },
-    {
-      transform: idMapper,
-    }
-  );
-  return response;
-};
+// getSets and getSetById removed - not used by any frontend components
 
-/**
- * Get set by ID
- * @param id - Set ID
- * @returns Promise<ISet> - Single set
- */
-export const getSetById = async (id: string): Promise<ISet> => {
-  return setOperations.getById(id, {
-    transform: idMapper,
-  });
-};
-
-/**
- * Create a new set
- * @param setData - Set creation data
- * @returns Promise<ISet> - Created set
- */
-export const createSet = setOperations.create;
-
-/**
- * Update existing set
- * @param id - Set ID
- * @param setData - Set update data
- * @returns Promise<ISet> - Updated set
- */
-export const updateSet = setOperations.update;
-
-/**
- * Delete set
- * @param id - Set ID
- * @returns Promise<void>
- */
-export const removeSet = setOperations.remove;
+// SET MODIFICATION OPERATIONS DISABLED
+// Sets are reference data managed by admin/backend only
 
 /**
  * Search sets with parameters - consolidated implementation
@@ -125,28 +87,8 @@ export const searchSets = async (searchParams: any): Promise<ISet[]> => {
   return result.data;
 };
 
-/**
- * Bulk create sets
- * @param setsData - Array of set creation data
- * @returns Promise<ISet[]> - Created sets
- */
-export const bulkCreateSets = setOperations.bulkCreate;
-
-/**
- * Export sets data
- * @param exportParams - Export parameters
- * @returns Promise<Blob> - Export file blob
- */
-export const exportSets = setOperations.export;
-
-/**
- * Batch operation on sets
- * @param operation - Operation name
- * @param ids - Set IDs
- * @param operationData - Operation-specific data
- * @returns Promise<ISet[]> - Operation results
- */
-export const batchSetOperation = setOperations.batchOperation;
+// BULK AND BATCH SET OPERATIONS DISABLED
+// Sets are reference data - no frontend modifications allowed
 
 // ========== SET-SPECIFIC OPERATIONS ==========
 
@@ -210,8 +152,4 @@ export const getPaginatedSets = async (
 export {
   getSetSuggestions,
   getBestMatchSet,
-  searchSetsByYear,
-  searchSetsByYearRange,
-  searchSetsByPsaPopulation,
-  searchSetsByCardCount,
 } from './searchApi';

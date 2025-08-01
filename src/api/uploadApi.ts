@@ -53,10 +53,9 @@ export interface MultipleUploadResult {
 /**
  * Upload single image
  * @param image - Image file to upload
- * @returns Promise<SingleUploadResult> - Upload result with thumbnail information
+ * @returns Promise<string> - Upload result URL
  */
 export const uploadSingleImage = async (image: File): Promise<string> => {
-  // Validate that image file is provided
   if (!image) {
     throw new Error('No image file provided for upload');
   }
@@ -72,10 +71,7 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
     },
   });
 
-  // Handle wrapped response format {success: true, data: {...}} or direct response
   const uploadedFile = response.data || response;
-
-  // Extract only the path from the uploaded file (backward compatibility)
   return uploadedFile.path || uploadedFile.url;
 };
 
@@ -87,7 +83,6 @@ export const uploadSingleImage = async (image: File): Promise<string> => {
 export const uploadSingleImageWithThumbnails = async (
   image: File
 ): Promise<SingleUploadResult> => {
-  // Validate that image file is provided
   if (!image) {
     throw new Error('No image file provided for upload');
   }
@@ -103,7 +98,6 @@ export const uploadSingleImageWithThumbnails = async (
     },
   });
 
-  // Handle wrapped response format {success: true, data: {...}} or direct response
   const uploadedFile = response.data || response;
 
   return {

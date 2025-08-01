@@ -16,7 +16,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_BASE_URL } from '../utils/constants';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
-import { BatchProcessor, optimizedApiRequest } from '../utils/apiOptimization';
+import { optimizedApiRequest } from '../utils/apiOptimization';
 import {
   transformApiResponse,
   transformRequestData,
@@ -104,9 +104,7 @@ export interface OptimizationConfig {
   enableCache?: boolean;
   cacheTTL?: number;
   enableDeduplication?: boolean;
-  enableBatching?: boolean;
-  batchSize?: number;
-  batchDelay?: number;
+  // enableBatching, batchSize, batchDelay removed - not used by any frontend components
 }
 
 /**
@@ -116,13 +114,7 @@ export interface EnhancedRequestConfig extends ApiRequestConfig {
   optimization?: OptimizationConfig;
 }
 
-/**
- * Batch request configuration
- */
-export interface BatchRequestConfig {
-  batchSize?: number;
-  batchDelay?: number;
-}
+// BatchRequestConfig removed - not used by any frontend components
 
 // ========== OPTIMIZATION STRATEGIES (OCP + DIP) ==========
 
@@ -160,7 +152,7 @@ class DefaultOptimizationStrategy implements OptimizationStrategy {
 export class UnifiedApiClient {
   private client: AxiosInstance;
   private optimizationStrategy: OptimizationStrategy;
-  private batchProcessors: Map<string, BatchProcessor<any, any>>;
+  // batchProcessors removed - not used by any frontend components
 
   constructor(
     baseURL: string = API_BASE_URL,
@@ -168,7 +160,7 @@ export class UnifiedApiClient {
   ) {
     this.client = this.createAxiosInstance(baseURL);
     this.optimizationStrategy = optimizationStrategy;
-    this.batchProcessors = new Map();
+    // this.batchProcessors = new Map(); - removed
   }
 
   /**
@@ -571,74 +563,9 @@ export class UnifiedApiClient {
     }
   }
 
-  // ========== BATCH OPERATIONS ==========
-
-  /**
-   * Batch GET requests for multiple resources
-   */
-  async batchGet<T>(
-    urls: string[],
-    config: EnhancedRequestConfig = {},
-    batchConfig: BatchRequestConfig = {}
-  ): Promise<T[]> {
-    const batchKey = `batch-get-${JSON.stringify(batchConfig)}`;
-
-    if (!this.batchProcessors.has(batchKey)) {
-      this.batchProcessors.set(
-        batchKey,
-        new BatchProcessor(async (urlsBatch: string[]) => {
-          const promises = urlsBatch.map((url) => this.get<T>(url, config));
-          return Promise.all(promises);
-        }, batchConfig)
-      );
-    }
-
-    const batchProcessor = this.batchProcessors.get(batchKey)!;
-    const results: T[] = [];
-
-    for (const url of urls) {
-      const result = await batchProcessor.add(url);
-      results.push(result);
-    }
-
-    return results;
-  }
-
-  /**
-   * Batch POST requests for bulk operations
-   */
-  async batchPost<T>(
-    requests: Array<{ url: string; data?: any }>,
-    config: EnhancedRequestConfig = {},
-    batchConfig: BatchRequestConfig = {}
-  ): Promise<T[]> {
-    const batchKey = `batch-post-${JSON.stringify(batchConfig)}`;
-
-    if (!this.batchProcessors.has(batchKey)) {
-      this.batchProcessors.set(
-        batchKey,
-        new BatchProcessor(
-          async (requestsBatch: Array<{ url: string; data?: any }>) => {
-            const promises = requestsBatch.map((req) =>
-              this.post<T>(req.url, req.data, config)
-            );
-            return Promise.all(promises);
-          },
-          batchConfig
-        )
-      );
-    }
-
-    const batchProcessor = this.batchProcessors.get(batchKey)!;
-    const results: T[] = [];
-
-    for (const request of requests) {
-      const result = await batchProcessor.add(request);
-      results.push(result);
-    }
-
-    return results;
-  }
+  // ========== BATCH OPERATIONS REMOVED ==========
+  // Batch operations were not used by any frontend components and have been removed
+  // to reduce code complexity and maintain only actually needed functionality
 
   // ========== SPECIALIZED WRAPPER METHODS (DRY) ==========
 
@@ -777,9 +704,7 @@ export default {
   put: unifiedApiClient.put.bind(unifiedApiClient),
   delete: unifiedApiClient.delete.bind(unifiedApiClient),
 
-  // Batch operations
-  batchGet: unifiedApiClient.batchGet.bind(unifiedApiClient),
-  batchPost: unifiedApiClient.batchPost.bind(unifiedApiClient),
+  // Batch operations removed - not used by any frontend components
 
   // Specialized wrappers
   apiGet: unifiedApiClient.apiGet.bind(unifiedApiClient),

@@ -98,68 +98,14 @@ const cardOperations = createResourceOperations<
   ICardUpdatePayload
 >(CARD_CONFIG, {
   includeExportOperations: true,
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
 
-/**
- * Get all cards with optional filtering parameters
- * @param params - Optional filter parameters
- * @returns Promise<ICard[]> - Array of cards
- */
-export const getCards = async (
-  params?: CardsSearchParams
-): Promise<ICard[]> => {
-  // If specific search parameters provided, use search instead
-  if (params?.cardName || params?.baseName) {
-    const searchParams: CardSearchParams = {
-      query: params.cardName || params.baseName || '*',
-      setId: params.setId,
-      limit: 50,
-    };
-    const response = await searchCardsApi(searchParams);
-    return response.data;
-  }
+// getCards removed - not used by any frontend components
 
-  // Otherwise use generic getAll with ID mapping
-  return cardOperations.getAll(params, {
-    transform: idMapper,
-  });
-};
-
-/**
- * Get card by ID
- * @param id - Card ID
- * @returns Promise<ICard> - Single card with population data
- */
-export const getCardById = async (id: string): Promise<ICard> => {
-  return cardOperations.getById(id, {
-    transform: idMapper,
-  });
-};
-
-/**
- * Create a new card
- * @param cardData - Card creation data
- * @returns Promise<ICard> - Created card
- */
-export const createCard = cardOperations.create;
-
-/**
- * Update existing card
- * @param id - Card ID
- * @param cardData - Card update data
- * @returns Promise<ICard> - Updated card
- */
-export const updateCard = cardOperations.update;
-
-/**
- * Delete card
- * @param id - Card ID
- * @returns Promise<void>
- */
-export const removeCard = cardOperations.remove;
+// ALL BASIC CARD CRUD OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Search cards with parameters - consolidated implementation
@@ -171,12 +117,7 @@ export const searchCards = async (searchParams: any): Promise<ICard[]> => {
   return result.data;
 };
 
-/**
- * Bulk create cards
- * @param cardsData - Array of card creation data
- * @returns Promise<ICard[]> - Created cards
- */
-export const bulkCreateCards = cardOperations.bulkCreate;
+// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Export cards data
@@ -185,23 +126,7 @@ export const bulkCreateCards = cardOperations.bulkCreate;
  */
 export const exportCards = cardOperations.export;
 
-/**
- * Batch operation on cards
- * @param operation - Operation name
- * @param ids - Card IDs
- * @param operationData - Operation-specific data
- * @returns Promise<ICard[]> - Operation results
- */
-export const batchCardOperation = cardOperations.batchOperation;
-
-/**
- * Get comprehensive card metrics and statistics
- * Uses the enhanced /api/cards/enhanced/metrics endpoint with 15-minute caching
- * @returns Promise<CardMetrics> - Card metrics and statistics
- */
-export const getCardMetrics = async (): Promise<CardMetrics> => {
-  return cardOperations.client.get('/cards/enhanced/metrics');
-};
+// getCardMetrics removed - not used by any frontend components
 
 // ========== CARD-SPECIFIC OPERATIONS ==========
 

@@ -52,7 +52,7 @@ const auctionOperations = createResourceOperations<
   IAuctionUpdatePayload
 >(AUCTION_CONFIG, {
   includeExportOperations: true,
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
@@ -166,12 +166,7 @@ export const deleteAuction = auctionOperations.remove;
  */
 export const searchAuctions = auctionOperations.search;
 
-/**
- * Bulk create auctions
- * @param auctionsData - Array of auction creation data
- * @returns Promise<IAuction[]> - Created auctions
- */
-export const bulkCreateAuctions = auctionOperations.bulkCreate;
+// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Export auctions data
@@ -179,15 +174,6 @@ export const bulkCreateAuctions = auctionOperations.bulkCreate;
  * @returns Promise<Blob> - Export file blob
  */
 export const exportAuctions = auctionOperations.export;
-
-/**
- * Batch operation on auctions
- * @param operation - Operation name
- * @param ids - Auction IDs
- * @param operationData - Operation-specific data
- * @returns Promise<IAuction[]> - Operation results
- */
-export const batchAuctionOperation = auctionOperations.batchOperation;
 
 // ========== AUCTION-SPECIFIC OPERATIONS ==========
 

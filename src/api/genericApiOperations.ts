@@ -143,28 +143,7 @@ export async function deleteResource(
   );
 }
 
-/**
- * Generic BULK operations
- */
-export async function bulkCreateResources<T>(
-  config: ResourceConfig,
-  resourcesData: Partial<T>[],
-  options?: OperationOptions
-): Promise<T[]> {
-  const { transform, ...requestOptions } = options || {};
-
-  const data = await unifiedApiClient.post<T[]>(
-    `${config.endpoint}/bulk`,
-    { items: resourcesData },
-    {
-      operation: `bulk create ${config.resourceName}s`,
-      successMessage: `${resourcesData.length} ${config.resourceName}s created successfully`,
-      ...requestOptions,
-    }
-  );
-
-  return transform ? transform(data) : data;
-}
+// BULK OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Generic search operation
@@ -239,31 +218,7 @@ export async function exportResource<T = Blob>(
   return transform ? transform(data) : data;
 }
 
-/**
- * Generic batch operation
- * For operations that need to be performed on multiple resources
- */
-export async function batchOperation<T>(
-  config: ResourceConfig,
-  operation: string,
-  ids: string[],
-  operationData?: any,
-  options?: OperationOptions
-): Promise<T[]> {
-  const { transform, ...requestOptions } = options || {};
-
-  const data = await unifiedApiClient.post<T[]>(
-    `${config.endpoint}/batch/${operation}`,
-    { ids, data: operationData },
-    {
-      operation: `batch ${operation} ${config.resourceName}s`,
-      successMessage: `Batch ${operation} completed for ${ids.length} ${config.resourceName}s`,
-      ...requestOptions,
-    }
-  );
-
-  return transform ? transform(data) : data;
-}
+// BATCH OPERATIONS REMOVED - Not used by any frontend components
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -377,10 +332,7 @@ export interface ResourceOperations<
     searchParams: GenericParams,
     options?: OperationOptions
   ) => Promise<TResource[]>;
-  bulkCreate: (
-    items: TCreatePayload[],
-    options?: OperationOptions
-  ) => Promise<TResource[]>;
+  // BULK/BATCH OPERATIONS REMOVED - Not used by any frontend components
   markSold?: (
     id: string,
     saleDetails: any,
@@ -390,12 +342,6 @@ export interface ResourceOperations<
     exportParams?: GenericParams,
     options?: OperationOptions
   ) => Promise<Blob>;
-  batchOperation?: (
-    operation: string,
-    ids: string[],
-    operationData?: any,
-    options?: OperationOptions
-  ) => Promise<TResource[]>;
 }
 
 /**
@@ -415,7 +361,7 @@ export function createResourceOperations<
   options: {
     includeSoldOperations?: boolean;
     includeExportOperations?: boolean;
-    includeBatchOperations?: boolean;
+    // includeBatchOperations removed - not used by any frontend components
   } = {}
 ): ResourceOperations<TResource, TCreatePayload, TUpdatePayload> {
   const operations: ResourceOperations<
@@ -455,12 +401,7 @@ export function createResourceOperations<
     search: (searchParams: GenericParams, requestOptions?: OperationOptions) =>
       searchResources<TResource>(config, searchParams, requestOptions),
 
-    bulkCreate: (items: TCreatePayload[], requestOptions?: OperationOptions) =>
-      bulkCreateResources<TResource>(
-        config,
-        items as Partial<TResource>[],
-        requestOptions
-      ),
+    // bulkCreate removed - not used by any frontend components
   };
 
   // Optional specialized operations
@@ -479,21 +420,7 @@ export function createResourceOperations<
     ) => exportResource<Blob>(config, exportParams, requestOptions);
   }
 
-  if (options.includeBatchOperations) {
-    operations.batchOperation = (
-      operation: string,
-      ids: string[],
-      operationData?: any,
-      requestOptions?: OperationOptions
-    ) =>
-      batchOperation<TResource>(
-        config,
-        operation,
-        ids,
-        operationData,
-        requestOptions
-      );
-  }
+  // Batch operations support removed - not used by any frontend components
 
   return operations;
 }
@@ -511,7 +438,7 @@ export const AUCTION_CONFIG = createResourceConfig('/auctions', 'auction');
 export const CARD_CONFIG = createResourceConfig('/cards/enhanced', 'card');
 
 /**
- * Common configuration for set resources
+ * Common configuration for set resources - READ-ONLY
  */
 export const SET_CONFIG = createResourceConfig('/sets', 'set');
 

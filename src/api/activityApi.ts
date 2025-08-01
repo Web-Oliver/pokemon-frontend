@@ -165,7 +165,7 @@ const activityOperations = createResourceOperations<
   IActivityUpdatePayload
 >(ACTIVITY_CONFIG, {
   includeExportOperations: true,
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
@@ -234,12 +234,7 @@ export const removeActivity = activityOperations.remove;
  */
 export const searchActivitiesGeneric = activityOperations.search;
 
-/**
- * Bulk create activities
- * @param activitiesData - Array of activity creation data
- * @returns Promise<Activity[]> - Created activities
- */
-export const bulkCreateActivities = activityOperations.bulkCreate;
+// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Export activities data
@@ -247,15 +242,6 @@ export const bulkCreateActivities = activityOperations.bulkCreate;
  * @returns Promise<Blob> - Export file blob
  */
 export const exportActivities = activityOperations.export;
-
-/**
- * Batch operation on activities
- * @param operation - Operation name
- * @param ids - Activity IDs
- * @param operationData - Operation-specific data
- * @returns Promise<Activity[]> - Operation results
- */
-export const batchActivityOperation = activityOperations.batchOperation;
 
 // ========== SPECIALIZED ACTIVITY OPERATIONS ==========
 
@@ -316,18 +302,7 @@ export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
   return response;
 };
 
-/**
- * Get available activity types and metadata
- * @returns Promise<ActivityTypesResponse> - Activity types and metadata
- */
-export const getActivityTypes = async (): Promise<ActivityTypesResponse> => {
-  const response = await unifiedApiClient.apiGet<ActivityTypesResponse>(
-    '/activities/types',
-    'activity types'
-  );
-
-  return response;
-};
+// getActivityTypes removed - not used by any frontend components
 
 /**
  * Search activities with full-text search
@@ -453,102 +428,11 @@ export interface ArchiveOldActivitiesResponse {
   };
 }
 
-/**
- * Archive activities older than specified days
- * Uses POST /api/activities/archive-old endpoint as per API documentation
- * @param days - Number of days (activities older than this will be archived)
- * @returns Promise<ArchiveOldActivitiesResponse> - Archive operation results
- */
-export const archiveOldActivities = async (
-  days: number
-): Promise<ArchiveOldActivitiesResponse> => {
-  const request: ArchiveOldActivitiesRequest = { days };
+// archiveOldActivities removed - not used by any frontend components
 
-  return unifiedApiClient.post<ArchiveOldActivitiesResponse>(
-    '/activities/archive-old',
-    request
-  );
-};
+// getArchivePreview removed - not used by any frontend components
 
-/**
- * Get estimated count of activities that would be archived
- * Helper function to preview archive operation
- * @param days - Number of days threshold
- * @returns Promise<{count: number, oldestDate: string}> - Preview of archive operation
- */
-export const getArchivePreview = async (
-  days: number
-): Promise<{ count: number; oldestDate: string }> => {
-  try {
-    // Calculate the cutoff date
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-
-    // Get activities older than the cutoff date
-    const activities = await getActivities({
-      limit: 1000, // Get a large sample to estimate
-      offset: 0,
-    });
-
-    const oldActivities = activities.data.filter(
-      (activity) => new Date(activity.createdAt) < cutoffDate
-    );
-
-    const oldestDate =
-      oldActivities.length > 0
-        ? Math.min(...oldActivities.map((a) => new Date(a.createdAt).getTime()))
-        : Date.now();
-
-    return {
-      count: oldActivities.length,
-      oldestDate: new Date(oldestDate).toISOString(),
-    };
-  } catch (error) {
-    console.error('Failed to get archive preview:', error);
-    return {
-      count: 0,
-      oldestDate: new Date().toISOString(),
-    };
-  }
-};
-
-/**
- * Archive activities with confirmation
- * Convenience function that includes preview and confirmation
- * @param days - Number of days threshold
- * @param confirm - Confirmation callback function
- * @returns Promise<ArchiveOldActivitiesResponse | null> - Archive results or null if cancelled
- */
-export const archiveOldActivitiesWithConfirmation = async (
-  days: number,
-  confirm: (preview: { count: number; oldestDate: string }) => Promise<boolean>
-): Promise<ArchiveOldActivitiesResponse | null> => {
-  // Get preview first
-  const preview = await getArchivePreview(days);
-
-  if (preview.count === 0) {
-    return {
-      success: true,
-      message: 'No activities found older than the specified days',
-      data: {
-        archivedCount: 0,
-        oldestArchived: '',
-        newestArchived: '',
-        archiveDate: new Date().toISOString(),
-      },
-    };
-  }
-
-  // Ask for confirmation
-  const confirmed = await confirm(preview);
-
-  if (!confirmed) {
-    return null; // User cancelled
-  }
-
-  // Proceed with archive
-  return archiveOldActivities(days);
-};
+// archiveOldActivitiesWithConfirmation removed - not used by any frontend components
 
 // Export all activity operations for convenience
 export default {
@@ -559,22 +443,19 @@ export default {
   updateActivity,
   removeActivity,
   searchActivitiesGeneric,
-  bulkCreateActivities,
+  // bulkCreateActivities removed - not used by any frontend components
   exportActivities,
-  batchActivityOperation,
+  // batchActivityOperation removed - not used by any frontend components
 
   // Specialized operations
   getActivities,
   getRecentActivities,
   getActivityStats,
-  getActivityTypes,
+  // getActivityTypes removed - not used by any frontend components
   searchActivities,
   getActivitiesForEntity,
   markActivityAsRead,
   archiveActivity,
 
-  // Archive functionality
-  archiveOldActivities,
-  getArchivePreview,
-  archiveOldActivitiesWithConfirmation,
+  // Archive functionality removed - not used by any frontend components
 };

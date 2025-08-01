@@ -83,7 +83,7 @@ const cardMarketRefProductOperations = createResourceOperations<
   ICardMarketRefProductUpdatePayload
 >(CARDMARKET_REF_PRODUCTS_CONFIG, {
   includeExportOperations: true,
-  includeBatchOperations: true,
+  // includeBatchOperations removed - not used by any frontend components
 });
 
 // ========== EXPORTED API OPERATIONS ==========
@@ -117,40 +117,9 @@ export const getCardMarketRefProducts = async (
   }
 };
 
-/**
- * Get CardMarket reference product by ID
- * @param id - Product ID
- * @returns Promise<ICardMarketReferenceProduct> - Single reference product
- */
-export const getCardMarketRefProductById = async (
-  id: string
-): Promise<ICardMarketReferenceProduct> => {
-  return cardMarketRefProductOperations.getById(id, {
-    transform: idMapper,
-  });
-};
+// getCardMarketRefProductById removed - not used by any frontend components
 
-/**
- * Create a new CardMarket reference product
- * @param productData - Product creation data
- * @returns Promise<ICardMarketReferenceProduct> - Created product
- */
-export const createCardMarketRefProduct = cardMarketRefProductOperations.create;
-
-/**
- * Update existing CardMarket reference product
- * @param id - Product ID
- * @param productData - Product update data
- * @returns Promise<ICardMarketReferenceProduct> - Updated product
- */
-export const updateCardMarketRefProduct = cardMarketRefProductOperations.update;
-
-/**
- * Delete CardMarket reference product
- * @param id - Product ID
- * @returns Promise<void>
- */
-export const removeCardMarketRefProduct = cardMarketRefProductOperations.remove;
+// ALL CARDMARKET CRUD OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Search CardMarket reference products with parameters - consolidated implementation
@@ -164,13 +133,7 @@ export const searchCardMarketRefProducts = async (
   return result.data;
 };
 
-/**
- * Bulk create CardMarket reference products
- * @param productsData - Array of product creation data
- * @returns Promise<ICardMarketReferenceProduct[]> - Created products
- */
-export const bulkCreateCardMarketRefProducts =
-  cardMarketRefProductOperations.bulkCreate;
+// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
 
 /**
  * Export CardMarket reference products data
@@ -179,16 +142,6 @@ export const bulkCreateCardMarketRefProducts =
  */
 export const exportCardMarketRefProducts =
   cardMarketRefProductOperations.export;
-
-/**
- * Batch operation on CardMarket reference products
- * @param operation - Operation name
- * @param ids - Product IDs
- * @param operationData - Operation-specific data
- * @returns Promise<ICardMarketReferenceProduct[]> - Operation results
- */
-export const batchCardMarketRefProductOperation =
-  cardMarketRefProductOperations.batchOperation;
 
 // ========== CARDMARKET-SPECIFIC OPERATIONS ==========
 
