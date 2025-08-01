@@ -117,7 +117,7 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
   customButtons,
 }) => {
   // Get the appropriate icon and section title for card information
-  const cardInfoIcon = icon;
+  const CardInfoIcon = icon;
   const sectionIconClass =
     cardType === 'psa' ? 'text-blue-300' : 'text-emerald-300';
   const sectionBgClass =
@@ -142,14 +142,14 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
 
           <h4 className="text-xl font-medium text-zinc-100 mb-4 flex items-center justify-between relative z-10">
             <div className="flex items-center">
-              <cardInfoIcon className="w-5 h-5 mr-2 text-zinc-300" />
+              <CardInfoIcon className="w-5 h-5 mr-2 text-zinc-300" />
               Card Information
             </div>
             {watch('setName') && (
               <div
                 className={`flex items-center text-sm ${sectionIconClass} ${sectionBgClass} px-3 py-1 rounded-full backdrop-blur-sm border ${sectionBorderClass}`}
               >
-                <cardInfoIcon className="w-4 h-4 mr-1" />
+                <CardInfoIcon className="w-4 h-4 mr-1" />
                 Filtering by: {watch('setName')}
               </div>
             )}

@@ -40,7 +40,7 @@ import DateRangeFilter, {
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
-import { handleApiError } from '../utils/errorHandler';
+import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { displayPrice } from '../utils/formatting';
 
 const SalesAnalytics: React.FC = () => {
