@@ -193,7 +193,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
         </div>
 
         {/* Context7 Premium Price History List */}
-        <div className="space-y-3 mb-8 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-transparent">
+        <div className="space-y-3 mb-8 max-h-64 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-indigo-300 scrollbar-track-transparent">
           {priceHistory.length > 0 ? (
             priceHistory
               .sort(

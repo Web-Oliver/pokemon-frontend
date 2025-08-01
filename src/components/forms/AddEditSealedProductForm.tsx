@@ -305,34 +305,36 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         primaryColorClass="purple"
       />
 
-      {/* Product Search Section - Maintains ALL existing functionality */}
-      <div className="mb-6 relative z-10">
-        <ProductSearchSection
-          register={register}
-          errors={errors}
-          setValue={setValue}
-          watch={watch}
-          clearErrors={clearErrors}
-          onSelectionChange={(selectedData) => {
-            console.log('[SEALED PRODUCT] Product selection:', selectedData);
+      {/* Product Search Section - Hidden in edit mode like other forms */}
+      {!isEditing && (
+        <div className="mb-6 relative z-10">
+          <ProductSearchSection
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+            clearErrors={clearErrors}
+            onSelectionChange={(selectedData) => {
+              console.log('[SEALED PRODUCT] Product selection:', selectedData);
 
-            // Store selected product data for form submission (CRITICAL - maintains existing behavior)
-            setSelectedProductData(selectedData);
-          }}
-          onError={(error) => {
-            console.error('[SEALED PRODUCT] Search error:', error);
-          }}
-          sectionTitle="Product Information"
-          sectionIcon={Package}
-          formType="product"
-          readOnlyFields={{
-            category: true,
-            availability: true,
-          }}
-          productCategories={productCategories}
-          loadingOptions={loadingOptions}
-        />
-      </div>
+              // Store selected product data for form submission (CRITICAL - maintains existing behavior)
+              setSelectedProductData(selectedData);
+            }}
+            onError={(error) => {
+              console.error('[SEALED PRODUCT] Search error:', error);
+            }}
+            sectionTitle="Product Information"
+            sectionIcon={Package}
+            formType="product"
+            readOnlyFields={{
+              category: true,
+              availability: true,
+            }}
+            productCategories={productCategories}
+            loadingOptions={loadingOptions}
+          />
+        </div>
+      )}
 
       {/* Context7 Premium Pricing & Investment Section */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">
@@ -433,7 +435,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         </div>
 
         {/* Price History Section (for editing existing products) */}
-        {isEditing && priceHistory.length > 0 && (
+        {isEditing && priceHistory.priceHistory.length > 0 && (
           <div className="mt-8 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50">
             <PriceHistoryDisplay
               priceHistory={priceHistory.priceHistory}

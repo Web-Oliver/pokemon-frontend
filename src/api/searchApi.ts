@@ -125,8 +125,8 @@ export const searchCards = async (
   return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
-    count: fullResponse.meta?.totalResults || fullResponse.count || 0,
-    data: mapCardIds(fullResponse.data || []) as ICard[],
+    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
+    data: mapCardIds(fullResponse.data?.cards || fullResponse.data || []) as ICard[],
   };
 };
 
@@ -151,7 +151,7 @@ export const getCardSuggestions = async (
     `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
   );
 
-  const cardSuggestions = response.suggestions?.cards?.data || [];
+  const cardSuggestions = response.suggestions?.cards?.data || response.data?.cards || [];
   return mapCardIds(cardSuggestions) as ICard[];
 };
 
@@ -269,8 +269,8 @@ export const searchSets = async (
   return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
-    count: fullResponse.meta?.totalResults || fullResponse.count || 0,
-    data: fullResponse.data || [],
+    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
+    data: fullResponse.data?.sets || fullResponse.data || [],
   };
 };
 
@@ -295,7 +295,7 @@ export const getSetSuggestions = async (
     `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
   );
 
-  return response.suggestions?.sets?.data || [];
+  return response.suggestions?.sets?.data || response.data?.sets || [];
 };
 
 /**
@@ -340,8 +340,8 @@ export const searchProducts = async (
   return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
-    count: fullResponse.meta?.totalResults || fullResponse.count || 0,
-    data: fullResponse.data || [],
+    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
+    data: fullResponse.data?.products || fullResponse.data || [],
   };
 };
 
@@ -366,7 +366,7 @@ export const getProductSuggestions = async (
     `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
   );
 
-  return response.suggestions?.products?.data || [];
+  return response.suggestions?.products?.data || response.data?.products || [];
 };
 
 /**
