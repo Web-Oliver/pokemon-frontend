@@ -182,18 +182,21 @@ export const useSearch = (): UseSearchReturn => {
           
           console.log(`[SEALED PRODUCT DEBUG] CardMarket API response:`, cardMarketSets);
           
-          // Transform CardMarket sets to match the expected format
+          // FIXED: Transform CardMarket sets to match the expected SearchResponse format
           const transformedData = {
+            success: true,
+            query: queryToUse,
+            count: cardMarketSets.length,
             data: cardMarketSets.map(set => ({
               _id: set.setName,
               setName: set.setName,
+              name: set.setName, // Add name field for display compatibility
               count: set.count,
               totalAvailable: set.totalAvailable,
               categoryCount: set.categoryCount,
               averagePrice: set.averagePrice,
               score: set.score,
             })),
-            count: cardMarketSets.length,
           };
           
           console.log(`[SEALED PRODUCT DEBUG] Transformed data:`, transformedData);

@@ -98,8 +98,8 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
       search.results
     );
     setSuggestions(search.results || []);
-    setIsLoading(search.loading);
-  }, [search.results, search.loading]);
+    setIsLoading(search.isLoading);
+  }, [search.results, search.isLoading]);
 
   // Centralized search effect - like the old autocomplete system
   useEffect(() => {
@@ -198,8 +198,11 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     debouncedSetName,
     debouncedProductName,
     formType,
-    // FIXED: Remove search functions from dependencies as they cause infinite loops
-    // The search functions are stable from useCallback
+    setName, // Add setName to dependencies for proper filtering
+    search.searchCardMarketSetNames,
+    search.searchSets,
+    search.searchProducts,
+    search.searchCards,
   ]);
 
   // Context7 Pattern: Memoized configuration following React.dev best practices

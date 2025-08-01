@@ -518,7 +518,9 @@ export const getCardMarketSetNames = async (
   const response = await pureFetch(url);
   console.log(`[SEALED PRODUCT DEBUG] Raw API response:`, response);
 
-  const data = response.data?.data || response.data || response;
+  // FIXED: Correct API response structure parsing
+  // Backend returns: {"success":true,"status":"success","data":[...]}
+  const data = response.data || [];
   console.log(`[SEALED PRODUCT DEBUG] Extracted data:`, data);
   console.log(`[SEALED PRODUCT DEBUG] Is data array?`, Array.isArray(data));
   
