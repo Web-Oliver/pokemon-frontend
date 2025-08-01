@@ -162,19 +162,23 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
 
       if (error) {
         return (
-          <div className="text-center py-12">
-            <div className="text-red-500 mb-4">
-              <Package className="mx-auto w-12 h-12" />
+          <div className="text-center py-16">
+            <div className="mb-6">
+              <div className="w-20 h-20 mx-auto bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mb-4">
+                <Package className="w-10 h-10 text-red-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Error Loading Collection
+              </h3>
+              <p className="text-white/60 text-lg max-w-md mx-auto mb-8">
+                {error}
+              </p>
             </div>
-            <h3 className="text-lg font-medium text-zinc-100 mb-2">
-              Error Loading Collection
-            </h3>
-            <p className="text-zinc-400 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 text-red-400 px-8 py-4 rounded-xl transition-all duration-300 font-semibold"
             >
-              Retry
+              Try Again
             </button>
           </div>
         );
@@ -183,26 +187,28 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
       const { data, emptyMessage } = getTabData();
 
       if (data.length === 0) {
+        const activeTabConfig = tabs.find((tab) => tab.id === activeTab);
+        const Icon = activeTabConfig?.icon || Package;
+        
         return (
-          <div className="text-center py-12">
-            <div className="text-gray-400 dark:text-zinc-600 dark:text-zinc-500 mb-4">
-              {React.createElement(
-                tabs.find((tab) => tab.id === activeTab)?.icon || Package,
-                {
-                  className: 'mx-auto w-12 h-12',
-                }
-              )}
+          <div className="text-center py-16">
+            <div className="mb-6">
+              <div className="w-20 h-20 mx-auto bg-white/10 rounded-2xl flex items-center justify-center mb-4">
+                <Icon className="w-10 h-10 text-white/60" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">
+                No {activeTabConfig?.name || 'Items'} Yet
+              </h3>
+              <p className="text-white/60 text-lg max-w-md mx-auto mb-8">
+                {emptyMessage}
+              </p>
             </div>
-            <h3 className="text-lg font-medium text-zinc-100 mb-2">
-              No Items Found
-            </h3>
-            <p className="text-zinc-400 mb-4">{emptyMessage}</p>
             <button
               onClick={onAddNewItem}
-              className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors inline-flex items-center"
+              className="bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 text-white px-8 py-4 rounded-xl transition-all duration-300 inline-flex items-center font-semibold"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add First Item
+              <Plus className="w-5 h-5 mr-3" />
+              Add Your First Item
             </button>
           </div>
         );
@@ -239,7 +245,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
       // Performance optimization: Remove Framer Motion animations
       // These were causing 76 extra renders and 253ms of "other time"
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 max-w-full mx-auto p-4 sm:p-6 md:p-8">
           {data.map((item: CollectionItem, index: number) => {
             const itemType = getItemType(item, activeTab);
             // Ensure absolutely unique key by combining ID with index as fallback
@@ -249,7 +255,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                 : `fallback-${activeTab}-${index}`;
 
             return (
-              <div key={uniqueKey} className="mx-auto w-full max-w-sm">
+              <div key={uniqueKey} className="w-full aspect-[3/5]">
                 <CollectionItemCard
                   item={item}
                   itemType={itemType}
@@ -265,42 +271,8 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
     };
 
     return (
-      <div className="bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
-
-        <div className="relative z-10">
-          {/* Tab Navigation */}
-          <div className="border-b border-zinc-700/50 px-8 pt-8">
-            <nav className="-mb-px flex space-x-1">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => onTabChange(tab.id)}
-                    className={`whitespace-nowrap py-4 px-6 border-b-3 font-bold text-sm transition-all duration-300 rounded-t-2xl relative group ${isActive ? 'border-cyan-500 text-cyan-400 bg-cyan-900/30 shadow-lg' : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600 hover:bg-zinc-800/50'}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg scale-110' : 'bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-zinc-300'}`}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="tracking-wide">{tab.name}</span>
-                    </div>
-                    {isActive && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg animate-pulse"></div>
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Tab Content */}
-          <div className="p-10">{renderTabContent()}</div>
-        </div>
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+        {renderTabContent()}
       </div>
     );
   }

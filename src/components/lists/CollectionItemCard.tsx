@@ -96,7 +96,7 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       showActions={false}
       enableInteractions={true}
       onView={handleClick}
-      className="mx-auto w-full max-w-sm min-h-[550px]"
+      className="mx-auto w-full h-full"
     />
   );
 };

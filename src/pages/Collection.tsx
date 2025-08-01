@@ -187,6 +187,8 @@ const Collection: React.FC = () => {
         sealedProductsCount={sealedProducts.length}
         soldItemsCount={soldItems.length}
         loading={loading}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
 
       {/* Collection Tabs */}

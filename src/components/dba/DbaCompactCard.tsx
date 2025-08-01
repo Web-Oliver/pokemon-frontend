@@ -79,7 +79,34 @@ const DbaCompactCardComponent: React.FC<DbaCompactCardProps> = ({
               fallbackIcon={<Package className="w-8 h-8 text-zinc-600" />}
             />
             {/* Enhanced gradient overlay for better text visibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"></div>
+            
+            {/* Bottom info overlay INSIDE the image container */}
+            <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm p-3 z-30">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-semibold text-sm leading-tight truncate">
+                    {displayName}
+                  </h3>
+                  <p className="text-white/70 text-xs truncate mt-0.5">
+                    {type === 'psa' ? (item.cardId?.setId?.setName || item.setName || 'Unknown Set') : (subtitle || '')}
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-2 ml-3 flex-shrink-0">
+                  {type === 'psa' && item.grade && (
+                    <div className="bg-blue-600 px-2 py-1 rounded text-xs font-bold text-white">
+                      Grade {item.grade}
+                    </div>
+                  )}
+                  {price > 0 && (
+                    <div className="bg-green-600 px-2 py-1 rounded text-xs font-bold text-white">
+                      {price.toLocaleString()} kr
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-zinc-800">
@@ -110,51 +137,7 @@ const DbaCompactCardComponent: React.FC<DbaCompactCardProps> = ({
         </div>
       )}
 
-      {/* PSA Grade Badge */}
-      {type === 'psa' && item.grade && (
-        <div className="absolute bottom-16 left-2 z-10">
-          <div className={`px-2 py-1 rounded text-xs font-bold ${getGradeBadgeColor(item.grade)}`}>
-            Grade {item.grade}
-          </div>
-        </div>
-      )}
 
-      {/* Card Info Section */}
-      <div className="p-3 bg-zinc-800">
-        <div className="mb-2">
-          <h3 className="text-sm font-medium text-white truncate mb-1">
-            {displayName}
-          </h3>
-          {subtitle && (
-            <p className="text-xs text-zinc-400">{subtitle}</p>
-          )}
-        </div>
-
-        {/* Price */}
-        <div className="mb-2">
-          <span className="text-cyan-400 font-bold text-sm">
-            {price > 0 ? `${price.toLocaleString()} kr` : 'No price'}
-          </span>
-        </div>
-
-        {/* DBA Status */}
-        {dbaInfo ? (
-          <div className="bg-gradient-to-r from-blue-900/50 to-cyan-900/50 rounded p-2 border border-blue-600/50">
-            <div className="text-center">
-              <div className="text-xs text-blue-200 font-medium">DBA Timer Active</div>
-              <div className="text-xs text-cyan-300 font-bold">
-                {dbaInfo.daysRemaining} days left
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-zinc-700/50 rounded p-2 border border-zinc-600/50">
-            <div className="text-center text-xs text-zinc-400">
-              Not selected for DBA
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

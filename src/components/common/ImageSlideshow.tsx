@@ -43,6 +43,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     showThumbnails = false,
   }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [imageIsVertical, setImageIsVertical] = useState(false);
 
     // Optimize: Memoize autoplay plugins to prevent re-creation
     const autoplayPlugins = useMemo(
@@ -138,6 +139,22 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
       [images]
     );
 
+    // Function to check if current image is vertical
+    const checkImageOrientation = useCallback((imageUrl: string) => {
+      const img = new Image();
+      img.onload = () => {
+        setImageIsVertical(img.height > img.width);
+      };
+      img.src = getImageUrl(imageUrl);
+    }, []);
+
+    // Check image orientation when selection changes
+    useEffect(() => {
+      if (hasImages && images[selectedIndex]) {
+        checkImageOrientation(images[selectedIndex]);
+      }
+    }, [selectedIndex, images, hasImages, checkImageOrientation]);
+
     if (!hasImages) {
       return (
         <div
@@ -156,9 +173,9 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     }
 
     return (
-      <div className="space-y-4">
+      <div className="w-full h-full">
         {/* Main Slideshow */}
-        <div className="relative w-full group">
+        <div className="relative w-full h-full group">
           {/* Futuristic Dark Navigation Buttons - Cursor.com Style */}
           {hasMultipleImages && (
             <>
@@ -190,11 +207,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
           )}
 
           <div
-            className={`relative w-full h-full overflow-hidden rounded-xl bg-zinc-800/60 shadow-2xl hover:shadow-3xl transition-all duration-300 border border-zinc-700/20 ${className}`}
-            style={{
-              boxShadow:
-                '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-            }}
+            className={`relative w-full h-full overflow-hidden bg-zinc-800/60 rounded-2xl ${className}`}
           >
             <div className="embla w-full h-full" ref={emblaMainRef}>
               <div className="embla__container flex h-full">
@@ -203,22 +216,24 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                     className="embla__slide flex-[0_0_100%] min-w-0 h-full relative overflow-hidden"
                     key={index}
                   >
-                    <img
-                      src={getImageUrl(image)}
-                      alt={`Item image ${index + 1}`}
-                      className="w-full h-full object-cover transition-opacity duration-300"
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        console.warn(`Failed to load image: ${target.src}`);
-                      }}
-                      onLoad={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.opacity = '1';
-                      }}
-                      style={{ opacity: 0 }}
-                    />
+                    <div className="w-full h-full">
+                      <img
+                        src={getImageUrl(image)}
+                        alt={`Item image ${index + 1}`}
+                        className="w-full h-full object-cover transition-opacity duration-300"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          console.warn(`Failed to load image: ${target.src}`);
+                        }}
+                        onLoad={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.opacity = '1';
+                        }}
+                        style={{ opacity: 0 }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -226,50 +241,9 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
           </div>
         </div>
 
-        {/* Futuristic Dark Dots Indicator - Cursor.com Style */}
-        {hasMultipleImages && !showThumbnails && (
-          <div className="flex justify-center items-center py-3 sm:py-4">
-            <div className="flex space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-700/50 shadow-2xl">
-              {images.map((_, index) => {
-                const isActive = index === selectedIndex;
-                return (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      emblaMainApi?.scrollTo(index);
-                    }}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onTouchStart={(e) => e.stopPropagation()}
-                    className={`relative transition-all duration-300 rounded-full border group ${
-                      isActive
-                        ? 'w-6 sm:w-8 md:w-10 h-2 sm:h-2.5 md:h-3 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 border-blue-400/50 shadow-lg shadow-blue-400/25'
-                        : 'w-2 sm:w-2.5 md:w-3 h-2 sm:h-2.5 md:h-3 bg-zinc-600 border-zinc-600/50 hover:bg-zinc-500 hover:border-zinc-500/70 hover:scale-125 active:scale-90'
-                    }`}
-                    aria-label={`Go to image ${index + 1}`}
-                    type="button"
-                  >
-                    {/* Active indicator glow */}
-                    {isActive && (
-                      <>
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/40 via-cyan-400/40 to-purple-400/40 blur-sm animate-pulse"></div>
-                        <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-400/20 via-cyan-400/20 to-purple-400/20 blur-md"></div>
-                      </>
-                    )}
-
-                    {/* Hover effect overlay */}
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/30 via-blue-500/30 to-purple-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Futuristic Dark Thumbnail Navigation - Cursor.com Style */}
-        {showThumbnails && hasMultipleImages && (
-          <div className="embla-thumbs px-2 sm:px-0">
+        {showThumbnails && hasImages && (
+          <div className="embla-thumbs px-2 sm:px-0 mt-4">
             <div
               className="embla-thumbs__viewport overflow-hidden"
               ref={emblaThumbsRef}

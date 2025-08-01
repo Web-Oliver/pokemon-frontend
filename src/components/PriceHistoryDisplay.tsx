@@ -273,12 +273,6 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
               </Button>
             </div>
 
-            <div className="mt-4 p-4 bg-gradient-to-r from-zinc-800/60 to-zinc-900/80 rounded-2xl border border-zinc-700/40 shadow-sm">
-              <div className="text-xs text-zinc-300 font-medium">
-                💡 <span className="font-bold">Pro Tip:</span> Regular price
-                updates help track your collection's market value over time
-              </div>
-            </div>
           </div>
         )}
       </div>

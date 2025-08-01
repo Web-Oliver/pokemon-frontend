@@ -127,7 +127,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   // Aspect ratio configuration
   const aspectConfig = {
     auto: 'aspect-auto',
-    card: 'aspect-[3/7]', // Made taller for bigger image area
+    card: 'aspect-[3/5]', // Vertical portrait cards
     square: 'aspect-square',
     wide: 'aspect-[16/9]',
   }[aspectRatio];
@@ -248,107 +248,75 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   // Variant-specific styling
   const getVariantStyles = () => {
     const baseStyles =
-      'relative rounded-xl shadow-lg border border-zinc-700/40 overflow-hidden bg-zinc-900/80 backdrop-blur-xl';
+      'relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10';
 
     switch (variant) {
       case 'detail':
-        return `${baseStyles} shadow-xl`;
+        return `${baseStyles} shadow-2xl rounded-2xl`;
       case 'auction':
-        return `${baseStyles} hover:shadow-xl`;
+        return `${baseStyles} shadow-lg hover:shadow-xl rounded-2xl`;
       case 'minimal':
-        return `${baseStyles} shadow-sm hover:shadow-md`;
+        return `${baseStyles} shadow-sm hover:shadow-md rounded-2xl`;
       case 'card':
       default:
-        return `${baseStyles} hover:shadow-xl`;
+        return `${baseStyles} shadow-lg hover:shadow-xl hover:border-white/20 rounded-2xl`;
     }
   };
 
   return (
     <div
-      className={`group ${getVariantStyles()} transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className} flex flex-col ${sizeConfig.height}`}
+      className={`group relative h-full w-full rounded-2xl overflow-hidden bg-white shadow-lg transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className}`}
       onClick={handleClick}
-      style={{
-        boxShadow:
-          '0 35px 60px -12px rgba(0, 0, 0, 0.5), 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 20px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-      }}
     >
-      {/* Main Image Container - Much bigger */}
-      <div
-        className={`relative w-full ${variant === 'detail' ? 'min-h-[500px]' : 'flex-1'}`}
-      >
-        <div className="w-full h-full rounded-t-xl overflow-hidden relative">
-          <ImageSlideshow
-            images={images}
-            fallbackIcon={<Package className="w-8 h-8 text-indigo-600" />}
-            autoplay={false}
-            autoplayDelay={4000}
-            className="w-full h-full"
-            showThumbnails={variant === 'detail'}
-          />
-
-          {/* Standard multi-layer text overlay shadow for better visibility */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/95 via-black/80 via-black/60 to-transparent z-10 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/98 via-black/85 to-transparent z-15 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/95 to-transparent z-20 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/90 z-25 pointer-events-none" />
-        </div>
-
-        {/* Action buttons */}
-        {renderActions()}
+      {/* Full background image */}
+      <div className="absolute inset-0">
+        <ImageSlideshow
+          images={images}
+          fallbackIcon={<Package className="w-8 h-8 text-white/60" />}
+          autoplay={false}
+          autoplayDelay={4000}
+          className="w-full h-full rounded-2xl"
+          showThumbnails={variant === 'detail'}
+        />
       </div>
 
-      {/* Text Layer - Standard shadows for better visibility */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 ${sizeConfig.textHeight} flex flex-col justify-end p-2 pointer-events-none z-30`}
-      >
-        {/* Badge */}
-        {showBadge && (
-          <div
-            className={`inline-flex items-center justify-center px-2 py-1 rounded-full ${sizeConfig.badge} font-bold mb-1 self-start pointer-events-auto ${sold ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-600 text-white shadow-lg'}`}
-            style={{
-              textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-              backgroundColor: sold ? '#059669' : '#2563eb',
-            }}
-          >
-            {getBadgeContent()}
+      {/* Clean text overlay at bottom - like the reference design */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 z-30">
+        <div className="flex items-end justify-between">
+          <div className="flex-1 min-w-0">
+            {/* Title - larger and prominent like "Jane Doe" */}
+            <h3 className="text-white font-bold text-xl leading-tight mb-1">
+              {title}
+            </h3>
+            
+            {/* Set name - more visible */}
+            {subtitle && (
+              <p className="text-white font-medium text-sm">
+                {subtitle}
+              </p>
+            )}
           </div>
-        )}
-
-        {/* Subtitle */}
-        {subtitle && (
-          <p
-            className={`${sizeConfig.badge} text-white font-semibold mb-0.5 tracking-wide uppercase leading-tight break-words`}
-            style={{
-              textShadow: '0 1px 3px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.8)',
-              WebkitTextStroke: '0.5px rgba(0,0,0,0.5)',
-            }}
-          >
-            {subtitle}
-          </p>
-        )}
-
-        {/* Title */}
-        <h3
-          className={`${sizeConfig.text} font-bold text-white leading-tight break-words`}
-          style={{
-            textShadow:
-              '0 2px 4px rgba(0,0,0,1), 0 1px 2px rgba(0,0,0,0.9), 0 3px 8px rgba(0,0,0,0.7)',
-            WebkitTextStroke: '0.5px rgba(0,0,0,0.3)',
-          }}
-        >
-          {title}
-        </h3>
+          
+          {/* Grade and Price stacked on right */}
+          <div className="flex flex-col items-end space-y-1 flex-shrink-0 ml-3">
+            {showBadge && (
+              <div className="text-white/90 text-xs font-medium">
+                {getBadgeContent()}
+              </div>
+            )}
+            {showPrice && price && (
+              <div className="text-white font-bold text-sm">
+                {price} kr
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Price in Bottom Right Corner */}
-      {showPrice && price && (
-        <div
-          className={`absolute bottom-2 right-2 px-2 py-1 rounded-lg ${sizeConfig.badge} font-bold bg-cyan-400 text-black dark:text-white dark:text-white pointer-events-auto z-40 shadow-xl`}
-          style={{
-            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-          }}
-        >
-          {price} kr.
+      {/* Action buttons only when explicitly enabled */}
+      {showActions && (
+        <div className="absolute top-2 left-2 z-30">
+          {renderActions()}
         </div>
       )}
     </div>
