@@ -14,6 +14,7 @@ import { log } from './utils/logger';
 import { Toaster } from 'react-hot-toast';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { queryClient } from './lib/queryClient';
+import './utils/cacheDebug'; // Enable cache debugging
 
 // Layout
 import MainLayout from './components/layouts/MainLayout';
@@ -182,7 +183,13 @@ function App() {
           {renderPage()}
         </Suspense>
       </MainLayout>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools 
+          initialIsOpen={false} 
+          buttonPosition="bottom-left"
+          position="bottom"
+        />
+      )}
       <Toaster
         position="top-right"
         reverseOrder={false}

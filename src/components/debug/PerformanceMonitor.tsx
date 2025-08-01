@@ -116,11 +116,11 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           ) : metrics.collectionSize <= 100 ? (
             <>
               <Clock className="w-3 h-3 text-yellow-400" />
-              <span>Virtualized</span>
+              <span>Good</span>
             </>
           ) : (
             <>
-              <Activity className="w-3 h-3 text-red-400" />
+              <Activity className="w-3 h-3 text-orange-400" />
               <span>Large collection</span>
             </>
           )}
