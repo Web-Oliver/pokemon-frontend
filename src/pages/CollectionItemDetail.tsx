@@ -8,7 +8,6 @@ import {
   Archive,
   ArrowLeft,
   CheckCircle,
-  DollarSign,
   Download,
   Edit,
   Image as ImageIcon,
@@ -20,11 +19,9 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import Button from '../components/common/Button';
 import ConfirmModal from '../components/common/ConfirmModal';
 import { ImageProductView } from '../components/common/ImageProductView';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { PageLayout } from '../components/layouts/PageLayout';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
