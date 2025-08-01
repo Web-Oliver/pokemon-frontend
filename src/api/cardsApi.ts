@@ -27,14 +27,7 @@ export interface CardsSearchParams {
   baseName?: string;
 }
 
-export interface SearchResponse {
-  cards: ICard[];
-  searchMeta?: {
-    cached?: boolean;
-    hitRate?: number;
-    queryTime?: number;
-  };
-}
+// SearchResponse removed - not used since card search functions were removed
 
 export interface CardSearchParams {
   query: string;

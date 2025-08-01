@@ -15,10 +15,4 @@ export { default as HelperText } from './HelperText';
 export { default as Shimmer } from './Shimmer';
 export { default as Glow } from './Glow';
 
-// Re-export types for convenience
-export type { default as FormWrapperProps } from './FormWrapper';
-export type { default as LabelProps } from './Label';
-export type { default as ErrorMessageProps } from './ErrorMessage';
-export type { default as HelperTextProps } from './HelperText';
-export type { default as ShimmerProps } from './Shimmer';
-export type { default as GlowProps } from './Glow';
+// Type re-exports removed - not used by any components

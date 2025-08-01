@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { Plus, Package, Sparkles } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
 
 interface DbaItemsWithoutTimersProps {
   psaCards: any[];

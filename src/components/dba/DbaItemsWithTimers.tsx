@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { Clock, Package, Star } from 'lucide-react';
+import { Clock, Star } from 'lucide-react';
 
 interface DbaItemsWithTimersProps {
   psaCards: any[];

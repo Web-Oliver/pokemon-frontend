@@ -133,14 +133,7 @@ export interface ActivityStatsResponse {
   data: ActivityStats;
 }
 
-export interface ActivityTypesResponse {
-  success: boolean;
-  data: {
-    types: Array<{ key: string; value: string; label: string }>;
-    priorities: Array<{ key: string; value: string; label: string }>;
-    dateRanges: Array<{ value: string; label: string }>;
-  };
-}
+// ActivityTypesResponse removed - getActivityTypes function not used by any frontend components
 
 /**
  * Activity creation payload interface
@@ -412,23 +405,7 @@ export const archiveActivity = async (
 /**
  * Archive old activities request interface
  */
-export interface ArchiveOldActivitiesRequest {
-  days: number;
-}
-
-/**
- * Archive old activities response interface
- */
-export interface ArchiveOldActivitiesResponse {
-  success: boolean;
-  message: string;
-  data: {
-    archivedCount: number;
-    oldestArchived: string;
-    newestArchived: string;
-    archiveDate: string;
-  };
-}
+// UNUSED INTERFACES REMOVED - Archive functions not used by any frontend components
 
 // archiveOldActivities removed - not used by any frontend components
 
