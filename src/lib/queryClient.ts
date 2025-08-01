@@ -58,4 +58,9 @@ export const queryKeys = {
   // Activity
   activity: ['activity'] as const,
   activityFeed: () => [...queryKeys.activity, 'feed'] as const,
+
+  // DBA Selection
+  dbaSelection: ['dba-selection'] as const,
+  dbaSelections: (params?: any) => [...queryKeys.dbaSelection, 'list', params] as const,
+  dbaSelectionStats: () => [...queryKeys.dbaSelection, 'stats'] as const,
 } as const;

@@ -1,0 +1,178 @@
+/**
+ * DBA Compact Card Component - Custom card without slideshow
+ * Layer 3: Components (CLAUDE.md Architecture)
+ * 
+ * SOLID Principles:
+ * - SRP: Only handles DBA card display and selection
+ * - OCP: Open for extension via props and composition
+ * - DIP: Depends on OptimizedImageView abstraction
+ * 
+ * Performance Optimizations:
+ * - React.memo for render optimization
+ * - useMemo for computed values
+ * - OptimizedImageView for lazy loading and caching
+ */
+
+import React, { memo, useMemo } from 'react';
+import { CheckCircle, Timer, Package } from 'lucide-react';
+import { OptimizedImageView } from '../common/OptimizedImageView';
+
+interface DbaCompactCardProps {
+  item: any;
+  type: 'psa' | 'raw' | 'sealed';
+  isSelected: boolean;
+  dbaInfo?: any;
+  displayName: string;
+  subtitle?: string;
+  onToggle: (item: any, type: 'psa' | 'raw' | 'sealed') => void;
+}
+
+const DbaCompactCardComponent: React.FC<DbaCompactCardProps> = ({
+  item,
+  type,
+  isSelected,
+  dbaInfo,
+  displayName,
+  subtitle,
+  onToggle,
+}) => {
+  // Memoize computed values for performance
+  const itemId = useMemo(() => item.id || item._id, [item.id, item._id]);
+  const price = useMemo(() => parseFloat(item.myPrice?.toString() || '0'), [item.myPrice]);
+  const primaryImage = useMemo(() => item.images?.[0], [item.images]);
+
+  const getCountdownColor = useMemo(() => (daysRemaining: number) => {
+    if (daysRemaining > 30) {
+      return 'text-green-300 bg-green-900/30 border-green-600';
+    }
+    if (daysRemaining > 10) {
+      return 'text-yellow-300 bg-yellow-900/30 border-yellow-600';
+    }
+    return 'text-red-300 bg-red-900/30 border-red-600';
+  }, []);
+
+  const getGradeBadgeColor = useMemo(() => (grade: number) => {
+    if (grade >= 9) return 'bg-emerald-500 text-white';
+    if (grade >= 7) return 'bg-blue-500 text-white';
+    if (grade >= 5) return 'bg-yellow-500 text-black';
+    return 'bg-gray-500 text-white';
+  }, []);
+
+  return (
+    <div
+      key={itemId}
+      className={`relative border-2 rounded-xl cursor-pointer transition-all duration-300 overflow-hidden ${
+        isSelected 
+          ? 'border-cyan-500 bg-cyan-900/30' 
+          : 'border-zinc-600 bg-zinc-800 hover:border-cyan-400 hover:bg-cyan-900/20'
+      }`}
+      onClick={() => onToggle(item, type)}
+    >
+      {/* Optimized Image Background with Lazy Loading */}
+      <div className="relative h-48 bg-zinc-900 overflow-hidden">
+        {primaryImage ? (
+          <>
+            <OptimizedImageView
+              src={primaryImage}
+              alt={displayName}
+              className="w-full h-full object-contain"
+              fallbackIcon={<Package className="w-8 h-8 text-zinc-600" />}
+            />
+            {/* Enhanced gradient overlay for better text visibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40 pointer-events-none"></div>
+          </>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+            <div className="flex flex-col items-center space-y-2 text-zinc-500">
+              <Package className="w-8 h-8" />
+              <span className="text-sm">No Image</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Selection Indicator */}
+      <div className="absolute top-2 right-2 z-10">
+        {isSelected ? (
+          <CheckCircle className="w-5 h-5 text-cyan-400 bg-zinc-900/80 rounded-full" />
+        ) : (
+          <div className="w-5 h-5 rounded-full border-2 border-zinc-400 bg-zinc-900/80"></div>
+        )}
+      </div>
+
+      {/* DBA Timer Badge */}
+      {dbaInfo && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className={`px-2 py-1 rounded-lg text-xs font-medium border ${getCountdownColor(dbaInfo.daysRemaining)}`}>
+            <Timer className="w-3 h-3 inline mr-1" />
+            {dbaInfo.daysRemaining}d
+          </div>
+        </div>
+      )}
+
+      {/* PSA Grade Badge */}
+      {type === 'psa' && item.grade && (
+        <div className="absolute bottom-16 left-2 z-10">
+          <div className={`px-2 py-1 rounded text-xs font-bold ${getGradeBadgeColor(item.grade)}`}>
+            Grade {item.grade}
+          </div>
+        </div>
+      )}
+
+      {/* Card Info Section */}
+      <div className="p-3 bg-zinc-800">
+        <div className="mb-2">
+          <h3 className="text-sm font-medium text-white truncate mb-1">
+            {displayName}
+          </h3>
+          {subtitle && (
+            <p className="text-xs text-zinc-400">{subtitle}</p>
+          )}
+        </div>
+
+        {/* Price */}
+        <div className="mb-2">
+          <span className="text-cyan-400 font-bold text-sm">
+            {price > 0 ? `${price.toLocaleString()} kr` : 'No price'}
+          </span>
+        </div>
+
+        {/* DBA Status */}
+        {dbaInfo ? (
+          <div className="bg-gradient-to-r from-blue-900/50 to-cyan-900/50 rounded p-2 border border-blue-600/50">
+            <div className="text-center">
+              <div className="text-xs text-blue-200 font-medium">DBA Timer Active</div>
+              <div className="text-xs text-cyan-300 font-bold">
+                {dbaInfo.daysRemaining} days left
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-zinc-700/50 rounded p-2 border border-zinc-600/50">
+            <div className="text-center text-xs text-zinc-400">
+              Not selected for DBA
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Memoize with optimized comparison to prevent unnecessary re-renders
+export const DbaCompactCard = memo(
+  DbaCompactCardComponent,
+  (prev, next) => {
+    return (
+      prev.item === next.item &&
+      prev.type === next.type &&
+      prev.isSelected === next.isSelected &&
+      prev.dbaInfo === next.dbaInfo &&
+      prev.displayName === next.displayName &&
+      prev.subtitle === next.subtitle &&
+      prev.onToggle === next.onToggle
+    );
+  }
+);
+
+export default DbaCompactCard;

@@ -103,6 +103,21 @@ const transformSalesData = (rawData: any[]): ISale[] => {
       }
     }
 
+    // Generate thumbnail URL from first image with -thumb suffix
+    let thumbnailUrl: string | undefined;
+    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+      const firstImage = item.images[0];
+      if (firstImage && typeof firstImage === 'string') {
+        // Extract filename and add -thumb suffix
+        const lastDotIndex = firstImage.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+          const nameWithoutExt = firstImage.substring(0, lastDotIndex);
+          const ext = firstImage.substring(lastDotIndex);
+          thumbnailUrl = `${nameWithoutExt}-thumb${ext}`;
+        }
+      }
+    }
+
     return {
       id: item._id || item.id,
       itemCategory: item.category || 'Unknown',
@@ -111,6 +126,7 @@ const transformSalesData = (rawData: any[]): ISale[] => {
       actualSoldPrice,
       dateSold: item.saleDetails?.dateSold || '',
       source: item.saleDetails?.source || 'Unknown',
+      thumbnailUrl,
     };
   });
 };

@@ -43,4 +43,5 @@ export interface ISale {
   actualSoldPrice: number; // Actual price the item sold for
   dateSold: string; // ISO date string when the item was sold
   source: string; // Where/how the item was sold
+  thumbnailUrl?: string; // Thumbnail image URL for the product
 }

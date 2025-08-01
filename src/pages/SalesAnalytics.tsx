@@ -11,12 +11,14 @@ import {
   ArrowDown,
   ArrowUp,
   BarChart3,
+  Calendar,
   DollarSign,
   Download,
   Minus,
   PieChart,
   RefreshCcw,
   TrendingUp,
+  X,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import {
@@ -130,16 +132,91 @@ const SalesAnalytics: React.FC = () => {
     }
   };
 
-  // Actions for header
+  // Stunning Date Picker - Award-Winning Design
   const headerActions = (
-    <button
-      onClick={handleExportCSV}
-      disabled={!Array.isArray(sales) || sales.length === 0}
-      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <Download className="w-5 h-5 mr-2" />
-      Export CSV
-    </button>
+    <div className="relative group">
+      {/* Holographic Background Effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-violet-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+      
+      {/* Main Date Picker Container */}
+      <div className="relative bg-gradient-to-br from-zinc-900/90 via-zinc-800/80 to-zinc-900/90 backdrop-blur-2xl border border-zinc-600/20 rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.15)] hover:shadow-[0_0_60px_rgba(6,182,212,0.25)] transition-all duration-500 p-5 min-w-[380px]">
+        {/* Shimmer Animation */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-2xl"></div>
+        
+        <div className="relative z-10 flex items-center space-x-4">
+          {/* Animated Calendar Icon */}
+          <div className="relative">
+            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+              <Calendar className="w-6 h-6 text-white" />
+            </div>
+            {/* Icon glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+          
+          {/* Start Date Input */}
+          <div className="relative flex-1">
+            <label className="block text-xs font-bold text-cyan-400 mb-1 uppercase tracking-widest">From</label>
+            <div className="relative group/input">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"></div>
+              <input
+                type="date"
+                value={localDateRange.startDate || ''}
+                onChange={(e) => setLocalDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                onBlur={() => setDateRange({ startDate: localDateRange.startDate, endDate: localDateRange.endDate })}
+                className="relative w-full px-4 py-3 bg-zinc-800/60 backdrop-blur-sm border border-zinc-600/40 rounded-xl text-zinc-100 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400/60 transition-all duration-300 hover:border-zinc-500/60"
+              />
+            </div>
+          </div>
+          
+          {/* Elegant Separator */}
+          <div className="flex flex-col items-center py-6">
+            <div className="w-8 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full mb-1"></div>
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">to</span>
+            <div className="w-8 h-0.5 bg-gradient-to-r from-blue-400 to-violet-400 rounded-full mt-1"></div>
+          </div>
+          
+          {/* End Date Input */}
+          <div className="relative flex-1">
+            <label className="block text-xs font-bold text-violet-400 mb-1 uppercase tracking-widest">Until</label>
+            <div className="relative group/input">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-violet-500/20 rounded-xl opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"></div>
+              <input
+                type="date"
+                value={localDateRange.endDate || ''}
+                onChange={(e) => setLocalDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                onBlur={() => setDateRange({ startDate: localDateRange.startDate, endDate: localDateRange.endDate })}
+                className="relative w-full px-4 py-3 bg-zinc-800/60 backdrop-blur-sm border border-zinc-600/40 rounded-xl text-zinc-100 font-medium focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400/60 transition-all duration-300 hover:border-zinc-500/60"
+              />
+            </div>
+          </div>
+          
+          {/* Clear Button - Only show when dates are selected */}
+          {(localDateRange.startDate || localDateRange.endDate) && (
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setLocalDateRange({ startDate: '', endDate: '' });
+                  setDateRange({ startDate: undefined, endDate: undefined });
+                }}
+                className="w-10 h-10 bg-gradient-to-br from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/50 rounded-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group/clear"
+              >
+                <X className="w-5 h-5 group-hover/clear:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Active Filter Indicator */}
+        {(localDateRange.startDate || localDateRange.endDate) && (
+          <div className="mt-4 pt-3 border-t border-zinc-700/40">
+            <div className="flex items-center text-xs text-cyan-300 font-medium">
+              <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full mr-2 animate-pulse"></div>
+              Filtering: {localDateRange.startDate || 'Start'} → {localDateRange.endDate || 'End'}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 
   return (
@@ -153,425 +230,352 @@ const SalesAnalytics: React.FC = () => {
     >
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Context7 Premium Analytics Header */}
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/5 via-emerald-500/5 to-green-500/5"></div>
-            <div className="relative z-10">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                    Sales Analytics
-                  </h1>
-                  <p className="text-xl text-zinc-300 font-medium leading-relaxed">
-                    Track your collection's financial performance and trends
-                  </p>
-                </div>
 
-                {/* Export and Refresh Controls */}
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={refreshData}
-                    disabled={loading}
-                  >
-                    <RefreshCcw
-                      className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`}
-                    />
-                    Refresh
-                  </Button>
-                </div>
+
+          {/* 🏆 AWARD-WINNING SALES VISUALIZATION - Groundbreaking Design */}
+          <div className="relative mb-8 overflow-hidden">
+            {/* Holographic Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-fuchsia-800/15 to-cyan-900/20 blur-3xl animate-pulse"></div>
+            <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(139,92,246,0.1),rgba(59,130,246,0.1),rgba(16,185,129,0.1),rgba(245,158,11,0.1),rgba(239,68,68,0.1),rgba(139,92,246,0.1))] animate-spin" style={{ animationDuration: '20s' }}></div>
+            
+            <div className="relative backdrop-blur-3xl bg-gradient-to-br from-zinc-900/80 via-zinc-800/60 to-zinc-900/80 rounded-[2rem] border border-white/10 shadow-[0_0_100px_rgba(139,92,246,0.3)] p-10">
+              {/* Floating Particles Effect */}
+              <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-violet-400 rounded-full animate-bounce opacity-40"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animationDelay: `${i * 0.5}s`,
+                      animationDuration: `${3 + Math.random() * 2}s`
+                    }}
+                  ></div>
+                ))}
               </div>
 
-              {error && (
-                <div className="mt-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-2xl">
-                  <p className="text-sm text-red-600 font-medium">{error}</p>
-                </div>
-              )}
-            </div>
-            {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-          </div>
-
-          {/* Date Range Filter */}
-          <DateRangeFilter
-            value={localDateRange}
-            onChange={handleDateRangeChange}
-            showPresets={false}
-            showCustomRange={true}
-            loading={loading}
-          />
-
-          {/* Context7 Premium KPI Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-emerald-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <DollarSign className="w-8 h-8 text-white" />
-                </div>
-                <div className="ml-6 flex-1">
-                  <p className="text-sm font-bold text-emerald-600 tracking-wide uppercase mb-1">
-                    Revenue
-                  </p>
-                  <p className="text-3xl font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors duration-300">
-                    {displayPrice(kpis?.totalRevenue || 0)}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1 font-medium">
-                    Total earned
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-blue-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <div className="ml-6 flex-1">
-                  <p className="text-sm font-bold text-blue-600 tracking-wide uppercase mb-1">
-                    Facebook
-                  </p>
-                  <p className="text-3xl font-bold text-zinc-100 group-hover:text-blue-400 transition-colors duration-300">
-                    {Array.isArray(sales)
-                      ? sales.filter((sale) => sale.source === 'Facebook')
-                          .length
-                      : 0}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1 font-medium">
-                    Items sold
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-purple-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <BarChart3 className="w-8 h-8 text-white" />
-                </div>
-                <div className="ml-6 flex-1">
-                  <p className="text-sm font-bold text-purple-600 tracking-wide uppercase mb-1">
-                    DBA
-                  </p>
-                  <p className="text-3xl font-bold text-zinc-100 group-hover:text-purple-300 transition-colors duration-300">
-                    {Array.isArray(sales)
-                      ? sales.filter((sale) => sale.source === 'DBA').length
-                      : 0}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1 font-medium">
-                    Items sold
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-500 hover:shadow-amber-500/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <PieChart className="w-8 h-8 text-white" />
-                </div>
-                <div className="ml-6 flex-1">
-                  <p className="text-sm font-bold text-amber-600 tracking-wide uppercase mb-1">
-                    Total Items
-                  </p>
-                  <p className="text-3xl font-bold text-zinc-100 group-hover:text-amber-300 transition-colors duration-300">
-                    {kpis?.totalItems || 0}
-                  </p>
-                  <p className="text-xs text-zinc-400 mt-1 font-medium">
-                    Items sold
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Revenue Over Time Chart */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5"></div>
-              <div className="relative z-10 p-8">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-zinc-100 mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    Revenue Over Time
+              <div className="relative z-10">
+                {/* Spectacular Header */}
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 mb-6 shadow-[0_0_50px_rgba(139,92,246,0.5)] animate-pulse">
+                    <TrendingUp className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 mb-4 tracking-wide">
+                    SALES UNIVERSE
                   </h2>
-                  <p className="text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-medium">
-                    Track your sales performance across different periods
-                  </p>
+                  <p className="text-xl text-zinc-300 font-medium">Experience your collection's cosmic performance</p>
                 </div>
-                {graphData && graphData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                      data={graphData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <defs>
-                        <linearGradient
-                          id="revenueGradient"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#3B82F6"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#1E40AF"
-                            stopOpacity={0.3}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#E2E8F0"
-                        opacity={0.6}
-                      />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(value) =>
-                          new Date(value).toLocaleDateString('da-DK', {
-                            month: 'short',
-                            day: 'numeric',
-                          })
-                        }
-                        tick={{ fill: '#64748B', fontSize: 12 }}
-                        axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
-                      />
-                      <YAxis
-                        tick={{ fill: '#64748B', fontSize: 12 }}
-                        axisLine={{ stroke: '#CBD5E1', strokeWidth: 1 }}
-                        tickFormatter={(value) => {
-                          if (value >= 1000) {
-                            return `${Math.round(value / 1000)}k kr.`;
-                          }
-                          return `${Math.round(value)} kr.`;
-                        }}
-                      />
-                      <Tooltip
-                        labelFormatter={(value) =>
-                          new Date(value).toLocaleDateString('da-DK')
-                        }
-                        formatter={(value: number) => [
-                          displayPrice(value),
-                          'Revenue',
-                        ]}
-                        contentStyle={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                          backdropFilter: 'blur(12px)',
-                          border: '1px solid rgba(226, 232, 240, 0.5)',
-                          borderRadius: '12px',
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                        }}
-                      />
-                      <Bar
-                        dataKey="revenue"
-                        fill="url(#revenueGradient)"
-                        radius={[4, 4, 0, 0]}
-                        name="Revenue"
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                      <BarChart3 className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-zinc-100 mb-2">
-                      No Revenue Data
-                    </h3>
-                    <p className="text-slate-500 dark:text-zinc-500 dark:text-zinc-400 font-medium">
-                      Revenue data over time will appear here once you start
-                      selling items.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
 
-            {/* Category Breakdown Chart */}
-            <div className="bg-zinc-800 rounded-lg shadow">
-              <div className="p-6 border-b border-gray-200 dark:border-zinc-700 dark:border-zinc-700">
-                <h2 className="text-lg font-semibold text-zinc-100">
-                  Sales by Category
-                </h2>
-              </div>
-              <div className="p-6">
-                {pieChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsPieChart>
-                      <Pie
-                        dataKey="value"
-                        data={pieChartData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        stroke="none"
-                        strokeWidth={0}
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(0)}%`
-                        }
-                      >
-                        {pieChartData.map((_, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={chartColors[index % chartColors.length]}
-                            stroke="none"
-                            strokeWidth={0}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number) => displayPrice(value)}
-                      />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
+                {/* Error Display */}
+                {error && (
+                  <div className="mb-8 p-4 bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-2xl">
+                    <p className="text-sm text-red-300 font-medium">{error}</p>
+                  </div>
+                )}
+
+                {Array.isArray(sales) && sales.length > 0 ? (
+                  <>
+                    {/* 🌟 REVOLUTIONARY DUAL METRIC DISPLAY */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                      {/* Total Cards Sold - Quantum Display */}
+                      <div className="group relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                        <div className="relative bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 backdrop-blur-xl rounded-3xl border border-emerald-400/30 p-8 hover:scale-105 transition-all duration-500 shadow-[0_0_60px_rgba(16,185,129,0.2)]">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500">
+                              <span className="text-2xl">🃏</span>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm text-emerald-400 font-bold uppercase tracking-widest mb-1">Total Cards</div>
+                              <div className="text-6xl font-black text-white group-hover:text-emerald-300 transition-colors duration-300">
+                                {sales.length}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full w-full animate-pulse"></div>
+                          </div>
+                          <div className="mt-4 text-center">
+                            <span className="inline-flex items-center px-4 py-2 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-bold border border-emerald-400/30">
+                              🚀 CARDS CONQUERED
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Total Revenue - Galactic Display */}
+                      <div className="group relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                        <div className="relative bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 backdrop-blur-xl rounded-3xl border border-violet-400/30 p-8 hover:scale-105 transition-all duration-500 shadow-[0_0_60px_rgba(139,92,246,0.2)]">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-r from-violet-400 to-purple-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:-rotate-12 transition-transform duration-500">
+                              <DollarSign className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm text-violet-400 font-bold uppercase tracking-widest mb-1">Total Revenue</div>
+                              <div className="text-6xl font-black text-white group-hover:text-violet-300 transition-colors duration-300">
+                                {displayPrice(sales.reduce((sum, sale) => sum + (Number(sale.actualSoldPrice) || 0), 0)).replace(' kr.', '')}
+                              </div>
+                              <div className="text-lg text-violet-300 font-medium">kr.</div>
+                            </div>
+                          </div>
+                          <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-violet-400 to-purple-400 rounded-full w-full animate-pulse"></div>
+                          </div>
+                          <div className="mt-4 text-center">
+                            <span className="inline-flex items-center px-4 py-2 bg-violet-500/20 text-violet-300 rounded-full text-sm font-bold border border-violet-400/30">
+                              💎 REVENUE GENERATED
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 🔥 REVOLUTIONARY CATEGORY CONSTELLATION */}
+                    <div className="relative">
+                      <div className="text-center mb-8">
+                        <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300 mb-2">
+                          Category Constellation
+                        </h3>
+                        <p className="text-zinc-400">Each category shines with its own brilliance</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {(() => {
+                          const categoryStats = {
+                            'PSA Graded Card': { count: 0, revenue: 0, icon: '🏆', color: 'from-yellow-400 to-orange-400', border: 'border-yellow-400/30', bg: 'bg-yellow-500/20', text: 'text-yellow-300' },
+                            'Raw Card': { count: 0, revenue: 0, icon: '🃏', color: 'from-blue-400 to-cyan-400', border: 'border-blue-400/30', bg: 'bg-blue-500/20', text: 'text-blue-300' },
+                            'Sealed Product': { count: 0, revenue: 0, icon: '📦', color: 'from-purple-400 to-pink-400', border: 'border-purple-400/30', bg: 'bg-purple-500/20', text: 'text-purple-300' }
+                          };
+
+                          sales.forEach(sale => {
+                            const category = sale.itemCategory;
+                            if (categoryStats[category]) {
+                              categoryStats[category].count += 1;
+                              categoryStats[category].revenue += Number(sale.actualSoldPrice) || 0;
+                            }
+                          });
+
+                          return Object.entries(categoryStats).map(([category, stats]) => (
+                            <div key={category} className="group relative">
+                              <div className={`absolute inset-0 bg-gradient-to-r ${stats.color.replace('to-', 'to-').replace('from-', 'from-')}/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500`}></div>
+                              <div className={`relative bg-zinc-800/60 backdrop-blur-xl rounded-2xl border ${stats.border} p-6 hover:scale-105 transition-all duration-500`}>
+                                <div className="text-center">
+                                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r ${stats.color} mb-4 text-2xl shadow-lg group-hover:animate-bounce`}>
+                                    {stats.icon}
+                                  </div>
+                                  <h4 className="text-lg font-bold text-white mb-2">{category}</h4>
+                                  <div className="space-y-2">
+                                    <div className={`inline-flex items-center px-3 py-1 ${stats.bg} ${stats.text} rounded-full text-sm font-bold ${stats.border} border`}>
+                                      {stats.count} cards
+                                    </div>
+                                    <div className={`text-2xl font-black ${stats.text}`}>
+                                      {displayPrice(stats.revenue)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+                  </>
                 ) : (
-                  <div className="text-center py-12">
-                    <PieChart className="mx-auto w-12 h-12 text-zinc-500" />
-                    <h3 className="mt-4 text-lg font-medium text-zinc-100">
-                      No category data
+                  <div className="text-center py-20">
+                    <div className="relative inline-block">
+                      <div className="w-32 h-32 bg-gradient-to-r from-violet-500/20 to-cyan-500/20 rounded-full mx-auto mb-8 flex items-center justify-center border-4 border-violet-400/30 backdrop-blur-sm">
+                        <TrendingUp className="w-16 h-16 text-violet-400" />
+                      </div>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/10 to-cyan-500/10 blur-2xl animate-pulse"></div>
+                    </div>
+                    <h3 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-300 to-cyan-300 mb-4">
+                      Your Sales Universe Awaits
                     </h3>
-                    <p className="mt-2 text-zinc-400">
-                      Sales by category will appear here.
+                    <p className="text-xl text-zinc-400 font-medium max-w-md mx-auto">
+                      This cosmic dashboard will come alive with stunning visuals once you start your selling journey.
                     </p>
                   </div>
                 )}
               </div>
+
+              {/* Ambient Border Glow */}
+              <div className="absolute inset-0 rounded-[2rem] border border-white/5 pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-violet-500/5 via-transparent to-cyan-500/5 pointer-events-none"></div>
             </div>
           </div>
 
-          {/* Sales Table */}
-          <div className="bg-zinc-800 rounded-lg shadow">
-            <div className="p-6 border-b border-zinc-600">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-zinc-100">
-                  Recent Sales
-                </h2>
-                {Array.isArray(sales) && sales.length > 0 && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleExportCSV}
-                    disabled={loading}
-                  >
-                    <Download className="w-4 h-4 mr-1" />
-                    Export CSV
-                  </Button>
-                )}
+          {/* Stunning Sales Gallery - Context7 Premium Design */}
+          <div className="bg-gradient-to-br from-zinc-900/90 via-zinc-800/80 to-zinc-900/90 backdrop-blur-2xl rounded-3xl shadow-2xl border border-zinc-700/30 relative overflow-hidden">
+            {/* Premium background effects */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-blue-500/5 to-purple-500/5"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.3),transparent_50%)] opacity-20"></div>
+            
+            <div className="relative z-10">
+              <div className="p-8 border-b border-zinc-700/40">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400 mb-2">
+                      Recent Sales
+                    </h2>
+                    <p className="text-zinc-400 font-medium">Your latest sold items with beautiful details</p>
+                  </div>
+                  {Array.isArray(sales) && sales.length > 0 && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleExportCSV}
+                      disabled={loading}
+                      className="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 hover:from-emerald-600/30 hover:to-teal-600/30 border-emerald-500/30 text-emerald-300 hover:text-emerald-200"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Export CSV
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="overflow-x-auto">
-              {Array.isArray(sales) && sales.length > 0 ? (
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
-                  <thead className="bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Item
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Category
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        My Price
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Sale Price
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Profit
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Date Sold
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                        Source
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-zinc-800 divide-y divide-zinc-600">
+              
+              {/* Clean List View Layout */}
+              <div className="p-0">
+                {Array.isArray(sales) && sales.length > 0 ? (
+                  <div className="divide-y divide-zinc-700/30">
                     {sales.slice(0, 10).map((sale, index) => {
                       const actualPrice = Number(sale.actualSoldPrice) || 0;
                       const myPrice = Number(sale.myPrice) || 0;
-                      const profit = actualPrice - myPrice;
-                      const profitColor =
-                        profit >= 0 ? 'text-green-600' : 'text-red-600';
 
                       return (
-                        <tr
+                        <div
                           key={sale.id || `sale-${index}`}
-                          className="hover:bg-gray-50 dark:hover:bg-zinc-900/50"
+                          className="group relative px-8 py-6 hover:bg-zinc-800/30 transition-all duration-200"
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-zinc-100">
-                              {sale.itemName || 'Unknown Item'}
+                          <div className="flex items-center space-x-6">
+                            {/* Product Thumbnail */}
+                            <div className="flex-shrink-0 relative">
+                              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-zinc-700/40 to-zinc-800/40 border border-zinc-600/20 overflow-hidden">
+                                {sale.thumbnailUrl ? (
+                                  <img 
+                                    src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : '/' + sale.thumbnailUrl}`}
+                                    alt={sale.itemName}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      // Fallback to emoji if image fails to load
+                                      const target = e.currentTarget;
+                                      target.style.display = 'none';
+                                      const fallbackDiv = target.nextElementSibling as HTMLElement;
+                                      if (fallbackDiv) {
+                                        fallbackDiv.style.display = 'flex';
+                                      }
+                                    }}
+                                  />
+                                ) : null}
+                                <div 
+                                  className="w-full h-full flex items-center justify-center text-zinc-400 text-lg" 
+                                  style={{ display: sale.thumbnailUrl ? 'none' : 'flex' }}
+                                >
+                                  {(() => {
+                                    const category = sale.itemCategory || 'Unknown';
+                                    if (category.includes('PSA')) return '🏆';
+                                    if (category.includes('Sealed')) return '📦';
+                                    if (category.includes('Raw')) return '🃏';
+                                    return '🎴';
+                                  })()}
+                                </div>
+                              </div>
+                              
+                              {/* Category badge */}
+                              <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-xs font-bold bg-blue-600/80 text-white border border-blue-500/30">
+                                {(() => {
+                                  const category = sale.itemCategory || 'Unknown';
+                                  if (category.includes('PSA')) return 'PSA';
+                                  if (category.includes('Sealed')) return 'Sealed';
+                                  if (category.includes('Raw')) return 'Raw';
+                                  return 'Card';
+                                })()}
+                              </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              {sale.itemCategory
-                                ?.replace(/([A-Z])/g, ' $1')
-                                .trim() || 'Unknown'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-100">
-                            {displayPrice(myPrice)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-100">
-                            {displayPrice(actualPrice)}
-                          </td>
-                          <td
-                            className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${profitColor}`}
-                          >
-                            {displayPrice(profit)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
-                            {sale.dateSold
-                              ? new Date(sale.dateSold).toLocaleDateString(
-                                  'da-DK'
-                                )
-                              : 'Unknown'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-400">
-                            {sale.source || 'Unknown'}
-                          </td>
-                        </tr>
+
+                            {/* Product Name & Details */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg font-semibold text-white group-hover:text-emerald-200 transition-colors mb-1 truncate">
+                                {sale.itemName || 'Unknown Item'}
+                              </h3>
+                              <div className="flex items-center space-x-4 text-sm text-zinc-400">
+                                <span>
+                                  📅 {sale.dateSold
+                                    ? new Date(sale.dateSold).toLocaleDateString('da-DK', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                      })
+                                    : 'Unknown'}
+                                </span>
+                                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-zinc-700/40 text-zinc-300">
+                                  {sale.source === 'Facebook' ? '📘' : sale.source === 'DBA' ? '🏪' : '🌐'} {sale.source || 'Unknown'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Price Information */}
+                            <div className="flex items-center space-x-8">
+                              <div className="text-right">
+                                <div className="text-xs text-zinc-400 uppercase tracking-wide mb-1">My Price</div>
+                                <div className="text-sm font-semibold text-zinc-300">{displayPrice(myPrice)}</div>
+                              </div>
+                              
+                              <div className="text-right">
+                                <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">Sale Price</div>
+                                <div className="text-lg font-bold text-emerald-400">{displayPrice(actualPrice)}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-center py-12">
-                  <TrendingUp className="mx-auto w-12 h-12 text-gray-400 dark:text-zinc-600 dark:text-zinc-500" />
-                  <h3 className="mt-4 text-lg font-medium text-zinc-100">
-                    No sales data
-                  </h3>
-                  <p className="mt-2 text-zinc-400">
-                    Sales transactions will appear here once you start selling
-                    items.
-                  </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-20">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-gradient-to-br from-zinc-700/40 to-zinc-800/40 rounded-3xl mx-auto mb-6 flex items-center justify-center border border-zinc-600/30 backdrop-blur-sm">
+                        <TrendingUp className="w-12 h-12 text-zinc-400" />
+                        {/* Animated glow */}
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur-xl animate-pulse"></div>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+                      No Sales Yet
+                    </h3>
+                    <p className="text-zinc-400 font-medium max-w-md mx-auto">
+                      Your beautiful sales gallery will appear here once you start selling items. Each sale will be displayed with stunning visuals and detailed information.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Beautiful Footer with View All Button */}
+              {Array.isArray(sales) && sales.length > 10 && (
+                <div className="px-8 py-6 border-t border-zinc-700/40 bg-zinc-900/30 backdrop-blur-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <p className="text-sm text-zinc-400 font-medium">
+                        Showing 10 of {sales.length} sales
+                      </p>
+                    </div>
+                    <button className="group relative px-6 py-3 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 hover:from-emerald-600/30 hover:to-teal-600/30 text-emerald-300 hover:text-emerald-200 font-semibold rounded-xl border border-emerald-500/30 hover:border-emerald-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/20">
+                      <span className="relative z-10 flex items-center">
+                        View All Sales
+                        <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </span>
+                      {/* Button glow effect */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
-
-            {Array.isArray(sales) && sales.length > 10 && (
-              <div className="px-6 py-3 border-t border-gray-200 dark:border-zinc-700 dark:border-zinc-700 text-center">
-                <p className="text-sm text-zinc-400">
-                  Showing 10 of {sales.length} sales.
-                  <button className="ml-1 text-blue-600 hover:text-blue-800">
-                    View all
-                  </button>
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
