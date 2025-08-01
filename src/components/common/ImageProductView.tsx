@@ -265,8 +265,8 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
   return (
     <div
-      className={`group relative h-full w-full rounded-2xl overflow-hidden bg-white shadow-lg transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className}`}
-      onClick={handleClick}
+      className={`group relative h-full w-full rounded-2xl overflow-visible bg-transparent transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className}`}
+      onClick={enableInteractions ? handleClick : undefined}
     >
       {/* Full background image */}
       <div className="absolute inset-0">
@@ -276,7 +276,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           autoplay={false}
           autoplayDelay={4000}
           className="w-full h-full rounded-2xl"
-          showThumbnails={variant === 'detail'}
+          showThumbnails={true}
         />
       </div>
 

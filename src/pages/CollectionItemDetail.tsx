@@ -355,11 +355,11 @@ const CollectionItemDetail: React.FC = () => {
       return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* PSA Grading Information */}
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden h-full">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-indigo-900/10 to-purple-900/20"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_70%)]"></div>
 
-            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
                   <Star className="w-6 h-6 text-blue-400" />
@@ -412,11 +412,11 @@ const CollectionItemDetail: React.FC = () => {
           </div>
 
           {/* Population Data */}
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden h-full">
             <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-emerald-900/10 to-teal-900/20"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(34,197,94,0.1),transparent_70%)]"></div>
 
-            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="p-3 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
                   <TrendingUp className="w-6 h-6 text-green-400" />
@@ -929,13 +929,13 @@ const CollectionItemDetail: React.FC = () => {
                 </div>
 
                 {/* Stunning Award-Winning Image Gallery Section - MOVED HERE */}
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden h-full">
                   {/* Premium Background with Gradient Mesh */}
                   <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-900/10 to-pink-900/20 opacity-50"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_70%)]"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
                     {/* Elegant Header with Glass Morphism */}
                     <div className="flex items-center space-x-4 mb-6">
                       <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
@@ -952,17 +952,17 @@ const CollectionItemDetail: React.FC = () => {
                     </div>
 
                     {/* Award-Winning Image Display */}
-                    <div className="relative">
+                    <div className="relative flex-1 flex flex-col">
                       {/* Subtle Glow Effects */}
                       <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-[2.5rem] blur-xl opacity-60"></div>
                       <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-pink-400/5 rounded-[2rem] blur-lg"></div>
 
                       {/* Main Image Container */}
-                      <div className="relative w-full flex justify-center">
+                      <div className="relative w-full flex justify-center flex-1">
                         <div className="w-full h-[500px] relative">
                           {/* Premium Border Gradient */}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl p-[2px]">
-                            <div className="w-full h-full bg-black/60 backdrop-blur-xl rounded-3xl overflow-hidden">
+                            <div className="w-full h-full bg-black/60 backdrop-blur-xl rounded-3xl overflow-visible">
                               <ImageProductView
                                 images={item.images || []}
                                 title={getItemTitle()}
@@ -989,7 +989,7 @@ const CollectionItemDetail: React.FC = () => {
                                 showBadge={false}
                                 showPrice={false}
                                 showActions={false}
-                                enableInteractions={true}
+                                enableInteractions={false}
                                 className="mx-auto h-full object-cover"
                               />
                             </div>
@@ -998,44 +998,44 @@ const CollectionItemDetail: React.FC = () => {
                       </div>
 
                       {/* Breathing Light Animation */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-[2.5rem] animate-pulse opacity-40"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-[2.5rem] animate-pulse opacity-40 pointer-events-none"></div>
+                      
+                      {/* Premium Download Button - Pushed to bottom */}
+                      {item.images && item.images.length > 0 && (
+                        <div className="mt-auto pt-6 flex justify-center">
+                          <button
+                            onClick={handleDownloadImages}
+                            disabled={downloadingZip}
+                            className="group relative overflow-hidden px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400/20"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative flex items-center space-x-2">
+                              {downloadingZip ? (
+                                <LoadingSpinner size="sm" />
+                              ) : (
+                                <Download className="w-4 h-4" />
+                              )}
+                              <span>
+                                {downloadingZip
+                                  ? 'Downloading...'
+                                  : 'Download ZIP'}
+                              </span>
+                            </div>
+                          </button>
+                        </div>
+                      )}
                     </div>
-
-                    {/* Premium Download Button */}
-                    {item.images && item.images.length > 0 && (
-                      <div className="mt-6 flex justify-center">
-                        <button
-                          onClick={handleDownloadImages}
-                          disabled={downloadingZip}
-                          className="group relative overflow-hidden px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400/20"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          <div className="relative flex items-center space-x-2">
-                            {downloadingZip ? (
-                              <LoadingSpinner size="sm" />
-                            ) : (
-                              <Download className="w-4 h-4" />
-                            )}
-                            <span>
-                              {downloadingZip
-                                ? 'Downloading...'
-                                : 'Download ZIP'}
-                            </span>
-                          </div>
-                        </button>
-                      </div>
-                    )}
 
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
                   </div>
                 </div>
 
                 {/* Premium Price History */}
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden h-full">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-emerald-900/10 to-teal-900/20"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(34,197,94,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
                     <div className="flex items-center space-x-4 mb-6">
                       <div className="p-3 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
                         <TrendingUp className="w-6 h-6 text-green-400" />
