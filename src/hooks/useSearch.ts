@@ -160,6 +160,24 @@ export const useSearch = (): UseSearchReturn => {
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             limit: 15,
           });
+        case 'cardmarket-sets':
+          const cardMarketSets = await getCardMarketSetNames(
+            debouncedQuery.trim(),
+            15
+          );
+          // Transform CardMarket sets to match the expected format
+          return {
+            data: cardMarketSets.map(set => ({
+              _id: set.setName,
+              setName: set.setName,
+              count: set.count,
+              totalAvailable: set.totalAvailable,
+              categoryCount: set.categoryCount,
+              averagePrice: set.averagePrice,
+              score: set.score,
+            })),
+            count: cardMarketSets.length,
+          };
         case 'products':
           return searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
@@ -256,6 +274,16 @@ export const useSearch = (): UseSearchReturn => {
       ...prev,
       currentQuery: query,
       currentType: 'sets',
+      currentFilters: {},
+    }));
+  }, []);
+
+  const handleSearchCardMarketSetNames = useCallback((query: string) => {
+    log(`[TANSTACK QUERY] Initiating CardMarket set names search: ${query}`);
+    setSearchConfig((prev) => ({
+      ...prev,
+      currentQuery: query,
+      currentType: 'cardmarket-sets',
       currentFilters: {},
     }));
   }, []);
@@ -448,6 +476,7 @@ export const useSearch = (): UseSearchReturn => {
 
       // Search operations with TanStack Query integration
       searchSets: handleSearchSets,
+      searchCardMarketSetNames: handleSearchCardMarketSetNames,
       searchProducts: handleSearchProducts,
       searchCards: handleSearchCards,
 
@@ -478,6 +507,7 @@ export const useSearch = (): UseSearchReturn => {
       searchConfig.selectedSet,
       searchConfig.selectedCategory,
       handleSearchSets,
+      handleSearchCardMarketSetNames,
       handleSearchProducts,
       handleSearchCards,
       selectSet,
