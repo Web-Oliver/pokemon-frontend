@@ -16,7 +16,6 @@ import { IPsaGradedCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { SearchResult } from '../../hooks/useSearch';
 import { ProductSearchSection } from './ProductSearchSection';
 import Button from '../common/Button';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -26,10 +25,7 @@ import FormHeader from '../common/FormHeader';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
-import {
-  transformRequestData,
-  convertObjectIdToString,
-} from '../../utils/responseTransformer';
+import { transformRequestData } from '../../utils/responseTransformer';
 
 interface AddEditPsaCardFormProps {
   onCancel: () => void;
@@ -307,8 +303,8 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           images: finalImages,
           priceHistory:
             priceHistory.priceHistory.length > 0
-              ? priceHistory.priceHistory.map((entry, index) => {
-                  const dateValue = entry.date || entry.dateUpdated;
+              ? priceHistory.priceHistory.map((entry, _index) => {
+                  const dateValue = entry.date;
                   let finalDate;
 
                   if (dateValue && typeof dateValue === 'string') {
@@ -362,7 +358,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
           priceHistory:
             priceHistory.priceHistory.length > 0
               ? priceHistory.priceHistory.map((entry) => {
-                  const dateValue = entry.date || entry.dateUpdated;
+                  const dateValue = entry.date;
                   let finalDate;
 
                   if (dateValue && typeof dateValue === 'string') {
@@ -502,7 +498,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
                     const transformedData = transformRequestData({
                       cardId: rawCardId,
                     });
-                    setSelectedCardId(transformedData.cardId);
+                    setSelectedCardId(transformedData.cardId || rawCardId);
                     console.log(
                       '[PSA CARD] Selected card ID:',
                       transformedData.cardId
@@ -598,11 +594,6 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
               sectionTitle=""
               sectionIcon={Award}
               formType="card"
-              variant="premium"
-              showMetadata={true}
-              allowClear={true}
-              disabled={isEditing}
-              className="premium-search-integration"
             />
           </div>
 
@@ -701,8 +692,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         isEditing={isEditing}
         priceHistory={priceHistory.priceHistory.map((entry) => ({
           price: entry.price,
-          dateUpdated:
-            entry.date || entry.dateUpdated || new Date().toISOString(),
+          dateUpdated: entry.date || new Date().toISOString(),
         }))}
         currentPriceNumber={priceHistory.currentPrice}
         onPriceUpdate={handlePriceUpdate}

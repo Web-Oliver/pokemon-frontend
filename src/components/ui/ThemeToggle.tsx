@@ -4,9 +4,9 @@
  * Beautiful animated theme toggle with light/dark/system modes
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Monitor, Sparkles } from 'lucide-react';
+import { Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
 const ThemeToggle: React.FC = () => {
   const [mounted, setMounted] = useState(false);

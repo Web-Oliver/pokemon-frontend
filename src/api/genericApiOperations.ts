@@ -11,7 +11,7 @@
  * - DIP: Depends on abstractions (unifiedApiClient)
  */
 
-import { unifiedApiClient, EnhancedRequestConfig } from './unifiedApiClient';
+import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
 
 // ========== INTERFACES ==========
 

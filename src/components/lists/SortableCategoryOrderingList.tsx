@@ -8,14 +8,13 @@
  * - Layer 3: UI Building Block component
  */
 
-import React, { memo, useCallback, useState, useMemo } from 'react';
-import { DragEndEvent, DragStartEvent, DragOverEvent } from '@dnd-kit/core';
-import { Grid3X3, Package, Users, ArrowUpDown } from 'lucide-react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
+import { ArrowUpDown, Grid3X3, Package, Users } from 'lucide-react';
 import {
   DragDropProvider,
-  SortableList,
   reorderArray,
-  isDragAllowed,
+  SortableList,
 } from '../../contexts/DragDropContext';
 import { SortableItemCard } from './SortableItemCard';
 import { CollectionItem, ItemCategory } from '../../domain/models/ordering';

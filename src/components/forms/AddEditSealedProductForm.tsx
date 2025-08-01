@@ -10,13 +10,12 @@
  * - DRY: Reuses common form patterns
  */
 
-import React, { useState, useEffect } from 'react';
-import { Archive, Package, TrendingUp, Camera } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Archive, Camera, Package, TrendingUp } from 'lucide-react';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { SearchResult } from '../../hooks/useSearch';
 import Input from '../common/Input';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
@@ -25,8 +24,8 @@ import { ProductSearchSection } from './ProductSearchSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import {
-  transformRequestData,
   convertObjectIdToString,
+  transformRequestData,
 } from '../../utils/responseTransformer';
 
 interface AddEditSealedProductFormProps {

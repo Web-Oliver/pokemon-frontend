@@ -5,15 +5,15 @@
  * Follows DRY principle - eliminates duplicate export patterns
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useAsyncOperation } from './useAsyncOperation';
 import {
-  exportToCSV,
-  exportToPDF,
-  exportToJSON,
   ExportFormat,
+  exportToCSV,
+  exportToJSON,
+  exportToPDF,
 } from '../utils/fileOperations';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../utils/errorHandler';
 
 export interface ExportConfig {
   filename?: string;

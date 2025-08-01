@@ -14,8 +14,8 @@
  */
 
 import {
-  createResourceOperations,
   ACTIVITY_CONFIG,
+  createResourceOperations,
   idMapper,
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';

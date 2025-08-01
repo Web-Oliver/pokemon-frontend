@@ -6,22 +6,20 @@
  * Maintains ALL existing functionality with consolidated search
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
-  UseFormRegister,
   FieldErrors,
-  UseFormWatch,
-  UseFormSetValue,
   UseFormClearErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
 } from 'react-hook-form';
-import { AutocompleteField } from '../search/AutocompleteField';
 import { SearchResult, useSearch } from '../../hooks/useSearch';
 import { InformationFieldRenderer } from './fields';
 import {
-  autoFillFromSelection,
   AutoFillConfig,
-  mapSetNameForProducts,
+  autoFillFromSelection,
 } from '../../utils/searchHelpers';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
@@ -144,42 +142,46 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
         );
         search.searchSets(currentValue);
         break;
-      case 'productName':
+      case 'productName': {
+        const currentSetName = watch('setName');
         if (formType === 'product') {
           console.log(
             '[CENTRALIZED SEARCH] Calling search.searchProducts:',
             currentValue,
-            setName?.trim()
+            currentSetName?.trim()
           );
-          search.searchProducts(currentValue, setName?.trim() || undefined);
+          search.searchProducts(currentValue, currentSetName?.trim() || undefined);
         } else {
           console.log(
             '[CENTRALIZED SEARCH] Calling search.searchCards:',
             currentValue,
-            setName?.trim()
+            currentSetName?.trim()
           );
-          search.searchCards(currentValue, setName?.trim() || undefined);
+          search.searchCards(currentValue, currentSetName?.trim() || undefined);
         }
         break;
+      }
     }
   }, [
     activeField,
     debouncedSetName,
     debouncedProductName,
-    setName,
     formType,
-    search,
+    watch,
+    search.searchSets,
+    search.searchProducts,
+    search.searchCards,
   ]);
 
   // Create auto-fill configuration
-  const autoFillConfig: AutoFillConfig = {
+  const autoFillConfig: AutoFillConfig = useMemo(() => ({
     setValue,
     clearErrors,
     formType,
-  };
+  }), [setValue, clearErrors, formType]);
 
   // Handle set selection using centralized system
-  const handleSetSelection = (result: SearchResult) => {
+  const handleSetSelection = useCallback((result: SearchResult) => {
     console.log('[CENTRALIZED] Set selected:', result);
 
     // Handle clearing - if result is empty, clear the form field
@@ -206,10 +208,10 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     // Clear suggestions after selection
     setSuggestions([]);
     setActiveField(null);
-  };
+  }, [setValue, clearErrors, onSelectionChange, autoFillConfig]);
 
   // Handle product/card selection using centralized system
-  const handleProductCardSelection = (result: SearchResult) => {
+  const handleProductCardSelection = useCallback((result: SearchResult) => {
     console.log(`[CENTRALIZED] ${formType} selected:`, result);
 
     // Handle clearing - if result is empty, clear the form field
@@ -229,7 +231,7 @@ export const ProductSearchSection: React.FC<ProductSearchSectionProps> = ({
     // Clear suggestions after selection
     setSuggestions([]);
     setActiveField(null);
-  };
+  }, [formType, setValue, clearErrors, onSelectionChange, autoFillConfig]);
 
   return (
     <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative">

@@ -7,7 +7,7 @@
  * Phase 4.2: Basic routing implementation with MainLayout integration
  */
 
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { log } from './utils/logger';

@@ -9,14 +9,14 @@
  * - Layer 2: Business Logic & Data Orchestration
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { exportApiService } from '../services/ExportApiService';
 import {
-  ExportRequest,
-  ExportItemType,
   ExportFormat,
+  ExportItemType,
+  ExportRequest,
   OrderedExportRequest,
 } from '../interfaces/api/IExportApiService';
 import {
@@ -26,31 +26,30 @@ import {
   SortMethod,
 } from '../domain/models/ordering';
 import {
+  ExportSessionData,
   orderingPersistence,
   storageHelpers,
-  ExportSessionData,
 } from '../utils/storageUtils';
 import {
+  handleApiError,
   showSuccessToast,
   showWarningToast,
-  handleApiError,
 } from '../utils/errorHandler';
 import {
-  formatExportSuccessMessage,
   formatExportErrorMessage,
-  validateExportRequest,
+  formatExportSuccessMessage,
   formatOrderedExportSuccessMessage,
   prepareItemsForOrderedExport,
+  validateExportRequest,
 } from '../utils/exportUtils';
 import {
-  sortItemsByPrice,
-  sortCategoriesByPrice,
   applyItemOrder,
-  moveItemUp,
-  moveItemDown,
-  resetToDefaultOrder,
   generateOrderFromItems,
   getItemCategory,
+  moveItemDown,
+  moveItemUp,
+  resetToDefaultOrder,
+  sortItemsByPrice,
 } from '../utils/orderingUtils';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;

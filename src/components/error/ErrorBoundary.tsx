@@ -9,8 +9,8 @@
  * - Development debugging with detailed error information
  */
 
-import { Component, ReactNode, lazy, Suspense } from 'react';
-import { AlertTriangle, RefreshCw, Home, Code, Activity } from 'lucide-react';
+import { Component, lazy, ReactNode, Suspense } from 'react';
+import { Activity, AlertTriangle, Code, Home, RefreshCw } from 'lucide-react';
 
 // Context7: Lazy load ReactProfiler for performance monitoring
 const ReactProfiler = lazy(() => import('../debug/ReactProfiler'));

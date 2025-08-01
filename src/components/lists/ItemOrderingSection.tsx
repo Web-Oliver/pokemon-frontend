@@ -12,18 +12,13 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import {
   ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  RotateCcw,
-  List,
   Grid3X3,
+  List,
+  RotateCcw,
+  Settings,
   SortAsc,
   SortDesc,
-  Settings,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
-import { CategoryOrderingList } from './CategoryOrderingList';
 import { SortableCategoryOrderingList } from './SortableCategoryOrderingList';
 import {
   CollectionItem,

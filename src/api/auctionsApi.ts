@@ -13,8 +13,8 @@
  */
 
 import {
-  createResourceOperations,
   AUCTION_CONFIG,
+  createResourceOperations,
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
 import { IAuction } from '../domain/models/auction';

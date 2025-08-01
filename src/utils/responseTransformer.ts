@@ -29,10 +29,10 @@ export interface StandardApiResponse<T> {
 export interface APIResponse<T> {
   success: boolean;
   status: 'success' | 'error' | 'partial';
-  data: T;
+  data?: T; // Optional for delete operations
   count?: number;
   message?: string;
-  meta: {
+  meta?: {
     timestamp: string;
     version: string;
     duration: string;
@@ -110,7 +110,13 @@ const validateApiResponse = (
   }
 
   // Check required fields - 'status' is optional since backend doesn't include it
-  if (!('success' in responseData) || !('data' in responseData)) {
+  // 'data' field is required, but can be null/undefined for delete operations
+  if (!('success' in responseData)) {
+    return false;
+  }
+
+  // For delete operations, data field might be missing but message should be present
+  if (!('data' in responseData) && !('message' in responseData)) {
     return false;
   }
 
@@ -440,8 +446,15 @@ export const transformApiResponse = <T>(responseData: any): T => {
   }
 
   // Extract and transform data with ID mapping
-  const extractedData = responseData.data;
+  // Handle cases where data field might be missing (e.g., delete operations)
+  const extractedData = responseData.data !== undefined ? responseData.data : null;
   console.log('[TRANSFORM API RESPONSE] Extracted data:', extractedData);
+
+  // For operations without data (like deletes), return the success message or status
+  if (extractedData === null && responseData.message) {
+    console.log('[TRANSFORM API RESPONSE] Returning message for data-less operation:', responseData.message);
+    return { success: true, message: responseData.message } as T;
+  }
 
   const transformedData = mapMongoIds(extractedData) as T;
   console.log('[TRANSFORM API RESPONSE] Final result:', transformedData);

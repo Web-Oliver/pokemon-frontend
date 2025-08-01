@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { ThemeColor, getHeaderTheme } from '../../theme/formThemes';
+import { getHeaderTheme, ThemeColor } from '../../theme/formThemes';
 
 interface FormHeaderProps {
   /** Icon component from lucide-react */

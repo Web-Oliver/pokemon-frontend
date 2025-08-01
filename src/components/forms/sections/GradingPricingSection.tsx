@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { Banknote, Star, Award } from 'lucide-react';
+import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { Award, Banknote, Star } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';

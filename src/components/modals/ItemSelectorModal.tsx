@@ -6,8 +6,8 @@
  * - DRY: Eliminates duplicate modal logic across different selection scenarios
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Package, Check } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Check, Package, Search } from 'lucide-react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import Input from '../common/Input';

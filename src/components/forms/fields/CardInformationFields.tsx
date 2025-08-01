@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import Input from '../../common/Input';
 
 interface ReadOnlyCardFields {

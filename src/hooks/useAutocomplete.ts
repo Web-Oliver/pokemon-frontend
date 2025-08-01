@@ -5,8 +5,8 @@
  * Focused autocomplete using the consolidated search hook
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { useSearch, SearchResult } from './useSearch';
+import { useCallback, useEffect, useState } from 'react';
+import { SearchResult, useSearch } from './useSearch';
 
 // Legacy compatibility interfaces
 export interface AutocompleteField {

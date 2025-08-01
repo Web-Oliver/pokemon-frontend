@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { Star, Package, Archive, CheckCircle } from 'lucide-react';
+import { Archive, CheckCircle, Package, Star } from 'lucide-react';
 
 export interface CollectionStatsProps {
   psaGradedCount: number;

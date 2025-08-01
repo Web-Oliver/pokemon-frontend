@@ -12,7 +12,7 @@
  */
 
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
-import { PremiumShimmer, PremiumGlow } from './PremiumFormElements';
+import { PremiumGlow, PremiumShimmer } from './PremiumFormElements';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;

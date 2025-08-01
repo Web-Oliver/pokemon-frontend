@@ -16,7 +16,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_BASE_URL } from '../utils/constants';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
-import { optimizedApiRequest, BatchProcessor } from '../utils/apiOptimization';
+import { BatchProcessor, optimizedApiRequest } from '../utils/apiOptimization';
 import {
   transformApiResponse,
   transformRequestData,

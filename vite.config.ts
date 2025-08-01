@@ -21,7 +21,7 @@ export default defineConfig({
         manualChunks: {
           // React vendor chunk
           react: ['react', 'react-dom'],
-          // UI vendor chunk  
+          // UI vendor chunk
           ui: ['lucide-react', 'framer-motion'],
           // Charts vendor chunk
           charts: ['recharts'],

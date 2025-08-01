@@ -11,20 +11,19 @@
 
 import React, { memo, useCallback, useMemo } from 'react';
 import {
-  ArrowUpDown,
-  ArrowUp,
+  Archive,
   ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   Package,
   Star,
-  Archive,
-  RotateCcw,
 } from 'lucide-react';
 import { OrderableItemCard } from './OrderableItemCard';
 import { CollectionItem, ItemCategory } from '../../domain/models/ordering';
 import {
+  applyItemOrder,
   getItemCategory,
   groupItemsByCategory,
-  applyItemOrder,
 } from '../../utils/orderingUtils';
 
 export interface CategoryOrderingListProps {

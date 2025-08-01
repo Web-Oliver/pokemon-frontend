@@ -6,15 +6,14 @@
  * Consolidates useSearch + useAutocomplete + SearchService into single hook
  */
 
-import { useState, useCallback, useRef, useMemo } from 'react';
-import { searchCards, searchSets, searchProducts } from '../api/searchApi';
-import { handleApiError } from '../utils/errorHandler';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { searchCards, searchProducts, searchSets } from '../api/searchApi';
 import { log } from '../utils/logger';
 import { useDebouncedCallback } from '../utils/common';
 import {
-  isValidSearchQuery,
-  handleSearchError,
   getDisplayName,
+  handleSearchError,
+  isValidSearchQuery,
 } from '../utils/searchHelpers';
 
 // Focused types

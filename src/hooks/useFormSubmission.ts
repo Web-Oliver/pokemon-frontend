@@ -9,7 +9,7 @@
  * - DRY: Eliminates ~100 lines of duplicate code per form component
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { UseFormHandleSubmit } from 'react-hook-form';
 
 interface ImageUploadHook {

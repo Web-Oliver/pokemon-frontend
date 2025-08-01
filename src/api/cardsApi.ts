@@ -13,8 +13,8 @@
  */
 
 import {
-  createResourceOperations,
   CARD_CONFIG,
+  createResourceOperations,
   idMapper,
 } from './genericApiOperations';
 import { ICard } from '../domain/models/card';

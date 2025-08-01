@@ -12,7 +12,7 @@
 import React from 'react';
 import Button from './Button';
 import { ButtonLoading } from './LoadingStates';
-import { ThemeColor, buildThemeClasses } from '../../theme/formThemes';
+import { buildThemeClasses, ThemeColor } from '../../theme/formThemes';
 
 interface FormActionButtonsProps {
   /** Function to call when cancel button is clicked */

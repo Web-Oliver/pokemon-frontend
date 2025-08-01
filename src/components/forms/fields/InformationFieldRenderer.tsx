@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import CardInformationFields from './CardInformationFields';
 import ProductInformationFields from './ProductInformationFields';
 

@@ -10,18 +10,18 @@
  * - Layer 3: UI Building Block component
  */
 
-import React, { useState, memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
-  Package,
-  Star,
   Archive,
   CheckCircle,
-  Eye,
   Download,
-  Share,
+  Edit,
+  Eye,
   Heart,
   MoreHorizontal,
-  Edit,
+  Package,
+  Share,
+  Star,
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { Banknote } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';

@@ -6,7 +6,7 @@
  * Eliminates code duplication across search components
  */
 
-import { UseFormSetValue, UseFormClearErrors } from 'react-hook-form';
+import { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
 import { SearchResult } from '../hooks/useSearch';
 
 // ===== TYPES =====

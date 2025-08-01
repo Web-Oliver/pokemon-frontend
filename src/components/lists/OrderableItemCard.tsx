@@ -10,15 +10,10 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 import { ImageProductView } from '../common/ImageProductView';
-import { formatCardNameForDisplay } from '../../utils/formatting';
 import { CollectionItem } from '../../domain/models/ordering';
-import {
-  getItemCategory,
-  getItemDisplayName,
-  getSortablePrice,
-} from '../../utils/orderingUtils';
+import { getItemCategory, getItemDisplayName } from '../../utils/orderingUtils';
 
 export interface OrderableItemCardProps {
   item: CollectionItem;

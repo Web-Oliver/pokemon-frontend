@@ -5,8 +5,8 @@
  * Focused autocomplete component using consolidated search hook
  */
 
-import React, { useRef, useEffect } from 'react';
-import { Search, X, ChevronDown } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { ChevronDown, Search, X } from 'lucide-react';
 import { useAutocomplete } from '../../hooks/useAutocomplete';
 import { SearchResult } from '../../hooks/useSearch';
 

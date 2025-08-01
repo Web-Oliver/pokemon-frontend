@@ -13,11 +13,11 @@
 
 import React, { useState } from 'react';
 import {
-  TrendingUp,
-  TrendingDown,
   Banknote,
   Calendar,
   Plus,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 import { IPriceHistoryEntry } from '../domain/models/common';
 import Button from './common/Button';
@@ -177,19 +177,19 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
         </div>
 
         {/* Context7 Premium Current Price Display */}
-        <div className="mb-8 p-6 bg-gradient-to-r from-indigo-50 via-blue-50 to-purple-50 rounded-3xl border border-indigo-200/50 shadow-xl relative overflow-hidden group/price">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
+        <div className="mb-8 p-6 bg-zinc-800/60 backdrop-blur-sm rounded-3xl border border-zinc-600/40 shadow-xl relative overflow-hidden group/price">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10"></div>
           <div className="relative z-10">
-            <div className="text-sm font-bold text-indigo-600 tracking-wide uppercase mb-2 flex items-center">
+            <div className="text-sm font-bold text-indigo-400 tracking-wide uppercase mb-2 flex items-center">
               <Calendar className="w-4 h-4 mr-2" />
               Current Market Price
             </div>
-            <div className="text-4xl font-bold text-indigo-900 group-hover/price:text-purple-900 transition-colors duration-300">
+            <div className="text-4xl font-bold text-zinc-100 group-hover/price:text-indigo-400 transition-colors duration-300">
               {formatPrice(currentPrice)}
             </div>
           </div>
           {/* Premium shimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/price:translate-x-full transition-transform duration-1000 ease-out"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/price:translate-x-full transition-transform duration-1000 ease-out"></div>
         </div>
 
         {/* Context7 Premium Price History List */}

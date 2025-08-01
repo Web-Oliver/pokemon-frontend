@@ -13,11 +13,11 @@ import {
 } from '../interfaces/api/IExportApiService';
 import {
   generateExportFilename,
+  generateOrderedExportFilename,
   getExportConfig,
   getExportConfigKey,
-  validateExportRequest,
   prepareItemsForOrderedExport,
-  generateOrderedExportFilename,
+  validateExportRequest,
 } from '../utils/exportUtils';
 import { CollectionItem } from '../domain/models/ordering';
 

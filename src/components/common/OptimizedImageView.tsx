@@ -10,7 +10,7 @@
  * - Performance: Implements lazy loading and minimal re-renders
  */
 
-import React, { useState, useRef, useEffect, memo } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
 
 interface OptimizedImageViewProps {

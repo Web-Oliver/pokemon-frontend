@@ -11,12 +11,11 @@
  */
 
 import React, { useEffect } from 'react';
-import { Package, Calendar } from 'lucide-react';
+import { Calendar, Package } from 'lucide-react';
 import { IRawCard } from '../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../hooks/useFormValidation';
-import { SearchResult } from '../../hooks/useSearch';
 import { ProductSearchSection } from './ProductSearchSection';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
@@ -24,8 +23,8 @@ import FormActionButtons from '../common/FormActionButtons';
 import GradingPricingSection from './sections/GradingPricingSection';
 import ImageUploadSection from './sections/ImageUploadSection';
 import {
-  transformRequestData,
   convertObjectIdToString,
+  transformRequestData,
 } from '../../utils/responseTransformer';
 
 interface AddEditRawCardFormProps {

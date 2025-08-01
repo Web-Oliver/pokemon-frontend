@@ -13,8 +13,8 @@
  */
 
 import {
-  createResourceOperations,
   CARDMARKET_REF_PRODUCTS_CONFIG,
+  createResourceOperations,
   idMapper,
 } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';

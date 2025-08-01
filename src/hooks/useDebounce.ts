@@ -8,7 +8,7 @@
  * - Proper cleanup on unmount
  */
 
-import { useCallback, useRef, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Hook for debouncing function calls

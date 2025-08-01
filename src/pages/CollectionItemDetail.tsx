@@ -327,60 +327,60 @@ const CollectionItemDetail: React.FC = () => {
       return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-700/20 p-6">
+              <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center">
                 <Star className="w-5 h-5 mr-2" />
                 PSA Grading Information
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-blue-600">Grade:</span>
-                  <span className="font-bold text-blue-800">
+                  <span className="text-zinc-300">Grade:</span>
+                  <span className="font-bold text-blue-400">
                     {psaCard.grade}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-blue-600">Card Name:</span>
-                  <span className="font-medium text-blue-800">
+                  <span className="text-zinc-300">Card Name:</span>
+                  <span className="font-medium text-zinc-100">
                     {psaCard.cardName || psaCard.cardId?.cardName || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-blue-600">Base Name:</span>
-                  <span className="font-medium text-blue-800">
+                  <span className="text-zinc-300">Base Name:</span>
+                  <span className="font-medium text-zinc-100">
                     {psaCard.cardId?.baseName || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-blue-600">Pokemon #:</span>
-                  <span className="font-medium text-blue-800">
+                  <span className="text-zinc-300">Pokemon #:</span>
+                  <span className="font-medium text-zinc-100">
                     {psaCard.cardId?.pokemonNumber || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-blue-600">Variety:</span>
-                  <span className="font-medium text-blue-800">
+                  <span className="text-zinc-300">Variety:</span>
+                  <span className="font-medium text-zinc-100">
                     {psaCard.cardId?.variety || 'Standard'}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-green-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
+            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-700/20 p-6">
+              <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Population Data
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-green-600">Total PSA Population:</span>
-                  <span className="font-bold text-green-800">
+                  <span className="text-zinc-300">Total PSA Population:</span>
+                  <span className="font-bold text-green-400">
                     {psaCard.cardId?.psaTotalGradedForCard || 'N/A'}
                   </span>
                 </div>
                 {psaCard.cardId?.psaGrades && (
                   <div className="mt-4">
-                    <p className="text-sm text-green-600 mb-2">
+                    <p className="text-sm text-zinc-300 mb-2">
                       Grade Distribution:
                     </p>
                     <div className="grid grid-cols-2 gap-2 text-xs">
@@ -394,8 +394,8 @@ const CollectionItemDetail: React.FC = () => {
                               key={grade}
                               className={`flex justify-between p-2 rounded ${
                                 psaCard.grade === gradeNumber
-                                  ? 'bg-blue-100 border border-blue-300 font-bold'
-                                  : 'bg-green-100'
+                                  ? 'bg-blue-500/20 border border-blue-400/50 font-bold text-blue-400'
+                                  : 'bg-zinc-800/50 text-zinc-100'
                               }`}
                             >
                               <span>Grade {gradeNumber}:</span>
@@ -406,8 +406,8 @@ const CollectionItemDetail: React.FC = () => {
                     </div>
 
                     {/* Show total population */}
-                    <div className="mt-3 pt-2 border-t border-green-200">
-                      <div className="flex justify-between text-sm font-semibold">
+                    <div className="mt-3 pt-2 border-t border-zinc-700">
+                      <div className="flex justify-between text-sm font-semibold text-zinc-100">
                         <span>Total Population:</span>
                         <span>
                           {Object.values(psaCard.cardId.psaGrades).reduce(

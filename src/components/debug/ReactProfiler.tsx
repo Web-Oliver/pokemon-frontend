@@ -12,12 +12,12 @@
 import React, {
   Profiler,
   ProfilerOnRenderCallback,
-  useState,
+  useCallback,
   useEffect,
   useRef,
-  useCallback,
+  useState,
 } from 'react';
-import { Activity, BarChart3, Clock, Zap, AlertTriangle } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, Clock, Zap } from 'lucide-react';
 
 // Context7: Performance metrics interfaces
 interface ProfilerMetrics {

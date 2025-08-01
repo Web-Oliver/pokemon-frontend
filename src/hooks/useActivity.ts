@@ -12,13 +12,13 @@
  * - Premium caching strategies
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import activityApi, {
   Activity,
+  ACTIVITY_PRIORITIES,
+  ACTIVITY_TYPES,
   ActivityFilters,
   ActivityStats,
-  ACTIVITY_TYPES,
-  ACTIVITY_PRIORITIES,
 } from '../api/activityApi';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';

@@ -3,11 +3,10 @@
  * Provides auction management functionality
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import * as auctionsApi from '../api/auctionsApi';
 import * as exportApi from '../api/exportApi';
 import { IAuction } from '../domain/models/auction';
-import { ISaleDetails } from '../domain/models/common';
 import { handleApiError } from '../utils/errorHandler';
 
 export interface UseAuctionState {

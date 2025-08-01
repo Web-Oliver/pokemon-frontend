@@ -48,7 +48,6 @@ import { useCollectionStats } from '../hooks/useCollectionStats';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 
 const Analytics: React.FC = () => {
-  const [selectedMetric, setSelectedMetric] = useState('all');
   const [dateRange, setDateRange] = useState<DateRangeState>({
     preset: 'month',
   });
@@ -59,7 +58,7 @@ const Analytics: React.FC = () => {
       limit: 100,
     }); // Limit to 100 recent activities for analytics
 
-  const { stats: activityStats, loading: statsLoading } = useActivityStats();
+  const { stats: activityStats } = useActivityStats();
 
   // Context7 Collection Statistics Hook - for real collection metrics
   const { totalValueFormatted } = useCollectionStats();

@@ -7,7 +7,7 @@
  * - Testing utilities and custom matchers
  */
 
-import { expect, afterEach, vi } from 'vitest';
+import { afterEach, expect, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import React from 'react';

@@ -6,20 +6,20 @@
  * for the Sales Analytics page component.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { ISale, ISalesSummary, ISalesGraphData } from '../domain/models/sale';
+import { useCallback, useEffect, useState } from 'react';
+import { ISale, ISalesGraphData, ISalesSummary } from '../domain/models/sale';
 import {
   getSalesData,
-  getSalesSummary,
   getSalesGraphData,
+  getSalesSummary,
 } from '../api/salesApi';
 import {
-  calculateKPIs,
-  processGraphData,
   aggregateByCategory,
+  calculateKPIs,
   calculateTrendAnalysis,
+  processGraphData,
 } from '../domain/services/SalesAnalyticsService';
-import { exportToCSV, commonCSVColumns } from '../utils/fileOperations';
+import { commonCSVColumns, exportToCSV } from '../utils/fileOperations';
 import { log } from '../utils/logger';
 
 export interface DateRange {

@@ -8,21 +8,21 @@
  * - Layer 2: Services/Context - provides drag & drop capabilities to components
  */
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import {
+  closestCenter,
+  defaultDropAnimationSideEffects,
   DndContext,
   DragEndEvent,
-  DragStartEvent,
   DragOverEvent,
-  closestCenter,
+  DragOverlay,
+  DragStartEvent,
+  DropAnimation,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
   useSensor,
   useSensors,
-  DragOverlay,
-  MeasuringStrategy,
-  DropAnimation,
-  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   arrayMove,

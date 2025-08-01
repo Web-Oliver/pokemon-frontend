@@ -5,7 +5,7 @@
  * Follows DRY principle - eliminates duplicate table/grid patterns
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export interface DataTableColumn<T> {
   key: keyof T | string;

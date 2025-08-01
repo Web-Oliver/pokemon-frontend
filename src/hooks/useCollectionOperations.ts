@@ -4,13 +4,12 @@
  * Follows SOLID principles - composes specialized hooks with separated concerns
  */
 
-import { useEffect, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { queryKeys } from '../lib/queryClient';
 

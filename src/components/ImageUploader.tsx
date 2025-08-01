@@ -13,22 +13,22 @@
  */
 
 import React, {
-  useState,
-  useRef,
-  DragEvent,
   ChangeEvent,
+  DragEvent,
   useEffect,
+  useRef,
+  useState,
 } from 'react';
-import { Upload, X, AlertCircle, Camera, Image, Sparkles } from 'lucide-react';
+import { AlertCircle, Camera, Image, Sparkles, Upload, X } from 'lucide-react';
 import ConfirmModal from './common/ConfirmModal';
 import {
   detectImageAspectRatio,
-  getResponsiveImageConfig,
   getContext7ContainerClasses,
-  getContext7ImageClasses,
   getContext7GlassOverlay,
+  getContext7ImageClasses,
   getContext7ShimmerEffect,
   getOptimalGridLayout,
+  getResponsiveImageConfig,
   type ImageAspectInfo,
 } from '../utils/fileOperations';
 

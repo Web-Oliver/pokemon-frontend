@@ -4,7 +4,7 @@
  * Monitors and displays performance metrics for development
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Activity, Clock, Zap } from 'lucide-react';
 
 interface PerformanceMetrics {

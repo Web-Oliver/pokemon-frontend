@@ -11,13 +11,13 @@
  * - Eliminated duplicate styling code following SOLID principles
  */
 
-import { SelectHTMLAttributes, forwardRef } from 'react';
+import { forwardRef, SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
-  PremiumWrapper,
-  PremiumLabel,
   PremiumErrorMessage,
   PremiumHelperText,
+  PremiumLabel,
+  PremiumWrapper,
 } from './PremiumFormElements';
 
 export interface SelectOption {

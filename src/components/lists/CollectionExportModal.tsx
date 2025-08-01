@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { Download, Image, FileText, Package, ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Download, FileText, Image, Package } from 'lucide-react';
 import Modal from '../common/Modal';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { CollectionItem } from './CollectionItemCard';

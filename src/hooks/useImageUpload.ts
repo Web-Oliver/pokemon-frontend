@@ -4,9 +4,9 @@
  * Follows Single Responsibility Principle - only handles image upload logic
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { getUploadApiService } from '../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { useAsyncOperation } from './useAsyncOperation';
 

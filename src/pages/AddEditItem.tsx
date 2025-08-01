@@ -40,7 +40,7 @@ interface ItemTypeOption {
 type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
 const AddEditItem: React.FC = () => {
-  const { loading: collectionLoading, error: collectionError } =
+  const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,16 +50,20 @@ const AddEditItem: React.FC = () => {
 
   // Parse URL to determine if in edit mode and get item details
   useEffect(() => {
-    const currentPath = window.location.pathname;
+    const handleEditMode = async () => {
+      const currentPath = window.location.pathname;
 
-    if (currentPath.startsWith('/collection/edit/')) {
-      const pathParts = currentPath.split('/');
-      if (pathParts.length === 5) {
-        const [, , , type, id] = pathParts;
-        setIsEditing(true);
-        fetchItemForEdit(type, id);
+      if (currentPath.startsWith('/collection/edit/')) {
+        const pathParts = currentPath.split('/');
+        if (pathParts.length === 5) {
+          const [, , , type, id] = pathParts;
+          setIsEditing(true);
+          await fetchItemForEdit(type, id);
+        }
       }
-    }
+    };
+
+    handleEditMode();
   }, []);
 
   // Fetch item data for editing
@@ -86,8 +90,11 @@ const AddEditItem: React.FC = () => {
           fetchedItem = await collectionApi.getSealedProductById(id);
           itemType = 'sealed-product';
           break;
-        default:
-          throw new Error(`Unknown item type: ${type}`);
+        default: {
+          const errorMessage = `Unknown item type: ${type}`;
+          setFetchError(errorMessage);
+          return;
+        }
       }
 
       setItemData(fetchedItem);

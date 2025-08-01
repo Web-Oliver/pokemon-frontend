@@ -8,7 +8,7 @@
  * - DRY: Centralizes sale logic
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { ISaleDetails } from '../domain/models/common';
 import { useCollectionOperations } from './useCollectionOperations';
 

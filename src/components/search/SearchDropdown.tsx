@@ -12,12 +12,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Search, Hash, Package, Star, TrendingUp } from 'lucide-react';
-import {
-  getSearchIconConfig,
-  getDisplayName as getDisplayNameHelper,
-  getResultMetadata,
-} from '../../utils/searchHelpers';
+import { Hash, Package, Search, Star, TrendingUp } from 'lucide-react';
+import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers';
 
 interface SearchSuggestion {
   _id?: string;

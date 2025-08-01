@@ -4,7 +4,7 @@
  * Follows Single Responsibility Principle - only handles price history management
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface PriceHistoryEntry {
   price: number;

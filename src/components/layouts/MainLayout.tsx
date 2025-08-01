@@ -7,21 +7,20 @@
 
 import React from 'react';
 import {
-  Home,
-  Package,
-  TrendingUp,
+  ChevronDown,
+  Database,
+  Facebook,
   Gavel,
+  Home,
   Menu,
+  Package,
+  Package2,
+  Plus,
+  Search,
+  Sparkles,
+  TrendingUp,
   X,
   Zap,
-  Sparkles,
-  Plus,
-  Database,
-  Package2,
-  ChevronDown,
-  Facebook,
-  Timer,
-  Search,
 } from 'lucide-react';
 import ThemeToggle from '../ui/ThemeToggle';
 

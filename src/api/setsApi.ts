@@ -14,16 +14,12 @@
 
 import {
   createResourceOperations,
-  SET_CONFIG,
   idMapper,
+  SET_CONFIG,
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
 import { ISet } from '../domain/models/card';
-import {
-  searchSets as searchSetsApi,
-  type SetSearchParams,
-  type SearchResponse,
-} from './searchApi';
+import { searchSets as searchSetsApi, type SetSearchParams } from './searchApi';
 
 // ========== INTERFACES (ISP Compliance) ==========
 

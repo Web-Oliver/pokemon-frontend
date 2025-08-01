@@ -7,7 +7,7 @@
  * Following CLAUDE.md SOLID principles and steering document guidelines
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { log } from '../utils/logger';
