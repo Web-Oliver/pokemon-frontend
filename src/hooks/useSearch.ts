@@ -169,9 +169,14 @@ export const useSearch = (): UseSearchReturn => {
         case 'cardmarket-sets':
           console.log(`[SEALED PRODUCT DEBUG] Executing cardmarket-sets search`);
           console.log(`[SEALED PRODUCT DEBUG] Debounced query:`, debouncedQuery);
+          console.log(`[SEALED PRODUCT DEBUG] Current query:`, searchConfig.currentQuery);
+          
+          // CRITICAL FIX: Use currentQuery instead of debouncedQuery for immediate search
+          const queryToUse = searchConfig.currentQuery || debouncedQuery;
+          console.log(`[SEALED PRODUCT DEBUG] Using query:`, queryToUse);
           
           const cardMarketSets = await getCardMarketSetNames(
-            debouncedQuery.trim(),
+            queryToUse.trim(),
             15
           );
           
