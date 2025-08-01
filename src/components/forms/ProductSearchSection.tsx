@@ -20,7 +20,7 @@ import { InformationFieldRenderer } from './fields';
 import {
   AutoFillConfig,
   autoFillFromSelection,
-} from '../../utils/searchHelpers.optimized';
+} from '../../utils/searchHelpers';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
 interface ProductSearchSectionProps {

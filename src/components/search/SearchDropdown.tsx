@@ -13,7 +13,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import { Hash, Package, Search, Star, TrendingUp } from 'lucide-react';
-import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers.optimized';
+import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers';
 
 interface SearchSuggestion {
   _id?: string;
