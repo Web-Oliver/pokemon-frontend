@@ -292,19 +292,43 @@ const CollectionItemDetail: React.FC = () => {
 
   const getItemTitle = () => {
     if (!item) {
+      console.log('[DEBUG getItemTitle] No item data');
       return 'Loading...';
     }
 
+    console.log('[DEBUG getItemTitle] Item data:', item);
+    console.log('[DEBUG getItemTitle] Item keys:', Object.keys(item));
+
     // For PSA and Raw cards, check cardId.cardName first, then cardName
     if ('cardId' in item || 'cardName' in item) {
-      return item.cardId?.cardName || item.cardName || 'Unknown Card';
+      console.log('[DEBUG getItemTitle] Detected card item (PSA/Raw)');
+      const title = item.cardId?.cardName || item.cardName || 'Unknown Card';
+      console.log('[DEBUG getItemTitle] Card title:', title);
+      return title;
     }
 
-    // For sealed products, check name
-    if ('name' in item) {
-      return item.name || 'Unknown Item';
+    // For sealed products, check productId object structure
+    if ('productId' in item && item.productId) {
+      const sealedItem = item as any;
+      console.log('[DEBUG getItemTitle] Detected sealed product with productId');
+      console.log('[DEBUG getItemTitle] ProductId object:', sealedItem.productId);
+      
+      // Get productName from productId object
+      if (sealedItem.productId?.productName) {
+        const title = sealedItem.productId.productName;
+        console.log('[DEBUG getItemTitle] Using productId.productName:', title);
+        return title;
+      }
+      
+      // Fallback to category from productId
+      if (sealedItem.productId?.category) {
+        const title = sealedItem.productId.category.replace(/-/g, ' ');
+        console.log('[DEBUG getItemTitle] Using productId.category:', title);
+        return title;
+      }
     }
 
+    console.log('[DEBUG getItemTitle] No matching fields found, returning Unknown Item');
     return 'Unknown Item';
   };
 
@@ -321,8 +345,12 @@ const CollectionItemDetail: React.FC = () => {
       return `Condition: ${item.condition}`;
     }
 
-    if ('category' in item) {
-      return `Category: ${item.category}`;
+    // For sealed products with productId structure
+    if ('productId' in item && item.productId) {
+      const sealedItem = item as any;
+      if (sealedItem.productId?.category) {
+        return `Category: ${sealedItem.productId.category.replace(/-/g, ' ')}`;
+      }
     }
 
     return '';
@@ -333,12 +361,26 @@ const CollectionItemDetail: React.FC = () => {
       return '';
     }
 
-    if ('setName' in item) {
-      return item.setName;
-    }
-
+    // For cards
     if ('cardId' in item && item.cardId?.setId?.setName) {
       return item.cardId.setId.setName;
+    }
+
+    // For sealed products with productId structure  
+    if ('productId' in item && item.productId) {
+      const sealedItem = item as any;
+      // We have setProductId but would need to make API call to get the actual set name
+      // For now, extract from product name or use placeholder
+      if (sealedItem.productId?.productName) {
+        // Try to extract set name from product name (e.g., "Journey Together Booster" -> "Journey Together")
+        const productName = sealedItem.productId.productName;
+        const setName = productName.replace(/(Booster|Box|Pack|Elite Trainer Box|ETB).*$/i, '').trim();
+        return setName || 'Set Name Pending';
+      }
+      
+      if (sealedItem.productId?.setProductId) {
+        return 'Set Name Pending'; // Would need API call to resolve setProductId
+      }
     }
 
     return 'Unknown Set';
@@ -1055,49 +1097,51 @@ const CollectionItemDetail: React.FC = () => {
                       />
                     </div>
 
-                    {/* Price Update Section - Moved to Right Column */}
-                    <div className="mt-6 pt-6 border-t border-white/10">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                          <Plus className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-bold bg-gradient-to-r from-white via-purple-100 to-violet-100 bg-clip-text text-transparent">
-                            Update Price
-                          </h3>
-                          <p className="text-white/60 text-xs">
-                            Adjust market value
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="Enter new price (e.g., 1500)"
-                          value={newPrice}
-                          onChange={handlePriceInputChange}
-                          className="w-full p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
-                        />
-                        <button
-                          onClick={handleCustomPriceUpdate}
-                          disabled={
-                            !newPrice.trim() ||
-                            isNaN(parseInt(newPrice, 10)) ||
-                            parseInt(newPrice, 10) <= 0 ||
-                            parseInt(newPrice, 10) ===
-                              Math.round(item?.myPrice || 0)
-                          }
-                          className="w-full p-3 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-purple-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                        >
-                          <div className="flex items-center justify-center space-x-2">
-                            <Plus className="w-4 h-4" />
-                            <span>Update Price</span>
+                    {/* Price Update Section - Only show for non-sold items */}
+                    {!item.sold && (
+                      <div className="mt-6 pt-6 border-t border-white/10">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
+                            <Plus className="w-5 h-5 text-purple-400" />
                           </div>
-                        </button>
+                          <div>
+                            <h3 className="text-lg font-bold bg-gradient-to-r from-white via-purple-100 to-violet-100 bg-clip-text text-transparent">
+                              Update Price
+                            </h3>
+                            <p className="text-white/60 text-xs">
+                              Adjust market value
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="Enter new price (e.g., 1500)"
+                            value={newPrice}
+                            onChange={handlePriceInputChange}
+                            className="w-full p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
+                          />
+                          <button
+                            onClick={handleCustomPriceUpdate}
+                            disabled={
+                              !newPrice.trim() ||
+                              isNaN(parseInt(newPrice, 10)) ||
+                              parseInt(newPrice, 10) <= 0 ||
+                              parseInt(newPrice, 10) ===
+                                Math.round(item?.myPrice || 0)
+                            }
+                            className="w-full p-3 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-purple-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                          >
+                            <div className="flex items-center justify-center space-x-2">
+                              <Plus className="w-4 h-4" />
+                              <span>Update Price</span>
+                            </div>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-emerald-500/5 to-teal-500/5 rounded-[2rem] animate-pulse opacity-30 pointer-events-none"></div>
                   </div>

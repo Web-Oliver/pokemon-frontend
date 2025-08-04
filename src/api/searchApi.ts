@@ -507,16 +507,26 @@ export const searchAvailableProducts = async (
 export const searchSetProducts = async (
   params: SetProductSearchParams
 ): Promise<SearchResponse<ISetProduct>> => {
-  const queryParams = buildQueryParams(params);
-  const fullResponse = await pureFetch(
-    `http://localhost:3000/api/search/setProducts?${queryParams.toString()}`
-  );
+  console.log('[API DEBUG] searchSetProducts called with params:', params);
+  
+  const queryParams = new URLSearchParams({
+    query: params.query.trim(),
+    types: 'setProducts',
+    limit: (params.limit || 15).toString(),
+    page: (params.page || 1).toString(),
+  });
+  
+  const url = `http://localhost:3000/api/search?${queryParams.toString()}`;
+  console.log('[API DEBUG] Making SetProducts API request to:', url);
+  
+  const fullResponse = await pureFetch(url);
+  console.log('[API DEBUG] SetProducts API response:', fullResponse);
 
   return {
     success: fullResponse.success || true,
     query: fullResponse.meta?.query || params.query,
-    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
-    data: fullResponse.data?.setProducts || fullResponse.data || [],
+    count: fullResponse.data?.setProducts?.length || 0,
+    data: fullResponse.data?.setProducts || [],
   };
 };
 

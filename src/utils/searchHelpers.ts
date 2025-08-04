@@ -17,7 +17,6 @@ import { SearchResult } from '../hooks/useSearch';
 export interface AutoFillConfig {
   setValue: UseFormSetValue<any>;
   clearErrors: UseFormClearErrors<any>;
-  formType: 'product' | 'card';
 }
 
 export interface SearchParams {
@@ -101,28 +100,51 @@ export const autoFillField = (
   value: any
 ) => {
   if (value !== undefined && value !== null) {
+    console.log('[AUTOFILL] Setting', fieldName, '=', value);
     config.setValue(fieldName, value, { shouldValidate: true });
     config.clearErrors(fieldName);
+  } else {
+    console.log('[AUTOFILL] Skipping field (undefined/null):', fieldName);
   }
 };
 
 /**
- * Auto-fill set information from search result
- * Centralized set auto-fill logic
+ * Auto-fill set information from search result for products
+ * Used by ProductSearchSection
  */
-export const autoFillSetData = (
+export const autoFillProductSetData = (
   config: AutoFillConfig,
   result: SearchResult
 ) => {
-  let setName: string | undefined;
+  console.log('[AUTOFILL DEBUG] Product set data received:', result.data);
   
-  if (config.formType === 'product') {
-    // For sealed products: Use setProductId.setProductName
-    setName = result.data.setProductId?.setProductName || result.data.setName;
+  // For sealed products: Use setProductId.setProductName or setName or setProductName
+  const setName = result.data.setProductId?.setProductName || result.data.setName || result.data.setProductName;
+  
+  if (setName) {
+    console.log('[AUTOFILL DEBUG] Setting setName (SetProduct name):', setName);
+    autoFillField(config, 'setName', setName);
   } else {
-    // For cards: Use setId.setName (card references set)
-    setName = result.data.setId?.setName || result.data.setName || result.data.setInfo?.setName;
+    console.log('[AUTOFILL DEBUG] No setName found in product data:', result.data);
   }
+
+  const year = result.data.year;
+  if (year) {
+    console.log('[AUTOFILL DEBUG] Setting year:', year);
+    autoFillField(config, 'year', year);
+  }
+};
+
+/**
+ * Auto-fill set information from search result for cards
+ * Used by CardSearchSection
+ */
+export const autoFillCardSetData = (
+  config: AutoFillConfig,
+  result: SearchResult
+) => {
+  // For cards: Use setId.setName (card references set)
+  const setName = result.data.setId?.setName || result.data.setName || result.data.setInfo?.setName;
   
   if (setName) {
     autoFillField(config, 'setName', setName);
@@ -136,71 +158,139 @@ export const autoFillSetData = (
 };
 
 /**
- * Auto-fill product/card specific data
- * Handles both product and card types with shared logic
+ * Auto-fill product specific data
+ * Used by ProductSearchSection
  */
-export const autoFillItemData = (
+export const autoFillProductData = (
   config: AutoFillConfig,
   result: SearchResult
 ) => {
-  const { formType } = config;
   const { data } = result;
 
-  // Auto-fill based on form type
-  if (formType === 'product') {
-    if (data.productName) {
-      autoFillField(config, 'productName', data.productName);
-    }
-  } else if (formType === 'card') {
-    if (data.cardName) {
-      autoFillField(config, 'cardName', data.cardName);
-    }
-    if (data.baseName) {
-      autoFillField(config, 'baseName', data.baseName);
-    }
-    if (data.variety) {
-      autoFillField(config, 'variety', data.variety);
-    }
-    // UPDATED: Use cardNumber instead of pokemonNumber
-    if (data.cardNumber) {
-      autoFillField(config, 'cardNumber', data.cardNumber);
-    }
+  console.log('[AUTOFILL DEBUG] Product data received:', data);
+
+  if (data.productName || data.name) {
+    const productName = data.productName || data.name;
+    console.log('[AUTOFILL DEBUG] Setting productName:', productName);
+    autoFillField(config, 'productName', productName);
   }
 
-  // Common fields
   if (data.category) {
+    console.log('[AUTOFILL DEBUG] Setting category:', data.category);
     autoFillField(config, 'category', data.category);
   }
 
   if (data.available !== undefined) {
-    autoFillField(config, 'availability', Number(data.available));
+    const availability = Number(data.available);
+    console.log('[AUTOFILL DEBUG] Setting availability:', availability);
+    autoFillField(config, 'availability', availability);
   }
 
   // Auto-fill CardMarket price - handle price string format
-  if (data.price) {
+  if (data.price && data.price !== 'N/A' && data.price !== null && data.price !== undefined) {
     // Handle price format like "3,97 €"
     const priceString = data.price.toString();
     const numericPrice = parseFloat(priceString.replace(/[^\d,.-]/g, '').replace(',', '.'));
-    if (!isNaN(numericPrice)) {
-      autoFillField(config, 'cardMarketPrice', Math.round(numericPrice).toString());
+    if (!isNaN(numericPrice) && numericPrice > 0) {
+      const roundedPrice = Math.round(numericPrice).toString();
+      console.log('[AUTOFILL DEBUG] Setting cardMarketPrice:', roundedPrice, 'from original:', data.price);
+      autoFillField(config, 'cardMarketPrice', roundedPrice);
+    } else {
+      console.log('[AUTOFILL DEBUG] Price could not be parsed as valid number:', data.price, 'parsed as:', numericPrice);
+      // Don't set cardMarketPrice for invalid prices - leave it empty/0
+      autoFillField(config, 'cardMarketPrice', '0');
     }
+  } else {
+    console.log('[AUTOFILL DEBUG] No valid price data found (N/A or missing):', data.price);
+    // Set cardMarketPrice to 0 for N/A prices
+    autoFillField(config, 'cardMarketPrice', '0');
   }
 };
 
 /**
- * Complete auto-fill workflow for selection
- * Combines set and item auto-fill logic
+ * Auto-fill card specific data
+ * Used by CardSearchSection
  */
-export const autoFillFromSelection = (
+export const autoFillCardData = (
+  config: AutoFillConfig,
+  result: SearchResult
+) => {
+  const { data } = result;
+
+  if (data.cardName) {
+    autoFillField(config, 'cardName', data.cardName);
+  }
+  if (data.baseName) {
+    autoFillField(config, 'baseName', data.baseName);
+  }
+  if (data.variety) {
+    autoFillField(config, 'variety', data.variety);
+  }
+  // UPDATED: Use cardNumber instead of pokemonNumber
+  if (data.cardNumber) {
+    autoFillField(config, 'cardNumber', data.cardNumber);
+  }
+};
+
+/**
+ * Complete auto-fill workflow for product selection
+ * Used by ProductSearchSection
+ */
+export const autoFillFromProductSelection = (
   config: AutoFillConfig,
   result: SearchResult,
   onSelectionChange?: (data: Record<string, unknown>) => void
 ) => {
-  // Auto-fill set data
-  autoFillSetData(config, result);
+  console.log('[AUTOFILL WORKFLOW] Starting product selection autofill with result:', result);
+  console.log('[AUTOFILL WORKFLOW] Result data structure:', result.data);
+  console.log('[AUTOFILL WORKFLOW] Config received:', config);
 
-  // Auto-fill item data
-  autoFillItemData(config, result);
+  // Auto-fill set data for products
+  console.log('[AUTOFILL WORKFLOW] Step 1: Auto-filling set data');
+  autoFillProductSetData(config, result);
+
+  // Auto-fill product data
+  console.log('[AUTOFILL WORKFLOW] Step 2: Auto-filling product data');
+  autoFillProductData(config, result);
+
+  // Call parent callback if provided (maintains existing behavior)
+  if (onSelectionChange) {
+    console.log('[AUTOFILL WORKFLOW] Step 3: Calling parent callback with data:', {
+      _id: result.id || result.data._id,
+      ...result.data,
+    });
+    onSelectionChange({
+      _id: result.id || result.data._id,
+      ...result.data,
+    });
+  }
+
+  // Enhanced logging for debugging
+  console.log('[AUTOFILL WORKFLOW] Complete - Summary of what should be filled:', {
+    setName: result.data.setProductId?.setProductName || result.data.setName || result.data.setProductName,
+    productName: result.data.productName || result.data.name,
+    category: result.data.category,
+    availability: result.data.available,
+    cardMarketPrice: result.data.price
+      ? Math.round(parseFloat(result.data.price))
+      : null,
+  });
+};
+
+/**
+ * Complete auto-fill workflow for card selection
+ * Used by CardSearchSection
+ */
+export const autoFillFromCardSelection = (
+  config: AutoFillConfig,
+  result: SearchResult,
+  onSelectionChange?: (data: Record<string, unknown>) => void
+) => {
+  // Auto-fill set data for cards
+  autoFillCardSetData(config, result);
+
+  // Auto-fill card data
+  autoFillCardData(config, result);
 
   // Call parent callback if provided (maintains existing behavior)
   if (onSelectionChange) {
@@ -212,15 +302,11 @@ export const autoFillFromSelection = (
 
   // Conditional logging for development (tree-shaken in production)
   if (process.env.NODE_ENV === 'development') {
-    console.log('[SEARCH HELPERS] Auto-filled fields:', {
-      setName: result.data.setName || result.data.setInfo?.setName,
-      itemName:
-        config.formType === 'product' ? result.data.name : result.data.cardName,
-      category: result.data.category,
-      availability: result.data.available,
-      cardMarketPrice: result.data.price
-        ? Math.round(parseFloat(result.data.price))
-        : null,
+    console.log('[SEARCH HELPERS] Auto-filled card fields:', {
+      setName: result.data.setId?.setName || result.data.setName,
+      cardName: result.data.cardName,
+      cardNumber: result.data.cardNumber,
+      variety: result.data.variety,
     });
   }
 };

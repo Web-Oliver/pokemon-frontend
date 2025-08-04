@@ -12,8 +12,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { searchCards, searchProducts, searchSets } from '../api/searchApi';
-import { getSetProducts } from '../api/setProductsApi';
+import { searchCards, searchProducts, searchSets, searchSetProducts } from '../api/searchApi';
 import { log } from '../utils/logger';
 import { useDebouncedValue } from './useDebounce';
 import { getDisplayName, handleSearchError } from '../utils/searchHelpers';
@@ -153,8 +152,8 @@ export const useSearch = (): UseSearchReturn => {
         return { data: [], count: 0 };
       }
 
-      log(
-        `[TANSTACK QUERY] Executing ${searchConfig.currentType} search: "${debouncedQuery}" with filters:`,
+      console.log(
+        `[TANSTACK QUERY DEBUG] Executing ${searchConfig.currentType} search: "${debouncedQuery}" with filters:`,
         searchConfig.currentFilters
       );
 
@@ -165,8 +164,8 @@ export const useSearch = (): UseSearchReturn => {
             limit: 15,
           });
         case 'setProducts':
-          return getSetProducts({
-            name: debouncedQuery.trim() || '*',
+          return searchSetProducts({
+            query: debouncedQuery.trim() || '*',
             limit: 15,
           });
         case 'products':
@@ -277,13 +276,17 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const handleSearchSetProducts = useCallback((query: string) => {
-    log(`[TANSTACK QUERY] Initiating SetProducts search: ${query}`);
-    setSearchConfig((prev) => ({
-      ...prev,
-      currentQuery: query,
-      currentType: 'setProducts',
-      currentFilters: {},
-    }));
+    console.log(`[TANSTACK QUERY DEBUG] Initiating SetProducts search: "${query}"`);
+    setSearchConfig((prev) => {
+      const newConfig = {
+        ...prev,
+        currentQuery: query,
+        currentType: 'setProducts' as const,
+        currentFilters: {},
+      };
+      console.log('[TANSTACK QUERY DEBUG] SetProducts search config updated:', newConfig);
+      return newConfig;
+    });
   }, []);
 
   const handleSearchProducts = useCallback(

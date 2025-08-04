@@ -114,10 +114,10 @@ const DbaExportConfiguration: React.FC<DbaExportConfigurationProps> =
                           {/* Item name at top */}
                           <div className="mb-4">
                             <span className="text-base font-medium text-white">
-                              {item.name || generateTitle(item)}
+                              {item.productId?.productName || item.name || generateTitle(item)}
                             </span>
                             <p className="text-sm text-zinc-400 mt-1">
-                              {item.setName} • {item.type.toUpperCase()}
+                              {item.productId?.setProductId || item.setName || 'Unknown Set'} • {item.type.toUpperCase()}
                             </p>
                           </div>
 
@@ -201,10 +201,10 @@ const DbaExportConfiguration: React.FC<DbaExportConfigurationProps> =
                             {/* Item name above image - same width */}
                             <div className="mb-3">
                               <span className="text-sm font-medium text-white">
-                                {item.name || generateTitle(item)}
+                                {item.productId?.productName || item.name || generateTitle(item)}
                               </span>
                               <p className="text-xs text-zinc-400 mt-1">
-                                {item.setName} • {item.type.toUpperCase()}
+                                {item.productId?.setProductId || item.setName || 'Unknown Set'} • {item.type.toUpperCase()}
                               </p>
                             </div>
 

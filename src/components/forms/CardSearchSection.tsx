@@ -350,9 +350,9 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
                                 </div>
                                 
                                 <div className="flex flex-wrap items-center gap-2">
-                                  {suggestion.data?.setId?.setName && (
+                                  {setName && setName.trim() && (
                                     <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
-                                      Set: {suggestion.data.setId.setName}
+                                      Set: {setName}
                                     </div>
                                   )}
                                   {suggestion.data?.cardNumber && (
@@ -383,16 +383,11 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
 
           <div className="mt-8">
             <InformationFieldRenderer
+              fieldType="card"
               register={register}
               errors={errors}
               watch={watch}
-              setValue={setValue}
-              clearErrors={clearErrors}
               readOnlyFields={{}}
-              productCategories={[]}
-              loadingOptions={false}
-              category={''}
-              formType="card"
             />
           </div>
         </div>

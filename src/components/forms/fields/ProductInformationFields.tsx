@@ -53,6 +53,10 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
     label: category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
   }));
 
+  console.log('[CATEGORY DEBUG] Available category options:', categoryOptions);
+  console.log('[CATEGORY DEBUG] Current category value from form:', watch('category'));
+  console.log('[CATEGORY DEBUG] ProductCategories prop:', productCategories);
+
   return (
     <>
       {/* SetProduct Name - Read-only field auto-filled from SetProduct selection */}

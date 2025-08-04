@@ -271,7 +271,20 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
             ></div>
 
             <div className="p-2 space-y-1 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent relative z-10">
-              {autocomplete.results.map((result, index) => (
+              {autocomplete.results.map((result, index) => {
+                // Debug: Log the actual data structure for cards
+                if (result.type === 'card') {
+                  console.log(`[CARD AUTOCOMPLETE DEBUG] Card ${index}:`, {
+                    displayName: result.displayName,
+                    type: result.type,
+                    data: result.data,
+                    hasSetName: !!result.data?.setName,
+                    hasSetId: !!result.data?.setId,
+                    setIdSetName: result.data?.setId?.setName,
+                    directSetName: result.data?.setName
+                  });
+                }
+                return (
                 <div
                   key={result.id}
                   onMouseDown={useCallback(
@@ -309,10 +322,16 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
 
                       {/* Premium Metadata */}
                       <div className="flex flex-wrap items-center gap-2">
-                        {result.data?.setName && result.type !== 'set' && (
+                        {result.type === 'card' && filters?.setName && (
                           <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
                             <Search className="w-3 h-3 mr-1" />
-                            {result.data.setName}
+                            Set: {filters.setName}
+                          </div>
+                        )}
+                        {result.type !== 'card' && (result.data?.setName || result.data?.setId?.setName) && result.type !== 'set' && (
+                          <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
+                            <Search className="w-3 h-3 mr-1" />
+                            {result.data.setName || result.data.setId?.setName}
                           </div>
                         )}
                         {result.data?.category && (
@@ -345,7 +364,8 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Breathing Animation */}

@@ -117,7 +117,8 @@ export const useDbaExport = () => {
 
   const getItemDisplayName = (item: any, type: string): string => {
     if (type === 'sealed') {
-      return item.name || 'Unknown Product';
+      // NEW: Use hierarchical SetProduct → Product structure
+      return item.productId?.productName || item.name || 'Unknown Product';
     } else {
       const cardName = item.cardId?.cardName || item.cardName || 'Unknown Card';
       return formatCardNameForDisplay(cardName);
@@ -183,6 +184,7 @@ export const useDbaExport = () => {
     const parts = ['Pokemon Kort'];
 
     if (item.type === 'sealed') {
+      // Use the name field from SelectedItem (already processed from productId.productName)
       const productName = item.name || '';
       if (productName) {
         const cleanName = productName
@@ -407,6 +409,11 @@ export const useDbaExport = () => {
         customDescription,
       };
 
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[DBA EXPORT] Export data being sent to backend:', exportData);
+        console.log('[DBA EXPORT] First selected item:', selectedItems[0]);
+      }
+
       const response = await exportApi.exportToDba(exportData);
 
       if (process.env.NODE_ENV === 'development') {
@@ -414,27 +421,30 @@ export const useDbaExport = () => {
       }
       setExportResult(response);
 
-      // Invalidate DBA selections cache to show countdown timers
-      try {
-        if (process.env.NODE_ENV === 'development') {
-          console.log(
-            '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
+      // Invalidate DBA selections cache to show countdown timers (optional)
+      // Don't let cache refresh errors block the success message
+      setTimeout(async () => {
+        try {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
+            );
+          }
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.dbaSelections({ active: true }),
+          });
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '[DBA EXPORT] DBA selections cache invalidated successfully'
+            );
+          }
+        } catch (dbaError) {
+          console.warn(
+            '[DBA EXPORT] Could not invalidate DBA selections cache (non-critical):',
+            dbaError
           );
         }
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.dbaSelections({ active: true }),
-        });
-        if (process.env.NODE_ENV === 'development') {
-          console.log(
-            '[DBA EXPORT] DBA selections cache invalidated successfully'
-          );
-        }
-      } catch (dbaError) {
-        console.warn(
-          '[DBA EXPORT] Could not invalidate DBA selections cache:',
-          dbaError
-        );
-      }
+      }, 1000); // Delay cache refresh to prevent race conditions
 
       const itemCount = response?.itemCount || 0;
       if (process.env.NODE_ENV === 'development') {

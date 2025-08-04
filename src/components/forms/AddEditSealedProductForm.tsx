@@ -10,7 +10,7 @@
  * - DRY: Reuses common form patterns
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Archive, Camera, Package, TrendingUp } from 'lucide-react';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
@@ -70,6 +70,40 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const { addSealedProduct, updateSealedProduct, loading } =
     useCollectionOperations();
 
+  // Check if item is sold - prevent editing of sold items
+  const isSold = isEditing && initialData?.sold;
+
+  // If trying to edit a sold item, show message and prevent editing
+  if (isSold) {
+    return (
+      <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8 text-center">
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Archive className="w-8 h-8 text-red-400" />
+        </div>
+        <h3 className="text-2xl font-bold text-red-400 mb-4">Item Already Sold</h3>
+        <p className="text-red-300/80 mb-6 text-lg">
+          This sealed product has been sold and cannot be edited. Sold items are locked to preserve transaction history.
+        </p>
+        <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-2xl p-4 mb-6">
+          <p className="text-red-300 font-semibold">
+            Sale Price: {initialData?.saleDetails?.actualSoldPrice || 'N/A'} kr
+          </p>
+          <p className="text-red-300/80 text-sm mt-1">
+            Sold on: {initialData?.saleDetails?.dateSold 
+              ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
+              : 'N/A'}
+          </p>
+        </div>
+        <button
+          onClick={onCancel}
+          className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+        >
+          Back to Collection
+        </button>
+      </div>
+    );
+  }
+
   // Validation rules for Sealed Product form
   const validationRules = {
     setName: { required: true },
@@ -90,6 +124,21 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     myPrice: { ...commonValidationRules.price, required: true },
   };
 
+  // Memoize initialData to prevent infinite re-renders
+  const memoizedInitialData = useMemo(() => {
+    return initialData
+      ? {
+          setName: initialData.setName,
+          productName: initialData.name, // Field mapping: name -> productName
+          category: initialData.category,
+          availability: initialData.availability,
+          cardMarketPrice: initialData.cardMarketPrice?.toString(),
+          myPrice: initialData.myPrice?.toString(),
+          dateAdded: initialData.dateAdded,
+        }
+      : undefined;
+  }, [initialData]);
+
   // Initialize base form with specialized hooks and standardized initialData handling
   const baseForm = useBaseForm<FormData>({
     defaultValues: {
@@ -105,18 +154,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     initialImages: initialData?.images || [],
     initialPriceHistory: initialData?.priceHistory || [],
     initialPrice: initialData?.myPrice || 0,
-    // Standardized initialData handling
-    initialData: initialData
-      ? {
-          setName: initialData.setName,
-          productName: initialData.name, // Field mapping: name -> productName
-          category: initialData.category,
-          availability: initialData.availability,
-          cardMarketPrice: initialData.cardMarketPrice?.toString(),
-          myPrice: initialData.myPrice?.toString(),
-          dateAdded: initialData.dateAdded,
-        }
-      : undefined,
+    // Standardized initialData handling with memoization
+    initialData: memoizedInitialData,
     isEditing,
     fieldMapping: {
       name: 'productName', // Map 'name' field to 'productName' form field
@@ -181,13 +220,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     const loadOptions = async () => {
       setLoadingOptions(true);
       try {
+        // Categories matching ACTUAL DATABASE VALUES
         const categories = [
-          'Booster Box',
-          'Elite Trainer Box',
-          'Theme Deck',
-          'Starter Deck',
-          'Collection Box',
+          { value: 'Booster-Boxes', label: 'Booster Boxes' },
+          { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
+          { value: 'Box-Sets', label: 'Box Sets' },
+          { value: 'Boosters', label: 'Boosters' },
         ];
+        console.log('[CATEGORIES DEBUG] Setting productCategories to:', categories);
         setProductCategories(categories);
       } catch (error) {
         console.error('Failed to load form options:', error);
@@ -305,6 +345,51 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         primaryColorClass="purple"
       />
 
+      {/* Item Status Indicator for editing mode */}
+      {isEditing && initialData && (
+        <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-6 shadow-2xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
+                <Archive className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-zinc-100">Item Status</h4>
+                <p className="text-zinc-400 text-sm">Current availability status</p>
+              </div>
+            </div>
+            <div className={`px-4 py-2 rounded-xl backdrop-blur-xl border font-semibold ${
+              initialData.sold 
+                ? 'bg-red-500/20 border-red-500/30 text-red-300' 
+                : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+            }`}>
+              {initialData.sold ? 'SOLD' : 'AVAILABLE'}
+            </div>
+          </div>
+          
+          {initialData.sold && initialData.saleDetails && (
+            <div className="mt-4 pt-4 border-t border-zinc-700/50">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-zinc-400">Sale Price:</span>
+                  <span className="ml-2 font-semibold text-green-400">
+                    {initialData.saleDetails.actualSoldPrice || 'N/A'} kr
+                  </span>
+                </div>
+                <div>
+                  <span className="text-zinc-400">Date Sold:</span>
+                  <span className="ml-2 font-semibold text-zinc-300">
+                    {initialData.saleDetails.dateSold 
+                      ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
+                      : 'N/A'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Product Search Section - Hidden in edit mode like other forms */}
       {!isEditing && (
         <div className="mb-6 relative z-10">
@@ -345,6 +430,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           Pricing & Investment Metrics
         </h4>
 
+        {/* Auto-filled fields: CardMarket Price (from product selection) */}
+        {/* User-editable fields: My Price, Date Added */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div>
             <Input
@@ -361,7 +449,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.cardMarketPrice?.message}
               placeholder="0"
-              disabled={isEditing}
+              disabled={true} // Always disabled - autofilled from product selection
             />
             {watchedCardMarketPrice && (
               <div className="mt-2 text-sm text-purple-600 font-semibold">
@@ -413,7 +501,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 required: 'Date added is required',
               })}
               error={errors.dateAdded?.message}
-              disabled={isEditing}
+              disabled={isEditing} // User can set date when adding, locked when editing
             />
 
             {/* Investment Analysis */}
