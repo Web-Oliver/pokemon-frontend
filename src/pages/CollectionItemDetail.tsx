@@ -219,6 +219,23 @@ const CollectionItemDetail: React.FC = () => {
         }
 
         setItem(fetchedItem);
+        
+        // Debug PSA card population data
+        if (type === 'psa') {
+          console.log('[DEBUG PSA API] Full PSA card response:', fetchedItem);
+          const psaCard = fetchedItem as any;
+          console.log('[DEBUG PSA API] cardId object:', psaCard.cardId);
+          console.log('[DEBUG PSA API] cardId.grades:', psaCard.cardId?.grades);
+          console.log('[DEBUG PSA API] cardId.setId:', psaCard.cardId?.setId);
+          console.log('[DEBUG PSA API] Individual grade counts:', {
+            grade_1: psaCard.cardId?.grades?.grade_1,
+            grade_2: psaCard.cardId?.grades?.grade_2,
+            grade_9: psaCard.cardId?.grades?.grade_9,
+            grade_10: psaCard.cardId?.grades?.grade_10,
+            grade_total: psaCard.cardId?.grades?.grade_total
+          });
+        }
+        
         log('Item fetched successfully');
       } catch (err) {
         handleApiError(err, 'Failed to fetch item details');
@@ -479,7 +496,12 @@ const CollectionItemDetail: React.FC = () => {
                     Total PSA Population
                   </span>
                   <span className="font-bold text-green-400 text-xl">
-                    {psaCard.cardId?.grades?.grade_total || 'N/A'}
+                    {(() => {
+                      console.log('[DEBUG Population] PSA Card cardId:', psaCard.cardId);
+                      console.log('[DEBUG Population] PSA Card cardId grades:', psaCard.cardId?.grades);
+                      console.log('[DEBUG Population] grade_total value:', psaCard.cardId?.grades?.grade_total);
+                      return psaCard.cardId?.grades?.grade_total || 'N/A';
+                    })()}
                   </span>
                 </div>
 
