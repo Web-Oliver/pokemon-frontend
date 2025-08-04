@@ -10,7 +10,8 @@
  */
 
 import { ICard, ISet } from '../domain/models/card';
-import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
+import { IProduct } from '../domain/models/product';
+import { ISetProduct } from '../domain/models/setProduct';
 import { buildQueryParams } from '../utils/searchHelpers';
 
 // ===== PURE TANSTACK QUERY TYPE DEFINITIONS =====
@@ -42,9 +43,16 @@ export interface ProductSearchParams {
   query: string;
   category?: string;
   setName?: string;
+  setProductId?: string; // NEW: Direct SetProduct filtering
   minPrice?: number;
   maxPrice?: number;
   availableOnly?: boolean;
+  limit?: number;
+  page?: number;
+}
+
+export interface SetProductSearchParams {
+  query: string;
   limit?: number;
   page?: number;
 }
@@ -327,11 +335,11 @@ export const getBestMatchSet = async (query: string): Promise<ISet | null> => {
 // ===== CONTEXT7 PURE TANSTACK QUERY PRODUCTS API =====
 
 /**
- * Pure TanStack Query Product Search - No internal caching
+ * Pure TanStack Query Product Search - Updated for new backend
  */
 export const searchProducts = async (
   params: ProductSearchParams
-): Promise<SearchResponse<ICardMarketReferenceProduct>> => {
+): Promise<SearchResponse<IProduct>> => {
   const queryParams = buildQueryParams(params);
   const fullResponse = await pureFetch(
     `http://localhost:3000/api/search/products?${queryParams.toString()}`
@@ -351,7 +359,7 @@ export const searchProducts = async (
 export const getProductSuggestions = async (
   query: string,
   limit: number = 10
-): Promise<ICardMarketReferenceProduct[]> => {
+): Promise<IProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -376,7 +384,7 @@ export const getBestMatchProduct = async (
   query: string,
   setContext?: string,
   categoryContext?: string
-): Promise<ICardMarketReferenceProduct | null> => {
+): Promise<IProduct | null> => {
   if (!query.trim()) {
     return null;
   }
@@ -405,7 +413,7 @@ export const searchProductsInSet = async (
   query: string,
   setName: string,
   limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
+): Promise<IProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -428,7 +436,7 @@ export const searchProductsByCategory = async (
   query: string,
   category: string,
   limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
+): Promise<IProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -452,7 +460,7 @@ export const searchProductsByPriceRange = async (
   minPrice: number,
   maxPrice: number,
   limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
+): Promise<IProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -475,7 +483,7 @@ export const searchProductsByPriceRange = async (
 export const searchAvailableProducts = async (
   query: string,
   limit: number = 15
-): Promise<ICardMarketReferenceProduct[]> => {
+): Promise<IProduct[]> => {
   if (!query.trim()) {
     return [];
   }
@@ -491,53 +499,67 @@ export const searchAvailableProducts = async (
   return response.data;
 };
 
-/**
- * Pure TanStack Query CardMarket Set Names
- */
-export const getCardMarketSetNames = async (
-  query?: string,
-  limit: number = 50
-): Promise<
-  Array<{
-    setName: string;
-    count: number;
-    totalAvailable: number;
-    categoryCount: number;
-    averagePrice: number;
-    score?: number;
-  }>
-> => {
-  const queryParams = new URLSearchParams({ limit: limit.toString() });
-  if (query?.trim()) {
-    queryParams.append('search', query.trim());
-  }
+// ===== CONTEXT7 PURE TANSTACK QUERY SETPRODUCTS API =====
 
-  const url = `http://localhost:3000/api/cardmarket-ref-products/set-names?${queryParams.toString()}`;
-  const response = await pureFetch(url);
-  
-  // Backend returns: {"success":true,"status":"success","data":[...]}
-  const data = response.data || [];
-  return Array.isArray(data) ? data : [];
+/**
+ * Pure TanStack Query SetProduct Search - NEW
+ */
+export const searchSetProducts = async (
+  params: SetProductSearchParams
+): Promise<SearchResponse<ISetProduct>> => {
+  const queryParams = buildQueryParams(params);
+  const fullResponse = await pureFetch(
+    `http://localhost:3000/api/search/setProducts?${queryParams.toString()}`
+  );
+
+  return {
+    success: fullResponse.success || true,
+    query: fullResponse.meta?.query || params.query,
+    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
+    data: fullResponse.data?.setProducts || fullResponse.data || [],
+  };
 };
 
 /**
- * Pure TanStack Query Search CardMarket Set Names
+ * Pure TanStack Query SetProduct Suggestions
  */
-export const searchCardMarketSetNames = async (
+export const getSetProductSuggestions = async (
   query: string,
-  limit: number = 15
-): Promise<
-  Array<{
-    setName: string;
-    count: number;
-    totalAvailable: number;
-    categoryCount: number;
-    averagePrice: number;
-    score?: number;
-  }>
-> => {
+  limit: number = 10
+): Promise<ISetProduct[]> => {
   if (!query.trim()) {
     return [];
   }
-  return getCardMarketSetNames(query, limit);
+
+  const queryParams = new URLSearchParams({
+    query: query.trim(),
+    types: 'setProducts',
+    limit: limit.toString(),
+  });
+
+  const response = await pureFetch(
+    `http://localhost:3000/api/search/suggest?${queryParams.toString()}`
+  );
+
+  return response.suggestions?.setProducts?.data || response.data?.setProducts || [];
+};
+
+/**
+ * Pure TanStack Query Best Match SetProduct
+ */
+export const getBestMatchSetProduct = async (
+  query: string
+): Promise<ISetProduct | null> => {
+  if (!query.trim()) {
+    return null;
+  }
+
+  const params: SetProductSearchParams = {
+    query: query.trim(),
+    limit: 1,
+    page: 1,
+  };
+
+  const response = await searchSetProducts(params);
+  return response.data.length > 0 ? response.data[0] : null;
 };

@@ -64,16 +64,18 @@ const DEFAULT_CONFIG: TransformationConfig = {
 /**
  * Metadata object keys that should be skipped during ID mapping
  * These objects contain properties/relationships, not entity data
+ * UPDATED: Reflects new backend field structure
  */
 const METADATA_KEYS = [
   'saleDetails',
-  'psaGrades',
-  'psaTotalGradedForCard',
+  'grades', // NEW: Updated from psaGrades
+  'total_grades', // NEW: Set-level grade totals
   'priceHistory',
   'metadata',
   'cardInfo',
   'productInfo',
   'setInfo',
+  'setProductInfo', // NEW: SetProduct metadata
   'buyerAddress',
   'sellerInfo',
   'paymentDetails',
@@ -82,6 +84,7 @@ const METADATA_KEYS = [
 /**
  * Properties that indicate a metadata object
  * Objects containing these properties should not be ID-mapped
+ * UPDATED: Reflects new backend field structure
  */
 const METADATA_PROPERTIES = [
   'paymentMethod',
@@ -93,8 +96,14 @@ const METADATA_PROPERTIES = [
   'streetName',
   'postnr',
   'city',
-  'grades', // PSA grade distribution
-  'population', // Card population data
+  'grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5', // NEW: Individual grade counts
+  'grade_6', 'grade_7', 'grade_8', 'grade_9', 'grade_10', // NEW: Individual grade counts
+  'grade_total', // NEW: Total graded count
+  'total_graded', // NEW: Set-level total graded
+  'uniquePokemonId', // NEW: Unique Pokemon identifier
+  'uniqueSetId', // NEW: Unique Set identifier
+  'uniqueSetProductId', // NEW: Unique SetProduct identifier
+  'uniqueProductId', // NEW: Unique Product identifier
 ] as const;
 
 /**
@@ -306,6 +315,7 @@ export const convertObjectIdToString = (objectId: any): string => {
 /**
  * List of ObjectId field names that need conversion
  * These are reference fields that MongoDB stores as ObjectIds
+ * UPDATED: Includes new SetProduct reference fields
  */
 const OBJECT_ID_FIELDS = [
   '_id',
@@ -314,6 +324,7 @@ const OBJECT_ID_FIELDS = [
   'setId',
   'cardId',
   'itemId',
+  'setProductId', // NEW: SetProduct reference
 ] as const;
 
 /**
@@ -331,6 +342,67 @@ const isObjectIdField = (fieldName: string): boolean => {
   }
 
   return false;
+};
+
+/**
+ * Field mapping configuration for backend migration
+ * Maps old field names to new field names
+ */
+const FIELD_MAPPINGS = {
+  // Card model field updates
+  'pokemonNumber': 'cardNumber',
+  'psaTotalGradedForCard': 'grades.grade_total',
+  'psaGrades': 'grades',
+  
+  // Set model field updates  
+  'totalPsaPopulation': 'total_grades.total_graded',
+} as const;
+
+/**
+ * Apply field name mappings for backend compatibility
+ * Transforms legacy field names to new backend structure
+ */
+export const mapFieldNames = <T>(data: T): T => {
+  if (data === null || data === undefined) {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map((item) => mapFieldNames(item)) as T;
+  }
+
+  if (typeof data === 'object') {
+    const result = { ...data } as any;
+
+    // Apply field mappings
+    for (const [oldField, newField] of Object.entries(FIELD_MAPPINGS)) {
+      if (oldField in result) {
+        // Handle nested field mapping (e.g., 'grades.grade_total')
+        if (newField.includes('.')) {
+          const [parentField, childField] = newField.split('.');
+          if (!result[parentField]) {
+            result[parentField] = {};
+          }
+          result[parentField][childField] = result[oldField];
+        } else {
+          result[newField] = result[oldField];
+        }
+        // Keep old field for backward compatibility during migration
+        // Will be removed in cleanup phase
+      }
+    }
+
+    // Recursively process nested objects
+    for (const [key, value] of Object.entries(result)) {
+      if (typeof value === 'object' && value !== null && !isMetadataObject(key, value)) {
+        result[key] = mapFieldNames(value);
+      }
+    }
+
+    return result as T;
+  }
+
+  return data;
 };
 
 /**
@@ -399,6 +471,9 @@ export const transformResponse = <T>(
     transformed = extractResponseData(transformed);
   }
 
+  // Apply field name mappings for backend migration
+  transformed = mapFieldNames(transformed);
+
   // Map MongoDB IDs if needed
   if (finalConfig.mapMongoIds) {
     transformed = mapMongoIds(transformed);
@@ -443,7 +518,7 @@ export const transformApiResponse = <T>(responseData: any): T => {
     throw error;
   }
 
-  // Extract and transform data with ID mapping
+  // Extract and transform data with field mapping and ID mapping
   // Handle cases where data field might be missing (e.g., delete operations)
   const extractedData =
     responseData.data !== undefined ? responseData.data : null;
@@ -453,7 +528,9 @@ export const transformApiResponse = <T>(responseData: any): T => {
     return { success: true, message: responseData.message } as T;
   }
 
-  const transformedData = mapMongoIds(extractedData) as T;
+  // Apply field name mappings first, then ID mapping
+  const fieldMappedData = mapFieldNames(extractedData);
+  const transformedData = mapMongoIds(fieldMappedData) as T;
   return transformedData;
 };
 

@@ -24,36 +24,50 @@ export interface ISet {
   year: number;
   setUrl?: string;
   totalCardsInSet?: number;
-  totalPsaPopulation?: number;
+  uniqueSetId: number; // NEW: Unique identifier for database rebuilding
+  total_grades: { // NEW: Updated PSA grade structure (replaces totalPsaPopulation)
+    grade_1: number;
+    grade_2: number;
+    grade_3: number;
+    grade_4: number;
+    grade_5: number;
+    grade_6: number;
+    grade_7: number;
+    grade_8: number;
+    grade_9: number;
+    grade_10: number;
+    total_graded: number;
+  };
 }
 
 export interface ISetDocument extends ISet {
   _id: string;
 }
 
-// Updated to match actual backend schema: psa_1 through psa_10
-export interface IPsaGrades {
-  psa_1?: number;
-  psa_2?: number;
-  psa_3?: number;
-  psa_4?: number;
-  psa_5?: number;
-  psa_6?: number;
-  psa_7?: number;
-  psa_8?: number;
-  psa_9?: number;
-  psa_10?: number;
+// Updated to match new backend schema: grade_1 through grade_10
+export interface IGrades {
+  grade_1: number;
+  grade_2: number;
+  grade_3: number;
+  grade_4: number;
+  grade_5: number;
+  grade_6: number;
+  grade_7: number;
+  grade_8: number;
+  grade_9: number;
+  grade_10: number;
+  grade_total: number; // NEW: Total graded count
 }
 
 export interface ICard {
   id: string;
   setId: string; // References Set model
-  pokemonNumber: string;
+  cardNumber: string; // UPDATED: Changed from pokemonNumber
   cardName: string;
-  baseName: string;
   variety?: string;
-  psaGrades?: IPsaGrades;
-  psaTotalGradedForCard?: number;
+  uniquePokemonId: number; // NEW: Unique identifier for database rebuilding
+  uniqueSetId: number; // NEW: Unique Set identifier
+  grades: IGrades; // UPDATED: New grades structure (replaces psaGrades)
   // Additional fields for UI purposes
   setName?: string; // Populated from Set reference
   year?: number; // Populated from Set reference
@@ -72,8 +86,7 @@ export interface IPsaGradedCard {
   // Additional fields for UI purposes
   cardName?: string; // Populated from Card reference
   setName?: string; // Populated from Card->Set reference
-  pokemonNumber?: string; // Populated from Card reference
-  baseName?: string; // Populated from Card reference
+  cardNumber?: string; // UPDATED: Changed from pokemonNumber
   variety?: string; // Populated from Card reference
 }
 
@@ -90,18 +103,17 @@ export interface IRawCard {
   // Additional fields for UI purposes
   cardName?: string; // Populated from Card reference
   setName?: string; // Populated from Card->Set reference
-  pokemonNumber?: string; // Populated from Card reference
-  baseName?: string; // Populated from Card reference
+  cardNumber?: string; // UPDATED: Changed from pokemonNumber
   variety?: string; // Populated from Card reference
 }
 
 export interface ISealedProduct {
   id: string;
-  productId: string; // References CardMarketReferenceProduct model (required by backend)
+  productId: string; // UPDATED: Now references Product model (was CardMarketReferenceProduct)
   category: string; // Must match backend enum
   setName: string; // Required
   name: string; // Required
-  availability: number; // Required - from CardMarket reference data
+  availability: number; // Required - from Product reference data
   cardMarketPrice: number; // Decimal128 in backend, number in frontend
   myPrice: number; // Required - Decimal128 in backend, number in frontend
   priceHistory: IPriceHistoryEntry[];

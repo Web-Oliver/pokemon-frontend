@@ -1,39 +1,44 @@
 /**
- * CardMarket Reference Products API Client
+ * Products API Client (Updated from CardMarket Reference Products)
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
  *
+ * MIGRATION: Updated to use new SetProduct → Product hierarchy
+ * - Old: CardMarketReferenceProduct (single model)
+ * - New: SetProduct → Product (hierarchical relationship)
+ *
  * SOLID Principles Implementation:
- * - SRP: Single responsibility for CardMarket reference product operations
+ * - SRP: Single responsibility for product operations with SetProduct hierarchy
  * - OCP: Open for extension via createResourceOperations configuration
- * - LSP: Maintains ICardMarketReferenceProduct interface compatibility
- * - ISP: Provides specific CardMarket product operations interface
+ * - LSP: Maintains product interface compatibility with new structure
+ * - ISP: Provides specific product operations interface
  * - DIP: Depends on genericApiOperations abstraction
  *
  * DRY: Uses createResourceOperations to eliminate boilerplate CRUD patterns
  */
 
 import {
-  CARDMARKET_REF_PRODUCTS_CONFIG,
+  PRODUCTS_CONFIG,
   createResourceOperations,
   idMapper,
 } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { searchProducts } from './searchApi';
-import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
+import { IProduct } from '../domain/models/product';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
-export interface CardMarketRefProductsParams {
+export interface ProductsParams {
   category?: string;
-  setName?: string;
+  setProductId?: string; // NEW: Filter by SetProduct ID
+  setName?: string; // Legacy support for set name filtering
   available?: boolean;
   search?: string;
   page?: number;
   limit?: number;
 }
 
-export interface PaginatedCardMarketRefProductsResponse {
-  products: ICardMarketReferenceProduct[];
+export interface PaginatedProductsResponse {
+  products: IProduct[];
   total: number;
   currentPage: number;
   totalPages: number;
@@ -44,7 +49,8 @@ export interface PaginatedCardMarketRefProductsResponse {
 export interface ProductSearchParams {
   query: string;
   category?: string;
-  setName?: string;
+  setName?: string; // For hierarchical filtering
+  setProductId?: string; // NEW: Direct SetProduct filtering
   minPrice?: number;
   maxPrice?: number;
   availableOnly?: boolean;
@@ -56,30 +62,31 @@ export interface OptimizedProductSearchResponse {
   success: boolean;
   query: string;
   count: number;
-  data: ICardMarketReferenceProduct[];
+  data: IProduct[];
 }
 
 /**
- * CardMarket reference product creation payload interface
+ * Product creation payload interface (updated for new structure)
  */
-type ICardMarketRefProductCreatePayload = Omit<ICardMarketReferenceProduct, 'id' | '_id'>;
+type IProductCreatePayload = Omit<IProduct, 'id' | '_id'>;
 
 /**
- * CardMarket reference product update payload interface
+ * Product update payload interface
  */
-type ICardMarketRefProductUpdatePayload = Partial<ICardMarketRefProductCreatePayload>;
+type IProductUpdatePayload = Partial<IProductCreatePayload>;
 
 // ========== GENERIC RESOURCE OPERATIONS ==========
 
 /**
- * Core CRUD operations for CardMarket reference products using createResourceOperations
+ * Core CRUD operations for products using createResourceOperations
+ * Updated to use new /api/products endpoint instead of /api/cardmarket-ref-products
  * Eliminates boilerplate patterns and ensures consistency with other API files
  */
-const cardMarketRefProductOperations = createResourceOperations<
-  ICardMarketReferenceProduct,
-  ICardMarketRefProductCreatePayload,
-  ICardMarketRefProductUpdatePayload
->(CARDMARKET_REF_PRODUCTS_CONFIG, {
+const productOperations = createResourceOperations<
+  IProduct,
+  IProductCreatePayload,
+  IProductUpdatePayload
+>(PRODUCTS_CONFIG, {
   includeExportOperations: true,
   // includeBatchOperations removed - not used by any frontend components
 });
@@ -87,19 +94,20 @@ const cardMarketRefProductOperations = createResourceOperations<
 // ========== EXPORTED API OPERATIONS ==========
 
 /**
- * Get CardMarket reference products with optional parameters
- * @param params - Optional filter parameters
- * @returns Promise<ICardMarketReferenceProduct[]> - Array of reference products
+ * Get products with optional parameters (updated for new backend)
+ * @param params - Optional filter parameters including SetProduct filtering
+ * @returns Promise<IProduct[]> - Array of products with SetProduct population
  */
-export const getCardMarketRefProducts = async (
-  params?: CardMarketRefProductsParams
-): Promise<ICardMarketReferenceProduct[]> => {
+export const getProducts = async (
+  params?: ProductsParams
+): Promise<IProduct[]> => {
   if (params?.search && params.search.trim()) {
     // Use optimized search when there's a search term
     const searchParams: ProductSearchParams = {
       query: params.search.trim(),
       category: params?.category,
       setName: params?.setName,
+      setProductId: params?.setProductId,
       availableOnly: params?.available,
       limit: params?.limit || 100,
       page: params?.page || 1,
@@ -109,53 +117,47 @@ export const getCardMarketRefProducts = async (
     return response.data;
   } else {
     // Use generic getAll operation with ID mapping
-    return cardMarketRefProductOperations.getAll(params, {
+    return productOperations.getAll(params, {
       transform: idMapper,
     });
   }
 };
 
-// getCardMarketRefProductById removed - not used by any frontend components
-
-// ALL CARDMARKET CRUD OPERATIONS REMOVED - Not used by any frontend components
-
 /**
- * Search CardMarket reference products with parameters - consolidated implementation
+ * Search products with parameters - updated for new backend
  * @param searchParams - Product search parameters
- * @returns Promise<ICardMarketReferenceProduct[]> - Search results
+ * @returns Promise<IProduct[]> - Search results
  */
-export const searchCardMarketRefProducts = async (
-  searchParams: any
-): Promise<ICardMarketReferenceProduct[]> => {
+export const searchProductsWithParams = async (
+  searchParams: ProductSearchParams
+): Promise<IProduct[]> => {
   const result = await searchProducts(searchParams);
   return result.data;
 };
 
-// BULK/BATCH CREATE OPERATIONS REMOVED - Not used by any frontend components
-
 /**
- * Export CardMarket reference products data
+ * Export products data
  * @param exportParams - Export parameters
  * @returns Promise<Blob> - Export file blob
  */
-export const exportCardMarketRefProducts =
-  cardMarketRefProductOperations.export;
+export const exportProducts = productOperations.export;
 
-// ========== CARDMARKET-SPECIFIC OPERATIONS ==========
+// ========== PRODUCT-SPECIFIC OPERATIONS ==========
 
 /**
- * Get paginated CardMarket reference products with filtering
+ * Get paginated products with filtering (updated for new backend)
  * @param params - Optional pagination and filter parameters
- * @returns Promise<PaginatedCardMarketRefProductsResponse> - Paginated products response
+ * @returns Promise<PaginatedProductsResponse> - Paginated products response
  */
-export const getPaginatedCardMarketRefProducts = async (
-  params?: CardMarketRefProductsParams
-): Promise<PaginatedCardMarketRefProductsResponse> => {
+export const getPaginatedProducts = async (
+  params?: ProductsParams
+): Promise<PaginatedProductsResponse> => {
   const {
     page = 1,
     limit = 20,
     category,
     setName,
+    setProductId,
     available,
     search,
   } = params || {};
@@ -168,6 +170,7 @@ export const getPaginatedCardMarketRefProducts = async (
       limit,
       category,
       setName,
+      setProductId,
       availableOnly: available,
     };
 
@@ -184,21 +187,21 @@ export const getPaginatedCardMarketRefProducts = async (
       hasPrevPage: page > 1,
     };
   } else {
-    // Use the main cardmarket-ref-products endpoint for browsing without search
+    // Use the main /api/products endpoint for browsing without search
     const queryParams = {
       page: page.toString(),
       limit: limit.toString(),
       ...(category && { category }),
       ...(setName && { setName }),
+      ...(setProductId && { setProductId }),
       ...(available !== undefined && { available: available.toString() }),
     };
 
-    const response =
-      await unifiedApiClient.apiGet<PaginatedCardMarketRefProductsResponse>(
-        '/cardmarket-ref-products',
-        'paginated CardMarket reference products',
-        { params: queryParams }
-      );
+    const response = await unifiedApiClient.apiGet<PaginatedProductsResponse>(
+      '/products',
+      'paginated products',
+      { params: queryParams }
+    );
 
     return {
       products: response.data?.products || [],
@@ -211,7 +214,7 @@ export const getPaginatedCardMarketRefProducts = async (
   }
 };
 
-// Import consolidated search functions for CardMarket-specific search operations
+// Import consolidated search functions for product search operations
 export {
   searchProducts,
   getProductSuggestions,
@@ -220,6 +223,4 @@ export {
   searchProductsByCategory,
   searchProductsByPriceRange,
   searchAvailableProducts,
-  getCardMarketSetNames,
-  searchCardMarketSetNames,
 } from './searchApi';
