@@ -540,35 +540,6 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
-                <Button
-                  onClick={navigateToAuctions}
-                  variant="outline"
-                  className="inline-flex items-center border-zinc-600 hover:border-zinc-500 text-zinc-300 hover:text-zinc-100"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Auctions
-                </Button>
-
-                <div className="flex items-center space-x-3">
-                  <Button
-                    onClick={navigateToEditAuction}
-                    variant="outline"
-                    className="inline-flex items-center border-indigo-300 hover:border-indigo-400 text-indigo-600 hover:text-indigo-800"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={handleDeleteAuction}
-                    variant="outline"
-                    className="inline-flex items-center text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </Button>
-                </div>
-              </div>
 
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
