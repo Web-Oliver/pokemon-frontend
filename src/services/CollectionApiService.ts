@@ -1,10 +1,17 @@
 /**
  * Collection API Service Implementation
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * Concrete implementation of ICollectionApiService using existing API modules
- *
- * Standard for new API format with comprehensive error handling and validation
- * Following CLAUDE.md SOLID principles and steering document guidelines
+ * 
+ * UPDATED: Enhanced for new backend architecture with Product model structure
+ * - SealedProduct now references Product model (instead of CardMarketReferenceProduct)
+ * - Field mappings handle cardNumber (instead of pokemonNumber)
+ * - Updated grades structure (grade_1 through grade_10)
+ * 
+ * Following CLAUDE.md SOLID principles:
+ * - SRP: Single responsibility for collection business logic
+ * - DIP: Depends on API client abstractions
+ * - ISP: Interface segregation for different collection types
+ * - OCP: Open for extension through new model structures
  */
 
 import * as collectionApi from '../api/collectionApi';
@@ -113,13 +120,13 @@ export class CollectionApiService implements ICollectionApiService {
     return this.executeWithErrorHandling('createPsaCard', async () => {
       const result = await collectionApi.createPsaGradedCard(cardData);
 
-      // Validate created card has required properties
+      // Validate created card has required properties (Card model reference with cardNumber field)
       if (!result || typeof result !== 'object' || !result.cardId) {
         log('[COLLECTION SERVICE] createPsaCard returned invalid result', {
           cardData,
           result,
         });
-        throw new Error('Failed to create PSA card: invalid response format');
+        throw new Error('Failed to create PSA card: invalid response format or missing Card reference');
       }
 
       return result;
@@ -225,13 +232,13 @@ export class CollectionApiService implements ICollectionApiService {
     return this.executeWithErrorHandling('createRawCard', async () => {
       const result = await collectionApi.createRawCard(cardData);
 
-      // Validate created card has required properties
+      // Validate created card has required properties (Card model reference with cardNumber field)
       if (!result || typeof result !== 'object' || !result.cardId) {
         log('[COLLECTION SERVICE] createRawCard returned invalid result', {
           cardData,
           result,
         });
-        throw new Error('Failed to create raw card: invalid response format');
+        throw new Error('Failed to create raw card: invalid response format or missing Card reference');
       }
 
       return result;
@@ -344,14 +351,14 @@ export class CollectionApiService implements ICollectionApiService {
     return this.executeWithErrorHandling('createSealedProduct', async () => {
       const result = await collectionApi.createSealedProduct(productData);
 
-      // Validate created product has required properties
+      // Validate created product has required properties (Product model reference)
       if (!result || typeof result !== 'object' || !result.productId) {
         log(
           '[COLLECTION SERVICE] createSealedProduct returned invalid result',
           { productData, result }
         );
         throw new Error(
-          'Failed to create sealed product: invalid response format'
+          'Failed to create sealed product: invalid response format or missing Product reference'
         );
       }
 

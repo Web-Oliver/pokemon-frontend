@@ -200,7 +200,7 @@ export const useDbaExport = () => {
       const setName = item.cardId?.setId?.setName || item.setName || '';
       const cardName =
         item.cardId?.cardName || item.cardName || item.name || '';
-      const pokemonNumber = item.cardId?.pokemonNumber || '';
+      const cardNumber = item.cardId?.cardNumber || ''; // UPDATED: pokemonNumber → cardNumber
 
       const shortenedSet = shortenSetName(setName);
       if (shortenedSet) {
@@ -218,8 +218,8 @@ export const useDbaExport = () => {
         parts.push(cleanCardName);
       }
 
-      if (pokemonNumber) {
-        parts.push(pokemonNumber);
+      if (cardNumber) {
+        parts.push(cardNumber);
       }
 
       if (item.type === 'psa' && item.grade) {

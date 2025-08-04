@@ -45,9 +45,8 @@ interface AddEditRawCardFormProps {
 interface FormData {
   setName: string;
   cardName: string;
-  pokemonNumber: string;
-  baseName: string;
-  variety: string;
+  cardNumber: string; // UPDATED: pokemonNumber → cardNumber
+  variety: string; // REMOVED: baseName (deprecated field per user feedback)
   condition: string;
   myPrice: string;
   dateAdded: string;
@@ -74,9 +73,9 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     defaultValues: {
       setName: initialData?.setName || '',
       cardName: initialData?.cardName || '',
-      pokemonNumber: initialData?.pokemonNumber || '',
-      baseName: initialData?.baseName || '',
+      cardNumber: initialData?.cardNumber || '', // UPDATED: pokemonNumber → cardNumber
       variety: initialData?.variety || '',
+      // REMOVED: baseName (deprecated field per user feedback)
       condition: initialData?.condition || '',
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded:

@@ -12,7 +12,8 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { searchCards, searchProducts, searchSets, getCardMarketSetNames } from '../api/searchApi';
+import { searchCards, searchProducts, searchSets } from '../api/searchApi';
+import { getSetProducts } from '../api/setProductsApi';
 import { log } from '../utils/logger';
 import { useDebouncedValue } from './useDebounce';
 import { getDisplayName, handleSearchError } from '../utils/searchHelpers';
@@ -21,10 +22,10 @@ import { queryKeys } from '../lib/queryClient';
 
 // Focused types
 export interface SearchResult {
-  _id: string;
+  id: string;
   displayName: string;
   data: any; // Original data from API
-  type: 'set' | 'product' | 'card';
+  type: 'set' | 'product' | 'card' | 'setProduct';
 }
 
 export interface SearchState {
@@ -46,7 +47,7 @@ export interface UseSearchReturn {
 
   // Core search operations with pure TanStack Query
   searchSets: (query: string) => void;
-  searchCardMarketSetNames: (query: string) => void;
+  searchSetProducts: (query: string) => void;
   searchProducts: (query: string, setName?: string, category?: string) => void;
   searchCards: (query: string, setName?: string) => void;
 
@@ -61,15 +62,15 @@ export interface UseSearchReturn {
 
   // Context7 TanStack Query caching methods
   prefetchQuery: (
-    type: 'sets' | 'products' | 'cards',
+    type: 'sets' | 'setProducts' | 'products' | 'cards',
     query: string,
     filters?: any
   ) => Promise<void>;
   invalidateSearchCache: (
-    type?: 'sets' | 'products' | 'cards'
+    type?: 'sets' | 'setProducts' | 'products' | 'cards'
   ) => Promise<void>;
   getSearchCache: (
-    type: 'sets' | 'products' | 'cards',
+    type: 'sets' | 'setProducts' | 'products' | 'cards',
     query: string
   ) => SearchResult[] | undefined;
 
@@ -88,7 +89,7 @@ export const useSearch = (): UseSearchReturn => {
   // State for search management (non-query state)
   const [searchConfig, setSearchConfig] = useState({
     currentQuery: '',
-    currentType: '' as 'sets' | 'products' | 'cards' | '',
+    currentType: '' as 'sets' | 'products' | 'cards' | 'setProducts' | '',
     currentFilters: {} as { setName?: string; category?: string },
     selectedSet: null as string | null,
     selectedCategory: null as string | null,
@@ -121,9 +122,8 @@ export const useSearch = (): UseSearchReturn => {
       switch (searchConfig.currentType) {
         case 'sets':
           return queryKeys.searchSets(baseQuery);
-        case 'cardmarket-sets':
-          // CRITICAL FIX: Add CardMarket sets query key generation
-          return ['search', 'cardmarket-sets', baseQuery];
+        case 'setProducts':
+          return ['search', 'setProducts', baseQuery];
         case 'products':
           return queryKeys.searchProducts(
             `${baseQuery}${setName ? `-${setName}` : ''}${category ? `-${category}` : ''}`
@@ -164,31 +164,11 @@ export const useSearch = (): UseSearchReturn => {
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             limit: 15,
           });
-        case 'cardmarket-sets':
-          // Use currentQuery instead of debouncedQuery for immediate search
-          const queryToUse = searchConfig.currentQuery || debouncedQuery;
-          
-          const cardMarketSets = await getCardMarketSetNames(
-            queryToUse.trim(),
-            15
-          );
-          
-          // Transform CardMarket sets to match the expected SearchResponse format
-          return {
-            success: true,
-            query: queryToUse,
-            count: cardMarketSets.length,
-            data: cardMarketSets.map(set => ({
-              _id: set.setName,
-              setName: set.setName,
-              name: set.setName, // Add name field for display compatibility
-              count: set.count,
-              totalAvailable: set.totalAvailable,
-              categoryCount: set.categoryCount,
-              averagePrice: set.averagePrice,
-              score: set.score,
-            })),
-          };
+        case 'setProducts':
+          return getSetProducts({
+            name: debouncedQuery.trim() || '*',
+            limit: 15,
+          });
         case 'products':
           return searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
@@ -230,8 +210,8 @@ export const useSearch = (): UseSearchReturn => {
     }
 
     // Map search types to result types
-    const getResultType = (searchType: string): 'set' | 'product' | 'card' => {
-      if (searchType === 'cardmarket-sets') return 'set';
+    const getResultType = (searchType: string): 'set' | 'product' | 'card' | 'setProduct' => {
+      if (searchType === 'setProducts') return 'setProduct';
       if (searchType === 'products') return 'product';
       if (searchType === 'cards') return 'card';
       return 'set';
@@ -240,9 +220,9 @@ export const useSearch = (): UseSearchReturn => {
     const resultType = getResultType(searchConfig.currentType || 'sets');
 
     return queryResults.data.map((item: any) => ({
-      _id: item._id,
+      id: item.id || item._id,
       displayName: getDisplayName({
-        _id: item._id,
+        _id: item.id || item._id,
         displayName: '',
         data: item,
         type: resultType,
@@ -296,12 +276,12 @@ export const useSearch = (): UseSearchReturn => {
     }));
   }, []);
 
-  const handleSearchCardMarketSetNames = useCallback((query: string) => {
-    log(`[TANSTACK QUERY] Initiating CardMarket set names search: ${query}`);
+  const handleSearchSetProducts = useCallback((query: string) => {
+    log(`[TANSTACK QUERY] Initiating SetProducts search: ${query}`);
     setSearchConfig((prev) => ({
       ...prev,
       currentQuery: query,
-      currentType: 'cardmarket-sets' as const,
+      currentType: 'setProducts',
       currentFilters: {},
     }));
   }, []);
@@ -494,7 +474,7 @@ export const useSearch = (): UseSearchReturn => {
 
       // Search operations with TanStack Query integration
       searchSets: handleSearchSets,
-      searchCardMarketSetNames: handleSearchCardMarketSetNames,
+      searchSetProducts: handleSearchSetProducts,
       searchProducts: handleSearchProducts,
       searchCards: handleSearchCards,
 
@@ -525,7 +505,7 @@ export const useSearch = (): UseSearchReturn => {
       searchConfig.selectedSet,
       searchConfig.selectedCategory,
       handleSearchSets,
-      handleSearchCardMarketSetNames,
+      handleSearchSetProducts,
       handleSearchProducts,
       handleSearchCards,
       selectSet,

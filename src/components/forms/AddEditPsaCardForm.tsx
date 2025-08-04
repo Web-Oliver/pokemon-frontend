@@ -42,9 +42,8 @@ interface AddEditPsaCardFormProps {
 interface FormData {
   setName: string;
   cardName: string;
-  pokemonNumber: string;
-  baseName: string;
-  variety: string;
+  cardNumber: string; // UPDATED: pokemonNumber → cardNumber
+  variety: string; // REMOVED: baseName (deprecated field per user feedback)
   grade: string;
   myPrice: string;
   dateAdded: string;
@@ -88,9 +87,9 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     defaultValues: {
       setName: initialData?.setName || '',
       cardName: initialData?.cardName || '',
-      pokemonNumber: initialData?.pokemonNumber || '',
-      baseName: initialData?.baseName || '',
+      cardNumber: initialData?.cardNumber || '', // UPDATED: pokemonNumber → cardNumber
       variety: initialData?.variety || '',
+      // REMOVED: baseName (deprecated field per user feedback)
       grade: initialData?.grade || '',
       myPrice: initialData?.myPrice?.toString() || '',
       dateAdded:

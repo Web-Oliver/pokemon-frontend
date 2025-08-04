@@ -40,9 +40,9 @@ interface GradingPricingSectionProps {
   cardInfo?: {
     setName?: string;
     cardName?: string;
-    pokemonNumber?: string;
-    baseName?: string;
+    cardNumber?: string; // UPDATED: pokemonNumber → cardNumber
     variety?: string;
+    // REMOVED: baseName (deprecated field per user feedback)
   };
   // Show investment metrics instead of input fields when card is auto-filled
   showInvestmentMetrics?: boolean;
@@ -173,9 +173,9 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-white/70 text-sm">Number</span>
+                  <span className="text-white/70 text-sm">Card Number</span>
                   <span className="font-semibold text-yellow-300 text-sm">
-                    #{cardInfo.pokemonNumber || 'N/A'}
+                    #{cardInfo.cardNumber || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -285,12 +285,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                   <span className="text-white font-semibold">Card Details</span>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-white/60">Base Name</span>
-                    <span className="text-white font-medium">
-                      {cardInfo.baseName || 'N/A'}
-                    </span>
-                  </div>
+                  {/* REMOVED: Base Name field (deprecated field per user feedback) */}
                   <div className="flex justify-between">
                     <span className="text-white/60">Variety</span>
                     <span className="text-white font-medium">

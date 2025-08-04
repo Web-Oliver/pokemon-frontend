@@ -22,7 +22,7 @@ interface SearchSuggestion {
   name?: string;
   setName?: string;
   category?: string;
-  pokemonNumber?: string;
+  cardNumber?: string; // UPDATED: pokemonNumber → cardNumber
   variety?: string;
   setInfo?: {
     setName: string;
@@ -545,9 +545,9 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
 
                             {/* Additional Context */}
                             {activeField === 'cardProduct' &&
-                              suggestion.pokemonNumber && (
+                              suggestion.cardNumber && (
                                 <p className="text-xs text-white/60 font-medium">
-                                  Pokémon #{suggestion.pokemonNumber}
+                                  Card #{suggestion.cardNumber}
                                 </p>
                               )}
                           </div>

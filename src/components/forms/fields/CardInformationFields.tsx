@@ -13,9 +13,9 @@ import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import Input from '../../common/Input';
 
 interface ReadOnlyCardFields {
-  pokemonNumber?: boolean;
-  baseName?: boolean;
+  cardNumber?: boolean; // UPDATED: pokemonNumber → cardNumber
   variety?: boolean;
+  // REMOVED: baseName (deprecated field per user feedback)
 }
 
 interface CardInformationFieldsProps {
@@ -39,31 +39,16 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
 
   return (
     <>
-      {/* Pokemon Number */}
-      {readOnlyFields.pokemonNumber && (
+      {/* UPDATED: Card Number (formerly Pokemon Number) */}
+      {readOnlyFields.cardNumber && (
         <div>
           <Input
-            label="Pokemon Number"
-            {...register('pokemonNumber')}
-            error={errors.pokemonNumber?.message}
+            label="Card Number"
+            {...register('cardNumber')}
+            error={errors.cardNumber?.message}
             placeholder="e.g., 006, 025, 150"
             disabled={true}
-            value={watch('pokemonNumber') || ''}
-            className="text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed"
-          />
-        </div>
-      )}
-
-      {/* Base Name */}
-      {readOnlyFields.baseName && (
-        <div>
-          <Input
-            label="Base Name"
-            {...register('baseName')}
-            error={errors.baseName?.message}
-            placeholder="e.g., Charizard, Pikachu, Mew"
-            disabled={true}
-            value={watch('baseName') || ''}
+            value={watch('cardNumber') || ''}
             className="text-center bg-gray-50 dark:bg-zinc-900/50 dark:bg-zinc-950 text-gray-500 dark:text-zinc-500 dark:text-zinc-400 cursor-not-allowed"
           />
         </div>

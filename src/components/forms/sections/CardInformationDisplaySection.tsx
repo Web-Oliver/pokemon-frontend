@@ -33,8 +33,9 @@ interface CardInformationDisplaySectionProps {
 
 /**
  * Card Information Display Section
- * Renders read-only Pokemon Number, Base Name, and Variety fields
+ * Renders read-only Card Number and Variety fields
  * Used by both PSA and Raw card forms to eliminate duplication
+ * UPDATED: Removed baseName, changed pokemonNumber to cardNumber
  */
 const CardInformationDisplaySection: React.FC<
   CardInformationDisplaySectionProps
@@ -59,31 +60,20 @@ const CardInformationDisplaySection: React.FC<
     <div className={`${className}`}>
       {/* Card Information Fields Grid */}
       <div className={gridClassName}>
-        {/* Pokemon Number Field */}
+        {/* Card Number Field (formerly Pokemon Number) */}
         <div>
           <Input
-            label="Pokémon Number"
-            {...register('pokemonNumber')}
-            error={errors.pokemonNumber?.message}
+            label="Card Number"
+            {...register('cardNumber')}
+            error={errors.cardNumber?.message}
             placeholder="e.g., 006, 025, 150"
             disabled={true}
-            value={watch('pokemonNumber') || ''}
+            value={watch('cardNumber') || ''}
             className={readOnlyFieldClass}
           />
         </div>
-
-        {/* Base Name Field */}
-        <div>
-          <Input
-            label="Base Name"
-            {...register('baseName')}
-            error={errors.baseName?.message}
-            placeholder="e.g., Charizard, Pikachu, Mew"
-            disabled={true}
-            value={watch('baseName') || ''}
-            className={readOnlyFieldClass}
-          />
-        </div>
+        
+        {/* REMOVED: Base Name Field (deprecated field per user feedback) */
 
         {/* Variety Field - Full Width */}
         <div className="md:col-span-2">
@@ -124,15 +114,11 @@ const CardInformationDisplaySection: React.FC<
           readOnly
         />
         <input
-          {...register('pokemonNumber')}
-          value={watch('pokemonNumber') || ''}
+          {...register('cardNumber')}
+          value={watch('cardNumber') || ''}
           readOnly
         />
-        <input
-          {...register('baseName')}
-          value={watch('baseName') || ''}
-          readOnly
-        />
+        {/* REMOVED: baseName registration (deprecated field per user feedback) */}
         <input
           {...register('variety')}
           value={watch('variety') || ''}

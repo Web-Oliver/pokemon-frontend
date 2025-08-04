@@ -60,14 +60,14 @@ export const useCollectionStats = (): CollectionStats & {
     const totalSales = safeSoldItems.length;
 
     // Calculate average PSA grade
-    const psaGrades = safePsaCards
+    const grades = safePsaCards // UPDATED: psaGrades → grades to match new backend structure
       .map((card) => parseFloat(card.grade))
       .filter((grade) => !isNaN(grade));
 
     const averageGrade =
-      psaGrades.length > 0
+      grades.length > 0
         ? (
-            psaGrades.reduce((sum, grade) => sum + grade, 0) / psaGrades.length
+            grades.reduce((sum, grade) => sum + grade, 0) / grades.length
           ).toFixed(1)
         : null;
 

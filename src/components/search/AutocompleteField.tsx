@@ -17,17 +17,23 @@ import { useAutocomplete } from '../../hooks/useAutocomplete';
 import { SearchResult } from '../../hooks/useSearch';
 
 export interface AutocompleteFieldProps {
-  searchType: 'sets' | 'products' | 'cards';
+  searchType: 'sets' | 'products' | 'cards' | 'setProducts'; // UPDATED: Added setProducts
   placeholder?: string;
   value?: string;
   onSelect: (result: SearchResult) => void;
-  filters?: { setName?: string; category?: string };
+  filters?: { setName?: string; category?: string; setProductId?: string }; // UPDATED: Added setProductId
   disabled?: boolean;
   className?: string;
   label?: string;
   error?: string;
   required?: boolean;
   onFocusChange?: (focused: boolean) => void;
+  // NEW: Hierarchical autocomplete configuration
+  hierarchicalConfig?: {
+    enableHierarchical?: boolean;
+    onAutofill?: (autofillData: any) => void;
+    fieldType?: 'set' | 'setProduct' | 'product' | 'card';
+  };
 }
 
 /**
@@ -46,9 +52,10 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
   error,
   required = false,
   onFocusChange,
+  hierarchicalConfig,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocomplete = useAutocomplete(searchType, onSelect, filters, disabled);
+  const autocomplete = useAutocomplete(searchType, onSelect, filters, disabled, hierarchicalConfig);
 
   // Sync external value with internal state - avoid infinite loops
   useEffect(() => {
@@ -166,14 +173,16 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
               onClick={useCallback(() => {
                 autocomplete.clear();
                 onSelect({
-                  _id: '',
+                  id: '',
                   displayName: '',
                   type:
                     searchType === 'sets'
                       ? 'set'
-                      : searchType === 'products'
-                        ? 'product'
-                        : 'card',
+                      : searchType === 'setProducts'
+                        ? 'setProduct'
+                        : searchType === 'products'
+                          ? 'product'
+                          : 'card',
                   data: {},
                 } as SearchResult);
               }, [autocomplete.clear, onSelect, searchType])}
@@ -264,7 +273,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
             <div className="p-2 space-y-1 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent relative z-10">
               {autocomplete.results.map((result, index) => (
                 <div
-                  key={result._id}
+                  key={result.id}
                   onMouseDown={useCallback(
                     (e) => {
                       e.preventDefault();
@@ -325,12 +334,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                       className={`flex-shrink-0 ml-4 px-3 py-1.5 rounded-xl font-bold text-xs shadow-lg backdrop-blur-xl border ${
                         result.type === 'set'
                           ? 'bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border-blue-500/30 text-blue-300'
-                          : result.type === 'product'
-                            ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
-                            : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
+                          : result.type === 'setProduct'
+                            ? 'bg-gradient-to-r from-indigo-500/20 to-blue-600/20 border-indigo-500/30 text-indigo-300'
+                            : result.type === 'product'
+                              ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
+                              : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
                       }`}
                     >
-                      {result.type}
+                      {result.type === 'setProduct' ? 'set product' : result.type}
                     </div>
                   </div>
                 </div>

@@ -115,11 +115,8 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     // Don't set loading here - it will be synced from search hook
     switch (activeField) {
       case 'setName':
-        if (formType === 'product') {
-          search.searchCardMarketSetNames(currentValue);
-        } else {
-          search.searchSets(currentValue);
-        }
+        // UPDATED: Use unified sets search for both product and card forms
+        search.searchSets(currentValue);
         break;
       case 'productName': {
         const currentSetName = setName;
@@ -154,7 +151,6 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     debouncedProductName,
     formType,
     setName, // Add setName to dependencies for proper filtering
-    search.searchCardMarketSetNames,
     search.searchSets,
     search.searchProducts,
     search.searchCards,

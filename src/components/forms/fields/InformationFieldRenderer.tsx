@@ -17,9 +17,9 @@ type FieldType = 'card' | 'product';
 
 interface ReadOnlyFields {
   // Card fields
-  pokemonNumber?: boolean;
-  baseName?: boolean;
+  cardNumber?: boolean; // UPDATED: pokemonNumber → cardNumber
   variety?: boolean;
+  // REMOVED: baseName (deprecated field per user feedback)
   // Product fields
   category?: boolean;
   availability?: boolean;
@@ -55,9 +55,9 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
           errors={errors}
           watch={watch}
           readOnlyFields={{
-            pokemonNumber: readOnlyFields.pokemonNumber,
-            baseName: readOnlyFields.baseName,
+            cardNumber: readOnlyFields.cardNumber, // UPDATED: pokemonNumber → cardNumber
             variety: readOnlyFields.variety,
+            // REMOVED: baseName (deprecated field per user feedback)
           }}
           isDisabled={isDisabled}
         />
