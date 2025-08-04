@@ -448,12 +448,23 @@ export const SET_CONFIG = createResourceConfig('/sets', 'set');
 export const SALES_CONFIG = createResourceConfig('/sales', 'sale');
 
 /**
- * Common configuration for CardMarket reference products
+ * Common configuration for CardMarket reference products - DEPRECATED
+ * Use PRODUCTS_CONFIG instead
  */
 export const CARDMARKET_REF_PRODUCTS_CONFIG = createResourceConfig(
   '/cardmarket-ref-products',
   'CardMarket reference product'
 );
+
+/**
+ * Common configuration for products (replaces CardMarket ref products)
+ */
+export const PRODUCTS_CONFIG = createResourceConfig('/products', 'product');
+
+/**
+ * Common configuration for set products (NEW hierarchical structure)
+ */
+export const SET_PRODUCTS_CONFIG = createResourceConfig('/set-products', 'set product');
 
 /**
  * Common configuration for DBA selection resources

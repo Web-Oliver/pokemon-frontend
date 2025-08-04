@@ -1,9 +1,9 @@
 /**
- * Product Search Section Component
+ * Card Search Section Component
  * Layer 3: Components (UI Building Blocks)
  *
- * Focused replacement for CardProductInformationSection
- * Maintains ALL existing functionality with consolidated search
+ * Dedicated search component for cards only (PSA and Raw cards)
+ * Handles Set -> Card hierarchical search pattern
  */
 
 import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
@@ -17,13 +17,9 @@ import {
 } from 'react-hook-form';
 import { SearchResult, useSearch } from '../../hooks/useSearch';
 import { InformationFieldRenderer } from './fields';
-import {
-  AutoFillConfig,
-  autoFillFromSelection,
-} from '../../utils/searchHelpers';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
-interface ProductSearchSectionProps {
+interface CardSearchSectionProps {
   /** React Hook Form functions */
   register: UseFormRegister<any>;
   errors: FieldErrors<any>;
@@ -35,24 +31,16 @@ interface ProductSearchSectionProps {
   sectionTitle: string;
   sectionIcon: LucideIcon;
 
-  /** Autocomplete functionality */
-  onSelectionChange: (selectedData: Record<string, unknown> | null) => void;
+  /** Card selection functionality */
+  onCardSelection: (selectedData: Record<string, unknown> | null) => void;
   onError?: (error: string) => void;
-
-  /** Form field configuration */
-  readOnlyFields?: {
-    category?: boolean;
-    availability?: boolean;
-  };
-  productCategories?: Array<{ value: string; label: string }> | string[];
-  loadingOptions?: boolean;
 }
 
 /**
- * Product Search Section
- * Provides focused search functionality while maintaining all existing auto-fill behavior
+ * Card Search Section
+ * Handles hierarchical Set -> Card search pattern
  */
-const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
+const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
   register,
   errors,
   setValue,
@@ -60,21 +48,16 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
   clearErrors,
   sectionTitle,
   sectionIcon: SectionIcon,
-  onSelectionChange,
+  onCardSelection,
   onError: _onError,
-  readOnlyFields = {},
-  productCategories = [],
-  loadingOptions = false,
 }) => {
   // Watch form values
   const setName = watch('setName') || '';
-  const productName = watch('productName') || '';
   const cardName = watch('cardName') || '';
-  const category = watch('category') || '';
 
-  // Centralized state management like the old autocomplete system
+  // Centralized state management
   const [activeField, setActiveField] = useState<
-    'setName' | 'productName' | null
+    'setName' | 'cardName' | null
   >(null);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,10 +67,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
 
   // Debounce search queries
   const debouncedSetName = useDebouncedValue(setName, 300);
-  const debouncedProductName = useDebouncedValue(
-    formType === 'product' ? productName : cardName,
-    300
-  );
+  const debouncedCardName = useDebouncedValue(cardName, 300);
 
   // Sync search results to local suggestions state
   useEffect(() => {
@@ -95,7 +75,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     setIsLoading(search.isLoading);
   }, [search.results, search.isLoading]);
 
-  // Centralized search effect - like the old autocomplete system
+  // Centralized search effect
   useEffect(() => {
     if (!activeField) {
       setSuggestions([]);
@@ -103,148 +83,110 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     }
 
     const currentValue =
-      activeField === 'setName' ? debouncedSetName : debouncedProductName;
+      activeField === 'setName' ? debouncedSetName : debouncedCardName;
 
     if (!currentValue || typeof currentValue !== 'string') {
       setSuggestions([]);
       return;
     }
 
-    // Don't set loading here - it will be synced from search hook
     switch (activeField) {
       case 'setName':
-        // UPDATED: Use unified sets search for both product and card forms
         search.searchSets(currentValue);
         break;
-      case 'productName': {
+      case 'cardName': {
         const currentSetName = setName;
 
-        // SMART SEARCH: If no query but set selected, show all from set. If query exists, filter within set.
+        // Smart search: If no query but set selected, show all from set
         let searchQuery = currentValue;
         if (!currentValue || currentValue.trim() === '') {
-          // No query - show all from set if set is selected
           if (currentSetName && currentSetName.trim()) {
             searchQuery = '*';
           } else {
-            // No query and no set - don't search
             setSuggestions([]);
             return;
           }
         }
 
-        if (formType === 'product') {
-          search.searchProducts(
-            searchQuery,
-            currentSetName?.trim() || undefined
-          );
-        } else {
-          search.searchCards(searchQuery, currentSetName?.trim() || undefined);
-        }
+        search.searchCards(searchQuery, currentSetName?.trim() || undefined);
         break;
       }
     }
   }, [
     activeField,
     debouncedSetName,
-    debouncedProductName,
-    formType,
-    setName, // Add setName to dependencies for proper filtering
+    debouncedCardName,
+    setName,
     search.searchSets,
-    search.searchProducts,
     search.searchCards,
   ]);
 
-  // Context7 Pattern: Memoized configuration following React.dev best practices
-  const autoFillConfig: AutoFillConfig = useMemo(
-    () => ({
-      setValue,
-      clearErrors,
-      formType,
-    }),
-    [setValue, clearErrors, formType]
-  );
-
-  // Context7 Pattern: Memoized event handler with stable dependencies
+  // Handle set selection
   const handleSetSelection = useCallback(
     (result: SearchResult) => {
-      console.log('[SEARCH DEBUG] SET SELECTION TRIGGERED:', result);
-      console.log('[SEARCH DEBUG] Current setName value:', setName);
+      console.log('[CARD SEARCH DEBUG] SET SELECTION:', result);
       
-      // Handle clearing - if result is empty, clear the form field
       if (!result.id || !result.displayName) {
-        console.log('[SEARCH DEBUG] Clearing set selection - missing id or displayName');
         setValue('setName', '');
         clearErrors('setName');
-        onSelectionChange(null);
-        // Clear suggestions and active field
         setSuggestions([]);
         setActiveField(null);
         return;
       }
 
-      // FIXED: Handle set selection directly without autoFillFromSelection to prevent override
+      // Set selection - only update setName field
       const selectedSetName = result.data.setName || result.displayName;
-      console.log('[SEARCH DEBUG] Setting setName to:', selectedSetName);
-      
       setValue('setName', selectedSetName);
       clearErrors('setName');
-      
-      console.log('[SEARCH DEBUG] After setValue, current form setName:', watch('setName'));
 
-      // Auto-fill year if available (but don't auto-fill setName again)
+      // Auto-fill year if available
       if (result.data.year) {
         setValue('year', result.data.year);
         clearErrors('year');
       }
 
-      // Call parent callback (maintains existing behavior)
-      onSelectionChange({
-        setName: selectedSetName,
-        year: result.data.year,
-        _id: result.id,
-        ...result.data,
-      });
-
-      // Clear suggestions after selection with a small delay to ensure value is set
+      // Clear suggestions
       setTimeout(() => {
-        console.log('[SEARCH DEBUG] Clearing suggestions and active field');
-        console.log('[SEARCH DEBUG] Final setName value after timeout:', watch('setName'));
         setSuggestions([]);
         setActiveField(null);
       }, 10);
     },
-    [setValue, clearErrors, onSelectionChange, setName, watch]
+    [setValue, clearErrors]
   );
 
-  // Context7 Pattern: Memoized selection handler for optimal re-render prevention
-  const handleProductCardSelection = useCallback(
+  // Handle card selection
+  const handleCardSelection = useCallback(
     (result: SearchResult) => {
-      console.log('[SEARCH DEBUG] PRODUCT/CARD SELECTION TRIGGERED:', result);
+      console.log('[CARD SEARCH DEBUG] CARD SELECTION:', result);
+      console.log('[CARD SEARCH DEBUG] CARD DATA setId:', result.data.setId);
       
-      // Handle clearing - if result is empty, clear the form field
       if (!result.id || !result.displayName) {
-        console.log('[SEARCH DEBUG] Clearing product/card selection - missing id or displayName');
-        const fieldName = formType === 'product' ? 'productName' : 'cardName';
-        setValue(fieldName, '');
-        clearErrors(fieldName);
-        onSelectionChange(null);
-        // Clear suggestions and active field
+        setValue('cardName', '');
+        clearErrors('cardName');
+        onCardSelection(null);
         setSuggestions([]);
         setActiveField(null);
         return;
       }
 
-      // Use autoFillFromSelection for products and cards (not sets)
-      autoFillFromSelection(autoFillConfig, result, onSelectionChange);
+      // Card selection - this should trigger the card selection hook
+      const cardData = {
+        _id: result.id,
+        ...result.data,
+      };
+      
+      console.log('[CARD SEARCH DEBUG] SENDING TO useCardSelection:', cardData);
+      console.log('[CARD SEARCH DEBUG] setId in cardData:', cardData.setId);
+      
+      onCardSelection(cardData);
 
-      // Clear suggestions after selection with a small delay to ensure value is set
+      // Clear suggestions
       setTimeout(() => {
-        console.log('[SEARCH DEBUG] Clearing product/card suggestions');
         setSuggestions([]);
         setActiveField(null);
       }, 10);
     },
-    [formType, setValue, clearErrors, onSelectionChange, autoFillConfig]
+    [setValue, clearErrors, onCardSelection]
   );
 
   return (
@@ -274,12 +216,12 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
               {sectionTitle}
             </h3>
             <p className="text-white/60 font-medium">
-              Search and select from your collection database
+              Search sets first, then find cards within the selected set
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            {/* Context7 Premium Set Name Autocomplete */}
+            {/* Set Name Search */}
             <div className="relative z-50">
               <label className="block text-sm font-bold text-white mb-3 flex items-center space-x-2">
                 <div className="p-1 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-white/10">
@@ -290,20 +232,14 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
               </label>
 
               <div className="relative">
-                {/* Background Glass Effects */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-[1.2rem] blur-md opacity-60"></div>
 
                 <div className="relative bg-black/40 backdrop-blur-3xl rounded-xl shadow-xl border border-white/10 ring-1 ring-white/5 overflow-hidden group">
-                  {/* Floating Orbs */}
-                  <div className="absolute -top-1 -right-1 w-12 h-12 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-lg animate-pulse opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
-
                   <input
                     type="text"
                     value={setName}
                     onChange={(e) => setValue('setName', e.target.value)}
-                    onFocus={() => {
-                      setActiveField('setName');
-                    }}
+                    onFocus={() => setActiveField('setName')}
                     onBlur={() => {
                       setTimeout(() => {
                         if (activeField === 'setName') {
@@ -314,23 +250,16 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                     placeholder="Search for set name..."
                     className="relative z-10 block w-full px-4 py-3 bg-transparent border-none text-white placeholder-white/50 font-medium focus:ring-0 focus:outline-none"
                   />
-
-                  {/* Shimmer Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-focus-within:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"></div>
-
-                  {/* Breathing Animation */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-xl animate-pulse opacity-40 pointer-events-none group-focus-within:opacity-60 transition-opacity duration-300"></div>
                 </div>
 
-                {/* Set Name Dropdown - Positioned relative to this input */}
+                {/* Set Name Dropdown */}
                 {activeField === 'setName' && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
                     <div className="relative bg-zinc-900 rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden max-h-80">
                       <div className="p-2 space-y-1 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/30 scrollbar-track-transparent relative z-10">
                         {suggestions.map((suggestion, index) => (
                           <div
-                            key={suggestion._id || suggestion.id || `set-suggestion-${index}`}
-                            data-suggestion
+                            key={suggestion.id || `set-suggestion-${index}`}
                             onClick={() => handleSetSelection(suggestion)}
                             className="group cursor-pointer select-none relative p-4 rounded-xl transition-all duration-300 transform hover:scale-102 overflow-hidden hover:bg-white/5 border border-transparent hover:border-white/10"
                             role="option"
@@ -353,37 +282,10 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                     </div>
                   </div>
                 )}
-
-                {/* Set Name No Results */}
-                {activeField === 'setName' &&
-                  setName.trim().length >= 1 &&
-                  suggestions.length === 0 &&
-                  !isLoading && (
-                    <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
-                      <div className="relative bg-zinc-900 rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden">
-                        <div className="p-8 text-center relative z-10">
-                          <div className="relative mb-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-slate-800/60 to-slate-900/80 rounded-2xl flex items-center justify-center mx-auto border border-white/10 shadow-lg">
-                              <Search className="w-8 h-8 text-white/60" />
-                            </div>
-                          </div>
-                          <h3 className="text-lg font-bold text-white mb-2">
-                            No results found
-                          </h3>
-                          <p className="text-white/60 text-sm font-medium">
-                            Try adjusting your search terms
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
               </div>
 
               {errors.setName && (
                 <div className="mt-3 p-3 bg-gradient-to-r from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-red-500/30 rounded-xl shadow-lg flex items-center space-x-2">
-                  <div className="p-1 rounded-lg bg-gradient-to-br from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-white/10">
-                    <SectionIcon className="w-3 h-3 text-red-400" />
-                  </div>
                   <p className="text-sm text-red-300 font-medium">
                     {errors.setName.message}
                   </p>
@@ -391,81 +293,53 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
               )}
             </div>
 
-            {/* Context7 Premium Product/Card Name Autocomplete */}
+            {/* Card Name Search */}
             <div className="relative z-50">
               <label className="block text-sm font-bold text-white mb-3 flex items-center space-x-2">
                 <div className="p-1 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10">
                   <SectionIcon className="w-3 h-3 text-blue-400" />
                 </div>
-                <span>{formType === 'product' ? 'Product Name' : 'Card Name'}</span>
+                <span>Card Name</span>
                 <span className="text-red-400 ml-1 font-bold">*</span>
               </label>
 
               <div className="relative">
-                {/* Background Glass Effects */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 rounded-[1.2rem] blur-md opacity-60"></div>
 
                 <div className="relative bg-black/40 backdrop-blur-3xl rounded-xl shadow-xl border border-white/10 ring-1 ring-white/5 overflow-hidden group">
-                  {/* Floating Orbs */}
-                  <div className="absolute -top-1 -right-1 w-12 h-12 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-lg animate-pulse opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
-
                   <input
                     type="text"
-                    value={formType === 'product' ? productName : cardName}
-                    onChange={(e) => {
-                      const fieldName =
-                        formType === 'product' ? 'productName' : 'cardName';
-                      setValue(fieldName, e.target.value);
-                    }}
+                    value={cardName}
+                    onChange={(e) => setValue('cardName', e.target.value)}
                     onFocus={() => {
-                      setActiveField('productName');
+                      setActiveField('cardName');
 
-                      // AUTO-TRIGGER SEARCH: If set is selected but no product name yet, show suggestions immediately
-                      const currentSetName = setName;
-                      const currentProductName =
-                        formType === 'product' ? productName : cardName;
-
-                      if (
-                        currentSetName &&
-                        currentSetName.trim() &&
-                        (!currentProductName || currentProductName.trim() === '')
-                      ) {
-                        // Trigger search with "*" as query to show all items from the set
-                        if (formType === 'product') {
-                          search.searchProducts('*', currentSetName.trim());
-                        } else {
-                          search.searchCards('*', currentSetName.trim());
-                        }
+                      // Auto-trigger search if set is selected but no card name yet
+                      if (setName && setName.trim() && (!cardName || cardName.trim() === '')) {
+                        search.searchCards('*', setName.trim());
                       }
                     }}
                     onBlur={() => {
                       setTimeout(() => {
-                        if (activeField === 'productName') {
+                        if (activeField === 'cardName') {
                           setActiveField(null);
                         }
                       }, 150);
                     }}
-                    placeholder={`Search for ${formType} name...`}
+                    placeholder="Search for card name..."
                     className="relative z-10 block w-full px-4 py-3 bg-transparent border-none text-white placeholder-white/50 font-medium focus:ring-0 focus:outline-none"
                   />
-
-                  {/* Shimmer Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-focus-within:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"></div>
-
-                  {/* Breathing Animation */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-indigo-500/5 rounded-xl animate-pulse opacity-40 pointer-events-none group-focus-within:opacity-60 transition-opacity duration-300"></div>
                 </div>
 
-                {/* Product/Card Name Dropdown - Positioned relative to this input */}
-                {activeField === 'productName' && suggestions.length > 0 && (
+                {/* Card Name Dropdown */}
+                {activeField === 'cardName' && suggestions.length > 0 && (
                   <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
                     <div className="relative bg-zinc-900 rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden max-h-80">
                       <div className="p-2 space-y-1 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent relative z-10">
                         {suggestions.map((suggestion, index) => (
                           <div
-                            key={suggestion._id || suggestion.id || `product-suggestion-${index}`}
-                            data-suggestion
-                            onClick={() => handleProductCardSelection(suggestion)}
+                            key={suggestion.id || `card-suggestion-${index}`}
+                            onClick={() => handleCardSelection(suggestion)}
                             className="group cursor-pointer select-none relative p-4 rounded-xl transition-all duration-300 transform hover:scale-102 overflow-hidden hover:bg-white/5 border border-transparent hover:border-white/10"
                             role="option"
                           >
@@ -475,16 +349,15 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                                   {suggestion.displayName}
                                 </div>
                                 
-                                {/* Premium Metadata */}
                                 <div className="flex flex-wrap items-center gap-2">
-                                  {suggestion.data?.setName && suggestion.type !== 'set' && (
+                                  {suggestion.data?.setId?.setName && (
                                     <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
-                                      Set: {suggestion.data.setName}
+                                      Set: {suggestion.data.setId.setName}
                                     </div>
                                   )}
-                                  {suggestion.data?.category && (
+                                  {suggestion.data?.cardNumber && (
                                     <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 rounded-lg text-xs text-purple-300 font-semibold">
-                                      {suggestion.data.category}
+                                      #{suggestion.data.cardNumber}
                                     </div>
                                   )}
                                 </div>
@@ -496,39 +369,12 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
                     </div>
                   </div>
                 )}
-
-                {/* Product/Card Name No Results */}
-                {activeField === 'productName' &&
-                  (formType === 'product' ? productName : cardName).trim().length >= 2 &&
-                  suggestions.length === 0 &&
-                  !isLoading && (
-                    <div className="absolute top-full left-0 right-0 z-[9999] mt-2">
-                      <div className="relative bg-zinc-900 rounded-2xl shadow-2xl border border-white/10 ring-1 ring-white/5 overflow-hidden">
-                        <div className="p-8 text-center relative z-10">
-                          <div className="relative mb-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-slate-800/60 to-slate-900/80 rounded-2xl flex items-center justify-center mx-auto border border-white/10 shadow-lg">
-                              <Search className="w-8 h-8 text-white/60" />
-                            </div>
-                          </div>
-                          <h3 className="text-lg font-bold text-white mb-2">
-                            No results found
-                          </h3>
-                          <p className="text-white/60 text-sm font-medium">
-                            Try adjusting your search terms
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
               </div>
 
-              {errors[formType === 'product' ? 'productName' : 'cardName'] && (
+              {errors.cardName && (
                 <div className="mt-3 p-3 bg-gradient-to-r from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-red-500/30 rounded-xl shadow-lg flex items-center space-x-2">
-                  <div className="p-1 rounded-lg bg-gradient-to-br from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-white/10">
-                    <SectionIcon className="w-3 h-3 text-red-400" />
-                  </div>
                   <p className="text-sm text-red-300 font-medium">
-                    {errors[formType === 'product' ? 'productName' : 'cardName']?.message}
+                    {errors.cardName.message}
                   </p>
                 </div>
               )}
@@ -542,23 +388,18 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
               watch={watch}
               setValue={setValue}
               clearErrors={clearErrors}
-              readOnlyFields={readOnlyFields}
-              productCategories={productCategories}
-              loadingOptions={loadingOptions}
-              category={category}
-              formType={formType}
+              readOnlyFields={{}}
+              productCategories={[]}
+              loadingOptions={false}
+              category={''}
+              formType="card"
             />
           </div>
-
-          {/* Breathing Animation for main container */}
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
         </div>
       </div>
-
     </div>
   );
 };
 
-// Context7 Performance: Memoized export with display name
-export const ProductSearchSection = memo(ProductSearchSectionComponent);
-ProductSearchSection.displayName = 'ProductSearchSection';
+export const CardSearchSection = memo(CardSearchSectionComponent);
+CardSearchSection.displayName = 'CardSearchSection';

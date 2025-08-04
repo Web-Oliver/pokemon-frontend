@@ -117,19 +117,21 @@ export const autoFillSetData = (
   let setName: string | undefined;
   
   if (config.formType === 'product') {
-    // For sealed products: ONLY use CardMarketReferenceProduct.setName
-    setName = result.data.setName;
+    // For sealed products: Use setProductId.setProductName
+    setName = result.data.setProductId?.setProductName || result.data.setName;
   } else {
-    // For cards: Use Set->Card relationship
-    setName = result.data.setName || result.data.setInfo?.setName;
+    // For cards: Use setId.setName (card references set)
+    setName = result.data.setId?.setName || result.data.setName || result.data.setInfo?.setName;
   }
   
   if (setName) {
     autoFillField(config, 'setName', setName);
   }
 
-  if (result.data.year) {
-    autoFillField(config, 'year', result.data.year);
+  // For cards, year comes from setId.year
+  const year = result.data.setId?.year || result.data.year;
+  if (year) {
+    autoFillField(config, 'year', year);
   }
 };
 
@@ -146,8 +148,8 @@ export const autoFillItemData = (
 
   // Auto-fill based on form type
   if (formType === 'product') {
-    if (data.name) {
-      autoFillField(config, 'productName', data.name);
+    if (data.productName) {
+      autoFillField(config, 'productName', data.productName);
     }
   } else if (formType === 'card') {
     if (data.cardName) {
@@ -159,8 +161,9 @@ export const autoFillItemData = (
     if (data.variety) {
       autoFillField(config, 'variety', data.variety);
     }
-    if (data.pokemonNumber) {
-      autoFillField(config, 'pokemonNumber', data.pokemonNumber);
+    // UPDATED: Use cardNumber instead of pokemonNumber
+    if (data.cardNumber) {
+      autoFillField(config, 'cardNumber', data.cardNumber);
     }
   }
 
@@ -173,11 +176,13 @@ export const autoFillItemData = (
     autoFillField(config, 'availability', Number(data.available));
   }
 
-  // Auto-fill CardMarket price
+  // Auto-fill CardMarket price - handle price string format
   if (data.price) {
-    const price = parseFloat(data.price);
-    if (!isNaN(price)) {
-      autoFillField(config, 'cardMarketPrice', Math.round(price).toString());
+    // Handle price format like "3,97 €"
+    const priceString = data.price.toString();
+    const numericPrice = parseFloat(priceString.replace(/[^\d,.-]/g, '').replace(',', '.'));
+    if (!isNaN(numericPrice)) {
+      autoFillField(config, 'cardMarketPrice', Math.round(numericPrice).toString());
     }
   }
 };
@@ -200,7 +205,7 @@ export const autoFillFromSelection = (
   // Call parent callback if provided (maintains existing behavior)
   if (onSelectionChange) {
     onSelectionChange({
-      _id: result._id,
+      _id: result.id || result.data._id,
       ...result.data,
     });
   }
@@ -281,8 +286,10 @@ export const getSearchIconConfig = (type: IconConfig['type']) => {
 export const getDisplayName = (result: SearchResult): string => {
   return (
     result.data.cardName ||
+    result.data.productName ||
     result.data.name ||
     result.data.setName ||
+    result.data.setProductName ||
     result.data.category ||
     'Unknown'
   );

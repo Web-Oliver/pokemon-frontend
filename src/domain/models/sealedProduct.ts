@@ -1,6 +1,7 @@
 /**
  * Sealed Product TypeScript interfaces
- * Corresponds to CardMarketReferenceProduct and SealedProduct Mongoose schemas
+ * UPDATED: Now corresponds to SetProduct → Product hierarchy and SealedProduct Mongoose schemas
+ * Migration: CardMarketReferenceProduct replaced with Product model
  */
 
 import { IPriceHistoryEntry, ISaleDetails } from './common';
@@ -22,7 +23,8 @@ export enum SealedProductCategory {
   TRAINER_KITS = 'Trainer-Kits',
 }
 
-// CardMarketReferenceProduct interface
+// DEPRECATED: CardMarketReferenceProduct interface - Use IProduct instead
+// Kept for backward compatibility during migration
 export interface ICardMarketReferenceProduct {
   _id: string;
   name: string;
@@ -34,10 +36,10 @@ export interface ICardMarketReferenceProduct {
   lastUpdated: string; // ISO date string
 }
 
-// Updated to match actual backend SealedProduct schema
+// Updated to match new backend SealedProduct schema with SetProduct → Product hierarchy
 export interface ISealedProduct {
   id: string;
-  productId: string; // References CardMarketReferenceProduct model
+  productId: string; // UPDATED: Now references Product model (was CardMarketReferenceProduct)
   category: SealedProductCategory;
   setName: string;
   name: string;
@@ -49,7 +51,9 @@ export interface ISealedProduct {
   dateAdded: string; // ISO date string
   sold: boolean;
   saleDetails?: ISaleDetails;
-  // Additional fields for UI purposes (populated from references)
-  productName?: string; // From CardMarketReferenceProduct
-  productUrl?: string; // From CardMarketReferenceProduct
+  // Additional fields for UI purposes (populated from Product → SetProduct references)
+  productName?: string; // From Product model
+  productUrl?: string; // From Product model
+  setProductName?: string; // NEW: From SetProduct model via Product reference
+  setProductId?: string; // NEW: SetProduct ID for hierarchical filtering
 }

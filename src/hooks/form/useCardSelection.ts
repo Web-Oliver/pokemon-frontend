@@ -22,9 +22,14 @@ interface SelectedCardData {
   setInfo?: {
     setName: string;
   };
+  // For card objects, setName comes from setId.setName
+  setId?: {
+    setName: string;
+    year?: number;
+  };
   setName?: string;
   cardName?: string;
-  pokemonNumber?: string | number;
+  cardNumber?: string | number;
   baseName?: string;
   variety?: string;
   [key: string]: any;
@@ -46,6 +51,9 @@ interface CardSelectionConfig {
 
   /** Enable debug logging */
   debug?: boolean;
+
+  /** Preserve existing setName (don't override from card data) */
+  preserveSetName?: boolean;
 }
 
 /**
@@ -60,6 +68,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
     onCardIdSelected,
     onSelectionComplete,
     debug = false,
+    preserveSetName = false,
   } = config;
 
   const handleCardSelection = useCallback(
@@ -79,11 +88,12 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         // Clear form fields when selection is cleared
         setValue('setName', '');
         setValue('cardName', '');
-        setValue('pokemonNumber', '');
+        setValue('cardNumber', '');
         setValue('baseName', '');
         setValue('variety', '');
         clearErrors('setName');
         clearErrors('cardName');
+        clearErrors('cardNumber');
         return;
       }
 
@@ -119,15 +129,53 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         return;
       }
 
-      // Auto-fill set name
-      const setName = selectedData.setInfo?.setName || selectedData.setName;
-      if (setName) {
-        setValue('setName', setName, { shouldValidate: true });
+      // Auto-fill set name - handle different data structures and circular references
+      // In hierarchical search (Set -> Card), setName should already be set from set selection
+      let cardSetName: string | undefined;
+      
+      // Try multiple approaches to extract setName, handling circular references
+      try {
+        cardSetName = selectedData.setId?.setName;
+      } catch (e) {
+        // Handle circular reference in setId
+        console.warn(`[${formType.toUpperCase()} CARD] Circular reference in setId, trying alternatives`);
+      }
+      
+      // Fallback to other sources
+      if (!cardSetName) {
+        cardSetName = selectedData.setDisplayName || selectedData.setInfo?.setName || selectedData.setName;
+      }
+      
+      if (debug && process.env.NODE_ENV === 'development') {
+        console.log(`[${formType.toUpperCase()} CARD] Card set name extraction:`, {
+          cardSetName,
+          setDisplayName: selectedData.setDisplayName,
+          hasSetId: !!selectedData.setId,
+          setInfo: selectedData.setInfo,
+          directSetName: selectedData.setName,
+          preserveSetName
+        });
+      }
+      
+      if (!preserveSetName && cardSetName) {
+        setValue('setName', cardSetName, { shouldValidate: true });
         clearErrors('setName');
+        if (debug && process.env.NODE_ENV === 'development') {
+          console.log(
+            `[${formType.toUpperCase()} CARD] Setting Set Name from card:`,
+            cardSetName
+          );
+        }
       } else if (debug && process.env.NODE_ENV === 'development') {
-        console.warn(
-          `[${formType.toUpperCase()} CARD] No setName found in selected card data`
-        );
+        if (preserveSetName) {
+          console.log(
+            `[${formType.toUpperCase()} CARD] Preserving existing setName (hierarchical search)`
+          );
+        } else {
+          console.log(
+            `[${formType.toUpperCase()} CARD] No setName found in card data`
+          );
+        }
       }
 
       // Auto-fill card name
@@ -140,16 +188,16 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         );
       }
 
-      // Auto-fill pokemon number
-      const pokemonNumber = selectedData.pokemonNumber?.toString() || '';
+      // Auto-fill card number
+      const cardNumber = selectedData.cardNumber?.toString() || '';
       if (debug && process.env.NODE_ENV === 'development') {
         console.log(
-          `[${formType.toUpperCase()} CARD] Setting Pokemon Number:`,
-          pokemonNumber
+          `[${formType.toUpperCase()} CARD] Setting Card Number:`,
+          cardNumber
         );
       }
-      setValue('pokemonNumber', pokemonNumber, { shouldValidate: true });
-      clearErrors('pokemonNumber');
+      setValue('cardNumber', cardNumber, { shouldValidate: true });
+      clearErrors('cardNumber');
 
       // Auto-fill base name
       const baseName = selectedData.baseName || selectedData.cardName || '';
@@ -183,9 +231,9 @@ export const useCardSelection = (config: CardSelectionConfig) => {
           `[${formType.toUpperCase()} CARD] Card selection complete - all fields populated from card reference:`,
           {
             cardId: rawCardId,
-            setName,
+            setName: cardSetName,
             cardName: selectedData.cardName,
-            pokemonNumber,
+            cardNumber,
             baseName,
             variety: varietyValue,
           }

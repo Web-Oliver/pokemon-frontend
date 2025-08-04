@@ -127,12 +127,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     }
   };
 
-  // Extract item display data from populated structure
+  // Extract item display data from populated structure - UPDATED for new field structure
   const getItemDisplayData = (item: any) => {
     const defaultData = {
       itemName: 'Unknown Item',
       itemImage: undefined,
       setName: undefined,
+      cardNumber: undefined, // NEW: Add cardNumber support
       grade: undefined,
       condition: undefined,
       price: undefined,
@@ -163,10 +164,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         return {
           itemName:
             itemData.cardId?.cardName ||
-            itemData.cardId?.baseName ||
-            'Unknown Item',
+            itemData.cardName ||
+            'Unknown Item', // REMOVED: baseName reference (deprecated)
           itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.cardId?.setId?.setName,
+          setName: itemData.cardId?.setId?.setName || itemData.setName,
+          cardNumber: itemData.cardId?.cardNumber || itemData.cardNumber, // NEW: cardNumber support
           grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
           condition:
             itemCategory === 'RawCard' ? itemData.condition : undefined,
@@ -174,9 +176,18 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         };
       case 'SealedProduct':
         return {
-          itemName: itemData.name || 'Unknown Item',
+          itemName: 
+            itemData.name ||
+            itemData.productId?.productName ||
+            itemData.productName ||
+            'Unknown Item', // UPDATED: Support new Product model structure
           itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.setName,
+          setName: 
+            itemData.setName ||
+            itemData.productId?.setProductName ||
+            itemData.setProductName ||
+            undefined, // UPDATED: Support SetProduct hierarchy
+          cardNumber: undefined, // N/A for sealed products
           grade: undefined,
           condition: undefined,
           price: itemData.myPrice,
@@ -907,10 +918,22 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                     displayData.itemName !== 'Unknown Item' && (
                                       <div className="flex items-center space-x-2 text-sm">
                                         <span className="font-medium text-zinc-300">
-                                          Card Name:
+                                          {item.itemCategory === 'SealedProduct' ? 'Product Name:' : 'Card Name:'}
                                         </span>
                                         <span className="text-zinc-100 font-medium">
                                           {displayData.itemName}
+                                        </span>
+                                      </div>
+                                    )}
+                                  {/* NEW: Card Number display for card items */}
+                                  {(item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') &&
+                                    displayData.cardNumber && (
+                                      <div className="flex items-center space-x-2 text-sm">
+                                        <span className="font-medium text-zinc-300">
+                                          Card Number:
+                                        </span>
+                                        <span className="text-zinc-100 font-bold text-yellow-500">
+                                          #{displayData.cardNumber}
                                         </span>
                                       </div>
                                     )}

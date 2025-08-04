@@ -1,6 +1,7 @@
 /**
  * Collection Page Component
  *
+ * UPDATED: Now handles new data structures (cardNumber, SetProduct → Product hierarchy)
  * Main collection management page orchestrating reusable components.
  * Refactored following CLAUDE.md principles:
  * - Single Responsibility: Only orchestrates components and manages page state
@@ -87,8 +88,11 @@ const Collection: React.FC = () => {
         id: item.id,
         type,
         name:
+          // UPDATED: Handle new field structures (cardNumber, setProductName, productName)
           (item as any).cardId?.cardName ||
           (item as any).cardName ||
+          (item as any).productId?.productName || // NEW: Product hierarchy
+          (item as any).productName || // NEW: Direct product name
           (item as any).name ||
           'Unknown Item',
       });

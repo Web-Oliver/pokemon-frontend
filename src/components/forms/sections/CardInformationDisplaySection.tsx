@@ -30,7 +30,6 @@ interface CardInformationDisplaySectionProps {
   className?: string;
   gridClassName?: string;
 }
-
 /**
  * Card Information Display Section
  * Renders read-only Card Number and Variety fields
@@ -72,9 +71,6 @@ const CardInformationDisplaySection: React.FC<
             className={readOnlyFieldClass}
           />
         </div>
-        
-        {/* REMOVED: Base Name Field (deprecated field per user feedback) */
-
         {/* Variety Field - Full Width */}
         <div className="md:col-span-2">
           <Input
@@ -88,7 +84,6 @@ const CardInformationDisplaySection: React.FC<
           />
         </div>
       </div>
-
       {/* Hidden form registrations for validation - Required for form submission */}
       <div className="hidden">
         <input

@@ -437,20 +437,20 @@ const CollectionItemDetail: React.FC = () => {
                     Total PSA Population
                   </span>
                   <span className="font-bold text-green-400 text-xl">
-                    {psaCard.cardId?.psaTotalGradedForCard || 'N/A'}
+                    {psaCard.cardId?.grades?.grade_total || 'N/A'}
                   </span>
                 </div>
 
-                {psaCard.cardId?.psaGrades && (
+                {psaCard.cardId?.grades && (
                   <div className="space-y-3">
                     <p className="text-sm text-white/80 font-medium mb-3">
                       Grade Distribution:
                     </p>
                     <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(psaCard.cardId.psaGrades)
+                      {Object.entries(psaCard.cardId.grades)
                         .filter(([, count]) => count > 0)
                         .map(([grade, count]) => {
-                          const gradeNumber = grade.replace('psa_', '');
+                          const gradeNumber = grade.replace('grade_', '');
                           const isCurrentGrade = psaCard.grade === gradeNumber;
                           return (
                             <div
@@ -480,10 +480,7 @@ const CollectionItemDetail: React.FC = () => {
                           Total Population
                         </span>
                         <span className="text-green-400 font-bold text-lg">
-                          {Object.values(psaCard.cardId.psaGrades).reduce(
-                            (sum: number, count: any) => sum + (count || 0),
-                            0
-                          )}
+                          {psaCard.cardId.grades.grade_total}
                         </span>
                       </div>
                     </div>

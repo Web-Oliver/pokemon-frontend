@@ -1,6 +1,7 @@
 /**
  * Dashboard Page Component - Context7 Award-Winning Design
  *
+ * UPDATED: Now displays SetProducts count from new backend architecture
  * Ultra-premium dashboard with stunning visual hierarchy and micro-interactions.
  * Features glass-morphism, premium gradients, and award-winning Context7 patterns.
  *
@@ -27,12 +28,15 @@ import {
   Star,
   Trash2,
   TrendingUp,
+  Database,
 } from 'lucide-react';
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
+import { getDataCounts } from '../api/statusApi';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 import { navigationHelper } from '../utils/navigation';
 
@@ -49,6 +53,13 @@ const Dashboard: React.FC = () => {
     topGradedCards,
     loading: statsLoading,
   } = useCollectionStats();
+
+  // NEW: Data counts from status endpoint (including SetProducts)
+  const { data: dataCounts, isLoading: dataCountsLoading } = useQuery({
+    queryKey: ['dataCounts'],
+    queryFn: getDataCounts,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Handle navigation to different sections
   const handleNavigation = (path: string) => {
@@ -156,7 +167,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Context7 Premium Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
         <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/50 hover:scale-105 transition-all duration-300 hover:shadow-cyan-500/20">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5"></div>
           <div className="flex items-center relative z-10">
@@ -220,6 +231,24 @@ const Dashboard: React.FC = () => {
               </p>
               <p className="text-3xl font-bold text-zinc-100 group-hover:text-amber-300 transition-colors duration-300">
                 {statsLoading ? '--' : topGradedCards.toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* NEW: SetProducts Count */}
+        <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/50 hover:scale-105 transition-all duration-300 hover:shadow-pink-500/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5"></div>
+          <div className="flex items-center relative z-10">
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <Database className="w-8 h-8 text-white" />
+            </div>
+            <div className="ml-6">
+              <p className="text-sm font-bold text-zinc-400 tracking-wide uppercase">
+                SetProducts
+              </p>
+              <p className="text-3xl font-bold text-zinc-100 group-hover:text-pink-300 transition-colors duration-300">
+                {dataCountsLoading ? '--' : (dataCounts?.setProducts?.toLocaleString() || '0')}
               </p>
             </div>
           </div>

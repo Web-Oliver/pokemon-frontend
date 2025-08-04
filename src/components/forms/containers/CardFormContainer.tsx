@@ -23,7 +23,7 @@ import {
 } from 'react-hook-form';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
-import { ProductSearchSection } from '../ProductSearchSection';
+import { CardSearchSection } from '../CardSearchSection';
 import CardInformationDisplaySection from '../sections/CardInformationDisplaySection';
 import GradingPricingSection from '../sections/GradingPricingSection';
 import ImageUploadSection from '../sections/ImageUploadSection';
@@ -157,13 +157,13 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
 
           {/* Standardized Card Search Section */}
           <div className="mb-6 relative z-10">
-            <ProductSearchSection
+            <CardSearchSection
               register={register}
               errors={errors}
               setValue={setValue}
               watch={watch}
               clearErrors={clearErrors}
-              onSelectionChange={onSelectionChange}
+              onCardSelection={onSelectionChange}
               onError={(error) => {
                 console.error(
                   `[${cardType.toUpperCase()} CARD] Card search error:`,
@@ -172,7 +172,6 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
               }}
               sectionTitle=""
               sectionIcon={icon}
-              formType="card"
             />
           </div>
 

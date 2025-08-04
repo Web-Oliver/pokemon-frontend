@@ -304,11 +304,11 @@ const SetSearch: React.FC = () => {
                             </span>
                           </div>
                         )}
-                        {set.totalPsaPopulation && (
+                        {set.total_grades?.total_graded && (
                           <div className="flex justify-between">
                             <span>PSA Population:</span>
                             <span className="font-semibold">
-                              {set.totalPsaPopulation}
+                              {set.total_grades.total_graded}
                             </span>
                           </div>
                         )}

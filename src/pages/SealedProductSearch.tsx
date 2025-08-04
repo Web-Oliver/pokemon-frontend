@@ -1,7 +1,8 @@
 /**
- * Sealed Product Search Page Component - CardMarket Reference Products
+ * Sealed Product Search Page Component - SetProduct → Product Hierarchy
  * Layer 4: Views/Pages (Application Screens)
- * Following CLAUDE.md principles: Beautiful design, SRP, and integration with CardMarket reference data
+ * Following CLAUDE.md principles: Beautiful design, SRP, and integration with new hierarchical product structure
+ * UPDATED: Now uses SetProduct → Product hierarchy instead of CardMarketReferenceProduct
  */
 
 import {
@@ -14,21 +15,23 @@ import {
   Search,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import * as cardMarketRefProductsApi from '../api/cardMarketRefProductsApi';
-import { searchProducts } from '../api/searchApi';
+import { searchProducts, getPaginatedProducts } from '../api/productsApi';
+import { searchSetProducts } from '../api/setProductsApi';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
-import { ICardMarketReferenceProduct } from '../domain/models/sealedProduct';
+import { IProduct, ProductCategory } from '../domain/models/product';
+import { ISetProduct } from '../domain/models/setProduct';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 
-const SealedProductSearch: React.FC = () => {
-  const [products, setProducts] = useState<ICardMarketReferenceProduct[]>([]);
+const ProductSearch: React.FC = () => {
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [setNameFilter, setSetNameFilter] = useState('');
+  const [setProductFilter, setSetProductFilter] = useState<ISetProduct | null>(null); // NEW: SetProduct filter
+  const [setNameFilter, setSetNameFilter] = useState(''); // Set name filter for searching
   const [availableOnly, setAvailableOnly] = useState(false);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -40,35 +43,25 @@ const SealedProductSearch: React.FC = () => {
 
   const itemsPerPage = 20;
 
-  // Available categories from your backend enum
-  const categories = [
-    'Blisters',
-    'Booster-Boxes',
-    'Boosters',
-    'Bundle',
-    'Collection-Boxes',
-    'Elite-Trainer-Boxes',
-    'Starter-Decks',
-    'Theme-Decks',
-    'Tins',
-  ];
+  // Available categories from ProductCategory enum
+  const categories = Object.values(ProductCategory);
 
-  // Fetch CardMarket reference products with pagination using standard search
+  // Fetch products with pagination using new SetProduct → Product hierarchy
   const fetchProducts = async (page: number = 1) => {
     try {
       setLoading(true);
       setError(null);
 
-      log('Fetching CardMarket reference products with params:', {
+      log('Fetching products with params:', {
         page,
         limit: itemsPerPage,
         categoryFilter,
-        setNameFilter,
+        setProductFilter: setProductFilter?.setProductName,
         availableOnly,
         searchTerm,
       });
 
-      let fetchedProducts: ICardMarketReferenceProduct[] = [];
+      let fetchedProducts: IProduct[] = [];
       let paginationData = {
         currentPage: page,
         totalPages: 1,
@@ -84,7 +77,7 @@ const SealedProductSearch: React.FC = () => {
           page,
           limit: itemsPerPage,
           ...(categoryFilter && { category: categoryFilter }),
-          ...(setNameFilter && { setName: setNameFilter }),
+          ...(setProductFilter && { setProductId: setProductFilter.id }),
           ...(availableOnly && { availableOnly: true }),
         };
 
@@ -102,28 +95,22 @@ const SealedProductSearch: React.FC = () => {
           total: totalResults,
         };
       } else {
-        // Use search API with wildcard when no search term (for consistency)
-        const searchParams = {
-          query: '*', // Wildcard to get all products
+        // Use paginated products API for browsing
+        const response = await getPaginatedProducts({
           page,
           limit: itemsPerPage,
           ...(categoryFilter && { category: categoryFilter }),
-          ...(setNameFilter && { setName: setNameFilter }),
-          ...(availableOnly && { availableOnly: true }),
-        };
+          ...(setProductFilter && { setProductId: setProductFilter.id }),
+          ...(availableOnly && { available: availableOnly }),
+        });
 
-        const searchResponse = await searchProducts(searchParams);
-        fetchedProducts = searchResponse.data || [];
-
-        // Calculate pagination for search results
-        const totalResults = searchResponse.count || 0;
-        const totalPages = Math.ceil(totalResults / itemsPerPage);
+        fetchedProducts = response.products || [];
         paginationData = {
-          currentPage: page,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-          total: totalResults,
+          currentPage: response.currentPage,
+          totalPages: response.totalPages,
+          hasNextPage: response.hasNextPage,
+          hasPrevPage: response.hasPrevPage,
+          total: response.total,
         };
       }
 
@@ -131,14 +118,14 @@ const SealedProductSearch: React.FC = () => {
       setPagination(paginationData);
 
       log(
-        'CardMarket reference products fetched successfully:',
+        'Products fetched successfully:',
         fetchedProducts.length,
         'products',
         'page',
         paginationData.currentPage
       );
     } catch (error) {
-      const errorMessage = 'Failed to fetch CardMarket reference products';
+      const errorMessage = 'Failed to fetch products';
       setError(errorMessage);
       handleApiError(error, errorMessage);
     } finally {
@@ -155,7 +142,8 @@ const SealedProductSearch: React.FC = () => {
   const handleClearFilters = () => {
     setSearchTerm('');
     setCategoryFilter('');
-    setSetNameFilter('');
+    setSetProductFilter(null); // Clear SetProduct filter
+    setSetNameFilter(''); // Clear set name filter
     setAvailableOnly(false);
     // Fetch all products when clearing filters
     setTimeout(() => {
@@ -197,7 +185,7 @@ const SealedProductSearch: React.FC = () => {
 
   return (
     <PageLayout
-      title="Sealed Product Search"
+      title="Product Search"
       subtitle="Discover CardMarket reference products with real-time pricing"
       loading={loading}
       error={error}
@@ -211,7 +199,7 @@ const SealedProductSearch: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                Sealed Products Search
+                Product Search
               </h1>
               <p className="text-xl text-zinc-300 font-medium leading-relaxed">
                 Browse CardMarket reference products and pricing
@@ -395,7 +383,7 @@ const SealedProductSearch: React.FC = () => {
               <div className="text-center">
                 <LoadingSpinner size="lg" />
                 <p className="mt-4 text-zinc-300 font-medium">
-                  Loading CardMarket products...
+                  Loading products...
                 </p>
               </div>
             </div>
@@ -447,7 +435,10 @@ const SealedProductSearch: React.FC = () => {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-2xl font-bold text-zinc-100">
-                    CardMarket Products
+                    Products
+                    {setProductFilter && (
+                      <span className="text-lg text-cyan-400 ml-2">→ {setProductFilter.setProductName}</span>
+                    )}
                   </h2>
                   <p className="text-zinc-300 font-medium mt-1">
                     Showing {products.length} of {pagination.total} products
@@ -472,13 +463,13 @@ const SealedProductSearch: React.FC = () => {
                     <div className="relative z-10 space-y-4">
                       <div>
                         <h3 className="font-bold text-zinc-100 text-lg leading-tight line-clamp-2 group-hover:text-emerald-400 transition-colors duration-300">
-                          {product.name}
+                          {product.productName}
                         </h3>
                         <p className="text-zinc-300 font-medium mt-1">
-                          {product.setName}
+                          {product.setProductName || 'Unknown SetProduct'}
                         </p>
                         <span className="inline-block px-3 py-1 text-xs font-bold bg-gradient-to-r from-emerald-900/50 to-teal-900/50 text-emerald-400 rounded-full mt-2 border border-emerald-500/30">
-                          {product.category?.replace('-', ' ') || 'Unknown'}
+                          {product.category?.replace(/-/g, ' ') || 'Unknown'}
                         </span>
                       </div>
 
@@ -534,7 +525,7 @@ const SealedProductSearch: React.FC = () => {
                             className="flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group/link"
                           >
                             <ExternalLink className="w-4 h-4 mr-2 group-hover/link:scale-110 transition-transform duration-300" />
-                            View on CardMarket
+                            View Product
                           </a>
                         </div>
                       )}
@@ -624,4 +615,4 @@ const SealedProductSearch: React.FC = () => {
   );
 };
 
-export default SealedProductSearch;
+export default ProductSearch;
