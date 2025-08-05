@@ -106,6 +106,10 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     navigationHelper.navigateToAuctions();
   };
 
+  const handleCancelEdit = () => {
+    navigateToAuctionDetail();
+  };
+
   // Handle form input changes
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -264,19 +268,19 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     handleRemoveItem(item.id, itemName, itemCategory);
   };
 
-  // Get status color
+  // Get status color - Theme-aware design system
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft':
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] border border-[var(--theme-border)]';
       case 'active':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
+        return 'bg-[var(--theme-accent-primary)]/20 text-[var(--theme-accent-primary)] border border-[var(--theme-accent-primary)]/50';
       case 'sold':
-        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+        return 'bg-[var(--theme-status-success)]/20 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/50';
       case 'expired':
-        return 'bg-red-100 text-red-800 border border-red-200';
+        return 'bg-[var(--theme-status-error)]/20 text-[var(--theme-status-error)] border border-[var(--theme-status-error)]/50';
       default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] border border-[var(--theme-border)]';
     }
   };
 
@@ -317,8 +321,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         </div>
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-12 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5"></div>
+            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-12 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-[var(--theme-status-error)]/5"></div>
               <div className="relative z-10">
                 <LoadingSpinner text="Loading auction details..." />
               </div>
@@ -371,14 +375,14 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Context7 Premium Header */}
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-red-500/5"></div>
+          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-[var(--theme-status-error)]/5"></div>
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-6">
                 <Button
                   onClick={navigateToAuctionDetail}
                   variant="outline"
-                  className="inline-flex items-center border-slate-300 dark:border-zinc-600 dark:border-zinc-600 hover:border-slate-400 dark:hover:border-zinc-500 text-slate-600 dark:text-zinc-400 dark:text-zinc-300 hover:text-slate-800 dark:hover:text-zinc-200"
+                  className="inline-flex items-center border-[var(--theme-border)] hover:border-[var(--theme-border-hover)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Auction
@@ -403,7 +407,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3 mb-4">
-                    <h1 className="text-4xl font-bold text-slate-900 dark:text-zinc-100 dark:text-white tracking-wide bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold text-[var(--theme-text-primary)] tracking-wide bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                       Edit Auction
                     </h1>
                     <span
@@ -414,32 +418,32 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                     </span>
                   </div>
 
-                  <p className="text-xl text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-medium leading-relaxed mb-6">
+                  <p className="text-xl text-[var(--theme-text-secondary)] font-medium leading-relaxed mb-6">
                     Update auction details, manage items, and modify settings
                   </p>
                 </div>
               </div>
             </div>
             {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-text-primary)]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
           </div>
 
           {/* Context7 Premium Error Message */}
           {error && (
-            <div className="bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-3xl p-6 shadow-lg">
+            <div className="bg-[var(--theme-status-error)]/10 backdrop-blur-sm border border-[var(--theme-status-error)]/30 rounded-3xl p-6 shadow-lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[var(--theme-status-error)] to-rose-600 rounded-2xl shadow-lg flex items-center justify-center">
                     <AlertCircle className="h-5 w-5 text-white" />
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-red-600 font-medium">{error}</p>
+                  <p className="text-sm text-[var(--theme-status-error)] font-medium">{error}</p>
                 </div>
                 <div className="ml-auto pl-3">
                   <button
                     onClick={clearError}
-                    className="inline-flex text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-100 transition-colors"
+                    className="inline-flex text-[var(--theme-status-error)]/70 hover:text-[var(--theme-status-error)] p-2 rounded-lg hover:bg-[var(--theme-status-error)]/10 transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -449,14 +453,14 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           )}
 
           {/* Context7 Premium Auction Details Form */}
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/3 via-purple-500/3 to-pink-500/3"></div>
+          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-secondary)]/3 via-purple-500/3 to-pink-500/3"></div>
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-100 dark:text-white tracking-wide">
+                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Auction Details
                 </h2>
-                <Edit3 className="w-6 h-6 text-indigo-600" />
+                <Edit3 className="w-6 h-6 text-[var(--theme-accent-secondary)]" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -464,7 +468,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <div className="space-y-2">
                   <label
                     htmlFor="topText"
-                    className="block text-sm font-bold text-slate-700 dark:text-zinc-300 dark:text-zinc-200 tracking-wide uppercase"
+                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
                   >
                     Auction Title
                   </label>
@@ -474,7 +478,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                     name="topText"
                     value={formData.topText}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
                     placeholder="Enter auction title..."
                   />
                 </div>
@@ -483,7 +487,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <div className="space-y-2">
                   <label
                     htmlFor="auctionDate"
-                    className="block text-sm font-bold text-slate-700 dark:text-zinc-300 dark:text-zinc-200 tracking-wide uppercase"
+                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
                   >
                     Auction Date
                   </label>
@@ -496,7 +500,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 pr-10 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
-                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-600" />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--theme-text-muted)]" />
                   </div>
                 </div>
 
@@ -504,7 +508,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <div className="space-y-2">
                   <label
                     htmlFor="status"
-                    className="block text-sm font-bold text-slate-700 dark:text-zinc-300 dark:text-zinc-200 tracking-wide uppercase"
+                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
                   >
                     Status
                   </label>
@@ -513,7 +517,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                     name="status"
                     value={formData.status}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
                   >
                     <option value="draft">Draft</option>
                     <option value="active">Active</option>
@@ -526,7 +530,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <div className="md:col-span-2 space-y-2">
                   <label
                     htmlFor="bottomText"
-                    className="block text-sm font-bold text-slate-700 dark:text-zinc-300 dark:text-zinc-200 tracking-wide uppercase"
+                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
                   >
                     Description
                   </label>
@@ -545,11 +549,11 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Items Management */}
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/3 via-teal-500/3 to-cyan-500/3"></div>
+          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/3 via-teal-500/3 to-[var(--theme-accent-primary)]/3"></div>
             <div className="relative z-10">
-              <div className="px-8 py-6 border-b border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-100 dark:text-white tracking-wide">
+              <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Auction Items ({currentAuction.items.length})
                 </h2>
                 <Button
@@ -563,13 +567,13 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
               {currentAuction.items.length === 0 ? (
                 <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                    <Package className="w-10 h-10 text-slate-500 dark:text-zinc-500 dark:text-zinc-400" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-text-secondary)] to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
+                    <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-zinc-100 dark:text-white mb-3">
+                  <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
                     No items in auction
                   </h3>
-                  <p className="text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-medium max-w-md mx-auto leading-relaxed mb-8">
+                  <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-8">
                     Add items from your collection to this auction.
                   </p>
                   <Button
@@ -622,7 +626,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                               }}
                               variant="outline"
                               size="sm"
-                              className="text-red-400 hover:text-red-300 border-red-700/40 hover:border-red-600/60 bg-zinc-900/80 backdrop-blur-sm shadow-lg"
+                              className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
                             >
                               <Trash2 className="w-4 h-4 mr-1" />
                               Remove
@@ -632,7 +636,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                           {/* Auction Specific Badge */}
                           {auctionItem.sold && (
                             <div className="absolute top-4 left-4 z-20">
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-900/30 text-emerald-300 border border-emerald-600/40 backdrop-blur-sm shadow-lg">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
                                 <Check className="w-3 h-3 mr-1" />
                                 Sold in Auction
                               </span>
