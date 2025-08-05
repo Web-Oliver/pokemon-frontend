@@ -6,9 +6,11 @@
  * - Centralized helper text styling
  * - Consistent spacing and typography
  * - Reusable across all form elements
+ * - Theme-aware spacing and text sizing
  */
 
 import React from 'react';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface HelperTextProps {
   helperText?: string;
@@ -19,12 +21,35 @@ export const HelperText: React.FC<HelperTextProps> = ({
   helperText,
   className = '',
 }) => {
+  const { config } = useTheme();
+  
   if (!helperText) {
     return null;
   }
 
+  // Theme-aware spacing based on density
+  const spacingClass = {
+    compact: 'mt-1',
+    comfortable: 'mt-2',
+    spacious: 'mt-3',
+  }[config.density];
+
+  // Theme-aware text sizing based on density
+  const textSize = {
+    compact: 'text-xs',
+    comfortable: 'text-sm',
+    spacious: 'text-base',
+  }[config.density];
+
+  // Theme-aware padding based on density
+  const paddingClass = {
+    compact: 'pl-0.5',
+    comfortable: 'pl-1',
+    spacious: 'pl-1.5',
+  }[config.density];
+
   return (
-    <p className={`mt-2 text-sm text-zinc-400 font-medium pl-1 ${className}`}>
+    <p className={`${spacingClass} ${textSize} text-zinc-400 font-medium ${paddingClass} ${className}`}>
       {helperText}
     </p>
   );

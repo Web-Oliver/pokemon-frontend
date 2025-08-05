@@ -1,5 +1,5 @@
 /**
- * Loading States Components
+ * Loading States Components with Theme Integration
  * Layer 3: Components (UI Building Blocks)
  *
  * Consolidates duplicate loading spinner patterns across the application.
@@ -7,13 +7,16 @@
  * - DRY: Eliminates duplicate loading patterns
  * - SRP: Each component has a single loading responsibility
  * - Reusability: Generic components for common loading scenarios
+ * - Theme Integration: Uses unified theme system for consistent styling
  */
 
 import React from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import { ThemeColor } from '../../theme/formThemes';
 
 interface BaseLoadingProps {
   className?: string;
+  themeColor?: ThemeColor;
 }
 
 /**
@@ -23,9 +26,10 @@ interface BaseLoadingProps {
 export const ButtonLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text = 'Loading...',
   className = '',
+  themeColor = 'dark',
 }) => (
   <>
-    <LoadingSpinner size="sm" className={`mr-2 ${className}`} />
+    <LoadingSpinner size="sm" themeColor={themeColor} className={`mr-2 ${className}`} />
     {text}
   </>
 );
@@ -37,9 +41,10 @@ export const ButtonLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
 export const PageLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text = 'Loading...',
   className = '',
+  themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-12 ${className}`}>
-    <LoadingSpinner text={text} />
+    <LoadingSpinner text={text} themeColor={themeColor} />
   </div>
 );
 
@@ -50,9 +55,10 @@ export const PageLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
 export const ContentLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text = 'Loading content...',
   className = '',
+  themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-16 ${className}`}>
-    <LoadingSpinner size="lg" text={text} />
+    <LoadingSpinner size="lg" text={text} themeColor={themeColor} />
   </div>
 );
 
@@ -63,9 +69,10 @@ export const ContentLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
 export const InlineLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text,
   className = '',
+  themeColor = 'dark',
 }) => (
   <div className={`flex items-center ${className}`}>
-    <LoadingSpinner size="sm" className="mr-2" />
+    <LoadingSpinner size="sm" themeColor={themeColor} className="mr-2" />
     {text && (
       <span className="text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300">
         {text}
@@ -81,9 +88,10 @@ export const InlineLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
 export const ModalLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text = 'Loading...',
   className = '',
+  themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-8 ${className}`}>
-    <LoadingSpinner text={text} />
+    <LoadingSpinner text={text} themeColor={themeColor} />
   </div>
 );
 
@@ -94,8 +102,9 @@ export const ModalLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
 export const CardLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   text = 'Loading...',
   className = '',
+  themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-6 ${className}`}>
-    <LoadingSpinner size="md" text={text} />
+    <LoadingSpinner size="md" text={text} themeColor={themeColor} />
   </div>
 );
