@@ -16,8 +16,9 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { CheckCircle, Timer, Package } from 'lucide-react';
+import { CheckCircle, Package } from 'lucide-react';
 import { PokemonCard } from '../design-system/PokemonCard';
+import { PokemonBadge } from '../design-system/PokemonBadge';
 import { OptimizedImageView } from '../common/OptimizedImageView';
 
 interface DbaCompactCardCosmicProps {
@@ -152,15 +153,20 @@ const DbaCompactCardCosmicComponent: React.FC<DbaCompactCardCosmicProps> = ({
         )}
       </div>
 
-      {/* DBA Timer Badge */}
+      {/* DBA Timer Badge - Updated to use PokemonBadge timer variant */}
       {dbaInfo && (
         <div className="absolute top-2 left-2 z-10">
-          <div
-            className={`px-2 py-1 rounded-lg text-xs font-medium border ${getCountdownColor(dbaInfo.daysRemaining)}`}
+          <PokemonBadge
+            variant="timer"
+            size="sm"
+            style="glass"
+            shape="pill"
+            pulse={true}
+            timeRemaining={`${dbaInfo.daysRemaining}d`}
+            className="cosmic-timer-badge"
           >
-            <Timer className="w-3 h-3 inline mr-1" />
             {dbaInfo.daysRemaining}d
-          </div>
+          </PokemonBadge>
         </div>
       )}
     </PokemonCard>

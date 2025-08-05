@@ -1,5 +1,5 @@
 /**
- * Image Product View Component
+ * Image Product View Component with Theme Integration
  *
  * Standardized reusable component for displaying product images across all pages.
  * Based on the premium design from CollectionItemCard with enhanced functionality.
@@ -8,6 +8,7 @@
  * - Open/Closed: Extensible via props for different use cases
  * - DRY: Reusable across collection, detail, and auction pages
  * - Layer 3: UI Building Block component
+ * - Theme Integration: Uses unified theme system for consistent styling
  */
 
 import React, { memo, useCallback, useState } from 'react';
@@ -25,6 +26,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 export interface ImageProductViewProps {
   // Core image data
@@ -52,6 +55,7 @@ export interface ImageProductViewProps {
   // Layout options
   aspectRatio?: 'auto' | 'card' | 'square' | 'wide';
   className?: string;
+  themeColor?: ThemeColor;
 
   // Callback functions
   onView?: () => void;
@@ -82,6 +86,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   enableInteractions = true,
   aspectRatio = 'card',
   className = '',
+  themeColor = 'dark',
   onView,
   onEdit,
   onDelete,
@@ -90,6 +95,8 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   onShare,
   onFavorite,
 }) => {
+  const { config } = useTheme();
+  const elementTheme = getElementTheme(themeColor);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   // Size configuration - Made image much bigger, text smaller
@@ -220,7 +227,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           </button>
 
           {isActionsOpen && (
-            <div className="absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-lg shadow-2xl border border-zinc-700/40 p-2 min-w-[120px]">
+            <div className={`absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ${elementTheme.border} p-2 min-w-[120px]`}>
               {actions.map((action, index) => {
                 const Icon = action.icon;
                 return (
@@ -231,7 +238,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
                       action.onClick?.();
                       setIsActionsOpen(false);
                     }}
-                    className="w-full flex items-center px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800/60 rounded transition-colors"
+                    className="w-full flex items-center px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800/60 rounded-xl transition-colors duration-300"
                   >
                     <Icon className="w-4 h-4 mr-2" />
                     {action.label}
@@ -277,6 +284,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           autoplayDelay={4000}
           className="w-full h-full rounded-2xl"
           showThumbnails={variant === 'detail'}
+          themeColor={themeColor}
         />
       </div>
 
@@ -339,6 +347,7 @@ const arePropsEqual = (
     prevProps.variant === nextProps.variant &&
     prevProps.size === nextProps.size &&
     prevProps.aspectRatio === nextProps.aspectRatio &&
+    prevProps.themeColor === nextProps.themeColor &&
     JSON.stringify(prevProps.images) === JSON.stringify(nextProps.images) &&
     prevProps.showBadge === nextProps.showBadge &&
     prevProps.showPrice === nextProps.showPrice &&

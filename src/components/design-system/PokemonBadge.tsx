@@ -11,9 +11,16 @@
 import React from 'react';
 import { cn } from '../../utils/common';
 
+// Timer icon component (inline to avoid external dependencies)
+const TimerIcon: React.FC<{ className?: string }> = ({ className = "w-3 h-3" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+  </svg>
+);
+
 export interface PokemonBadgeProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'gradient';
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'gradient' | 'timer' | 'cosmic';
   size?: 'xs' | 'sm' | 'md' | 'lg';
   style?: 'solid' | 'outline' | 'glass' | 'minimal';
   shape?: 'rounded' | 'pill' | 'square';
@@ -22,6 +29,9 @@ export interface PokemonBadgeProps {
   removable?: boolean;
   onRemove?: () => void;
   className?: string;
+  /** Timer-specific props */
+  timeRemaining?: string;
+  showTimerIcon?: boolean;
 }
 
 /**
@@ -39,6 +49,8 @@ export const PokemonBadge: React.FC<PokemonBadgeProps> = ({
   removable = false,
   onRemove,
   className = '',
+  timeRemaining,
+  showTimerIcon = true,
 }) => {
   // Base foundation - used by ALL badges
   const baseClasses = [
@@ -112,6 +124,18 @@ export const PokemonBadge: React.FC<PokemonBadgeProps> = ({
         outline: 'bg-transparent text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 border-gradient-to-r border-cyan-400/50',
         glass: 'bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 text-white border-purple-400/30 backdrop-blur-lg',
         minimal: 'bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 text-purple-300 border-transparent'
+      },
+      timer: {
+        solid: 'cosmic-timer-badge text-white border-transparent',
+        outline: 'bg-transparent text-cyan-400 border-cyan-400/50 cosmic-glow-pulse hover:bg-cyan-400/10',
+        glass: 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-200 border-cyan-400/30 backdrop-blur-lg cosmic-glow-pulse',
+        minimal: 'bg-cyan-500/10 text-cyan-300 border-transparent cosmic-glow-pulse'
+      },
+      cosmic: {
+        solid: 'cosmic-card-bg text-white border-transparent cosmic-pulse',
+        outline: 'bg-transparent text-purple-400 border-purple-400/50 holographic-shimmer hover:bg-purple-400/10',
+        glass: 'cosmic-background text-purple-200 border-purple-400/30 backdrop-blur-lg cosmic-pulse',
+        minimal: 'cosmic-neural-bg text-purple-300 border-transparent cosmic-float'
       }
     };
     
@@ -137,8 +161,15 @@ export const PokemonBadge: React.FC<PokemonBadgeProps> = ({
         )} />
       )}
       
+      {/* Timer Icon */}
+      {variant === 'timer' && showTimerIcon && (
+        <TimerIcon className="w-3 h-3 flex-shrink-0" />
+      )}
+      
       {/* Badge Content */}
-      <span className="truncate">{children}</span>
+      <span className="truncate">
+        {variant === 'timer' && timeRemaining ? timeRemaining : children}
+      </span>
       
       {/* Remove Button */}
       {removable && onRemove && (

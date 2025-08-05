@@ -1,5 +1,5 @@
 /**
- * Optimized Autocomplete Component - Context7 Performance Patterns
+ * Optimized Autocomplete Component - Context7 Performance Patterns with Theme Integration
  *
  * Following Context7 React.dev documentation for optimal autocomplete performance:
  * - React.memo for preventing unnecessary re-renders
@@ -7,6 +7,7 @@
  * - useCallback for stable event handlers
  * - Suspense boundaries for async operations
  * - React Compiler optimization ready
+ * - Unified theme system integration with performance patterns maintained
  */
 
 import React, {
@@ -25,6 +26,8 @@ import {
   useOptimizedSearch,
   useSearchResultSelector,
 } from '../../hooks/useOptimizedSearch';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 interface OptimizedAutocompleteProps {
   placeholder?: string;
@@ -37,6 +40,7 @@ interface OptimizedAutocompleteProps {
   autoFocus?: boolean;
   minLength?: number;
   maxResults?: number;
+  themeColor?: ThemeColor;
 }
 
 // Context7 Pattern: Memoized suggestion item for optimal rendering
@@ -52,7 +56,7 @@ const SuggestionItem = memo(
     onSelect: (result: SearchResult) => void;
     searchQuery: string;
   }) => {
-    // Context7 Pattern: Memoized highlighted text
+    // Context7 Pattern: Memoized highlighted text with theme integration
     const highlightedText = useMemo(() => {
       const text = result.displayName;
       if (!searchQuery) {
@@ -67,7 +71,7 @@ const SuggestionItem = memo(
 
       return parts.map((part, index) =>
         regex.test(part) ? (
-          <mark key={index} className="bg-blue-200 text-blue-900 rounded px-1">
+          <mark key={index} className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 rounded px-1 font-medium">
             {part}
           </mark>
         ) : (
@@ -85,41 +89,45 @@ const SuggestionItem = memo(
       <div
         onClick={handleClick}
         className={`
-        px-4 py-3 cursor-pointer transition-all duration-150 border-l-4
+        px-4 py-3 cursor-pointer transition-all duration-300 border-l-4 relative overflow-hidden
         ${
           isSelected
-            ? 'bg-blue-50 border-blue-500 text-blue-900'
-            : 'hover:bg-gray-50 border-transparent'
+            ? 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-400 text-cyan-100 shadow-lg backdrop-blur-sm'
+            : 'hover:bg-zinc-800/60 border-transparent text-zinc-300 hover:text-zinc-100'
         }
       `}
       >
-        <div className="font-medium text-sm">{highlightedText}</div>
+        <div className="font-medium text-sm relative z-10">{highlightedText}</div>
         {result.data?.setName && result.type !== 'set' && (
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-zinc-400 mt-1 relative z-10">
             Set: {result.data.setName}
           </div>
         )}
         {result.data?.category && (
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-zinc-400 mt-1 relative z-10">
             Category: {result.data.category}
           </div>
+        )}
+        {/* Subtle glow effect for selected items */}
+        {isSelected && (
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-blue-400/5 pointer-events-none"></div>
         )}
       </div>
     );
   }
 );
 
-// Context7 Pattern: Memoized loading fallback component
+// Context7 Pattern: Memoized loading fallback component with theme integration
 const SearchFallback = memo(() => {
   return (
     <div className="flex items-center justify-center py-8">
-      <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-      <span className="ml-2 text-sm text-gray-600">Searching...</span>
+      <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+      <span className="ml-2 text-sm text-zinc-300">Searching...</span>
     </div>
   );
 });
 
-// Context7 Pattern: Main autocomplete component with comprehensive optimization
+// Context7 Pattern: Main autocomplete component with comprehensive optimization and theme integration
 export const OptimizedAutocomplete = memo(
   ({
     placeholder = 'Search...',
@@ -132,7 +140,10 @@ export const OptimizedAutocomplete = memo(
     autoFocus = false,
     minLength = 1,
     maxResults = 10,
+    themeColor = 'dark',
   }: OptimizedAutocompleteProps) => {
+    const { config } = useTheme();
+    const elementTheme = getElementTheme(themeColor);
     const [inputValue, setInputValue] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -256,12 +267,12 @@ export const OptimizedAutocomplete = memo(
       }
 
       return (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-auto">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 rounded-2xl shadow-2xl max-h-96 overflow-auto">
           <Suspense fallback={<SearchFallback />}>
             {searchHook.isSearching ? (
               <SearchFallback />
             ) : filteredResults.length > 0 ? (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-zinc-700/30">
                 {filteredResults.map((result, index) => (
                   <SuggestionItem
                     key={result._id || `${result.type}-${index}`}
@@ -273,10 +284,10 @@ export const OptimizedAutocomplete = memo(
                 ))}
               </div>
             ) : (
-              <div className="px-4 py-6 text-center text-gray-500 text-sm">
-                <Search className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+              <div className="px-4 py-6 text-center text-zinc-400 text-sm">
+                <Search className="w-6 h-6 mx-auto mb-2 text-zinc-500" />
                 <div>No results found</div>
-                <div className="text-xs mt-1">Try different keywords</div>
+                <div className="text-xs mt-1 text-zinc-500">Try different keywords</div>
               </div>
             )}
           </Suspense>
@@ -314,18 +325,19 @@ export const OptimizedAutocomplete = memo(
             placeholder={placeholder}
             disabled={disabled}
             className={`
-            w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg
-            focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            transition-all duration-200
-            ${isFocused ? 'ring-2 ring-blue-500 border-blue-500' : ''}
+            w-full px-4 py-3 pr-10 bg-zinc-800/90 backdrop-blur-sm border ${elementTheme.border} rounded-2xl
+            text-zinc-100 placeholder-zinc-400
+            ${elementTheme.focus} shadow-lg hover:shadow-xl
+            disabled:bg-zinc-800/50 disabled:cursor-not-allowed
+            transition-all duration-300
+            ${isFocused ? 'ring-2 ring-cyan-500/50 border-cyan-300' : ''}
           `}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             {searchHook.isSearching ? (
-              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+              <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
             ) : (
-              <Search className="w-4 h-4 text-gray-400" />
+              <Search className="w-4 h-4 text-zinc-400" />
             )}
           </div>
         </div>

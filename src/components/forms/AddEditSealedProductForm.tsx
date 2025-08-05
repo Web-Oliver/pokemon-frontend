@@ -96,7 +96,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         </div>
         <button
           onClick={onCancel}
-          className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 backdrop-blur-xl border border-red-500/20"
         >
           Back to Collection
         </button>

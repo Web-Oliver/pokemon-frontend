@@ -1,5 +1,5 @@
 /**
- * DateRangeFilter Component
+ * DateRangeFilter Component with Theme Integration
  * Reusable date range filtering component
  *
  * Following CLAUDE.md principles:
@@ -7,11 +7,14 @@
  * - Open/Closed: Extensible through preset configurations and custom ranges
  * - DRY: Eliminates duplicate date filtering across Analytics and SalesAnalytics
  * - Interface Segregation: Provides both preset and custom date range options
+ * - Theme Integration: Uses unified theme system for consistent styling
  */
 
 import React, { useState } from 'react';
 import { Calendar, Filter, X } from 'lucide-react';
 import Button from './Button';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getElementTheme, getHeaderTheme, ThemeColor } from '../../theme/formThemes';
 
 export interface DateRangeState {
   startDate?: string;
@@ -34,6 +37,8 @@ interface DateRangeFilterProps {
   loading?: boolean;
   /** Additional CSS classes */
   className?: string;
+  /** Theme color configuration */
+  themeColor?: ThemeColor;
 }
 
 // Default preset options
@@ -54,7 +59,11 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   presetOptions = DEFAULT_PRESET_OPTIONS,
   loading = false,
   className = '',
+  themeColor = 'dark',
 }) => {
+  const { config } = useTheme();
+  const elementTheme = getElementTheme(themeColor);
+  const headerTheme = getHeaderTheme(themeColor);
   const [localCustomRange, setLocalCustomRange] = useState({
     startDate: value.startDate || '',
     endDate: value.endDate || '',
@@ -89,9 +98,9 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
   return (
     <div
-      className={`bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-6 relative overflow-hidden ${className}`}
+      className={`bg-gradient-to-r ${headerTheme.background} backdrop-blur-xl rounded-3xl shadow-2xl ${headerTheme.border} p-6 relative overflow-hidden ${className}`}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
+      <div className={`absolute inset-0 bg-gradient-to-r ${headerTheme.overlay}`}></div>
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold text-zinc-100 flex items-center tracking-wide">
@@ -128,7 +137,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                   value={value.preset || ''}
                   onChange={(e) => handlePresetChange(e.target.value)}
                   disabled={loading}
-                  className="w-full pl-12 pr-10 py-3 text-base font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-300 focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer disabled:opacity-50 text-zinc-100"
+                  className={`w-full pl-12 pr-10 py-3 text-base font-medium bg-zinc-800/90 backdrop-blur-sm ${elementTheme.border} rounded-2xl shadow-lg ${elementTheme.focus} focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer disabled:opacity-50 text-zinc-100`}
                 >
                   <option value="">Select time range...</option>
                   {presetOptions.map((option) => (
@@ -177,7 +186,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                         }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-2 text-sm font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-300 focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl disabled:opacity-50 text-zinc-100"
+                      className={`w-full px-3 py-2 text-sm font-medium bg-zinc-800/90 backdrop-blur-sm ${elementTheme.border} rounded-xl shadow-lg ${elementTheme.focus} focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl disabled:opacity-50 text-zinc-100`}
                     />
                   </div>
                   <div className="relative group">
@@ -193,7 +202,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                         }))
                       }
                       disabled={loading}
-                      className="w-full px-3 py-2 text-sm font-medium bg-zinc-800/90 backdrop-blur-sm border border-zinc-600/50 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-300 focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl disabled:opacity-50 text-zinc-100"
+                      className={`w-full px-3 py-2 text-sm font-medium bg-zinc-800/90 backdrop-blur-sm ${elementTheme.border} rounded-xl shadow-lg ${elementTheme.focus} focus:bg-zinc-800 transition-all duration-300 hover:shadow-xl disabled:opacity-50 text-zinc-100`}
                     />
                   </div>
                 </div>

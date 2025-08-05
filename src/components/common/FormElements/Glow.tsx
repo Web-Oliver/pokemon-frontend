@@ -6,9 +6,11 @@
  * - Centralized glow effect styling
  * - Consistent color themes and animations
  * - Reusable across interactive elements
+ * - Theme-aware glow effects and intensity
  */
 
 import React from 'react';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface GlowProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'default';
@@ -19,17 +21,36 @@ export const Glow: React.FC<GlowProps> = ({
   variant = 'default',
   className = '',
 }) => {
-  const glowVariants = {
-    primary: 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20',
-    secondary: 'from-zinc-500/20 via-zinc-600/20 to-zinc-500/20',
-    danger: 'from-red-500/20 via-rose-500/20 to-red-500/20',
-    success: 'from-emerald-500/20 via-teal-500/20 to-emerald-500/20',
-    default: 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20',
+  const { config } = useTheme();
+  
+  // Theme-aware glow variants
+  const getGlowVariant = (variantType: string) => {
+    const baseVariants = {
+      primary: config.primaryColor === 'dark' 
+        ? 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20'
+        : `from-${config.primaryColor}-500/20 via-blue-500/20 to-${config.primaryColor}-500/20`,
+      secondary: 'from-zinc-500/20 via-zinc-600/20 to-zinc-500/20',
+      danger: 'from-red-500/20 via-rose-500/20 to-red-500/20',
+      success: 'from-emerald-500/20 via-teal-500/20 to-emerald-500/20',
+      default: config.primaryColor === 'dark' 
+        ? 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20'
+        : `from-${config.primaryColor}-500/20 via-blue-500/20 to-${config.primaryColor}-500/20`,
+    };
+    return baseVariants[variantType] || baseVariants.default;
   };
+  
+  // Animation duration and blur intensity based on theme
+  const animationDuration = config.reducedMotion ? '0s' : 'var(--animation-duration-normal, 0.3s)';
+  const blurIntensity = `blur(${Math.max(4, config.glassmorphismIntensity / 20)}px)`;
 
   return (
     <div
-      className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${glowVariants[variant]} opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10 ${className}`}
+      className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${getGlowVariant(variant)} opacity-0 group-hover:opacity-100 transition-opacity -z-10 ${className}`}
+      style={{
+        transitionDuration: animationDuration,
+        filter: blurIntensity,
+        opacity: config.animationIntensity === 'disabled' ? 0 : undefined
+      }}
     />
   );
 };

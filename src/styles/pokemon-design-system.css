@@ -46,6 +46,31 @@
   --color-neural-purple: oklch(0.60 0.18 305);
   --color-quantum-pink: oklch(0.65 0.22 340);
   --color-plasma-emerald: oklch(0.60 0.18 155);
+
+  /* COSMIC GRADIENT SYSTEM - Consolidated from 33+ DBA patterns */
+  /* Holographic Base Gradients */
+  --cosmic-holographic-base: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(6, 182, 212, 0.2) 100%);
+  --cosmic-conic-holographic: conic-gradient(from 0deg at 50% 50%, rgba(99,102,241,0.1), rgba(139,92,246,0.1), rgba(6,182,212,0.1), rgba(16,185,129,0.1), rgba(245,158,11,0.1), rgba(99,102,241,0.1));
+  
+  /* DBA Cosmic Card Backgrounds */
+  --cosmic-card-gradient: linear-gradient(135deg, rgba(39, 39, 42, 0.8) 0%, rgba(6, 182, 212, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%);
+  --cosmic-card-border: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(139, 92, 246, 0.3));
+  
+  /* Neural Network Patterns */
+  --cosmic-neural-radial: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+  --cosmic-neural-grid: repeating-linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.05) 1px, transparent 2px);
+  
+  /* Quantum Effects */
+  --cosmic-quantum-shimmer: linear-gradient(45deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2), rgba(245, 158, 11, 0.2));
+  --cosmic-quantum-pulse: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.3) 0%, rgba(236, 72, 153, 0.2) 50%, transparent 100%);
+  
+  /* Plasma Field Effects */
+  --cosmic-plasma-field: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%);
+  --cosmic-plasma-wave: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.1));
+  
+  /* Timer Badge Cosmic Variants */
+  --cosmic-timer-gradient: linear-gradient(135deg, rgba(6, 182, 212, 0.8), rgba(168, 85, 247, 0.8));
+  --cosmic-timer-glow: 0 0 20px rgba(6, 182, 212, 0.4);
   
   /* GLASSMORPHISM INTENSITY SYSTEM */
   /* Dynamic intensity controlled by ThemeContext glassmorphismIntensity */
@@ -458,6 +483,33 @@
   50% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.6) }
 }
 
+/* COSMIC ANIMATION SYSTEM - Preserves 17 animation patterns from DBA */
+@keyframes cosmic-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+  33% { transform: translateY(-15px) rotate(120deg); opacity: 0.6; }
+  66% { transform: translateY(10px) rotate(240deg); opacity: 0.4; }
+}
+
+@keyframes cosmic-pulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes holographic-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes quantum-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cosmic-glow-pulse {
+  0%, 100% { box-shadow: var(--cosmic-timer-glow); }
+  50% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.6), 0 0 40px rgba(168, 85, 247, 0.4); }
+}
+
 /* ================================
    RESPONSIVE DESIGN
    ================================ */
@@ -518,6 +570,52 @@
 
 .minimal-shadow {
   box-shadow: var(--shadow-minimal);
+}
+
+/* COSMIC EFFECT UTILITY CLASSES */
+.cosmic-background {
+  background: var(--cosmic-holographic-base);
+}
+
+.cosmic-card-bg {
+  background: var(--cosmic-card-gradient);
+  border: 1px solid;
+  border-image: var(--cosmic-card-border) 1;
+}
+
+.cosmic-neural-bg {
+  background: var(--cosmic-neural-radial);
+}
+
+.cosmic-quantum-bg {
+  background: var(--cosmic-quantum-shimmer);
+}
+
+.cosmic-plasma-bg {
+  background: var(--cosmic-plasma-field);
+}
+
+.cosmic-timer-badge {
+  background: var(--cosmic-timer-gradient);
+  box-shadow: var(--cosmic-timer-glow);
+  animation: cosmic-glow-pulse 2s ease-in-out infinite;
+}
+
+.cosmic-float {
+  animation: cosmic-float 8s ease-in-out infinite;
+}
+
+.cosmic-pulse {
+  animation: cosmic-pulse 4s ease-in-out infinite;
+}
+
+.holographic-shimmer {
+  background-size: 200% 100%;
+  animation: holographic-shimmer 3s ease-in-out infinite;
+}
+
+.quantum-spin {
+  animation: quantum-spin 30s linear infinite;
 }
 
 /* ================================

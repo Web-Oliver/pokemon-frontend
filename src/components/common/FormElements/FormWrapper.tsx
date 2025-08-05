@@ -6,9 +6,11 @@
  * - Single source of truth for form gradients and effects
  * - Reusable composition pattern for all form elements
  * - Centralized micro-interactions and animations
+ * - Theme-aware styling integration
  */
 
 import React, { ReactNode } from 'react';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface FormWrapperProps {
   children: ReactNode;
@@ -23,21 +25,48 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   className = '',
   error = false,
 }) => {
+  const { config, getCSSProperties } = useTheme();
   const widthClass = fullWidth ? 'w-full' : '';
+  
+  // Get theme-aware CSS properties
+  const cssProperties = getCSSProperties();
+  const animationDuration = config.reducedMotion ? '0s' : 'var(--animation-duration-normal, 0.3s)';
+  
+  // Theme-aware gradient colors
+  const primaryGradient = error 
+    ? 'from-red-500/20 via-rose-500/20 to-red-500/20'
+    : `from-${config.primaryColor}-500/20 via-blue-500/20 to-${config.primaryColor}-500/20`;
+    
+  const backgroundGradient = error
+    ? 'from-red-500/10 via-rose-500/10 to-red-500/10'
+    : `from-${config.primaryColor}-500/10 via-blue-500/10 to-${config.primaryColor}-500/10`;
 
   return (
-    <div className={`${widthClass} group ${className}`}>
+    <div 
+      className={`${widthClass} group ${className}`}
+      style={cssProperties}
+    >
       <div className={`relative ${widthClass}`}>
-        {/* Context7 Premium Background Gradient */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        {/* Theme-aware Background Gradient */}
+        <div 
+          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${backgroundGradient} opacity-0 group-focus-within:opacity-100 pointer-events-none`}
+          style={{ 
+            transitionProperty: 'opacity',
+            transitionDuration: animationDuration,
+            transitionTimingFunction: 'ease-out'
+          }}
+        ></div>
 
-        {/* Premium Glow Effect */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm -z-10 pointer-events-none"></div>
-
-        {/* Error State Glow Override */}
-        {error && (
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/20 via-rose-500/20 to-red-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm -z-10 pointer-events-none"></div>
-        )}
+        {/* Theme-aware Glow Effect */}
+        <div 
+          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${primaryGradient} opacity-0 group-focus-within:opacity-100 blur-sm -z-10 pointer-events-none`}
+          style={{ 
+            transitionProperty: 'opacity',
+            transitionDuration: animationDuration,
+            transitionTimingFunction: 'ease-out',
+            filter: `blur(${config.glassmorphismIntensity / 20}px)`
+          }}
+        ></div>
 
         {children}
       </div>

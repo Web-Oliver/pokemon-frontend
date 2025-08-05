@@ -5,38 +5,47 @@
  * SOLID Principles:
  * - SRP: Single responsibility for cosmic background effects
  * - OCP: Open for extension via props
- * - DIP: Self-contained visual component
+ * - DIP: Uses shared Layer 1 utilities (cosmicEffects.ts)
+ * 
+ * UPDATED: Uses shared cosmic effect system from utils/cosmicEffects.ts
+ * Maintains original DBA aesthetic while leveraging unified utilities
  */
 
 import React from 'react';
+import { CosmicBackground } from '../effects';
 
-const DbaCosmicBackground: React.FC = () => {
+interface DbaCosmicBackgroundProps {
+  /** Custom particle configuration */
+  particleConfig?: {
+    count?: number;
+    colors?: string[];
+    sizeRange?: [number, number];
+    durationRange?: [number, number];
+    opacity?: number;
+    animationType?: 'bounce' | 'pulse' | 'fade' | 'float';
+  };
+  /** Additional CSS classes */
+  className?: string;
+}
+
+const DbaCosmicBackground: React.FC<DbaCosmicBackgroundProps> = ({
+  particleConfig = {
+    count: 12,
+    colors: ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'],
+    sizeRange: [2, 6],
+    durationRange: [4, 7],
+    opacity: 0.3,
+    animationType: 'bounce'
+  },
+  className = ''
+}) => {
   return (
-    <>
-      {/* 🌌 COSMIC BACKGROUND EFFECTS */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Holographic base layer */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-purple-800/15 to-cyan-900/20 blur-3xl animate-pulse"></div>
-        <div
-          className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(99,102,241,0.1),rgba(139,92,246,0.1),rgba(6,182,212,0.1),rgba(16,185,129,0.1),rgba(245,158,11,0.1),rgba(99,102,241,0.1))] animate-spin"
-          style={{ animationDuration: '30s' }}
-        ></div>
-
-        {/* Floating particles */}
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-bounce opacity-30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${4 + Math.random() * 3}s`,
-            }}
-          ></div>
-        ))}
-      </div>
-    </>
+    <CosmicBackground
+      gradientKey="holographicBase"
+      particleConfig={particleConfig}
+      className={className}
+      respectThemeSettings={true}
+    />
   );
 };
 

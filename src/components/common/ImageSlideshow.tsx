@@ -2,6 +2,8 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 interface ImageSlideshowProps {
   images: string[];
@@ -10,6 +12,7 @@ interface ImageSlideshowProps {
   autoplayDelay?: number;
   className?: string;
   showThumbnails?: boolean;
+  themeColor?: ThemeColor;
 }
 
 // Helper function to get image URL without assumptions
@@ -41,7 +44,10 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     autoplayDelay = 3000,
     className = '',
     showThumbnails = false,
+    themeColor = 'dark',
   }) => {
+    const { config } = useTheme();
+    const elementTheme = getElementTheme(themeColor);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [imageIsVertical, setImageIsVertical] = useState(false);
 
@@ -158,7 +164,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     if (!hasImages) {
       return (
         <div
-          className={`w-full h-48 bg-zinc-800/60 rounded-xl flex items-center justify-center shadow-2xl border border-zinc-700/20 ${className}`}
+          className={`w-full h-48 bg-zinc-800/60 rounded-xl flex items-center justify-center shadow-2xl ${elementTheme.border} ${className}`}
           style={{
             boxShadow:
               '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)',
@@ -180,7 +186,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
           {hasMultipleImages && (
             <>
               <button
-                className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 border border-zinc-700/50 hover:border-zinc-600 backdrop-blur-xl group"
+                className={`absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 ${elementTheme.border} hover:border-zinc-600 backdrop-blur-xl group`}
                 onClick={scrollPrev}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
@@ -192,7 +198,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                 <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               <button
-                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 border border-zinc-700/50 hover:border-zinc-600 backdrop-blur-xl group"
+                className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 ${elementTheme.border} hover:border-zinc-600 backdrop-blur-xl group`}
                 onClick={scrollNext}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
@@ -267,7 +273,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                         className={`relative z-50 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 transition-all duration-300 group cursor-pointer ${
                           isActive
                             ? 'border-cyan-400 ring-2 ring-cyan-400/30 shadow-xl shadow-cyan-400/25 scale-105 sm:scale-110'
-                            : 'border-zinc-700/50 hover:border-zinc-600/70 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                            : `${elementTheme.border} hover:border-zinc-600/70 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95`
                         }`}
                         type="button"
                         aria-label={`Go to image ${index + 1}`}

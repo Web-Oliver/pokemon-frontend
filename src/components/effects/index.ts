@@ -17,3 +17,9 @@ export type { NeuralNetworkBackgroundProps } from './NeuralNetworkBackground';
 
 export { default as FloatingGeometry } from './FloatingGeometry';
 export type { FloatingGeometryProps, GeometricElement } from './FloatingGeometry';
+
+export { default as CosmicBackground } from './CosmicBackground';
+export type { CosmicBackgroundProps } from './CosmicBackground';
+
+export { default as HolographicBorder } from './HolographicBorder';
+export type { HolographicBorderProps } from './HolographicBorder';
