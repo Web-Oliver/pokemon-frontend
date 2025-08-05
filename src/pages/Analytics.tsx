@@ -620,124 +620,131 @@ const Analytics: React.FC = () => {
               </div>
             </div>
 
-      {/* Context7 Recent Activity Timeline */}
-      <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50"></div>
-        <div className="p-8 relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-zinc-100 flex items-center">
-              <LineChart className="w-6 h-6 mr-3 text-indigo-600" />
-              Recent Activity Timeline
-            </h3>
-            <button
-              onClick={() => handleNavigation('/activity')}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-            >
-              View All Activities
-            </button>
-          </div>
+            {/* Context7 Recent Activity Timeline */}
+            <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
+              {/* Neural glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-indigo-500/5 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+              {/* Holographic border */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+              
+              <div className="p-8 relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] flex items-center">
+                    <LineChart className="w-6 h-6 mr-3 text-indigo-400" />
+                    Recent Activity Timeline
+                  </h3>
+                  <button
+                    onClick={() => handleNavigation('/activity')}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  >
+                    View All Activities
+                  </button>
+                </div>
 
-          {loading ? (
-            <ContentLoading text="Loading analytics..." />
-          ) : analyticsData?.totalActivities ? (
-            <div className="space-y-4">
-              {activities
-                .filter(
-                  (activity, index, self) =>
-                    index === self.findIndex((a) => a._id === activity._id)
-                )
-                .slice(0, 10)
-                .map((activity, index) => {
-                  const IconComponent = getActivityIcon(activity.type);
-                  const color = getActivityColor(activity.type);
+                {loading ? (
+                  <ContentLoading text="Loading analytics..." />
+                ) : analyticsData?.totalActivities ? (
+                  <div className="space-y-4">
+                    {activities
+                      .filter(
+                        (activity, index, self) =>
+                          index === self.findIndex((a) => a._id === activity._id)
+                      )
+                      .slice(0, 10)
+                      .map((activity, index) => {
+                        const IconComponent = getActivityIcon(activity.type);
+                        const color = getActivityColor(activity.type);
 
-                  return (
-                    <div
-                      key={`${activity._id}-${index}`}
-                      className="flex items-center p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 group hover:shadow-md"
-                    >
-                      <div
-                        className={`w-12 h-12 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                      >
-                        <IconComponent className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-zinc-100 group-hover:text-indigo-300 transition-colors duration-300">
-                            {activity.title}
-                          </p>
-                          {activity.priority === 'HIGH' && (
-                            <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
-                              High Priority
-                            </span>
-                          )}
-                          {activity.priority === 'CRITICAL' && (
-                            <span className="px-2 py-1 bg-red-200 text-red-800 text-xs font-bold rounded-full">
-                              Critical
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-zinc-400">
-                          {activity.description}
-                        </p>
-                        {activity.metadata?.cardName && (
-                          <p className="text-xs text-zinc-500 mt-1">
-                            Card: {activity.metadata.cardName}
-                            {activity.metadata.setName &&
-                              ` • ${activity.metadata.setName}`}
-                          </p>
-                        )}
-                        {activity.metadata?.auctionTitle && (
-                          <p className="text-xs text-zinc-500 mt-1">
-                            Auction: {activity.metadata.auctionTitle}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-zinc-500 font-medium">
-                          {getRelativeTime(activity.timestamp)}
-                        </p>
-                        {(activity.metadata?.newPrice ||
-                          activity.metadata?.salePrice ||
-                          activity.metadata?.estimatedValue) && (
-                          <p className="text-sm font-semibold text-emerald-700">
-                            {displayPrice(
-                              activity.metadata.newPrice ||
-                                activity.metadata.salePrice ||
-                                activity.metadata.estimatedValue
-                            )}
-                          </p>
-                        )}
-                        {activity.metadata?.priceChangePercentage && (
-                          <p
-                            className={`text-xs font-medium ${activity.metadata.priceChangePercentage > 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                        return (
+                          <div
+                            key={`${activity._id}-${index}`}
+                            className="flex items-center p-4 rounded-2xl backdrop-blur-sm bg-[var(--theme-surface)]/50 border border-[var(--theme-border)]/30 hover:bg-[var(--theme-surface-hover)]/70 transition-all duration-300 group/activity hover:shadow-md"
                           >
-                            {activity.metadata.priceChangePercentage > 0
-                              ? '+'
-                              : ''}
-                            {activity.metadata.priceChangePercentage.toFixed(1)}
-                            %
-                          </p>
-                        )}
-                      </div>
+                            <div
+                              className={`w-12 h-12 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover/activity:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(99,102,241,0.3)]`}
+                            >
+                              <IconComponent className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-semibold text-[var(--theme-text-primary)] group-hover/activity:text-indigo-300 transition-colors duration-300">
+                                  {activity.title}
+                                </p>
+                                {activity.priority === 'HIGH' && (
+                                  <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                                    High Priority
+                                  </span>
+                                )}
+                                {activity.priority === 'CRITICAL' && (
+                                  <span className="px-2 py-1 bg-red-200 text-red-800 text-xs font-bold rounded-full">
+                                    Critical
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-[var(--theme-text-secondary)]">
+                                {activity.description}
+                              </p>
+                              {activity.metadata?.cardName && (
+                                <p className="text-xs text-[var(--theme-text-tertiary)] mt-1">
+                                  Card: {activity.metadata.cardName}
+                                  {activity.metadata.setName &&
+                                    ` • ${activity.metadata.setName}`}
+                                </p>
+                              )}
+                              {activity.metadata?.auctionTitle && (
+                                <p className="text-xs text-[var(--theme-text-tertiary)] mt-1">
+                                  Auction: {activity.metadata.auctionTitle}
+                                </p>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-[var(--theme-text-secondary)] font-medium">
+                                {getRelativeTime(activity.timestamp)}
+                              </p>
+                              {(activity.metadata?.newPrice ||
+                                activity.metadata?.salePrice ||
+                                activity.metadata?.estimatedValue) && (
+                                <p className="text-sm font-semibold text-emerald-400">
+                                  {displayPrice(
+                                    activity.metadata.newPrice ||
+                                      activity.metadata.salePrice ||
+                                      activity.metadata.estimatedValue
+                                  )}
+                                </p>
+                              )}
+                              {activity.metadata?.priceChangePercentage && (
+                                <p
+                                  className={`text-xs font-medium ${activity.metadata.priceChangePercentage > 0 ? 'text-emerald-400' : 'text-red-400'}`}
+                                >
+                                  {activity.metadata.priceChangePercentage > 0
+                                    ? '+'
+                                    : ''}
+                                  {activity.metadata.priceChangePercentage.toFixed(1)}
+                                  %
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[var(--theme-border)] shadow-xl backdrop-blur-sm">
+                      <BarChart3 className="w-8 h-8 text-[var(--theme-text-secondary)]" />
                     </div>
-                  );
-                })}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-white rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 shadow-lg">
-                <BarChart3 className="w-8 h-8 text-zinc-400" />
+                    <h4 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
+                      No Data Available
+                    </h4>
+                    <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed">
+                      Start using the collection management features to see analytics
+                      here.
+                    </p>
+                  </div>
+                )}
               </div>
-              <h4 className="text-xl font-bold text-zinc-200 mb-3">
-                No Data Available
-              </h4>
-              <p className="text-zinc-400 font-medium max-w-md mx-auto leading-relaxed">
-                Start using the collection management features to see analytics
-                here.
-              </p>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </PageLayout>
