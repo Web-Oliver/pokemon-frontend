@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <PageLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
         {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
         <div className="absolute inset-0 opacity-20">
           {/* Primary Neural Network Pattern */}
@@ -184,7 +184,7 @@ const Dashboard: React.FC = () => {
             {/* Context7 2025 Futuristic Glassmorphism Header */}
             <div className="relative group">
               {/* Glassmorphism card with neumorphism elements */}
-              <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15] border border-white/[0.20] rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden">
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl text-[var(--theme-text-primary)] p-12 relative overflow-hidden">
                 {/* Neural network glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
 
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
                         <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
                           {/* Inner glow */}
                           <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
-                          <Cpu className="w-10 h-10 text-cyan-300 relative z-10 animate-pulse" />
+                          <Cpu className="w-10 h-10 text-[var(--theme-accent-primary)] relative z-10 animate-pulse" />
                           {/* Orbiting elements */}
                           <div
                             className="absolute inset-0 animate-spin opacity-40"
@@ -267,7 +267,7 @@ const Dashboard: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
                 {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] border border-white/[0.15] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
+                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
                   {/* Neural network pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
@@ -300,10 +300,10 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-cyan-200/90 mb-2 tracking-wider uppercase">
+                      <p className="text-sm font-semibold text-[var(--theme-accent-primary)]/90 mb-2 tracking-wider uppercase">
                         Neural Items
                       </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-300">
+                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-accent-primary)] via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-300">
                         {statsLoading ? '--' : totalItems.toLocaleString()}
                       </p>
                     </div>
@@ -317,7 +317,7 @@ const Dashboard: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
                 {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-emerald-500/[0.08] to-cyan-500/[0.12] border border-white/[0.15] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
+                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
                   {/* Success pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
@@ -336,7 +336,7 @@ const Dashboard: React.FC = () => {
                       <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/30 via-cyan-500/20 to-blue-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                         {/* Inner holographic glow */}
                         <div className="absolute inset-2 bg-gradient-to-br from-emerald-400/20 to-cyan-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <DollarSign className="w-8 h-8 text-emerald-300 relative z-10 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
+                        <DollarSign className="w-8 h-8 text-[var(--theme-status-success)] relative z-10 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
 
                         {/* Success flow animation */}
                         <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
@@ -358,10 +358,10 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-emerald-200/90 mb-2 tracking-wider uppercase">
+                      <p className="text-sm font-semibold text-[var(--theme-status-success)]/90 mb-2 tracking-wider uppercase">
                         Quantum Value
                       </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-emerald-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-300">
+                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-status-success)] via-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-300">
                         {statsLoading ? '--' : totalValueFormatted}
                       </p>
                     </div>
@@ -375,7 +375,7 @@ const Dashboard: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
                 {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-purple-500/[0.08] to-pink-500/[0.12] border border-white/[0.15] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
+                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
                   {/* Temporal wave pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
                       <div className="w-16 h-16 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                         {/* Inner holographic glow */}
                         <div className="absolute inset-2 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <TrendingUp className="w-8 h-8 text-purple-300 relative z-10 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse" />
+                        <TrendingUp className="w-8 h-8 text-[var(--theme-accent-secondary)] relative z-10 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse" />
 
                         {/* Temporal ripple effect */}
                         <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
@@ -406,10 +406,10 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-purple-200/90 mb-2 tracking-wider uppercase">
+                      <p className="text-sm font-semibold text-[var(--theme-accent-secondary)]/90 mb-2 tracking-wider uppercase">
                         Temporal Sales
                       </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-purple-300 via-pink-300 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform duration-300">
+                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-accent-secondary)] via-pink-300 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform duration-300">
                         {statsLoading ? '--' : totalSales.toLocaleString()}
                       </p>
                     </div>
@@ -423,7 +423,7 @@ const Dashboard: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
                 {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-amber-500/[0.08] to-orange-500/[0.12] border border-white/[0.15] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(245,158,11,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
+                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(245,158,11,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
                   {/* Achievement pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
@@ -481,7 +481,7 @@ const Dashboard: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
                 {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-pink-500/[0.08] to-rose-500/[0.12] border border-white/[0.15] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(236,72,153,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
+                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(236,72,153,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
                   {/* Database pattern overlay */}
                   <div
                     className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
@@ -535,10 +535,10 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Context7 Premium Quick Actions */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"></div>
-              <div className="p-8 border-b border-zinc-700/50 relative z-10">
-                <h2 className="text-2xl font-bold text-zinc-100 tracking-wide">
+            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface)]/50 to-[var(--theme-surface-secondary)]/50"></div>
+              <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
+                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Quick Actions
                 </h2>
               </div>
@@ -546,48 +546,48 @@ const Dashboard: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   <button
                     onClick={() => handleNavigation('/add-item')}
-                    className="group p-8 bg-gradient-to-br from-zinc-800/80 to-zinc-700/80 backdrop-blur-sm border-2 border-cyan-700/50 rounded-3xl hover:border-cyan-400 hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-primary)]/50 rounded-3xl hover:border-[var(--theme-accent-primary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-primary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/10 to-[var(--theme-accent-secondary)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Plus className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
                       Add New Item
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
                       Add cards or products
                     </p>
                   </button>
 
                   <button
                     onClick={() => handleNavigation('/sales-analytics')}
-                    className="group p-8 bg-gradient-to-br from-zinc-800/80 to-zinc-700/80 backdrop-blur-sm border-2 border-emerald-700/50 rounded-3xl hover:border-emerald-400 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-status-success)]/50 rounded-3xl hover:border-[var(--theme-status-success)] hover:shadow-2xl hover:shadow-[var(--theme-status-success)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <BarChart3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-emerald-300 transition-colors duration-300">
+                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
                       View Analytics
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
                       Sales and trends
                     </p>
                   </button>
 
                   <button
                     onClick={() => handleNavigation('/collection')}
-                    className="group p-8 bg-gradient-to-br from-zinc-800/80 to-zinc-700/80 backdrop-blur-sm border-2 border-purple-700/50 rounded-3xl hover:border-purple-400 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-secondary)]/50 rounded-3xl hover:border-[var(--theme-accent-secondary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-secondary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-secondary)]/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-violet-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Grid3X3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-zinc-100 mb-2 group-hover:text-purple-300 transition-colors duration-300">
+                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-accent-secondary)] transition-colors duration-300">
                       Browse Collection
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
                       View all items
                     </p>
                   </button>
@@ -596,21 +596,21 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Context7 Premium Recent Activity */}
-            <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"></div>
+            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface)]/50 to-[var(--theme-surface-secondary)]/50"></div>
 
               {/* Header */}
-              <div className="p-8 border-b border-zinc-700/50 relative z-10">
+              <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-zinc-100 tracking-wide flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center mr-4">
+                  <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center mr-4">
                       <BarChart3 className="w-6 h-6 text-white" />
                     </div>
                     Recent Activity
                   </h2>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-zinc-400">Live</span>
+                    <div className="w-3 h-3 bg-[var(--theme-status-success)] rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-[var(--theme-text-muted)]">Live</span>
                   </div>
                 </div>
               </div>
@@ -651,7 +651,7 @@ const Dashboard: React.FC = () => {
                         return (
                           <div
                             key={activityKey}
-                            className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-zinc-800/50 hover:to-zinc-700/50 rounded-2xl p-4 transition-all duration-300"
+                            className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-[var(--theme-surface-secondary)]/50 hover:to-[var(--theme-surface-secondary)]/30 rounded-2xl p-4 transition-all duration-300"
                           >
                             <div className="flex-shrink-0">
                               <div
@@ -662,16 +662,16 @@ const Dashboard: React.FC = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
-                                <p className="text-sm font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors duration-300">
+                                <p className="text-sm font-bold text-[var(--theme-text-primary)] group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
                                   {activity.title}
                                 </p>
-                                <span className="text-xs text-zinc-400 font-medium">
+                                <span className="text-xs text-[var(--theme-text-muted)] font-medium">
                                   {activity.timestamp
                                     ? getRelativeTime(activity.timestamp)
                                     : 'Unknown time'}
                                 </span>
                               </div>
-                              <p className="text-sm text-zinc-400 mt-1">
+                              <p className="text-sm text-[var(--theme-text-muted)] mt-1">
                                 {activity.description}
                               </p>
                               <div className="flex items-center mt-2 space-x-3">
@@ -691,7 +691,7 @@ const Dashboard: React.FC = () => {
                                 {(activity.metadata?.newPrice ||
                                   activity.metadata?.salePrice ||
                                   activity.metadata?.estimatedValue) && (
-                                  <span className="text-xs text-zinc-400">
+                                  <span className="text-xs text-[var(--theme-text-muted)]">
                                     {activity.metadata?.newPrice &&
                                       typeof activity.metadata.newPrice ===
                                         'number' &&
@@ -717,29 +717,29 @@ const Dashboard: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="w-20 h-20 bg-gradient-to-br from-zinc-700 to-zinc-600 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                      <Package className="w-10 h-10 text-zinc-400" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
+                      <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
                     </div>
-                    <h3 className="text-xl font-bold text-zinc-100 mb-3">
+                    <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
                       No recent activity
                     </h3>
-                    <p className="text-zinc-400 font-medium max-w-md mx-auto leading-relaxed">
+                    <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed">
                       Start adding items to your collection to see activity here.
                     </p>
                   </div>
                 )}
 
                 {/* Context7 Premium Show More Section */}
-                <div className="mt-8 pt-6 border-t border-zinc-700/50">
+                <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
                   <button
                     onClick={() => handleNavigation('/activity')}
-                    className="w-full group bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 border-2 border-cyan-700/50 hover:border-cyan-400 rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20"
+                    className="w-full group bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 border-2 border-[var(--theme-accent-primary)]/50 hover:border-[var(--theme-accent-primary)] rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--theme-accent-primary)]/20"
                   >
                     <div className="flex items-center justify-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <BarChart3 className="w-4 h-4 text-white" />
                       </div>
-                      <span className="text-sm font-bold text-zinc-300 group-hover:text-cyan-400 transition-colors duration-300">
+                      <span className="text-sm font-bold text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
                         View All Activity & Analytics
                       </span>
                     </div>
