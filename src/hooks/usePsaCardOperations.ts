@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { IPsaGradedCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations, createPsaCardConfig } from './useGenericCrudOperations';
+import { useGenericCrudOperations, createPsaCardConfig, CrudApiOperations, CrudMessages } from './useGenericCrudOperations';
 
 export interface UsePsaCardOperationsReturn {
   loading: boolean;
@@ -49,8 +49,17 @@ export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
     [collectionApi]
   );
 
-  // Use consolidated operations hook
-  const operations = useGenericCrudOperations(entityConfig);
+  // Use consolidated operations hook with proper parameters
+  const operations = useGenericCrudOperations(
+    entityConfig.apiMethods,
+    {
+      entityName: entityConfig.entityName,
+      addSuccess: entityConfig.messages.addSuccess,
+      updateSuccess: entityConfig.messages.updateSuccess,
+      deleteSuccess: entityConfig.messages.deleteSuccess,
+      soldSuccess: entityConfig.messages.soldSuccess,
+    }
+  );
 
   // Return interface-compatible methods for backward compatibility
   return {

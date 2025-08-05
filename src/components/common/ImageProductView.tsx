@@ -256,21 +256,25 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   const baseStyles =
     'relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10';
 
-  switch (variant) {
-    case 'detail':
-      return `${baseStyles} shadow-2xl rounded-2xl`;
-    case 'auction':
-      return `${baseStyles} shadow-lg hover:shadow-xl rounded-2xl`;
-    case 'minimal':
-      return `${baseStyles} shadow-sm hover:shadow-md rounded-2xl`;
-    case 'card':
-    default:
-      return `${baseStyles} shadow-lg hover:shadow-xl hover:border-white/20 rounded-2xl`;
-  }
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'detail':
+        return `${baseStyles} shadow-2xl rounded-2xl`;
+      case 'auction':
+        return `${baseStyles} shadow-lg hover:shadow-xl rounded-2xl`;
+      case 'minimal':
+        return `${baseStyles} shadow-sm hover:shadow-md rounded-2xl`;
+      case 'card':
+      default:
+        return `${baseStyles} shadow-lg hover:shadow-xl hover:border-white/20 rounded-2xl`;
+    }
+  };
+
+  const variantStyles = getVariantStyles();
 
   return (
     <div
-      className={`group relative h-full w-full rounded-2xl overflow-visible bg-transparent transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${className}`}
+      className={`group h-full w-full transition-all duration-300 ${enableInteractions ? 'cursor-pointer hover:scale-[1.02]' : ''} ${variantStyles} ${className}`}
       onClick={enableInteractions ? handleClick : undefined}
     >
       {/* Full background image */}

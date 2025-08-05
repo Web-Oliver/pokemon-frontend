@@ -28,6 +28,7 @@ import { PokemonSearch } from '../design-system/PokemonSearch';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import ValidationField from './fields/ValidationField';
+import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
 import { FormValidationService, VALIDATION_CONFIGS } from '../../services/forms/FormValidationService';
 import {
   convertObjectIdToString,
@@ -400,36 +401,32 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         </div>
       )}
 
-      {/* Product Search Section - Hidden in edit mode like other forms */}
+      {/* Hierarchical Product Search Section - Only for ADD pages */}
       {!isEditing && (
-        <div className="mb-6 relative z-10">
-          <PokemonSearch
-            searchType="products"
-            searchVariant="section"
-            register={register}
-            errors={errors}
-            setValue={setValue}
-            watch={watch}
-            clearErrors={clearErrors}
-            onSelectionChange={(selectedData) => {
-              console.log('[SEALED PRODUCT] Product selection:', selectedData);
+        <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative mb-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-purple-900/50 pointer-events-none"></div>
 
-              // Store selected product data for form submission (CRITICAL - maintains existing behavior)
-              setSelectedProductData(selectedData);
-            }}
-            onError={(error) => {
-              console.error('[SEALED PRODUCT] Search error:', error);
-            }}
-            sectionTitle="Product Information"
-            sectionIcon={Package}
-            formType="product"
-            readOnlyFields={{
-              category: true,
-              availability: true,
-            }}
-            productCategories={productCategories}
-            loadingOptions={loadingOptions}
-          />
+          <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center relative">
+            <Package className="w-6 h-6 mr-3 text-zinc-300" />
+            Product Information
+          </h4>
+
+          <div className="relative">
+            <HierarchicalProductSearch
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              watch={watch}
+              clearErrors={clearErrors}
+              onSelectionChange={(selectedData) => {
+                console.log('[SEALED PRODUCT] Product selection:', selectedData);
+                // Store selected product data for form submission (CRITICAL - maintains existing behavior)
+                setSelectedProductData(selectedData);
+              }}
+              isSubmitting={isSubmitting}
+              isEditing={isEditing}
+            />
+          </div>
         </div>
       )}
 

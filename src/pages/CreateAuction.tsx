@@ -169,8 +169,9 @@ const CreateAuction: React.FC = () => {
     SealedProduct: [],
   });
 
-  // Filter and search state
-  const [searchTerm, setSearchTerm] = useState('');
+  // SOLID/DRY: Hierarchical search state for dual search boxes
+  const [selectedSetName, setSelectedSetName] = useState<string>('');
+  const [cardProductSearchTerm, setCardProductSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<
     'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'
   >('all');
@@ -461,15 +462,18 @@ const CreateAuction: React.FC = () => {
     [allCollectionItems, selectedItemIds]
   );
 
-  // Select all filtered items
+  // SOLID/DRY: Select all filtered items with hierarchical filtering
   const selectAllItems = useCallback(() => {
     const filteredItems = allCollectionItems.filter((item) => {
       const matchesType = filterType === 'all' || item.itemType === filterType;
-      const matchesSearch =
-        !searchTerm.trim() ||
-        item.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.setName?.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesType && matchesSearch;
+      
+      // Hierarchical filtering: first by set, then by card/product
+      const matchesSet = !selectedSetName || 
+        item.setName?.toLowerCase().includes(selectedSetName.toLowerCase());
+      const matchesCardProduct = !cardProductSearchTerm.trim() ||
+        item.displayName.toLowerCase().includes(cardProductSearchTerm.toLowerCase());
+        
+      return matchesType && matchesSet && matchesCardProduct;
     });
 
     const newSelection = new Set(selectedItemIds);
@@ -494,7 +498,8 @@ const CreateAuction: React.FC = () => {
     allCollectionItems,
     selectedItemOrderByType,
     filterType,
-    searchTerm,
+    selectedSetName,
+    cardProductSearchTerm,
   ]);
 
   // Clear all selections
@@ -738,8 +743,10 @@ const CreateAuction: React.FC = () => {
                         onSelectAll={selectAllItems}
                         onClearSelection={clearAllSelections}
                         selectedItemsValue={selectedItemsValue}
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
+                        selectedSetName={selectedSetName}
+                        onSetSelection={setSelectedSetName}
+                        cardProductSearchTerm={cardProductSearchTerm}
+                        onCardProductSearchChange={setCardProductSearchTerm}
                         filterType={filterType}
                         onFilterChange={setFilterType}
                         showPreview={showPreview}

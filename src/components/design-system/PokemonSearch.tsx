@@ -33,7 +33,7 @@ import React, {
 } from 'react';
 import { Search, Loader2, LucideIcon } from 'lucide-react';
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormClearErrors } from 'react-hook-form';
-import { SearchResult } from '../../hooks/useSearch';
+import { SearchResult, useSearch } from '../../hooks/useSearch';
 import {
   useOptimizedSearch,
   useSearchResultSelector,
@@ -262,56 +262,78 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   const layoutTheme = useLayoutTheme();
   const animationTheme = useAnimationTheme();
   
-  // Enhanced search hook with all variants
-  const optimizedSearch = useOptimizedSearch({
-    hierarchicalMode: hierarchical,
-    onAutofill: onSelectionChange,
-  });
+  // Direct search hook integration - FIXED to actually trigger searches
+  const search = useSearch();
   
-  // Local state for missing functionality
+  // Local state for search functionality
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // Use optimized search results
-  const { results, isLoading } = optimizedSearch;
+  // Use direct search results with proper API integration
+  const { results, isLoading } = search;
 
   // Form integration for section variants
   const watchedValues = watch ? watch() : {};
   const fieldError = errors?.[fieldName || ''];
   
-  // Enhanced result selector with form integration
-  const { handleResultSelect } = useSearchResultSelector({
-    onSelect: (result) => {
-      // Handle different selection patterns
-      if (searchVariant === 'section' && setValue && onSelectionChange) {
-        // Form integration - auto-fill related fields
-        if (searchType === 'products') {
-          setValue('productName', result.displayName);
-          setValue('setName', result.data?.setName || '');
-          setValue('category', result.data?.category || '');
-          setValue('availability', result.data?.availability || '');
-        } else if (searchType === 'cards') {
-          setValue('cardName', result.displayName);
-          setValue('setName', result.data?.setName || '');
-          setValue('cardNumber', result.data?.cardNumber || '');
-        }
-        onSelectionChange(result.data);
-        clearErrors?.(['productName', 'cardName', 'setName']);
-      } else {
-        onSelect(result);
+  // Direct result selection handler - FIXED!
+  const handleResultSelect = useCallback((result: SearchResult) => {
+    console.log('[POKEMON SEARCH] Result selected:', result);
+    
+    // Handle different selection patterns
+    if (searchVariant === 'section' && setValue && onSelectionChange) {
+      // Form integration - auto-fill related fields
+      if (searchType === 'products') {
+        setValue('productName', result.displayName);
+        setValue('setName', result.data?.setName || '');
+        setValue('category', result.data?.category || '');
+        setValue('availability', result.data?.availability || '');
+      } else if (searchType === 'cards') {
+        setValue('cardName', result.displayName);
+        setValue('setName', result.data?.setName || '');
+        setValue('cardNumber', result.data?.cardNumber || '');
       }
-      setIsVisible(false);
-      setSearchQuery(result.displayName);
-    },
-    onInputChange,
-  });
+      onSelectionChange(result.data);
+      clearErrors?.(['productName', 'cardName', 'setName']);
+    } else {
+      onSelect(result);
+    }
+    
+    // Update UI state
+    setIsVisible(false);
+    setSearchQuery(result.displayName);
+    setSelectedIndex(-1);
+  }, [searchVariant, setValue, onSelectionChange, searchType, onSelect, clearErrors]);
 
-  // Input change handler with form integration
+  // Input change handler with ACTUAL search API triggering - FIXED!
   const handleInputChange = useCallback((value: string) => {
     setSearchQuery(value);
+    
+    // CRITICAL FIX: Actually trigger the search API calls based on searchType
+    if (value.length >= minLength) {
+      setIsVisible(true);
+      
+      // Trigger the appropriate search based on searchType
+      switch (searchType) {
+        case 'sets':
+          search.searchSets(value);
+          break;
+        case 'cards':
+          search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
+          break;
+        case 'products':
+          search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
+          break;
+        default:
+          console.warn(`[POKEMON SEARCH] Unknown searchType: ${searchType}`);
+      }
+    } else {
+      setIsVisible(false);
+      search.clearResults();
+    }
     
     if (searchVariant === 'section' && setValue && fieldName) {
       setValue(fieldName, value);
@@ -331,7 +353,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
       }
       onSelectionChange?.(null);
     }
-  }, [setSearchQuery, setValue, fieldName, onInputChange, searchVariant, searchType, onSelectionChange]);
+  }, [searchType, setFilter, minLength, search, setValue, fieldName, onInputChange, searchVariant, onSelectionChange]);
 
   // Enhanced keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -505,22 +527,32 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
     );
   };
 
-  // Enhanced dropdown rendering with all variants
+  // Enhanced dropdown rendering - FIXED to use actual search results
   const renderDropdown = () => {
     if (!isVisible) return null;
 
-    const displayResults = searchVariant === 'dropdown' && suggestions.length > 0 ? 
-      suggestions.map(s => ({ ...s, type: s.type || searchType })) : 
-      results;
+    // Use actual search results from the search hook - FIXED!
+    const displayResults = results || [];
 
     if (displayResults.length === 0 && !isLoading) {
       return (
         <div ref={dropdownRef} className={dropdownClasses}>
           <div className="px-4 py-3 text-center text-zinc-400">
             {searchQuery.length < minLength 
-              ? `Type at least ${minLength} characters to search`
-              : 'No results found'
+              ? `Type at least ${minLength} characters to search ${searchType}`
+              : `No ${searchType} found for "${searchQuery}"`
             }
+          </div>
+        </div>
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <div ref={dropdownRef} className={dropdownClasses}>
+          <div className="px-4 py-3 text-center text-zinc-400">
+            <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2" />
+            Searching {searchType}...
           </div>
         </div>
       );

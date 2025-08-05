@@ -23,7 +23,7 @@ import {
 } from 'react-hook-form';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
-import { PokemonSearch } from '../../design-system/PokemonSearch';
+import HierarchicalCardSearch from '../sections/HierarchicalCardSearch';
 import CardInformationDisplaySection from '../sections/CardInformationDisplaySection';
 import GradingPricingSection from '../sections/GradingPricingSection';
 import ImageUploadSection from '../sections/ImageUploadSection';
@@ -155,27 +155,17 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
             )}
           </h4>
 
-          {/* Standardized Card Search Section */}
-          <div className="mb-6 relative z-10">
-            <PokemonSearch
-              searchType="cards"
-              searchVariant="section"
-              register={register}
-              errors={errors}
-              setValue={setValue}
-              watch={watch}
-              clearErrors={clearErrors}
-              onCardSelection={onSelectionChange}
-              onError={(error) => {
-                console.error(
-                  `[${cardType.toUpperCase()} CARD] Card search error:`,
-                  error
-                );
-              }}
-              sectionTitle=""
-              sectionIcon={icon}
-            />
-          </div>
+          {/* Hierarchical Search - Only for ADD pages */}
+          <HierarchicalCardSearch
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+            clearErrors={clearErrors}
+            onSelectionChange={onSelectionChange}
+            isSubmitting={isSubmitting}
+            isEditing={isEditing}
+          />
 
           {/* Reusable Card Information Display */}
           <CardInformationDisplaySection

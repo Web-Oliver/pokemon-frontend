@@ -86,10 +86,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   }, [enableAspectRatioDetection]);
   
   const analyzeNewImages = useCallback(async (images: any[]) => {
-    if (!enableAspectRatioDetection || !images.length) return;
+    if (!enableAspectRatioDetection || !images.length) {
+      return [];
+    }
+    
     setIsAnalyzing(true);
     // Simple analysis logic here if needed
+    const results = []; // Return empty results for now
     setIsAnalyzing(false);
+    return results;
   }, [enableAspectRatioDetection]);
 
   const handleFileDrop = useCallback(async (files: FileList) => {
@@ -123,14 +128,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       }
     }
 
-    // Update parent component
+    // Update parent component - USE UPDATED PREVIEWS, NOT OLD STATE!
     const allFiles = [
-      ...previews.filter(p => !p.isExisting && p.file).map(p => p.file!),
+      ...updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!),
       ...newFiles,
     ];
-    const remainingExistingUrls = previews
+    const remainingExistingUrls = updatedPreviews
       .filter(p => p.isExisting)
       .map(p => p.url.replace('http://localhost:3000', ''));
+    
     onImagesChange(allFiles, remainingExistingUrls);
   }, [previews, maxFiles, maxFileSize, acceptedTypes, analyzeNewImages, onImagesChange]);
 

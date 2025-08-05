@@ -144,12 +144,13 @@ export const useHierarchicalSearch = ({
     debouncedPrimary,
     debouncedSecondary,
     primaryValue,
-    config,
+    config.mode,
+    config.primaryField,
+    config.secondaryField,
     search.searchSets,
     search.searchCards,
     search.searchSetProducts,
     search.searchProducts,
-    search,
   ]);
 
   // Handle primary field selection (Set/SetProduct)

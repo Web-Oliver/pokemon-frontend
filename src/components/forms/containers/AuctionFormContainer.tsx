@@ -14,7 +14,11 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
+import FormHeader from '../../common/FormHeader';
+import { PokemonInput } from '../../design-system/PokemonInput';
+import FormActionButtons from '../../common/FormActionButtons';
 
 interface AuctionFormContainerProps {
   /** Form Configuration */
@@ -136,7 +140,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
             {...register('auctionDate')}
             type="date"
             label="Auction Date (Optional)"
-            helperText="Leave empty to set the date later"
+            helper="Leave empty to set the date later"
             min={getCurrentDate()}
             error={errors.auctionDate?.message}
             fullWidth
@@ -147,7 +151,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
           <PokemonSelect
             {...register('status')}
             label="Initial Status"
-            helperText="Start with 'Draft' to review and add items before making it active"
+            helper="Start with 'Draft' to review and add items before making it active"
             options={[
               { value: 'draft', label: 'Draft - Not visible to public' },
               { value: 'active', label: 'Active - Live auction' },

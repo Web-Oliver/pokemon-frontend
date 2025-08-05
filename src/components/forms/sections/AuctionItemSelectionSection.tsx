@@ -11,8 +11,12 @@
  * - Open/Closed: Extensible through props and callbacks
  */
 
-import { CheckCircle, Eye, Package, Search, X } from 'lucide-react';
+import React, { useMemo, useState, useCallback } from 'react';
+import { CheckCircle, Eye, Package, Search, X, Hash, TrendingUp, Grid3X3, Users, Circle, ChevronRight } from 'lucide-react';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
+import { PokemonSearch } from '../../design-system/PokemonSearch';
+import { PokemonButton } from '../../design-system/PokemonButton';
+import { PokemonInput } from '../../design-system/PokemonInput';
 
 interface UnifiedCollectionItem {
   id: string;
@@ -43,9 +47,11 @@ interface AuctionItemSelectionSectionProps {
   /** Summary Information */
   selectedItemsValue: number;
 
-  /** Filter State */
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
+  /** Hierarchical Search State - SOLID/DRY Implementation */
+  selectedSetName?: string;
+  onSetSelection: (setName: string) => void;
+  cardProductSearchTerm: string;
+  onCardProductSearchChange: (term: string) => void;
   filterType: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
   onFilterChange: (
     filter: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct'
@@ -72,35 +78,55 @@ const AuctionItemSelectionSection: React.FC<
   onSelectAll,
   onClearSelection,
   selectedItemsValue,
-  searchTerm,
-  onSearchChange,
+  selectedSetName,
+  onSetSelection,
+  cardProductSearchTerm,
+  onCardProductSearchChange,
   filterType,
   onFilterChange,
   showPreview,
   onTogglePreview,
   selectedItemsByType,
 }) => {
-  // Filter items based on search term and filter type
+  // SOLID/DRY: Hierarchical filtering logic
   const filteredItems = useMemo(() => {
     let filtered = items;
 
-    // Filter by type
+    // First: Filter by selected set (hierarchical)
+    if (selectedSetName) {
+      filtered = filtered.filter((item) => 
+        item.setName?.toLowerCase().includes(selectedSetName.toLowerCase())
+      );
+    }
+
+    // Second: Filter by item type
     if (filterType !== 'all') {
       filtered = filtered.filter((item) => item.itemType === filterType);
     }
 
-    // Filter by search term
-    if (searchTerm.trim()) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.displayName.toLowerCase().includes(search) ||
-          item.setName?.toLowerCase().includes(search)
+    // Third: Filter by card/product search term
+    if (cardProductSearchTerm.trim()) {
+      const search = cardProductSearchTerm.toLowerCase();
+      filtered = filtered.filter((item) =>
+        item.displayName.toLowerCase().includes(search)
       );
     }
 
     return filtered;
-  }, [items, filterType, searchTerm]);
+  }, [items, selectedSetName, filterType, cardProductSearchTerm]);
+
+  // SOLID: Single responsibility for set selection
+  const handleSetSelection = useCallback((result: any) => {
+    onSetSelection(result.displayName || result.setName);
+  }, [onSetSelection]);
+
+  // SOLID: Single responsibility for card/product selection with autofill
+  const handleCardProductSelection = useCallback((result: any) => {
+    // Autofill set information when card/product is selected
+    if (result.setName && !selectedSetName) {
+      onSetSelection(result.setName);
+    }
+  }, [selectedSetName, onSetSelection]);
 
   if (loading) {
     return (
@@ -216,26 +242,68 @@ const AuctionItemSelectionSection: React.FC<
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
 
         <div className="relative z-10 space-y-6">
-          {/* Search and Filter Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <PokemonInput
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search items..."
-              startIcon={<Search className="w-5 h-5 text-zinc-500" />}
-              fullWidth
-            />
-            <Select
-              value={filterType}
-              onChange={(e) => onFilterChange(e.target.value as any)}
-              options={[
-                { value: 'all', label: 'All Items' },
-                { value: 'PsaGradedCard', label: 'PSA Graded Cards' },
-                { value: 'RawCard', label: 'Raw Cards' },
-                { value: 'SealedProduct', label: 'Sealed Products' },
-              ]}
-              fullWidth
-            />
+          {/* SOLID/DRY: Dual Search Interface - PROPER Hierarchical Search */}
+          <div className="space-y-4">
+            {/* Row 1: Set/SetProduct Search + Item Type Filter */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Option A: Set Search (for Cards) */}
+              <PokemonSearch
+                searchType="sets"
+                placeholder="Search Pokemon Sets (for Cards)..."
+                onSelectionChange={handleSetSelection}
+                hierarchical={false}
+                themeColor="cyan"
+                className="w-full"
+                label="1A. Select Pokemon Set (for Cards)"
+                helperText="Choose a set to filter cards"
+              />
+              
+              <PokemonSelect
+                value={filterType}
+                onChange={(e) => onFilterChange(e.target.value as any)}
+                options={[
+                  { value: 'all', label: 'All Items' },
+                  { value: 'PsaGradedCard', label: 'PSA Graded Cards' },
+                  { value: 'RawCard', label: 'Raw Cards' },
+                  { value: 'SealedProduct', label: 'Sealed Products' },
+                ]}
+                fullWidth
+                label="Item Type Filter"
+              />
+            </div>
+
+            {/* Row 2: SetProduct Search (for Products) */}
+            <div className="grid grid-cols-1 gap-4">
+              <PokemonSearch
+                searchType="setProducts"
+                placeholder="OR Search Set Products (for Sealed Products)..."
+                onSelectionChange={handleSetSelection}
+                hierarchical={false}
+                themeColor="purple"
+                className="w-full"
+                label="1B. Select Set Product (for Sealed Products)"
+                helperText="Choose a set product to filter sealed products"
+              />
+            </div>
+
+            {/* Row 3: Cards/Products Search Box - Secondary Filter */}
+            <div className="grid grid-cols-1 gap-4">
+              <PokemonSearch
+                searchType={filterType === 'SealedProduct' ? "products" : "cards"}
+                placeholder={selectedSetName ? 
+                  `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'} in ${selectedSetName}...` : 
+                  `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'}...`}
+                onSelectionChange={handleCardProductSelection}
+                parentValue={selectedSetName}
+                hierarchical={true}
+                themeColor="blue"
+                className="w-full"
+                label={`2. Search ${filterType === 'SealedProduct' ? 'Products' : 'Cards'}`}
+                helperText={selectedSetName ? 
+                  `Searching ${filterType === 'SealedProduct' ? 'products' : 'cards'} within ${selectedSetName}` : 
+                  `Search all ${filterType === 'SealedProduct' ? 'products' : 'cards'} or select a set/setProduct first`}
+              />
+            </div>
           </div>
 
           {/* Bulk Actions */}
@@ -277,8 +345,8 @@ const AuctionItemSelectionSection: React.FC<
                 No items found
               </h4>
               <p className="text-zinc-300 font-medium">
-                {searchTerm || filterType !== 'all'
-                  ? 'Try adjusting your search or filter.'
+                {selectedSetName || cardProductSearchTerm || filterType !== 'all'
+                  ? 'Try adjusting your set selection, search terms, or filter.'
                   : 'Add items to your collection first.'}
               </p>
             </div>
