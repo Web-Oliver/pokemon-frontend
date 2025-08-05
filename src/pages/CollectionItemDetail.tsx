@@ -470,48 +470,48 @@ const CollectionItemDetail: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-indigo-900/10 to-purple-900/20"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_70%)]"></div>
 
-            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
+            <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50 h-full flex flex-col">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                  <Star className="w-6 h-6 text-blue-400" />
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                  <Star className="w-6 h-6 text-[var(--theme-accent-primary)]" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-primary)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                     PSA Certification
                   </h3>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-[var(--theme-text-secondary)] text-sm">
                     Professional grading details
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">PSA Grade</span>
-                  <span className="font-bold text-blue-400 text-2xl">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">PSA Grade</span>
+                  <span className="font-bold text-[var(--theme-accent-primary)] text-2xl">
                     {psaCard.grade}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">Card Name</span>
-                  <span className="font-medium text-white">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">Card Name</span>
+                  <span className="font-medium text-[var(--theme-text-primary)]">
                     {psaCard.cardName || psaCard.cardId?.cardName || 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">Base Name</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">Base Name</span>
                   <span className="font-medium text-cyan-300">
                     {psaCard.cardId?.baseName || 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">Pokemon #</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">Pokemon #</span>
                   <span className="font-bold text-yellow-400">
                     {psaCard.cardId?.pokemonNumber || 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">Variety</span>
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">Variety</span>
                   <span className="font-medium text-purple-300">
                     {psaCard.cardId?.variety || 'Standard'}
                   </span>
@@ -527,27 +527,27 @@ const CollectionItemDetail: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-emerald-900/10 to-teal-900/20"></div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(34,197,94,0.1),transparent_70%)]"></div>
 
-            <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
+            <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50 h-full flex flex-col">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-status-success)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                  <TrendingUp className="w-6 h-6 text-[var(--theme-status-success)]" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-green-100 to-emerald-100 bg-clip-text text-transparent">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-status-success)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                     Population Data
                   </h3>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-[var(--theme-text-secondary)] text-sm">
                     Rarity & distribution stats
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                  <span className="text-white/70 font-medium">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
                     Total PSA Population
                   </span>
-                  <span className="font-bold text-green-400 text-xl">
+                  <span className="font-bold text-[var(--theme-status-success)] text-xl">
                     {(() => {
                       console.log('[DEBUG Population] PSA Card cardId:', psaCard.cardId);
                       console.log('[DEBUG Population] PSA Card cardId grades:', psaCard.cardId?.grades);
@@ -559,7 +559,7 @@ const CollectionItemDetail: React.FC = () => {
 
                 {psaCard.cardId?.grades && (
                   <div className="space-y-3">
-                    <p className="text-sm text-white/80 font-medium mb-3">
+                    <p className="text-sm text-[var(--theme-text-primary)]/80 font-medium mb-3">
                       Grade Distribution:
                     </p>
                     <div className="grid grid-cols-2 gap-2">
@@ -573,15 +573,15 @@ const CollectionItemDetail: React.FC = () => {
                               key={grade}
                               className={`flex justify-between items-center p-2 rounded-lg border transition-all duration-300 ${
                                 isCurrentGrade
-                                  ? 'bg-blue-500/20 border-blue-400/50 text-blue-300 shadow-lg shadow-blue-500/20'
-                                  : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+                                  ? 'bg-[var(--theme-accent-primary)]/20 border-[var(--theme-accent-primary)]/50 text-[var(--theme-accent-primary)] shadow-lg shadow-[var(--theme-accent-primary)]/20'
+                                  : 'bg-[var(--theme-surface-secondary)] border-[var(--theme-border)] text-[var(--theme-text-primary)]/80 hover:bg-[var(--theme-surface-secondary)]/80'
                               }`}
                             >
                               <span className="font-medium text-sm">
                                 Grade {gradeNumber}
                               </span>
                               <span
-                                className={`font-bold text-sm ${isCurrentGrade ? 'text-blue-400' : 'text-white'}`}
+                                className={`font-bold text-sm ${isCurrentGrade ? 'text-[var(--theme-accent-primary)]' : 'text-[var(--theme-text-primary)]'}`}
                               >
                                 {count}
                               </span>
@@ -590,12 +590,12 @@ const CollectionItemDetail: React.FC = () => {
                         })}
                     </div>
 
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
-                        <span className="text-green-300 font-medium">
+                    <div className="mt-4 pt-4 border-t border-[var(--theme-border)]">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-gradient-to-r from-[var(--theme-status-success)]/10 to-[var(--theme-accent-secondary)]/10 border border-[var(--theme-status-success)]/20">
+                        <span className="text-[var(--theme-status-success)] font-medium">
                           Total Population
                         </span>
-                        <span className="text-green-400 font-bold text-lg">
+                        <span className="text-[var(--theme-status-success)] font-bold text-lg">
                           {psaCard.cardId.grades.grade_total}
                         </span>
                       </div>
@@ -619,42 +619,42 @@ const CollectionItemDetail: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-green-900/10 to-teal-900/20"></div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(16,185,129,0.1),transparent_70%)]"></div>
 
-          <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+          <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                <Package className="w-6 h-6 text-emerald-400" />
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-status-success)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                <Package className="w-6 h-6 text-[var(--theme-status-success)]" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-emerald-100 to-green-100 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-status-success)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                   Raw Card Details
                 </h3>
-                <p className="text-white/60 text-sm">
+                <p className="text-[var(--theme-text-secondary)] text-sm">
                   Ungraded card information
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Condition</span>
-                <span className="font-bold text-emerald-400 text-lg">
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Condition</span>
+                <span className="font-bold text-[var(--theme-status-success)] text-lg">
                   {rawCard.condition}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Card Name</span>
-                <span className="font-medium text-white">
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Card Name</span>
+                <span className="font-medium text-[var(--theme-text-primary)]">
                   {rawCard.cardName || rawCard.cardId?.cardName || 'N/A'}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Base Name</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Base Name</span>
                 <span className="font-medium text-cyan-300">
                   {rawCard.cardId?.baseName || 'N/A'}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Pokemon #</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Pokemon #</span>
                 <span className="font-bold text-yellow-400">
                   {rawCard.cardId?.pokemonNumber || 'N/A'}
                 </span>
@@ -675,37 +675,37 @@ const CollectionItemDetail: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-violet-900/10 to-fuchsia-900/20"></div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(147,51,234,0.1),transparent_70%)]"></div>
 
-          <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+          <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-500/20 to-fuchsia-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                <Archive className="w-6 h-6 text-purple-400" />
+              <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                <Archive className="w-6 h-6 text-[var(--theme-accent-primary)]" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-fuchsia-100 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-primary)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                   Sealed Product
                 </h3>
-                <p className="text-white/60 text-sm">
+                <p className="text-[var(--theme-text-secondary)] text-sm">
                   Unopened product details
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Category</span>
-                <span className="font-bold text-purple-400 text-lg">
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Category</span>
+                <span className="font-bold text-[var(--theme-accent-primary)] text-lg">
                   {sealedProduct.category}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Availability</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Availability</span>
                 <span className="font-medium text-cyan-300">
                   {sealedProduct.availability || 'N/A'}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                <span className="text-white/70 font-medium">Market Price</span>
-                <span className="font-bold text-green-400">
+              <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                <span className="text-[var(--theme-text-secondary)] font-medium">Market Price</span>
+                <span className="font-bold text-[var(--theme-status-success)]">
                   {sealedProduct.cardMarketPrice || 'N/A'} kr
                 </span>
               </div>
@@ -726,56 +726,56 @@ const CollectionItemDetail: React.FC = () => {
     }
 
     return (
-      <div className="bg-green-50 p-6 rounded-2xl">
-        <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
+      <div className="bg-[var(--theme-status-success)]/10 p-6 rounded-2xl border border-[var(--theme-status-success)]/20">
+        <h3 className="text-lg font-semibold text-[var(--theme-status-success)] mb-4 flex items-center">
           <CheckCircle className="w-5 h-5 mr-2" />
           Sale Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-green-600">Sale Price:</span>
-              <span className="font-bold text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Sale Price:</span>
+              <span className="font-bold text-[var(--theme-status-success)]">
                 {item.saleDetails.actualSoldPrice} kr.
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-green-600">Payment Method:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Payment Method:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.paymentMethod}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-green-600">Delivery:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Delivery:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.deliveryMethod}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-green-600">Source:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Source:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.source}
               </span>
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-green-600">Date Sold:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Date Sold:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.dateSold
                   ? new Date(item.saleDetails.dateSold).toLocaleDateString()
                   : 'N/A'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-green-600">Buyer:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Buyer:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.buyerFullName || 'N/A'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-green-600">Tracking:</span>
-              <span className="font-medium text-green-800">
+              <span className="text-[var(--theme-text-secondary)]">Tracking:</span>
+              <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.trackingNumber || 'N/A'}
               </span>
             </div>
@@ -806,7 +806,7 @@ const CollectionItemDetail: React.FC = () => {
     <>
       <div className="min-h-screen relative overflow-hidden">
         {/* Award-Winning Background */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-purple-950/20 to-blue-950/30"></div>
+        <div className="fixed inset-0 bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-blue-950/30"></div>
         <div className="fixed inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.1),transparent_70%)]"></div>
         <div className="fixed inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(168,85,247,0.08),transparent_70%)]"></div>
         <div className="fixed inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(236,72,153,0.05),transparent_70%)]"></div>
@@ -838,7 +838,7 @@ const CollectionItemDetail: React.FC = () => {
                     }}
                   ></div>
                 </div>
-                <p className="text-white/80 text-lg">
+                <p className="text-[var(--theme-text-primary)]/80 text-lg">
                   Loading premium details...
                 </p>
               </div>
@@ -847,14 +847,14 @@ const CollectionItemDetail: React.FC = () => {
 
           {error && !item && (
             <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center p-8 rounded-3xl bg-red-500/10 backdrop-blur-xl border border-red-500/20">
-                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Package className="w-8 h-8 text-red-400" />
+              <div className="text-center p-8 rounded-3xl bg-[var(--theme-status-error)]/10 backdrop-blur-xl border border-[var(--theme-status-error)]/20">
+                <div className="w-16 h-16 bg-[var(--theme-status-error)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="w-8 h-8 text-[var(--theme-status-error)]" />
                 </div>
-                <h3 className="text-xl font-bold text-red-400 mb-2">
+                <h3 className="text-xl font-bold text-[var(--theme-status-error)] mb-2">
                   Item Not Found
                 </h3>
-                <p className="text-red-300/80">{error}</p>
+                <p className="text-[var(--theme-status-error)]/80">{error}</p>
               </div>
             </div>
           )}
@@ -866,7 +866,7 @@ const CollectionItemDetail: React.FC = () => {
                 <div className="mb-6">
                   <button
                     onClick={handleBackToCollection}
-                    className="group flex items-center space-x-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="group flex items-center space-x-2 px-4 py-2 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-surface-secondary)]/80 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
                     <span className="font-medium">Back to Collection</span>
@@ -879,36 +879,36 @@ const CollectionItemDetail: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/10 to-pink-900/20"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+                  <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-6 lg:space-y-0">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4 mb-4">
-                          <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                            <Star className="w-6 h-6 text-blue-400" />
+                          <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                            <Star className="w-6 h-6 text-[var(--theme-accent-primary)]" />
                           </div>
                           <div>
-                            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-primary)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent leading-tight">
                               {getItemTitle()}
                             </h1>
-                            <p className="text-lg text-blue-300/80 font-medium mt-1">
+                            <p className="text-lg text-[var(--theme-accent-primary)]/80 font-medium mt-1">
                               {getItemSubtitle()}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 mt-6">
-                          <div className="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white/90">
+                          <div className="px-4 py-2 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)] text-[var(--theme-text-primary)]">
                             <span className="text-sm font-medium">
                               Set: {getSetName()}
                             </span>
                           </div>
-                          <div className="px-4 py-2 rounded-xl bg-green-500/20 backdrop-blur-xl border border-green-500/30 text-green-300">
+                          <div className="px-4 py-2 rounded-xl bg-[var(--theme-status-success)]/20 backdrop-blur-xl border border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]">
                             <span className="text-sm font-bold">
                               {item.myPrice || '0'} kr
                             </span>
                           </div>
                           <div
-                            className={`px-4 py-2 rounded-xl backdrop-blur-xl border ${item.sold ? 'bg-red-500/20 border-red-500/30 text-red-300' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'}`}
+                            className={`px-4 py-2 rounded-xl backdrop-blur-xl border ${item.sold ? 'bg-[var(--theme-status-error)]/20 border-[var(--theme-status-error)]/30 text-[var(--theme-status-error)]' : 'bg-[var(--theme-status-success)]/20 border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]'}`}
                           >
                             <span className="text-sm font-medium">
                               {item.sold ? 'Sold' : 'Available'}
@@ -969,55 +969,55 @@ const CollectionItemDetail: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-indigo-900/10 to-purple-900/20"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
+                  <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50 h-full flex flex-col">
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                        <Info className="w-6 h-6 text-blue-400" />
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                        <Info className="w-6 h-6 text-[var(--theme-accent-primary)]" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-primary)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                           Essential Details
                         </h2>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-[var(--theme-text-secondary)] text-sm">
                           Core item information
                         </p>
                       </div>
                     </div>
 
                     <div className="space-y-6 flex-1">
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Current Value
                         </span>
-                        <span className="font-bold text-green-400 text-lg">
+                        <span className="font-bold text-[var(--theme-status-success)] text-lg">
                           {item.myPrice || '0'} kr
                         </span>
                       </div>
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Date Added
                         </span>
-                        <span className="font-medium text-blue-300">
+                        <span className="font-medium text-[var(--theme-accent-primary)]">
                           {item.dateAdded
                             ? new Date(item.dateAdded).toLocaleDateString()
                             : 'N/A'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Status
                         </span>
                         <span
-                          className={`font-bold px-3 py-1 rounded-lg ${item.sold ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}`}
+                          className={`font-bold px-3 py-1 rounded-lg ${item.sold ? 'bg-[var(--theme-status-error)]/20 text-[var(--theme-status-error)] border border-[var(--theme-status-error)]/30' : 'bg-[var(--theme-status-success)]/20 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/30'}`}
                         >
                           {item.sold ? 'Sold' : 'Available'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Category
                         </span>
-                        <span className="font-medium text-purple-300">
+                        <span className="font-medium text-[var(--theme-accent-secondary)]">
                           {(() => {
                             const { type } = getUrlParams();
                             return type === 'psa'
@@ -1028,16 +1028,16 @@ const CollectionItemDetail: React.FC = () => {
                           })()}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Images
                         </span>
                         <span className="font-bold text-cyan-400">
                           {item.images?.length || 0}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                        <span className="text-white/70 font-medium">
+                      <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                        <span className="text-[var(--theme-text-secondary)] font-medium">
                           Condition
                         </span>
                         <span className="font-bold text-yellow-400">
@@ -1061,17 +1061,17 @@ const CollectionItemDetail: React.FC = () => {
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_70%)]"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
+                  <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50 h-full flex flex-col">
                     {/* Elegant Header with Glass Morphism */}
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                        <ImageIcon className="w-6 h-6 text-blue-400" />
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                        <ImageIcon className="w-6 h-6 text-[var(--theme-accent-primary)]" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-primary)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                           Premium Gallery
                         </h2>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-[var(--theme-text-secondary)] text-sm">
                           High-resolution imagery
                         </p>
                       </div>
@@ -1087,8 +1087,8 @@ const CollectionItemDetail: React.FC = () => {
                       <div className="relative w-full flex justify-center flex-1">
                         <div className="w-full h-[500px] relative">
                           {/* Premium Border Gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl p-[2px]">
-                            <div className="w-full h-full bg-black/60 backdrop-blur-xl rounded-3xl overflow-visible">
+                          <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/20 via-[var(--theme-accent-secondary)]/20 to-[var(--theme-accent-primary)]/20 rounded-3xl p-[2px]">
+                            <div className="w-full h-full bg-[var(--theme-surface)]/60 backdrop-blur-xl rounded-3xl overflow-visible">
                               <ImageProductView
                                 images={item.images || []}
                                 title={getItemTitle()}
@@ -1161,16 +1161,16 @@ const CollectionItemDetail: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-emerald-900/10 to-teal-900/20"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(34,197,94,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 h-full flex flex-col">
+                  <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50 h-full flex flex-col">
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                        <TrendingUp className="w-6 h-6 text-green-400" />
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-status-success)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                        <TrendingUp className="w-6 h-6 text-[var(--theme-status-success)]" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-green-100 to-emerald-100 bg-clip-text text-transparent">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-status-success)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                           Value Timeline
                         </h2>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-[var(--theme-text-secondary)] text-sm">
                           Price tracking & history
                         </p>
                       </div>
@@ -1186,16 +1186,16 @@ const CollectionItemDetail: React.FC = () => {
 
                     {/* Price Update Section - Only show for non-sold items */}
                     {!item.sold && (
-                      <div className="mt-6 pt-6 border-t border-white/10">
+                      <div className="mt-6 pt-6 border-t border-[var(--theme-border)]">
                         <div className="flex items-center space-x-3 mb-4">
-                          <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                            <Plus className="w-5 h-5 text-purple-400" />
+                          <div className="p-2 rounded-xl bg-gradient-to-br from-[var(--theme-accent-secondary)]/20 to-[var(--theme-accent-primary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                            <Plus className="w-5 h-5 text-[var(--theme-accent-secondary)]" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold bg-gradient-to-r from-white via-purple-100 to-violet-100 bg-clip-text text-transparent">
+                            <h3 className="text-lg font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-accent-secondary)]/80 to-[var(--theme-accent-primary)]/80 bg-clip-text text-transparent">
                               Update Price
                             </h3>
-                            <p className="text-white/60 text-xs">
+                            <p className="text-[var(--theme-text-secondary)] text-xs">
                               Adjust market value
                             </p>
                           </div>
@@ -1208,7 +1208,7 @@ const CollectionItemDetail: React.FC = () => {
                             placeholder="Enter new price (e.g., 1500)"
                             value={newPrice}
                             onChange={handlePriceInputChange}
-                            className="w-full p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
+                            className="w-full p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)] text-[var(--theme-text-primary)] placeholder-[var(--theme-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)]/50 focus:border-[var(--theme-accent-secondary)]/50 transition-all duration-300"
                           />
                           <button
                             onClick={handleCustomPriceUpdate}
@@ -1219,7 +1219,7 @@ const CollectionItemDetail: React.FC = () => {
                               parseInt(newPrice, 10) ===
                                 Math.round(item?.myPrice || 0)
                             }
-                            className="w-full p-3 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-purple-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            className="w-full p-3 rounded-xl bg-gradient-to-r from-[var(--theme-accent-secondary)] to-[var(--theme-accent-primary)] text-white font-semibold shadow-lg shadow-[var(--theme-accent-secondary)]/25 hover:shadow-xl hover:shadow-[var(--theme-accent-secondary)]/40 transition-all duration-300 transform hover:scale-[1.02] border border-[var(--theme-accent-secondary)]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                           >
                             <div className="flex items-center justify-center space-x-2">
                               <Plus className="w-4 h-4" />
@@ -1244,16 +1244,16 @@ const CollectionItemDetail: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-pink-900/10 to-rose-900/20"></div>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(239,68,68,0.1),transparent_70%)]"></div>
 
-                  <div className="relative bg-black/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5">
+                  <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50">
                     <div className="flex items-center space-x-4 mb-6">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-white/10 shadow-lg">
-                        <CheckCircle className="w-6 h-6 text-red-400" />
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-[var(--theme-status-error)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg">
+                        <CheckCircle className="w-6 h-6 text-[var(--theme-status-error)]" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-red-100 to-pink-100 bg-clip-text text-transparent">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--theme-text-primary)] via-[var(--theme-status-error)]/80 to-[var(--theme-accent-secondary)]/80 bg-clip-text text-transparent">
                           Sale Completed
                         </h2>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-[var(--theme-text-secondary)] text-sm">
                           Transaction details
                         </p>
                       </div>
@@ -1261,35 +1261,35 @@ const CollectionItemDetail: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Sale Price
                           </span>
-                          <span className="font-bold text-green-400 text-lg">
+                          <span className="font-bold text-[var(--theme-status-success)] text-lg">
                             {item.saleDetails.actualSoldPrice} kr
                           </span>
                         </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Payment
                           </span>
-                          <span className="font-medium text-blue-300">
+                          <span className="font-medium text-[var(--theme-accent-primary)]">
                             {item.saleDetails.paymentMethod}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Delivery
                           </span>
-                          <span className="font-medium text-purple-300">
+                          <span className="font-medium text-[var(--theme-accent-secondary)]">
                             {item.saleDetails.deliveryMethod}
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Date Sold
                           </span>
                           <span className="font-medium text-cyan-300">
@@ -1300,16 +1300,16 @@ const CollectionItemDetail: React.FC = () => {
                               : 'N/A'}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Buyer
                           </span>
                           <span className="font-medium text-yellow-300">
                             {item.saleDetails.buyerFullName || 'N/A'}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10">
-                          <span className="text-white/70 font-medium">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
+                          <span className="text-[var(--theme-text-secondary)] font-medium">
                             Tracking
                           </span>
                           <span className="font-medium text-pink-300">
