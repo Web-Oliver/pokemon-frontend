@@ -10,6 +10,7 @@
  * - Premium gradients and color palettes
  * - Context7 design system compliance
  * - Stunning animations and hover effects
+ * - Unified theme system integration
  */
 
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
@@ -26,6 +27,7 @@ import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { navigationHelper } from '../utils/navigation';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -42,6 +44,7 @@ type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 const AddEditItem: React.FC = () => {
   const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
+  const theme = useTheme();
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
@@ -210,9 +213,9 @@ const AddEditItem: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Context7 Award-Winning Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900"></div>
+    <div className={`min-h-screen relative overflow-hidden ${theme.getThemeClasses()}`}>
+      {/* Context7 Award-Winning Background - Theme Aware */}
+      <div className="absolute inset-0 bg-[var(--theme-bg-primary)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.08),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(16,185,129,0.05),transparent_60%)]"></div>
@@ -235,7 +238,7 @@ const AddEditItem: React.FC = () => {
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-green-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
             <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-green-400/5 rounded-[2.5rem] blur-xl"></div>
 
-            <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-hidden">
+            <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-8 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
               {/* Premium Gradient Border */}
               <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
@@ -250,7 +253,7 @@ const AddEditItem: React.FC = () => {
                 <div className="flex items-center space-x-6">
                   <button
                     onClick={handleBackToCollection}
-                    className="group relative overflow-hidden p-3 rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
                     aria-label="Back to collection"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -258,10 +261,10 @@ const AddEditItem: React.FC = () => {
                   </button>
 
                   <div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+                    <h1 className="text-4xl font-bold text-gradient-primary leading-tight">
                       {isEditing ? 'Edit Collection Item' : 'Add New Item'}
                     </h1>
-                    <p className="text-lg text-white/60 font-medium mt-2">
+                    <p className="text-lg text-[var(--theme-text-muted)] font-medium mt-2">
                       {isEditing
                         ? 'Update your precious collection item with care'
                         : 'Expand your collection with a new treasure'}
@@ -288,23 +291,23 @@ const AddEditItem: React.FC = () => {
 
           {/* Loading State */}
           {fetchLoading && (
-            <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-xl border border-zinc-700/30 p-8 text-center">
+            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-2xl shadow-xl border border-[var(--theme-border)] p-8 text-center">
               <LoadingSpinner size="lg" />
-              <p className="mt-4 text-zinc-400">Loading item for editing...</p>
+              <p className="mt-4 text-[var(--theme-text-muted)]">Loading item for editing...</p>
             </div>
           )}
 
           {/* Error State */}
           {fetchError && (
-            <div className="bg-red-50/95 backdrop-blur-xl rounded-2xl shadow-xl border border-red-200/50 p-8">
+            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-2xl shadow-xl border border-[var(--theme-border)] p-8">
               <div className="text-center">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Archive className="w-6 h-6 text-red-600" />
+                <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Archive className="w-6 h-6 text-red-400" />
                 </div>
-                <h3 className="text-lg font-bold text-red-300 mb-2">
+                <h3 className="text-lg font-bold text-[var(--theme-text-primary)] mb-2">
                   Error Loading Item
                 </h3>
-                <p className="text-red-400 mb-4">{fetchError}</p>
+                <p className="text-[var(--theme-text-muted)] mb-4">{fetchError}</p>
                 <button
                   onClick={handleBackToCollection}
                   className="bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-red-700 transition-colors"
@@ -322,7 +325,7 @@ const AddEditItem: React.FC = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
               <div className="absolute -inset-2 bg-gradient-to-r from-indigo-400/5 via-purple-400/5 to-pink-400/5 rounded-[2.5rem] blur-xl"></div>
 
-              <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
+              <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-12 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
                 {/* Floating Orbs */}
                 <div className="absolute -top-8 -left-8 w-40 h-40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
                 <div
@@ -331,10 +334,10 @@ const AddEditItem: React.FC = () => {
                 ></div>
 
                 <div className="mb-12 relative z-10 text-center">
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent mb-4 leading-tight">
+                  <h2 className="text-3xl font-bold text-gradient-primary mb-4 leading-tight">
                     Choose Your Collection Type
                   </h2>
-                  <p className="text-xl text-white/60 font-medium max-w-2xl mx-auto">
+                  <p className="text-xl text-[var(--theme-text-muted)] font-medium max-w-2xl mx-auto">
                     Select the type of precious item you want to add to your
                     collection
                   </p>
@@ -365,7 +368,7 @@ const AddEditItem: React.FC = () => {
                       <button
                         key={itemType.id}
                         onClick={() => setSelectedItemType(itemType.id)}
-                        className={`group relative text-center p-8 bg-black/60 backdrop-blur-2xl rounded-3xl transition-all duration-500 hover:scale-105 hover:shadow-2xl ${shadowClasses[itemType.color as keyof typeof shadowClasses]} border border-white/10 ring-1 ring-white/5 hover:ring-2 ${glowClasses[itemType.color as keyof typeof glowClasses]} overflow-hidden transform hover:-translate-y-2`}
+                        className={`group relative text-center p-8 glass-bg backdrop-blur-2xl rounded-3xl transition-all duration-[var(--animation-duration-slow)] hover:scale-105 hover:shadow-2xl ${shadowClasses[itemType.color as keyof typeof shadowClasses]} border border-[var(--border-glass-medium)] ring-1 ring-[var(--border-glass-subtle)] hover:ring-2 ${glowClasses[itemType.color as keyof typeof glowClasses]} overflow-hidden transform hover:-translate-y-2`}
                         style={{
                           animationDelay: `${index * 200}ms`,
                           animation: 'fadeInUp 0.8s ease-out forwards',
@@ -400,16 +403,16 @@ const AddEditItem: React.FC = () => {
                         </div>
 
                         <div className="relative z-10">
-                          <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-white transition-colors duration-300">
+                          <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-4 group-hover:text-[var(--theme-text-primary)] transition-colors duration-[var(--animation-duration-normal)]">
                             {itemType.name}
                           </h3>
-                          <p className="text-white/60 text-base leading-relaxed group-hover:text-white/80 transition-colors duration-300 font-medium">
+                          <p className="text-[var(--theme-text-muted)] text-base leading-relaxed group-hover:text-[var(--theme-text-secondary)] transition-colors duration-[var(--animation-duration-normal)] font-medium">
                             {itemType.description}
                           </p>
                         </div>
 
                         {/* Premium Arrow Indicator */}
-                        <div className="absolute bottom-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white/60 group-hover:text-white group-hover:bg-white/20 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <div className="absolute bottom-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-glass-primary)] backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text-primary)] group-hover:bg-[var(--bg-glass-secondary)] group-hover:translate-x-1 group-hover:scale-110 transition-all duration-[var(--animation-duration-normal)] opacity-0 group-hover:opacity-100">
                           <ArrowLeft className="w-4 h-4 rotate-180" />
                         </div>
 
@@ -435,7 +438,7 @@ const AddEditItem: React.FC = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
               <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-cyan-400/5 rounded-[2.5rem] blur-xl"></div>
 
-              <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-12 ring-1 ring-white/5 overflow-hidden">
+              <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-12 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
                 {/* Floating Orbs */}
                 <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
                 <div
@@ -448,7 +451,7 @@ const AddEditItem: React.FC = () => {
                     {!isEditing && (
                       <button
                         onClick={() => setSelectedItemType(null)}
-                        className="group relative overflow-hidden p-3 rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
                         aria-label="Back to item type selection"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -457,13 +460,13 @@ const AddEditItem: React.FC = () => {
                     )}
 
                     <div>
-                      <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent leading-tight">
+                      <h2 className="text-3xl font-bold text-gradient-primary leading-tight">
                         {
                           itemTypes.find((type) => type.id === selectedItemType)
                             ?.name
                         }
                       </h2>
-                      <p className="text-lg text-white/60 font-medium mt-2">
+                      <p className="text-lg text-[var(--theme-text-muted)] font-medium mt-2">
                         {
                           itemTypes.find((type) => type.id === selectedItemType)
                             ?.description

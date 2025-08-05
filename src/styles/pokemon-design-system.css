@@ -21,11 +21,19 @@
   --theme-bg-primary: var(--theme-header-background, rgba(9, 9, 11, 0.8));
   --theme-bg-secondary: var(--theme-bg-card, rgba(24, 24, 27, 0.8));
   --theme-bg-accent: var(--theme-bg-overlay, rgba(39, 39, 42, 0.8));
+  --theme-surface: var(--theme-bg-card, rgba(24, 24, 27, 0.8));
+  
+  /* Theme-aware text colors */
+  --theme-text-primary: var(--theme-text-primary, rgba(255, 255, 255, 0.9));
+  --theme-text-secondary: var(--theme-text-secondary, rgba(255, 255, 255, 0.7));
+  --theme-text-muted: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
+  --theme-text-accent: var(--theme-text-accent, rgba(6, 182, 212, 1));
   
   /* Theme-aware border colors */
   --theme-border-primary: var(--theme-border-color, rgba(113, 113, 122, 0.5));
   --theme-border-secondary: var(--theme-border-subtle, rgba(113, 113, 122, 0.3));
   --theme-border-accent: var(--theme-border-focus, rgba(6, 182, 212, 0.5));
+  --theme-border: var(--theme-border-color, rgba(113, 113, 122, 0.3));
   
   /* Pokemon Collection Brand Colors (Static) */
   --color-pokemon-red: oklch(0.65 0.25 25);
@@ -524,6 +532,16 @@
   --theme-card-border: var(--border-glass-light);
   --theme-shadow-primary: var(--shadow-glass);
   --theme-shadow-hover: var(--shadow-glass-hover);
+  
+  /* Theme-specific text colors */
+  --theme-text-primary: rgba(255, 255, 255, 0.95);
+  --theme-text-secondary: rgba(255, 255, 255, 0.8);
+  --theme-text-muted: rgba(255, 255, 255, 0.6);
+  --theme-text-accent: #06b6d4;
+  
+  /* Theme-specific surface colors */
+  --theme-surface: rgba(0, 0, 0, 0.6);
+  --theme-border: rgba(255, 255, 255, 0.15);
 }
 
 /* Context7 2025 Futuristic Theme */
@@ -533,6 +551,16 @@
   --theme-card-border: rgba(0, 212, 255, 0.3);
   --theme-shadow-primary: var(--shadow-neural);
   --theme-shadow-hover: 0 0 40px rgba(0, 212, 255, 0.4);
+  
+  /* Theme-specific text colors */
+  --theme-text-primary: rgba(0, 212, 255, 0.95);
+  --theme-text-secondary: rgba(0, 212, 255, 0.8);
+  --theme-text-muted: rgba(0, 212, 255, 0.6);
+  --theme-text-accent: #00d4ff;
+  
+  /* Theme-specific surface colors */
+  --theme-surface: rgba(0, 40, 80, 0.7);
+  --theme-border: rgba(0, 212, 255, 0.2);
 }
 
 /* DBA Cosmic Theme */
@@ -542,6 +570,16 @@
   --theme-card-border: rgba(139, 92, 246, 0.3);
   --theme-shadow-primary: var(--shadow-cosmic);
   --theme-shadow-hover: 0 0 50px rgba(139, 92, 246, 0.5);
+  
+  /* Theme-specific text colors */
+  --theme-text-primary: rgba(236, 72, 153, 0.95);
+  --theme-text-secondary: rgba(236, 72, 153, 0.8);
+  --theme-text-muted: rgba(236, 72, 153, 0.6);
+  --theme-text-accent: #ec4899;
+  
+  /* Theme-specific surface colors */
+  --theme-surface: rgba(70, 40, 120, 0.7);
+  --theme-border: rgba(139, 92, 246, 0.2);
 }
 
 /* Minimal Clean Theme */
@@ -551,6 +589,16 @@
   --theme-card-border: rgba(0, 0, 0, 0.1);
   --theme-shadow-primary: var(--shadow-minimal);
   --theme-shadow-hover: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
+  
+  /* Theme-specific text colors */
+  --theme-text-primary: rgba(0, 0, 0, 0.9);
+  --theme-text-secondary: rgba(0, 0, 0, 0.7);
+  --theme-text-muted: rgba(0, 0, 0, 0.5);
+  --theme-text-accent: #10b981;
+  
+  /* Theme-specific surface colors */
+  --theme-surface: rgba(255, 255, 255, 0.95);
+  --theme-border: rgba(0, 0, 0, 0.1);
 }
 
 /* ================================
