@@ -1,17 +1,29 @@
+/* Pokemon Collection - Unified Design System */
+@import "./styles/pokemon-design-system.css";
+
 /* Context7 Premium Design System - Using Tailwind Configuration */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global base styles - Dark Futuristic Theme */
+/* Global base styles - Pokemon Collection Theme */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  @apply font-sans antialiased bg-zinc-950 text-zinc-100;
+  @apply font-sans antialiased;
+  background: linear-gradient(135deg, 
+    #0f172a 0%,
+    rgba(88, 28, 135, 0.2) 25%,
+    rgba(59, 130, 246, 0.1) 50%,
+    rgba(6, 182, 212, 0.1) 75%,
+    #0f172a 100%
+  );
+  color: #f8fafc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 /* Ensure proper mobile viewport handling */
@@ -21,35 +33,45 @@ body {
   }
 }
 
-/* Premium scrollbar styles - Dark Theme */
+/* Premium scrollbar styles - Pokemon Theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-zinc-900;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-700 rounded-full;
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-600;
+  background: linear-gradient(135deg, #0891b2, #7c3aed);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
 }
 
-/* Context7 Premium Custom Components - Dark Futuristic */
+/* Enhanced scrollbar for webkit browsers */
+::-webkit-scrollbar-corner {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+/* Context7 Premium Custom Components - Pokemon Collection Enhanced */
 @layer components {
+  /* Legacy support - Updated to use new design tokens */
   .btn-premium {
-    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-2xl text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-cyan-500/25;
+    @apply btn-pokemon btn-primary;
   }
 
   .card-premium {
-    @apply bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/50 hover:scale-102 transition-all duration-500 hover:shadow-cyan-500/20;
+    @apply card-glass;
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent;
+    @apply text-gradient-primary;
   }
 
   .scrollbar-hide {
@@ -59,5 +81,177 @@ body {
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Enhanced component patterns based on analysis */
+  .page-container {
+    @apply bg-pokemon relative overflow-hidden min-h-screen;
+  }
+  
+  .content-wrapper {
+    @apply relative z-10 p-8;
+  }
+  
+  .main-container {
+    @apply max-w-7xl mx-auto space-y-12;
+  }
+  
+  /* Activity/Timeline specific patterns */
+  .activity-timeline {
+    @apply space-y-6;
+  }
+  
+  .activity-card {
+    @apply card-glass border-holographic p-6 hover-lift;
+  }
+  
+  /* Dashboard specific patterns */
+  .dashboard-stats {
+    @apply stats-grid;
+  }
+  
+  .dashboard-stat-card {
+    @apply stat-card icon-neural;
+  }
+  
+  /* Filter system patterns */
+  .filter-container {
+    @apply flex flex-wrap gap-3;
+  }
+  
+  .filter-active {
+    @apply filter-pill active;
+  }
+  
+  .filter-inactive {
+    @apply filter-pill;
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .filter-inactive:hover {
+    background: rgba(6, 182, 212, 0.2);
+    color: rgba(6, 182, 212, 0.9);
+  }
+  
+  /* Search input patterns */
+  .search-input {
+    @apply input-glass;
+  }
+  
+  .search-input:focus {
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+  }
+  
+  /* Header patterns from analysis */
+  .page-header {
+    @apply card-glass border-holographic p-12 relative overflow-hidden;
+  }
+  
+  .page-title {
+    @apply text-5xl font-black text-gradient-primary drop-shadow-lg;
+  }
+  
+  .page-subtitle {
+    @apply text-xl text-cyan-100/90 font-medium leading-relaxed;
+  }
+  
+  /* Loading states */
+  .loading-container {
+    @apply flex items-center justify-center min-h-[200px];
+  }
+  
+  .loading-text {
+    @apply text-cyan-100/80 font-medium;
+  }
+  
+  /* Error states */
+  .error-container {
+    @apply bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-3xl p-6 shadow-lg;
+  }
+  
+  .error-badge {
+    @apply text-red-400 text-sm font-medium bg-red-900/50 px-4 py-2 rounded-2xl border border-red-500/30;
+  }
+  
+  .error-message {
+    @apply text-red-300 font-medium text-lg;
+  }
+  
+  /* Empty states */
+  .empty-state {
+    @apply text-center py-16;
+  }
+  
+  .empty-state-icon {
+    @apply w-20 h-20 bg-gradient-to-br from-slate-100 to-white rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-200/50 shadow-lg;
+  }
+  
+  .empty-state-title {
+    @apply text-xl font-bold text-white mb-3;
+  }
+  
+  .empty-state-description {
+    @apply text-zinc-300 font-medium max-w-md mx-auto leading-relaxed;
+  }
+  
+  /* Auction/Card specific patterns */
+  .auction-card {
+    @apply card-glass p-6 hover-scale cursor-pointer;
+  }
+  
+  .auction-status-active {
+    @apply bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border-emerald-400/30;
+  }
+  
+  .auction-status-draft {
+    @apply bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/30;
+  }
+  
+  .auction-status-sold {
+    @apply bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-400/30;
+  }
+  
+  /* Form patterns */
+  .form-group {
+    @apply space-y-2;
+  }
+  
+  .form-label {
+    @apply text-sm font-semibold text-cyan-200/90 tracking-wider uppercase;
+  }
+  
+  .form-input {
+    @apply input-glass;
+  }
+  
+  .form-select {
+    @apply input-glass cursor-pointer;
+  }
+  
+  /* Badge system */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm border border-white/15;
+  }
+  
+  .badge-primary {
+    @apply bg-cyan-100/20 text-cyan-200 border-cyan-400/30;
+  }
+  
+  .badge-secondary {
+    @apply bg-purple-100/20 text-purple-200 border-purple-400/30;
+  }
+  
+  .badge-success {
+    @apply bg-emerald-100/20 text-emerald-200 border-emerald-400/30;
+  }
+  
+  .badge-warning {
+    @apply bg-amber-100/20 text-amber-200 border-amber-400/30;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100/20 text-red-200 border-red-400/30;
   }
 }
