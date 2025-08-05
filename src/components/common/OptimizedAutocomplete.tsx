@@ -20,7 +20,8 @@ import React, {
   Suspense,
   startTransition,
 } from 'react';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, LucideIcon } from 'lucide-react';
+import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormClearErrors } from 'react-hook-form';
 import { SearchResult } from '../../hooks/useSearch';
 import {
   useOptimizedSearch,
@@ -29,7 +30,17 @@ import {
 import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
+// Enhanced search interfaces for consolidation
+interface SearchSuggestion {
+  id: string;
+  displayName: string;
+  type: string;
+  data?: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
 interface OptimizedAutocompleteProps {
+  // Base search functionality (original)
   placeholder?: string;
   searchType: 'sets' | 'products' | 'cards';
   setFilter?: string;
@@ -41,6 +52,50 @@ interface OptimizedAutocompleteProps {
   minLength?: number;
   maxResults?: number;
   themeColor?: ThemeColor;
+
+  // Enhanced search system (consolidation)
+  searchVariant?: 'basic' | 'dropdown' | 'section' | 'field' | 'lazy';
+  
+  // Dropdown variant (from SearchDropdown.tsx - 601 lines)
+  suggestions?: SearchSuggestion[];
+  loading?: boolean;
+  highlightSearchTerm?: boolean;
+  onClose?: () => void;
+  suggestionsCount?: number;
+  activeField?: string;
+  
+  // Section variant (from ProductSearchSection.tsx/CardSearchSection.tsx)
+  register?: UseFormRegister<any>;
+  errors?: FieldErrors<any>;
+  setValue?: UseFormSetValue<any>;
+  watch?: UseFormWatch<any>;
+  clearErrors?: UseFormClearErrors<any>;
+  sectionTitle?: string;
+  sectionIcon?: LucideIcon;
+  onSelectionChange?: (selectedData: Record<string, unknown> | null) => void;
+  onError?: (error: string) => void;
+  readOnlyFields?: Record<string, boolean>;
+  productCategories?: Array<{ value: string; label: string }> | string[];
+  loadingOptions?: boolean;
+  
+  // Field variant (from AutocompleteField.tsx - 414 lines)
+  fieldName?: string;
+  label?: string;
+  required?: boolean;
+  helpText?: string;
+  
+  // Lazy variant (from LazySearchDropdown.tsx)
+  lazyLoad?: boolean;
+  loadMore?: () => void;
+  hasMore?: boolean;
+  
+  // Hierarchical search (Set -> Product/Card pattern)
+  hierarchical?: boolean;
+  parentField?: string;
+  parentValue?: string;
+  
+  // Search container integration
+  containerVariant?: 'inline' | 'modal' | 'sidebar' | 'floating';
 }
 
 // Context7 Pattern: Memoized suggestion item for optimal rendering
@@ -137,162 +192,384 @@ const SearchFallback = memo(() => {
 SearchFallback.displayName = 'SearchFallback';
 
 // Context7 Pattern: Main autocomplete component with comprehensive optimization and theme integration
-export const OptimizedAutocomplete = memo(
-  ({
-    placeholder = 'Search...',
+export const OptimizedAutocomplete: React.FC<OptimizedAutocompleteProps> = ({
+  // Base props
+  placeholder = 'Search...',
+  searchType,
+  setFilter,
+  onSelect,
+  onInputChange,
+  className = '',
+  disabled = false,
+  autoFocus = false,
+  minLength = 2,
+  maxResults = 50,
+  themeColor = 'cyan',
+  
+  // Enhanced search props
+  searchVariant = 'basic',
+  
+  // Dropdown variant props
+  suggestions = [],
+  loading = false,
+  highlightSearchTerm = true,
+  onClose,
+  suggestionsCount = 0,
+  activeField,
+  
+  // Section variant props
+  register,
+  errors,
+  setValue,
+  watch,
+  clearErrors,
+  sectionTitle,
+  sectionIcon: SectionIcon,
+  onSelectionChange,
+  onError,
+  readOnlyFields,
+  productCategories,
+  loadingOptions = false,
+  
+  // Field variant props
+  fieldName,
+  label,
+  required = false,
+  helpText,
+  
+  // Lazy variant props
+  lazyLoad = false,
+  loadMore,
+  hasMore = false,
+  
+  // Hierarchical search props
+  hierarchical = false,
+  parentField,
+  parentValue,
+  
+  // Container variant props
+  containerVariant = 'inline',
+}) => {
+  // Theme integration
+  const visualTheme = useVisualTheme();
+  const layoutTheme = useLayoutTheme();
+  const animationTheme = useAnimationTheme();
+  
+  // Enhanced search hook with all variants
+  const {
+    searchQuery,
+    setSearchQuery,
+    results,
+    isLoading,
+    selectedIndex,
+    setSelectedIndex,
+    isVisible,
+    setIsVisible,
+    inputRef,
+    dropdownRef,
+  } = useOptimizedSearch({
     searchType,
-    setFilter,
-    onSelect,
-    onInputChange,
-    className = '',
-    disabled = false,
-    autoFocus = false,
-    minLength = 1,
-    maxResults = 10,
-    themeColor = 'dark',
-  }: OptimizedAutocompleteProps) => {
-    const { visualTheme } = useVisualTheme();
-    const { density } = useLayoutTheme();
-    const { animationIntensity } = useAnimationTheme();
-    const elementTheme = getElementTheme(themeColor);
-    const [inputValue, setInputValue] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const [isFocused, setIsFocused] = useState(false);
+    setFilter: hierarchical ? parentValue : setFilter,
+    minLength,
+    maxResults,
+    disabled: disabled || (hierarchical && !parentValue),
+  });
 
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    // Context7 Pattern: Optimized search hook with transitions
-    const searchHook = useOptimizedSearch({
-      minLength,
-      debounceMs: 300,
-      enableTransitions: true,
-    });
-
-    // Context7 Pattern: Memoized filtered results
-    const filteredResults = useSearchResultSelector(
-      searchHook.results,
-      useCallback((result: SearchResult) => result, []),
-      [maxResults]
-    ).slice(0, maxResults);
-
-    // Context7 Pattern: Memoized search trigger
-    const triggerSearch = useCallback(
-      (query: string) => {
-        if (!query || query.length < minLength) {
-          setIsOpen(false);
-          return;
+  // Form integration for section variants
+  const watchedValues = watch ? watch() : {};
+  const fieldError = errors?.[fieldName || ''];
+  
+  // Enhanced result selector with form integration
+  const { handleResultSelect } = useSearchResultSelector({
+    onSelect: (result) => {
+      // Handle different selection patterns
+      if (searchVariant === 'section' && setValue && onSelectionChange) {
+        // Form integration - auto-fill related fields
+        if (searchType === 'products') {
+          setValue('productName', result.displayName);
+          setValue('setName', result.data?.setName || '');
+          setValue('category', result.data?.category || '');
+          setValue('availability', result.data?.availability || '');
+        } else if (searchType === 'cards') {
+          setValue('cardName', result.displayName);
+          setValue('setName', result.data?.setName || '');
+          setValue('cardNumber', result.data?.cardNumber || '');
         }
-
-        switch (searchType) {
-          case 'sets':
-            searchHook.searchSets(query);
-            break;
-          case 'products':
-            searchHook.searchProducts(query, setFilter);
-            break;
-          case 'cards':
-            searchHook.searchCards(query, setFilter);
-            break;
-        }
-        setIsOpen(true);
-      },
-      [searchType, setFilter, searchHook, minLength]
-    );
-
-    // Context7 Pattern: Optimized input change handler
-    const handleInputChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setInputValue(value);
-        setSelectedIndex(0);
-
-        // Use startTransition for non-urgent updates
-        startTransition(() => {
-          onInputChange?.(value);
-          triggerSearch(value);
-        });
-      },
-      [onInputChange, triggerSearch]
-    );
-
-    // Context7 Pattern: Memoized selection handler
-    const handleSelect = useCallback(
-      (result: SearchResult) => {
-        setInputValue(result.displayName);
-        setIsOpen(false);
+        onSelectionChange(result.data);
+        clearErrors?.(['productName', 'cardName', 'setName']);
+      } else {
         onSelect(result);
-      },
-      [onSelect]
-    );
-
-    // Context7 Pattern: Memoized keyboard handler
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (!isOpen || filteredResults.length === 0) {
-          return;
-        }
-
-        switch (e.key) {
-          case 'ArrowDown':
-            e.preventDefault();
-            setSelectedIndex((prev) => (prev + 1) % filteredResults.length);
-            break;
-          case 'ArrowUp':
-            e.preventDefault();
-            setSelectedIndex(
-              (prev) =>
-                (prev - 1 + filteredResults.length) % filteredResults.length
-            );
-            break;
-          case 'Enter':
-            e.preventDefault();
-            if (filteredResults[selectedIndex]) {
-              handleSelect(filteredResults[selectedIndex]);
-            }
-            break;
-          case 'Escape':
-            e.preventDefault();
-            setIsOpen(false);
-            inputRef.current?.blur();
-            break;
-        }
-      },
-      [isOpen, filteredResults, selectedIndex, handleSelect]
-    );
-
-    // Context7 Pattern: Effect with cleanup
-    useEffect(() => {
-      if (autoFocus && inputRef.current) {
-        inputRef.current.focus();
       }
-    }, [autoFocus]);
+      setIsVisible(false);
+      setSearchQuery(result.displayName);
+    },
+    onInputChange,
+  });
 
-    // Context7 Pattern: Memoized suggestions list
-    const suggestionsList = useMemo(() => {
-      if (
-        !isOpen ||
-        (!searchHook.isSearching && filteredResults.length === 0)
-      ) {
-        return null;
+  // Input change handler with form integration
+  const handleInputChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    
+    if (searchVariant === 'section' && setValue && fieldName) {
+      setValue(fieldName, value);
+    }
+    
+    if (onInputChange) {
+      onInputChange(value);
+    }
+    
+    // Clear related fields when input changes
+    if (searchVariant === 'section' && setValue && value === '') {
+      if (searchType === 'products') {
+        setValue('category', '');
+        setValue('availability', '');
+      } else if (searchType === 'cards') {
+        setValue('cardNumber', '');
       }
+      onSelectionChange?.(null);
+    }
+  }, [setSearchQuery, setValue, fieldName, onInputChange, searchVariant, searchType, onSelectionChange]);
 
+  // Enhanced keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!isVisible || results.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % results.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && results[selectedIndex]) {
+          handleResultSelect(results[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        setIsVisible(false);
+        onClose?.();
+        break;
+    }
+  }, [isVisible, results, selectedIndex, handleResultSelect, setSelectedIndex, onClose]);
+
+  // Theme-aware styling
+  const elementTheme = getElementTheme(themeColor, visualTheme);
+  
+  // Enhanced container classes based on variant
+  const containerClasses = useMemo(() => {
+    const base = 'relative w-full';
+    
+    switch (containerVariant) {
+      case 'modal':
+        return `${base} z-50`;
+      case 'sidebar':
+        return `${base} border-r border-zinc-700/50`;
+      case 'floating':
+        return `${base} absolute top-full left-0 right-0 z-40`;
+      default:
+        return base;
+    }
+  }, [containerVariant]);
+
+  // Enhanced input classes with theme integration
+  const inputClasses = useMemo(() => {
+    const base = [
+      'w-full px-4 py-3 rounded-xl',
+      'bg-zinc-900/90 backdrop-blur-sm',
+      'border border-zinc-700/50',
+      'text-zinc-100 placeholder-zinc-400',
+      'focus:outline-none focus:ring-2',
+      'transition-all duration-300',
+      elementTheme.focus,
+      elementTheme.border,
+    ];
+
+    if (disabled) {
+      base.push('opacity-50 cursor-not-allowed');
+    }
+    
+    if (fieldError) {
+      base.push('border-red-500/50 focus:ring-red-500/50');
+    }
+
+    return base.join(' ');
+  }, [elementTheme, disabled, fieldError]);
+
+  // Enhanced dropdown classes
+  const dropdownClasses = useMemo(() => {
+    return [
+      'absolute top-full left-0 right-0 z-50 mt-2',
+      'bg-zinc-900/95 backdrop-blur-xl',
+      'border border-zinc-700/50 rounded-xl',
+      'shadow-2xl shadow-black/50',
+      'max-h-80 overflow-y-auto',
+      'transition-all duration-300',
+      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none',
+    ].join(' ');
+  }, [isVisible]);
+
+  // Section variant rendering
+  const renderSectionVariant = () => {
+    if (searchVariant !== 'section') return null;
+
+    return (
+      <div className="space-y-4">
+        {sectionTitle && SectionIcon && (
+          <div className="flex items-center gap-3 pb-2 border-b border-zinc-700/30">
+            <SectionIcon className="w-5 h-5 text-cyan-400" />
+            <h3 className="text-lg font-semibold text-zinc-100">{sectionTitle}</h3>
+          </div>
+        )}
+        
+        {/* Enhanced input with form integration */}
+        <div className="space-y-2">
+          {label && (
+            <label className="block text-sm font-medium text-zinc-300">
+              {label} {required && <span className="text-red-400">*</span>}
+            </label>
+          )}
+          
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-400" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setIsVisible(true)}
+              placeholder={placeholder}
+              disabled={disabled || (hierarchical && !parentValue)}
+              autoFocus={autoFocus}
+              className={`pl-10 ${inputClasses}`}
+              {...(register && fieldName ? register(fieldName, { required }) : {})}
+            />
+            
+            {(isLoading || loadingOptions) && (
+              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
+            )}
+          </div>
+          
+          {fieldError && (
+            <p className="text-sm text-red-400">{fieldError.message}</p>
+          )}
+          
+          {helpText && !fieldError && (
+            <p className="text-sm text-zinc-500">{helpText}</p>
+          )}
+        </div>
+        
+        {/* Hierarchical search message */}
+        {hierarchical && !parentValue && (
+          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <p className="text-sm text-amber-400">
+              Please select a {parentField} first to enable {searchType} search.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Basic variant rendering (original functionality)
+  const renderBasicVariant = () => {
+    if (searchVariant !== 'basic') return null;
+
+    return (
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-400" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsVisible(true)}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoFocus={autoFocus}
+          className={`pl-10 ${inputClasses}`}
+        />
+        
+        {isLoading && (
+          <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
+        )}
+      </div>
+    );
+  };
+
+  // Enhanced dropdown rendering with all variants
+  const renderDropdown = () => {
+    if (!isVisible) return null;
+
+    const displayResults = searchVariant === 'dropdown' && suggestions.length > 0 ? 
+      suggestions.map(s => ({ ...s, type: s.type || searchType })) : 
+      results;
+
+    if (displayResults.length === 0 && !isLoading) {
       return (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 rounded-2xl shadow-2xl max-h-96 overflow-auto">
-          <Suspense fallback={<SearchFallback />}>
-            {searchHook.isSearching ? (
-              <SearchFallback />
-            ) : filteredResults.length > 0 ? (
-              <div className="divide-y divide-zinc-700/30">
-                {filteredResults.map((result, index) => (
-                  <SuggestionItem
-                    key={result._id || `${result.type}-${index}`}
-                    result={result}
-                    isSelected={selectedIndex === index}
-                    onSelect={handleSelect}
-                    searchQuery={inputValue}
-                  />
-                ))}
+        <div ref={dropdownRef} className={dropdownClasses}>
+          <div className="px-4 py-3 text-center text-zinc-400">
+            {searchQuery.length < minLength 
+              ? `Type at least ${minLength} characters to search`
+              : 'No results found'
+            }
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div ref={dropdownRef} className={dropdownClasses}>
+        <Suspense fallback={<SearchFallback />}>
+          {displayResults.map((result, index) => (
+            <SuggestionItem
+              key={result.id || `${result.type}-${index}`}
+              result={result}
+              isSelected={index === selectedIndex}
+              onSelect={handleResultSelect}
+              searchQuery={highlightSearchTerm ? searchQuery : ''}
+            />
+          ))}
+          
+          {/* Lazy loading */}
+          {lazyLoad && hasMore && (
+            <div className="px-4 py-3 text-center">
+              <button
+                onClick={loadMore}
+                className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+              >
+                Load more results...
+              </button>
+            </div>
+          )}
+          
+          {/* Results count */}
+          {suggestionsCount > 0 && (
+            <div className="px-4 py-2 border-t border-zinc-700/30 text-xs text-zinc-500">
+              Showing {displayResults.length} of {suggestionsCount} results
+            </div>
+          )}
+        </Suspense>
+      </div>
+    );
+  };
+
+  return (
+    <div className={`${containerClasses} ${className}`}>
+      {/* Render based on search variant */}
+      {renderSectionVariant()}
+      {renderBasicVariant()}
+      
+      {/* Enhanced dropdown for all variants */}
+      {renderDropdown()}
+    </div>
+  );
+}}
               </div>
             ) : (
               <div className="px-4 py-6 text-center text-zinc-400 text-sm">
@@ -365,3 +642,6 @@ export const OptimizedAutocomplete = memo(
 OptimizedAutocomplete.displayName = 'OptimizedAutocomplete';
 
 export default OptimizedAutocomplete;
+
+// Enhanced export as PokemonSearch for design system consistency
+export { OptimizedAutocomplete as PokemonSearch };
