@@ -10,10 +10,7 @@
  * - NOT over-engineered: Simple, focused validation field component
  */
 
-import React from 'react';
-import { FieldError } from 'react-hook-form';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 import { commonValidationRules, ValidationRule } from '../../../hooks/useFormValidation';
 
 export type ValidationFieldType = 'price' | 'email' | 'phone' | 'grade' | 'date' | 'text' | 'select' | 'number';
@@ -208,7 +205,7 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
   // Render select field for select type
   if (type === 'select') {
     return (
-      <Select
+      <PokemonSelect
         label={label}
         {...register(name, registerOptions)}
         error={error?.message}
@@ -221,13 +218,13 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
             {option.label}
           </option>
         ))}
-      </Select>
+      </PokemonSelect>
     );
   }
 
   // Render input field for all other types
   return (
-    <Input
+    <PokemonInput
       label={label}
       {...inputProps}
       {...register(name, registerOptions)}

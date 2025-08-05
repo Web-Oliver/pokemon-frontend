@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useState, useCallback } from 'react';
 import * as setsApi from '../api/setsApi';
 import { searchSets } from '../api/searchApi';
-import Input from '../components/common/Input';
+import { PokemonInput } from '../components/design-system/PokemonInput';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
 import { usePageLayout } from '../hooks/usePageLayout';
@@ -223,7 +223,7 @@ const SetSearch: React.FC = () => {
               <div className="relative group">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300" />
-                <Input
+                <PokemonInput
                   type="text"
                   placeholder="Search sets by name..."
                   value={searchTerm}
@@ -242,7 +242,7 @@ const SetSearch: React.FC = () => {
               <div className="relative group">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
                 <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300" />
-                <Input
+                <PokemonInput
                   type="number"
                   placeholder="e.g. 1998"
                   value={yearFilter}

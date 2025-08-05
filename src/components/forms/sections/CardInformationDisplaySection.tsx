@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
-import Input from '../../common/Input';
+import { PokemonInput } from '../../design-system/PokemonInput';
 
 interface CardInformationDisplaySectionProps {
   /** React Hook Form functions */
@@ -60,7 +60,7 @@ const CardInformationDisplaySection: React.FC<
       <div className={gridClassName}>
         {/* Card Number Field (formerly Pokemon Number) */}
         <div>
-          <Input
+          <PokemonInput
             label="Card Number"
             {...register('cardNumber')}
             error={errors.cardNumber?.message}
@@ -72,7 +72,7 @@ const CardInformationDisplaySection: React.FC<
         </div>
         {/* Variety Field - Full Width */}
         <div className="md:col-span-2">
-          <Input
+          <PokemonInput
             label="Variety"
             {...register('variety')}
             error={errors.variety?.message}

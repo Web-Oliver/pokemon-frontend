@@ -189,3 +189,6 @@ export const processActivitiesForAnalytics = (activities: any[]) => {
     )[0],
   };
 };
+
+// Export collection item helpers for cross-file usage
+export * from './collectionItemHelpers';

@@ -10,9 +10,20 @@
 
 import React, { forwardRef } from 'react';
 import { cn } from '../../utils/common';
+import { Loader2 } from 'lucide-react';
+import { useVisualTheme } from '../../hooks/theme/useVisualTheme';
+import { useLayoutTheme } from '../../hooks/theme/useLayoutTheme';  
+import { useAnimationTheme } from '../../hooks/theme/useAnimationTheme';
+import { inputClasses } from '../../utils/theme/inputClasses';
+import { FormWrapper } from '../common/FormWrapper';
+import { Label } from '../common/Label';
+import { ErrorText } from '../common/ErrorText';
+import { HelperText } from '../common/HelperText';
+import type { VisualTheme, Density, AnimationIntensity } from '../../types/themeTypes';
 
 export interface PokemonInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  // Original PokemonInput props
   label?: string;
   error?: string;
   helper?: string;
@@ -22,6 +33,21 @@ export interface PokemonInputProps
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
   loading?: boolean;
+  
+  // Theme system compatibility props
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  helperText?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
+  theme?: VisualTheme;
+  _colorScheme?: string;
+  density?: Density;
+  animationIntensity?: AnimationIntensity;
+  testId?: string;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -38,16 +64,43 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
       size = 'md',
       leftIcon,
       rightIcon,
+      startIcon, // Theme system compatibility
+      endIcon,   // Theme system compatibility
       fullWidth = false,
       loading = false,
+      required = false,
+      disabled = false,
+      readOnly = false,
+      theme,
+      _colorScheme,
+      density,
+      animationIntensity,
+      helperText, // Theme system compatibility
+      testId,
       className = '',
       id,
+      onFocus,
+      onBlur,
       ...props
     },
     ref
   ) => {
-    const inputId =
-      id || `pokemon-input-${Math.random().toString(36).substr(2, 9)}`;
+    // Theme context integration
+    const { visualTheme } = useVisualTheme();
+    const { density: contextDensity } = useLayoutTheme();
+    const { animationIntensity: contextAnimationIntensity } = useAnimationTheme();
+
+    // Merge context theme with component props
+    const effectiveTheme = theme || visualTheme;
+    const effectiveDensity = density || contextDensity;
+    const effectiveAnimationIntensity = animationIntensity || contextAnimationIntensity;
+
+    // Icon compatibility - support both legacy and theme system patterns
+    const resolvedStartIcon = startIcon || leftIcon;
+    const resolvedEndIcon = endIcon || rightIcon;
+    const resolvedHelper = helperText || helper;
+
+    const inputId = id || `pokemon-input-${Math.random().toString(36).substr(2, 9)}`;
 
     // Base foundation - used by ALL inputs
     const baseClasses = [
@@ -61,9 +114,10 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
       'focus:outline-none focus:ring-2 focus:border-transparent',
       'hover:shadow-xl focus:shadow-2xl',
       'disabled:opacity-50 disabled:cursor-not-allowed',
+      'group-focus-within:border-theme-border-accent/60',
     ].join(' ');
 
-    // Variant system - covers ALL use cases
+    // Enhanced variant system with theme integration
     const variantClasses = {
       default: [
         'focus:ring-cyan-500/50 focus:bg-zinc-800/95',
@@ -88,14 +142,30 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
         'rounded-none shadow-none',
         'focus:border-b-emerald-400 hover:border-b-zinc-500',
       ].join(' '),
+      // Theme system variants
+      theme: effectiveTheme ? inputClasses({
+        size,
+        hasError: !!error,
+        disabled,
+        theme: effectiveTheme,
+        fullWidth,
+      }) : '',
     };
 
-    // Size system
+    // Size system with density support
     const sizeClasses = {
-      sm: 'px-3 py-2 text-sm',
-      md: 'px-4 py-3 text-base',
-      lg: 'px-6 py-4 text-lg',
+      sm: effectiveDensity === 'compact' ? 'px-2 py-1 text-sm' : 'px-3 py-2 text-sm',
+      md: effectiveDensity === 'compact' ? 'px-3 py-2 text-base' : 
+          effectiveDensity === 'spacious' ? 'px-6 py-4 text-base' : 'px-4 py-3 text-base',
+      lg: effectiveDensity === 'compact' ? 'px-4 py-3 text-lg' : 
+          effectiveDensity === 'spacious' ? 'px-8 py-5 text-lg' : 'px-6 py-4 text-lg',
     };
+
+    // Animation classes based on intensity
+    const animationClasses = effectiveAnimationIntensity === 'disabled' ? '' :
+      effectiveAnimationIntensity === 'subtle' ? 'hover:shadow-theme-hover focus:shadow-theme-hover' :
+      effectiveAnimationIntensity === 'enhanced' ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101 group-focus-within:scale-110 group-focus-within:drop-shadow-sm' :
+      'hover:shadow-theme-hover focus:shadow-theme-hover';
 
     // Error state styling
     const errorClasses = error
@@ -106,87 +176,96 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
       : '';
 
     // Icon padding adjustments
-    const iconPadding =
-      leftIcon && rightIcon
-        ? 'pl-12 pr-12'
-        : leftIcon
-          ? 'pl-12'
-          : rightIcon
-            ? 'pr-12'
-            : '';
+    const hasStartIcon = !!(resolvedStartIcon);
+    const hasEndIcon = !!(resolvedEndIcon);
+    const iconPadding = hasStartIcon && hasEndIcon ? 'pl-12 pr-12' :
+      hasStartIcon ? 'pl-12' :
+      hasEndIcon ? 'pr-12' : '';
+
+    // Choose variant classes based on theme usage
+    const chosenVariantClasses = effectiveTheme && variant === 'default' ? 
+      variantClasses.theme : variantClasses[variant];
 
     const finalClassName = cn(
       baseClasses,
-      variantClasses[variant],
+      chosenVariantClasses,
       sizeClasses[size],
       errorClasses,
       iconPadding,
+      animationClasses,
       fullWidth && 'w-full',
       className
     );
 
+    // Icon classes with theme support
+    const iconClasses = cn(
+      'h-5 w-5 text-zinc-400 transition-all duration-theme-normal',
+      'group-focus-within:text-theme-primary',
+      effectiveAnimationIntensity === 'enhanced' &&
+        'group-focus-within:scale-110 group-focus-within:drop-shadow-sm'
+    );
+
+    // Input with icon container classes
+    const inputWithIconClasses = hasStartIcon || hasEndIcon ? 'group' : '';
+
     return (
-      <div className={cn('space-y-2', fullWidth && 'w-full')}>
-        {/* Label */}
+      <FormWrapper fullWidth={fullWidth} error={!!error}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-semibold text-cyan-200/90 tracking-wider uppercase"
-          >
+          <Label htmlFor={inputId} required={required}>
             {label}
-          </label>
+          </Label>
         )}
-
-        {/* Input Container */}
-        <div className={cn('relative', fullWidth && 'w-full')}>
-          {/* Left Icon */}
-          {leftIcon && (
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
-              <div className="w-5 h-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300">
-                {leftIcon}
-              </div>
+        <div className={cn('relative', inputWithIconClasses, fullWidth && 'w-full')}>
+          {/* Start Icon */}
+          {resolvedStartIcon && (
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+              {React.isValidElement(resolvedStartIcon) ? (
+                React.cloneElement(resolvedStartIcon as React.ReactElement, {
+                  className: iconClasses,
+                })
+              ) : (
+                <div className={iconClasses}>{resolvedStartIcon}</div>
+              )}
             </div>
           )}
 
-          {/* Input Field */}
-          <input ref={ref} id={inputId} className={finalClassName} {...props} />
+          {/* Input */}
+          <input
+            ref={ref}
+            id={inputId}
+            className={finalClassName}
+            disabled={disabled || loading}
+            readOnly={readOnly}
+            data-testid={testId}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            {...props}
+          />
 
-          {/* Right Icon */}
-          {rightIcon && !loading && (
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none z-10">
-              <div className="w-5 h-5 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300">
-                {rightIcon}
-              </div>
-            </div>
-          )}
-
-          {/* Loading Spinner */}
-          {loading && (
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10">
-              <div className="w-5 h-5 border-2 border-zinc-600 border-t-cyan-400 rounded-full animate-spin" />
+          {/* End Icon or Loading */}
+          {(resolvedEndIcon || loading) && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+              {loading ? (
+                <Loader2 className={cn(iconClasses, 'animate-spin')} />
+              ) : React.isValidElement(resolvedEndIcon) ? (
+                React.cloneElement(resolvedEndIcon as React.ReactElement, {
+                  className: iconClasses,
+                })
+              ) : (
+                <div className={iconClasses}>{resolvedEndIcon}</div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Helper Text */}
-        {helper && !error && (
-          <p className="text-xs text-cyan-200/60 font-medium">{helper}</p>
+        {/* Helper/Error Text */}
+        {(resolvedHelper || error) && (
+          <div className="mt-2 space-y-1">
+            {error && <ErrorText>{error}</ErrorText>}
+            {resolvedHelper && !error && <HelperText>{resolvedHelper}</HelperText>}
+          </div>
         )}
-
-        {/* Error Message */}
-        {error && (
-          <p className="text-xs text-red-400 font-medium flex items-center gap-1">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {error}
-          </p>
-        )}
-      </div>
+      </FormWrapper>
     );
   }
 );

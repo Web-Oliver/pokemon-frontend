@@ -12,18 +12,7 @@
  * - Dependency Inversion: Uses abstract form components
  */
 
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
-import {
-  FieldErrors,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from 'react-hook-form';
-import FormHeader from '../../common/FormHeader';
-import FormActionButtons from '../../common/FormActionButtons';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 
 interface AuctionFormContainerProps {
   /** Form Configuration */
@@ -106,7 +95,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
           </h4>
 
           {/* Header Text Field */}
-          <Input
+          <PokemonInput
             {...register('topText', { required: 'Header text is required' })}
             label="Auction Header Text"
             placeholder="Enter the main auction title/description"
@@ -141,7 +130,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
           </div>
 
           {/* Auction Date Field */}
-          <Input
+          <PokemonInput
             {...register('auctionDate')}
             type="date"
             label="Auction Date (Optional)"
@@ -153,7 +142,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
           />
 
           {/* Status Field */}
-          <Select
+          <PokemonSelect
             {...register('status')}
             label="Initial Status"
             helperText="Start with 'Draft' to review and add items before making it active"

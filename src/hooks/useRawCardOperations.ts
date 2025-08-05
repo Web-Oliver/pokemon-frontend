@@ -28,50 +28,42 @@ export interface UseRawCardOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles Raw card configuration and interface mapping
  */
-export const useRawCardOperations = (): UseRawCardOperationsReturn => {
+export const // ========================================
+// CONSOLIDATED RAW CARD OPERATIONS HOOK
+// ========================================
+// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
+
+import { useMemo } from 'react';
+import { getCollectionApiService } from '../services/ServiceRegistry';
+import { 
+  useConsolidatedCollectionOperations, 
+  createRawCardConfig 
+} from './useGenericCrudOperations';
+
+/**
+ * Raw Card operations hook - uses consolidated collection operations
+ * Maintains backward compatibility while eliminating code duplication
+ */
+export const useRawCardOperations = () => {
   const collectionApi = getCollectionApiService();
 
-  // Memoize API operations configuration to prevent unnecessary re-renders
-  const apiOperations = useMemo(
-    () => ({
-      create: collectionApi.createRawCard.bind(collectionApi),
-      update: collectionApi.updateRawCard.bind(collectionApi),
-      delete: collectionApi.deleteRawCard.bind(collectionApi),
-      markSold: collectionApi.markRawCardSold.bind(collectionApi),
-    }),
+  // Create entity configuration using factory
+  const entityConfig = useMemo(
+    () => createRawCardConfig(collectionApi),
     [collectionApi]
   );
 
-  // Memoize messages configuration
-  const messages = useMemo(
-    () => ({
-      entityName: 'Raw Card',
-      addSuccess: 'Raw card added to collection!',
-      updateSuccess: 'Raw card updated successfully!',
-      deleteSuccess: 'Raw card removed from collection!',
-      soldSuccess: 'Raw card marked as sold!',
-    }),
-    []
-  );
+  // Use consolidated operations hook
+  const operations = useConsolidatedCollectionOperations(entityConfig);
 
-  const {
-    loading,
-    error,
-    add,
-    update,
-    delete: deleteItem,
-    markSold,
-    clearError,
-  } = useGenericCrudOperations<IRawCard>(apiOperations, messages);
-
-  // Return interface-compatible methods
+  // Return interface-compatible methods for backward compatibility
   return {
-    loading,
-    error,
-    addRawCard: add,
-    updateRawCard: update,
-    deleteRawCard: deleteItem,
-    markRawCardSold: markSold,
-    clearError,
+    loading: operations.loading,
+    error: operations.error,
+    addRawCard: operations.add,
+    updateRawCard: operations.update,
+    deleteRawCard: operations.delete,
+    markRawCardSold: operations.markSold,
+    clearError: operations.clearError,
   };
-};
+};;

@@ -21,7 +21,7 @@ import React, {
   useState,
 } from 'react';
 import { AlertCircle, Camera, Image, Sparkles, Upload, X } from 'lucide-react';
-import ConfirmModal from './common/ConfirmModal';
+import { PokemonConfirmModal } from './design-system/PokemonModal';
 import { GlassmorphismContainer } from './effects/GlassmorphismContainer';
 import {
   detectImageAspectRatio,
@@ -228,6 +228,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               Release to add your beautiful images
             </p>
           </div>
+
+
         ) : (
           <div className="py-4">
             <Upload className="w-10 h-10 text-gray-400 mx-auto mb-4" />
@@ -301,17 +303,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       {/* Confirmation modal for removing images */}
       {showRemoveConfirm && imageToRemove && (
-        <ConfirmModal
+        <PokemonConfirmModal
           isOpen={showRemoveConfirm}
           onClose={handleCancelRemoveImage}
           onConfirm={confirmRemoveImage}
           title="Remove Image"
-          message={`Are you sure you want to remove this ${
+          confirmMessage={`Are you sure you want to remove this ${
             imageToRemove.isExisting ? 'existing' : 'new'
           } image?`}
           confirmText="Remove"
-          confirmVariant="danger"
-          isLoading={isRemoving}
+          variant="danger"
+          loading={isRemoving}
         />
       )}
     </div>
@@ -555,20 +557,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
 
       {/* Remove Image Confirmation Modal */}
-      <ConfirmModal
+      <PokemonConfirmModal
         isOpen={showRemoveConfirm}
         onClose={handleCancelRemoveImage}
         onConfirm={confirmRemoveImage}
         title="Remove Image"
-        description={`Are you sure you want to remove this image? ${
+        confirmMessage={`Are you sure you want to remove this image? ${
           imageToRemove?.isExisting
             ? 'This will permanently remove the image from your collection.'
             : 'This will remove the image from the upload queue.'
         }`}
         confirmText="Remove Image"
         variant={imageToRemove?.isExisting ? 'danger' : 'warning'}
-        icon="trash"
-        isLoading={isRemoving}
+        loading={isRemoving}
       />
     </div>
   );

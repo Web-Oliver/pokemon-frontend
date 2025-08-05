@@ -11,23 +11,7 @@
  * - Open/Closed: Extensible through props and callbacks
  */
 
-import React, { useMemo } from 'react';
-import {
-  Package,
-  Search,
-  Hash,
-  TrendingUp,
-  Eye,
-  CheckCircle,
-  Circle,
-  X,
-  Grid3X3,
-  Users,
-  ChevronRight,
-} from 'lucide-react';
-import Button from '../../common/Button';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 
 interface UnifiedCollectionItem {
   id: string;
@@ -170,7 +154,7 @@ const AuctionItemSelectionSection: React.FC<
             )}
           </div>
           {selectedItemIds.size > 0 && (
-            <Button
+            <PokemonButton
               type="button"
               onClick={onTogglePreview}
               variant="outline"
@@ -178,7 +162,7 @@ const AuctionItemSelectionSection: React.FC<
             >
               <Eye className="w-4 h-4 mr-2" />
               {showPreview ? 'Hide Preview' : 'Preview Selection'}
-            </Button>
+            </PokemonButton>
           )}
         </div>
       </div>
@@ -233,7 +217,7 @@ const AuctionItemSelectionSection: React.FC<
         <div className="relative z-10 space-y-6">
           {/* Search and Filter Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
+            <PokemonInput
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search items..."
@@ -256,7 +240,7 @@ const AuctionItemSelectionSection: React.FC<
           {/* Bulk Actions */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Button
+              <PokemonButton
                 type="button"
                 onClick={onSelectAll}
                 variant="outline"
@@ -264,9 +248,9 @@ const AuctionItemSelectionSection: React.FC<
                 disabled={filteredItems.length === 0}
               >
                 Select All ({filteredItems.length})
-              </Button>
+              </PokemonButton>
               {selectedItemIds.size > 0 && (
-                <Button
+                <PokemonButton
                   type="button"
                   onClick={onClearSelection}
                   variant="outline"
@@ -274,7 +258,7 @@ const AuctionItemSelectionSection: React.FC<
                 >
                   <X className="w-4 h-4 mr-1" />
                   Clear Selection
-                </Button>
+                </PokemonButton>
               )}
             </div>
             <p className="text-sm text-zinc-400 font-medium">
@@ -405,7 +389,7 @@ const AuctionItemSelectionSection: React.FC<
                     {selectedItemsValue.toLocaleString()} kr. total
                   </span>
                 </div>
-                <Button
+                <PokemonButton
                   type="button"
                   onClick={() => onTogglePreview()}
                   variant="outline"
@@ -414,7 +398,7 @@ const AuctionItemSelectionSection: React.FC<
                   <Eye className="w-4 h-4 mr-2" />
                   View & Order
                   <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
+                </PokemonButton>
               </div>
             </div>
           )}

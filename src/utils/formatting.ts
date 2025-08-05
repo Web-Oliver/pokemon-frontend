@@ -8,6 +8,7 @@
  * - Card name formatting and manipulation
  * - Price display and Decimal128 conversion
  * - Time formatting and relative time calculations
+ * - Number and string formatting utilities
  */
 
 // ========================================
@@ -143,7 +144,7 @@ export const formatPrice = (price: any): string | null => {
 };
 
 /**
- * Context7 Compact Number Formatter - Format large numbers with K notation
+ * Format number in compact notation (1K, 1M, etc.)
  */
 export const formatCompactNumber = (num: number): string => {
   if (num >= 1000000) {
@@ -152,6 +153,37 @@ export const formatCompactNumber = (num: number): string => {
     return `${(num / 1000).toFixed(num % 1000 === 0 ? 0 : 1)}K`;
   }
   return num.toString();
+};
+
+/**
+ * Format bytes in human readable format
+ */
+export const formatBytes = (bytes: number, decimals: number = 2): string => {
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
+/**
+ * Format percentage with consistent decimal places
+ */
+export const formatPercentage = (value: number, decimals: number = 1): string => {
+  return `${value.toFixed(decimals)}%`;
+};
+
+/**
+ * Format large numbers with separators (1,000,000)
+ */
+export const formatNumberWithSeparators = (num: number): string => {
+  return num.toLocaleString();
 };
 
 /**

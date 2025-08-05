@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import Button from './Button';
+import { PokemonButton } from '../design-system/PokemonButton';
 import { ButtonLoading } from './LoadingStates';
 import { buildThemeClasses, ThemeColor } from '../../theme/formThemes';
 
@@ -59,7 +59,7 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
       className={`flex justify-end space-x-6 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 ${className}`}
     >
       {/* Cancel Button */}
-      <Button
+      <PokemonButton
         type="button"
         variant="secondary"
         onClick={onCancel}
@@ -67,21 +67,19 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
         className="px-8 py-3"
       >
         Cancel
-      </Button>
+      </PokemonButton>
 
       {/* Submit Button */}
-      <Button
+      <PokemonButton
         type="submit"
         variant="primary"
         disabled={isSubmitting}
         className={`min-w-[140px] px-8 py-3 ${buttonTheme}`}
+        loading={isSubmitting}
+        loadingText={finalLoadingText}
       >
-        {isSubmitting ? (
-          <ButtonLoading text={finalLoadingText} />
-        ) : (
-          finalSubmitText
-        )}
-      </Button>
+        {finalSubmitText}
+      </PokemonButton>
     </div>
   );
 };

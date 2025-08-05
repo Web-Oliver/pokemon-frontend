@@ -23,7 +23,7 @@ import {
 } from 'react-hook-form';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
-import { CardSearchSection } from '../CardSearchSection';
+import { PokemonSearch } from '../../design-system/PokemonSearch';
 import CardInformationDisplaySection from '../sections/CardInformationDisplaySection';
 import GradingPricingSection from '../sections/GradingPricingSection';
 import ImageUploadSection from '../sections/ImageUploadSection';
@@ -157,7 +157,9 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
 
           {/* Standardized Card Search Section */}
           <div className="mb-6 relative z-10">
-            <CardSearchSection
+            <PokemonSearch
+              searchType="cards"
+              searchVariant="section"
               register={register}
               errors={errors}
               setValue={setValue}

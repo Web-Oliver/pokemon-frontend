@@ -34,50 +34,42 @@ export interface UsePsaCardOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles PSA card configuration and interface mapping
  */
-export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
+export const // ========================================
+// CONSOLIDATED PSA CARD OPERATIONS HOOK
+// ========================================
+// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
+
+import { useMemo } from 'react';
+import { getCollectionApiService } from '../services/ServiceRegistry';
+import { 
+  useConsolidatedCollectionOperations, 
+  createPsaCardConfig 
+} from './useGenericCrudOperations';
+
+/**
+ * PSA Card operations hook - uses consolidated collection operations
+ * Maintains backward compatibility while eliminating code duplication
+ */
+export const usePsaCardOperations = () => {
   const collectionApi = getCollectionApiService();
 
-  // Memoize API operations configuration to prevent unnecessary re-renders
-  const apiOperations = useMemo(
-    () => ({
-      create: collectionApi.createPsaCard.bind(collectionApi),
-      update: collectionApi.updatePsaCard.bind(collectionApi),
-      delete: collectionApi.deletePsaCard.bind(collectionApi),
-      markSold: collectionApi.markPsaCardSold.bind(collectionApi),
-    }),
+  // Create entity configuration using factory
+  const entityConfig = useMemo(
+    () => createPsaCardConfig(collectionApi),
     [collectionApi]
   );
 
-  // Memoize messages configuration
-  const messages = useMemo(
-    () => ({
-      entityName: 'PSA Graded Card',
-      addSuccess: 'PSA graded card added to collection!',
-      updateSuccess: 'PSA graded card updated successfully!',
-      deleteSuccess: 'PSA graded card removed from collection!',
-      soldSuccess: 'PSA graded card marked as sold!',
-    }),
-    []
-  );
+  // Use consolidated operations hook
+  const operations = useConsolidatedCollectionOperations(entityConfig);
 
-  const {
-    loading,
-    error,
-    add,
-    update,
-    delete: deleteItem,
-    markSold,
-    clearError,
-  } = useGenericCrudOperations<IPsaGradedCard>(apiOperations, messages);
-
-  // Return interface-compatible methods
+  // Return interface-compatible methods for backward compatibility
   return {
-    loading,
-    error,
-    addPsaCard: add,
-    updatePsaCard: update,
-    deletePsaCard: deleteItem,
-    markPsaCardSold: markSold,
-    clearError,
+    loading: operations.loading,
+    error: operations.error,
+    addPsaCard: operations.add,
+    updatePsaCard: operations.update,
+    deletePsaCard: operations.delete,
+    markPsaCardSold: operations.markSold,
+    clearError: operations.clearError,
   };
-};
+};;

@@ -8,10 +8,10 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Package, Search } from 'lucide-react';
-import Modal from '../common/Modal';
-import Button from '../common/Button';
-import Input from '../common/Input';
-import Select from '../common/Select';
+import { PokemonModal } from '../design-system/PokemonModal';
+import { PokemonButton } from '../design-system/PokemonButton';
+import { PokemonInput } from '../design-system/PokemonInput';
+import { PokemonSelect } from '../design-system/PokemonSelect';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 // Generic item interface that all selectable items must extend
@@ -289,13 +289,13 @@ export function ItemSelectorModal<T extends SelectableItem>({
   const selectedCount = selectedItems.size;
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={title} maxWidth="2xl">
+    <PokemonModal open={isOpen} onClose={handleClose} title={title} size="xl">
       <div className="space-y-6">
         {/* Search and Filters */}
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
             <div className="flex-1">
-              <Input
+              <PokemonInput
                 type="text"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
@@ -308,9 +308,9 @@ export function ItemSelectorModal<T extends SelectableItem>({
             </div>
             {filterOptions.length > 0 && (
               <div className="w-48">
-                <Select
+                <PokemonSelect
                   value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
+                  onChange={(value) => setFilterCategory(value as string)}
                   options={[
                     { value: 'all', label: 'All Categories' },
                     ...filterOptions,
@@ -324,7 +324,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
           {allowMultipleSelection && (
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <Button
+                <PokemonButton
                   onClick={handleSelectAll}
                   variant="outline"
                   size="sm"
@@ -333,7 +333,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
                   {selectedCount === filteredItems.length
                     ? 'Deselect All'
                     : 'Select All'}
-                </Button>
+                </PokemonButton>
                 <span className="text-sm text-gray-600 dark:text-zinc-400 dark:text-zinc-300">
                   {selectedCount} of {filteredItems.length} items selected
                   {maxSelection && ` (max ${maxSelection})`}
@@ -383,14 +383,14 @@ export function ItemSelectorModal<T extends SelectableItem>({
 
         {/* Action Buttons */}
         <div className="flex items-center justify-end space-x-3 pt-4 border-t">
-          <Button
+          <PokemonButton
             onClick={handleClose}
             variant="outline"
             disabled={isSubmitting}
           >
             Cancel
-          </Button>
-          <Button
+          </PokemonButton>
+          <PokemonButton
             onClick={handleSubmit}
             disabled={selectedCount === 0 || isSubmitting}
             className="min-w-[120px]"
@@ -403,10 +403,10 @@ export function ItemSelectorModal<T extends SelectableItem>({
             ) : (
               `Select ${selectedCount} Item${selectedCount !== 1 ? 's' : ''}`
             )}
-          </Button>
+          </PokemonButton>
         </div>
       </div>
-    </Modal>
+    </PokemonModal>
   );
 }
 

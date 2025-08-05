@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { Settings } from 'lucide-react';
-import Input from '../common/Input';
+import { PokemonInput } from '../design-system/PokemonInput';
 import DbaExportActionsCosmic from './DbaExportActionsCosmic';
 
 interface SelectedItem {
@@ -85,7 +85,7 @@ const DbaExportConfiguration: React.FC<DbaExportConfigurationProps> =
                   <label className="block text-sm font-medium text-zinc-300 mb-2">
                     Custom Description Prefix (Optional)
                   </label>
-                  <Input
+                  <PokemonInput
                     value={customDescription}
                     onChange={(e) => setCustomDescription(e.target.value)}
                     placeholder="e.g., Sjældent samler kort..."

@@ -4,24 +4,7 @@
  * Following CLAUDE.md principles for detailed information display
  */
 
-import {
-  Archive,
-  ArrowLeft,
-  Check,
-  CheckCircle,
-  Download,
-  Edit,
-  Image as ImageIcon,
-  Info,
-  Package,
-  Plus,
-  Star,
-  Trash2,
-  TrendingUp,
-} from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import ConfirmModal from '../components/common/ConfirmModal';
-import Modal from '../components/common/Modal';
+import { PokemonModal } from '../components/design-system/PokemonModal';
 import { ImageProductView } from '../components/common/ImageProductView';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
@@ -1293,7 +1276,7 @@ const CollectionItemDetail: React.FC = () => {
       </div>
 
       {/* Mark as Sold Modal */}
-      <Modal
+      <PokemonModal
         isOpen={isMarkSoldModalOpen}
         onClose={handleModalClose}
         title={`Mark "${getItemTitle()}" as Sold`}
@@ -1310,19 +1293,18 @@ const CollectionItemDetail: React.FC = () => {
             onSuccess={handleMarkSoldSuccess}
           />
         )}
-      </Modal>
+      </PokemonModal>
 
       {/* Premium Delete Confirmation Modal */}
-      <ConfirmModal
+      <PokemonConfirmModal
         isOpen={showDeleteConfirm}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         title="Delete Collection Item"
-        description="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
+        confirmMessage="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
         confirmText="Delete Item"
         variant="danger"
-        icon="trash"
-        isLoading={deleting}
+        loading={deleting}
       />
     </>
   );

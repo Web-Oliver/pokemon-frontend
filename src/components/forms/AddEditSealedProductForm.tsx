@@ -20,11 +20,11 @@ import {
   useFormSubmission,
   FormSubmissionPatterns,
 } from './wrappers/FormSubmissionWrapper';
-import Input from '../common/Input';
+import { PokemonInput } from '../design-system/PokemonInput';
 import LoadingSpinner from '../common/LoadingSpinner';
 import FormHeader from '../common/FormHeader';
 import FormActionButtons from '../common/FormActionButtons';
-import { ProductSearchSection } from './ProductSearchSection';
+import { PokemonSearch } from '../design-system/PokemonSearch';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import ValidationField from './fields/ValidationField';
@@ -403,7 +403,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       {/* Product Search Section - Hidden in edit mode like other forms */}
       {!isEditing && (
         <div className="mb-6 relative z-10">
-          <ProductSearchSection
+          <PokemonSearch
+            searchType="products"
+            searchVariant="section"
             register={register}
             errors={errors}
             setValue={setValue}
@@ -445,7 +447,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div>
-            <Input
+            <PokemonInput
               label="CardMarket Price (kr.)"
               type="number"
               step="1"

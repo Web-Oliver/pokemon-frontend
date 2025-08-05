@@ -9,10 +9,7 @@
  * - Interface Segregation: Focused interface for SetProduct → Product structure
  */
 
-import React from 'react';
-import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 import { ProductCategory } from '../../../domain/models/product';
 
 interface ReadOnlyProductFields {
@@ -70,7 +67,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* SetProduct Name - Read-only field auto-filled from SetProduct selection */}
       {readOnlyFields.setProductName && (
         <div>
-          <Input
+          <PokemonInput
             label="Set Product"
             {...register('setProductName')}
             error={errors.setProductName?.message}
@@ -85,7 +82,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* Product Name - Read-only field auto-filled from Product selection */}
       {readOnlyFields.productName && (
         <div>
-          <Input
+          <PokemonInput
             label="Product Name"
             {...register('productName')}
             error={errors.productName?.message}
@@ -100,7 +97,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* Category */}
       {readOnlyFields.category && (
         <div>
-          <Select
+          <PokemonSelect
             label="Category"
             {...register('category', { required: 'Category is required' })}
             error={errors.category?.message}
@@ -114,7 +111,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* Available - NEW field name matching Product model */}
       {readOnlyFields.available && (
         <div>
-          <Input
+          <PokemonInput
             label="Available"
             type="number"
             min="0"
@@ -138,7 +135,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* Price - From Product model */}
       {readOnlyFields.price && (
         <div>
-          <Input
+          <PokemonInput
             label="Price"
             type="text"
             {...register('price', {
@@ -160,7 +157,7 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
       {/* URL - Product URL from Product model */}
       {readOnlyFields.url && (
         <div className="md:col-span-2">
-          <Input
+          <PokemonInput
             label="Product URL"
             type="url"
             {...register('url', {

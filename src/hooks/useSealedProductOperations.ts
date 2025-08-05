@@ -36,51 +36,42 @@ export interface UseSealedProductOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles Sealed product configuration and interface mapping
  */
-export const useSealedProductOperations =
-  (): UseSealedProductOperationsReturn => {
-    const collectionApi = getCollectionApiService();
+export const // ========================================
+// CONSOLIDATED SEALED PRODUCT OPERATIONS HOOK
+// ========================================
+// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
 
-    // Memoize API operations configuration to prevent unnecessary re-renders
-    const apiOperations = useMemo(
-      () => ({
-        create: collectionApi.createSealedProduct.bind(collectionApi),
-        update: collectionApi.updateSealedProduct.bind(collectionApi),
-        delete: collectionApi.deleteSealedProduct.bind(collectionApi),
-        markSold: collectionApi.markSealedProductSold.bind(collectionApi),
-      }),
-      [collectionApi]
-    );
+import { useMemo } from 'react';
+import { getCollectionApiService } from '../services/ServiceRegistry';
+import { 
+  useConsolidatedCollectionOperations, 
+  createSealedProductConfig 
+} from './useGenericCrudOperations';
 
-    // Memoize messages configuration
-    const messages = useMemo(
-      () => ({
-        entityName: 'Sealed Product',
-        addSuccess: 'Sealed product added to collection!',
-        updateSuccess: 'Sealed product updated successfully!',
-        deleteSuccess: 'Sealed product removed from collection!',
-        soldSuccess: 'Sealed product marked as sold!',
-      }),
-      []
-    );
+/**
+ * Sealed Product operations hook - uses consolidated collection operations
+ * Maintains backward compatibility while eliminating code duplication
+ */
+export const useSealedProductOperations = () => {
+  const collectionApi = getCollectionApiService();
 
-    const {
-      loading,
-      error,
-      add,
-      update,
-      delete: deleteItem,
-      markSold,
-      clearError,
-    } = useGenericCrudOperations<ISealedProduct>(apiOperations, messages);
+  // Create entity configuration using factory
+  const entityConfig = useMemo(
+    () => createSealedProductConfig(collectionApi),
+    [collectionApi]
+  );
 
-    // Return interface-compatible methods
-    return {
-      loading,
-      error,
-      addSealedProduct: add,
-      updateSealedProduct: update,
-      deleteSealedProduct: deleteItem,
-      markSealedProductSold: markSold,
-      clearError,
-    };
+  // Use consolidated operations hook
+  const operations = useConsolidatedCollectionOperations(entityConfig);
+
+  // Return interface-compatible methods for backward compatibility
+  return {
+    loading: operations.loading,
+    error: operations.error,
+    addSealedProduct: operations.add,
+    updateSealedProduct: operations.update,
+    deleteSealedProduct: operations.delete,
+    markSealedProductSold: operations.markSold,
+    clearError: operations.clearError,
   };
+};;

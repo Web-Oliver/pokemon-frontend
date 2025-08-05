@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Input from '../common/Input';
+import { PokemonInput } from '../design-system/PokemonInput';
 
 interface DbaCustomDescriptionInputProps {
   value: string;
@@ -17,18 +17,16 @@ const DbaCustomDescriptionInput: React.FC<DbaCustomDescriptionInputProps> = ({
 }) => {
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-300 mb-2">
-        Custom Description Prefix (Optional)
-      </label>
-      <Input
+      <PokemonInput
+        label="Custom Description Prefix (Optional)"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        variant="default"
+        size="md"
         placeholder="e.g., Sjældent samler kort..."
-        className="w-full"
+        fullWidth={true}
+        helper="This text will be added before the auto-generated description"
       />
-      <p className="text-xs text-zinc-400 mt-1">
-        This text will be added before the auto-generated description
-      </p>
     </div>
   );
 };

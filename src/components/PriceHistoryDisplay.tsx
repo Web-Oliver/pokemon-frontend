@@ -11,17 +11,8 @@
  * - Stunning animations and hover effects
  */
 
-import React, { useState } from 'react';
-import {
-  Banknote,
-  Calendar,
-  Plus,
-  TrendingDown,
-  TrendingUp,
-} from 'lucide-react';
-import { IPriceHistoryEntry } from '../domain/models/common';
-import Button from './common/Button';
-import Input from './common/Input';
+import { PokemonButton } from './design-system/PokemonButton';
+import { PokemonInput } from './design-system/PokemonInput';
 import { log } from '../utils/logger';
 import { showWarningToast } from '../utils/errorHandler';
 
@@ -249,7 +240,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <Input
+                <PokemonInput
                   type="text"
                   inputMode="numeric"
                   placeholder="Enter new price (e.g., 1500)"
@@ -258,7 +249,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
                   className="w-full text-center"
                 />
               </div>
-              <Button
+              <PokemonButton
                 onClick={handlePriceUpdate}
                 disabled={
                   !newPrice.trim() ||
@@ -270,7 +261,7 @@ export const PriceHistoryDisplay: React.FC<PriceHistoryDisplayProps> = ({
                 variant="primary"
               >
                 Update Price
-              </Button>
+              </PokemonButton>
             </div>
           </div>
         )}

@@ -11,7 +11,7 @@
 
 import React, { useState } from 'react';
 import { ArrowUpDown, Download, FileText, Image, Package } from 'lucide-react';
-import Modal from '../common/Modal';
+import { PokemonModal } from '../design-system/PokemonModal';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { CollectionItem } from './CollectionItemCard';
 import {
@@ -139,11 +139,11 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
   const hasOrderingFeatures = onReorderItems && onMoveItemUp && onMoveItemDown;
 
   return (
-    <Modal
-      isOpen={isOpen}
+    <PokemonModal
+      open={isOpen}
       onClose={onClose}
       title="Export Collection Items"
-      maxWidth="6xl"
+      size="xl"
     >
       <div className="space-y-6">
         {/* Tab Navigation */}
@@ -339,7 +339,7 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
           </button>
         </div>
       </div>
-    </Modal>
+    </PokemonModal>
   );
 };
 

@@ -4,21 +4,8 @@
  * Following CLAUDE.md Layer 4 (Views/Pages) principles
  */
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  Calendar,
-  Check,
-  Edit3,
-  Package,
-  Plus,
-  Save,
-  Trash2,
-  X,
-} from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import Button from '../components/common/Button';
-import ConfirmModal from '../components/common/ConfirmModal';
+import { PokemonButton } from '../components/design-system/PokemonButton';
+import { PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
 import CollectionItemCard, {
@@ -379,17 +366,17 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-[var(--theme-status-error)]/5"></div>
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-6">
-                <Button
+                <PokemonButton
                   onClick={navigateToAuctionDetail}
                   variant="outline"
                   className="inline-flex items-center border-[var(--theme-border)] hover:border-[var(--theme-border-hover)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Auction
-                </Button>
+                </PokemonButton>
 
                 <div className="flex items-center space-x-3">
-                  <Button
+                  <PokemonButton
                     onClick={handleSaveChanges}
                     disabled={isEditing}
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
@@ -400,7 +387,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                       <Save className="w-4 h-4 mr-2" />
                     )}
                     Save Changes
-                  </Button>
+                  </PokemonButton>
                 </div>
               </div>
 
@@ -558,13 +545,13 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Auction Items ({currentAuction.items.length})
                 </h2>
-                <Button
+                <PokemonButton
                   onClick={() => setIsAddItemModalOpen(true)}
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20"
                 >
                   <Plus className="w-5 h-5 mr-3" />
                   Add Items
-                </Button>
+                </PokemonButton>
               </div>
 
               {currentAuction.items.length === 0 ? (
@@ -578,13 +565,13 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                   <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-8">
                     Add items from your collection to this auction.
                   </p>
-                  <Button
+                  <PokemonButton
                     onClick={() => setIsAddItemModalOpen(true)}
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <Plus className="w-5 h-5 mr-3" />
                     Add First Item
-                  </Button>
+                  </PokemonButton>
                 </div>
               ) : (
                 <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -612,7 +599,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
 
                           {/* Remove from Auction Button - Overlay */}
                           <div className="absolute top-4 right-4 z-20">
-                            <Button
+                            <PokemonButton
                               onClick={() => {
                                 const itemName =
                                   auctionItem.itemData?.cardId?.cardName ||
@@ -632,7 +619,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                             >
                               <Trash2 className="w-4 h-4 mr-1" />
                               Remove
-                            </Button>
+                            </PokemonButton>
                           </div>
 
                           {/* Auction Specific Badge */}
@@ -667,16 +654,15 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           />
 
           {/* Remove Item Confirmation Modal */}
-          <ConfirmModal
+          <PokemonConfirmModal
             isOpen={showRemoveItemConfirmation}
             onClose={handleCancelRemoveItem}
             onConfirm={confirmRemoveItem}
             title="Remove Item from Auction"
-            description={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
+            confirmMessage={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
             confirmText="Remove Item"
             variant="warning"
-            icon="trash"
-            isLoading={removingItem}
+            loading={removingItem}
           />
         </div>
       </div>

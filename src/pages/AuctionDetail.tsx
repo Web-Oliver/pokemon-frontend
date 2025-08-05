@@ -4,22 +4,7 @@
  * Phase 9.1 - Auction List & Detail Pages implementation
  */
 
-import {
-  Calendar,
-  Check,
-  Copy,
-  DollarSign,
-  Download,
-  FileText,
-  Package,
-  Plus,
-  Share,
-  X,
-} from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import Button from '../components/common/Button';
-import ConfirmModal from '../components/common/ConfirmModal';
-import Modal from '../components/common/Modal';
+import { PokemonModal } from '../components/design-system/PokemonModal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
@@ -512,7 +497,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   The auction you&apos;re looking for doesn&apos;t exist or has
                   been deleted.
                 </p>
-                <Button onClick={navigateToAuctions}>Back to Auctions</Button>
+                <PokemonButton onClick={navigateToAuctions}>Back to Auctions</PokemonButton>
               </div>
             </div>
           </div>
@@ -696,7 +681,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     Facebook Post
                   </h4>
                   <div className="space-y-3">
-                    <Button
+                    <PokemonButton
                       onClick={handleGenerateFacebookPost}
                       disabled={loading}
                       className="w-full flex items-center justify-center"
@@ -704,16 +689,16 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     >
                       <Share className="w-4 h-4 mr-2" />
                       Generate Post
-                    </Button>
+                    </PokemonButton>
                     {showFacebookPost && generatedFacebookPost && (
-                      <Button
+                      <PokemonButton
                         onClick={handleCopyToClipboard}
                         className="w-full flex items-center justify-center"
                         variant="outline"
                       >
                         <Copy className="w-4 h-4 mr-2" />
                         Copy to Clipboard
-                      </Button>
+                      </PokemonButton>
                     )}
                   </div>
                 </div>
@@ -723,7 +708,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <h4 className="text-sm font-bold text-[var(--theme-status-success)] tracking-wide uppercase">
                     Text File Export
                   </h4>
-                  <Button
+                  <PokemonButton
                     onClick={handleDownloadTextFile}
                     disabled={loading}
                     className="w-full flex items-center justify-center"
@@ -731,7 +716,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     Download Text File
-                  </Button>
+                  </PokemonButton>
                 </div>
 
                 {/* Images Zip Export */}
@@ -739,7 +724,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <h4 className="text-sm font-bold text-amber-600 tracking-wide uppercase">
                     Image Export
                   </h4>
-                  <Button
+                  <PokemonButton
                     onClick={handleDownloadImagesZip}
                     disabled={loading}
                     className="w-full flex items-center justify-center"
@@ -747,7 +732,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download Images Zip
-                  </Button>
+                  </PokemonButton>
                 </div>
               </div>
 
@@ -758,13 +743,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     <h4 className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
                       Generated Facebook Post
                     </h4>
-                    <Button
+                    <PokemonButton
                       onClick={() => setShowFacebookPost(false)}
                       variant="outline"
                       size="sm"
                     >
                       <X className="w-4 h-4" />
-                    </Button>
+                    </PokemonButton>
                   </div>
                   <div className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl p-6 border border-[var(--theme-border)]">
                     <textarea
@@ -773,14 +758,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       readOnly
                     />
                     <div className="flex justify-end mt-3">
-                      <Button
+                      <PokemonButton
                         onClick={handleCopyToClipboard}
                         size="sm"
                         className="flex items-center"
                       >
                         <Copy className="w-4 h-4 mr-1" />
                         Copy
-                      </Button>
+                      </PokemonButton>
                     </div>
                   </div>
                 </div>
@@ -796,13 +781,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Auction Items ({currentAuction.items.length})
                 </h2>
-                <Button
+                <PokemonButton
                   onClick={() => setIsAddItemModalOpen(true)}
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20"
                 >
                   <Plus className="w-5 h-5 mr-3" />
                   Add Items
-                </Button>
+                </PokemonButton>
               </div>
 
               {currentAuction.items.length === 0 ? (
@@ -816,13 +801,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-8">
                     Add items from your collection to this auction.
                   </p>
-                  <Button
+                  <PokemonButton
                     onClick={() => setIsAddItemModalOpen(true)}
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <Plus className="w-5 h-5 mr-3" />
                     Add First Item
-                  </Button>
+                  </PokemonButton>
                 </div>
               ) : (
                 <div className="p-8 space-y-6">
@@ -873,16 +858,16 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
                                 <div className="flex items-center space-x-2">
                                   {!isItemSold(item) && (
-                                    <Button
+                                    <PokemonButton
                                       onClick={() => handleMarkSold(item)}
                                       variant="outline"
                                       size="sm"
                                       className="text-emerald-600 hover:text-emerald-700 border-emerald-200 hover:border-emerald-300"
                                     >
                                       Mark Sold
-                                    </Button>
+                                    </PokemonButton>
                                   )}
-                                  <Button
+                                  <PokemonButton
                                     onClick={() =>
                                       handleRemoveItem(
                                         item.itemId || item.itemData?._id,
@@ -895,7 +880,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                     className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
                                   >
                                     Remove
-                                  </Button>
+                                  </PokemonButton>
                                 </div>
                               </div>
 
@@ -1068,7 +1053,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           />
 
           {/* Mark as Sold Modal */}
-          <Modal
+          <PokemonModal
             isOpen={isMarkSoldModalOpen}
             onClose={handleModalClose}
             title={`Mark "${selectedItem?.name}" as Sold`}
@@ -1083,32 +1068,30 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 isLoading={collectionLoading}
               />
             )}
-          </Modal>
+          </PokemonModal>
 
           {/* Delete Auction Confirmation Modal */}
-          <ConfirmModal
+          <PokemonConfirmModal
             isOpen={showDeleteConfirmation}
             onClose={handleCancelDeleteAuction}
             onConfirm={confirmDeleteAuction}
             title="Delete Auction"
-            description={`Are you sure you want to delete the auction "${currentAuction?.topText || 'Untitled Auction'}"? This action cannot be undone and will permanently remove the auction and all its associated data.`}
+            confirmMessage={`Are you sure you want to delete the auction "${currentAuction?.topText || 'Untitled Auction'}"? This action cannot be undone and will permanently remove the auction and all its associated data.`}
             confirmText="Delete Auction"
             variant="danger"
-            icon="trash"
-            isLoading={deleting}
+            loading={deleting}
           />
 
           {/* Remove Item Confirmation Modal */}
-          <ConfirmModal
+          <PokemonConfirmModal
             isOpen={showRemoveItemConfirmation}
             onClose={handleCancelRemoveItem}
             onConfirm={confirmRemoveItem}
             title="Remove Item from Auction"
-            description={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
+            confirmMessage={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
             confirmText="Remove Item"
             variant="warning"
-            icon="trash"
-            isLoading={removingItem}
+            loading={removingItem}
           />
         </div>
       </div>

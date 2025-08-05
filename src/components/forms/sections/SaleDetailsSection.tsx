@@ -4,11 +4,7 @@
  * Following CLAUDE.md principles for component separation and reusability
  */
 
-import React from 'react';
-import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
-import { Banknote } from 'lucide-react';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 import ValidationField from '../fields/ValidationField';
 
 interface SaleDetailsSectionProps {
@@ -50,7 +46,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
           </h5>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <Select
+              <PokemonSelect
                 label="Payment Method"
                 {...register('paymentMethod')}
                 options={[
@@ -75,7 +71,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <Select
+              <PokemonSelect
                 label="Source"
                 {...register('source')}
                 options={[
@@ -96,7 +92,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
           </h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Select
+              <PokemonSelect
                 label="Delivery Method"
                 {...register('deliveryMethod')}
                 options={[
@@ -127,7 +123,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
           </h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Input
+              <PokemonInput
                 label="Buyer Full Name"
                 type="text"
                 {...register('buyerFullName')}
@@ -168,7 +164,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <Input
+                <PokemonInput
                   label="Street Address"
                   type="text"
                   {...register('streetName')}
@@ -178,7 +174,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
               </div>
 
               <div>
-                <Input
+                <PokemonInput
                   label="Postal Code"
                   type="text"
                   {...register('postnr')}
@@ -188,7 +184,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
               </div>
 
               <div>
-                <Input
+                <PokemonInput
                   label="City"
                   type="text"
                   {...register('city')}
@@ -198,7 +194,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
               </div>
 
               <div className="md:col-span-2">
-                <Input
+                <PokemonInput
                   label="Tracking Number"
                   type="text"
                   {...register('trackingNumber')}

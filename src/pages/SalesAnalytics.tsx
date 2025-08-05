@@ -7,9 +7,7 @@
  * Following CLAUDE.md principles for beautiful, award-winning design.
  */
 
-import { Calendar, DollarSign, Download, TrendingUp, X } from 'lucide-react';
-import React, { useState } from 'react';
-import Button from '../components/common/Button';
+import { PokemonButton } from '../components/design-system/PokemonButton';
 import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useExportOperations } from '../hooks/useExportOperations';
@@ -363,7 +361,7 @@ const SalesAnalytics: React.FC = () => {
                   </p>
                 </div>
                 {Array.isArray(sales) && sales.length > 0 && (
-                  <Button
+                  <PokemonButton
                     variant="secondary"
                     size="sm"
                     onClick={handleExportCSV}
@@ -372,7 +370,7 @@ const SalesAnalytics: React.FC = () => {
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Export CSV
-                  </Button>
+                  </PokemonButton>
                 )}
               </div>
 

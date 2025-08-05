@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
-import Input from '../../common/Input';
+import { PokemonInput } from '../../design-system/PokemonInput';
 import { IGrades } from '../../../domain/models/card';
 
 interface ReadOnlyCardFields {
@@ -60,7 +60,7 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
       {/* Card Number */}
       {readOnlyFields.cardNumber && (
         <div>
-          <Input
+          <PokemonInput
             label="Card Number"
             {...register('cardNumber')}
             error={errors.cardNumber?.message}
@@ -75,7 +75,7 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
       {/* Variety */}
       {readOnlyFields.variety && (
         <div>
-          <Input
+          <PokemonInput
             label="Variety"
             {...register('variety')}
             error={errors.variety?.message}
@@ -90,7 +90,7 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
       {/* Grade Total - Summary display */}
       {readOnlyFields.gradeTotal && grades && (
         <div>
-          <Input
+          <PokemonInput
             label="Total PSA Graded"
             value={grades.grade_total?.toLocaleString() || '0'}
             disabled={true}
@@ -216,7 +216,7 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
           const gradeNumber = key.replace('grade_', '');
           return (
             <div key={key}>
-              <Input
+              <PokemonInput
                 label={`PSA ${gradeNumber}`}
                 {...register(key)}
                 error={errors[key]?.message}

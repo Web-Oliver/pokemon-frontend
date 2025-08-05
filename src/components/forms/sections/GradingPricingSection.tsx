@@ -4,19 +4,7 @@
  * Following CLAUDE.md + Context7 principles for award-winning design
  */
 
-import React from 'react';
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import {
-  Award,
-  Banknote,
-  Star,
-  TrendingUp,
-  DollarSign,
-  Calendar,
-  Target,
-} from 'lucide-react';
-import Input from '../../common/Input';
-import Select from '../../common/Select';
+import { PokemonSelect } from '../../design-system/PokemonSelect';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
 import ValidationField from '../fields/ValidationField';
 
@@ -357,7 +345,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           {/* Grade/Condition Selection */}
           <div>
-            <Select
+            <PokemonSelect
               label={fieldLabel}
               {...register(fieldName, {
                 required: `${fieldLabel} is required`,
@@ -395,7 +383,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
           {/* Price Input */}
           <div>
-            <Input
+            <PokemonInput
               label="My Price (kr.)"
               type="text"
               inputMode="numeric"
@@ -434,7 +422,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
           {/* Date Added */}
           <div>
-            <Input
+            <PokemonInput
               label="Date Added"
               type="date"
               {...register('dateAdded', {

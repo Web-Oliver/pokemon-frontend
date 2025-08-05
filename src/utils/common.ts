@@ -36,6 +36,7 @@ export {
   formatDate,
   formatTime,
   formatDateTime,
+  formatBytes,
 } from './formatting';
 
 export {
@@ -241,23 +242,6 @@ export const retry = async <T>(
 };
 
 /**
- * Format bytes to human readable string
- */
-export const formatBytes = (bytes: number, decimals: number = 2): string => {
-  if (bytes === 0) {
-    return '0 Bytes';
-  }
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-};
-
-/**
  * Create array of specified length with fill value or function
  */
 export const createArray = <T>(
@@ -325,4 +309,109 @@ export const sortBy = <T>(
     }
     return 0;
   });
+};
+
+/**
+ * Collection Item Helper Functions
+ * Following CLAUDE.md Layer 1 (Core/Foundation) principles
+ */
+
+export const getItemTitle = (item: any): string => {
+  if (!item) {
+    return 'Loading...';
+  }
+
+  // For PSA and Raw cards, check cardId.cardName first, then cardName
+  if ('cardId' in item || 'cardName' in item) {
+    return item.cardId?.cardName || item.cardName || 'Unknown Card';
+  }
+
+  // For sealed products, check productId object structure
+  if ('productId' in item && item.productId) {
+    // Get productName from productId object
+    if (item.productId?.productName) {
+      return item.productId.productName;
+    }
+
+    // Fallback to category from productId
+    if (item.productId?.category) {
+      return item.productId.category.replace(/-/g, ' ');
+    }
+  }
+
+  return 'Unknown Item';
+};
+
+export const getItemSubtitle = (item: any): string => {
+  if (!item) {
+    return '';
+  }
+
+  if ('grade' in item) {
+    return `PSA Grade ${item.grade}`;
+  }
+
+  if ('condition' in item) {
+    return `Condition: ${item.condition}`;
+  }
+
+  // For sealed products with productId structure
+  if ('productId' in item && item.productId) {
+    if (item.productId?.category) {
+      return `Category: ${item.productId.category.replace(/-/g, ' ')}`;
+    }
+  }
+
+  return '';
+};
+
+export const getSetName = (item: any): string => {
+  if (!item) {
+    return '';
+  }
+
+  // For cards
+  if ('cardId' in item && item.cardId?.setId?.setName) {
+    return item.cardId.setId.setName;
+  }
+
+  // For sealed products with productId structure
+  if ('productId' in item && item.productId) {
+    // Try to extract set name from product name
+    if (item.productId?.productName) {
+      const productName = item.productId.productName;
+      const setName = productName
+        .replace(/(Booster|Box|Pack|Elite Trainer Box|ETB).*$/i, '')
+        .trim();
+      return setName || 'Set Name Pending';
+    }
+
+    if (item.productId?.setProductId) {
+      return 'Set Name Pending'; // Would need API call to resolve setProductId
+    }
+  }
+
+  return 'Unknown Set';
+};
+
+export const getItemType = (item: any): 'psa' | 'raw' | 'sealed' | 'unknown' => {
+  if (!item) return 'unknown';
+  
+  if ('grade' in item) return 'psa';
+  if ('condition' in item) return 'raw';
+  if ('category' in item) return 'sealed';
+  
+  return 'unknown';
+};
+
+export const getItemDisplayData = (item: any) => {
+  return {
+    title: getItemTitle(item),
+    subtitle: getItemSubtitle(item),
+    setName: getSetName(item),
+    type: getItemType(item),
+    price: formatPrice(item?.myPrice),
+    sold: item?.sold || false,
+    images: item?.images || [],
+  };
 };
