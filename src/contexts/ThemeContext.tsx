@@ -102,6 +102,10 @@ export interface ThemeContextType {
   getThemeClasses: () => string;
   getCSSProperties: () => Record<string, string>;
   isThemeLoaded: boolean;
+  
+  // System Integration
+  getSystemPreference: () => 'light' | 'dark';
+  isSystemTheme: boolean;
 }
 
 // ================================
@@ -243,7 +247,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [config, setConfig] = useState<ThemeConfiguration>(defaultConfig);
   const [isThemeLoaded, setIsThemeLoaded] = useState(false);
 
-  // Load configuration on mount
+  // Load configuration on mount and set up system theme detection
   useEffect(() => {
     const loadedConfig = loadConfig();
     setConfig(loadedConfig);
@@ -252,6 +256,40 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Sync color scheme with next-themes
     if (loadedConfig.colorScheme !== 'system') {
       setNextTheme(loadedConfig.colorScheme);
+    }
+
+    // Auto dark/light mode detection - listen for system changes
+    if (loadedConfig.colorScheme === 'system' && typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+        // Only apply if user hasn't overridden system setting
+        setConfig(prev => {
+          if (prev.colorScheme === 'system') {
+            // Update next-themes to match system preference
+            setNextTheme('system');
+            return prev;
+          }
+          return prev;
+        });
+      };
+
+      // Add listener for system theme changes
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
+      } else {
+        // Fallback for older browsers
+        mediaQuery.addListener(handleSystemThemeChange);
+      }
+
+      // Cleanup function
+      return () => {
+        if (mediaQuery.removeEventListener) {
+          mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        } else {
+          mediaQuery.removeListener(handleSystemThemeChange);
+        }
+      };
     }
   }, [setNextTheme]);
 
@@ -437,6 +475,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [config]);
 
+  // System theme utilities
+  const getSystemPreference = useCallback((): 'light' | 'dark' => {
+    if (typeof window === 'undefined') return 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }, []);
+
+  const isSystemTheme = config.colorScheme === 'system';
+
   const contextValue: ThemeContextType = {
     config,
     resolvedTheme: (resolvedTheme as 'light' | 'dark') || 'dark',
@@ -457,6 +503,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     getThemeClasses,
     getCSSProperties,
     isThemeLoaded,
+    getSystemPreference,
+    isSystemTheme,
   };
 
   return (
