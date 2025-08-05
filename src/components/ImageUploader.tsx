@@ -318,10 +318,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
     </div>
   );
-}
-  );
 };
-      )}
 
       {/* Context7 Premium Error Message */}
       {error && (

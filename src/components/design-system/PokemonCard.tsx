@@ -427,8 +427,4 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
       )}
     </div>
   );
-}
-      )}
-    </div>
-  );
 };

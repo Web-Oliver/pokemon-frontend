@@ -21,7 +21,7 @@ import DbaExportSuccess from '../components/dba/DbaExportSuccess';
 import DbaItemsWithTimers from '../components/dba/DbaItemsWithTimers';
 import DbaItemsWithoutTimers from '../components/dba/DbaItemsWithoutTimers';
 import DbaEmptyStateCosmic from '../components/dba/DbaEmptyStateCosmic';
-import DbaCompactCardCosmic from '../components/dba/DbaCompactCardCosmic';
+import { PokemonCard } from '../components/design-system/PokemonCard';
 
 const DbaExport: React.FC = () => {
   const {
@@ -63,10 +63,13 @@ const DbaExport: React.FC = () => {
     }
 
     return (
-      <DbaCompactCardCosmic
+      <PokemonCard
         key={itemId}
+        cardType="dba"
+        compact={true}
+        cosmic={true}
         item={item}
-        type={type}
+        itemType={type}
         isSelected={isSelected}
         dbaInfo={dbaInfo}
         displayName={displayName}

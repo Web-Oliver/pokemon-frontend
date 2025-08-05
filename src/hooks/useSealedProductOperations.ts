@@ -36,17 +36,7 @@ export interface UseSealedProductOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles Sealed product configuration and interface mapping
  */
-export const // ========================================
-// CONSOLIDATED SEALED PRODUCT OPERATIONS HOOK
-// ========================================
-// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
 
-import { useMemo } from 'react';
-import { getCollectionApiService } from '../services/ServiceRegistry';
-import { 
-  useConsolidatedCollectionOperations, 
-  createSealedProductConfig 
-} from './useGenericCrudOperations';
 
 /**
  * Sealed Product operations hook - uses consolidated collection operations

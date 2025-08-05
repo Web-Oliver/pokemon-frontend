@@ -34,23 +34,13 @@ export interface UsePsaCardOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles PSA card configuration and interface mapping
  */
-export const // ========================================
-// CONSOLIDATED PSA CARD OPERATIONS HOOK
-// ========================================
-// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
 
-import { useMemo } from 'react';
-import { getCollectionApiService } from '../services/ServiceRegistry';
-import { 
-  useConsolidatedCollectionOperations, 
-  createPsaCardConfig 
-} from './useGenericCrudOperations';
 
 /**
  * PSA Card operations hook - uses consolidated collection operations
  * Maintains backward compatibility while eliminating code duplication
  */
-export const usePsaCardOperations = () => {
+export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
   const collectionApi = getCollectionApiService();
 
   // Create entity configuration using factory
@@ -60,7 +50,7 @@ export const usePsaCardOperations = () => {
   );
 
   // Use consolidated operations hook
-  const operations = useConsolidatedCollectionOperations(entityConfig);
+  const operations = useGenericCrudOperations(entityConfig);
 
   // Return interface-compatible methods for backward compatibility
   return {
@@ -72,4 +62,4 @@ export const usePsaCardOperations = () => {
     markPsaCardSold: operations.markSold,
     clearError: operations.clearError,
   };
-};;
+};

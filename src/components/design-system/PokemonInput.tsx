@@ -14,11 +14,10 @@ import { Loader2 } from 'lucide-react';
 import { useVisualTheme } from '../../hooks/theme/useVisualTheme';
 import { useLayoutTheme } from '../../hooks/theme/useLayoutTheme';  
 import { useAnimationTheme } from '../../hooks/theme/useAnimationTheme';
-import { inputClasses } from '../../utils/theme/inputClasses';
-import { FormWrapper } from '../common/FormWrapper';
-import { Label } from '../common/Label';
-import { ErrorText } from '../common/ErrorText';
-import { HelperText } from '../common/HelperText';
+import { inputClasses } from '../../utils/classNameUtils';
+import { FormWrapper } from '../common/FormElements/FormWrapper';
+import { Label } from '../common/FormElements/Label';
+import { HelperText } from '../common/FormElements/HelperText';
 import type { VisualTheme, Density, AnimationIntensity } from '../../types/themeTypes';
 
 export interface PokemonInputProps
@@ -261,7 +260,7 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
         {/* Helper/Error Text */}
         {(resolvedHelper || error) && (
           <div className="mt-2 space-y-1">
-            {error && <ErrorText>{error}</ErrorText>}
+            {error && <span className="text-red-400 text-sm font-medium">{error}</span>}
             {resolvedHelper && !error && <HelperText>{resolvedHelper}</HelperText>}
           </div>
         )}

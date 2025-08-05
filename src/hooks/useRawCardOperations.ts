@@ -28,35 +28,19 @@ export interface UseRawCardOperationsReturn {
  * Uses generic CRUD operations to eliminate code duplication
  * Follows SRP - only handles Raw card configuration and interface mapping
  */
-export const // ========================================
-// CONSOLIDATED RAW CARD OPERATIONS HOOK
-// ========================================
-// Now uses consolidated useConsolidatedCollectionOperations following SOLID/DRY principles
-
-import { useMemo } from 'react';
-import { getCollectionApiService } from '../services/ServiceRegistry';
-import { 
-  useConsolidatedCollectionOperations, 
-  createRawCardConfig 
-} from './useGenericCrudOperations';
-
 /**
  * Raw Card operations hook - uses consolidated collection operations
- * Maintains backward compatibility while eliminating code duplication
  */
-export const useRawCardOperations = () => {
+export const useRawCardOperations = (): UseRawCardOperationsReturn => {
   const collectionApi = getCollectionApiService();
 
-  // Create entity configuration using factory
   const entityConfig = useMemo(
     () => createRawCardConfig(collectionApi),
     [collectionApi]
   );
 
-  // Use consolidated operations hook
-  const operations = useConsolidatedCollectionOperations(entityConfig);
+  const operations = useGenericCrudOperations(entityConfig);
 
-  // Return interface-compatible methods for backward compatibility
   return {
     loading: operations.loading,
     error: operations.error,
@@ -66,4 +50,4 @@ export const useRawCardOperations = () => {
     markRawCardSold: operations.markSold,
     clearError: operations.clearError,
   };
-};;
+};
