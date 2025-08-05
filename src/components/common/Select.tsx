@@ -1,19 +1,23 @@
 /**
- * Context7 Award-Winning Select Component
- * Ultra-premium select field with stunning visual hierarchy and micro-interactions
- * Features glass-morphism, premium gradients, and award-winning design patterns
- *
- * Following CLAUDE.md + Context7 principles + DRY optimization:
- * - Award-winning visual design with micro-interactions
- * - Glass-morphism and premium focus states
- * - Context7 design system compliance
- * - Centralized premium styling through PremiumFormElements
- * - Eliminated duplicate styling code following SOLID principles
+ * Theme-Aware Select Component
+ * Phase 2.1.3: Migrated to unified theme system with enhanced functionality
+ * 
+ * Following CLAUDE.md + Context7 principles + Unified Theme System:
+ * - Standardized prop interfaces from themeTypes.ts
+ * - Theme-aware styling with CSS custom properties
+ * - Consistent variant system across all components
+ * - Premium visual effects through centralized utilities
+ * - Full integration with ThemeContext for dynamic theming
+ * - Backward compatibility with existing usage patterns
  */
 
 import { forwardRef, SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
+import { StandardSelectProps } from '../../types/themeTypes';
+import { cn, inputStyleConfig, generateThemeClasses } from '../../utils/themeUtils';
+import { inputClasses } from '../../utils/classNameUtils';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export interface SelectOption {
   value: string;
@@ -21,62 +25,144 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  error?: string;
-  helperText?: string;
-  fullWidth?: boolean;
+export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement>, Omit<StandardSelectProps, 'options' | 'onChange'> {
   options: SelectOption[];
-  placeholder?: string;
+  onChange?: (value: string | string[]) => void;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       label,
+      placeholder = 'Select an option...',
+      value,
+      defaultValue,
+      size = 'md',
+      fullWidth = true,
+      multiple = false,
+      searchable = false,
       error,
       helperText,
-      fullWidth = false,
-      options,
-      placeholder = 'Select an option...',
+      required = false,
+      disabled = false,
+      theme,
+      colorScheme,
+      density,
+      animationIntensity,
       className = '',
+      testId,
+      options,
+      onChange,
       id,
       ...props
     },
     ref
   ) => {
+    const themeContext = useTheme();
+    
+    // Merge context theme with component props
+    const effectiveTheme = theme || themeContext?.config.visualTheme;
+    const effectiveColorScheme = colorScheme || themeContext?.config.primaryColor;
+    const effectiveDensity = density || themeContext?.config.density;
+    const effectiveAnimationIntensity = animationIntensity || themeContext?.config.animationIntensity;
+
+    // Generate unique select ID
     const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
 
-    const baseSelectClasses =
-      'block w-full px-4 py-3 pr-12 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 focus:bg-zinc-800/95 text-zinc-100 font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl appearance-none cursor-pointer focus:shadow-[0_0_0_3px_rgb(6,182,212,0.1)] hover:border-cyan-500/40';
+    // Generate theme-aware classes using the input utility (select styling is similar)
+    const themeAwareClasses = inputClasses({
+      size,
+      hasError: !!error,
+      disabled,
+      theme: effectiveTheme,
+      fullWidth,
+    });
 
-    const errorSelectClasses = error
-      ? 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20'
-      : 'border-zinc-700/50 focus:ring-cyan-500/50 focus:border-cyan-400';
+    // Select-specific classes
+    const selectSpecificClasses = cn(
+      'appearance-none cursor-pointer',
+      'pr-12', // Make room for chevron icon
+      effectiveDensity === 'compact' ? 'py-density-xs' : effectiveDensity === 'spacious' ? 'py-density-lg' : 'py-density-sm'
+    );
 
-    const widthClass = fullWidth ? 'w-full' : '';
+    // Animation classes based on intensity
+    const animationClasses = effectiveAnimationIntensity === 'disabled' 
+      ? '' 
+      : effectiveAnimationIntensity === 'subtle'
+      ? 'hover:shadow-sm focus:shadow-sm'
+      : effectiveAnimationIntensity === 'enhanced'
+      ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101'
+      : 'hover:shadow-theme-hover focus:shadow-theme-hover';
 
-    const finalSelectClassName = [
-      baseSelectClasses,
-      errorSelectClasses,
-      className,
-    ]
-      .filter(Boolean)
-      .join(' ');
+    // Final className combination
+    const finalSelectClassName = cn(
+      themeAwareClasses,
+      selectSpecificClasses,
+      animationClasses,
+      'group-focus-within:border-theme-border-accent/60',
+      className
+    );
+
+    // Icon animation classes
+    const iconContainerClasses = cn(
+      'w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-theme-normal shadow-sm',
+      'bg-theme-bg-accent',
+      'group-focus-within:bg-theme-primary/20 group-focus-within:shadow-theme-primary',
+      effectiveAnimationIntensity === 'enhanced' && 'group-focus-within:scale-110'
+    );
+
+    const chevronClasses = cn(
+      'h-4 w-4 transition-all duration-theme-normal',
+      'text-zinc-400 group-focus-within:text-theme-primary',
+      effectiveAnimationIntensity !== 'disabled' && 'group-focus-within:rotate-180'
+    );
+
+    // Option classes with theme support
+    const optionClasses = cn(
+      'py-2',
+      themeContext?.resolvedTheme === 'dark' 
+        ? 'text-zinc-100 bg-zinc-900' 
+        : 'text-zinc-900 bg-white'
+    );
+
+    const placeholderOptionClasses = cn(
+      optionClasses,
+      'text-zinc-400'
+    );
+
+    // Handle change event conversion
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      if (onChange) {
+        const value = event.target.value;
+        onChange(multiple ? [value] : value);
+      }
+    };
 
     return (
       <FormWrapper fullWidth={fullWidth} error={!!error}>
-        {label && <Label htmlFor={selectId}>{label}</Label>}
+        {label && (
+          <Label htmlFor={selectId} required={required}>
+            {label}
+          </Label>
+        )}
 
-        <div className={`relative ${fullWidth ? 'w-full' : ''}`}>
+        <div className={cn('relative group', fullWidth && 'w-full')}>
+          {/* Select Element */}
           <select
             ref={ref}
             id={selectId}
+            value={value}
+            defaultValue={defaultValue}
+            multiple={multiple}
+            required={required}
+            disabled={disabled}
             className={finalSelectClassName}
+            data-testid={testId}
+            onChange={handleChange}
             {...props}
           >
-            {placeholder && (
-              <option value="" disabled className="text-zinc-400 bg-zinc-900">
+            {placeholder && !multiple && (
+              <option value="" disabled className={placeholderOptionClasses}>
                 {placeholder}
               </option>
             )}
@@ -85,22 +171,25 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
-                className="text-zinc-100 bg-zinc-900 py-2"
+                className={optionClasses}
               >
                 {option.label}
               </option>
             ))}
           </select>
 
-          {/* Context7 Premium Dropdown Icon */}
-          <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10">
-            <div className="w-8 h-8 bg-zinc-800 group-focus-within:bg-cyan-900/50 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm group-focus-within:shadow-md group-focus-within:scale-110 group-focus-within:shadow-[0_2px_8px_0_rgb(6,182,212,0.2)]">
-              <ChevronDown className="h-4 w-4 text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:rotate-180" />
+          {/* Theme-Aware Dropdown Icon */}
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none z-10">
+            <div className={iconContainerClasses}>
+              <ChevronDown className={chevronClasses} />
             </div>
           </div>
         </div>
 
+        {/* Error Message */}
         <ErrorMessage error={error} />
+        
+        {/* Helper Text */}
         <HelperText helperText={helperText} />
       </FormWrapper>
     );
