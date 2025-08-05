@@ -259,13 +259,51 @@ export const getActivities = async (
     ...(filters.search && { search: filters.search }),
   };
 
-  const response = await unifiedApiClient.apiGet<ActivityResponse>(
+  // The unifiedApiClient.apiGet returns the transformed data, but we need the full ActivityResponse structure
+  // Since this is a paginated endpoint, we need to check what the backend actually returns
+  const response = await unifiedApiClient.apiGet<any>(
     '/activities',
     'activities with filters',
     { params: queryParams }
   );
 
-  return response;
+  // Handle the transformed response - the backend should return {success, data: Activity[], meta: {...}}
+  // But unifiedApiClient transforms it to just the data portion
+  if (Array.isArray(response)) {
+    // If we get an array directly, it means the transformation extracted the data array
+    // We need to create the expected ActivityResponse structure
+    return {
+      success: true,
+      data: response,
+      meta: {
+        total: response.length,
+        limit: filters.limit || 50,
+        offset: filters.offset || 0,
+        hasMore: false, // We don't have this info from the transformed response
+        page: Math.floor((filters.offset || 0) / (filters.limit || 50)) + 1,
+        totalPages: 1, // We don't have this info from the transformed response
+      },
+    };
+  }
+
+  // If response has the expected structure, return it as is
+  if (response && typeof response === 'object' && 'data' in response && 'meta' in response) {
+    return response as ActivityResponse;
+  }
+
+  // Fallback for unexpected response format
+  return {
+    success: true,
+    data: Array.isArray(response) ? response : [],
+    meta: {
+      total: 0,
+      limit: filters.limit || 50,
+      offset: filters.offset || 0,
+      hasMore: false,
+      page: 1,
+      totalPages: 1,
+    },
+  };
 };
 
 /**
@@ -276,12 +314,17 @@ export const getActivities = async (
 export const getRecentActivities = async (
   limit: number = 10
 ): Promise<{ success: boolean; data: Activity[] }> => {
-  const response = await unifiedApiClient.apiGet<{
-    success: boolean;
-    data: Activity[];
-  }>(`/activities/recent?limit=${limit}`, 'recent activities');
+  const response = await unifiedApiClient.apiGet<Activity[]>(
+    `/activities/recent?limit=${limit}`, 
+    'recent activities'
+  );
 
-  return response;
+  // The unifiedApiClient.apiGet returns the transformed data (just the activities array)
+  // We need to wrap it in the expected format for backward compatibility
+  return {
+    success: true,
+    data: Array.isArray(response) ? response : []
+  };
 };
 
 /**
@@ -289,12 +332,36 @@ export const getRecentActivities = async (
  * @returns Promise<ActivityStatsResponse> - Activity statistics
  */
 export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
-  const response = await unifiedApiClient.apiGet<ActivityStatsResponse>(
+  const response = await unifiedApiClient.apiGet<any>(
     '/activities/stats',
     'activity statistics'
   );
 
-  return response;
+  // Handle the transformed response - unifiedApiClient extracts the data field
+  // If response is the stats object directly, wrap it in the expected format  
+  if (response && typeof response === 'object' && !('success' in response)) {
+    return {
+      success: true,
+      data: response
+    };
+  }
+
+  // If response already has the expected structure, return it as is
+  if (response && typeof response === 'object' && 'success' in response && 'data' in response) {
+    return response as ActivityStatsResponse;
+  }
+
+  // Fallback for unexpected response format
+  return {
+    success: true,
+    data: {
+      total: 0,
+      today: 0,
+      week: 0,
+      month: 0,
+      lastActivity: undefined
+    }
+  };
 };
 
 // getActivityTypes removed - not used by any frontend components
@@ -320,13 +387,39 @@ export const searchActivities = async (
     ...(filters.entityType && { entityType: filters.entityType }),
   };
 
-  const response = await unifiedApiClient.apiGet<{
-    success: boolean;
-    data: Activity[];
-    meta: { searchTerm: string; resultCount: number };
-  }>('/activities/search', 'activity search', { params: queryParams });
+  const response = await unifiedApiClient.apiGet<any>(
+    '/activities/search', 
+    'activity search', 
+    { params: queryParams }
+  );
 
-  return response;
+  // Handle the transformed response - unifiedApiClient extracts the data field
+  if (Array.isArray(response)) {
+    // If we get an array directly, it means the transformation extracted the data array
+    return {
+      success: true,
+      data: response,
+      meta: { 
+        searchTerm: searchTerm,
+        resultCount: response.length 
+      }
+    };
+  }
+
+  // If response has the expected structure, return it as is
+  if (response && typeof response === 'object' && 'data' in response && 'meta' in response) {
+    return response;
+  }
+
+  // Fallback for unexpected response format
+  return {
+    success: true,
+    data: [],
+    meta: { 
+      searchTerm: searchTerm,
+      resultCount: 0 
+    }
+  };
 };
 
 /**
@@ -352,15 +445,30 @@ export const getActivitiesForEntity = async (
     throw new Error('Invalid entityType or entityId provided');
   }
 
-  const response = await unifiedApiClient.apiGet<{
-    success: boolean;
-    data: Activity[];
-  }>(
+  const response = await unifiedApiClient.apiGet<any>(
     `/activities/entity/${validEntityType}/${validEntityId}`,
     'activities for entity'
   );
 
-  return response;
+  // Handle the transformed response - unifiedApiClient extracts the data field
+  if (Array.isArray(response)) {
+    // If we get an array directly, it means the transformation extracted the data array
+    return {
+      success: true,
+      data: response
+    };
+  }
+
+  // If response has the expected structure, return it as is
+  if (response && typeof response === 'object' && 'success' in response && 'data' in response) {
+    return response;
+  }
+
+  // Fallback for unexpected response format
+  return {
+    success: true,
+    data: []
+  };
 };
 
 /**

@@ -7,6 +7,7 @@
 import {
   Archive,
   ArrowLeft,
+  Check,
   CheckCircle,
   Download,
   Edit,
@@ -20,8 +21,10 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ConfirmModal from '../components/common/ConfirmModal';
+import Modal from '../components/common/Modal';
 import { ImageProductView } from '../components/common/ImageProductView';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PriceHistoryDisplay } from '../components/PriceHistoryDisplay';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
@@ -42,6 +45,7 @@ const CollectionItemDetail: React.FC = () => {
   const [downloadingZip, setDownloadingZip] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
   const [newPrice, setNewPrice] = useState<string>('');
 
   // ZIP download handler
@@ -300,6 +304,54 @@ const CollectionItemDetail: React.FC = () => {
     // Navigate to edit form with the item data
     // The edit forms are part of the AddEditItem page with edit mode
     navigationHelper.navigateToEdit.item(type as 'psa' | 'raw' | 'sealed', id);
+  };
+
+  const handleMarkSold = () => {
+    if (!item || item.sold) {
+      return;
+    }
+    setIsMarkSoldModalOpen(true);
+  };
+
+  const handleMarkSoldSuccess = () => {
+    setIsMarkSoldModalOpen(false);
+    // Refresh the item data to show updated sold status
+    const fetchItem = async () => {
+      const { type, id } = getUrlParams();
+      if (!type || !id) return;
+      
+      try {
+        setLoading(true);
+        const collectionApi = getCollectionApiService();
+        let fetchedItem: CollectionItem;
+
+        switch (type) {
+          case 'psa':
+            fetchedItem = await collectionApi.getPsaCardById(id);
+            break;
+          case 'raw':
+            fetchedItem = await collectionApi.getRawCardById(id);
+            break;
+          case 'sealed':
+            fetchedItem = await collectionApi.getSealedProductById(id);
+            break;
+          default:
+            throw new Error('Invalid item type');
+        }
+
+        setItem(fetchedItem);
+      } catch (err) {
+        handleApiError(err, 'Failed to refresh item data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  };
+
+  const handleModalClose = () => {
+    setIsMarkSoldModalOpen(false);
   };
 
   const handleBackToCollection = () => {
@@ -878,6 +930,19 @@ const CollectionItemDetail: React.FC = () => {
                           </div>
                         </button>
 
+                        {!item?.sold && (
+                          <button
+                            onClick={handleMarkSold}
+                            className="group relative overflow-hidden px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-emerald-400/20"
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative flex items-center space-x-2">
+                              <Check className="w-4 h-4" />
+                              <span>Mark Sold</span>
+                            </div>
+                          </button>
+                        )}
+
                         <button
                           onClick={handleDelete}
                           className="group relative overflow-hidden px-6 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-red-400/20"
@@ -1262,6 +1327,26 @@ const CollectionItemDetail: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Mark as Sold Modal */}
+      <Modal
+        isOpen={isMarkSoldModalOpen}
+        onClose={handleModalClose}
+        title={`Mark "${getItemTitle()}" as Sold`}
+        maxWidth="2xl"
+      >
+        {item && (
+          <MarkSoldForm
+            itemId={item.id || (item as any)._id}
+            itemType={(() => {
+              const { type } = getUrlParams();
+              return type as 'psa' | 'raw' | 'sealed';
+            })()}
+            onCancel={handleModalClose}
+            onSuccess={handleMarkSoldSuccess}
+          />
+        )}
+      </Modal>
 
       {/* Premium Delete Confirmation Modal */}
       <ConfirmModal

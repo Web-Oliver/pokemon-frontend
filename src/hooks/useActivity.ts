@@ -139,14 +139,18 @@ export const useActivity = (
             'description' in activity
         );
 
+        // FIXED: Always replace activities when filters change (not append)
+        // Only append when doing pagination (offset > 0 AND no filter changes)
+        const isFilterChange = newFilters && Object.keys(newFilters).some(key => key !== 'offset');
+        const isPagination = newFilters?.offset && newFilters.offset > 0 && !isFilterChange;
+        
         setState((prev) => ({
           ...prev,
-          activities:
-            newFilters?.offset === 0
-              ? validatedActivities
-              : [...(prev.activities || []), ...validatedActivities],
+          activities: isPagination
+            ? [...(prev.activities || []), ...validatedActivities]
+            : validatedActivities, // Always replace for filter changes or initial load
           hasMore: safeMeta.hasMore || false,
-          total: safeMeta.total || 0,
+          total: validatedActivities.length, // FIXED: Use actual result count for filtering
           page: safeMeta.page || 1,
           loading: false,
         }));

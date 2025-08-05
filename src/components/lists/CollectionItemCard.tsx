@@ -96,6 +96,13 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
     onViewDetails(item, itemType);
   }, [onViewDetails, item, itemType]);
 
+  // Memoized mark sold handler to prevent unnecessary re-renders
+  const handleMarkSold = useCallback(() => {
+    if (onMarkAsSold && !item.sold) {
+      onMarkAsSold(item, itemType);
+    }
+  }, [onMarkAsSold, item, itemType]);
+
   return (
     <ImageProductView
       images={item.images || []}
@@ -121,9 +128,10 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       aspectRatio="card"
       showBadge={true}
       showPrice={true}
-      showActions={false}
+      showActions={showMarkAsSoldButton && activeTab !== 'sold-items'}
       enableInteractions={true}
       onView={handleClick}
+      _onMarkSold={showMarkAsSoldButton && activeTab !== 'sold-items' ? handleMarkSold : undefined}
       className="mx-auto w-full h-full"
     />
   );

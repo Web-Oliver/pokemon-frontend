@@ -78,8 +78,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Context7 Premium Page Header */}
-          <div className="bg-zinc-900/90 backdrop-blur-xl rounded-3xl shadow-2xl p-10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-cyan-500/5"></div>
+          <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15] border border-white/[0.20] rounded-3xl shadow-2xl p-10 relative overflow-hidden group">
+            {/* Neural network glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
+            
+            {/* Holographic border animation */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
+            
+            {/* Top accent line with RGB shifting */}
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
             <div className="relative z-10 flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-bold text-zinc-100 tracking-wide mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">

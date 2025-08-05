@@ -453,7 +453,7 @@ const Dashboard: React.FC = () => {
           {/* Context7 Premium Show More Section */}
           <div className="mt-8 pt-6 border-t border-zinc-700/50">
             <button
-              onClick={() => handleNavigation('/analytics')}
+              onClick={() => handleNavigation('/activity')}
               className="w-full group bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 border-2 border-cyan-700/50 hover:border-cyan-400 rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20"
             >
               <div className="flex items-center justify-center space-x-3">
