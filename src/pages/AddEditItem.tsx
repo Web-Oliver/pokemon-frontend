@@ -19,7 +19,6 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
-import { PageLayout } from '../components/layouts/PageLayout';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
@@ -213,7 +212,9 @@ const AddEditItem: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen relative overflow-hidden ${theme.getThemeClasses()}`}>
+    <div
+      className={`min-h-screen relative overflow-hidden ${theme.getThemeClasses()}`}
+    >
       {/* Context7 Award-Winning Background - Theme Aware */}
       <div className="absolute inset-0 bg-[var(--theme-bg-primary)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_60%)]"></div>
@@ -293,7 +294,9 @@ const AddEditItem: React.FC = () => {
           {fetchLoading && (
             <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-2xl shadow-xl border border-[var(--theme-border)] p-8 text-center">
               <LoadingSpinner size="lg" />
-              <p className="mt-4 text-[var(--theme-text-muted)]">Loading item for editing...</p>
+              <p className="mt-4 text-[var(--theme-text-muted)]">
+                Loading item for editing...
+              </p>
             </div>
           )}
 
@@ -307,7 +310,9 @@ const AddEditItem: React.FC = () => {
                 <h3 className="text-lg font-bold text-[var(--theme-text-primary)] mb-2">
                   Error Loading Item
                 </h3>
-                <p className="text-[var(--theme-text-muted)] mb-4">{fetchError}</p>
+                <p className="text-[var(--theme-text-muted)] mb-4">
+                  {fetchError}
+                </p>
                 <button
                   onClick={handleBackToCollection}
                   className="bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-red-700 transition-colors"

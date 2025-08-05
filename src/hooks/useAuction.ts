@@ -365,7 +365,7 @@ export const useAuction = (
         throw err;
       }
     },
-    [currentAuction?.id]
+    [currentAuction?._id]
   );
 
   /**

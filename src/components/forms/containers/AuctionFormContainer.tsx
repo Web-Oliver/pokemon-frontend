@@ -68,8 +68,6 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
   primaryColorClass,
   register,
   errors,
-  setValue,
-  watch,
   handleSubmit,
   onSubmit,
   onCancel,
@@ -101,7 +99,9 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
 
         <div className="relative z-10 space-y-6">
           <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center">
-            {React.createElement(icon, { className: "w-6 h-6 mr-3 text-teal-400" })}
+            {React.createElement(icon, {
+              className: 'w-6 h-6 mr-3 text-teal-400',
+            })}
             Auction Details
           </h4>
 

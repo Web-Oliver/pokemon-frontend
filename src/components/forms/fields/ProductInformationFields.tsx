@@ -48,13 +48,21 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
   }
 
   // Generate category options from ProductCategory enum if not provided
-  const categoryOptions = productCategories.length > 0 ? productCategories : Object.values(ProductCategory).map(category => ({
-    value: category,
-    label: category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
-  }));
+  const categoryOptions =
+    productCategories.length > 0
+      ? productCategories
+      : Object.values(ProductCategory).map((category) => ({
+          value: category,
+          label: category
+            .replace('-', ' ')
+            .replace(/\b\w/g, (l) => l.toUpperCase()),
+        }));
 
   console.log('[CATEGORY DEBUG] Available category options:', categoryOptions);
-  console.log('[CATEGORY DEBUG] Current category value from form:', watch('category'));
+  console.log(
+    '[CATEGORY DEBUG] Current category value from form:',
+    watch('category')
+  );
   console.log('[CATEGORY DEBUG] ProductCategories prop:', productCategories);
 
   return (
@@ -112,7 +120,10 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
             min="0"
             {...register('available', {
               required: 'Available quantity is required',
-              min: { value: 0, message: 'Available quantity must be 0 or greater' },
+              min: {
+                value: 0,
+                message: 'Available quantity must be 0 or greater',
+              },
               validate: (value) =>
                 !isNaN(Number(value)) || 'Must be a valid number',
             })}
@@ -134,7 +145,8 @@ const ProductInformationFields: React.FC<ProductInformationFieldsProps> = ({
               required: 'Price is required',
               pattern: {
                 value: /^\d+(\.\d{1,2})?$/,
-                message: 'Price must be a valid number with up to 2 decimal places',
+                message:
+                  'Price must be a valid number with up to 2 decimal places',
               },
             })}
             error={errors.price?.message}

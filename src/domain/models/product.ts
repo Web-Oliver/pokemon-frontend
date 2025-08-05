@@ -28,7 +28,7 @@ export interface IProduct {
   category: ProductCategory;
   url: string; // Product URL
   uniqueProductId: number; // Unique identifier for database rebuilding
-  
+
   // Populated fields (when populated from SetProduct reference)
   setProductName?: string; // From SetProduct reference
   setProduct?: ISetProduct; // Full SetProduct object when populated

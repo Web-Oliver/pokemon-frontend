@@ -27,22 +27,24 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
 }) => {
   const { config, getCSSProperties } = useTheme();
   const widthClass = fullWidth ? 'w-full' : '';
-  
+
   // Get theme-aware CSS properties
   const cssProperties = getCSSProperties();
-  const animationDuration = config.reducedMotion ? '0s' : 'var(--animation-duration-normal, 0.3s)';
-  
+  const animationDuration = config.reducedMotion
+    ? '0s'
+    : 'var(--animation-duration-normal, 0.3s)';
+
   // Theme-aware gradient colors
-  const primaryGradient = error 
+  const primaryGradient = error
     ? 'from-red-500/20 via-rose-500/20 to-red-500/20'
     : `from-${config.primaryColor}-500/20 via-blue-500/20 to-${config.primaryColor}-500/20`;
-    
+
   const backgroundGradient = error
     ? 'from-red-500/10 via-rose-500/10 to-red-500/10'
     : `from-${config.primaryColor}-500/10 via-blue-500/10 to-${config.primaryColor}-500/10`;
 
   return (
-    <div 
+    <div
       className={`${widthClass} group ${className}`}
       style={{
         ...cssProperties,
@@ -52,17 +54,17 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
     >
       <div className={`relative ${widthClass}`}>
         {/* Theme-aware Background Gradient */}
-        <div 
+        <div
           className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${backgroundGradient} opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity ease-out`}
           style={{ transitionDuration: 'var(--form-transition-duration)' }}
         ></div>
 
         {/* Theme-aware Glow Effect */}
-        <div 
+        <div
           className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${primaryGradient} opacity-0 group-focus-within:opacity-100 blur-sm -z-10 pointer-events-none transition-opacity ease-out`}
-          style={{ 
+          style={{
             transitionDuration: 'var(--form-transition-duration)',
-            filter: `blur(var(--form-blur-intensity))`
+            filter: `blur(var(--form-blur-intensity))`,
           }}
         ></div>
 

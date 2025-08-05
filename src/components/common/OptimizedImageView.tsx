@@ -35,7 +35,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
   onError,
   themeColor = 'dark',
 }) => {
-  const { config } = useTheme();
+  const {} = useTheme();
   const elementTheme = getElementTheme(themeColor);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -99,7 +99,9 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Placeholder while loading with theme integration */}
       {!isLoaded && (
-        <div className={`absolute inset-0 flex items-center justify-center bg-zinc-800/60 rounded-xl ${elementTheme.border} backdrop-blur-sm`}>
+        <div
+          className={`absolute inset-0 flex items-center justify-center bg-zinc-800/60 rounded-xl ${elementTheme.border} backdrop-blur-sm`}
+        >
           <div className="animate-pulse flex flex-col items-center space-y-2">
             {fallbackIcon}
             <div className="w-16 h-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full animate-pulse"></div>

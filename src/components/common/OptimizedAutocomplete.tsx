@@ -71,7 +71,10 @@ const SuggestionItem = memo(
 
       return parts.map((part, index) =>
         regex.test(part) ? (
-          <mark key={index} className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 rounded px-1 font-medium">
+          <mark
+            key={index}
+            className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 rounded px-1 font-medium"
+          >
             {part}
           </mark>
         ) : (
@@ -97,7 +100,9 @@ const SuggestionItem = memo(
         }
       `}
       >
-        <div className="font-medium text-sm relative z-10">{highlightedText}</div>
+        <div className="font-medium text-sm relative z-10">
+          {highlightedText}
+        </div>
         {result.data?.setName && result.type !== 'set' && (
           <div className="text-xs text-zinc-400 mt-1 relative z-10">
             Set: {result.data.setName}
@@ -142,7 +147,7 @@ export const OptimizedAutocomplete = memo(
     maxResults = 10,
     themeColor = 'dark',
   }: OptimizedAutocompleteProps) => {
-    const { config } = useTheme();
+    const {} = useTheme();
     const elementTheme = getElementTheme(themeColor);
     const [inputValue, setInputValue] = useState('');
     const [isOpen, setIsOpen] = useState(false);
@@ -287,7 +292,9 @@ export const OptimizedAutocomplete = memo(
               <div className="px-4 py-6 text-center text-zinc-400 text-sm">
                 <Search className="w-6 h-6 mx-auto mb-2 text-zinc-500" />
                 <div>No results found</div>
-                <div className="text-xs mt-1 text-zinc-500">Try different keywords</div>
+                <div className="text-xs mt-1 text-zinc-500">
+                  Try different keywords
+                </div>
               </div>
             )}
           </Suspense>

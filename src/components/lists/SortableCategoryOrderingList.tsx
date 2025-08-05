@@ -111,7 +111,7 @@ const SortableCategoryOrderingListComponent: React.FC<
   );
 
   // Handle drag over (for visual feedback)
-  const handleDragOver = useCallback((event: DragOverEvent) => {
+  const handleDragOver = useCallback(() => {
     // Could add visual feedback here if needed
   }, []);
 

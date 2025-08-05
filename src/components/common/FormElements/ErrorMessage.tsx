@@ -22,7 +22,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   className = '',
 }) => {
   const { config } = useTheme();
-  
+
   if (!error) {
     return null;
   }
@@ -30,7 +30,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   // Theme-aware spacing based on density
   const spacingClass = {
     compact: 'mt-1',
-    comfortable: 'mt-2', 
+    comfortable: 'mt-2',
     spacious: 'mt-3',
   }[config.density];
 
@@ -55,7 +55,9 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
 
   return (
     <div className={`${spacingClass} flex items-center ${className}`}>
-      <div className={`${iconSize} bg-gradient-to-r from-red-500 to-rose-500 rounded-full ${marginClass} flex items-center justify-center`}>
+      <div
+        className={`${iconSize} bg-gradient-to-r from-red-500 to-rose-500 rounded-full ${marginClass} flex items-center justify-center`}
+      >
         <span className="text-white text-xs font-bold">!</span>
       </div>
       <p className={`${textSize} text-red-400 font-medium`} role="alert">

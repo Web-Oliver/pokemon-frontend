@@ -200,7 +200,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
         };
       }
     },
-    submitToApi: async (cardData, isEditing, itemId) => {
+    submitToApi: async (cardData, isEditing) => {
       if (isEditing && initialData?.id) {
         const cardId = convertObjectIdToString(initialData.id);
         await updateRawCard(cardId, cardData);

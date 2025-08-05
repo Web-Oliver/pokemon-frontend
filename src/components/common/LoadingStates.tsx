@@ -29,7 +29,11 @@ export const ButtonLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <>
-    <LoadingSpinner size="sm" themeColor={themeColor} className={`mr-2 ${className}`} />
+    <LoadingSpinner
+      size="sm"
+      themeColor={themeColor}
+      className={`mr-2 ${className}`}
+    />
     {text}
   </>
 );

@@ -56,9 +56,9 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
   const cardName = watch('cardName') || '';
 
   // Centralized state management
-  const [activeField, setActiveField] = useState<
-    'setName' | 'cardName' | null
-  >(null);
+  const [activeField, setActiveField] = useState<'setName' | 'cardName' | null>(
+    null
+  );
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,7 +72,6 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
   // Sync search results to local suggestions state
   useEffect(() => {
     setSuggestions(search.results || []);
-    setIsLoading(search.isLoading);
   }, [search.results, search.isLoading]);
 
   // Centralized search effect
@@ -125,7 +124,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
   const handleSetSelection = useCallback(
     (result: SearchResult) => {
       console.log('[CARD SEARCH DEBUG] SET SELECTION:', result);
-      
+
       if (!result.id || !result.displayName) {
         setValue('setName', '');
         clearErrors('setName');
@@ -159,7 +158,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
     (result: SearchResult) => {
       console.log('[CARD SEARCH DEBUG] CARD SELECTION:', result);
       console.log('[CARD SEARCH DEBUG] CARD DATA setId:', result.data.setId);
-      
+
       if (!result.id || !result.displayName) {
         setValue('cardName', '');
         clearErrors('cardName');
@@ -174,10 +173,10 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
         _id: result.id,
         ...result.data,
       };
-      
+
       console.log('[CARD SEARCH DEBUG] SENDING TO useCardSelection:', cardData);
       console.log('[CARD SEARCH DEBUG] setId in cardData:', cardData.setId);
-      
+
       onCardSelection(cardData);
 
       // Clear suggestions
@@ -315,7 +314,11 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
                       setActiveField('cardName');
 
                       // Auto-trigger search if set is selected but no card name yet
-                      if (setName && setName.trim() && (!cardName || cardName.trim() === '')) {
+                      if (
+                        setName &&
+                        setName.trim() &&
+                        (!cardName || cardName.trim() === '')
+                      ) {
                         search.searchCards('*', setName.trim());
                       }
                     }}
@@ -348,7 +351,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
                                 <div className="text-white font-bold text-lg leading-tight truncate group-hover:text-blue-400 transition-colors duration-300">
                                   {suggestion.displayName}
                                 </div>
-                                
+
                                 <div className="flex flex-wrap items-center gap-2">
                                   {setName && setName.trim() && (
                                     <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">

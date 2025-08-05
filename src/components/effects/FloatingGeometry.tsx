@@ -1,14 +1,14 @@
 /**
  * Floating Geometry Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * Extracted from CreateAuction.tsx Context7 2025 futuristic system
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for floating geometric elements
  * - OCP: Open for extension via configurable props
  * - DIP: Abstracts geometric animation implementation details
  * - DRY: Reusable geometric elements across components
- * 
+ *
  * Theme-compatible: Uses theme tokens and respects animation settings
  */
 
@@ -81,15 +81,17 @@ const FloatingGeometry: React.FC<FloatingGeometryProps> = ({
 
     return {
       className: baseClass,
-      style: duration ? { 
-        animationDuration: `${parseFloat(duration) * (1 / intensityMultiplier)}s` 
-      } : undefined,
+      style: duration
+        ? {
+            animationDuration: `${parseFloat(duration) * (1 / intensityMultiplier)}s`,
+          }
+        : undefined,
     };
   };
 
   const getShapeClasses = (element: GeometricElement) => {
     const baseClasses = 'absolute border-2 transition-all duration-500';
-    
+
     switch (element.type) {
       case 'square':
         return `${baseClasses} ${element.borderOnly ? '' : 'bg-current'} transform rotate-45`;
@@ -105,8 +107,10 @@ const FloatingGeometry: React.FC<FloatingGeometryProps> = ({
   };
 
   const getShadowStyle = (element: GeometricElement) => {
-    if (!element.glowEffect) return {};
-    
+    if (!element.glowEffect) {
+      return {};
+    }
+
     return {
       boxShadow: `0 0 20px rgba(${hexToRgb(element.color)}, 0.3)`,
     };
@@ -115,8 +119,11 @@ const FloatingGeometry: React.FC<FloatingGeometryProps> = ({
   return (
     <div className={`absolute inset-0 pointer-events-none ${className}`}>
       {elements.map((element, index) => {
-        const animation = getAnimationClass(element.animation, element.animationDuration);
-        
+        const animation = getAnimationClass(
+          element.animation,
+          element.animationDuration
+        );
+
         return (
           <div
             key={index}

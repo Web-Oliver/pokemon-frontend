@@ -22,7 +22,7 @@ export const HelperText: React.FC<HelperTextProps> = ({
   className = '',
 }) => {
   const { config } = useTheme();
-  
+
   if (!helperText) {
     return null;
   }
@@ -49,7 +49,9 @@ export const HelperText: React.FC<HelperTextProps> = ({
   }[config.density];
 
   return (
-    <p className={`${spacingClass} ${textSize} text-zinc-400 font-medium ${paddingClass} ${className}`}>
+    <p
+      className={`${spacingClass} ${textSize} text-zinc-400 font-medium ${paddingClass} ${className}`}
+    >
       {helperText}
     </p>
   );

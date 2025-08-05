@@ -124,11 +124,11 @@ export const HIERARCHICAL_CACHE_STRATEGIES = {
   // SetProduct is parent, Products are children - cache SetProducts longer
   SET_PRODUCT_PARENT: CACHE_TTL.SET_PRODUCTS, // 15 minutes - Parent data is stable
   PRODUCT_CHILDREN: CACHE_TTL.PRODUCTS, // 5 minutes - Child data changes more often
-  
+
   // Hierarchical search - cache set-filtered results shorter than full search
   FILTERED_SEARCH: CACHE_TTL.SEARCH_SUGGESTIONS, // 3 minutes - Filtered results change
   FULL_SEARCH: CACHE_TTL.PRODUCTS, // 5 minutes - Full search results more stable
-  
+
   // Autocomplete hierarchy - SetProduct suggestions cached longer than Product suggestions
   SET_PRODUCT_SUGGESTIONS: CACHE_TTL.SET_PRODUCTS, // 15 minutes - SetProduct names rarely change
   PRODUCT_SUGGESTIONS: CACHE_TTL.SEARCH_SUGGESTIONS, // 3 minutes - Product availability changes
@@ -140,13 +140,22 @@ export const HIERARCHICAL_CACHE_STRATEGIES = {
  */
 export const CACHE_INVALIDATION = {
   // When SetProduct changes, invalidate related Product caches
-  SET_PRODUCT_CHANGE: ['searchProducts', 'getPaginatedProducts', 'getProductSuggestions'],
-  
+  SET_PRODUCT_CHANGE: [
+    'searchProducts',
+    'getPaginatedProducts',
+    'getProductSuggestions',
+  ],
+
   // When Product changes, don't invalidate SetProduct (parent remains stable)
   PRODUCT_CHANGE: ['searchProducts', 'getPaginatedProducts'],
-  
+
   // When hierarchy changes, invalidate all related caches
-  HIERARCHY_CHANGE: ['searchSetProducts', 'searchProducts', 'getSetProducts', 'getPaginatedProducts'],
+  HIERARCHY_CHANGE: [
+    'searchSetProducts',
+    'searchProducts',
+    'getSetProducts',
+    'getPaginatedProducts',
+  ],
 } as const;
 
 /**
@@ -216,10 +225,10 @@ export const getCacheInvalidationPattern = (
 export const shouldUseHierarchicalCache = (operation: string): boolean => {
   const hierarchicalOperations = [
     'searchProducts',
-    'getPaginatedProducts', 
+    'getPaginatedProducts',
     'getProductSuggestions',
     'searchSetProducts',
-    'getSetProductSuggestions'
+    'getSetProductSuggestions',
   ];
   return hierarchicalOperations.includes(operation);
 };

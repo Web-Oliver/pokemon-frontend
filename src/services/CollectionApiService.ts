@@ -1,12 +1,12 @@
 /**
  * Collection API Service Implementation
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * UPDATED: Enhanced for new backend architecture with Product model structure
  * - SealedProduct now references Product model (instead of CardMarketReferenceProduct)
  * - Field mappings handle cardNumber (instead of pokemonNumber)
  * - Updated grades structure (grade_1 through grade_10)
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - SRP: Single responsibility for collection business logic
  * - DIP: Depends on API client abstractions
@@ -126,7 +126,9 @@ export class CollectionApiService implements ICollectionApiService {
           cardData,
           result,
         });
-        throw new Error('Failed to create PSA card: invalid response format or missing Card reference');
+        throw new Error(
+          'Failed to create PSA card: invalid response format or missing Card reference'
+        );
       }
 
       return result;
@@ -238,7 +240,9 @@ export class CollectionApiService implements ICollectionApiService {
           cardData,
           result,
         });
-        throw new Error('Failed to create raw card: invalid response format or missing Card reference');
+        throw new Error(
+          'Failed to create raw card: invalid response format or missing Card reference'
+        );
       }
 
       return result;

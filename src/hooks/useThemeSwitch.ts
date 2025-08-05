@@ -1,13 +1,13 @@
 /**
  * Theme Switching Utilities Hook
  * Phase 1.2.2: Advanced theme switching and utility enhancements
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme switching logic only
  * - Open/Closed: Extensible for new switching patterns
  * - DRY: Centralized theme switching utilities
  * - Dependency Inversion: Abstracts theme switching implementation
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme state management
  * - themeUtils.ts for styling utilities
@@ -16,7 +16,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { VisualTheme, ColorScheme, Density, AnimationIntensity } from '../contexts/ThemeContext';
+import {
+  VisualTheme,
+  ColorScheme,
+  Density,
+  AnimationIntensity,
+} from '../contexts/ThemeContext';
 import { ThemeColor } from '../theme/formThemes';
 
 // ================================
@@ -33,35 +38,48 @@ export function useThemeSwitch() {
   const [previousTheme, setPreviousTheme] = useState<VisualTheme | null>(null);
 
   // Smooth theme switching with transition effects
-  const switchTheme = useCallback(async (newTheme: VisualTheme, duration: number = 300) => {
-    if (isTransitioning || newTheme === theme.config.visualTheme) return;
+  const switchTheme = useCallback(
+    async (newTheme: VisualTheme, duration: number = 300) => {
+      if (isTransitioning || newTheme === theme.config.visualTheme) {
+        return;
+      }
 
-    setIsTransitioning(true);
-    setPreviousTheme(theme.config.visualTheme);
-    
-    // Add transition class to document
-    document.documentElement.classList.add('theme-transitioning');
-    
-    // Apply new theme
-    theme.setVisualTheme(newTheme);
-    
-    // Wait for transition to complete
-    await new Promise(resolve => setTimeout(resolve, duration));
-    
-    // Remove transition class
-    document.documentElement.classList.remove('theme-transitioning');
-    setIsTransitioning(false);
-    setPreviousTheme(null);
-  }, [theme, isTransitioning]);
+      setIsTransitioning(true);
+      setPreviousTheme(theme.config.visualTheme);
+
+      // Add transition class to document
+      document.documentElement.classList.add('theme-transitioning');
+
+      // Apply new theme
+      theme.setVisualTheme(newTheme);
+
+      // Wait for transition to complete
+      await new Promise((resolve) => setTimeout(resolve, duration));
+
+      // Remove transition class
+      document.documentElement.classList.remove('theme-transitioning');
+      setIsTransitioning(false);
+      setPreviousTheme(null);
+    },
+    [theme, isTransitioning]
+  );
 
   // Quick theme switching without transitions
-  const quickSwitchTheme = useCallback((newTheme: VisualTheme) => {
-    theme.setVisualTheme(newTheme);
-  }, [theme]);
+  const quickSwitchTheme = useCallback(
+    (newTheme: VisualTheme) => {
+      theme.setVisualTheme(newTheme);
+    },
+    [theme]
+  );
 
   // Cycle through available themes
   const cycleTheme = useCallback(() => {
-    const themes: VisualTheme[] = ['context7-premium', 'context7-futuristic', 'dba-cosmic', 'minimal'];
+    const themes: VisualTheme[] = [
+      'context7-premium',
+      'context7-futuristic',
+      'dba-cosmic',
+      'minimal',
+    ];
     const currentIndex = themes.indexOf(theme.config.visualTheme);
     const nextIndex = (currentIndex + 1) % themes.length;
     switchTheme(themes[nextIndex]);
@@ -69,7 +87,12 @@ export function useThemeSwitch() {
 
   // Switch to next theme in sequence
   const nextTheme = useCallback(() => {
-    const themes: VisualTheme[] = ['context7-premium', 'context7-futuristic', 'dba-cosmic', 'minimal'];
+    const themes: VisualTheme[] = [
+      'context7-premium',
+      'context7-futuristic',
+      'dba-cosmic',
+      'minimal',
+    ];
     const currentIndex = themes.indexOf(theme.config.visualTheme);
     const nextIndex = currentIndex < themes.length - 1 ? currentIndex + 1 : 0;
     switchTheme(themes[nextIndex]);
@@ -77,7 +100,12 @@ export function useThemeSwitch() {
 
   // Switch to previous theme in sequence
   const previousThemeSwitch = useCallback(() => {
-    const themes: VisualTheme[] = ['context7-premium', 'context7-futuristic', 'dba-cosmic', 'minimal'];
+    const themes: VisualTheme[] = [
+      'context7-premium',
+      'context7-futuristic',
+      'dba-cosmic',
+      'minimal',
+    ];
     const currentIndex = themes.indexOf(theme.config.visualTheme);
     const prevIndex = currentIndex > 0 ? currentIndex - 1 : themes.length - 1;
     switchTheme(themes[prevIndex]);
@@ -92,7 +120,12 @@ export function useThemeSwitch() {
     cycleTheme,
     nextTheme,
     previousTheme: previousThemeSwitch,
-    availableThemes: ['context7-premium', 'context7-futuristic', 'dba-cosmic', 'minimal'] as const,
+    availableThemes: [
+      'context7-premium',
+      'context7-futuristic',
+      'dba-cosmic',
+      'minimal',
+    ] as const,
   };
 }
 
@@ -102,10 +135,13 @@ export function useThemeSwitch() {
  */
 export function useColorSchemeSwitch() {
   const theme = useTheme();
-  
-  const switchColorScheme = useCallback((newScheme: ColorScheme) => {
-    theme.setColorScheme(newScheme);
-  }, [theme]);
+
+  const switchColorScheme = useCallback(
+    (newScheme: ColorScheme) => {
+      theme.setColorScheme(newScheme);
+    },
+    [theme]
+  );
 
   const cycleColorScheme = useCallback(() => {
     const schemes: ColorScheme[] = ['light', 'dark', 'system'];
@@ -136,12 +172,22 @@ export function useColorSchemeSwitch() {
 export function usePrimaryColorSwitch() {
   const theme = useTheme();
 
-  const switchPrimaryColor = useCallback((newColor: ThemeColor) => {
-    theme.setPrimaryColor(newColor);
-  }, [theme]);
+  const switchPrimaryColor = useCallback(
+    (newColor: ThemeColor) => {
+      theme.setPrimaryColor(newColor);
+    },
+    [theme]
+  );
 
   const cyclePrimaryColor = useCallback(() => {
-    const colors: ThemeColor[] = ['purple', 'blue', 'emerald', 'amber', 'rose', 'dark'];
+    const colors: ThemeColor[] = [
+      'purple',
+      'blue',
+      'emerald',
+      'amber',
+      'rose',
+      'dark',
+    ];
     const currentIndex = colors.indexOf(theme.config.primaryColor);
     const nextIndex = (currentIndex + 1) % colors.length;
     switchPrimaryColor(colors[nextIndex]);
@@ -151,7 +197,14 @@ export function usePrimaryColorSwitch() {
     currentColor: theme.config.primaryColor,
     switchPrimaryColor,
     cyclePrimaryColor,
-    availableColors: ['purple', 'blue', 'emerald', 'amber', 'rose', 'dark'] as const,
+    availableColors: [
+      'purple',
+      'blue',
+      'emerald',
+      'amber',
+      'rose',
+      'dark',
+    ] as const,
   };
 }
 
@@ -162,9 +215,12 @@ export function usePrimaryColorSwitch() {
 export function useAdvancedThemeSettings() {
   const theme = useTheme();
 
-  const switchDensity = useCallback((newDensity: Density) => {
-    theme.setDensity(newDensity);
-  }, [theme]);
+  const switchDensity = useCallback(
+    (newDensity: Density) => {
+      theme.setDensity(newDensity);
+    },
+    [theme]
+  );
 
   const cycleDensity = useCallback(() => {
     const densities: Density[] = ['compact', 'comfortable', 'spacious'];
@@ -173,30 +229,47 @@ export function useAdvancedThemeSettings() {
     switchDensity(densities[nextIndex]);
   }, [theme.config.density, switchDensity]);
 
-  const switchAnimationIntensity = useCallback((newIntensity: AnimationIntensity) => {
-    theme.setAnimationIntensity(newIntensity);
-  }, [theme]);
+  const switchAnimationIntensity = useCallback(
+    (newIntensity: AnimationIntensity) => {
+      theme.setAnimationIntensity(newIntensity);
+    },
+    [theme]
+  );
 
   const cycleAnimationIntensity = useCallback(() => {
-    const intensities: AnimationIntensity[] = ['subtle', 'normal', 'enhanced', 'disabled'];
+    const intensities: AnimationIntensity[] = [
+      'subtle',
+      'normal',
+      'enhanced',
+      'disabled',
+    ];
     const currentIndex = intensities.indexOf(theme.config.animationIntensity);
     const nextIndex = (currentIndex + 1) % intensities.length;
     switchAnimationIntensity(intensities[nextIndex]);
   }, [theme.config.animationIntensity, switchAnimationIntensity]);
 
-  const adjustGlassmorphismIntensity = useCallback((intensity: number) => {
-    theme.setGlassmorphismIntensity(Math.max(0, Math.min(100, intensity)));
-  }, [theme]);
+  const adjustGlassmorphismIntensity = useCallback(
+    (intensity: number) => {
+      theme.setGlassmorphismIntensity(Math.max(0, Math.min(100, intensity)));
+    },
+    [theme]
+  );
 
-  const increaseGlassmorphism = useCallback((step: number = 10) => {
-    const current = theme.config.glassmorphismIntensity;
-    adjustGlassmorphismIntensity(current + step);
-  }, [theme.config.glassmorphismIntensity, adjustGlassmorphismIntensity]);
+  const increaseGlassmorphism = useCallback(
+    (step: number = 10) => {
+      const current = theme.config.glassmorphismIntensity;
+      adjustGlassmorphismIntensity(current + step);
+    },
+    [theme.config.glassmorphismIntensity, adjustGlassmorphismIntensity]
+  );
 
-  const decreaseGlassmorphism = useCallback((step: number = 10) => {
-    const current = theme.config.glassmorphismIntensity;
-    adjustGlassmorphismIntensity(current - step);
-  }, [theme.config.glassmorphismIntensity, adjustGlassmorphismIntensity]);
+  const decreaseGlassmorphism = useCallback(
+    (step: number = 10) => {
+      const current = theme.config.glassmorphismIntensity;
+      adjustGlassmorphismIntensity(current - step);
+    },
+    [theme.config.glassmorphismIntensity, adjustGlassmorphismIntensity]
+  );
 
   return {
     // Density controls
@@ -253,21 +326,29 @@ export function useThemePresets() {
     }
   }, []);
 
-  const saveCurrentAsPreset = useCallback((name: string) => {
-    theme.saveCustomPreset(name, theme.config);
-    setCustomPresets(prev => ({
-      ...prev,
-      [name]: theme.config,
-    }));
-  }, [theme]);
+  const saveCurrentAsPreset = useCallback(
+    (name: string) => {
+      theme.saveCustomPreset(name, theme.config);
+      setCustomPresets((prev) => ({
+        ...prev,
+        [name]: theme.config,
+      }));
+    },
+    [theme]
+  );
 
-  const loadPreset = useCallback((name: string) => {
-    theme.loadCustomPreset(name);
-  }, [theme]);
+  const loadPreset = useCallback(
+    (name: string) => {
+      theme.loadCustomPreset(name);
+    },
+    [theme]
+  );
 
   const deletePreset = useCallback((name: string) => {
     try {
-      const stored = JSON.parse(localStorage.getItem('pokemon-custom-presets') || '{}');
+      const stored = JSON.parse(
+        localStorage.getItem('pokemon-custom-presets') || '{}'
+      );
       delete stored[name];
       localStorage.setItem('pokemon-custom-presets', JSON.stringify(stored));
       setCustomPresets(stored);
@@ -278,8 +359,8 @@ export function useThemePresets() {
 
   const exportPresets = useCallback(() => {
     const dataStr = JSON.stringify(customPresets, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
+    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+
     const exportFileDefaultName = 'pokemon-theme-presets.json';
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -293,7 +374,10 @@ export function useThemePresets() {
       reader.onload = (e) => {
         try {
           const imported = JSON.parse(e.target?.result as string);
-          localStorage.setItem('pokemon-custom-presets', JSON.stringify(imported));
+          localStorage.setItem(
+            'pokemon-custom-presets',
+            JSON.stringify(imported)
+          );
           setCustomPresets(imported);
           resolve();
         } catch (error) {
@@ -330,11 +414,15 @@ export function useThemeKeyboardShortcuts(enabled: boolean = true) {
   const { cycleDensity } = useAdvancedThemeSettings();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      return;
+    }
 
     const handleKeyPress = (event: KeyboardEvent) => {
       // Only activate with Ctrl/Cmd + Shift modifier
-      if (!(event.ctrlKey || event.metaKey) || !event.shiftKey) return;
+      if (!(event.ctrlKey || event.metaKey) || !event.shiftKey) {
+        return;
+      }
 
       switch (event.key) {
         case 'T':
@@ -388,7 +476,7 @@ export function useSystemPreferences() {
     // Color scheme preference
     const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const updateColorScheme = () => {
-      setSystemPreferences(prev => ({
+      setSystemPreferences((prev) => ({
         ...prev,
         prefersColorScheme: colorSchemeQuery.matches ? 'dark' : 'light',
       }));
@@ -399,11 +487,11 @@ export function useSystemPreferences() {
     // Reduced motion preference
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const updateMotion = () => {
-      setSystemPreferences(prev => ({
+      setSystemPreferences((prev) => ({
         ...prev,
         prefersReducedMotion: motionQuery.matches,
       }));
-      
+
       // Auto-apply reduced motion if system preference is set
       if (motionQuery.matches && !theme.config.reducedMotion) {
         theme.toggleReducedMotion();
@@ -415,7 +503,7 @@ export function useSystemPreferences() {
     // High contrast preference
     const contrastQuery = window.matchMedia('(prefers-contrast: high)');
     const updateContrast = () => {
-      setSystemPreferences(prev => ({
+      setSystemPreferences((prev) => ({
         ...prev,
         prefersHighContrast: contrastQuery.matches,
       }));
@@ -438,7 +526,10 @@ export function useSystemPreferences() {
   return {
     systemPreferences,
     syncWithSystem: () => {
-      if (systemPreferences.prefersReducedMotion && !theme.config.reducedMotion) {
+      if (
+        systemPreferences.prefersReducedMotion &&
+        !theme.config.reducedMotion
+      ) {
         theme.toggleReducedMotion();
       }
       if (systemPreferences.prefersHighContrast && !theme.config.highContrast) {

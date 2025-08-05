@@ -1,14 +1,14 @@
 /**
  * Shared Particle System Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * Extracted from CreateAuction.tsx Context7 2025 futuristic system
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for particle effects
  * - OCP: Open for extension via configurable props
  * - DIP: Abstracts particle implementation details
  * - DRY: Reusable particle system across components
- * 
+ *
  * Theme-compatible: Respects particle effects enabled setting
  */
 
@@ -51,10 +51,13 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
   return (
     <div className={`absolute inset-0 pointer-events-none ${className}`}>
       {[...Array(particleCount)].map((_, i) => {
-        const size = Math.random() * (sizeRange[1] - sizeRange[0]) + sizeRange[0];
-        const duration = Math.random() * (durationRange[1] - durationRange[0]) + durationRange[0];
+        const size =
+          Math.random() * (sizeRange[1] - sizeRange[0]) + sizeRange[0];
+        const duration =
+          Math.random() * (durationRange[1] - durationRange[0]) +
+          durationRange[0];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        
+
         return (
           <div
             key={i}

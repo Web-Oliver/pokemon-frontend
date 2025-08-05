@@ -1,13 +1,13 @@
 /**
  * Search API Service Implementation
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * UPDATED: Enhanced with hierarchical search capabilities
  * - SetProduct → Product filtering
  * - Set-first filtering logic
  * - Product autofill functionality
  * - No simultaneous suggestions enforcement
- * 
+ *
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for search orchestration
  * - DIP: Depends on searchApi abstractions
@@ -17,13 +17,13 @@
 import { ICard, ISet } from '../domain/models/card';
 import { IProduct } from '../domain/models/product';
 import { ISetProduct } from '../domain/models/setProduct';
-import { 
+import {
   ISearchApiService,
   HierarchicalSearchConfig,
   SearchContext,
   SetProductSelectionResult,
   ProductSelectionResult,
-  SetSelectionResult
+  SetSelectionResult,
 } from '../interfaces/api/ISearchApiService';
 import {
   getBestMatchProduct,
@@ -36,7 +36,6 @@ import {
   searchProductsInSet,
   searchSetProducts,
 } from '../api/searchApi';
-
 
 /**
  * Enhanced Search API Service with hierarchical capabilities
@@ -88,7 +87,10 @@ export class SearchApiService implements ISearchApiService {
     }
 
     // Per user spec: no simultaneous suggestions
-    if (this.searchContext.activeField && this.searchContext.activeField !== 'setProduct') {
+    if (
+      this.searchContext.activeField &&
+      this.searchContext.activeField !== 'setProduct'
+    ) {
       return [];
     }
 
@@ -110,7 +112,10 @@ export class SearchApiService implements ISearchApiService {
     }
 
     // Per user spec: no simultaneous suggestions
-    if (this.searchContext.activeField && this.searchContext.activeField !== 'product') {
+    if (
+      this.searchContext.activeField &&
+      this.searchContext.activeField !== 'product'
+    ) {
       return [];
     }
 
@@ -151,7 +156,10 @@ export class SearchApiService implements ISearchApiService {
     }
 
     // Per user spec: no simultaneous suggestions
-    if (this.searchContext.activeField && this.searchContext.activeField !== 'set') {
+    if (
+      this.searchContext.activeField &&
+      this.searchContext.activeField !== 'set'
+    ) {
       return [];
     }
 
@@ -163,7 +171,9 @@ export class SearchApiService implements ISearchApiService {
    * Handle SetProduct selection and autofill logic
    * Per user spec: selecting SetProduct should not show other suggestions
    */
-  async handleSetProductSelection(setProduct: ISetProduct): Promise<SetProductSelectionResult> {
+  async handleSetProductSelection(
+    setProduct: ISetProduct
+  ): Promise<SetProductSelectionResult> {
     this.updateSearchContext({
       setProductId: setProduct.id,
       activeField: null, // Clear active field after selection
@@ -179,7 +189,9 @@ export class SearchApiService implements ISearchApiService {
    * Handle Product selection and autofill logic
    * Per user spec: selecting Product should autofill Set information
    */
-  async handleProductSelection(product: IProduct): Promise<ProductSelectionResult> {
+  async handleProductSelection(
+    product: IProduct
+  ): Promise<ProductSelectionResult> {
     this.updateSearchContext({
       productId: product.id,
       activeField: null, // Clear active field after selection
@@ -232,7 +244,9 @@ export class SearchApiService implements ISearchApiService {
    * Check if suggestions should be shown for a specific field
    * Implements "no simultaneous suggestions" rule
    */
-  shouldShowSuggestions(fieldType: 'setProduct' | 'product' | 'set' | 'card'): boolean {
+  shouldShowSuggestions(
+    fieldType: 'setProduct' | 'product' | 'set' | 'card'
+  ): boolean {
     // If no field is active, allow suggestions
     if (!this.searchContext.activeField) {
       return true;
@@ -260,9 +274,11 @@ export class SearchApiService implements ISearchApiService {
     const issues: string[] = [];
 
     // Check for invalid simultaneous active states
-    if (this.searchContext.activeField && 
-        this.searchContext.setProductId && 
-        this.searchContext.productId) {
+    if (
+      this.searchContext.activeField &&
+      this.searchContext.setProductId &&
+      this.searchContext.productId
+    ) {
       issues.push('Invalid state: both SetProduct and Product are selected');
     }
 

@@ -45,13 +45,13 @@ interface OptimizedSearchState {
  * Implements performance patterns from React.dev documentation with hierarchical search logic
  */
 export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
-  const { 
-    minLength = 1, 
-    debounceMs = 300, 
+  const {
+    minLength = 1,
+    debounceMs = 300,
     enableTransitions = true,
     hierarchicalMode = true, // Enable hierarchical mode by default
     allowSimultaneousSuggestions = false, // Per user specification - no simultaneous suggestions
-    onAutofill
+    onAutofill,
   } = config;
 
   const [state, setState] = useState<OptimizedSearchState>({
@@ -68,9 +68,6 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
   const [isPending, startTransition] = useTransition();
   const search = useSearch();
   const abortControllerRef = useRef<AbortController | null>(null);
-
-  // Context7 Pattern: Memoized debounced query for performance
-  const debouncedQuery = useDebouncedValue(state.query, debounceMs);
 
   // Context7 Pattern: Memoized search function with stable reference and hierarchical support
   const performSearch = useCallback(
@@ -101,9 +98,11 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
           }));
           return;
         }
-        
+
         // Update search context for hierarchical tracking
-        searchApiService.updateSearchContext({ activeField: searchType as any });
+        searchApiService.updateSearchContext({
+          activeField: searchType as any,
+        });
       }
 
       // Cancel previous request
@@ -128,12 +127,13 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
             case 'setProducts':
               // Use SearchApiService for SetProduct search until useSearch supports it
               try {
-                const setProductResults = await searchApiService.getSetProductSuggestions(query, 15);
-                results = setProductResults.map(sp => ({
+                const setProductResults =
+                  await searchApiService.getSetProductSuggestions(query, 15);
+                results = setProductResults.map((sp) => ({
                   id: sp.id,
                   displayName: sp.setProductName,
                   type: 'setProduct' as const,
-                  data: sp
+                  data: sp,
                 }));
               } catch (error) {
                 console.error('SetProduct search failed:', error);
@@ -144,16 +144,17 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
               // Apply hierarchical filtering if SetProduct is selected
               if (hierarchicalMode && state.selectedSetProduct) {
                 try {
-                  const filteredResults = await searchApiService.getHierarchicalProductSuggestions(
-                    query,
-                    { setProductSelected: state.selectedSetProduct.data },
-                    15
-                  );
-                  results = filteredResults.map(p => ({
+                  const filteredResults =
+                    await searchApiService.getHierarchicalProductSuggestions(
+                      query,
+                      { setProductSelected: state.selectedSetProduct.data },
+                      15
+                    );
+                  results = filteredResults.map((p) => ({
                     id: p.id,
                     displayName: p.productName,
                     type: 'product' as const,
-                    data: p
+                    data: p,
                   }));
                 } catch (error) {
                   console.error('Hierarchical product search failed:', error);
@@ -248,7 +249,7 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
       selectedSetProduct: undefined,
       selectedSet: undefined,
     });
-    
+
     // Clear hierarchical context if enabled
     if (hierarchicalMode) {
       searchApiService.clearSearchContext();
@@ -256,47 +257,58 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
   }, [hierarchicalMode]);
 
   // NEW: Hierarchical selection methods
-  const selectSetProduct = useCallback((setProduct: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      selectedSetProduct: setProduct,
-      activeField: 'setProduct'
-    }));
-    
-    if (hierarchicalMode) {
-      searchApiService.handleSetProductSelection(setProduct.data);
-    }
-  }, [hierarchicalMode]);
+  const selectSetProduct = useCallback(
+    (setProduct: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        selectedSetProduct: setProduct,
+        activeField: 'setProduct',
+      }));
 
-  const selectSet = useCallback((set: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      selectedSet: set,
-      activeField: 'set'
-    }));
-    
-    if (hierarchicalMode) {
-      searchApiService.handleSetSelection(set.data);
-    }
-  }, [hierarchicalMode]);
-
-  const selectProduct = useCallback(async (product: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      activeField: 'product'
-    }));
-    
-    if (hierarchicalMode) {
-      try {
-        const result = await searchApiService.handleProductSelection(product.data);
-        if (result.autofillData && onAutofill) {
-          onAutofill(result.autofillData);
-        }
-      } catch (error) {
-        console.error('Product selection failed:', error);
+      if (hierarchicalMode) {
+        searchApiService.handleSetProductSelection(setProduct.data);
       }
-    }
-  }, [hierarchicalMode, onAutofill]);
+    },
+    [hierarchicalMode]
+  );
+
+  const selectSet = useCallback(
+    (set: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        selectedSet: set,
+        activeField: 'set',
+      }));
+
+      if (hierarchicalMode) {
+        searchApiService.handleSetSelection(set.data);
+      }
+    },
+    [hierarchicalMode]
+  );
+
+  const selectProduct = useCallback(
+    async (product: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        activeField: 'product',
+      }));
+
+      if (hierarchicalMode) {
+        try {
+          const result = await searchApiService.handleProductSelection(
+            product.data
+          );
+          if (result.autofillData && onAutofill) {
+            onAutofill(result.autofillData);
+          }
+        } catch (error) {
+          console.error('Product selection failed:', error);
+        }
+      }
+    },
+    [hierarchicalMode, onAutofill]
+  );
 
   const searchSetProducts = useCallback(
     (query: string) => {
@@ -311,41 +323,44 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
     () => ({
       ...state,
       isPending: isPending || state.isPending,
-      
+
       // Original search methods
       searchSets,
       searchProducts,
       searchCards,
       clearResults,
-      
+
       // NEW: Hierarchical search methods
       searchSetProducts,
       selectSetProduct,
       selectSet,
       selectProduct,
-      
+
       // Utility properties
       hasResults: state.results.length > 0,
       isSearching: state.isLoading || isPending || state.isPending,
-      
+
       // NEW: Hierarchical state accessors
       isHierarchicalMode: hierarchicalMode,
-      canShowSuggestions: hierarchicalMode ? 
-        searchApiService.shouldShowSuggestions(state.activeField as any) : true,
-      searchContext: hierarchicalMode ? searchApiService.getSearchContext() : null,
+      canShowSuggestions: hierarchicalMode
+        ? searchApiService.shouldShowSuggestions(state.activeField as any)
+        : true,
+      searchContext: hierarchicalMode
+        ? searchApiService.getSearchContext()
+        : null,
     }),
     [
-      state, 
-      isPending, 
-      searchSets, 
-      searchProducts, 
-      searchCards, 
+      state,
+      isPending,
+      searchSets,
+      searchProducts,
+      searchCards,
       searchSetProducts,
       selectSetProduct,
       selectSet,
       selectProduct,
       clearResults,
-      hierarchicalMode
+      hierarchicalMode,
     ]
   );
 };

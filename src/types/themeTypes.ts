@@ -1,13 +1,13 @@
 /**
  * Standardized Theme-Aware Component Types
  * Phase 1.2.1: Component Architecture Foundation
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Defines consistent prop interfaces
  * - Open/Closed: Extensible for new component types
  * - Interface Segregation: Specific interfaces for different component needs
  * - DRY: Single source of truth for component prop patterns
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme configuration
  * - formThemes.ts for color scheme support
@@ -16,7 +16,11 @@
 
 import { ReactNode } from 'react';
 import { ThemeColor } from '../theme/formThemes';
-import { VisualTheme, Density, AnimationIntensity } from '../contexts/ThemeContext';
+import {
+  VisualTheme,
+  Density,
+  AnimationIntensity,
+} from '../contexts/ThemeContext';
 
 // ================================
 // BASE COMPONENT INTERFACES
@@ -51,15 +55,15 @@ export type ComponentSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * Component variant patterns
  * Standardized styling variants across the design system
  */
-export type ComponentVariant = 
-  | 'primary' 
-  | 'secondary' 
-  | 'success' 
-  | 'warning' 
-  | 'danger' 
-  | 'info' 
-  | 'outline' 
-  | 'ghost' 
+export type ComponentVariant =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'outline'
+  | 'ghost'
   | 'glass'
   | 'minimal';
 
@@ -84,7 +88,13 @@ export type IconPosition = 'start' | 'end' | 'both';
 /**
  * Component state indicators
  */
-export type ComponentState = 'default' | 'hover' | 'active' | 'focus' | 'disabled' | 'error';
+export type ComponentState =
+  | 'default'
+  | 'hover'
+  | 'active'
+  | 'focus'
+  | 'disabled'
+  | 'error';
 
 // ================================
 // INTERACTIVE COMPONENT INTERFACES
@@ -394,7 +404,7 @@ export interface FormIntegrationProps {
  * Complete standardized component props
  * Union of all standardized component interfaces
  */
-export type StandardComponentProps = 
+export type StandardComponentProps =
   | StandardButtonProps
   | StandardInputProps
   | StandardSelectProps

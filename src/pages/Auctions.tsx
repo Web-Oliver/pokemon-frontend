@@ -13,21 +13,12 @@
  * - Preserved Context7 2025 futuristic header design as specified
  */
 
-import { 
-  Calendar, 
-  DollarSign, 
-  Filter, 
-  Package, 
-  Plus, 
-  X, 
+import {
   ArrowLeft,
   Sparkles,
-  Cpu,
   Zap,
-  Target,
-  TrendingUp,
   Award,
-  Clock
+  Clock,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -38,11 +29,11 @@ import { formatDateWithTime } from '../utils/formatting';
 import { navigationHelper } from '../utils/navigation';
 
 // Import unified design system
-import { 
+import {
   PokemonCard,
-  PokemonButton, 
-  PokemonSelect, 
-  PokemonPageContainer 
+  PokemonButton,
+  PokemonSelect,
+  PokemonPageContainer,
 } from '../components/design-system';
 
 const Auctions: React.FC = () => {
@@ -155,300 +146,316 @@ const Auctions: React.FC = () => {
     <PageLayout title="Auctions" subtitle="Manage your collection auctions">
       <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-12">
-            {/* Context7 2025 Futuristic Glassmorphism Header */}
-            <div className="relative group">
-              {/* Glassmorphism card with neumorphism elements */}
-              <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15] border border-white/[0.20] rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden">
-                {/* Neural network glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
+          {/* Context7 2025 Futuristic Glassmorphism Header */}
+          <div className="relative group">
+            {/* Glassmorphism card with neumorphism elements */}
+            <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15] border border-white/[0.20] rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden">
+              {/* Neural network glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
 
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
+              {/* Holographic border animation */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
 
-                {/* Top accent line with RGB shifting */}
-                <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
+              {/* Top accent line with RGB shifting */}
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
 
-                {/* Floating geometric elements */}
-                <div
-                  className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                  style={{ animationDuration: '20s' }}
-                ></div>
-                <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
+              {/* Floating geometric elements */}
+              <div
+                className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                style={{ animationDuration: '20s' }}
+              ></div>
+              <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
 
-                <div className="relative z-10">
-                  <div className="flex items-center mb-8">
-                    {/* Neumorphism back button */}
-                    <button
-                      onClick={() => handleNavigation('/dashboard')}
-                      className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-                    >
-                      <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
-                    </button>
-
-                    {/* Holographic icon container */}
-                    <div className="relative mr-8">
-                      <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
-                        {/* Inner glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
-                        <DollarSign className="w-10 h-10 text-cyan-300 relative z-10 animate-pulse" />
-                        {/* Orbiting elements */}
-                        <div
-                          className="absolute inset-0 animate-spin opacity-40"
-                          style={{ animationDuration: '15s' }}
-                        >
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
-                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Title section with cyberpunk styling */}
-                    <div className="flex-1">
-                      <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                        Auction Hub
-                      </h1>
-                      <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
-                        <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                        Neural-powered auction management for your collection universe
-                      </p>
-                    </div>
-
-                    {/* Action buttons using unified components */}
-                    <div className="flex items-center space-x-4">
-                      <PokemonButton
-                        variant="ghost"
-                        size="md"
-                        onClick={() => {
-                          console.log('[Auctions] Manual refresh triggered');
-                          fetchAuctions();
-                        }}
-                        className="p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-                      >
-                        <Zap className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:rotate-180 transition-all duration-300 text-cyan-300" />
-                      </PokemonButton>
-                      <PokemonButton
-                        variant="secondary"
-                        size="lg"
-                        onClick={navigateToCreateAuction}
-                        className="px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center"
-                      >
-                        <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                        Create Auction
-                      </PokemonButton>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Premium floating elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-zinc-800/10 rounded-full animate-pulse delay-75"></div>
-            </div>
-
-            {/* Stats Grid using PokemonCard System */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Active Auctions */}
-              <PokemonCard variant="glass" size="md" interactive className="group">
-                <div className="relative z-10 flex items-center">
-                  <div className="relative mr-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                      <Zap className="w-8 h-8 text-cyan-300 relative z-10 animate-pulse" />
-                      <div
-                        className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{ animationDuration: '20s' }}
-                      >
-                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
-                        <div className="w-1 h-1 bg-purple-400 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-cyan-200/90 mb-2 tracking-wider uppercase">
-                      Active Auctions
-                    </p>
-                    <p className="text-3xl font-black bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-300">
-                      {activeAuctions}
-                    </p>
-                  </div>
-                </div>
-              </PokemonCard>
-
-              {/* Draft Auctions */}
-              <PokemonCard variant="glass" size="md" interactive className="group">
-                <div className="relative z-10 flex items-center">
-                  <div className="relative mr-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                      <Clock className="w-8 h-8 text-purple-300 relative z-10 animate-pulse" />
-                      <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
-                      <div
-                        className="absolute inset-2 rounded-xl border border-pink-400/20 animate-ping opacity-30"
-                        style={{ animationDelay: '0.5s' }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-purple-200/90 mb-2 tracking-wider uppercase">
-                      Draft Auctions
-                    </p>
-                    <p className="text-3xl font-black bg-gradient-to-r from-purple-300 via-pink-300 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform duration-300">
-                      {draftAuctions}
-                    </p>
-                  </div>
-                </div>
-              </PokemonCard>
-
-              {/* Completed Auctions */}
-              <PokemonCard variant="glass" size="md" interactive className="group">
-                <div className="relative z-10 flex items-center">
-                  <div className="relative mr-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/30 via-cyan-500/20 to-blue-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                      <Award className="w-8 h-8 text-emerald-300 relative z-10 animate-pulse" />
-                      <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
-                        <div className="w-1 h-1 bg-emerald-400 rounded-full absolute top-2 left-2 animate-ping"></div>
-                        <div
-                          className="w-1 h-1 bg-cyan-400 rounded-full absolute top-2 right-2 animate-ping"
-                          style={{ animationDelay: '0.3s' }}
-                        ></div>
-                        <div
-                          className="w-1 h-1 bg-blue-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                          style={{ animationDelay: '0.6s' }}
-                        ></div>
-                        <div
-                          className="w-1 h-1 bg-emerald-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                          style={{ animationDelay: '0.9s' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-emerald-200/90 mb-2 tracking-wider uppercase">
-                      Completed Auctions
-                    </p>
-                    <p className="text-3xl font-black bg-gradient-to-r from-emerald-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-300">
-                      {completedAuctions}
-                    </p>
-                  </div>
-                </div>
-              </PokemonCard>
-            </div>
-
-            {/* Filter Hub using PokemonCard */}
-            <PokemonCard variant="glass" size="lg" className="group relative">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  {/* Icon container */}
-                  <div className="relative mr-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-[1rem] shadow-xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
-                      <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-lg blur-md"></div>
-                      <Filter className="w-6 h-6 text-cyan-300 relative z-10 animate-pulse" />
-                    </div>
-                  </div>
-                  <h2 className="text-2xl font-black bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                    Auction Filters
-                  </h2>
-                </div>
-
-                {statusFilter && (
-                  <PokemonButton
-                    variant="danger"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="px-4 py-2 rounded-xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-red-400/30 text-red-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center"
+              <div className="relative z-10">
+                <div className="flex items-center mb-8">
+                  {/* Neumorphism back button */}
+                  <button
+                    onClick={() => handleNavigation('/dashboard')}
+                    className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
                   >
-                    <X className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-all duration-300" />
-                    Clear Filters
-                  </PokemonButton>
-                )}
-              </div>
+                    <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
+                  </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-cyan-200/90 mb-3 tracking-wider uppercase">
-                    Status Filter
-                  </label>
-                  <PokemonSelect
-                    value={statusFilter}
-                    onChange={handleStatusFilterChange}
-                    placeholder="All Statuses"
-                    options={[
-                      { value: '', label: 'All Statuses' },
-                      { value: 'draft', label: 'Draft' },
-                      { value: 'active', label: 'Active' },
-                      { value: 'sold', label: 'Sold' },
-                      { value: 'expired', label: 'Expired' },
-                    ]}
-                  />
+                  {/* Holographic icon container */}
+                  <div className="relative mr-8">
+                    <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
+                      {/* Inner glow */}
+                      <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
+                      <DollarSign className="w-10 h-10 text-cyan-300 relative z-10 animate-pulse" />
+                      {/* Orbiting elements */}
+                      <div
+                        className="absolute inset-0 animate-spin opacity-40"
+                        style={{ animationDuration: '15s' }}
+                      >
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title section with cyberpunk styling */}
+                  <div className="flex-1">
+                    <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+                      Auction Hub
+                    </h1>
+                    <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
+                      <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+                      Neural-powered auction management for your collection
+                      universe
+                    </p>
+                  </div>
+
+                  {/* Action buttons using unified components */}
+                  <div className="flex items-center space-x-4">
+                    <PokemonButton
+                      variant="ghost"
+                      size="md"
+                      onClick={() => {
+                        console.log('[Auctions] Manual refresh triggered');
+                        fetchAuctions();
+                      }}
+                      className="p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+                    >
+                      <Zap className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:rotate-180 transition-all duration-300 text-cyan-300" />
+                    </PokemonButton>
+                    <PokemonButton
+                      variant="secondary"
+                      size="lg"
+                      onClick={navigateToCreateAuction}
+                      className="px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center"
+                    >
+                      <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
+                      Create Auction
+                    </PokemonButton>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Premium floating elements */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse"></div>
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-zinc-800/10 rounded-full animate-pulse delay-75"></div>
+          </div>
+
+          {/* Stats Grid using PokemonCard System */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Active Auctions */}
+            <PokemonCard
+              variant="glass"
+              size="md"
+              interactive
+              className="group"
+            >
+              <div className="relative z-10 flex items-center">
+                <div className="relative mr-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <Zap className="w-8 h-8 text-cyan-300 relative z-10 animate-pulse" />
+                    <div
+                      className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ animationDuration: '20s' }}
+                    >
+                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
+                      <div className="w-1 h-1 bg-purple-400 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-cyan-200/90 mb-2 tracking-wider uppercase">
+                    Active Auctions
+                  </p>
+                  <p className="text-3xl font-black bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-300">
+                    {activeAuctions}
+                  </p>
                 </div>
               </div>
             </PokemonCard>
 
-            {/* Context7 2025 Futuristic Error Message */}
-            {error && (
-              <div className="group relative overflow-hidden">
-                {/* Error glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-pink-500/15 to-orange-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm"></div>
-
-                {/* Advanced glassmorphism error container */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-red-500/[0.08] to-pink-500/[0.12] border border-red-400/[0.20] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(239,68,68,0.37)] transition-all duration-500">
-                  {/* Error pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ef4444' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ef4444' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
-                  <div className="flex items-center relative z-10">
-                    <div className="flex-shrink-0 mr-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-red-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1rem] shadow-xl flex items-center justify-center border border-red-400/[0.20]">
-                        <X className="h-6 w-6 text-red-300 animate-pulse" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-red-200 font-medium">{error}</p>
-                    </div>
-                    <button
-                      onClick={clearError}
-                      className="ml-4 p-2 rounded-xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-red-400/30 text-red-300 hover:text-white transition-all duration-500 group/btn"
-                    >
-                      <X className="h-4 w-4 group-hover/btn:scale-110 transition-all duration-300" />
-                    </button>
+            {/* Draft Auctions */}
+            <PokemonCard
+              variant="glass"
+              size="md"
+              interactive
+              className="group"
+            >
+              <div className="relative z-10 flex items-center">
+                <div className="relative mr-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <Clock className="w-8 h-8 text-purple-300 relative z-10 animate-pulse" />
+                    <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
+                    <div
+                      className="absolute inset-2 rounded-xl border border-pink-400/20 animate-ping opacity-30"
+                      style={{ animationDelay: '0.5s' }}
+                    ></div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Context7 2025 Futuristic Loading State */}
-            {loading && (
-              <div className="group relative overflow-hidden">
-                {/* Loading glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm animate-pulse"></div>
-
-                {/* Advanced glassmorphism loading container */}
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-slate-500/[0.03] to-purple-500/[0.08] border border-white/[0.12] rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] p-12">
-                  {/* Loading pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] animate-pulse transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
-                  {/* Quantum accent line */}
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse"></div>
-
-                  <div className="relative z-10">
-                    <LoadingSpinner text="Loading auctions..." />
-                  </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-purple-200/90 mb-2 tracking-wider uppercase">
+                    Draft Auctions
+                  </p>
+                  <p className="text-3xl font-black bg-gradient-to-r from-purple-300 via-pink-300 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform duration-300">
+                    {draftAuctions}
+                  </p>
                 </div>
               </div>
-            )}
+            </PokemonCard>
 
-            {/* Auction Timeline using PokemonCard */}
-            {!loading && (
-              <PokemonCard variant="glass" size="lg" className="relative">
+            {/* Completed Auctions */}
+            <PokemonCard
+              variant="glass"
+              size="md"
+              interactive
+              className="group"
+            >
+              <div className="relative z-10 flex items-center">
+                <div className="relative mr-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/30 via-cyan-500/20 to-blue-500/30 backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <Award className="w-8 h-8 text-emerald-300 relative z-10 animate-pulse" />
+                    <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
+                      <div className="w-1 h-1 bg-emerald-400 rounded-full absolute top-2 left-2 animate-ping"></div>
+                      <div
+                        className="w-1 h-1 bg-cyan-400 rounded-full absolute top-2 right-2 animate-ping"
+                        style={{ animationDelay: '0.3s' }}
+                      ></div>
+                      <div
+                        className="w-1 h-1 bg-blue-400 rounded-full absolute bottom-2 left-2 animate-ping"
+                        style={{ animationDelay: '0.6s' }}
+                      ></div>
+                      <div
+                        className="w-1 h-1 bg-emerald-400 rounded-full absolute bottom-2 right-2 animate-ping"
+                        style={{ animationDelay: '0.9s' }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-emerald-200/90 mb-2 tracking-wider uppercase">
+                    Completed Auctions
+                  </p>
+                  <p className="text-3xl font-black bg-gradient-to-r from-emerald-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-300">
+                    {completedAuctions}
+                  </p>
+                </div>
+              </div>
+            </PokemonCard>
+          </div>
+
+          {/* Filter Hub using PokemonCard */}
+          <PokemonCard variant="glass" size="lg" className="group relative">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                {/* Icon container */}
+                <div className="relative mr-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-[1rem] shadow-xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
+                    <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-lg blur-md"></div>
+                    <Filter className="w-6 h-6 text-cyan-300 relative z-10 animate-pulse" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-black bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                  Auction Filters
+                </h2>
+              </div>
+
+              {statusFilter && (
+                <PokemonButton
+                  variant="danger"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="px-4 py-2 rounded-xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-red-400/30 text-red-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center"
+                >
+                  <X className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-all duration-300" />
+                  Clear Filters
+                </PokemonButton>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-cyan-200/90 mb-3 tracking-wider uppercase">
+                  Status Filter
+                </label>
+                <PokemonSelect
+                  value={statusFilter}
+                  onChange={handleStatusFilterChange}
+                  placeholder="All Statuses"
+                  options={[
+                    { value: '', label: 'All Statuses' },
+                    { value: 'draft', label: 'Draft' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'sold', label: 'Sold' },
+                    { value: 'expired', label: 'Expired' },
+                  ]}
+                />
+              </div>
+            </div>
+          </PokemonCard>
+
+          {/* Context7 2025 Futuristic Error Message */}
+          {error && (
+            <div className="group relative overflow-hidden">
+              {/* Error glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-pink-500/15 to-orange-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm"></div>
+
+              {/* Advanced glassmorphism error container */}
+              <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.12] via-red-500/[0.08] to-pink-500/[0.12] border border-red-400/[0.20] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(239,68,68,0.37)] transition-all duration-500">
+                {/* Error pattern overlay */}
+                <div
+                  className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ef4444' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ef4444' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
+                    backgroundSize: '30px 30px',
+                  }}
+                ></div>
+
+                <div className="flex items-center relative z-10">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1rem] shadow-xl flex items-center justify-center border border-red-400/[0.20]">
+                      <X className="h-6 w-6 text-red-300 animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-red-200 font-medium">{error}</p>
+                  </div>
+                  <button
+                    onClick={clearError}
+                    className="ml-4 p-2 rounded-xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-red-400/30 text-red-300 hover:text-white transition-all duration-500 group/btn"
+                  >
+                    <X className="h-4 w-4 group-hover/btn:scale-110 transition-all duration-300" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Context7 2025 Futuristic Loading State */}
+          {loading && (
+            <div className="group relative overflow-hidden">
+              {/* Loading glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm animate-pulse"></div>
+
+              {/* Advanced glassmorphism loading container */}
+              <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-slate-500/[0.03] to-purple-500/[0.08] border border-white/[0.12] rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] p-12">
+                {/* Loading pattern overlay */}
+                <div
+                  className="absolute inset-0 opacity-[0.02] animate-pulse transition-opacity duration-500"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
+                    backgroundSize: '30px 30px',
+                  }}
+                ></div>
+
+                {/* Quantum accent line */}
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse"></div>
+
+                <div className="relative z-10">
+                  <LoadingSpinner text="Loading auctions..." />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Auction Timeline using PokemonCard */}
+          {!loading && (
+            <PokemonCard variant="glass" size="lg" className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500/3 via-orange-500/3 to-red-500/3"></div>
               <div className="relative z-10">
                 <div className="mb-6 border-b border-slate-200/50 dark:border-zinc-700/50 pb-6">
@@ -573,8 +580,8 @@ const Auctions: React.FC = () => {
                   </div>
                 )}
               </div>
-              </PokemonCard>
-            )}
+            </PokemonCard>
+          )}
         </div>
       </PokemonPageContainer>
     </PageLayout>

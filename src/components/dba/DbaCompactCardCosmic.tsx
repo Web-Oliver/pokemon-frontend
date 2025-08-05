@@ -48,37 +48,8 @@ const DbaCompactCardCosmicComponent: React.FC<DbaCompactCardCosmicProps> = ({
   );
   const primaryImage = useMemo(() => item.images?.[0], [item.images]);
 
-  const getCountdownColor = useMemo(
-    () => (daysRemaining: number) => {
-      if (daysRemaining > 30) {
-        return 'text-green-300 bg-green-900/30 border-green-600';
-      }
-      if (daysRemaining > 10) {
-        return 'text-yellow-300 bg-yellow-900/30 border-yellow-600';
-      }
-      return 'text-red-300 bg-red-900/30 border-red-600';
-    },
-    []
-  );
-
-  const getGradeBadgeColor = useMemo(
-    () => (grade: number) => {
-      if (grade >= 9) {
-        return 'bg-emerald-500 text-white';
-      }
-      if (grade >= 7) {
-        return 'bg-blue-500 text-white';
-      }
-      if (grade >= 5) {
-        return 'bg-yellow-500 text-black';
-      }
-      return 'bg-gray-500 text-white';
-    },
-    []
-  );
-
   return (
-    <PokemonCard 
+    <PokemonCard
       key={itemId}
       variant="cosmic"
       size="md"
@@ -174,16 +145,19 @@ const DbaCompactCardCosmicComponent: React.FC<DbaCompactCardCosmicProps> = ({
 };
 
 // Memoize with optimized comparison to prevent unnecessary re-renders
-export const DbaCompactCardCosmic = memo(DbaCompactCardCosmicComponent, (prev, next) => {
-  return (
-    prev.item === next.item &&
-    prev.type === next.type &&
-    prev.isSelected === next.isSelected &&
-    prev.dbaInfo === next.dbaInfo &&
-    prev.displayName === next.displayName &&
-    prev.subtitle === next.subtitle &&
-    prev.onToggle === next.onToggle
-  );
-});
+export const DbaCompactCardCosmic = memo(
+  DbaCompactCardCosmicComponent,
+  (prev, next) => {
+    return (
+      prev.item === next.item &&
+      prev.type === next.type &&
+      prev.isSelected === next.isSelected &&
+      prev.dbaInfo === next.dbaInfo &&
+      prev.displayName === next.displayName &&
+      prev.subtitle === next.subtitle &&
+      prev.onToggle === next.onToggle
+    );
+  }
+);
 
 export default DbaCompactCardCosmic;

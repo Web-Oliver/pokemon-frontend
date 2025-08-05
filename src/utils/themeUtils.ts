@@ -1,13 +1,13 @@
 /**
  * Theme-Aware Component Utilities
  * Phase 1.2.1: Component Architecture Foundation
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme utility functions only
  * - Open/Closed: Extensible for new theme patterns
  * - DRY: Centralized theme logic for all components
  * - Dependency Inversion: Abstracts theme implementation details
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme configuration
  * - themeTypes.ts for standardized interfaces
@@ -16,14 +16,14 @@
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { 
-  ComponentSize, 
-  ComponentVariant, 
+import {
+  ComponentSize,
+  ComponentVariant,
   ComponentState,
   BaseThemeProps,
   ComponentStyleConfig,
   ThemeOverride,
-  ComponentAnimationConfig 
+  ComponentAnimationConfig,
 } from '../types/themeTypes';
 import { ThemeColor, getFormTheme } from '../theme/formThemes';
 import { VisualTheme } from '../contexts/ThemeContext';
@@ -101,19 +101,27 @@ export function generateAnimationClasses(
   config: ComponentAnimationConfig,
   state: ComponentState = 'default'
 ): string {
-  if (config.disabled) return '';
+  if (config.disabled) {
+    return '';
+  }
 
   const classes: string[] = [];
 
   switch (state) {
     case 'hover':
-      if (config.hover) classes.push(config.hover);
+      if (config.hover) {
+        classes.push(config.hover);
+      }
       break;
     case 'focus':
-      if (config.focus) classes.push(config.focus);
+      if (config.focus) {
+        classes.push(config.focus);
+      }
       break;
     case 'active':
-      if (config.active) classes.push(config.active);
+      if (config.active) {
+        classes.push(config.active);
+      }
       break;
     default:
       // Base animation classes are handled in component styles
@@ -227,7 +235,8 @@ export const inputStyleConfig: ComponentStyleConfig = {
     outline: 'border-2 border-theme-border-primary bg-transparent',
     ghost: 'border-none bg-transparent focus:bg-theme-bg-primary/50',
     glass: 'bg-glass-primary backdrop-blur-theme border-glass-border-light',
-    minimal: 'bg-white border-gray-300 focus:ring-gray-500/50 focus:border-gray-400',
+    minimal:
+      'bg-white border-gray-300 focus:ring-gray-500/50 focus:border-gray-400',
   },
   sizes: {
     xs: 'px-3 py-1.5 text-xs',
@@ -240,9 +249,11 @@ export const inputStyleConfig: ComponentStyleConfig = {
     default: '',
     hover: 'hover:shadow-theme-hover hover:border-theme-border-accent/60',
     active: '',
-    focus: 'focus:ring-2 focus:ring-theme-primary/50 focus:border-theme-border-accent',
+    focus:
+      'focus:ring-2 focus:ring-theme-primary/50 focus:border-theme-border-accent',
     disabled: 'opacity-50 cursor-not-allowed bg-gray-100',
-    error: 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20',
+    error:
+      'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20',
   },
 };
 
@@ -255,7 +266,8 @@ export const cardStyleConfig: ComponentStyleConfig = {
     'overflow-hidden relative'
   ),
   variants: {
-    primary: 'bg-glass-primary border border-glass-border-light shadow-theme-primary',
+    primary:
+      'bg-glass-primary border border-glass-border-light shadow-theme-primary',
     secondary: 'bg-zinc-800/80 border border-zinc-700/50 shadow-lg',
     success: 'bg-emerald-500/10 border border-emerald-500/20 shadow-lg',
     warning: 'bg-amber-500/10 border border-amber-500/20 shadow-lg',
@@ -263,7 +275,8 @@ export const cardStyleConfig: ComponentStyleConfig = {
     info: 'bg-blue-500/10 border border-blue-500/20 shadow-lg',
     outline: 'bg-transparent border-2 border-theme-border-primary',
     ghost: 'bg-transparent',
-    glass: 'bg-glass-primary backdrop-blur-theme border border-glass-border-light shadow-glass-main',
+    glass:
+      'bg-glass-primary backdrop-blur-theme border border-glass-border-light shadow-glass-main',
     minimal: 'bg-white border border-gray-200 shadow-minimal',
   },
   sizes: {
@@ -298,9 +311,11 @@ export const badgeStyleConfig: ComponentStyleConfig = {
     warning: 'bg-amber-600 text-white',
     danger: 'bg-red-600 text-white',
     info: 'bg-blue-600 text-white',
-    outline: 'border border-theme-border-primary text-theme-primary bg-transparent',
+    outline:
+      'border border-theme-border-primary text-theme-primary bg-transparent',
     ghost: 'text-theme-primary bg-theme-primary/10',
-    glass: 'bg-glass-primary backdrop-blur-theme text-white border border-glass-border-light',
+    glass:
+      'bg-glass-primary backdrop-blur-theme text-white border border-glass-border-light',
     minimal: 'bg-gray-100 text-gray-800',
   },
   sizes: {
@@ -395,11 +410,17 @@ export function getResponsiveClasses(
   large?: string
 ): string {
   const classes = [mobile];
-  
-  if (tablet) classes.push(`md:${tablet}`);
-  if (desktop) classes.push(`lg:${desktop}`);
-  if (large) classes.push(`xl:${large}`);
-  
+
+  if (tablet) {
+    classes.push(`md:${tablet}`);
+  }
+  if (desktop) {
+    classes.push(`lg:${desktop}`);
+  }
+  if (large) {
+    classes.push(`xl:${large}`);
+  }
+
   return cn(...classes);
 }
 
@@ -407,8 +428,9 @@ export function getResponsiveClasses(
  * Generate focus-visible classes for accessibility
  */
 export function getFocusClasses(variant: ComponentVariant = 'primary'): string {
-  const baseClasses = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
-  
+  const baseClasses =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+
   switch (variant) {
     case 'primary':
       return cn(baseClasses, 'focus-visible:ring-theme-primary');
@@ -430,7 +452,6 @@ export function getFocusClasses(variant: ComponentVariant = 'primary'): string {
 // ================================
 // EXPORTS
 // ================================
-
 
 export default {
   cn,

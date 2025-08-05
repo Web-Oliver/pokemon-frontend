@@ -47,10 +47,8 @@ const StatCard: React.FC<StatCardProps> = ({
   gradientFrom,
   gradientTo,
   textColor,
-  hoverShadow,
   isActive,
   onClick,
-  tabId,
 }) => (
   <PokemonCard
     variant="glass"

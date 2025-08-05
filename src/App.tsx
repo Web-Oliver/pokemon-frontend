@@ -205,39 +205,39 @@ function App() {
           </>
         )}
         <Toaster
-        position="top-right"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{}}
-        toastOptions={{
-          // Global default options for all toasts
-          duration: 4000,
-          style: {
-            fontFamily:
-              'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-            fontSize: '14px',
-            fontWeight: '500',
-            borderRadius: '8px',
-            boxShadow:
-              '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-          },
-          success: {
+          position="top-right"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{}}
+          toastOptions={{
+            // Global default options for all toasts
             duration: 4000,
-            iconTheme: {
-              primary: '#16A34A',
-              secondary: '#FFFFFF',
+            style: {
+              fontFamily:
+                'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+              fontSize: '14px',
+              fontWeight: '500',
+              borderRadius: '8px',
+              boxShadow:
+                '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             },
-          },
-          error: {
-            duration: 5000,
-            iconTheme: {
-              primary: '#DC2626',
-              secondary: '#FFFFFF',
+            success: {
+              duration: 4000,
+              iconTheme: {
+                primary: '#16A34A',
+                secondary: '#FFFFFF',
+              },
             },
-          },
-        }}
-      />
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#DC2626',
+                secondary: '#FFFFFF',
+              },
+            },
+          }}
+        />
       </ThemeProvider>
     </QueryClientProvider>
   );

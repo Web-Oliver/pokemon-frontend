@@ -1,14 +1,14 @@
 /**
  * Neural Network Background Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * Extracted from CreateAuction.tsx Context7 2025 futuristic system
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for neural network visual effects
  * - OCP: Open for extension via configurable props
  * - DIP: Abstracts neural network implementation details
  * - DRY: Reusable neural network patterns across components
- * 
+ *
  * Theme-compatible: Uses theme tokens for colors and opacity
  */
 
@@ -47,7 +47,8 @@ const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = ({
   const { config } = useTheme();
 
   // Respect theme settings
-  const shouldShowParticles = config.particleEffectsEnabled && enableQuantumParticles;
+  const shouldShowParticles =
+    config.particleEffectsEnabled && enableQuantumParticles;
   const adjustedOpacity = opacity * (config.glassmorphismIntensity / 100);
 
   // Create SVG background patterns
@@ -58,7 +59,10 @@ const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = ({
   const gridPattern = `linear-gradient(90deg, transparent 98%, rgba(${hexToRgb(gridColor)}, 0.1) 100%), linear-gradient(transparent 98%, rgba(${hexToRgb(secondaryColor)}, 0.1) 100%)`;
 
   return (
-    <div className={`absolute inset-0 ${className}`} style={{ opacity: adjustedOpacity }}>
+    <div
+      className={`absolute inset-0 ${className}`}
+      style={{ opacity: adjustedOpacity }}
+    >
       {/* Primary Neural Network Pattern */}
       <div
         className="absolute inset-0 animate-pulse"
@@ -67,7 +71,7 @@ const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = ({
           animationDuration: `${6 / animationSpeed}s`,
         }}
       />
-      
+
       {/* Secondary Quantum Particles */}
       {shouldShowParticles && (
         <div
@@ -78,7 +82,7 @@ const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = ({
           }}
         />
       )}
-      
+
       {/* Holographic Grid Overlay */}
       {enableGrid && (
         <div

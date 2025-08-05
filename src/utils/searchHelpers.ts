@@ -117,15 +117,21 @@ export const autoFillProductSetData = (
   result: SearchResult
 ) => {
   console.log('[AUTOFILL DEBUG] Product set data received:', result.data);
-  
+
   // For sealed products: Use setProductId.setProductName or setName or setProductName
-  const setName = result.data.setProductId?.setProductName || result.data.setName || result.data.setProductName;
-  
+  const setName =
+    result.data.setProductId?.setProductName ||
+    result.data.setName ||
+    result.data.setProductName;
+
   if (setName) {
     console.log('[AUTOFILL DEBUG] Setting setName (SetProduct name):', setName);
     autoFillField(config, 'setName', setName);
   } else {
-    console.log('[AUTOFILL DEBUG] No setName found in product data:', result.data);
+    console.log(
+      '[AUTOFILL DEBUG] No setName found in product data:',
+      result.data
+    );
   }
 
   const year = result.data.year;
@@ -144,8 +150,11 @@ export const autoFillCardSetData = (
   result: SearchResult
 ) => {
   // For cards: Use setId.setName (card references set)
-  const setName = result.data.setId?.setName || result.data.setName || result.data.setInfo?.setName;
-  
+  const setName =
+    result.data.setId?.setName ||
+    result.data.setName ||
+    result.data.setInfo?.setName;
+
   if (setName) {
     autoFillField(config, 'setName', setName);
   }
@@ -187,21 +196,41 @@ export const autoFillProductData = (
   }
 
   // Auto-fill CardMarket price - handle price string format
-  if (data.price && data.price !== 'N/A' && data.price !== null && data.price !== undefined) {
+  if (
+    data.price &&
+    data.price !== 'N/A' &&
+    data.price !== null &&
+    data.price !== undefined
+  ) {
     // Handle price format like "3,97 €"
     const priceString = data.price.toString();
-    const numericPrice = parseFloat(priceString.replace(/[^\d,.-]/g, '').replace(',', '.'));
+    const numericPrice = parseFloat(
+      priceString.replace(/[^\d,.-]/g, '').replace(',', '.')
+    );
     if (!isNaN(numericPrice) && numericPrice > 0) {
       const roundedPrice = Math.round(numericPrice).toString();
-      console.log('[AUTOFILL DEBUG] Setting cardMarketPrice:', roundedPrice, 'from original:', data.price);
+      console.log(
+        '[AUTOFILL DEBUG] Setting cardMarketPrice:',
+        roundedPrice,
+        'from original:',
+        data.price
+      );
       autoFillField(config, 'cardMarketPrice', roundedPrice);
     } else {
-      console.log('[AUTOFILL DEBUG] Price could not be parsed as valid number:', data.price, 'parsed as:', numericPrice);
+      console.log(
+        '[AUTOFILL DEBUG] Price could not be parsed as valid number:',
+        data.price,
+        'parsed as:',
+        numericPrice
+      );
       // Don't set cardMarketPrice for invalid prices - leave it empty/0
       autoFillField(config, 'cardMarketPrice', '0');
     }
   } else {
-    console.log('[AUTOFILL DEBUG] No valid price data found (N/A or missing):', data.price);
+    console.log(
+      '[AUTOFILL DEBUG] No valid price data found (N/A or missing):',
+      data.price
+    );
     // Set cardMarketPrice to 0 for N/A prices
     autoFillField(config, 'cardMarketPrice', '0');
   }
@@ -241,7 +270,10 @@ export const autoFillFromProductSelection = (
   result: SearchResult,
   onSelectionChange?: (data: Record<string, unknown>) => void
 ) => {
-  console.log('[AUTOFILL WORKFLOW] Starting product selection autofill with result:', result);
+  console.log(
+    '[AUTOFILL WORKFLOW] Starting product selection autofill with result:',
+    result
+  );
   console.log('[AUTOFILL WORKFLOW] Result data structure:', result.data);
   console.log('[AUTOFILL WORKFLOW] Config received:', config);
 
@@ -255,10 +287,13 @@ export const autoFillFromProductSelection = (
 
   // Call parent callback if provided (maintains existing behavior)
   if (onSelectionChange) {
-    console.log('[AUTOFILL WORKFLOW] Step 3: Calling parent callback with data:', {
-      _id: result.id || result.data._id,
-      ...result.data,
-    });
+    console.log(
+      '[AUTOFILL WORKFLOW] Step 3: Calling parent callback with data:',
+      {
+        _id: result.id || result.data._id,
+        ...result.data,
+      }
+    );
     onSelectionChange({
       _id: result.id || result.data._id,
       ...result.data,
@@ -266,15 +301,21 @@ export const autoFillFromProductSelection = (
   }
 
   // Enhanced logging for debugging
-  console.log('[AUTOFILL WORKFLOW] Complete - Summary of what should be filled:', {
-    setName: result.data.setProductId?.setProductName || result.data.setName || result.data.setProductName,
-    productName: result.data.productName || result.data.name,
-    category: result.data.category,
-    availability: result.data.available,
-    cardMarketPrice: result.data.price
-      ? Math.round(parseFloat(result.data.price))
-      : null,
-  });
+  console.log(
+    '[AUTOFILL WORKFLOW] Complete - Summary of what should be filled:',
+    {
+      setName:
+        result.data.setProductId?.setProductName ||
+        result.data.setName ||
+        result.data.setProductName,
+      productName: result.data.productName || result.data.name,
+      category: result.data.category,
+      availability: result.data.available,
+      cardMarketPrice: result.data.price
+        ? Math.round(parseFloat(result.data.price))
+        : null,
+    }
+  );
 };
 
 /**

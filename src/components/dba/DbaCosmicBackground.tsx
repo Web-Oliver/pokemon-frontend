@@ -6,7 +6,7 @@
  * - SRP: Single responsibility for cosmic background effects
  * - OCP: Open for extension via props
  * - DIP: Uses shared Layer 1 utilities (cosmicEffects.ts)
- * 
+ *
  * UPDATED: Uses shared cosmic effect system from utils/cosmicEffects.ts
  * Maintains original DBA aesthetic while leveraging unified utilities
  */
@@ -35,9 +35,9 @@ const DbaCosmicBackground: React.FC<DbaCosmicBackgroundProps> = ({
     sizeRange: [2, 6],
     durationRange: [4, 7],
     opacity: 0.3,
-    animationType: 'bounce'
+    animationType: 'bounce',
   },
-  className = ''
+  className = '',
 }) => {
   return (
     <CosmicBackground

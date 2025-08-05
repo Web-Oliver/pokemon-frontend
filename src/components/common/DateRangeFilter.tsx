@@ -14,7 +14,11 @@ import React, { useState } from 'react';
 import { Calendar, Filter, X } from 'lucide-react';
 import Button from './Button';
 import { useTheme } from '../../contexts/ThemeContext';
-import { getElementTheme, getHeaderTheme, ThemeColor } from '../../theme/formThemes';
+import {
+  getElementTheme,
+  getHeaderTheme,
+  ThemeColor,
+} from '../../theme/formThemes';
 
 export interface DateRangeState {
   startDate?: string;
@@ -61,7 +65,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   className = '',
   themeColor = 'dark',
 }) => {
-  const { config } = useTheme();
+  const {} = useTheme();
   const elementTheme = getElementTheme(themeColor);
   const headerTheme = getHeaderTheme(themeColor);
   const [localCustomRange, setLocalCustomRange] = useState({
@@ -100,7 +104,9 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     <div
       className={`bg-gradient-to-r ${headerTheme.background} backdrop-blur-xl rounded-3xl shadow-2xl ${headerTheme.border} p-6 relative overflow-hidden ${className}`}
     >
-      <div className={`absolute inset-0 bg-gradient-to-r ${headerTheme.overlay}`}></div>
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${headerTheme.overlay}`}
+      ></div>
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold text-zinc-100 flex items-center tracking-wide">

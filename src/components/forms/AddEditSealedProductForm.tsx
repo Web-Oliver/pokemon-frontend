@@ -80,16 +80,20 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <Archive className="w-8 h-8 text-red-400" />
         </div>
-        <h3 className="text-2xl font-bold text-red-400 mb-4">Item Already Sold</h3>
+        <h3 className="text-2xl font-bold text-red-400 mb-4">
+          Item Already Sold
+        </h3>
         <p className="text-red-300/80 mb-6 text-lg">
-          This sealed product has been sold and cannot be edited. Sold items are locked to preserve transaction history.
+          This sealed product has been sold and cannot be edited. Sold items are
+          locked to preserve transaction history.
         </p>
         <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-2xl p-4 mb-6">
           <p className="text-red-300 font-semibold">
             Sale Price: {initialData?.saleDetails?.actualSoldPrice || 'N/A'} kr
           </p>
           <p className="text-red-300/80 text-sm mt-1">
-            Sold on: {initialData?.saleDetails?.dateSold 
+            Sold on:{' '}
+            {initialData?.saleDetails?.dateSold
               ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
               : 'N/A'}
           </p>
@@ -227,7 +231,127 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           { value: 'Box-Sets', label: 'Box Sets' },
           { value: 'Boosters', label: 'Boosters' },
         ];
-        console.log('[CATEGORIES DEBUG] Setting productCategories to:', categories);
+        console.log(
+          '[CATEGORIES DEBUG] Setting productCategories to:',
+          categories
+        );
+        setProductCategories(categories);
+      } catch (error) {
+        console.error('Failed to load form options:', error);
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+
+    loadOptions();
+  }, []);
+
+  // Memoize initialData to prevent infinite re-renders
+  const memoizedInitialData = useMemo(() => {
+    return initialData
+      ? {
+          setName: initialData.setName,
+          productName: initialData.name, // Field mapping: name -> productName
+          category: initialData.category,
+          availability: initialData.availability,
+          cardMarketPrice: initialData.cardMarketPrice?.toString(),
+          myPrice: initialData.myPrice?.toString(),
+          dateAdded: initialData.dateAdded,
+        }
+      : undefined;
+  }, [initialData]);
+
+  // Initialize base form with specialized hooks and standardized initialData handling
+  const baseForm = useBaseForm<FormData>({
+    defaultValues: {
+      setName: initialData?.setName || '',
+      productName: initialData?.name || '',
+      category: initialData?.category || '',
+      availability: initialData?.availability || 0,
+      cardMarketPrice: initialData?.cardMarketPrice?.toString() || '',
+      myPrice: initialData?.myPrice?.toString() || '',
+      dateAdded: formatDateForInput(initialData?.dateAdded),
+    },
+    validationRules,
+    initialImages: initialData?.images || [],
+    initialPriceHistory: initialData?.priceHistory || [],
+    initialPrice: initialData?.myPrice || 0,
+    // Standardized initialData handling with memoization
+    initialData: memoizedInitialData,
+    isEditing,
+    fieldMapping: {
+      name: 'productName', // Map 'name' field to 'productName' form field
+    },
+  });
+
+  const { form, isSubmitting, imageUpload, priceHistory, setSubmitting } =
+    baseForm;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    clearErrors,
+  } = form;
+
+  // State for product categories and selection
+  const [productCategories, setProductCategories] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [selectedProductData, setSelectedProductData] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+
+  // Removed over-engineered autocomplete configuration
+
+  // Form-specific useEffect for unique internal state only (following CLAUDE.md SRP)
+  useEffect(() => {
+    if (isEditing && initialData) {
+      // Form fields are now handled by useBaseForm centrally
+
+      // Set selectedProductData for existing products to maintain reference link
+      // This is form-specific logic that cannot be centralized
+      if (initialData.productId) {
+        // Use centralized ObjectId conversion
+        const transformedInitialData = transformRequestData(initialData);
+
+        setSelectedProductData({
+          _id: transformedInitialData.productId,
+          setName: initialData.setName,
+          name: initialData.name,
+          category: initialData.category,
+          available: initialData.availability,
+          price: initialData.cardMarketPrice,
+        });
+      }
+    }
+  }, [isEditing, initialData]);
+
+  // Removed legacy search state sync - using enhanced autocomplete only
+
+  // Watch form fields for validation
+  const watchedPrice = watch('myPrice');
+  const watchedCardMarketPrice = watch('cardMarketPrice');
+
+  // Load dynamic options from backend
+  useEffect(() => {
+    const loadOptions = async () => {
+      setLoadingOptions(true);
+      try {
+        // Categories matching ACTUAL DATABASE VALUES
+        const categories = [
+          { value: 'Booster-Boxes', label: 'Booster Boxes' },
+          { value: 'Elite-Trainer-Boxes', label: 'Elite Trainer Boxes' },
+          { value: 'Box-Sets', label: 'Box Sets' },
+          { value: 'Boosters', label: 'Boosters' },
+        ];
+        console.log(
+          '[CATEGORIES DEBUG] Setting productCategories to:',
+          categories
+        );
         setProductCategories(categories);
       } catch (error) {
         console.error('Failed to load form options:', error);
@@ -248,6 +372,65 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       }
     }
   }, [watchedPrice, priceHistory.updateCurrentPrice]);
+
+  const handlePriceUpdate = (newPrice: number, date: string) => {
+    // Add new price to history using specialized hook
+    priceHistory.addPriceEntry(newPrice, 'manual_update');
+
+    // Update form field
+    setValue('myPrice', newPrice.toString());
+  };
+
+  // Standardized submission handling using FormSubmissionWrapper
+  const { handleSubmission } = useFormSubmission<
+    FormData,
+    Partial<ISealedProduct>
+  >({
+    setSubmitting,
+    onSuccess,
+    imageUpload,
+    priceHistory,
+    logContext: 'SEALED PRODUCT',
+    validateBeforeSubmission: (data) => {
+      if (!selectedProductData?._id) {
+        throw new Error(
+          'Please select a product from the suggestions to ensure reference data link'
+        );
+      }
+    },
+    prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
+      const allImageUrls = FormSubmissionPatterns.combineImages(
+        imageUpload.remainingExistingImages,
+        imageUrls
+      );
+
+      return {
+        productId: selectedProductData?._id,
+        setName: formData.setName.trim(),
+        name: formData.productName.trim(),
+        category: formData.category,
+        availability: Number(formData.availability),
+        cardMarketPrice: formData.cardMarketPrice
+          ? parseFloat(formData.cardMarketPrice)
+          : undefined,
+        myPrice: parseFloat(formData.myPrice),
+        dateAdded: formData.dateAdded,
+        images: allImageUrls,
+        priceHistory: FormSubmissionPatterns.transformPriceHistory(
+          priceHistory.priceHistory,
+          parseFloat(formData.myPrice)
+        ),
+      };
+    },
+    submitToApi: async (productData, isEditing, itemId) => {
+      if (isEditing && initialData?.id) {
+        const productId = convertObjectIdToString(initialData.id);
+        await updateSealedProduct(productId, productData);
+      } else {
+        await addSealedProduct(productData);
+      }
+    },
+  });
 
   const handlePriceUpdate = (newPrice: number, date: string) => {
     // Add new price to history using specialized hook
@@ -355,18 +538,22 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               </div>
               <div>
                 <h4 className="text-lg font-bold text-zinc-100">Item Status</h4>
-                <p className="text-zinc-400 text-sm">Current availability status</p>
+                <p className="text-zinc-400 text-sm">
+                  Current availability status
+                </p>
               </div>
             </div>
-            <div className={`px-4 py-2 rounded-xl backdrop-blur-xl border font-semibold ${
-              initialData.sold 
-                ? 'bg-red-500/20 border-red-500/30 text-red-300' 
-                : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
-            }`}>
+            <div
+              className={`px-4 py-2 rounded-xl backdrop-blur-xl border font-semibold ${
+                initialData.sold
+                  ? 'bg-red-500/20 border-red-500/30 text-red-300'
+                  : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+              }`}
+            >
               {initialData.sold ? 'SOLD' : 'AVAILABLE'}
             </div>
           </div>
-          
+
           {initialData.sold && initialData.saleDetails && (
             <div className="mt-4 pt-4 border-t border-zinc-700/50">
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -379,8 +566,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
                 <div>
                   <span className="text-zinc-400">Date Sold:</span>
                   <span className="ml-2 font-semibold text-zinc-300">
-                    {initialData.saleDetails.dateSold 
-                      ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
+                    {initialData.saleDetails.dateSold
+                      ? new Date(
+                          initialData.saleDetails.dateSold
+                        ).toLocaleDateString()
                       : 'N/A'}
                   </span>
                 </div>

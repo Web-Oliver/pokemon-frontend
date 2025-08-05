@@ -82,7 +82,6 @@ export const useDataTable = <T extends { id: string }>(
 ): UseDataTableReturn<T> => {
   const {
     data,
-    columns,
     initialSort,
     itemsPerPage: initialItemsPerPage = 20,
     searchFields = [],

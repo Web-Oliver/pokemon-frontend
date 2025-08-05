@@ -55,7 +55,13 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
   hierarchicalConfig,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocomplete = useAutocomplete(searchType, onSelect, filters, disabled, hierarchicalConfig);
+  const autocomplete = useAutocomplete(
+    searchType,
+    onSelect,
+    filters,
+    disabled,
+    hierarchicalConfig
+  );
 
   // Sync external value with internal state - avoid infinite loops
   useEffect(() => {
@@ -281,89 +287,92 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                     hasSetName: !!result.data?.setName,
                     hasSetId: !!result.data?.setId,
                     setIdSetName: result.data?.setId?.setName,
-                    directSetName: result.data?.setName
+                    directSetName: result.data?.setName,
                   });
                 }
                 return (
-                <div
-                  key={result.id}
-                  onMouseDown={useCallback(
-                    (e) => {
+                  <div
+                    key={result.id}
+                    onMouseDown={(e) => {
                       e.preventDefault();
                       autocomplete.selectResult(result);
-                    },
-                    [autocomplete.selectResult, result]
-                  )}
-                  className={`group cursor-pointer select-none relative p-4 rounded-xl transition-all duration-300 transform hover:scale-102 overflow-hidden ${
-                    index === autocomplete.activeIndex
-                      ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 shadow-lg'
-                      : 'hover:bg-white/5 border border-transparent hover:border-white/10'
-                  }`}
-                >
-                  {/* Premium Gradient Overlay for Active */}
-                  {index === autocomplete.activeIndex && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl"></div>
-                  )}
+                    }}
+                    className={`group cursor-pointer select-none relative p-4 rounded-xl transition-all duration-300 transform hover:scale-102 overflow-hidden ${
+                      index === autocomplete.activeIndex
+                        ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 shadow-lg'
+                        : 'hover:bg-white/5 border border-transparent hover:border-white/10'
+                    }`}
+                  >
+                    {/* Premium Gradient Overlay for Active */}
+                    {index === autocomplete.activeIndex && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl"></div>
+                    )}
 
-                  {/* Shimmer Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                    {/* Shimmer Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
 
-                  <div className="relative z-10 flex items-center justify-between">
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <span
-                        className={`block font-semibold text-lg truncate pr-4 ${
-                          index === autocomplete.activeIndex
-                            ? 'text-white'
-                            : 'text-white/90'
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <span
+                          className={`block font-semibold text-lg truncate pr-4 ${
+                            index === autocomplete.activeIndex
+                              ? 'text-white'
+                              : 'text-white/90'
+                          }`}
+                        >
+                          {result.displayName}
+                        </span>
+
+                        {/* Premium Metadata */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {result.type === 'card' && filters?.setName && (
+                            <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
+                              <Search className="w-3 h-3 mr-1" />
+                              Set: {filters.setName}
+                            </div>
+                          )}
+                          {result.type !== 'card' &&
+                            (result.data?.setName ||
+                              result.data?.setId?.setName) &&
+                            result.type !== 'set' && (
+                              <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
+                                <Search className="w-3 h-3 mr-1" />
+                                {result.data.setName ||
+                                  result.data.setId?.setName}
+                              </div>
+                            )}
+                          {result.data?.category && (
+                            <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 rounded-lg text-xs text-purple-300 font-semibold">
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              {result.data.category}
+                            </div>
+                          )}
+                          {result.data?.year && (
+                            <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-slate-500/20 to-zinc-600/20 backdrop-blur-xl border border-slate-500/30 rounded-lg text-xs text-slate-300 font-semibold">
+                              {result.data.year}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Premium Type Badge */}
+                      <div
+                        className={`flex-shrink-0 ml-4 px-3 py-1.5 rounded-xl font-bold text-xs shadow-lg backdrop-blur-xl border ${
+                          result.type === 'set'
+                            ? 'bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border-blue-500/30 text-blue-300'
+                            : result.type === 'setProduct'
+                              ? 'bg-gradient-to-r from-indigo-500/20 to-blue-600/20 border-indigo-500/30 text-indigo-300'
+                              : result.type === 'product'
+                                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
+                                : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
                         }`}
                       >
-                        {result.displayName}
-                      </span>
-
-                      {/* Premium Metadata */}
-                      <div className="flex flex-wrap items-center gap-2">
-                        {result.type === 'card' && filters?.setName && (
-                          <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
-                            <Search className="w-3 h-3 mr-1" />
-                            Set: {filters.setName}
-                          </div>
-                        )}
-                        {result.type !== 'card' && (result.data?.setName || result.data?.setId?.setName) && result.type !== 'set' && (
-                          <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-emerald-500/30 rounded-lg text-xs text-emerald-300 font-semibold">
-                            <Search className="w-3 h-3 mr-1" />
-                            {result.data.setName || result.data.setId?.setName}
-                          </div>
-                        )}
-                        {result.data?.category && (
-                          <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-purple-500/20 to-violet-600/20 backdrop-blur-xl border border-purple-500/30 rounded-lg text-xs text-purple-300 font-semibold">
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            {result.data.category}
-                          </div>
-                        )}
-                        {result.data?.year && (
-                          <div className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-slate-500/20 to-zinc-600/20 backdrop-blur-xl border border-slate-500/30 rounded-lg text-xs text-slate-300 font-semibold">
-                            {result.data.year}
-                          </div>
-                        )}
+                        {result.type === 'setProduct'
+                          ? 'set product'
+                          : result.type}
                       </div>
                     </div>
-
-                    {/* Premium Type Badge */}
-                    <div
-                      className={`flex-shrink-0 ml-4 px-3 py-1.5 rounded-xl font-bold text-xs shadow-lg backdrop-blur-xl border ${
-                        result.type === 'set'
-                          ? 'bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border-blue-500/30 text-blue-300'
-                          : result.type === 'setProduct'
-                            ? 'bg-gradient-to-r from-indigo-500/20 to-blue-600/20 border-indigo-500/30 text-indigo-300'
-                            : result.type === 'product'
-                              ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 border-emerald-500/30 text-emerald-300'
-                              : 'bg-gradient-to-r from-purple-500/20 to-violet-600/20 border-purple-500/30 text-purple-300'
-                      }`}
-                    >
-                      {result.type === 'setProduct' ? 'set product' : result.type}
-                    </div>
                   </div>
-                </div>
                 );
               })}
             </div>

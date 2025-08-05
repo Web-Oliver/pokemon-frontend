@@ -107,59 +107,103 @@ const CardInformationFields: React.FC<CardInformationFieldsProps> = ({
               <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
               PSA Population Breakdown
             </h4>
-            
+
             <div className="grid grid-cols-5 gap-2 text-xs">
               {/* PSA 1-5 */}
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 1</div>
-                <div className="font-semibold text-red-600 dark:text-red-400">{grades.grade_1?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 1
+                </div>
+                <div className="font-semibold text-red-600 dark:text-red-400">
+                  {grades.grade_1?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 2</div>
-                <div className="font-semibold text-red-500 dark:text-red-400">{grades.grade_2?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 2
+                </div>
+                <div className="font-semibold text-red-500 dark:text-red-400">
+                  {grades.grade_2?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 3</div>
-                <div className="font-semibold text-orange-600 dark:text-orange-400">{grades.grade_3?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 3
+                </div>
+                <div className="font-semibold text-orange-600 dark:text-orange-400">
+                  {grades.grade_3?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 4</div>
-                <div className="font-semibold text-orange-500 dark:text-orange-400">{grades.grade_4?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 4
+                </div>
+                <div className="font-semibold text-orange-500 dark:text-orange-400">
+                  {grades.grade_4?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 5</div>
-                <div className="font-semibold text-yellow-600 dark:text-yellow-400">{grades.grade_5?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 5
+                </div>
+                <div className="font-semibold text-yellow-600 dark:text-yellow-400">
+                  {grades.grade_5?.toLocaleString() || '0'}
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-5 gap-2 text-xs mt-2">
               {/* PSA 6-10 */}
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 6</div>
-                <div className="font-semibold text-yellow-500 dark:text-yellow-400">{grades.grade_6?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 6
+                </div>
+                <div className="font-semibold text-yellow-500 dark:text-yellow-400">
+                  {grades.grade_6?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 7</div>
-                <div className="font-semibold text-lime-600 dark:text-lime-400">{grades.grade_7?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 7
+                </div>
+                <div className="font-semibold text-lime-600 dark:text-lime-400">
+                  {grades.grade_7?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 8</div>
-                <div className="font-semibold text-green-600 dark:text-green-400">{grades.grade_8?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 8
+                </div>
+                <div className="font-semibold text-green-600 dark:text-green-400">
+                  {grades.grade_8?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 9</div>
-                <div className="font-semibold text-blue-600 dark:text-blue-400">{grades.grade_9?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 9
+                </div>
+                <div className="font-semibold text-blue-600 dark:text-blue-400">
+                  {grades.grade_9?.toLocaleString() || '0'}
+                </div>
               </div>
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium">PSA 10</div>
-                <div className="font-semibold text-purple-600 dark:text-purple-400">{grades.grade_10?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium">
+                  PSA 10
+                </div>
+                <div className="font-semibold text-purple-600 dark:text-purple-400">
+                  {grades.grade_10?.toLocaleString() || '0'}
+                </div>
               </div>
             </div>
 
             <div className="mt-3 pt-3 border-t border-blue-200/50 dark:border-zinc-700/50">
               <div className="text-center">
-                <div className="text-gray-600 dark:text-zinc-400 font-medium text-sm">Total Graded</div>
-                <div className="font-bold text-lg text-blue-800 dark:text-blue-300">{grades.grade_total?.toLocaleString() || '0'}</div>
+                <div className="text-gray-600 dark:text-zinc-400 font-medium text-sm">
+                  Total Graded
+                </div>
+                <div className="font-bold text-lg text-blue-800 dark:text-blue-300">
+                  {grades.grade_total?.toLocaleString() || '0'}
+                </div>
               </div>
             </div>
           </div>

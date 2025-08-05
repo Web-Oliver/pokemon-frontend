@@ -43,7 +43,6 @@ const CardInformationDisplaySection: React.FC<
   errors,
   watch,
   isVisible = true,
-  cardType,
   className = '',
   gridClassName = 'grid grid-cols-1 md:grid-cols-2 gap-6',
 }) => {

@@ -44,18 +44,17 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   // Memoized item display name calculation - UPDATED for new field structure
   const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
-    
+
     // Handle different item types with new structure
-    const cardName = (
+    const cardName =
       // For PSA/Raw cards - check populated fields first, then direct fields
-      (itemRecord.cardId as Record<string, unknown>)?.cardName ||
-      itemRecord.cardName ||
-      // For sealed products - use name or productName
-      itemRecord.name ||
-      (itemRecord.productId as Record<string, unknown>)?.productName ||
-      itemRecord.productName ||
-      'Unknown Item'
-    ) as string;
+      ((itemRecord.cardId as Record<string, unknown>)?.cardName ||
+        itemRecord.cardName ||
+        // For sealed products - use name or productName
+        itemRecord.name ||
+        (itemRecord.productId as Record<string, unknown>)?.productName ||
+        itemRecord.productName ||
+        'Unknown Item') as string;
 
     // Format card name for display (remove hyphens and parentheses)
     return formatCardNameForDisplay(cardName);
@@ -64,7 +63,7 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   // Memoized set name calculation - UPDATED for new field structure
   const setName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
-    
+
     return (
       // For PSA/Raw cards - check populated fields from Card->Set reference
       (itemRecord.cardId as Record<string, unknown>)?.setId?.setName ||
@@ -76,20 +75,6 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       'Unknown Set'
     );
   }, [item]);
-
-  // NEW: Memoized card number display - for card items
-  const cardNumber = useMemo(() => {
-    const itemRecord = item as Record<string, unknown>;
-    
-    if (itemType === 'sealed') return undefined;
-    
-    return (
-      // Check populated fields first, then direct fields
-      (itemRecord.cardId as Record<string, unknown>)?.cardNumber ||
-      itemRecord.cardNumber ||
-      undefined
-    ) as string | undefined;
-  }, [item, itemType]);
 
   // Memoized click handler to prevent unnecessary re-renders
   const handleClick = useCallback(() => {
@@ -131,7 +116,11 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       showActions={showMarkAsSoldButton && activeTab !== 'sold-items'}
       enableInteractions={true}
       onView={handleClick}
-      _onMarkSold={showMarkAsSoldButton && activeTab !== 'sold-items' ? handleMarkSold : undefined}
+      _onMarkSold={
+        showMarkAsSoldButton && activeTab !== 'sold-items'
+          ? handleMarkSold
+          : undefined
+      }
       className="mx-auto w-full h-full"
     />
   );
@@ -160,8 +149,10 @@ const arePropsEqual = (
       prevItem.images !== nextItem.images ||
       // UPDATED: Check both cardId and productId references
       JSON.stringify(prevItem.cardId) !== JSON.stringify(nextItem.cardId) ||
-      JSON.stringify(prevItem.productId) !== JSON.stringify(nextItem.productId) ||
-      JSON.stringify(prevItem.saleDetails) !== JSON.stringify(nextItem.saleDetails) ||
+      JSON.stringify(prevItem.productId) !==
+        JSON.stringify(nextItem.productId) ||
+      JSON.stringify(prevItem.saleDetails) !==
+        JSON.stringify(nextItem.saleDetails) ||
       // NEW: Check field name changes
       prevItem.cardNumber !== nextItem.cardNumber ||
       prevItem.setProductName !== nextItem.setProductName ||

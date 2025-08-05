@@ -106,8 +106,11 @@ export const searchSetProducts = async (
   query: string,
   limit: number = 50
 ): Promise<ISetProduct[]> => {
-  console.log('[SETPRODUCTS API DEBUG] searchSetProducts called with:', { query, limit });
-  
+  console.log('[SETPRODUCTS API DEBUG] searchSetProducts called with:', {
+    query,
+    limit,
+  });
+
   if (!query.trim()) {
     console.log('[SETPRODUCTS API DEBUG] Empty query, returning empty array');
     return [];
@@ -121,10 +124,9 @@ export const searchSetProducts = async (
   const url = `/set-products/search?${queryParams.toString()}`;
   console.log('[SETPRODUCTS API DEBUG] Making request to:', url);
 
-  const response = await unifiedApiClient.apiGet<{ setProducts: ISetProduct[] }>(
-    url,
-    'search SetProducts'
-  );
+  const response = await unifiedApiClient.apiGet<{
+    setProducts: ISetProduct[];
+  }>(url, 'search SetProducts');
 
   console.log('[SETPRODUCTS API DEBUG] API response:', response);
   const results = response.data?.setProducts || [];
@@ -157,11 +159,7 @@ export const getSetProductSuggestions = async (
 export const getPaginatedSetProducts = async (
   params?: SetProductsParams
 ): Promise<PaginatedSetProductsResponse> => {
-  const {
-    page = 1,
-    limit = 20,
-    search,
-  } = params || {};
+  const { page = 1, limit = 20, search } = params || {};
 
   const queryParams = {
     page: page.toString(),

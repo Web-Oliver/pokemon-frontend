@@ -30,7 +30,9 @@ const ProductSearch: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [setProductFilter, setSetProductFilter] = useState<ISetProduct | null>(null); // NEW: SetProduct filter
+  const [setProductFilter, setSetProductFilter] = useState<ISetProduct | null>(
+    null
+  ); // NEW: SetProduct filter
   const [setNameFilter, setSetNameFilter] = useState(''); // Set name filter for searching
   const [availableOnly, setAvailableOnly] = useState(false);
   const [pagination, setPagination] = useState({
@@ -255,7 +257,10 @@ const ProductSearch: React.FC = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="w-full pl-10 pr-10 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-400 focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]">
+                  <option
+                    value=""
+                    className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
+                  >
                     All Categories
                   </option>
                   {categories.map((category) => (
@@ -437,7 +442,9 @@ const ProductSearch: React.FC = () => {
                   <h2 className="text-2xl font-bold text-[var(--theme-text-primary)]">
                     Products
                     {setProductFilter && (
-                      <span className="text-lg text-[var(--theme-accent-primary)] ml-2">→ {setProductFilter.setProductName}</span>
+                      <span className="text-lg text-[var(--theme-accent-primary)] ml-2">
+                        → {setProductFilter.setProductName}
+                      </span>
                     )}
                   </h2>
                   <p className="text-[var(--theme-text-secondary)] font-medium mt-1">

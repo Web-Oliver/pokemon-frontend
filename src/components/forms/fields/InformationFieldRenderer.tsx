@@ -20,7 +20,7 @@ interface ReadOnlyFields {
   cardNumber?: boolean; // UPDATED: pokemonNumber → cardNumber
   variety?: boolean;
   // REMOVED: baseName (deprecated field per user feedback)
-  
+
   // NEW: Grades structure fields
   grades?: boolean; // Show complete grades breakdown
   gradeTotal?: boolean; // Show only total graded count
@@ -34,7 +34,7 @@ interface ReadOnlyFields {
   grade_8?: boolean;
   grade_9?: boolean;
   grade_10?: boolean;
-  
+
   // NEW: SetProduct → Product hierarchical fields
   setProductName?: boolean;
   productName?: boolean;

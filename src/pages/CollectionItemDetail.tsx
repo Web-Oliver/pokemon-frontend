@@ -223,7 +223,7 @@ const CollectionItemDetail: React.FC = () => {
         }
 
         setItem(fetchedItem);
-        
+
         // Debug PSA card population data
         if (type === 'psa') {
           console.log('[DEBUG PSA API] Full PSA card response:', fetchedItem);
@@ -236,10 +236,10 @@ const CollectionItemDetail: React.FC = () => {
             grade_2: psaCard.cardId?.grades?.grade_2,
             grade_9: psaCard.cardId?.grades?.grade_9,
             grade_10: psaCard.cardId?.grades?.grade_10,
-            grade_total: psaCard.cardId?.grades?.grade_total
+            grade_total: psaCard.cardId?.grades?.grade_total,
           });
         }
-        
+
         log('Item fetched successfully');
       } catch (err) {
         handleApiError(err, 'Failed to fetch item details');
@@ -318,8 +318,10 @@ const CollectionItemDetail: React.FC = () => {
     // Refresh the item data to show updated sold status
     const fetchItem = async () => {
       const { type, id } = getUrlParams();
-      if (!type || !id) return;
-      
+      if (!type || !id) {
+        return;
+      }
+
       try {
         setLoading(true);
         const collectionApi = getCollectionApiService();
@@ -379,16 +381,21 @@ const CollectionItemDetail: React.FC = () => {
     // For sealed products, check productId object structure
     if ('productId' in item && item.productId) {
       const sealedItem = item as any;
-      console.log('[DEBUG getItemTitle] Detected sealed product with productId');
-      console.log('[DEBUG getItemTitle] ProductId object:', sealedItem.productId);
-      
+      console.log(
+        '[DEBUG getItemTitle] Detected sealed product with productId'
+      );
+      console.log(
+        '[DEBUG getItemTitle] ProductId object:',
+        sealedItem.productId
+      );
+
       // Get productName from productId object
       if (sealedItem.productId?.productName) {
         const title = sealedItem.productId.productName;
         console.log('[DEBUG getItemTitle] Using productId.productName:', title);
         return title;
       }
-      
+
       // Fallback to category from productId
       if (sealedItem.productId?.category) {
         const title = sealedItem.productId.category.replace(/-/g, ' ');
@@ -397,7 +404,9 @@ const CollectionItemDetail: React.FC = () => {
       }
     }
 
-    console.log('[DEBUG getItemTitle] No matching fields found, returning Unknown Item');
+    console.log(
+      '[DEBUG getItemTitle] No matching fields found, returning Unknown Item'
+    );
     return 'Unknown Item';
   };
 
@@ -435,7 +444,7 @@ const CollectionItemDetail: React.FC = () => {
       return item.cardId.setId.setName;
     }
 
-    // For sealed products with productId structure  
+    // For sealed products with productId structure
     if ('productId' in item && item.productId) {
       const sealedItem = item as any;
       // We have setProductId but would need to make API call to get the actual set name
@@ -443,10 +452,12 @@ const CollectionItemDetail: React.FC = () => {
       if (sealedItem.productId?.productName) {
         // Try to extract set name from product name (e.g., "Journey Together Booster" -> "Journey Together")
         const productName = sealedItem.productId.productName;
-        const setName = productName.replace(/(Booster|Box|Pack|Elite Trainer Box|ETB).*$/i, '').trim();
+        const setName = productName
+          .replace(/(Booster|Box|Pack|Elite Trainer Box|ETB).*$/i, '')
+          .trim();
         return setName || 'Set Name Pending';
       }
-      
+
       if (sealedItem.productId?.setProductId) {
         return 'Set Name Pending'; // Would need API call to resolve setProductId
       }
@@ -487,31 +498,41 @@ const CollectionItemDetail: React.FC = () => {
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                  <span className="text-[var(--theme-text-secondary)] font-medium">PSA Grade</span>
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
+                    PSA Grade
+                  </span>
                   <span className="font-bold text-[var(--theme-accent-primary)] text-2xl">
                     {psaCard.grade}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                  <span className="text-[var(--theme-text-secondary)] font-medium">Card Name</span>
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
+                    Card Name
+                  </span>
                   <span className="font-medium text-[var(--theme-text-primary)]">
                     {psaCard.cardName || psaCard.cardId?.cardName || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                  <span className="text-[var(--theme-text-secondary)] font-medium">Base Name</span>
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
+                    Base Name
+                  </span>
                   <span className="font-medium text-cyan-300">
                     {psaCard.cardId?.baseName || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                  <span className="text-[var(--theme-text-secondary)] font-medium">Pokemon #</span>
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
+                    Pokemon #
+                  </span>
                   <span className="font-bold text-yellow-400">
                     {psaCard.cardId?.pokemonNumber || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                  <span className="text-[var(--theme-text-secondary)] font-medium">Variety</span>
+                  <span className="text-[var(--theme-text-secondary)] font-medium">
+                    Variety
+                  </span>
                   <span className="font-medium text-purple-300">
                     {psaCard.cardId?.variety || 'Standard'}
                   </span>
@@ -549,9 +570,18 @@ const CollectionItemDetail: React.FC = () => {
                   </span>
                   <span className="font-bold text-[var(--theme-status-success)] text-xl">
                     {(() => {
-                      console.log('[DEBUG Population] PSA Card cardId:', psaCard.cardId);
-                      console.log('[DEBUG Population] PSA Card cardId grades:', psaCard.cardId?.grades);
-                      console.log('[DEBUG Population] grade_total value:', psaCard.cardId?.grades?.grade_total);
+                      console.log(
+                        '[DEBUG Population] PSA Card cardId:',
+                        psaCard.cardId
+                      );
+                      console.log(
+                        '[DEBUG Population] PSA Card cardId grades:',
+                        psaCard.cardId?.grades
+                      );
+                      console.log(
+                        '[DEBUG Population] grade_total value:',
+                        psaCard.cardId?.grades?.grade_total
+                      );
                       return psaCard.cardId?.grades?.grade_total || 'N/A';
                     })()}
                   </span>
@@ -636,25 +666,33 @@ const CollectionItemDetail: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Condition</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Condition
+                </span>
                 <span className="font-bold text-[var(--theme-status-success)] text-lg">
                   {rawCard.condition}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Card Name</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Card Name
+                </span>
                 <span className="font-medium text-[var(--theme-text-primary)]">
                   {rawCard.cardName || rawCard.cardId?.cardName || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Base Name</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Base Name
+                </span>
                 <span className="font-medium text-cyan-300">
                   {rawCard.cardId?.baseName || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Pokemon #</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Pokemon #
+                </span>
                 <span className="font-bold text-yellow-400">
                   {rawCard.cardId?.pokemonNumber || 'N/A'}
                 </span>
@@ -692,19 +730,25 @@ const CollectionItemDetail: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Category</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Category
+                </span>
                 <span className="font-bold text-[var(--theme-accent-primary)] text-lg">
                   {sealedProduct.category}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Availability</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Availability
+                </span>
                 <span className="font-medium text-cyan-300">
                   {sealedProduct.availability || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
-                <span className="text-[var(--theme-text-secondary)] font-medium">Market Price</span>
+                <span className="text-[var(--theme-text-secondary)] font-medium">
+                  Market Price
+                </span>
                 <span className="font-bold text-[var(--theme-status-success)]">
                   {sealedProduct.cardMarketPrice || 'N/A'} kr
                 </span>
@@ -734,25 +778,33 @@ const CollectionItemDetail: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Sale Price:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Sale Price:
+              </span>
               <span className="font-bold text-[var(--theme-status-success)]">
                 {item.saleDetails.actualSoldPrice} kr.
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Payment Method:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Payment Method:
+              </span>
               <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.paymentMethod}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Delivery:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Delivery:
+              </span>
               <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.deliveryMethod}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Source:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Source:
+              </span>
               <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.source}
               </span>
@@ -760,7 +812,9 @@ const CollectionItemDetail: React.FC = () => {
           </div>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Date Sold:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Date Sold:
+              </span>
               <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.dateSold
                   ? new Date(item.saleDetails.dateSold).toLocaleDateString()
@@ -774,7 +828,9 @@ const CollectionItemDetail: React.FC = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--theme-text-secondary)]">Tracking:</span>
+              <span className="text-[var(--theme-text-secondary)]">
+                Tracking:
+              </span>
               <span className="font-medium text-[var(--theme-text-primary)]">
                 {item.saleDetails.trackingNumber || 'N/A'}
               </span>
@@ -1125,7 +1181,7 @@ const CollectionItemDetail: React.FC = () => {
 
                       {/* Breathing Light Animation */}
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-[2.5rem] animate-pulse opacity-40 pointer-events-none"></div>
-                      
+
                       {/* Premium Download Button - Pushed to bottom */}
                       {item.images && item.images.length > 0 && (
                         <div className="mt-auto pt-6 flex justify-center">

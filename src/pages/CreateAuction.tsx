@@ -13,7 +13,7 @@
  * - Neo-brutalist elements mixed with soft glassmorphism
  * - Refactored to use proper form components following SOLID and DRY principles
  * - Following CLAUDE.md layered architecture and Context7 design patterns
- * 
+ *
  * THEME INTEGRATION (Phase 2.2.6 Complete):
  * - Preserves Context7 2025 futuristic system as specialized variant
  * - Uses shared effect utilities (ParticleSystem, NeuralNetworkBackground, FloatingGeometry)
@@ -22,14 +22,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { 
-  Gavel, 
-  ArrowLeft, 
-  Sparkles, 
-  Cpu, 
-  Zap, 
-  Target 
-} from 'lucide-react';
+import { Gavel, ArrowLeft, Sparkles, Cpu, Zap, Target } from 'lucide-react';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { IAuctionItem } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
@@ -43,11 +36,11 @@ import { log } from '../utils/logger';
 import AuctionFormContainer from '../components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../components/forms/sections/AuctionItemSelectionSection';
 import { useTheme } from '../contexts/ThemeContext';
-import { 
-  ParticleSystem, 
-  NeuralNetworkBackground, 
+import {
+  ParticleSystem,
+  NeuralNetworkBackground,
   FloatingGeometry,
-  type GeometricElement 
+  type GeometricElement,
 } from '../components/effects';
 
 // Form data interface
@@ -334,26 +327,25 @@ const CreateAuction: React.FC = () => {
       .filter((product) => !product.sold)
       .forEach((product) => {
         // Use hierarchical structure to get product name - match CollectionItemCard pattern
-        const productName = (
+        const productName =
           // For sealed products - check Product->SetProduct reference
           (product as any).productId?.productName ||
           product.name ||
           (product as any).productName ||
-          'Unknown Product'
-        );
+          'Unknown Product';
 
-        // Use hierarchical structure to get set name - match CollectionItemCard pattern  
-        const setName = (
+        // Use hierarchical structure to get set name - match CollectionItemCard pattern
+        const setName =
           // For sealed products - check Product->SetProduct reference
           (product as any).productId?.setProductName ||
           product.setName ||
           (product as any).setProductName ||
-          'Unknown Set'
-        );
+          'Unknown Set';
 
-        const displayName = setName !== 'Unknown Set'
-          ? `${productName} - ${setName}`
-          : productName;
+        const displayName =
+          setName !== 'Unknown Set'
+            ? `${productName} - ${setName}`
+            : productName;
 
         const processedImages = (product.images || [])
           .map(memoizedProcessImageUrl)
@@ -582,14 +574,18 @@ const CreateAuction: React.FC = () => {
 
   // Theme-aware background while preserving Context7 2025 futuristic aesthetic
   const backgroundStyles = {
-    background: config.visualTheme === 'context7-futuristic' 
-      ? 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)'
-      : 'linear-gradient(135deg, var(--theme-background-start, rgb(2 6 23)) 0%, var(--theme-background-mid, rgba(88 28 135 / 0.2)) 50%, var(--theme-background-end, rgba(49 46 129 / 0.3)) 100%)',
+    background:
+      config.visualTheme === 'context7-futuristic'
+        ? 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)'
+        : 'linear-gradient(135deg, var(--theme-background-start, rgb(2 6 23)) 0%, var(--theme-background-mid, rgba(88 28 135 / 0.2)) 50%, var(--theme-background-end, rgba(49 46 129 / 0.3)) 100%)',
   };
 
   return (
-    <PageLayout title="Create Auction" subtitle="Create a new auction for your items">
-      <div 
+    <PageLayout
+      title="Create Auction"
+      subtitle="Create a new auction for your items"
+    >
+      <div
         className="min-h-screen relative overflow-hidden"
         style={backgroundStyles}
       >
@@ -619,14 +615,14 @@ const CreateAuction: React.FC = () => {
             {/* Context7 2025 Futuristic Glassmorphism Header */}
             <div className="relative group">
               {/* Glassmorphism card with neumorphism elements - theme-aware */}
-              <div 
+              <div
                 className="backdrop-blur-xl border rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden"
                 style={{
                   background: `linear-gradient(135deg, 
                     rgba(255, 255, 255, ${0.15 * (config.glassmorphismIntensity / 100)}) 0%, 
                     rgba(6, 182, 212, ${0.12 * (config.glassmorphismIntensity / 100)}) 50%, 
                     rgba(168, 85, 247, ${0.15 * (config.glassmorphismIntensity / 100)}) 100%)`,
-                  borderColor: `rgba(255, 255, 255, ${0.20 * (config.glassmorphismIntensity / 100)})`,
+                  borderColor: `rgba(255, 255, 255, ${0.2 * (config.glassmorphismIntensity / 100)})`,
                 }}
               >
                 {/* Neural network glow effect */}
@@ -675,7 +671,8 @@ const CreateAuction: React.FC = () => {
                       </h1>
                       <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
                         <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                        Neural-powered auction creation for your collection universe
+                        Neural-powered auction creation for your collection
+                        universe
                       </p>
                     </div>
                   </div>
@@ -693,7 +690,7 @@ const CreateAuction: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/5 to-pink-500/10 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm"></div>
 
               {/* Advanced glassmorphism container - theme-aware */}
-              <div 
+              <div
                 className="relative backdrop-blur-xl border rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] hover:shadow-[0_20px_50px_0_rgba(6,182,212,0.15)] transition-all duration-500"
                 style={{
                   background: `linear-gradient(135deg, 

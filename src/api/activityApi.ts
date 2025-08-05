@@ -287,7 +287,12 @@ export const getActivities = async (
   }
 
   // If response has the expected structure, return it as is
-  if (response && typeof response === 'object' && 'data' in response && 'meta' in response) {
+  if (
+    response &&
+    typeof response === 'object' &&
+    'data' in response &&
+    'meta' in response
+  ) {
     return response as ActivityResponse;
   }
 
@@ -315,7 +320,7 @@ export const getRecentActivities = async (
   limit: number = 10
 ): Promise<{ success: boolean; data: Activity[] }> => {
   const response = await unifiedApiClient.apiGet<Activity[]>(
-    `/activities/recent?limit=${limit}`, 
+    `/activities/recent?limit=${limit}`,
     'recent activities'
   );
 
@@ -323,7 +328,7 @@ export const getRecentActivities = async (
   // We need to wrap it in the expected format for backward compatibility
   return {
     success: true,
-    data: Array.isArray(response) ? response : []
+    data: Array.isArray(response) ? response : [],
   };
 };
 
@@ -338,16 +343,21 @@ export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
   );
 
   // Handle the transformed response - unifiedApiClient extracts the data field
-  // If response is the stats object directly, wrap it in the expected format  
+  // If response is the stats object directly, wrap it in the expected format
   if (response && typeof response === 'object' && !('success' in response)) {
     return {
       success: true,
-      data: response
+      data: response,
     };
   }
 
   // If response already has the expected structure, return it as is
-  if (response && typeof response === 'object' && 'success' in response && 'data' in response) {
+  if (
+    response &&
+    typeof response === 'object' &&
+    'success' in response &&
+    'data' in response
+  ) {
     return response as ActivityStatsResponse;
   }
 
@@ -359,8 +369,8 @@ export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
       today: 0,
       week: 0,
       month: 0,
-      lastActivity: undefined
-    }
+      lastActivity: undefined,
+    },
   };
 };
 
@@ -388,8 +398,8 @@ export const searchActivities = async (
   };
 
   const response = await unifiedApiClient.apiGet<any>(
-    '/activities/search', 
-    'activity search', 
+    '/activities/search',
+    'activity search',
     { params: queryParams }
   );
 
@@ -399,15 +409,20 @@ export const searchActivities = async (
     return {
       success: true,
       data: response,
-      meta: { 
-        searchTerm: searchTerm,
-        resultCount: response.length 
-      }
+      meta: {
+        searchTerm,
+        resultCount: response.length,
+      },
     };
   }
 
   // If response has the expected structure, return it as is
-  if (response && typeof response === 'object' && 'data' in response && 'meta' in response) {
+  if (
+    response &&
+    typeof response === 'object' &&
+    'data' in response &&
+    'meta' in response
+  ) {
     return response;
   }
 
@@ -415,10 +430,10 @@ export const searchActivities = async (
   return {
     success: true,
     data: [],
-    meta: { 
-      searchTerm: searchTerm,
-      resultCount: 0 
-    }
+    meta: {
+      searchTerm,
+      resultCount: 0,
+    },
   };
 };
 
@@ -455,19 +470,24 @@ export const getActivitiesForEntity = async (
     // If we get an array directly, it means the transformation extracted the data array
     return {
       success: true,
-      data: response
+      data: response,
     };
   }
 
   // If response has the expected structure, return it as is
-  if (response && typeof response === 'object' && 'success' in response && 'data' in response) {
+  if (
+    response &&
+    typeof response === 'object' &&
+    'success' in response &&
+    'data' in response
+  ) {
     return response;
   }
 
   // Fallback for unexpected response format
   return {
     success: true,
-    data: []
+    data: [],
   };
 };
 

@@ -1,7 +1,7 @@
 /**
  * Theme-Aware Input Component
  * Phase 2.1.2: Migrated to unified theme system with enhanced functionality
- * 
+ *
  * Following CLAUDE.md + Context7 principles + Unified Theme System:
  * - Standardized prop interfaces from themeTypes.ts
  * - Theme-aware styling with CSS custom properties
@@ -14,11 +14,18 @@
 import React, { forwardRef, InputHTMLAttributes } from 'react';
 import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
 import { StandardInputProps } from '../../types/themeTypes';
-import { cn, inputStyleConfig, generateThemeClasses, getFocusClasses } from '../../utils/themeUtils';
+import {
+  cn,
+  inputStyleConfig,
+  generateThemeClasses,
+  getFocusClasses,
+} from '../../utils/themeUtils';
 import { inputClasses } from '../../utils/classNameUtils';
 import { useTheme } from '../../contexts/ThemeContext';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement>, Omit<StandardInputProps, 'onChange' | 'onFocus' | 'onBlur'> {
+export interface InputProps
+  extends InputHTMLAttributes<HTMLInputElement>,
+    Omit<StandardInputProps, 'onChange' | 'onFocus' | 'onBlur'> {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -55,12 +62,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const themeContext = useTheme();
-    
+
     // Merge context theme with component props
     const effectiveTheme = theme || themeContext?.config.visualTheme;
-    const effectiveColorScheme = colorScheme || themeContext?.config.primaryColor;
     const effectiveDensity = density || themeContext?.config.density;
-    const effectiveAnimationIntensity = animationIntensity || themeContext?.config.animationIntensity;
+    const effectiveAnimationIntensity =
+      animationIntensity || themeContext?.config.animationIntensity;
 
     // Generate unique input ID
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
@@ -81,31 +88,34 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     // Dynamic padding based on icons and density
     const getPadding = () => {
-      const basePadding = effectiveDensity === 'compact' 
-        ? 'py-density-xs'
-        : effectiveDensity === 'spacious'
-        ? 'py-density-lg'
-        : 'py-density-sm';
+      const basePadding =
+        effectiveDensity === 'compact'
+          ? 'py-density-xs'
+          : effectiveDensity === 'spacious'
+            ? 'py-density-lg'
+            : 'py-density-sm';
 
-      const horizontalPadding = hasStartIcon && hasEndIcon
-        ? 'pl-12 pr-12'
-        : hasStartIcon
-        ? 'pl-12 pr-4'
-        : hasEndIcon
-        ? 'pl-4 pr-12'
-        : 'px-4';
+      const horizontalPadding =
+        hasStartIcon && hasEndIcon
+          ? 'pl-12 pr-12'
+          : hasStartIcon
+            ? 'pl-12 pr-4'
+            : hasEndIcon
+              ? 'pl-4 pr-12'
+              : 'px-4';
 
       return cn(basePadding, horizontalPadding);
     };
 
     // Animation classes based on intensity
-    const animationClasses = effectiveAnimationIntensity === 'disabled' 
-      ? '' 
-      : effectiveAnimationIntensity === 'subtle'
-      ? 'hover:shadow-sm focus:shadow-sm'
-      : effectiveAnimationIntensity === 'enhanced'
-      ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101'
-      : 'hover:shadow-theme-hover focus:shadow-theme-hover';
+    const animationClasses =
+      effectiveAnimationIntensity === 'disabled'
+        ? ''
+        : effectiveAnimationIntensity === 'subtle'
+          ? 'hover:shadow-sm focus:shadow-sm'
+          : effectiveAnimationIntensity === 'enhanced'
+            ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101'
+            : 'hover:shadow-theme-hover focus:shadow-theme-hover';
 
     // Final className combination
     const finalInputClassName = cn(
@@ -120,7 +130,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const iconClasses = cn(
       'h-5 w-5 text-zinc-400 transition-all duration-theme-normal',
       'group-focus-within:text-theme-primary',
-      effectiveAnimationIntensity === 'enhanced' && 'group-focus-within:scale-110 group-focus-within:drop-shadow-sm'
+      effectiveAnimationIntensity === 'enhanced' &&
+        'group-focus-within:scale-110 group-focus-within:drop-shadow-sm'
     );
 
     return (
@@ -131,13 +142,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </Label>
         )}
 
-        <div className={cn(inputWithIconClasses, fullWidth && 'w-full', 'relative group')}>
+        <div
+          className={cn(
+            inputWithIconClasses,
+            fullWidth && 'w-full',
+            'relative group'
+          )}
+        >
           {/* Start Icon */}
           {startIcon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-              <div className={iconClasses}>
-                {startIcon}
-              </div>
+              <div className={iconClasses}>{startIcon}</div>
             </div>
           )}
 
@@ -162,16 +177,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {/* End Icon */}
           {endIcon && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none z-10">
-              <div className={iconClasses}>
-                {endIcon}
-              </div>
+              <div className={iconClasses}>{endIcon}</div>
             </div>
           )}
         </div>
 
         {/* Error Message */}
         <ErrorMessage error={error} />
-        
+
         {/* Helper Text */}
         <HelperText helperText={helperText} />
       </FormWrapper>

@@ -39,7 +39,7 @@ export const usePageLayout = <T = any>(
     async (action: () => Promise<T>): Promise<T | undefined> => {
       try {
         return await asyncOperation.execute(action);
-      } catch (error) {
+      } catch {
         // Error is already handled by useAsyncOperation
         return undefined;
       }

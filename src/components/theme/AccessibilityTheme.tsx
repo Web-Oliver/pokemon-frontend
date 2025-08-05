@@ -1,13 +1,13 @@
 /**
  * Accessibility-Focused Theme Features Component
  * Phase 3.2.2: Accessibility theme features ONLY
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Manages accessibility theme features only
  * - Open/Closed: Extensible for new accessibility patterns
  * - DRY: Centralized accessibility theme logic
  * - Dependency Inversion: Abstracts accessibility implementation details
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme state management
  * - useAccessibilityTheme.ts for accessibility-specific operations
@@ -70,7 +70,9 @@ export interface AccessibilityIndicatorProps {
  * Wraps content with accessibility-aware theme features
  * Handles high contrast, reduced motion, and focus management
  */
-const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndicatorProps> = ({
+const AccessibilityTheme: React.FC<
+  AccessibilityThemeProps & AccessibilityIndicatorProps
+> = ({
   children,
   autoDetectPreferences = true,
   enableKeyboardShortcuts = true,
@@ -96,27 +98,41 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
 
   // Apply accessibility-specific CSS properties
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined') {
+      return;
+    }
 
     const root = document.documentElement;
 
     // High contrast mode CSS properties
     if (theme.config.highContrast) {
       root.style.setProperty('--accessibility-high-contrast', 'true');
-      
+
       // Apply high contrast overrides if provided
       if (highContrastOverrides) {
         if (highContrastOverrides.background) {
-          root.style.setProperty('--accessibility-hc-bg', highContrastOverrides.background);
+          root.style.setProperty(
+            '--accessibility-hc-bg',
+            highContrastOverrides.background
+          );
         }
         if (highContrastOverrides.text) {
-          root.style.setProperty('--accessibility-hc-text', highContrastOverrides.text);
+          root.style.setProperty(
+            '--accessibility-hc-text',
+            highContrastOverrides.text
+          );
         }
         if (highContrastOverrides.border) {
-          root.style.setProperty('--accessibility-hc-border', highContrastOverrides.border);
+          root.style.setProperty(
+            '--accessibility-hc-border',
+            highContrastOverrides.border
+          );
         }
         if (highContrastOverrides.accent) {
-          root.style.setProperty('--accessibility-hc-accent', highContrastOverrides.accent);
+          root.style.setProperty(
+            '--accessibility-hc-accent',
+            highContrastOverrides.accent
+          );
         }
       }
     } else {
@@ -126,7 +142,7 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
     // Reduced motion mode CSS properties
     if (theme.config.reducedMotion) {
       root.style.setProperty('--accessibility-reduced-motion', 'true');
-      
+
       // Apply reduced motion overrides if provided
       if (reducedMotionOverrides) {
         if (reducedMotionOverrides.disableTransitions) {
@@ -159,18 +175,23 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
 
     // Add accessibility classes to document
     const accessibilityClasses = [];
-    if (theme.config.highContrast) accessibilityClasses.push('accessibility-high-contrast');
-    if (theme.config.reducedMotion) accessibilityClasses.push('accessibility-reduced-motion');
-    if (focusManagement.trapFocus) accessibilityClasses.push('accessibility-focus-trap');
+    if (theme.config.highContrast) {
+      accessibilityClasses.push('accessibility-high-contrast');
+    }
+    if (theme.config.reducedMotion) {
+      accessibilityClasses.push('accessibility-reduced-motion');
+    }
+    if (focusManagement.trapFocus) {
+      accessibilityClasses.push('accessibility-focus-trap');
+    }
 
     // Remove existing accessibility classes
     root.className = root.className.replace(/accessibility-\w+/g, '');
-    
+
     // Add new accessibility classes
     if (accessibilityClasses.length > 0) {
       root.classList.add(...accessibilityClasses);
     }
-
   }, [
     theme.config.highContrast,
     theme.config.reducedMotion,
@@ -181,7 +202,9 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
 
   // Skip links for keyboard navigation
   const renderSkipLinks = () => {
-    if (!focusManagement.skipLinks) return null;
+    if (!focusManagement.skipLinks) {
+      return null;
+    }
 
     return (
       <div className="accessibility-skip-links">
@@ -211,10 +234,12 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
 
   // Accessibility status indicators
   const renderAccessibilityIndicators = () => {
-    if (!showIndicators) return null;
+    if (!showIndicators) {
+      return null;
+    }
 
     const indicators = [];
-    
+
     if (theme.config.highContrast) {
       indicators.push({
         id: 'high-contrast',
@@ -223,7 +248,7 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
         active: true,
       });
     }
-    
+
     if (theme.config.reducedMotion) {
       indicators.push({
         id: 'reduced-motion',
@@ -251,7 +276,9 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
       });
     }
 
-    if (indicators.length === 0) return null;
+    if (indicators.length === 0) {
+      return null;
+    }
 
     const positionClasses = {
       'top-left': 'top-4 left-4',
@@ -291,7 +318,7 @@ const AccessibilityTheme: React.FC<AccessibilityThemeProps & AccessibilityIndica
   };
 
   return (
-    <div 
+    <div
       className={cn(
         'accessibility-theme-wrapper',
         theme.config.highContrast && 'theme-high-contrast',
@@ -341,30 +368,49 @@ const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
   autoDetect = true,
 }) => {
   const theme = useTheme();
-  const accessibility = useAccessibilityTheme({ autoDetectPreferences: autoDetect });
+  const accessibility = useAccessibilityTheme({
+    autoDetectPreferences: autoDetect,
+  });
 
   useEffect(() => {
-    if (!theme.config.highContrast) return;
+    if (!theme.config.highContrast) {
+      return;
+    }
 
     const root = document.documentElement;
-    
+
     // Set high contrast intensity
     const contrastMultiplier = Math.max(1, Math.min(10, intensity)) / 5; // Normalize to 0.2-2.0
-    root.style.setProperty('--accessibility-contrast-intensity', contrastMultiplier.toString());
+    root.style.setProperty(
+      '--accessibility-contrast-intensity',
+      contrastMultiplier.toString()
+    );
 
     // Apply custom color overrides
     if (colorOverrides) {
       if (colorOverrides.background) {
-        root.style.setProperty('--accessibility-hc-bg-override', colorOverrides.background);
+        root.style.setProperty(
+          '--accessibility-hc-bg-override',
+          colorOverrides.background
+        );
       }
       if (colorOverrides.foreground) {
-        root.style.setProperty('--accessibility-hc-text-override', colorOverrides.foreground);
+        root.style.setProperty(
+          '--accessibility-hc-text-override',
+          colorOverrides.foreground
+        );
       }
       if (colorOverrides.accent) {
-        root.style.setProperty('--accessibility-hc-accent-override', colorOverrides.accent);
+        root.style.setProperty(
+          '--accessibility-hc-accent-override',
+          colorOverrides.accent
+        );
       }
       if (colorOverrides.border) {
-        root.style.setProperty('--accessibility-hc-border-override', colorOverrides.border);
+        root.style.setProperty(
+          '--accessibility-hc-border-override',
+          colorOverrides.border
+        );
       }
     }
 
@@ -385,7 +431,7 @@ const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={cn(
         'high-contrast-wrapper',
         `contrast-intensity-${Math.round(intensity)}`
@@ -434,16 +480,23 @@ const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
   autoDetect = true,
 }) => {
   const theme = useTheme();
-  const accessibility = useAccessibilityTheme({ autoDetectPreferences: autoDetect });
+  const accessibility = useAccessibilityTheme({
+    autoDetectPreferences: autoDetect,
+  });
 
   useEffect(() => {
-    if (!theme.config.reducedMotion) return;
+    if (!theme.config.reducedMotion) {
+      return;
+    }
 
     const root = document.documentElement;
-    
+
     // Set motion sensitivity level
     const sensitivity = Math.max(1, Math.min(5, sensitivityLevel));
-    root.style.setProperty('--accessibility-motion-sensitivity', sensitivity.toString());
+    root.style.setProperty(
+      '--accessibility-motion-sensitivity',
+      sensitivity.toString()
+    );
 
     // Apply motion preferences
     if (motionPreferences.allowEssentialMotion) {
@@ -461,7 +514,10 @@ const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
 
     // Calculate motion reduction percentage based on sensitivity
     const motionReduction = (sensitivity / 5) * 100;
-    root.style.setProperty('--accessibility-motion-reduction', `${motionReduction}%`);
+    root.style.setProperty(
+      '--accessibility-motion-reduction',
+      `${motionReduction}%`
+    );
 
     return () => {
       // Cleanup motion preferences
@@ -472,18 +528,14 @@ const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
       root.style.removeProperty('--accessibility-allow-scroll-animations');
       root.style.removeProperty('--accessibility-motion-reduction');
     };
-  }, [
-    theme.config.reducedMotion,
-    sensitivityLevel,
-    motionPreferences,
-  ]);
+  }, [theme.config.reducedMotion, sensitivityLevel, motionPreferences]);
 
   if (!theme.config.reducedMotion) {
     return <>{children}</>;
   }
 
   return (
-    <div 
+    <div
       className={cn(
         'reduced-motion-wrapper',
         `motion-sensitivity-${sensitivityLevel}`,
@@ -534,24 +586,35 @@ const FocusManagementTheme: React.FC<FocusManagementThemeProps> = ({
   focusIndicatorColor,
   focusIndicatorThickness = 2,
 }) => {
-  const theme = useTheme();
-  const accessibility = useAccessibilityTheme();
+  useTheme();
+  useAccessibilityTheme();
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined') {
+      return;
+    }
 
     const root = document.documentElement;
 
     // Enhanced focus indicators
     if (enhancedFocusIndicators) {
       root.style.setProperty('--accessibility-enhanced-focus', 'true');
-      root.style.setProperty('--accessibility-focus-style', focusIndicatorStyle);
-      
+      root.style.setProperty(
+        '--accessibility-focus-style',
+        focusIndicatorStyle
+      );
+
       if (focusIndicatorColor) {
-        root.style.setProperty('--accessibility-focus-color', focusIndicatorColor);
+        root.style.setProperty(
+          '--accessibility-focus-color',
+          focusIndicatorColor
+        );
       }
-      
-      root.style.setProperty('--accessibility-focus-thickness', `${focusIndicatorThickness}px`);
+
+      root.style.setProperty(
+        '--accessibility-focus-thickness',
+        `${focusIndicatorThickness}px`
+      );
     }
 
     // Focus management
@@ -580,7 +643,7 @@ const FocusManagementTheme: React.FC<FocusManagementThemeProps> = ({
   ]);
 
   return (
-    <div 
+    <div
       className={cn(
         'focus-management-wrapper',
         enhancedFocusIndicators && 'enhanced-focus-indicators',
@@ -627,7 +690,9 @@ const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
   const theme = useTheme();
   const accessibility = useAccessibilityTheme();
 
-  if (!showControls) return null;
+  if (!showControls) {
+    return null;
+  }
 
   const positionClasses = {
     floating: 'fixed bottom-4 right-4 z-40',
@@ -657,7 +722,7 @@ const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
       <div className="text-sm font-semibold mb-2 text-center">
         Accessibility
       </div>
-      
+
       {enableQuickToggles && (
         <div className="space-y-2">
           <button
@@ -672,10 +737,12 @@ const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
             aria-pressed={theme.config.highContrast}
           >
             <span>High Contrast</span>
-            <span className={cn(
-              'w-4 h-4 rounded-full transition-all',
-              theme.config.highContrast ? 'bg-white' : 'bg-gray-400'
-            )} />
+            <span
+              className={cn(
+                'w-4 h-4 rounded-full transition-all',
+                theme.config.highContrast ? 'bg-white' : 'bg-gray-400'
+              )}
+            />
           </button>
 
           <button
@@ -690,20 +757,28 @@ const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
             aria-pressed={theme.config.reducedMotion}
           >
             <span>Reduced Motion</span>
-            <span className={cn(
-              'w-4 h-4 rounded-full transition-all',
-              theme.config.reducedMotion ? 'bg-white' : 'bg-gray-400'
-            )} />
+            <span
+              className={cn(
+                'w-4 h-4 rounded-full transition-all',
+                theme.config.reducedMotion ? 'bg-white' : 'bg-gray-400'
+              )}
+            />
           </button>
 
           {accessibility.systemPreferences && (
             <div className="pt-2 border-t border-white/20">
-              <div className="text-xs text-gray-300 mb-1">System Preferences:</div>
+              <div className="text-xs text-gray-300 mb-1">
+                System Preferences:
+              </div>
               {accessibility.systemPreferences.prefersHighContrast && (
-                <div className="text-xs text-yellow-400">• High Contrast Detected</div>
+                <div className="text-xs text-yellow-400">
+                  • High Contrast Detected
+                </div>
               )}
               {accessibility.systemPreferences.prefersReducedMotion && (
-                <div className="text-xs text-blue-400">• Reduced Motion Detected</div>
+                <div className="text-xs text-blue-400">
+                  • Reduced Motion Detected
+                </div>
               )}
             </div>
           )}

@@ -100,45 +100,6 @@ export const useFormSubmission = <T, FormData = any>(
     [setIsSubmitting, setSubmitError]
   );
 
-  const createSubmitHandler = useCallback(
-    async (formData: FormData): Promise<void> => {
-      const {
-        isEditing,
-        initialData,
-        imageUpload,
-        priceHistory,
-        selectedCardId,
-        onSuccess,
-        submitFunction,
-        updateFunction,
-        prepareFormData,
-      } = config;
-
-      // Upload images using specialized hook
-      const uploadedImages = await imageUpload.uploadImages();
-
-      // Prepare submission data using the provided function
-      const submissionData = prepareFormData(formData, uploadedImages, {
-        isEditing,
-        initialData,
-        selectedCardId,
-        currentPrice: priceHistory?.currentPrice,
-        priceHistory: priceHistory?.priceHistory,
-        remainingImages: imageUpload.remainingExistingImages,
-      });
-
-      // Submit using the appropriate function
-      if (isEditing && initialData?.id && updateFunction) {
-        await updateFunction(initialData.id as string, submissionData);
-      } else {
-        await submitFunction(submissionData);
-      }
-
-      onSuccess();
-    },
-    [config]
-  );
-
   return {
     isSubmitting,
     handleSubmit,

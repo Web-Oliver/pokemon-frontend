@@ -163,9 +163,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       case 'RawCard':
         return {
           itemName:
-            itemData.cardId?.cardName ||
-            itemData.cardName ||
-            'Unknown Item', // REMOVED: baseName reference (deprecated)
+            itemData.cardId?.cardName || itemData.cardName || 'Unknown Item', // REMOVED: baseName reference (deprecated)
           itemImage: getImageUrl(itemData.images?.[0]),
           setName: itemData.cardId?.setId?.setName || itemData.setName,
           cardNumber: itemData.cardId?.cardNumber || itemData.cardNumber, // NEW: cardNumber support
@@ -176,13 +174,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         };
       case 'SealedProduct':
         return {
-          itemName: 
+          itemName:
             itemData.name ||
             itemData.productId?.productName ||
             itemData.productName ||
             'Unknown Item', // UPDATED: Support new Product model structure
           itemImage: getImageUrl(itemData.images?.[0]),
-          setName: 
+          setName:
             itemData.setName ||
             itemData.productId?.setProductName ||
             itemData.setProductName ||
@@ -438,7 +436,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         document.execCommand('copy');
         document.body.removeChild(textArea);
         showSuccessToast('Facebook post copied to clipboard!');
-      } catch (fallbackErr) {
+      } catch {
         showWarningToast('Failed to copy to clipboard. Please copy manually.');
       }
     }
@@ -551,7 +549,6 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
             <div className="relative z-10">
-
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3 mb-6">
@@ -608,7 +605,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-[var(--theme-status-error)] font-medium">{error}</p>
+                  <p className="text-sm text-[var(--theme-status-error)] font-medium">
+                    {error}
+                  </p>
                 </div>
                 <div className="ml-auto pl-3">
                   <button
@@ -918,7 +917,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                     displayData.itemName !== 'Unknown Item' && (
                                       <div className="flex items-center space-x-2 text-sm">
                                         <span className="font-medium text-[var(--theme-text-secondary)]">
-                                          {item.itemCategory === 'SealedProduct' ? 'Product Name:' : 'Card Name:'}
+                                          {item.itemCategory === 'SealedProduct'
+                                            ? 'Product Name:'
+                                            : 'Card Name:'}
                                         </span>
                                         <span className="text-[var(--theme-text-primary)] font-medium">
                                           {displayData.itemName}
@@ -926,7 +927,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                                       </div>
                                     )}
                                   {/* NEW: Card Number display for card items */}
-                                  {(item.itemCategory === 'PsaGradedCard' || item.itemCategory === 'RawCard') &&
+                                  {(item.itemCategory === 'PsaGradedCard' ||
+                                    item.itemCategory === 'RawCard') &&
                                     displayData.cardNumber && (
                                       <div className="flex items-center space-x-2 text-sm">
                                         <span className="font-medium text-[var(--theme-text-secondary)]">

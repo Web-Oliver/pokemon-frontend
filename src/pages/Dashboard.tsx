@@ -49,6 +49,10 @@ import { useCollectionStats } from '../hooks/useCollectionStats';
 import { getDataCounts } from '../api/statusApi';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 import { navigationHelper } from '../utils/navigation';
+import {
+  GlassmorphismContainer,
+  IconGlassmorphism,
+} from '../components/effects/GlassmorphismContainer';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
@@ -130,7 +134,10 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <PageLayout title="Dashboard" subtitle="Professional Pokémon Collection Management">
+    <PageLayout
+      title="Dashboard"
+      subtitle="Professional Pokémon Collection Management"
+    >
       <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
         {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
         <div className="absolute inset-0 opacity-20">
@@ -183,76 +190,98 @@ const Dashboard: React.FC = () => {
           <div className="max-w-7xl mx-auto space-y-12">
             {/* Context7 2025 Futuristic Glassmorphism Header */}
             <div className="relative group">
-              {/* Glassmorphism card with neumorphism elements */}
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl text-[var(--theme-text-primary)] p-12 relative overflow-hidden">
-                {/* Neural network glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
-
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
-
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="default"
+                size="xl"
+                rounded="3xl"
+                pattern="neural"
+                glow="intense"
+                animated={true}
+              >
                 {/* Top accent line with RGB shifting */}
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
 
                 {/* Floating geometric elements */}
                 <div
                   className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                  style={{ animationDuration: 'var(--animation-duration-particle)' }}
+                  style={{
+                    animationDuration: 'var(--animation-duration-particle)',
+                  }}
                 ></div>
                 <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
 
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-8">
-                    {/* Holographic icon container */}
-                    <div className="flex items-center">
-                      <div className="relative mr-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
-                          {/* Inner glow */}
-                          <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
-                          <Cpu className="w-10 h-10 text-[var(--theme-accent-primary)] relative z-10 animate-pulse" />
-                          {/* Orbiting elements */}
-                          <div
-                            className="absolute inset-0 animate-spin opacity-40"
-                            style={{ animationDuration: 'var(--animation-duration-orbit)' }}
-                          >
-                            <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
-                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
-                          </div>
+                <div className="flex items-center justify-between mb-8">
+                  {/* Holographic icon container */}
+                  <div className="flex items-center">
+                    <div className="relative mr-8">
+                      <IconGlassmorphism variant="lg" colorScheme="default">
+                        <Cpu className="w-10 h-10 text-[var(--theme-accent-primary)] relative z-10 animate-pulse" />
+                        {/* Orbiting elements */}
+                        <div
+                          className="absolute inset-0 animate-spin opacity-40"
+                          style={{
+                            animationDuration:
+                              'var(--animation-duration-orbit)',
+                          }}
+                        >
+                          <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
+                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
                         </div>
-                      </div>
-
-                      {/* Title section with cyberpunk styling */}
-                      <div className="flex-1">
-                        <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                          Command Center
-                        </h1>
-                        <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
-                          <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                          Neural-powered collection management for your universe
-                        </p>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
-                    {/* Action buttons */}
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => navigationHelper.navigateToCreate.item()}
-                        className="px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center"
-                      >
-                        <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                        Add Item
-                      </button>
-                      <button
-                        onClick={() => navigationHelper.navigateToCreate.auction()}
-                        className="px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 backdrop-blur-sm border border-emerald-400/30 hover:border-emerald-400/50 text-emerald-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center"
-                      >
-                        <Calendar className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                        Create Auction
-                      </button>
+                    {/* Title section with cyberpunk styling */}
+                    <div className="flex-1">
+                      <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+                        Command Center
+                      </h1>
+                      <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
+                        <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+                        Neural-powered collection management for your universe
+                      </p>
                     </div>
                   </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center space-x-4">
+                    <GlassmorphismContainer
+                      variant="subtle"
+                      colorScheme="custom"
+                      customGradient={{
+                        from: 'cyan-500/20',
+                        to: 'purple-500/20',
+                      }}
+                      size="xs"
+                      rounded="2xl"
+                      interactive={true}
+                      onClick={() => navigationHelper.navigateToCreate.item()}
+                      className="px-6 py-4 border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center cursor-pointer"
+                    >
+                      <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
+                      Add Item
+                    </GlassmorphismContainer>
+                    <GlassmorphismContainer
+                      variant="subtle"
+                      colorScheme="custom"
+                      customGradient={{
+                        from: 'emerald-500/20',
+                        to: 'cyan-500/20',
+                      }}
+                      size="xs"
+                      rounded="2xl"
+                      interactive={true}
+                      onClick={() =>
+                        navigationHelper.navigateToCreate.auction()
+                      }
+                      className="px-6 py-4 border border-emerald-400/30 hover:border-emerald-400/50 text-emerald-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center cursor-pointer"
+                    >
+                      <Calendar className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
+                      Create Auction
+                    </GlassmorphismContainer>
+                  </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
               {/* Premium floating elements */}
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse"></div>
@@ -266,37 +295,35 @@ const Dashboard: React.FC = () => {
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
-                {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
-                  {/* Neural network pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
+                <GlassmorphismContainer
+                  variant="intense"
+                  colorScheme="default"
+                  size="md"
+                  rounded="2xl"
+                  pattern="neural"
+                  glow="medium"
+                  interactive={true}
+                  className="hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
+                >
                   {/* Quantum glow effect */}
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60 animate-pulse"></div>
 
-                  <div className="relative z-10 flex items-center">
-                    {/* Advanced neumorphic icon container */}
+                  <div className="flex items-center">
                     <div className="relative mr-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        {/* Inner holographic glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/20 to-purple-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <IconGlassmorphism variant="md" colorScheme="default">
                         <Package className="w-8 h-8 text-cyan-300 relative z-10 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)] animate-pulse" />
-
                         {/* Orbiting quantum particles */}
                         <div
                           className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{ animationDuration: 'var(--animation-duration-particle)' }}
+                          style={{
+                            animationDuration:
+                              'var(--animation-duration-particle)',
+                          }}
                         >
                           <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
                           <div className="w-1 h-1 bg-purple-400 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
                         </div>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
                     <div className="flex-1">
@@ -308,7 +335,7 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </GlassmorphismContainer>
               </div>
 
               {/* Total Value - Holographic Currency Card */}
@@ -316,45 +343,46 @@ const Dashboard: React.FC = () => {
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
-                {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
-                  {/* Success pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
+                <GlassmorphismContainer
+                  variant="intense"
+                  colorScheme="success"
+                  size="md"
+                  rounded="2xl"
+                  pattern="neural"
+                  glow="medium"
+                  interactive={true}
+                  className="hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
+                >
                   {/* Quantum glow effect */}
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-60 animate-pulse"></div>
 
-                  <div className="relative z-10 flex items-center">
-                    {/* Advanced neumorphic icon container */}
+                  <div className="flex items-center">
                     <div className="relative mr-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/30 via-cyan-500/20 to-blue-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        {/* Inner holographic glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-emerald-400/20 to-cyan-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <IconGlassmorphism variant="md" colorScheme="success">
                         <DollarSign className="w-8 h-8 text-[var(--theme-status-success)] relative z-10 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-
                         {/* Success flow animation */}
                         <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
                           <div className="w-1 h-1 bg-emerald-400 rounded-full absolute top-2 left-2 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-cyan-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-short)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-short)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-blue-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-medium)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-emerald-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-long)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-long)',
+                            }}
                           ></div>
                         </div>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
                     <div className="flex-1">
@@ -366,7 +394,7 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </GlassmorphismContainer>
               </div>
 
               {/* Sales - Temporal Analytics Card */}
@@ -374,35 +402,32 @@ const Dashboard: React.FC = () => {
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
-                {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
-                  {/* Temporal wave pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
+                <GlassmorphismContainer
+                  variant="intense"
+                  colorScheme="warning"
+                  size="md"
+                  rounded="2xl"
+                  pattern="neural"
+                  glow="medium"
+                  interactive={true}
+                  className="hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
+                >
                   {/* Quantum glow effect */}
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 animate-pulse"></div>
 
-                  <div className="relative z-10 flex items-center">
-                    {/* Advanced neumorphic icon container */}
+                  <div className="flex items-center">
                     <div className="relative mr-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-orange-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        {/* Inner holographic glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <IconGlassmorphism variant="md" colorScheme="warning">
                         <TrendingUp className="w-8 h-8 text-[var(--theme-accent-secondary)] relative z-10 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse" />
-
                         {/* Temporal ripple effect */}
                         <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
                         <div
                           className="absolute inset-2 rounded-xl border border-pink-400/20 animate-ping opacity-30"
-                          style={{ animationDelay: 'var(--animation-delay-medium)' }}
+                          style={{
+                            animationDelay: 'var(--animation-delay-medium)',
+                          }}
                         ></div>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
                     <div className="flex-1">
@@ -414,7 +439,7 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </GlassmorphismContainer>
               </div>
 
               {/* Top Graded - Elite Achievement Card */}
@@ -449,15 +474,21 @@ const Dashboard: React.FC = () => {
                           <div className="w-1 h-1 bg-amber-400 rounded-full absolute top-1 left-3 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-orange-400 rounded-full absolute top-3 right-1 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-short)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-short)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-red-400 rounded-full absolute bottom-1 left-1 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-short)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-short)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-amber-400 rounded-full absolute bottom-3 right-3 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-medium)',
+                            }}
                           ></div>
                         </div>
                       </div>
@@ -507,15 +538,21 @@ const Dashboard: React.FC = () => {
                           <div className="w-1 h-1 bg-pink-400 rounded-full absolute top-2 left-2 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-rose-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-short)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-short)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-red-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-medium)',
+                            }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-pink-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{ animationDelay: 'var(--animation-delay-long)' }}
+                            style={{
+                              animationDelay: 'var(--animation-delay-long)',
+                            }}
                           ></div>
                         </div>
                       </div>
@@ -526,7 +563,9 @@ const Dashboard: React.FC = () => {
                         Quantum Sets
                       </p>
                       <p className="text-3xl font-black bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {dataCountsLoading ? '--' : (dataCounts?.setProducts?.toLocaleString() || '0')}
+                        {dataCountsLoading
+                          ? '--'
+                          : dataCounts?.setProducts?.toLocaleString() || '0'}
                       </p>
                     </div>
                   </div>
@@ -610,7 +649,9 @@ const Dashboard: React.FC = () => {
                   </h2>
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-[var(--theme-status-success)] rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-[var(--theme-text-muted)]">Live</span>
+                    <span className="text-sm font-medium text-[var(--theme-text-muted)]">
+                      Live
+                    </span>
                   </div>
                 </div>
               </div>
@@ -619,7 +660,10 @@ const Dashboard: React.FC = () => {
               <div className="p-8 relative z-10">
                 {activitiesLoading ? (
                   <div className="flex justify-center py-8">
-                    <LoadingSpinner size="md" text="Loading recent activities..." />
+                    <LoadingSpinner
+                      size="md"
+                      text="Loading recent activities..."
+                    />
                   </div>
                 ) : recentActivities &&
                   Array.isArray(recentActivities) &&
@@ -678,7 +722,8 @@ const Dashboard: React.FC = () => {
                                 {Array.isArray(activity.metadata?.badges) &&
                                   activity.metadata.badges
                                     .filter(
-                                      (badge) => badge && typeof badge === 'string'
+                                      (badge) =>
+                                        badge && typeof badge === 'string'
                                     )
                                     .map((badge, index) => (
                                       <span
@@ -701,8 +746,8 @@ const Dashboard: React.FC = () => {
                                         'number' &&
                                       displayPrice(activity.metadata.salePrice)}
                                     {activity.metadata?.estimatedValue &&
-                                      typeof activity.metadata.estimatedValue ===
-                                        'number' &&
+                                      typeof activity.metadata
+                                        .estimatedValue === 'number' &&
                                       `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
                                   </span>
                                 )}
@@ -724,7 +769,8 @@ const Dashboard: React.FC = () => {
                       No recent activity
                     </h3>
                     <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed">
-                      Start adding items to your collection to see activity here.
+                      Start adding items to your collection to see activity
+                      here.
                     </p>
                   </div>
                 )}

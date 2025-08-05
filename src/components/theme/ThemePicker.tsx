@@ -1,13 +1,13 @@
 /**
  * ThemePicker Component - Visual Theme Selection Interface
  * Phase 3.1.1: Core theme picker functionality
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Handles visual theme selection only
  * - DRY: Reuses existing PokemonCard and PokemonButton components
  * - Integration: Uses existing ThemeContext hooks and theme presets
  * - Reusability: Self-contained theme picker interface
- * 
+ *
  * Features:
  * - Visual preview cards for each theme preset
  * - Interactive theme switching with live preview
@@ -16,7 +16,11 @@
  */
 
 import React from 'react';
-import { useTheme, themePresets, VisualTheme } from '../../contexts/ThemeContext';
+import {
+  useTheme,
+  themePresets,
+  VisualTheme,
+} from '../../contexts/ThemeContext';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
 import { cn } from '../../utils/common';
@@ -41,17 +45,17 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   const handleThemeSelect = (themeId: VisualTheme) => {
     // Apply the full preset configuration
     applyPreset(themeId);
-    
+
     // Also set just the visual theme for immediate effect
     setVisualTheme(themeId);
-    
+
     // Notify parent component if callback provided
     onThemeChange?.(themeId);
   };
 
-  const renderThemePreview = (preset: typeof themePresets[0]) => {
+  const renderThemePreview = (preset: (typeof themePresets)[0]) => {
     const isSelected = config.visualTheme === preset.id;
-    
+
     return (
       <PokemonCard
         key={preset.id}
@@ -64,17 +68,19 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
           isSelected && [
             'ring-2 ring-cyan-400/60',
             'shadow-[0_0_30px_rgba(6,182,212,0.4)]',
-            'scale-105'
+            'scale-105',
           ]
         )}
         onClick={() => handleThemeSelect(preset.id)}
       >
         {/* Theme Preview Header */}
         <div className="mb-4">
-          <h3 className={cn(
-            'text-lg font-bold mb-1 transition-colors duration-300',
-            isSelected ? 'text-cyan-300' : 'text-white'
-          )}>
+          <h3
+            className={cn(
+              'text-lg font-bold mb-1 transition-colors duration-300',
+              isSelected ? 'text-cyan-300' : 'text-white'
+            )}
+          >
             {preset.name}
           </h3>
           <p className="text-zinc-400 text-sm line-clamp-2">
@@ -85,32 +91,41 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
         {/* Visual Preview Area */}
         <div className="mb-4 relative">
           {/* Preview Background */}
-          <div className={cn(
-            'h-24 rounded-xl relative overflow-hidden',
-            preset.preview.backgroundColor === 'backdrop-blur-xl' && 'backdrop-blur-xl',
-            preset.preview.backgroundColor === 'neural-network' && 'bg-gradient-to-br from-blue-900/20 to-cyan-900/20',
-            preset.preview.backgroundColor === 'cosmic-gradient' && 'bg-gradient-to-br from-purple-900/20 to-pink-900/20',
-            preset.preview.backgroundColor === 'clean-white' && 'bg-gradient-to-br from-gray-50 to-white',
-            `bg-gradient-to-br ${preset.preview.gradient}`
-          )}>
+          <div
+            className={cn(
+              'h-24 rounded-xl relative overflow-hidden',
+              preset.preview.backgroundColor === 'backdrop-blur-xl' &&
+                'backdrop-blur-xl',
+              preset.preview.backgroundColor === 'neural-network' &&
+                'bg-gradient-to-br from-blue-900/20 to-cyan-900/20',
+              preset.preview.backgroundColor === 'cosmic-gradient' &&
+                'bg-gradient-to-br from-purple-900/20 to-pink-900/20',
+              preset.preview.backgroundColor === 'clean-white' &&
+                'bg-gradient-to-br from-gray-50 to-white',
+              `bg-gradient-to-br ${preset.preview.gradient}`
+            )}
+          >
             {/* Animated overlay for visual interest */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            
+
             {/* Sample UI elements */}
             <div className="absolute inset-4 flex items-center justify-between">
               {/* Sample button */}
-              <div className={cn(
-                'px-3 py-1 rounded-lg text-xs font-medium',
-                preset.id === 'minimal' ? 'bg-emerald-100 text-emerald-800' : 'bg-white/20 text-white backdrop-blur-sm'
-              )}>
+              <div
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-medium',
+                  preset.id === 'minimal'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-white/20 text-white backdrop-blur-sm'
+                )}
+              >
                 Sample
               </div>
-              
+
               {/* Sample text */}
-              <div className={cn(
-                'text-xs font-medium',
-                preset.preview.textColor
-              )}>
+              <div
+                className={cn('text-xs font-medium', preset.preview.textColor)}
+              >
                 Preview
               </div>
             </div>
@@ -173,7 +188,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
             Theme Selection
           </h2>
           <p className="text-zinc-400">
-            Choose your visual theme. Each theme includes unique styling, effects, and animations.
+            Choose your visual theme. Each theme includes unique styling,
+            effects, and animations.
           </p>
         </div>
       )}
@@ -184,7 +200,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
           <div>
             <span className="text-sm text-zinc-400">Current Theme:</span>
             <h3 className="text-lg font-semibold text-white">
-              {themePresets.find(p => p.id === config.visualTheme)?.name || 'Unknown'}
+              {themePresets.find((p) => p.id === config.visualTheme)?.name ||
+                'Unknown'}
             </h3>
           </div>
           <div className="text-right">
@@ -205,8 +222,9 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
       <PokemonCard variant="ghost" size="sm" className="mt-6">
         <div className="text-center">
           <p className="text-zinc-400 text-sm">
-            Looking for more customization options? Additional theme settings like density, 
-            animation intensity, and accessibility features are available in the full theme settings.
+            Looking for more customization options? Additional theme settings
+            like density, animation intensity, and accessibility features are
+            available in the full theme settings.
           </p>
         </div>
       </PokemonCard>

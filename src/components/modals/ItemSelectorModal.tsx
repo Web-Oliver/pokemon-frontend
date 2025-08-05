@@ -287,7 +287,6 @@ export function ItemSelectorModal<T extends SelectableItem>({
   }, [isOpen]);
 
   const selectedCount = selectedItems.size;
-  const canSelectMore = !maxSelection || selectedCount < maxSelection;
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={title} maxWidth="2xl">

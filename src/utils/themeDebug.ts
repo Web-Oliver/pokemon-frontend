@@ -1,20 +1,26 @@
 /**
  * Theme Debug Utilities
  * Phase 3.3.1: Developer Debugging Tools
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme debugging utilities only
  * - Open/Closed: Extensible for new debugging features
  * - DRY: Centralized debugging logic
  * - Dependency Inversion: Abstracts debugging implementation details
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme configuration
  * - themeUtils.ts for component style configurations
  * - formThemes.ts for color scheme validation
  */
 
-import { ThemeConfiguration, VisualTheme, ColorScheme, Density, AnimationIntensity } from '../contexts/ThemeContext';
+import {
+  ThemeConfiguration,
+  VisualTheme,
+  ColorScheme,
+  Density,
+  AnimationIntensity,
+} from '../contexts/ThemeContext';
 import { ThemeColor, formThemes } from '../theme/formThemes';
 import { ComponentStyleConfig } from '../types/themeTypes';
 
@@ -59,7 +65,9 @@ export interface ComponentVariantInfo {
 /**
  * Validates theme configuration against best practices and potential issues
  */
-export function validateThemeConfiguration(config: ThemeConfiguration): ValidationResult[] {
+export function validateThemeConfiguration(
+  config: ThemeConfiguration
+): ValidationResult[] {
   const results: ValidationResult[] = [];
 
   // Configuration validation
@@ -69,7 +77,7 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       category: 'Configuration',
       message: 'Visual theme is not set',
       suggestion: 'Set a valid visual theme from available options',
-      severity: 'critical'
+      severity: 'critical',
     });
   }
 
@@ -78,8 +86,9 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       type: 'error',
       category: 'Configuration',
       message: 'Primary color is invalid or not supported',
-      suggestion: 'Choose from available color schemes: purple, blue, emerald, amber, rose, dark',
-      severity: 'high'
+      suggestion:
+        'Choose from available color schemes: purple, blue, emerald, amber, rose, dark',
+      severity: 'high',
     });
   }
 
@@ -89,18 +98,24 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       type: 'warning',
       category: 'Performance',
       message: 'High glassmorphism intensity may impact performance',
-      suggestion: 'Consider reducing glassmorphism intensity for better performance',
-      severity: 'medium'
+      suggestion:
+        'Consider reducing glassmorphism intensity for better performance',
+      severity: 'medium',
     });
   }
 
-  if (config.particleEffectsEnabled && config.animationIntensity === 'enhanced') {
+  if (
+    config.particleEffectsEnabled &&
+    config.animationIntensity === 'enhanced'
+  ) {
     results.push({
       type: 'warning',
       category: 'Performance',
-      message: 'Enhanced animations with particles may impact performance on lower-end devices',
-      suggestion: 'Consider reducing animation intensity or disabling particles for performance',
-      severity: 'medium'
+      message:
+        'Enhanced animations with particles may impact performance on lower-end devices',
+      suggestion:
+        'Consider reducing animation intensity or disabling particles for performance',
+      severity: 'medium',
     });
   }
 
@@ -111,7 +126,7 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       category: 'Accessibility',
       message: 'Enhanced animations without reduced motion consideration',
       suggestion: 'Respect system prefers-reduced-motion setting',
-      severity: 'medium'
+      severity: 'medium',
     });
   }
 
@@ -120,29 +135,34 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       type: 'success',
       category: 'Accessibility',
       message: 'Standard contrast mode active',
-      severity: 'low'
+      severity: 'low',
     });
   }
 
   // Compatibility validation
-  const supportedVisualThemes: VisualTheme[] = ['context7-premium', 'context7-futuristic', 'dba-cosmic', 'minimal'];
+  const supportedVisualThemes: VisualTheme[] = [
+    'context7-premium',
+    'context7-futuristic',
+    'dba-cosmic',
+    'minimal',
+  ];
   if (!supportedVisualThemes.includes(config.visualTheme)) {
     results.push({
       type: 'error',
       category: 'Compatibility',
       message: 'Unsupported visual theme',
       suggestion: 'Use one of the supported visual themes',
-      severity: 'high'
+      severity: 'high',
     });
   }
 
   // Success cases
-  if (results.filter(r => r.type === 'error').length === 0) {
+  if (results.filter((r) => r.type === 'error').length === 0) {
     results.push({
       type: 'success',
       category: 'Configuration',
       message: 'Theme configuration is valid',
-      severity: 'low'
+      severity: 'low',
     });
   }
 
@@ -151,7 +171,7 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
       type: 'success',
       category: 'Performance',
       message: 'Glassmorphism intensity is optimized for performance',
-      severity: 'low'
+      severity: 'low',
     });
   }
 
@@ -167,15 +187,20 @@ export function validateThemeConfiguration(config: ThemeConfiguration): Validati
  */
 export function getThemePerformanceMetrics(): ThemePerformanceMetrics {
   const startTime = performance.now();
-  
+
   // Count CSS custom properties
   const cssPropertiesCount = extractCSSCustomProperties();
   const cssCount = Object.keys(cssPropertiesCount).length;
 
   // Count theme classes in document
-  const themeClassesCount = Array.from(document.documentElement.classList)
-    .filter(cls => cls.startsWith('theme-') || cls.startsWith('density-') || cls.startsWith('animation-'))
-    .length;
+  const themeClassesCount = Array.from(
+    document.documentElement.classList
+  ).filter(
+    (cls) =>
+      cls.startsWith('theme-') ||
+      cls.startsWith('density-') ||
+      cls.startsWith('animation-')
+  ).length;
 
   // Memory usage (if available)
   const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
@@ -196,7 +221,7 @@ export function getThemePerformanceMetrics(): ThemePerformanceMetrics {
     totalSwitches: storedData.totalSwitches,
     averageSwitchTime: storedData.averageSwitchTime,
     bundleSizeImpact: estimateBundleSizeImpact(),
-    renderImpactScore: calculateRenderImpactScore()
+    renderImpactScore: calculateRenderImpactScore(),
   };
 }
 
@@ -206,12 +231,15 @@ export function getThemePerformanceMetrics(): ThemePerformanceMetrics {
 export function trackThemeSwitch(startTime: number, endTime: number): void {
   const duration = endTime - startTime;
   const storedData = getStoredPerformanceData();
-  
+
   const newData = {
     lastSwitchDuration: Math.round(duration),
     totalSwitches: storedData.totalSwitches + 1,
-    averageSwitchTime: Math.round((storedData.averageSwitchTime * storedData.totalSwitches + duration) / (storedData.totalSwitches + 1)),
-    timestamps: [...storedData.timestamps, Date.now()].slice(-10) // Keep last 10 switches
+    averageSwitchTime: Math.round(
+      (storedData.averageSwitchTime * storedData.totalSwitches + duration) /
+        (storedData.totalSwitches + 1)
+    ),
+    timestamps: [...storedData.timestamps, Date.now()].slice(-10), // Keep last 10 switches
   };
 
   try {
@@ -229,7 +257,7 @@ function getStoredPerformanceData() {
     lastSwitchDuration: 0,
     totalSwitches: 0,
     averageSwitchTime: 0,
-    timestamps: [] as number[]
+    timestamps: [] as number[],
   };
 
   try {
@@ -248,7 +276,7 @@ function estimateBundleSizeImpact(): number {
   const baseSize = 15; // Base theme system size in KB
   const cssPropertiesCount = Object.keys(extractCSSCustomProperties()).length;
   const additionalSize = Math.round(cssPropertiesCount * 0.05); // ~50 bytes per property
-  
+
   return baseSize + additionalSize;
 }
 
@@ -258,11 +286,11 @@ function estimateBundleSizeImpact(): number {
 function calculateRenderImpactScore(): number {
   const themeClassCount = Array.from(document.documentElement.classList).length;
   const cssPropertyCount = Object.keys(extractCSSCustomProperties()).length;
-  
+
   // Simple scoring algorithm
   const classScore = Math.min(themeClassCount / 10, 2); // Max 2 points for classes
   const propertyScore = Math.min(cssPropertyCount / 50, 3); // Max 3 points for properties
-  
+
   return Math.round((classScore + propertyScore) * 10) / 10;
 }
 
@@ -275,11 +303,13 @@ function calculateRenderImpactScore(): number {
  */
 export function extractCSSCustomProperties(): Record<string, string> {
   const properties: Record<string, string> = {};
-  
-  if (typeof document === 'undefined') return properties;
+
+  if (typeof document === 'undefined') {
+    return properties;
+  }
 
   const computedStyles = getComputedStyle(document.documentElement);
-  
+
   // Get all CSS custom properties
   for (let i = 0; i < computedStyles.length; i++) {
     const property = computedStyles[i];
@@ -302,11 +332,13 @@ export function extractThemeProperties(): Record<string, string> {
   const themeProperties: Record<string, string> = {};
 
   Object.entries(allProperties).forEach(([property, value]) => {
-    if (property.includes('theme') || 
-        property.includes('glass') || 
-        property.includes('cosmic') ||
-        property.includes('density') ||
-        property.includes('animation')) {
+    if (
+      property.includes('theme') ||
+      property.includes('glass') ||
+      property.includes('cosmic') ||
+      property.includes('density') ||
+      property.includes('animation')
+    ) {
       themeProperties[property] = value;
     }
   });
@@ -322,7 +354,7 @@ export function extractThemeProperties(): Record<string, string> {
  * Get component variant information for documentation
  */
 export function getComponentVariantInfo(
-  componentName: string, 
+  componentName: string,
   styleConfig: ComponentStyleConfig
 ): ComponentVariantInfo {
   const variants = Object.keys(styleConfig.variants || {});
@@ -334,7 +366,7 @@ export function getComponentVariantInfo(
   const exampleUsage = [
     `<${componentName.charAt(0).toUpperCase() + componentName.slice(1)} variant="primary" size="md" />`,
     `<${componentName.charAt(0).toUpperCase() + componentName.slice(1)} variant="secondary" size="lg" />`,
-    `<${componentName.charAt(0).toUpperCase() + componentName.slice(1)} variant="outline" size="sm" />`
+    `<${componentName.charAt(0).toUpperCase() + componentName.slice(1)} variant="outline" size="sm" />`,
   ];
 
   return {
@@ -344,7 +376,7 @@ export function getComponentVariantInfo(
     states,
     totalCombinations,
     baseClasses: styleConfig.base || '',
-    exampleUsage
+    exampleUsage,
   };
 }
 
@@ -353,13 +385,47 @@ export function getComponentVariantInfo(
  */
 export function getAllComponentVariants(): ComponentVariantInfo[] {
   const components = [
-    { name: 'button', config: { base: '', variants: {}, sizes: {}, states: {} } as ComponentStyleConfig },
-    { name: 'input', config: { base: '', variants: {}, sizes: {}, states: {} } as ComponentStyleConfig },
-    { name: 'card', config: { base: '', variants: {}, sizes: {}, states: {} } as ComponentStyleConfig },
-    { name: 'badge', config: { base: '', variants: {}, sizes: {}, states: {} } as ComponentStyleConfig }
+    {
+      name: 'button',
+      config: {
+        base: '',
+        variants: {},
+        sizes: {},
+        states: {},
+      } as ComponentStyleConfig,
+    },
+    {
+      name: 'input',
+      config: {
+        base: '',
+        variants: {},
+        sizes: {},
+        states: {},
+      } as ComponentStyleConfig,
+    },
+    {
+      name: 'card',
+      config: {
+        base: '',
+        variants: {},
+        sizes: {},
+        states: {},
+      } as ComponentStyleConfig,
+    },
+    {
+      name: 'badge',
+      config: {
+        base: '',
+        variants: {},
+        sizes: {},
+        states: {},
+      } as ComponentStyleConfig,
+    },
   ];
 
-  return components.map(({ name, config }) => getComponentVariantInfo(name, config));
+  return components.map(({ name, config }) =>
+    getComponentVariantInfo(name, config)
+  );
 }
 
 // ================================
@@ -394,7 +460,10 @@ export function checkThemePerformance(config: ThemeConfiguration): {
     score -= 20;
   }
 
-  if (config.particleEffectsEnabled && config.animationIntensity === 'enhanced') {
+  if (
+    config.particleEffectsEnabled &&
+    config.animationIntensity === 'enhanced'
+  ) {
     issues.push('Enhanced animations with particles enabled');
     score -= 25;
   }
@@ -413,7 +482,7 @@ export function checkThemePerformance(config: ThemeConfiguration): {
   return {
     hasIssues: issues.length > 0,
     issues,
-    score: Math.max(0, score)
+    score: Math.max(0, score),
   };
 }
 
@@ -428,14 +497,16 @@ export function generateThemeDocumentation(config: ThemeConfiguration) {
     performance: getThemePerformanceMetrics(),
     componentVariants: getAllComponentVariants(),
     generatedAt: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 }
 
 /**
  * Test theme accessibility compliance
  */
-export function testThemeAccessibility(config: ThemeConfiguration): ValidationResult[] {
+export function testThemeAccessibility(
+  config: ThemeConfiguration
+): ValidationResult[] {
   const results: ValidationResult[] = [];
 
   // Color contrast testing (simplified)
@@ -449,7 +520,7 @@ export function testThemeAccessibility(config: ThemeConfiguration): ValidationRe
       category: 'Accessibility',
       message: 'Animations enabled without reduced motion support',
       suggestion: 'Consider respecting prefers-reduced-motion media query',
-      severity: 'medium'
+      severity: 'medium',
     });
   }
 
@@ -459,7 +530,7 @@ export function testThemeAccessibility(config: ThemeConfiguration): ValidationRe
       type: 'success',
       category: 'Accessibility',
       message: 'High contrast mode is enabled',
-      severity: 'low'
+      severity: 'low',
     });
   }
 
@@ -471,17 +542,17 @@ export function testThemeAccessibility(config: ThemeConfiguration): ValidationRe
  */
 function testColorContrast(): ValidationResult[] {
   const results: ValidationResult[] = [];
-  
+
   // This is a simplified contrast check
   // In a real implementation, you'd calculate actual contrast ratios
   const hasGoodContrast = true; // Placeholder logic
-  
+
   if (hasGoodContrast) {
     results.push({
       type: 'success',
       category: 'Accessibility',
       message: 'Color contrast ratios appear adequate',
-      severity: 'low'
+      severity: 'low',
     });
   } else {
     results.push({
@@ -489,7 +560,7 @@ function testColorContrast(): ValidationResult[] {
       category: 'Accessibility',
       message: 'Poor color contrast detected',
       suggestion: 'Increase contrast between text and background colors',
-      severity: 'high'
+      severity: 'high',
     });
   }
 
@@ -505,65 +576,75 @@ function testColorContrast(): ValidationResult[] {
  */
 export function createThemeTestEnvironment() {
   return {
-    testAllVariants: (componentName: string, styleConfig: ComponentStyleConfig) => {
+    testAllVariants: (
+      componentName: string,
+      styleConfig: ComponentStyleConfig
+    ) => {
       const variants = Object.keys(styleConfig.variants || {});
       const sizes = Object.keys(styleConfig.sizes || {});
-      
+
       console.group(`🧪 Testing ${componentName} variants`);
-      variants.forEach(variant => {
-        sizes.forEach(size => {
+      variants.forEach((variant) => {
+        sizes.forEach((size) => {
           console.log(`${variant} + ${size}:`, {
             classes: [
               styleConfig.base,
               styleConfig.variants?.[variant],
-              styleConfig.sizes?.[size]
-            ].filter(Boolean).join(' ')
+              styleConfig.sizes?.[size],
+            ]
+              .filter(Boolean)
+              .join(' '),
           });
         });
       });
       console.groupEnd();
     },
-    
+
     benchmarkThemeSwitch: async (newTheme: VisualTheme) => {
       const startTime = performance.now();
-      
+
       // Simulate theme switch
-      document.documentElement.className = document.documentElement.className.replace(/theme-\w+/g, '');
+      document.documentElement.className =
+        document.documentElement.className.replace(/theme-\w+/g, '');
       document.documentElement.classList.add(`theme-${newTheme}`);
-      
+
       // Wait for next frame
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
       const endTime = performance.now();
       const duration = endTime - startTime;
-      
-      console.log(`⚡ Theme switch to ${newTheme} took ${duration.toFixed(2)}ms`);
+
+      console.log(
+        `⚡ Theme switch to ${newTheme} took ${duration.toFixed(2)}ms`
+      );
       trackThemeSwitch(startTime, endTime);
-      
+
       return duration;
     },
-    
+
     validateAllComponents: () => {
       const components = ['button', 'input', 'card', 'badge'];
-      components.forEach(component => {
+      components.forEach((component) => {
         console.log(`🔍 Validating ${component} component...`);
         // Component validation logic would go here
       });
-    }
+    },
   };
 }
 
 /**
  * Generate theme comparison report
  */
-export function generateThemeComparison(themes: VisualTheme[]): Record<string, any> {
+export function generateThemeComparison(
+  themes: VisualTheme[]
+): Record<string, any> {
   const comparison: Record<string, any> = {};
-  
-  themes.forEach(themeId => {
+
+  themes.forEach((themeId) => {
     comparison[themeId] = {
       performance: estimateThemePerformance(themeId),
       accessibility: estimateThemeAccessibility(themeId),
-      complexity: estimateThemeComplexity(themeId)
+      complexity: estimateThemeComplexity(themeId),
     };
   });
 
@@ -573,7 +654,10 @@ export function generateThemeComparison(themes: VisualTheme[]): Record<string, a
 /**
  * Estimate theme performance characteristics
  */
-function estimateThemePerformance(theme: VisualTheme): { score: number; factors: string[] } {
+function estimateThemePerformance(theme: VisualTheme): {
+  score: number;
+  factors: string[];
+} {
   const factors: string[] = [];
   let score = 100;
 
@@ -604,7 +688,10 @@ function estimateThemePerformance(theme: VisualTheme): { score: number; factors:
 /**
  * Estimate theme accessibility characteristics
  */
-function estimateThemeAccessibility(theme: VisualTheme): { score: number; factors: string[] } {
+function estimateThemeAccessibility(theme: VisualTheme): {
+  score: number;
+  factors: string[];
+} {
   const factors: string[] = [];
   let score = 100;
 
@@ -633,7 +720,10 @@ function estimateThemeAccessibility(theme: VisualTheme): { score: number; factor
 /**
  * Estimate theme complexity
  */
-function estimateThemeComplexity(theme: VisualTheme): { score: number; factors: string[] } {
+function estimateThemeComplexity(theme: VisualTheme): {
+  score: number;
+  factors: string[];
+} {
   const factors: string[] = [];
   let score = 0;
 
@@ -722,36 +812,46 @@ export function generateThemeCSS(config: ThemeConfiguration): string {
  * Debug theme conflicts and inconsistencies
  */
 export function debugThemeConflicts(): {
-  conflicts: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' }>;
+  conflicts: Array<{
+    type: string;
+    description: string;
+    severity: 'low' | 'medium' | 'high';
+  }>;
   suggestions: string[];
 } {
-  const conflicts: Array<{ type: string; description: string; severity: 'low' | 'medium' | 'high' }> = [];
+  const conflicts: Array<{
+    type: string;
+    description: string;
+    severity: 'low' | 'medium' | 'high';
+  }> = [];
   const suggestions: string[] = [];
 
   // Check for conflicting CSS classes
-  const themeClasses = Array.from(document.documentElement.classList)
-    .filter(cls => cls.startsWith('theme-'));
-  
+  const themeClasses = Array.from(document.documentElement.classList).filter(
+    (cls) => cls.startsWith('theme-')
+  );
+
   if (themeClasses.length > 1) {
     conflicts.push({
       type: 'Multiple Theme Classes',
       description: `Found multiple theme classes: ${themeClasses.join(', ')}`,
-      severity: 'high'
+      severity: 'high',
     });
     suggestions.push('Remove conflicting theme classes from document element');
   }
 
   // Check for CSS property overrides
   const customProperties = extractCSSCustomProperties();
-  const potentialOverrides = Object.keys(customProperties).filter(prop => 
-    prop.includes('theme') && customProperties[prop].includes('!important')
+  const potentialOverrides = Object.keys(customProperties).filter(
+    (prop) =>
+      prop.includes('theme') && customProperties[prop].includes('!important')
   );
 
   if (potentialOverrides.length > 0) {
     conflicts.push({
       type: 'CSS Override Detected',
       description: `Found !important overrides in: ${potentialOverrides.join(', ')}`,
-      severity: 'medium'
+      severity: 'medium',
     });
     suggestions.push('Avoid using !important in theme-related CSS properties');
   }
@@ -778,5 +878,5 @@ export default {
   createThemeTestEnvironment,
   generateThemeComparison,
   generateThemeCSS,
-  debugThemeConflicts
+  debugThemeConflicts,
 };

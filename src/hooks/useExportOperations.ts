@@ -66,7 +66,6 @@ export const useExportOperations = (): UseExportOperationsReturn => {
         filename = 'export',
         format = 'csv',
         includeHeaders = true,
-        dateFormat = 'YYYY-MM-DD',
       } = config;
 
       await execute(async () => {

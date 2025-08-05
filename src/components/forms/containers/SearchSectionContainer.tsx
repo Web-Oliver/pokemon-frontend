@@ -17,13 +17,13 @@ interface SearchSectionContainerProps {
   sectionTitle: string;
   sectionIcon: LucideIcon;
   description?: string;
-  
+
   /** Content slots */
   children: ReactNode;
-  
+
   /** Styling overrides */
   className?: string;
-  
+
   /** Theme variants */
   variant?: 'card' | 'product' | 'default';
 }
@@ -43,7 +43,7 @@ export const SearchSectionContainer: React.FC<SearchSectionContainerProps> = ({
   // Variant-specific styling
   const variantClasses = {
     card: 'from-cyan-500/10 via-blue-500/10 to-purple-500/10',
-    product: 'from-emerald-500/10 via-blue-500/10 to-purple-500/10', 
+    product: 'from-emerald-500/10 via-blue-500/10 to-purple-500/10',
     default: 'from-cyan-500/10 via-blue-500/10 to-purple-500/10',
   };
 
@@ -53,17 +53,22 @@ export const SearchSectionContainer: React.FC<SearchSectionContainerProps> = ({
     default: 'from-cyan-400/5 via-blue-400/5 to-purple-400/5',
   };
 
-  const defaultDescription = variant === 'card' 
-    ? 'Search sets first, then find cards within the selected set'
-    : 'Search and select from your collection database';
+  const defaultDescription =
+    variant === 'card'
+      ? 'Search sets first, then find cards within the selected set'
+      : 'Search and select from your collection database';
 
   return (
     <div className={`relative ${className}`}>
       {/* Main Container with Context7 Design */}
       <div className="relative">
         {/* Context7 Background Glass Effects */}
-        <div className={`absolute -inset-4 bg-gradient-to-r ${variantClasses[variant]} rounded-[3rem] blur-2xl opacity-60`}></div>
-        <div className={`absolute -inset-2 bg-gradient-to-r ${variantSecondaryClasses[variant]} rounded-[2.5rem] blur-xl`}></div>
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${variantClasses[variant]} rounded-[3rem] blur-2xl opacity-60`}
+        ></div>
+        <div
+          className={`absolute -inset-2 bg-gradient-to-r ${variantSecondaryClasses[variant]} rounded-[2.5rem] blur-xl`}
+        ></div>
 
         <div className="relative bg-black/40 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/10 p-8 ring-1 ring-white/5 overflow-visible">
           {/* Floating Orbs */}
@@ -89,12 +94,12 @@ export const SearchSectionContainer: React.FC<SearchSectionContainerProps> = ({
           </div>
 
           {/* Content Area */}
-          <div className="relative z-10">
-            {children}
-          </div>
+          <div className="relative z-10">{children}</div>
 
           {/* Breathing Animation for main container */}
-          <div className={`absolute inset-0 bg-gradient-to-r ${variantClasses[variant]} rounded-[2rem] animate-pulse opacity-40 pointer-events-none`}></div>
+          <div
+            className={`absolute inset-0 bg-gradient-to-r ${variantClasses[variant]} rounded-[2rem] animate-pulse opacity-40 pointer-events-none`}
+          ></div>
         </div>
       </div>
     </div>

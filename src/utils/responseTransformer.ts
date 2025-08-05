@@ -96,8 +96,16 @@ const METADATA_PROPERTIES = [
   'streetName',
   'postnr',
   'city',
-  'grade_1', 'grade_2', 'grade_3', 'grade_4', 'grade_5', // NEW: Individual grade counts
-  'grade_6', 'grade_7', 'grade_8', 'grade_9', 'grade_10', // NEW: Individual grade counts
+  'grade_1',
+  'grade_2',
+  'grade_3',
+  'grade_4',
+  'grade_5', // NEW: Individual grade counts
+  'grade_6',
+  'grade_7',
+  'grade_8',
+  'grade_9',
+  'grade_10', // NEW: Individual grade counts
   'grade_total', // NEW: Total graded count
   'total_graded', // NEW: Set-level total graded
   'uniquePokemonId', // NEW: Unique Pokemon identifier
@@ -350,12 +358,12 @@ const isObjectIdField = (fieldName: string): boolean => {
  */
 const FIELD_MAPPINGS = {
   // Card model field updates
-  'pokemonNumber': 'cardNumber',
-  'psaTotalGradedForCard': 'grades.grade_total',
-  'psaGrades': 'grades',
-  
-  // Set model field updates  
-  'totalPsaPopulation': 'total_grades.total_graded',
+  pokemonNumber: 'cardNumber',
+  psaTotalGradedForCard: 'grades.grade_total',
+  psaGrades: 'grades',
+
+  // Set model field updates
+  totalPsaPopulation: 'total_grades.total_graded',
 } as const;
 
 /**
@@ -394,7 +402,11 @@ export const mapFieldNames = <T>(data: T): T => {
 
     // Recursively process nested objects
     for (const [key, value] of Object.entries(result)) {
-      if (typeof value === 'object' && value !== null && !isMetadataObject(key, value)) {
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !isMetadataObject(key, value)
+      ) {
         result[key] = mapFieldNames(value);
       }
     }

@@ -1,13 +1,13 @@
 /**
  * Theme Debugger Component
  * Phase 3.3.1: Developer Debugging Tools
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme debugging and visualization only
  * - Open/Closed: Extensible for new debugging features
  * - DRY: Centralized theme debugging logic
  * - Dependency Inversion: Uses theme abstractions rather than direct implementation
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for current theme state
  * - themeUtils.ts for style configurations
@@ -16,36 +16,36 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Eye, 
-  EyeOff, 
-  Code, 
-  Palette, 
-  Settings, 
-  Monitor, 
-  CheckCircle, 
+import {
+  Eye,
+  EyeOff,
+  Code,
+  Palette,
+  Settings,
+  Monitor,
+  CheckCircle,
   AlertTriangle,
   Copy,
   Download,
   RefreshCw,
   Zap,
   Layers,
-  Clock
+  Clock,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { 
-  buttonStyleConfig, 
-  inputStyleConfig, 
-  cardStyleConfig, 
+import {
+  buttonStyleConfig,
+  inputStyleConfig,
+  cardStyleConfig,
   badgeStyleConfig,
-  cn 
+  cn,
 } from '../../utils/themeUtils';
 import { formThemes } from '../../theme/formThemes';
-import { 
+import {
   validateThemeConfiguration,
   getThemePerformanceMetrics,
   extractCSSCustomProperties,
-  getComponentVariantInfo
+  getComponentVariantInfo,
 } from '../../utils/themeDebug';
 
 export interface ThemeDebuggerProps {
@@ -54,20 +54,32 @@ export interface ThemeDebuggerProps {
   /** Position of the debugger panel */
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
   /** Initial panel to show */
-  defaultPanel?: 'overview' | 'tokens' | 'components' | 'performance' | 'validation';
+  defaultPanel?:
+    | 'overview'
+    | 'tokens'
+    | 'components'
+    | 'performance'
+    | 'validation';
 }
 
-type DebugPanel = 'overview' | 'tokens' | 'components' | 'performance' | 'validation';
+type DebugPanel =
+  | 'overview'
+  | 'tokens'
+  | 'components'
+  | 'performance'
+  | 'validation';
 
 export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
   enabled = process.env.NODE_ENV === 'development',
   position = 'bottom-right',
-  defaultPanel = 'overview'
+  defaultPanel = 'overview',
 }) => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<DebugPanel>(defaultPanel);
-  const [performanceData, setPerformanceData] = useState(() => getThemePerformanceMetrics());
+  const [performanceData, setPerformanceData] = useState(() =>
+    getThemePerformanceMetrics()
+  );
   const intervalRef = useRef<NodeJS.Timeout>();
 
   // Update performance data every 2 seconds when performance panel is active
@@ -89,13 +101,15 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
     };
   }, [activePanel, isOpen]);
 
-  if (!enabled) return null;
+  if (!enabled) {
+    return null;
+  }
 
   const positionClasses = {
     'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4', 
+    'bottom-left': 'bottom-4 left-4',
     'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4'
+    'top-left': 'top-4 left-4',
   }[position];
 
   const validationResults = validateThemeConfiguration(theme.config);
@@ -110,12 +124,12 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
       ...theme.config,
       cssProperties,
       performance: performanceData,
-      validation: validationResults
+      validation: validationResults,
     };
-    
+
     const dataStr = JSON.stringify(config, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
+    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', `theme-debug-${Date.now()}.json`);
@@ -142,16 +156,25 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             <div className="space-y-2">
               <div className="font-semibold text-purple-400">Settings</div>
               <div className="bg-zinc-800/50 p-2 rounded">
-                <div>High Contrast: {theme.config.highContrast ? 'ON' : 'OFF'}</div>
-                <div>Reduced Motion: {theme.config.reducedMotion ? 'ON' : 'OFF'}</div>
+                <div>
+                  High Contrast: {theme.config.highContrast ? 'ON' : 'OFF'}
+                </div>
+                <div>
+                  Reduced Motion: {theme.config.reducedMotion ? 'ON' : 'OFF'}
+                </div>
                 <div>Glassmorphism: {theme.config.glassmorphismIntensity}%</div>
-                <div>Particles: {theme.config.particleEffectsEnabled ? 'ON' : 'OFF'}</div>
+                <div>
+                  Particles:{' '}
+                  {theme.config.particleEffectsEnabled ? 'ON' : 'OFF'}
+                </div>
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-2">
-            <div className="font-semibold text-emerald-400">Applied CSS Classes</div>
+            <div className="font-semibold text-emerald-400">
+              Applied CSS Classes
+            </div>
             <div className="bg-zinc-800/50 p-2 rounded text-xs font-mono break-all">
               {theme.getThemeClasses()}
             </div>
@@ -166,7 +189,9 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
               Export Config
             </button>
             <button
-              onClick={() => copyToClipboard(JSON.stringify(theme.config, null, 2))}
+              onClick={() =>
+                copyToClipboard(JSON.stringify(theme.config, null, 2))
+              }
               className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600/50 hover:bg-green-600/70 rounded transition-colors"
             >
               <Copy className="w-3 h-3" />
@@ -174,7 +199,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             </button>
           </div>
         </div>
-      )
+      ),
     },
     tokens: {
       icon: Code,
@@ -182,10 +207,15 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
       content: (
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="font-semibold text-cyan-400">CSS Custom Properties</div>
+            <div className="font-semibold text-cyan-400">
+              CSS Custom Properties
+            </div>
             <div className="max-h-48 overflow-y-auto bg-zinc-800/50 p-2 rounded">
               {Object.entries(cssProperties).map(([property, value]) => (
-                <div key={property} className="flex justify-between text-xs font-mono py-1 border-b border-zinc-700/30 last:border-b-0">
+                <div
+                  key={property}
+                  className="flex justify-between text-xs font-mono py-1 border-b border-zinc-700/30 last:border-b-0"
+                >
                   <span className="text-emerald-400">{property}</span>
                   <span className="text-zinc-300 truncate ml-2">{value}</span>
                 </div>
@@ -194,26 +224,39 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-purple-400">Computed Theme Properties</div>
+            <div className="font-semibold text-purple-400">
+              Computed Theme Properties
+            </div>
             <div className="max-h-48 overflow-y-auto bg-zinc-800/50 p-2 rounded">
-              {Object.entries(theme.getCSSProperties()).map(([property, value]) => (
-                <div key={property} className="flex justify-between text-xs font-mono py-1 border-b border-zinc-700/30 last:border-b-0">
-                  <span className="text-purple-400">{property}</span>
-                  <span className="text-zinc-300 truncate ml-2">{value}</span>
-                </div>
-              ))}
+              {Object.entries(theme.getCSSProperties()).map(
+                ([property, value]) => (
+                  <div
+                    key={property}
+                    className="flex justify-between text-xs font-mono py-1 border-b border-zinc-700/30 last:border-b-0"
+                  >
+                    <span className="text-purple-400">{property}</span>
+                    <span className="text-zinc-300 truncate ml-2">{value}</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
 
           <button
-            onClick={() => copyToClipboard(Object.entries(cssProperties).map(([k, v]) => `${k}: ${v}`).join('\n'))}
+            onClick={() =>
+              copyToClipboard(
+                Object.entries(cssProperties)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join('\n')
+              )
+            }
             className="flex items-center gap-1 px-2 py-1 text-xs bg-cyan-600/50 hover:bg-cyan-600/70 rounded transition-colors w-full justify-center"
           >
             <Copy className="w-3 h-3" />
             Copy All Tokens
           </button>
         </div>
-      )
+      ),
     },
     components: {
       icon: Layers,
@@ -225,26 +268,32 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
               { name: 'Button', config: buttonStyleConfig },
               { name: 'Input', config: inputStyleConfig },
               { name: 'Card', config: cardStyleConfig },
-              { name: 'Badge', config: badgeStyleConfig }
+              { name: 'Badge', config: badgeStyleConfig },
             ].map(({ name, config }) => {
-              const variantInfo = getComponentVariantInfo(name.toLowerCase(), config);
+              getComponentVariantInfo(name.toLowerCase(), config);
               return (
                 <div key={name} className="bg-zinc-800/50 p-3 rounded">
-                  <div className="font-semibold text-cyan-400 mb-2">{name} Component</div>
+                  <div className="font-semibold text-cyan-400 mb-2">
+                    {name} Component
+                  </div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
                       <div className="text-zinc-400 mb-1">Variants</div>
                       <div className="space-y-1">
-                        {Object.keys(config.variants || {}).map(variant => (
-                          <div key={variant} className="text-emerald-400">{variant}</div>
+                        {Object.keys(config.variants || {}).map((variant) => (
+                          <div key={variant} className="text-emerald-400">
+                            {variant}
+                          </div>
                         ))}
                       </div>
                     </div>
                     <div>
                       <div className="text-zinc-400 mb-1">Sizes</div>
                       <div className="space-y-1">
-                        {Object.keys(config.sizes || {}).map(size => (
-                          <div key={size} className="text-purple-400">{size}</div>
+                        {Object.keys(config.sizes || {}).map((size) => (
+                          <div key={size} className="text-purple-400">
+                            {size}
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -260,7 +309,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             })}
           </div>
         </div>
-      )
+      ),
     },
     performance: {
       icon: Zap,
@@ -272,53 +321,83 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="bg-zinc-800/50 p-2 rounded">
                 <div className="text-zinc-400">CSS Properties</div>
-                <div className="text-xl font-bold text-green-400">{performanceData.cssPropertiesCount}</div>
+                <div className="text-xl font-bold text-green-400">
+                  {performanceData.cssPropertiesCount}
+                </div>
               </div>
               <div className="bg-zinc-800/50 p-2 rounded">
                 <div className="text-zinc-400">Theme Classes</div>
-                <div className="text-xl font-bold text-blue-400">{performanceData.themeClassesCount}</div>
+                <div className="text-xl font-bold text-blue-400">
+                  {performanceData.themeClassesCount}
+                </div>
               </div>
               <div className="bg-zinc-800/50 p-2 rounded">
                 <div className="text-zinc-400">Load Time</div>
-                <div className="text-xl font-bold text-purple-400">{performanceData.loadTimeMs}ms</div>
+                <div className="text-xl font-bold text-purple-400">
+                  {performanceData.loadTimeMs}ms
+                </div>
               </div>
               <div className="bg-zinc-800/50 p-2 rounded">
                 <div className="text-zinc-400">Memory Usage</div>
-                <div className="text-xl font-bold text-orange-400">{performanceData.memoryUsageMB}MB</div>
+                <div className="text-xl font-bold text-orange-400">
+                  {performanceData.memoryUsageMB}MB
+                </div>
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-purple-400">Theme Transitions</div>
+            <div className="font-semibold text-purple-400">
+              Theme Transitions
+            </div>
             <div className="bg-zinc-800/50 p-2 rounded text-xs">
               <div className="flex justify-between">
                 <span>Last Switch Duration:</span>
-                <span className="text-green-400">{performanceData.lastSwitchDuration}ms</span>
+                <span className="text-green-400">
+                  {performanceData.lastSwitchDuration}ms
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Total Switches:</span>
-                <span className="text-blue-400">{performanceData.totalSwitches}</span>
+                <span className="text-blue-400">
+                  {performanceData.totalSwitches}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Average Switch Time:</span>
-                <span className="text-purple-400">{performanceData.averageSwitchTime}ms</span>
+                <span className="text-purple-400">
+                  {performanceData.averageSwitchTime}ms
+                </span>
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-emerald-400">Resource Impact</div>
+            <div className="font-semibold text-emerald-400">
+              Resource Impact
+            </div>
             <div className="bg-zinc-800/50 p-2 rounded text-xs space-y-1">
               <div className="flex justify-between">
                 <span>Bundle Size Impact:</span>
-                <span className={performanceData.bundleSizeImpact < 50 ? 'text-green-400' : 'text-orange-400'}>
+                <span
+                  className={
+                    performanceData.bundleSizeImpact < 50
+                      ? 'text-green-400'
+                      : 'text-orange-400'
+                  }
+                >
                   {performanceData.bundleSizeImpact}KB
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Render Impact:</span>
-                <span className={performanceData.renderImpactScore < 3 ? 'text-green-400' : 'text-orange-400'}>
+                <span
+                  className={
+                    performanceData.renderImpactScore < 3
+                      ? 'text-green-400'
+                      : 'text-orange-400'
+                  }
+                >
                   {performanceData.renderImpactScore}/5
                 </span>
               </div>
@@ -333,7 +412,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             Refresh Metrics
           </button>
         </div>
-      )
+      ),
     },
     validation: {
       icon: CheckCircle,
@@ -344,12 +423,17 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             <div className="font-semibold text-cyan-400">Theme Validation</div>
             <div className="space-y-2">
               {validationResults.map((result, index) => (
-                <div key={index} className={cn(
-                  "flex items-start gap-2 p-2 rounded text-xs",
-                  result.type === 'error' ? 'bg-red-900/30 text-red-300' :
-                  result.type === 'warning' ? 'bg-amber-900/30 text-amber-300' :
-                  'bg-green-900/30 text-green-300'
-                )}>
+                <div
+                  key={index}
+                  className={cn(
+                    'flex items-start gap-2 p-2 rounded text-xs',
+                    result.type === 'error'
+                      ? 'bg-red-900/30 text-red-300'
+                      : result.type === 'warning'
+                        ? 'bg-amber-900/30 text-amber-300'
+                        : 'bg-green-900/30 text-green-300'
+                  )}
+                >
                   {result.type === 'error' ? (
                     <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                   ) : result.type === 'warning' ? (
@@ -361,7 +445,9 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
                     <div className="font-semibold">{result.category}</div>
                     <div>{result.message}</div>
                     {result.suggestion && (
-                      <div className="text-zinc-400 mt-1">💡 {result.suggestion}</div>
+                      <div className="text-zinc-400 mt-1">
+                        💡 {result.suggestion}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -370,33 +456,95 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-purple-400">Theme Health Score</div>
+            <div className="font-semibold text-purple-400">
+              Theme Health Score
+            </div>
             <div className="bg-zinc-800/50 p-2 rounded">
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Configuration:</span>
-                  <span className={validationResults.filter(r => r.category === 'Configuration' && r.type === 'success').length > 0 ? 'text-green-400' : 'text-red-400'}>
-                    {validationResults.filter(r => r.category === 'Configuration' && r.type === 'success').length} / {validationResults.filter(r => r.category === 'Configuration').length}
+                  <span
+                    className={
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Configuration' && r.type === 'success'
+                      ).length > 0
+                        ? 'text-green-400'
+                        : 'text-red-400'
+                    }
+                  >
+                    {
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Configuration' && r.type === 'success'
+                      ).length
+                    }{' '}
+                    /{' '}
+                    {
+                      validationResults.filter(
+                        (r) => r.category === 'Configuration'
+                      ).length
+                    }
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Performance:</span>
-                  <span className={validationResults.filter(r => r.category === 'Performance' && r.type === 'success').length > 0 ? 'text-green-400' : 'text-red-400'}>
-                    {validationResults.filter(r => r.category === 'Performance' && r.type === 'success').length} / {validationResults.filter(r => r.category === 'Performance').length}
+                  <span
+                    className={
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Performance' && r.type === 'success'
+                      ).length > 0
+                        ? 'text-green-400'
+                        : 'text-red-400'
+                    }
+                  >
+                    {
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Performance' && r.type === 'success'
+                      ).length
+                    }{' '}
+                    /{' '}
+                    {
+                      validationResults.filter(
+                        (r) => r.category === 'Performance'
+                      ).length
+                    }
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Accessibility:</span>
-                  <span className={validationResults.filter(r => r.category === 'Accessibility' && r.type === 'success').length > 0 ? 'text-green-400' : 'text-red-400'}>
-                    {validationResults.filter(r => r.category === 'Accessibility' && r.type === 'success').length} / {validationResults.filter(r => r.category === 'Accessibility').length}
+                  <span
+                    className={
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Accessibility' && r.type === 'success'
+                      ).length > 0
+                        ? 'text-green-400'
+                        : 'text-red-400'
+                    }
+                  >
+                    {
+                      validationResults.filter(
+                        (r) =>
+                          r.category === 'Accessibility' && r.type === 'success'
+                      ).length
+                    }{' '}
+                    /{' '}
+                    {
+                      validationResults.filter(
+                        (r) => r.category === 'Accessibility'
+                      ).length
+                    }
                   </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   };
 
   return (
@@ -438,9 +586,9 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
                   key={panelId}
                   onClick={() => setActivePanel(panelId as DebugPanel)}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-1 p-2 text-xs transition-colors",
-                    activePanel === panelId 
-                      ? 'bg-cyan-600/30 text-cyan-400 border-b-2 border-cyan-400' 
+                    'flex-1 flex items-center justify-center gap-1 p-2 text-xs transition-colors',
+                    activePanel === panelId
+                      ? 'bg-cyan-600/30 text-cyan-400 border-b-2 border-cyan-400'
                       : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
                   )}
                   title={panel.title}

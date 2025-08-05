@@ -12,10 +12,15 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { searchCards, searchProducts, searchSets, searchSetProducts } from '../api/searchApi';
+import {
+  searchCards,
+  searchProducts,
+  searchSets,
+  searchSetProducts,
+} from '../api/searchApi';
 import { log } from '../utils/logger';
 import { useDebouncedValue } from './useDebounce';
-import { getDisplayName, handleSearchError } from '../utils/searchHelpers';
+import { getDisplayName } from '../utils/searchHelpers';
 // Removed isValidSearchQuery - implementing lower tolerance search
 import { queryKeys } from '../lib/queryClient';
 
@@ -209,10 +214,18 @@ export const useSearch = (): UseSearchReturn => {
     }
 
     // Map search types to result types
-    const getResultType = (searchType: string): 'set' | 'product' | 'card' | 'setProduct' => {
-      if (searchType === 'setProducts') return 'setProduct';
-      if (searchType === 'products') return 'product';
-      if (searchType === 'cards') return 'card';
+    const getResultType = (
+      searchType: string
+    ): 'set' | 'product' | 'card' | 'setProduct' => {
+      if (searchType === 'setProducts') {
+        return 'setProduct';
+      }
+      if (searchType === 'products') {
+        return 'product';
+      }
+      if (searchType === 'cards') {
+        return 'card';
+      }
       return 'set';
     };
 
@@ -276,7 +289,9 @@ export const useSearch = (): UseSearchReturn => {
   }, []);
 
   const handleSearchSetProducts = useCallback((query: string) => {
-    console.log(`[TANSTACK QUERY DEBUG] Initiating SetProducts search: "${query}"`);
+    console.log(
+      `[TANSTACK QUERY DEBUG] Initiating SetProducts search: "${query}"`
+    );
     setSearchConfig((prev) => {
       const newConfig = {
         ...prev,
@@ -284,7 +299,10 @@ export const useSearch = (): UseSearchReturn => {
         currentType: 'setProducts' as const,
         currentFilters: {},
       };
-      console.log('[TANSTACK QUERY DEBUG] SetProducts search config updated:', newConfig);
+      console.log(
+        '[TANSTACK QUERY DEBUG] SetProducts search config updated:',
+        newConfig
+      );
       return newConfig;
     });
   }, []);

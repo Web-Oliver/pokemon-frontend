@@ -551,9 +551,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
       const categoryItems = safeItems.filter(
         (item) => getItemCategory(item) === category
       );
-      const otherItems = safeItems.filter(
-        (item) => getItemCategory(item) !== category
-      );
+      safeItems.filter((item) => getItemCategory(item) !== category);
 
       // Sort category items by price
       const sortedCategoryItems = sortItemsByPrice(categoryItems, ascending);

@@ -1,13 +1,13 @@
 /**
  * Holographic Border Component
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for holographic border effects
  * - OCP: Open for extension via intensity and timing props
  * - DIP: Uses Layer 1 utilities for effect generation
  * - DRY: Abstracts holographic border pattern from multiple components
- * 
+ *
  * Extracted from border-holographic pattern across DBA components
  */
 
@@ -45,7 +45,7 @@ const HolographicBorder: React.FC<HolographicBorderProps> = ({
       cyan: `rgba(6, 182, 212, ${intensity})`,
       purple: `rgba(168, 85, 247, ${intensity})`,
       gradient: `linear-gradient(90deg, transparent, rgba(6, 182, 212, ${intensity}), rgba(168, 85, 247, ${intensity}), transparent)`,
-      cosmic: `linear-gradient(90deg, transparent, rgba(6, 182, 212, ${intensity}), rgba(139, 92, 246, ${intensity}), rgba(236, 72, 153, ${intensity}), transparent)`
+      cosmic: `linear-gradient(90deg, transparent, rgba(6, 182, 212, ${intensity}), rgba(139, 92, 246, ${intensity}), rgba(236, 72, 153, ${intensity}), transparent)`,
     };
     return colors[theme as keyof typeof colors] || colors.cyan;
   };
@@ -54,7 +54,7 @@ const HolographicBorder: React.FC<HolographicBorderProps> = ({
     const widths = {
       thin: 'before:border',
       medium: 'before:border-2',
-      thick: 'before:border-4'
+      thick: 'before:border-4',
     };
     return widths[width as keyof typeof widths] || widths.medium;
   };
@@ -62,7 +62,7 @@ const HolographicBorder: React.FC<HolographicBorderProps> = ({
   const borderColor = getColorStyles(colorTheme);
 
   return (
-    <div 
+    <div
       className={cn(
         'relative',
         getBorderWidthClass(borderWidth),
@@ -70,17 +70,13 @@ const HolographicBorder: React.FC<HolographicBorderProps> = ({
         showOnHover ? 'hover:before:opacity-100' : 'before:opacity-100',
         className
       )}
-      style={{
-        '--holographic-border-color': borderColor,
-        '--holographic-duration': `${duration}s`,
-      } as React.CSSProperties & Record<string, string>}
+      style={
+        {
+          '--holographic-border-color': borderColor,
+          '--holographic-duration': `${duration}s`,
+        } as React.CSSProperties & Record<string, string>
+      }
     >
-      <style jsx>{`
-        .holographic-border::before {
-          background: var(--holographic-border-color);
-          animation: pulse var(--holographic-duration) ease-in-out infinite;
-        }
-      `}</style>
       {children}
     </div>
   );

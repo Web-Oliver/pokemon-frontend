@@ -57,22 +57,6 @@ const DbaCompactCardComponent: React.FC<DbaCompactCardProps> = ({
     []
   );
 
-  const getGradeBadgeColor = useMemo(
-    () => (grade: number) => {
-      if (grade >= 9) {
-        return 'bg-emerald-500 text-white';
-      }
-      if (grade >= 7) {
-        return 'bg-blue-500 text-white';
-      }
-      if (grade >= 5) {
-        return 'bg-yellow-500 text-black';
-      }
-      return 'bg-gray-500 text-white';
-    },
-    []
-  );
-
   return (
     <div
       key={itemId}

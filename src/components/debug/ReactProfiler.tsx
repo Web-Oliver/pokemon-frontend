@@ -287,7 +287,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
         lcpObserver.disconnect();
         fidObserver.disconnect();
         clsObserver.disconnect();
-      } catch (error) {
+      } catch {
         // Ignore cleanup errors
       }
     };

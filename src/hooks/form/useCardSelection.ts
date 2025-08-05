@@ -132,31 +132,39 @@ export const useCardSelection = (config: CardSelectionConfig) => {
       // Auto-fill set name - handle different data structures and circular references
       // In hierarchical search (Set -> Card), setName should already be set from set selection
       let cardSetName: string | undefined;
-      
+
       // Try multiple approaches to extract setName, handling circular references
       try {
         cardSetName = selectedData.setId?.setName;
-      } catch (e) {
+      } catch {
         // Handle circular reference in setId
-        console.warn(`[${formType.toUpperCase()} CARD] Circular reference in setId, trying alternatives`);
+        console.warn(
+          `[${formType.toUpperCase()} CARD] Circular reference in setId, trying alternatives`
+        );
       }
-      
+
       // Fallback to other sources
       if (!cardSetName) {
-        cardSetName = selectedData.setDisplayName || selectedData.setInfo?.setName || selectedData.setName;
+        cardSetName =
+          selectedData.setDisplayName ||
+          selectedData.setInfo?.setName ||
+          selectedData.setName;
       }
-      
+
       if (debug && process.env.NODE_ENV === 'development') {
-        console.log(`[${formType.toUpperCase()} CARD] Card set name extraction:`, {
-          cardSetName,
-          setDisplayName: selectedData.setDisplayName,
-          hasSetId: !!selectedData.setId,
-          setInfo: selectedData.setInfo,
-          directSetName: selectedData.setName,
-          preserveSetName
-        });
+        console.log(
+          `[${formType.toUpperCase()} CARD] Card set name extraction:`,
+          {
+            cardSetName,
+            setDisplayName: selectedData.setDisplayName,
+            hasSetId: !!selectedData.setId,
+            setInfo: selectedData.setInfo,
+            directSetName: selectedData.setName,
+            preserveSetName,
+          }
+        );
       }
-      
+
       if (!preserveSetName && cardSetName) {
         setValue('setName', cardSetName, { shouldValidate: true });
         clearErrors('setName');

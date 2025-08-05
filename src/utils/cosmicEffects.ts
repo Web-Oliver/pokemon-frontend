@@ -1,13 +1,13 @@
 /**
  * Cosmic Effects Utilities
  * Layer 1: Core/Foundation (CLAUDE.md Architecture)
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for cosmic effect utilities and generators
  * - OCP: Open for extension via configurable parameters
  * - DIP: Abstracts cosmic effect implementation details from components
  * - DRY: Eliminates duplicate gradient and particle generation logic
- * 
+ *
  * Extracted from DbaCosmicBackground.tsx and other DBA components
  * Consolidates 33+ gradient patterns and particle systems into reusable utilities
  */
@@ -40,7 +40,9 @@ export interface CosmicGradient {
  * Generate particle style configurations
  * Extracted from DbaCosmicBackground.tsx particle generation logic
  */
-export const generateParticleStyles = (config: ParticleConfig = {}): Array<{
+export const generateParticleStyles = (
+  config: ParticleConfig = {}
+): Array<{
   key: number;
   style: React.CSSProperties;
   className: string;
@@ -51,14 +53,15 @@ export const generateParticleStyles = (config: ParticleConfig = {}): Array<{
     sizeRange = [2, 8],
     durationRange = [4, 7],
     opacity = 0.3,
-    animationType = 'bounce'
+    animationType = 'bounce',
   } = config;
 
   return Array.from({ length: count }, (_, i) => {
     const size = Math.random() * (sizeRange[1] - sizeRange[0]) + sizeRange[0];
-    const duration = Math.random() * (durationRange[1] - durationRange[0]) + durationRange[0];
+    const duration =
+      Math.random() * (durationRange[1] - durationRange[0]) + durationRange[0];
     const color = colors[Math.floor(Math.random() * colors.length)];
-    
+
     return {
       key: i,
       style: {
@@ -71,7 +74,7 @@ export const generateParticleStyles = (config: ParticleConfig = {}): Array<{
         background: `linear-gradient(to right, ${color}, transparent)`,
         opacity,
       },
-      className: `absolute rounded-full animate-${animationType}`
+      className: `absolute rounded-full animate-${animationType}`,
     };
   });
 };
@@ -83,44 +86,50 @@ export const generateParticleStyles = (config: ParticleConfig = {}): Array<{
 export const COSMIC_GRADIENTS = {
   // Core cosmic backgrounds
   holographicBase: {
-    gradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(6, 182, 212, 0.2) 100%)',
+    gradient:
+      'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 50%, rgba(6, 182, 212, 0.2) 100%)',
     animationType: 'pulse' as const,
-    animationDuration: 4
+    animationDuration: 4,
   },
 
   conicHolographic: {
-    gradient: 'conic-gradient(from 0deg at 50% 50%, rgba(99,102,241,0.1), rgba(139,92,246,0.1), rgba(6,182,212,0.1), rgba(16,185,129,0.1), rgba(245,158,11,0.1), rgba(99,102,241,0.1))',
+    gradient:
+      'conic-gradient(from 0deg at 50% 50%, rgba(99,102,241,0.1), rgba(139,92,246,0.1), rgba(6,182,212,0.1), rgba(16,185,129,0.1), rgba(245,158,11,0.1), rgba(99,102,241,0.1))',
     animationType: 'spin' as const,
-    animationDuration: 30
+    animationDuration: 30,
   },
 
-  // DBA cosmic card backgrounds  
+  // DBA cosmic card backgrounds
   cosmicCard: {
-    gradient: 'linear-gradient(135deg, rgba(39, 39, 42, 0.8) 0%, rgba(6, 182, 212, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%)',
+    gradient:
+      'linear-gradient(135deg, rgba(39, 39, 42, 0.8) 0%, rgba(6, 182, 212, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%)',
     animationType: 'pulse' as const,
-    animationDuration: 3
+    animationDuration: 3,
   },
 
   // Neural network patterns
   neuralNetwork: {
-    gradient: 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
+    gradient:
+      'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%)',
     animationType: 'pulse' as const,
-    animationDuration: 2
+    animationDuration: 2,
   },
 
   // Quantum effects
   quantumShimmer: {
-    gradient: 'linear-gradient(45deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2), rgba(245, 158, 11, 0.2))',
+    gradient:
+      'linear-gradient(45deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2), rgba(245, 158, 11, 0.2))',
     animationType: 'shift' as const,
-    animationDuration: 5
+    animationDuration: 5,
   },
 
   // Plasma effects
   plasmaField: {
-    gradient: 'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%)',
+    gradient:
+      'radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 50%, transparent 100%)',
     animationType: 'pulse' as const,
-    animationDuration: 6
-  }
+    animationDuration: 6,
+  },
 } as const;
 
 /**
@@ -144,7 +153,7 @@ export const getHolographicBorderStyles = (
   } as any,
   '&:hover::before': {
     opacity: 1,
-  } as any
+  } as any,
 });
 
 /**
@@ -157,7 +166,7 @@ export const COSMIC_TIMER_CONFIG = {
   size: 'sm' as const,
   shape: 'pill' as const,
   pulse: true,
-  className: 'cosmic-glow'
+  className: 'cosmic-glow',
 };
 
 /**
@@ -176,7 +185,7 @@ export const COSMIC_ANIMATIONS = {
       }
     `,
     duration: '8s',
-    timing: 'ease-in-out infinite'
+    timing: 'ease-in-out infinite',
   },
 
   // Cosmic pulse for backgrounds
@@ -189,7 +198,7 @@ export const COSMIC_ANIMATIONS = {
       }
     `,
     duration: '4s',
-    timing: 'ease-in-out infinite'
+    timing: 'ease-in-out infinite',
   },
 
   // Holographic shimmer
@@ -202,7 +211,7 @@ export const COSMIC_ANIMATIONS = {
       }
     `,
     duration: '3s',
-    timing: 'ease-in-out infinite'
+    timing: 'ease-in-out infinite',
   },
 
   // Quantum spin
@@ -215,8 +224,8 @@ export const COSMIC_ANIMATIONS = {
       }
     `,
     duration: '30s',
-    timing: 'linear infinite'
-  }
+    timing: 'linear infinite',
+  },
 };
 
 /**
@@ -237,7 +246,7 @@ export const generateCosmicBackground = (
     baseLayerClassName: `absolute inset-0 blur-3xl animate-pulse`,
     baseLayerStyle: {
       background: gradient.gradient,
-      animationDuration: `${gradient.animationDuration}s`
-    }
+      animationDuration: `${gradient.animationDuration}s`,
+    },
   };
 };

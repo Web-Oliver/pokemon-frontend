@@ -1,7 +1,7 @@
 /**
  * Pokemon Modal Component - The Ultimate Dialog Engine
  * Consolidates ALL modal patterns: confirmations, forms, details, overlays
- * 
+ *
  * Following CLAUDE.md principles:
  * - DRY: Eliminates 300+ lines of duplicate modal styling
  * - Solid: One definitive modal implementation
@@ -48,7 +48,9 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
 }) => {
   // Handle escape key
   useEffect(() => {
-    if (!isOpen || !closeOnEscape) return;
+    if (!isOpen || !closeOnEscape) {
+      return;
+    }
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -73,7 +75,9 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   // Size system - covers all use cases
   const sizeClasses = {
@@ -81,7 +85,7 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-[95vw] max-h-[95vh]'
+    full: 'max-w-[95vw] max-h-[95vh]',
   };
 
   // Variant system - different modal styles
@@ -90,24 +94,21 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
       default: [
         'bg-zinc-900/95 backdrop-blur-xl',
         'border border-zinc-700/50',
-        'shadow-2xl'
+        'shadow-2xl',
       ].join(' '),
       glass: [
         'bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12]',
         'backdrop-blur-xl border border-white/[0.15]',
-        'shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]'
+        'shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]',
       ].join(' '),
-      solid: [
-        'bg-zinc-900 border border-zinc-800',
-        'shadow-2xl'
-      ].join(' '),
+      solid: ['bg-zinc-900 border border-zinc-800', 'shadow-2xl'].join(' '),
       center: [
         'bg-gradient-to-br from-zinc-900/95 to-zinc-800/95',
         'backdrop-blur-xl border border-zinc-700/30',
-        'shadow-[0_20px_50px_0_rgba(0,0,0,0.5)]'
-      ].join(' ')
+        'shadow-[0_20px_50px_0_rgba(0,0,0,0.5)]',
+      ].join(' '),
     };
-    
+
     return variants[variant as keyof typeof variants] || variants.glass;
   };
 
@@ -120,13 +121,13 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop/Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
         onClick={handleOverlayClick}
       />
-      
+
       {/* Modal Container */}
-      <div 
+      <div
         className={cn(
           'relative w-full rounded-2xl transition-all duration-300 transform',
           'animate-in fade-in-0 zoom-in-95 duration-300',
@@ -141,10 +142,10 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
         {variant === 'glass' && (
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 animate-pulse" />
         )}
-        
+
         {/* Top accent line */}
         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent opacity-60" />
-        
+
         {/* Header */}
         {(title || showCloseButton) && (
           <div className="relative z-10 flex items-center justify-between p-6 pb-0">
@@ -153,7 +154,7 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
                 {title}
               </h2>
             )}
-            
+
             {showCloseButton && (
               <button
                 onClick={onClose}
@@ -165,28 +166,28 @@ export const PokemonModal: React.FC<PokemonModalProps> = ({
             )}
           </div>
         )}
-        
+
         {/* Content */}
         <div className="relative z-10 p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
-              <span className="ml-3 text-cyan-100/80 font-medium">Loading...</span>
+              <span className="ml-3 text-cyan-100/80 font-medium">
+                Loading...
+              </span>
             </div>
           ) : (
             children
           )}
         </div>
-        
+
         {/* Footer */}
         {footer && (
           <div className="relative z-10 px-6 pb-6 pt-0">
-            <div className="border-t border-white/10 pt-4">
-              {footer}
-            </div>
+            <div className="border-t border-white/10 pt-4">{footer}</div>
           </div>
         )}
-        
+
         {/* Loading overlay */}
         {loading && (
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
@@ -236,30 +237,26 @@ export const PokemonConfirmModal: React.FC<PokemonConfirmModalProps> = ({
   const config = variantConfig[variant];
 
   return (
-    <PokemonModal 
-      isOpen={isOpen} 
-      onClose={onClose} 
-      title={title} 
+    <PokemonModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
       size="sm"
       loading={loading}
-      footer={(
+      footer={
         <div className="flex gap-3 justify-end">
-          <PokemonButton 
-            variant="ghost" 
-            onClick={onClose}
-            disabled={loading}
-          >
+          <PokemonButton variant="ghost" onClick={onClose} disabled={loading}>
             {cancelText}
           </PokemonButton>
-          <PokemonButton 
-            variant={config.confirmVariant} 
+          <PokemonButton
+            variant={config.confirmVariant}
             onClick={onConfirm}
             loading={loading}
           >
             {confirmText}
           </PokemonButton>
         </div>
-      )}
+      }
     >
       <div className="flex items-start gap-4">
         <div className="text-2xl flex-shrink-0">{config.icon}</div>

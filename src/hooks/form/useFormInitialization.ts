@@ -133,7 +133,7 @@ export const useFormInitialization = (
 
     // Create a stable identifier for the current item
     const itemId = initialData._id || initialData.id || 'no-id';
-    
+
     // Skip if already initialized for this item
     if (initializedRef.current === itemId) {
       return;
@@ -152,7 +152,7 @@ export const useFormInitialization = (
     // Extract card data if available (for PSA and Raw cards)
     if (initialData.cardId && typeof initialData.cardId === 'object') {
       const cardData = extractCardData(initialData.cardId);
-      
+
       if (cardData.setName || cardData.cardName) {
         const { setName, cardName, pokemonNumber, baseName, variety } =
           cardData;

@@ -23,10 +23,7 @@ import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { navigationHelper } from '../utils/navigation';
 
 // Import unified design system
-import { 
-  PokemonButton, 
-  PokemonModal 
-} from '../components/design-system';
+import { PokemonButton, PokemonModal } from '../components/design-system';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
@@ -141,7 +138,7 @@ const Collection: React.FC = () => {
   const handleSelectAllItems = useCallback(() => {
     const allItems = getAllCollectionItems();
     selectAllItems(allItems);
-  }, [selectAllItems, psaCards, rawCards, sealedProducts]);
+  }, [selectAllItems, getAllCollectionItems]);
 
   const headerActions = useMemo(
     () => (

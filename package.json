@@ -46,6 +46,7 @@
     "recharts": "^3.1.0",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
+    "typescript-eslint": "^8.39.0",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
@@ -53,7 +54,7 @@
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
-    "@types/node": "^24.0.13",
+    "@types/node": "^24.2.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@typescript-eslint/eslint-plugin": "^8.38.0",

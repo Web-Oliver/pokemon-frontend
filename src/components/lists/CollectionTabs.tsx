@@ -76,7 +76,6 @@ const tabs: TabConfig[] = [
 export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
   ({
     activeTab,
-    onTabChange,
     psaCards,
     rawCards,
     sealedProducts,

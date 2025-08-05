@@ -1,13 +1,13 @@
 /**
  * Theme Exporter Component
  * Phase 3.1.2: Theme Export/Import System
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Handles theme export/import UI only
  * - Open/Closed: Extensible for new export/import features
  * - DRY: Reuses existing component patterns and utilities
  * - Interface Segregation: Focused interface for theme management
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme configuration access
  * - themeExport.ts for export/import utilities
@@ -30,7 +30,6 @@ import {
   createThemeBackup,
   getThemeBackups,
   restoreThemeFromBackup,
-  ThemeImportResult,
 } from '../../utils/themeExport';
 import { cn } from '../../utils/themeUtils';
 
@@ -61,11 +60,14 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
 }) => {
   const theme = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Component state
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [importMessage, setImportMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [showImportOptions, setShowImportOptions] = useState(false);
   const [showBackups, setShowBackups] = useState(false);
@@ -90,29 +92,41 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
         exportDescription || 'Current theme configuration',
         theme.getCSSProperties()
       );
-      setImportMessage({ type: 'success', text: 'Theme exported successfully!' });
+      setImportMessage({
+        type: 'success',
+        text: 'Theme exported successfully!',
+      });
       setShowExportOptions(false);
       setCustomPresetName('');
       setExportDescription('');
     } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to export theme' 
+      setImportMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Failed to export theme',
       });
     } finally {
       setIsExporting(false);
     }
-  }, [theme.config, theme.getCSSProperties, customPresetName, exportDescription]);
+  }, [
+    theme.config,
+    theme.getCSSProperties,
+    customPresetName,
+    exportDescription,
+  ]);
 
   const handleExportAllPresets = useCallback(async () => {
     setIsExporting(true);
     try {
       exportAllCustomPresets('My Custom Themes');
-      setImportMessage({ type: 'success', text: 'All custom presets exported successfully!' });
+      setImportMessage({
+        type: 'success',
+        text: 'All custom presets exported successfully!',
+      });
     } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to export presets' 
+      setImportMessage({
+        type: 'error',
+        text:
+          error instanceof Error ? error.message : 'Failed to export presets',
       });
     } finally {
       setIsExporting(false);
@@ -122,8 +136,10 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   const handleExportPresetCollection = useCallback(async () => {
     setIsExporting(true);
     try {
-      const themes = customPresets.map(name => {
-        const preset = JSON.parse(localStorage.getItem('pokemon-custom-presets') || '{}')[name];
+      const themes = customPresets.map((name) => {
+        const preset = JSON.parse(
+          localStorage.getItem('pokemon-custom-presets') || '{}'
+        )[name];
         return {
           config: preset,
           name,
@@ -136,15 +152,21 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
         customPresetName || 'Custom Theme Collection',
         exportDescription || 'Collection of custom themes'
       );
-      
-      setImportMessage({ type: 'success', text: 'Theme collection exported successfully!' });
+
+      setImportMessage({
+        type: 'success',
+        text: 'Theme collection exported successfully!',
+      });
       setShowExportOptions(false);
       setCustomPresetName('');
       setExportDescription('');
     } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to export theme collection' 
+      setImportMessage({
+        type: 'error',
+        text:
+          error instanceof Error
+            ? error.message
+            : 'Failed to export theme collection',
       });
     } finally {
       setIsExporting(false);
@@ -155,117 +177,152 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   // IMPORT HANDLERS
   // ================================
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    handleImportTheme(file);
-  }, []);
-
-  const handleImportTheme = useCallback(async (file: File) => {
-    setIsImporting(true);
-    setImportMessage(null);
-
-    try {
-      // Validate file
-      const validation = validateThemeFile(file);
-      if (!validation.valid) {
-        setImportMessage({ type: 'error', text: validation.error || 'Invalid file' });
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) {
         return;
       }
 
-      // Import theme
-      const result = await importThemeFromFile(file);
-      
-      if (!result.success) {
-        setImportMessage({ type: 'error', text: result.error || 'Failed to import theme' });
-        return;
-      }
+      handleImportTheme(file);
+    },
+    []
+  );
 
-      // Handle single theme
-      if (result.importedTheme) {
-        // Apply the imported theme configuration
-        const importedConfig = result.importedTheme;
-        theme.setVisualTheme(importedConfig.visualTheme);
-        theme.setColorScheme(importedConfig.colorScheme);
-        theme.setDensity(importedConfig.density);
-        theme.setAnimationIntensity(importedConfig.animationIntensity);
-        theme.setPrimaryColor(importedConfig.primaryColor);
-        theme.setGlassmorphismIntensity(importedConfig.glassmorphismIntensity);
-        
-        if (importedConfig.highContrast !== theme.config.highContrast) {
-          theme.toggleHighContrast();
-        }
-        if (importedConfig.reducedMotion !== theme.config.reducedMotion) {
-          theme.toggleReducedMotion();
-        }
-        if (importedConfig.particleEffectsEnabled !== theme.config.particleEffectsEnabled) {
-          theme.toggleParticleEffects();
-        }
-        if (importedConfig.customCSSProperties) {
-          theme.setCustomProperties(importedConfig.customCSSProperties);
-        }
-        
-        setImportMessage({ 
-          type: 'success', 
-          text: `Theme "${result.metadata?.name}" imported and applied successfully!` 
-        });
-        onThemeImported?.(result.metadata?.name || 'Imported Theme');
-        setShowImportOptions(false);
-        return;
-      }
+  const handleImportTheme = useCallback(
+    async (file: File) => {
+      setIsImporting(true);
+      setImportMessage(null);
 
-      // Handle theme collection
-      if (result.importedThemes && result.importedThemes.length > 0) {
-        const collectionResult = await importAndSavePresetCollection(file);
-        if (collectionResult.success) {
-          setImportMessage({ 
-            type: 'success', 
-            text: `Imported ${collectionResult.importedCount} themes successfully!${collectionResult.skippedCount ? ` (${collectionResult.skippedCount} skipped)` : ''}` 
+      try {
+        // Validate file
+        const validation = validateThemeFile(file);
+        if (!validation.valid) {
+          setImportMessage({
+            type: 'error',
+            text: validation.error || 'Invalid file',
           });
-        } else {
-          setImportMessage({ type: 'error', text: collectionResult.error || 'Failed to import themes' });
+          return;
         }
-        setShowImportOptions(false);
-        return;
-      }
 
-      setImportMessage({ type: 'error', text: 'No valid theme data found in file' });
-    } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to import theme' 
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  }, [theme, onThemeImported]);
+        // Import theme
+        const result = await importThemeFromFile(file);
 
-  const handleImportAsPreset = useCallback(async (file: File, presetName: string) => {
-    setIsImporting(true);
-    setImportMessage(null);
+        if (!result.success) {
+          setImportMessage({
+            type: 'error',
+            text: result.error || 'Failed to import theme',
+          });
+          return;
+        }
 
-    try {
-      const result = await importAndSavePreset(file, presetName);
-      
-      if (result.success) {
-        setImportMessage({ 
-          type: 'success', 
-          text: `Theme saved as preset "${result.presetName}" successfully!` 
+        // Handle single theme
+        if (result.importedTheme) {
+          // Apply the imported theme configuration
+          const importedConfig = result.importedTheme;
+          theme.setVisualTheme(importedConfig.visualTheme);
+          theme.setColorScheme(importedConfig.colorScheme);
+          theme.setDensity(importedConfig.density);
+          theme.setAnimationIntensity(importedConfig.animationIntensity);
+          theme.setPrimaryColor(importedConfig.primaryColor);
+          theme.setGlassmorphismIntensity(
+            importedConfig.glassmorphismIntensity
+          );
+
+          if (importedConfig.highContrast !== theme.config.highContrast) {
+            theme.toggleHighContrast();
+          }
+          if (importedConfig.reducedMotion !== theme.config.reducedMotion) {
+            theme.toggleReducedMotion();
+          }
+          if (
+            importedConfig.particleEffectsEnabled !==
+            theme.config.particleEffectsEnabled
+          ) {
+            theme.toggleParticleEffects();
+          }
+          if (importedConfig.customCSSProperties) {
+            theme.setCustomProperties(importedConfig.customCSSProperties);
+          }
+
+          setImportMessage({
+            type: 'success',
+            text: `Theme "${result.metadata?.name}" imported and applied successfully!`,
+          });
+          onThemeImported?.(result.metadata?.name || 'Imported Theme');
+          setShowImportOptions(false);
+          return;
+        }
+
+        // Handle theme collection
+        if (result.importedThemes && result.importedThemes.length > 0) {
+          const collectionResult = await importAndSavePresetCollection(file);
+          if (collectionResult.success) {
+            setImportMessage({
+              type: 'success',
+              text: `Imported ${collectionResult.importedCount} themes successfully!${collectionResult.skippedCount ? ` (${collectionResult.skippedCount} skipped)` : ''}`,
+            });
+          } else {
+            setImportMessage({
+              type: 'error',
+              text: collectionResult.error || 'Failed to import themes',
+            });
+          }
+          setShowImportOptions(false);
+          return;
+        }
+
+        setImportMessage({
+          type: 'error',
+          text: 'No valid theme data found in file',
         });
-        setShowImportOptions(false);
-      } else {
-        setImportMessage({ type: 'error', text: result.error || 'Failed to import theme as preset' });
+      } catch (error) {
+        setImportMessage({
+          type: 'error',
+          text:
+            error instanceof Error ? error.message : 'Failed to import theme',
+        });
+      } finally {
+        setIsImporting(false);
       }
-    } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to import theme as preset' 
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  }, []);
+    },
+    [theme, onThemeImported]
+  );
+
+  const handleImportAsPreset = useCallback(
+    async (file: File, presetName: string) => {
+      setIsImporting(true);
+      setImportMessage(null);
+
+      try {
+        const result = await importAndSavePreset(file, presetName);
+
+        if (result.success) {
+          setImportMessage({
+            type: 'success',
+            text: `Theme saved as preset "${result.presetName}" successfully!`,
+          });
+          setShowImportOptions(false);
+        } else {
+          setImportMessage({
+            type: 'error',
+            text: result.error || 'Failed to import theme as preset',
+          });
+        }
+      } catch (error) {
+        setImportMessage({
+          type: 'error',
+          text:
+            error instanceof Error
+              ? error.message
+              : 'Failed to import theme as preset',
+        });
+      } finally {
+        setIsImporting(false);
+      }
+    },
+    []
+  );
 
   // ================================
   // BACKUP HANDLERS
@@ -274,39 +331,53 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   const handleCreateBackup = useCallback(() => {
     try {
       createThemeBackup(theme.config);
-      setImportMessage({ type: 'success', text: 'Theme backup created successfully!' });
+      setImportMessage({
+        type: 'success',
+        text: 'Theme backup created successfully!',
+      });
     } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to create backup' 
+      setImportMessage({
+        type: 'error',
+        text:
+          error instanceof Error ? error.message : 'Failed to create backup',
       });
     }
   }, [theme.config]);
 
-  const handleRestoreBackup = useCallback((backupIndex: number) => {
-    try {
-      const restoredConfig = restoreThemeFromBackup(backupIndex);
-      if (restoredConfig) {
-        // Apply restored configuration
-        Object.entries(restoredConfig).forEach(([key, value]) => {
-          if (key in theme) {
-            const setter = theme[`set${key.charAt(0).toUpperCase() + key.slice(1)}` as keyof typeof theme];
-            if (typeof setter === 'function') {
-              (setter as any)(value);
+  const handleRestoreBackup = useCallback(
+    (backupIndex: number) => {
+      try {
+        const restoredConfig = restoreThemeFromBackup(backupIndex);
+        if (restoredConfig) {
+          // Apply restored configuration
+          Object.entries(restoredConfig).forEach(([key, value]) => {
+            if (key in theme) {
+              const setter =
+                theme[
+                  `set${key.charAt(0).toUpperCase() + key.slice(1)}` as keyof typeof theme
+                ];
+              if (typeof setter === 'function') {
+                (setter as any)(value);
+              }
             }
-          }
+          });
+
+          setImportMessage({
+            type: 'success',
+            text: 'Theme restored from backup successfully!',
+          });
+          setShowBackups(false);
+        }
+      } catch (error) {
+        setImportMessage({
+          type: 'error',
+          text:
+            error instanceof Error ? error.message : 'Failed to restore backup',
         });
-        
-        setImportMessage({ type: 'success', text: 'Theme restored from backup successfully!' });
-        setShowBackups(false);
       }
-    } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to restore backup' 
-      });
-    }
-  }, [theme]);
+    },
+    [theme]
+  );
 
   // ================================
   // PRESET MANAGEMENT
@@ -315,11 +386,15 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   const handleDeletePreset = useCallback((presetName: string) => {
     try {
       deleteCustomPreset(presetName);
-      setImportMessage({ type: 'success', text: `Preset "${presetName}" deleted successfully!` });
+      setImportMessage({
+        type: 'success',
+        text: `Preset "${presetName}" deleted successfully!`,
+      });
     } catch (error) {
-      setImportMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to delete preset' 
+      setImportMessage({
+        type: 'error',
+        text:
+          error instanceof Error ? error.message : 'Failed to delete preset',
       });
     }
   }, []);
@@ -344,18 +419,28 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
     'focus:outline-none focus:ring-2 focus:ring-offset-2',
     'transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
     'border backdrop-blur-sm',
-    size === 'sm' ? 'px-3 py-1.5 text-sm' : size === 'lg' ? 'px-6 py-3 text-base' : 'px-4 py-2 text-sm'
+    size === 'sm'
+      ? 'px-3 py-1.5 text-sm'
+      : size === 'lg'
+        ? 'px-6 py-3 text-base'
+        : 'px-4 py-2 text-sm'
   );
 
   const primaryButtonClasses = cn(
     buttonBaseClasses,
     'bg-gradient-to-r text-white shadow-md hover:shadow-lg',
-    theme.config.primaryColor === 'purple' && 'from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 focus:ring-purple-500/50',
-    theme.config.primaryColor === 'blue' && 'from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:ring-blue-500/50',
-    theme.config.primaryColor === 'emerald' && 'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 focus:ring-emerald-500/50',
-    theme.config.primaryColor === 'amber' && 'from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:ring-amber-500/50',
-    theme.config.primaryColor === 'rose' && 'from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 focus:ring-rose-500/50',
-    theme.config.primaryColor === 'dark' && 'from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 focus:ring-cyan-500/50'
+    theme.config.primaryColor === 'purple' &&
+      'from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 focus:ring-purple-500/50',
+    theme.config.primaryColor === 'blue' &&
+      'from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:ring-blue-500/50',
+    theme.config.primaryColor === 'emerald' &&
+      'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 focus:ring-emerald-500/50',
+    theme.config.primaryColor === 'amber' &&
+      'from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:ring-amber-500/50',
+    theme.config.primaryColor === 'rose' &&
+      'from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 focus:ring-rose-500/50',
+    theme.config.primaryColor === 'dark' &&
+      'from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 focus:ring-cyan-500/50'
   );
 
   const secondaryButtonClasses = cn(
@@ -373,17 +458,21 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   // ================================
 
   return (
-    <div className={cn(
-      'bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/50 rounded-2xl',
-      'shadow-xl transition-all duration-300',
-      getSizeClasses(),
-      className
-    )}>
+    <div
+      className={cn(
+        'bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/50 rounded-2xl',
+        'shadow-xl transition-all duration-300',
+        getSizeClasses(),
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-zinc-100">Theme Manager</h3>
-          <p className="text-sm text-zinc-400">Export and import theme configurations</p>
+          <p className="text-sm text-zinc-400">
+            Export and import theme configurations
+          </p>
         </div>
         <div className="text-xs text-zinc-500 bg-zinc-800/50 px-2 py-1 rounded">
           {getThemeConfigSummary(theme.config)}
@@ -392,12 +481,14 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
 
       {/* Message Display */}
       {importMessage && (
-        <div className={cn(
-          'p-3 rounded-lg border mb-4',
-          importMessage.type === 'success' 
-            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-            : 'bg-red-500/10 border-red-500/20 text-red-400'
-        )}>
+        <div
+          className={cn(
+            'p-3 rounded-lg border mb-4',
+            importMessage.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              : 'bg-red-500/10 border-red-500/20 text-red-400'
+          )}
+        >
           {importMessage.text}
         </div>
       )}
@@ -418,7 +509,9 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
           <div className="space-y-4 p-4 bg-zinc-800/30 rounded-xl border border-zinc-700/30">
             {/* Export Current Theme */}
             <div className="space-y-3">
-              <h5 className="text-sm font-medium text-zinc-300">Export Current Theme</h5>
+              <h5 className="text-sm font-medium text-zinc-300">
+                Export Current Theme
+              </h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input
                   type="text"
@@ -447,7 +540,9 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
             {/* Export All Presets */}
             {customPresets.length > 0 && (
               <div className="space-y-3 pt-4 border-t border-zinc-700/30">
-                <h5 className="text-sm font-medium text-zinc-300">Export Custom Presets</h5>
+                <h5 className="text-sm font-medium text-zinc-300">
+                  Export Custom Presets
+                </h5>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleExportAllPresets}
@@ -488,11 +583,13 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
         {showImportOptions && (
           <div className="space-y-4 p-4 bg-zinc-800/30 rounded-xl border border-zinc-700/30">
             <div className="space-y-3">
-              <h5 className="text-sm font-medium text-zinc-300">Import Theme File</h5>
+              <h5 className="text-sm font-medium text-zinc-300">
+                Import Theme File
+              </h5>
               <p className="text-xs text-zinc-500">
                 Import a single theme or theme collection JSON file
               </p>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -500,7 +597,7 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              
+
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => fileInputRef.current?.click()}
@@ -509,7 +606,7 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
                 >
                   {isImporting ? 'Importing...' : 'Choose Theme File'}
                 </button>
-                
+
                 <button
                   onClick={handleCreateBackup}
                   className={secondaryButtonClasses}
@@ -531,7 +628,9 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
               onClick={() => setShowBackups(!showBackups)}
               className={secondaryButtonClasses}
             >
-              {showBackups ? 'Hide Backups' : `Show Backups (${themeBackups.length})`}
+              {showBackups
+                ? 'Hide Backups'
+                : `Show Backups (${themeBackups.length})`}
             </button>
           </div>
 
@@ -543,9 +642,13 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
                   className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/30"
                 >
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-zinc-200">{backup.metadata.name}</p>
+                    <p className="text-sm font-medium text-zinc-200">
+                      {backup.metadata.name}
+                    </p>
                     <p className="text-xs text-zinc-400">
-                      {new Date(backup.metadata.exportDate).toLocaleDateString()}
+                      {new Date(
+                        backup.metadata.exportDate
+                      ).toLocaleDateString()}
                     </p>
                     <p className="text-xs text-zinc-500">
                       {getThemeConfigSummary(backup.configuration)}
@@ -554,7 +657,10 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleRestoreBackup(index)}
-                      className={cn(buttonBaseClasses, 'px-3 py-1 text-xs border-emerald-500/50 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40')}
+                      className={cn(
+                        buttonBaseClasses,
+                        'px-3 py-1 text-xs border-emerald-500/50 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40'
+                      )}
                     >
                       Restore
                     </button>
@@ -576,17 +682,26 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
                 key={presetName}
                 className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/30"
               >
-                <span className="text-sm text-zinc-200 truncate">{presetName}</span>
+                <span className="text-sm text-zinc-200 truncate">
+                  {presetName}
+                </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => theme.loadCustomPreset(presetName)}
-                    className={cn(buttonBaseClasses, 'px-3 py-1 text-xs border-cyan-500/50 bg-cyan-600/20 text-cyan-400 hover:bg-cyan-600/40')}
+                    className={cn(
+                      buttonBaseClasses,
+                      'px-3 py-1 text-xs border-cyan-500/50 bg-cyan-600/20 text-cyan-400 hover:bg-cyan-600/40'
+                    )}
                   >
                     Load
                   </button>
                   <button
                     onClick={() => handleDeletePreset(presetName)}
-                    className={cn(buttonBaseClasses, 'px-3 py-1 text-xs', dangerButtonClasses)}
+                    className={cn(
+                      buttonBaseClasses,
+                      'px-3 py-1 text-xs',
+                      dangerButtonClasses
+                    )}
                   >
                     Delete
                   </button>
@@ -604,11 +719,26 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
             Instructions & Tips
           </summary>
           <div className="mt-3 space-y-2 text-xs text-zinc-400">
-            <p><strong>Export:</strong> Save your current theme or all custom presets as JSON files</p>
-            <p><strong>Import:</strong> Load theme files to apply immediately or save as presets</p>
-            <p><strong>Backups:</strong> Automatic backups are created before major changes</p>
-            <p><strong>File Format:</strong> Only JSON files (.json) are supported</p>
-            <p><strong>Compatibility:</strong> Themes are version-checked for compatibility</p>
+            <p>
+              <strong>Export:</strong> Save your current theme or all custom
+              presets as JSON files
+            </p>
+            <p>
+              <strong>Import:</strong> Load theme files to apply immediately or
+              save as presets
+            </p>
+            <p>
+              <strong>Backups:</strong> Automatic backups are created before
+              major changes
+            </p>
+            <p>
+              <strong>File Format:</strong> Only JSON files (.json) are
+              supported
+            </p>
+            <p>
+              <strong>Compatibility:</strong> Themes are version-checked for
+              compatibility
+            </p>
           </div>
         </details>
       </div>

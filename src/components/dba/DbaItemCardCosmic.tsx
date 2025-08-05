@@ -66,9 +66,7 @@ const DbaItemCardCosmic: React.FC<DbaItemCardCosmicProps> = ({
         ) : (
           <div
             className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-              isSelected
-                ? 'bg-cyan-500 border-cyan-500'
-                : 'border-slate-300'
+              isSelected ? 'bg-cyan-500 border-cyan-500' : 'border-slate-300'
             }`}
           >
             {isSelected && <CheckCircle className="w-3 h-3 text-white" />}

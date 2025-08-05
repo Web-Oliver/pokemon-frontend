@@ -1,13 +1,13 @@
 /**
  * Enhanced ClassName Utilities
  * Phase 1.2.2: Advanced className generation and theme integration
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: ClassName generation and management only
  * - Open/Closed: Extensible for new className patterns
  * - DRY: Centralized className logic across all components
  * - Interface Segregation: Specific utilities for different use cases
- * 
+ *
  * Integrates with:
  * - themeUtils.ts for base cn() utility
  * - ThemeContext.tsx for theme-aware class generation
@@ -16,13 +16,17 @@
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { 
-  ComponentSize, 
-  ComponentVariant, 
+import {
+  ComponentSize,
+  ComponentVariant,
   ComponentState,
-  BaseThemeProps 
+  BaseThemeProps,
 } from '../types/themeTypes';
-import { VisualTheme, Density, AnimationIntensity } from '../contexts/ThemeContext';
+import {
+  VisualTheme,
+  Density,
+  AnimationIntensity,
+} from '../contexts/ThemeContext';
 
 // ================================
 // ENHANCED CLASSNAME UTILITIES
@@ -40,7 +44,11 @@ export function cn(...inputs: ClassValue[]): string {
  * Conditional className utility
  * Apply classes based on boolean conditions
  */
-export function cva(condition: boolean, trueClasses: string, falseClasses: string = ''): string {
+export function cva(
+  condition: boolean,
+  trueClasses: string,
+  falseClasses: string = ''
+): string {
   return condition ? trueClasses : falseClasses;
 }
 
@@ -69,14 +77,26 @@ export function responsive(config: {
   '2xl'?: string;
 }): string {
   const classes: string[] = [];
-  
-  if (config.base) classes.push(config.base);
-  if (config.sm) classes.push(`sm:${config.sm}`);
-  if (config.md) classes.push(`md:${config.md}`);
-  if (config.lg) classes.push(`lg:${config.lg}`);
-  if (config.xl) classes.push(`xl:${config.xl}`);
-  if (config['2xl']) classes.push(`2xl:${config['2xl']}`);
-  
+
+  if (config.base) {
+    classes.push(config.base);
+  }
+  if (config.sm) {
+    classes.push(`sm:${config.sm}`);
+  }
+  if (config.md) {
+    classes.push(`md:${config.md}`);
+  }
+  if (config.lg) {
+    classes.push(`lg:${config.lg}`);
+  }
+  if (config.xl) {
+    classes.push(`xl:${config.xl}`);
+  }
+  if (config['2xl']) {
+    classes.push(`2xl:${config['2xl']}`);
+  }
+
   return cn(...classes);
 }
 
@@ -84,7 +104,10 @@ export function responsive(config: {
  * State-based className utility
  * Generate classes based on component state
  */
-export function stateClasses(state: ComponentState, variants: Partial<Record<ComponentState, string>>): string {
+export function stateClasses(
+  state: ComponentState,
+  variants: Partial<Record<ComponentState, string>>
+): string {
   return variants[state] || '';
 }
 
@@ -166,16 +189,18 @@ export function themeAware(config: {
 }): string {
   const classes: string[] = [];
 
-  if (config.base) classes.push(config.base);
-  
+  if (config.base) {
+    classes.push(config.base);
+  }
+
   if (config.currentTheme && config.theme?.[config.currentTheme]) {
     classes.push(config.theme[config.currentTheme]);
   }
-  
+
   if (config.currentDensity && config.density?.[config.currentDensity]) {
     classes.push(config.density[config.currentDensity]);
   }
-  
+
   if (config.currentAnimation && config.animation?.[config.currentAnimation]) {
     classes.push(config.animation[config.currentAnimation]);
   }
@@ -192,7 +217,7 @@ export function glassmorphism(
   variant: 'primary' | 'secondary' | 'accent' = 'primary'
 ): string {
   const baseClasses = 'backdrop-blur-theme border';
-  
+
   const variantClasses = {
     primary: 'bg-glass-primary border-glass-border-light',
     secondary: 'bg-glass-secondary border-glass-border-medium',
@@ -200,8 +225,9 @@ export function glassmorphism(
   };
 
   // Intensity-based modifications
-  const intensityModifier = intensity > 50 ? 'shadow-theme-primary' : 'shadow-sm';
-  
+  const intensityModifier =
+    intensity > 50 ? 'shadow-theme-primary' : 'shadow-sm';
+
   return cn(baseClasses, variantClasses[variant], intensityModifier);
 }
 
@@ -213,7 +239,9 @@ export function animationClasses(
   intensity: AnimationIntensity,
   type: 'hover' | 'focus' | 'active' | 'entrance' = 'hover'
 ): string {
-  if (intensity === 'disabled') return '';
+  if (intensity === 'disabled') {
+    return '';
+  }
 
   const animationMap = {
     subtle: {
@@ -252,10 +280,7 @@ export function colorSchemeClasses(
     return resolved === 'light' ? lightClasses : darkClasses;
   }
 
-  return cn(
-    `light:${lightClasses}`,
-    `dark:${darkClasses}`
-  );
+  return cn(`light:${lightClasses}`, `dark:${darkClasses}`);
 }
 
 // ================================
@@ -271,7 +296,7 @@ export function focusRing(
   intensity: 'light' | 'normal' | 'heavy' = 'normal'
 ): string {
   const baseClasses = 'focus-visible:outline-none focus-visible:ring-offset-2';
-  
+
   const intensityClasses = {
     light: 'focus-visible:ring-1',
     normal: 'focus-visible:ring-2',
@@ -302,7 +327,9 @@ export function hoverEffect(
   type: 'lift' | 'scale' | 'glow' | 'rotate' | 'slide' = 'scale',
   intensity: AnimationIntensity = 'normal'
 ): string {
-  if (intensity === 'disabled') return '';
+  if (intensity === 'disabled') {
+    return '';
+  }
 
   const effectMap = {
     subtle: {
@@ -329,7 +356,7 @@ export function hoverEffect(
   };
 
   const baseTransition = 'transition-all duration-theme-normal';
-  
+
   return cn(baseTransition, effectMap[intensity][type]);
 }
 
@@ -341,7 +368,9 @@ export function loadingClasses(
   isLoading: boolean,
   type: 'spinner' | 'pulse' | 'shimmer' = 'pulse'
 ): string {
-  if (!isLoading) return '';
+  if (!isLoading) {
+    return '';
+  }
 
   const loadingMap = {
     spinner: 'animate-spin',
@@ -357,8 +386,10 @@ export function loadingClasses(
  * Generate consistent disabled styling
  */
 export function disabledClasses(isDisabled: boolean): string {
-  if (!isDisabled) return '';
-  
+  if (!isDisabled) {
+    return '';
+  }
+
   return cn(
     'opacity-50',
     'cursor-not-allowed',
@@ -372,8 +403,10 @@ export function disabledClasses(isDisabled: boolean): string {
  * Generate error styling that respects theme
  */
 export function errorClasses(hasError: boolean): string {
-  if (!hasError) return '';
-  
+  if (!hasError) {
+    return '';
+  }
+
   return cn(
     'border-red-500',
     'bg-red-500/5',
@@ -413,30 +446,32 @@ export function buttonClasses(config: {
     'inline-flex items-center justify-center font-semibold rounded-2xl',
     'transition-all duration-theme-normal',
     'relative overflow-hidden',
-    
+
     // Size classes
     sizeClasses(size, 'padding'),
     sizeClasses(size, 'text'),
-    
+
     // Variant classes
     variantClasses(variant, {
-      primary: 'bg-theme-primary hover:bg-theme-primary-hover text-white shadow-theme-primary',
+      primary:
+        'bg-theme-primary hover:bg-theme-primary-hover text-white shadow-theme-primary',
       secondary: 'bg-zinc-700 hover:bg-zinc-800 text-zinc-100',
       success: 'bg-emerald-600 hover:bg-emerald-700 text-white',
       warning: 'bg-amber-600 hover:bg-amber-700 text-white',
       danger: 'bg-red-600 hover:bg-red-700 text-white',
-      outline: 'border-2 border-theme-border-primary text-theme-primary hover:bg-theme-primary hover:text-white',
+      outline:
+        'border-2 border-theme-border-primary text-theme-primary hover:bg-theme-primary hover:text-white',
       ghost: 'text-theme-primary hover:bg-theme-primary/10',
       glass: glassmorphism(80, 'primary'),
     }),
-    
+
     // Focus ring
     focusRing(variant),
-    
+
     // Animation effects
     animationClasses(animationIntensity, 'hover'),
     animationClasses(animationIntensity, 'active'),
-    
+
     // State classes
     cva(fullWidth, 'w-full'),
     loadingClasses(loading),
@@ -471,14 +506,14 @@ export function inputClasses(config: {
     'placeholder-zinc-400 text-zinc-100 font-medium',
     'transition-all duration-theme-normal',
     'shadow-theme-primary hover:shadow-theme-hover focus:shadow-theme-hover',
-    
+
     // Size classes
     sizeClasses(size, 'padding'),
     sizeClasses(size, 'text'),
-    
+
     // Focus ring
     focusRing(variant),
-    
+
     // State classes
     cva(fullWidth, 'w-full'),
     errorClasses(hasError),
@@ -508,10 +543,10 @@ export function cardClasses(config: {
     // Base card classes
     'rounded-3xl backdrop-blur-theme transition-all duration-theme-normal',
     'overflow-hidden relative',
-    
+
     // Size classes
     sizeClasses(size, 'padding'),
-    
+
     // Variant classes
     variantClasses(variant, {
       primary: glassmorphism(80, 'primary'),
@@ -519,7 +554,7 @@ export function cardClasses(config: {
       glass: glassmorphism(90, 'primary'),
       minimal: 'bg-white border border-gray-200 shadow-minimal',
     }),
-    
+
     // Interactive effects
     cva(
       interactive,

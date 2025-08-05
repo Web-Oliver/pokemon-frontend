@@ -178,7 +178,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       showSuccessToast('Item removed from auction');
       setShowRemoveItemConfirmation(false);
       setItemToRemove(null);
-    } catch (err) {
+    } catch {
       // Error handled by the hook
     } finally {
       setRemovingItem(false);
@@ -438,7 +438,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm text-[var(--theme-status-error)] font-medium">{error}</p>
+                  <p className="text-sm text-[var(--theme-status-error)] font-medium">
+                    {error}
+                  </p>
                 </div>
                 <div className="ml-auto pl-3">
                   <button

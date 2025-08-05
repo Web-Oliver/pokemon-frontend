@@ -71,7 +71,10 @@ export interface DbaSelectionParams {
 /**
  * DBA selection creation payload interface
  */
-type IDbaSelectionCreatePayload = Omit<DbaSelection, 'id' | '_id' | 'createdAt' | 'updatedAt'>;
+type IDbaSelectionCreatePayload = Omit<
+  DbaSelection,
+  'id' | '_id' | 'createdAt' | 'updatedAt'
+>;
 
 /**
  * DBA selection update payload interface

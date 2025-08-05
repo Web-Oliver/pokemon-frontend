@@ -597,7 +597,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
         </div>
 
         {/* Context7 Optimized Styles */}
-        <style jsx="true">{`
+        <style>{`
           .scrollbar-thin::-webkit-scrollbar {
             width: 4px;
           }

@@ -1,10 +1,10 @@
 /**
  * SetProduct API Service Interface
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * NEWLY CREATED: Interface for SetProduct operations
  * Follows Dependency Inversion Principle - defines abstractions for SetProduct operations
- * 
+ *
  * Following CLAUDE.md principles:
  * - ISP: Interface segregation for SetProduct-specific operations
  * - DIP: High-level modules depend on abstractions
@@ -32,11 +32,16 @@ export interface ISetProductApiService {
   // Read operations
   getSetProducts(filters?: SetProductFilters): Promise<ISetProduct[]>;
   getSetProductById(id: string): Promise<ISetProduct>;
-  getSetProductByUniqueId(uniqueSetProductId: number): Promise<ISetProduct | null>;
+  getSetProductByUniqueId(
+    uniqueSetProductId: number
+  ): Promise<ISetProduct | null>;
 
   // Search operations (for hierarchical autocomplete)
   searchSetProducts(query: string, limit?: number): Promise<ISetProduct[]>;
-  getSetProductSuggestions(query: string, limit?: number): Promise<ISetProduct[]>;
+  getSetProductSuggestions(
+    query: string,
+    limit?: number
+  ): Promise<ISetProduct[]>;
   getBestMatchSetProduct(query: string): Promise<ISetProduct | null>;
 
   // No write operations - SetProducts are read-only reference data

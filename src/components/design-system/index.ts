@@ -1,7 +1,7 @@
 /**
  * Pokemon Collection Design System - The Complete Component Library
  * Consolidates ALL UI patterns into solid, DRY, reusable components
- * 
+ *
  * Following CLAUDE.md layered architecture:
  * - Layer 3: Components (UI Building Blocks)
  * - Single source of truth for ALL UI components
@@ -23,7 +23,10 @@ export { PokemonSelect } from './PokemonSelect';
 export type { PokemonSelectProps, SelectOption } from './PokemonSelect';
 
 export { PokemonModal, PokemonConfirmModal } from './PokemonModal';
-export type { PokemonModalProps, PokemonConfirmModalProps } from './PokemonModal';
+export type {
+  PokemonModalProps,
+  PokemonConfirmModalProps,
+} from './PokemonModal';
 
 // Specialized Components
 export { PokemonBadge } from './PokemonBadge';

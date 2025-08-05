@@ -1,13 +1,13 @@
 /**
  * Accessibility Theme Hook
  * Phase 3.2.2: Accessibility theme features ONLY
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Accessibility theme management only
  * - Open/Closed: Extensible for new accessibility patterns
  * - DRY: Centralized accessibility theme logic
  * - Dependency Inversion: Abstracts accessibility implementation
- * 
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme state management
  * - useThemeSwitch.ts for theme switching utilities
@@ -67,15 +67,23 @@ export interface AccessibilityThemeActions {
   /** Toggle reduced motion mode */
   toggleReducedMotion: () => void;
   /** Set high contrast with custom options */
-  setHighContrast: (enabled: boolean, overrides?: AccessibilityThemeConfig['highContrastOverrides']) => void;
+  setHighContrast: (
+    enabled: boolean,
+    overrides?: AccessibilityThemeConfig['highContrastOverrides']
+  ) => void;
   /** Set reduced motion with custom options */
-  setReducedMotion: (enabled: boolean, overrides?: AccessibilityThemeConfig['reducedMotionOverrides']) => void;
+  setReducedMotion: (
+    enabled: boolean,
+    overrides?: AccessibilityThemeConfig['reducedMotionOverrides']
+  ) => void;
   /** Sync with system preferences */
   syncWithSystemPreferences: () => void;
   /** Reset accessibility settings */
   resetAccessibilitySettings: () => void;
   /** Apply accessibility preset */
-  applyAccessibilityPreset: (preset: 'maximum' | 'moderate' | 'minimal' | 'off') => void;
+  applyAccessibilityPreset: (
+    preset: 'maximum' | 'moderate' | 'minimal' | 'off'
+  ) => void;
 }
 
 export interface AccessibilityThemeState {
@@ -105,8 +113,10 @@ function useAccessibilityTheme(
   config: AccessibilityThemeConfig = {}
 ): AccessibilityThemeState & AccessibilityThemeActions {
   const theme = useTheme();
-  const [systemPreferences, setSystemPreferences] = useState<AccessibilitySystemPreferences | null>(null);
-  const [accessibilityConfig, setAccessibilityConfig] = useState<AccessibilityThemeConfig>(config);
+  const [systemPreferences, setSystemPreferences] =
+    useState<AccessibilitySystemPreferences | null>(null);
+  const [accessibilityConfig, setAccessibilityConfig] =
+    useState<AccessibilityThemeConfig>(config);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   // ================================
@@ -114,19 +124,28 @@ function useAccessibilityTheme(
   // ================================
 
   useEffect(() => {
-    if (!config.autoDetectPreferences) return;
+    if (!config.autoDetectPreferences) {
+      return;
+    }
 
     const detectSystemPreferences = () => {
       const preferences: AccessibilitySystemPreferences = {
-        prefersHighContrast: window.matchMedia('(prefers-contrast: high)').matches,
-        prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        prefersColorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches 
-          ? 'dark' 
-          : window.matchMedia('(prefers-color-scheme: light)').matches 
-            ? 'light' 
+        prefersHighContrast: window.matchMedia('(prefers-contrast: high)')
+          .matches,
+        prefersReducedMotion: window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches,
+        prefersColorScheme: window.matchMedia('(prefers-color-scheme: dark)')
+          .matches
+          ? 'dark'
+          : window.matchMedia('(prefers-color-scheme: light)').matches
+            ? 'light'
             : 'no-preference',
-        prefersReducedTransparency: window.matchMedia('(prefers-reduced-transparency: reduce)').matches,
-        prefersReducedData: window.matchMedia('(prefers-reduced-data: reduce)').matches,
+        prefersReducedTransparency: window.matchMedia(
+          '(prefers-reduced-transparency: reduce)'
+        ).matches,
+        prefersReducedData: window.matchMedia('(prefers-reduced-data: reduce)')
+          .matches,
       };
 
       setSystemPreferences(preferences);
@@ -138,12 +157,30 @@ function useAccessibilityTheme(
 
     // Set up media query listeners
     const mediaQueries = [
-      { query: '(prefers-contrast: high)', handler: () => detectSystemPreferences() },
-      { query: '(prefers-reduced-motion: reduce)', handler: () => detectSystemPreferences() },
-      { query: '(prefers-color-scheme: dark)', handler: () => detectSystemPreferences() },
-      { query: '(prefers-color-scheme: light)', handler: () => detectSystemPreferences() },
-      { query: '(prefers-reduced-transparency: reduce)', handler: () => detectSystemPreferences() },
-      { query: '(prefers-reduced-data: reduce)', handler: () => detectSystemPreferences() },
+      {
+        query: '(prefers-contrast: high)',
+        handler: () => detectSystemPreferences(),
+      },
+      {
+        query: '(prefers-reduced-motion: reduce)',
+        handler: () => detectSystemPreferences(),
+      },
+      {
+        query: '(prefers-color-scheme: dark)',
+        handler: () => detectSystemPreferences(),
+      },
+      {
+        query: '(prefers-color-scheme: light)',
+        handler: () => detectSystemPreferences(),
+      },
+      {
+        query: '(prefers-reduced-transparency: reduce)',
+        handler: () => detectSystemPreferences(),
+      },
+      {
+        query: '(prefers-reduced-data: reduce)',
+        handler: () => detectSystemPreferences(),
+      },
     ];
 
     const mediaQueryLists = mediaQueries.map(({ query, handler }) => {
@@ -156,7 +193,10 @@ function useAccessibilityTheme(
     if (initialPreferences.prefersHighContrast && !theme.config.highContrast) {
       theme.toggleHighContrast();
     }
-    if (initialPreferences.prefersReducedMotion && !theme.config.reducedMotion) {
+    if (
+      initialPreferences.prefersReducedMotion &&
+      !theme.config.reducedMotion
+    ) {
       theme.toggleReducedMotion();
     }
 
@@ -172,11 +212,15 @@ function useAccessibilityTheme(
   // ================================
 
   useEffect(() => {
-    if (!config.enableKeyboardShortcuts) return;
+    if (!config.enableKeyboardShortcuts) {
+      return;
+    }
 
     const handleKeyPress = (event: KeyboardEvent) => {
       // Only activate with Ctrl/Cmd + Alt modifier for accessibility shortcuts
-      if (!(event.ctrlKey || event.metaKey) || !event.altKey) return;
+      if (!(event.ctrlKey || event.metaKey) || !event.altKey) {
+        return;
+      }
 
       switch (event.key.toLowerCase()) {
         case 'c':
@@ -211,7 +255,9 @@ function useAccessibilityTheme(
   // ================================
 
   const manageFocus = useCallback(() => {
-    if (!config.focusManagement?.restoreFocus) return;
+    if (!config.focusManagement?.restoreFocus) {
+      return;
+    }
 
     // Store current focused element
     if (document.activeElement && document.activeElement !== document.body) {
@@ -220,7 +266,9 @@ function useAccessibilityTheme(
   }, [config.focusManagement?.restoreFocus]);
 
   const restoreFocus = useCallback(() => {
-    if (!config.focusManagement?.restoreFocus || !previousFocusRef.current) return;
+    if (!config.focusManagement?.restoreFocus || !previousFocusRef.current) {
+      return;
+    }
 
     try {
       previousFocusRef.current.focus();
@@ -244,44 +292,52 @@ function useAccessibilityTheme(
     manageFocus();
   }, [theme, manageFocus]);
 
-  const setHighContrast = useCallback((
-    enabled: boolean, 
-    overrides?: AccessibilityThemeConfig['highContrastOverrides']
-  ) => {
-    if (enabled !== theme.config.highContrast) {
-      theme.toggleHighContrast();
-    }
-    
-    if (overrides) {
-      setAccessibilityConfig(prev => ({
-        ...prev,
-        highContrastOverrides: overrides,
-      }));
-    }
-    
-    manageFocus();
-  }, [theme, manageFocus]);
+  const setHighContrast = useCallback(
+    (
+      enabled: boolean,
+      overrides?: AccessibilityThemeConfig['highContrastOverrides']
+    ) => {
+      if (enabled !== theme.config.highContrast) {
+        theme.toggleHighContrast();
+      }
 
-  const setReducedMotion = useCallback((
-    enabled: boolean,
-    overrides?: AccessibilityThemeConfig['reducedMotionOverrides']
-  ) => {
-    if (enabled !== theme.config.reducedMotion) {
-      theme.toggleReducedMotion();
-    }
-    
-    if (overrides) {
-      setAccessibilityConfig(prev => ({
-        ...prev,
-        reducedMotionOverrides: overrides,
-      }));
-    }
-    
-    manageFocus();
-  }, [theme, manageFocus]);
+      if (overrides) {
+        setAccessibilityConfig((prev) => ({
+          ...prev,
+          highContrastOverrides: overrides,
+        }));
+      }
+
+      manageFocus();
+    },
+    [theme, manageFocus]
+  );
+
+  const setReducedMotion = useCallback(
+    (
+      enabled: boolean,
+      overrides?: AccessibilityThemeConfig['reducedMotionOverrides']
+    ) => {
+      if (enabled !== theme.config.reducedMotion) {
+        theme.toggleReducedMotion();
+      }
+
+      if (overrides) {
+        setAccessibilityConfig((prev) => ({
+          ...prev,
+          reducedMotionOverrides: overrides,
+        }));
+      }
+
+      manageFocus();
+    },
+    [theme, manageFocus]
+  );
 
   const syncWithSystemPreferences = useCallback(() => {
-    if (!systemPreferences) return;
+    if (!systemPreferences) {
+      return;
+    }
 
     let changes = false;
 
@@ -289,74 +345,83 @@ function useAccessibilityTheme(
       theme.toggleHighContrast();
       changes = true;
     }
-    
+
     if (systemPreferences.prefersReducedMotion && !theme.config.reducedMotion) {
       theme.toggleReducedMotion();
       changes = true;
     }
 
     if (changes) {
-      announceAccessibilityChange('Synced with system accessibility preferences');
+      announceAccessibilityChange(
+        'Synced with system accessibility preferences'
+      );
     }
   }, [systemPreferences, theme]);
 
   const resetAccessibilitySettings = useCallback(() => {
-    if (theme.config.highContrast) theme.toggleHighContrast();
-    if (theme.config.reducedMotion) theme.toggleReducedMotion();
-    
+    if (theme.config.highContrast) {
+      theme.toggleHighContrast();
+    }
+    if (theme.config.reducedMotion) {
+      theme.toggleReducedMotion();
+    }
+
     setAccessibilityConfig({
       autoDetectPreferences: true,
       enableKeyboardShortcuts: true,
     });
-    
+
     announceAccessibilityChange('Accessibility settings reset to defaults');
     manageFocus();
   }, [theme, manageFocus]);
 
-  const applyAccessibilityPreset = useCallback((preset: 'maximum' | 'moderate' | 'minimal' | 'off') => {
-    switch (preset) {
-      case 'maximum':
-        setHighContrast(true, {
-          background: '#000000',
-          text: '#ffffff',
-          border: '#ffffff',
-          accent: '#ffff00',
-        });
-        setReducedMotion(true, {
-          disableTransitions: true,
-          disableAnimations: true,
-          disableParallax: true,
-          disableAutoplay: true,
-        });
-        break;
-        
-      case 'moderate':
-        setHighContrast(true);
-        setReducedMotion(true, {
-          disableTransitions: false,
-          disableAnimations: true,
-          disableParallax: true,
-          disableAutoplay: false,
-        });
-        break;
-        
-      case 'minimal':
-        setHighContrast(false);
-        setReducedMotion(true, {
-          disableTransitions: false,
-          disableAnimations: false,
-          disableParallax: true,
-          disableAutoplay: true,
-        });
-        break;
-        
-      case 'off':
-        resetAccessibilitySettings();
-        break;
-    }
-    
-    announceAccessibilityChange(`Applied ${preset} accessibility preset`);
-  }, [setHighContrast, setReducedMotion, resetAccessibilitySettings]);
+  const applyAccessibilityPreset = useCallback(
+    (preset: 'maximum' | 'moderate' | 'minimal' | 'off') => {
+      switch (preset) {
+        case 'maximum':
+          setHighContrast(true, {
+            background: '#000000',
+            text: '#ffffff',
+            border: '#ffffff',
+            accent: '#ffff00',
+          });
+          setReducedMotion(true, {
+            disableTransitions: true,
+            disableAnimations: true,
+            disableParallax: true,
+            disableAutoplay: true,
+          });
+          break;
+
+        case 'moderate':
+          setHighContrast(true);
+          setReducedMotion(true, {
+            disableTransitions: false,
+            disableAnimations: true,
+            disableParallax: true,
+            disableAutoplay: false,
+          });
+          break;
+
+        case 'minimal':
+          setHighContrast(false);
+          setReducedMotion(true, {
+            disableTransitions: false,
+            disableAnimations: false,
+            disableParallax: true,
+            disableAutoplay: true,
+          });
+          break;
+
+        case 'off':
+          resetAccessibilitySettings();
+          break;
+      }
+
+      announceAccessibilityChange(`Applied ${preset} accessibility preset`);
+    },
+    [setHighContrast, setReducedMotion, resetAccessibilitySettings]
+  );
 
   // ================================
   // ACCESSIBILITY ANNOUNCEMENTS
@@ -369,9 +434,9 @@ function useAccessibilityTheme(
     announcement.setAttribute('aria-atomic', 'true');
     announcement.className = 'sr-only';
     announcement.textContent = message;
-    
+
     document.body.appendChild(announcement);
-    
+
     // Remove the announcement after a delay
     setTimeout(() => {
       if (announcement.parentNode) {
@@ -384,10 +449,13 @@ function useAccessibilityTheme(
   // DERIVED STATE
   // ================================
 
-  const isAccessibilityModeActive = theme.config.highContrast || theme.config.reducedMotion;
+  const isAccessibilityModeActive =
+    theme.config.highContrast || theme.config.reducedMotion;
   const isHighContrastActive = theme.config.highContrast;
   const isReducedMotionActive = theme.config.reducedMotion;
-  const isFocusManagementActive = Boolean(config.focusManagement?.trapFocus || config.focusManagement?.restoreFocus);
+  const isFocusManagementActive = Boolean(
+    config.focusManagement?.trapFocus || config.focusManagement?.restoreFocus
+  );
 
   return {
     // State
@@ -438,10 +506,12 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
 
   // Monitor system high contrast preference
   useEffect(() => {
-    if (!config.autoApply) return;
+    if (!config.autoApply) {
+      return;
+    }
 
     const contrastQuery = window.matchMedia('(prefers-contrast: high)');
-    
+
     const handleContrastChange = () => {
       if (contrastQuery.matches && !theme.config.highContrast) {
         theme.toggleHighContrast();
@@ -451,13 +521,14 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
     handleContrastChange(); // Initial check
     contrastQuery.addEventListener('change', handleContrastChange);
 
-    return () => contrastQuery.removeEventListener('change', handleContrastChange);
+    return () =>
+      contrastQuery.removeEventListener('change', handleContrastChange);
   }, [config.autoApply, theme]);
 
   const adjustIntensity = useCallback((newIntensity: number) => {
     const clampedIntensity = Math.max(1, Math.min(10, newIntensity));
     setIntensity(clampedIntensity);
-    
+
     // Update CSS custom property
     if (typeof document !== 'undefined') {
       document.documentElement.style.setProperty(
@@ -467,24 +538,27 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
     }
   }, []);
 
-  const updateColorOverrides = useCallback((overrides: HighContrastConfig['colorOverrides']) => {
-    setColorOverrides(overrides);
-    
-    if (typeof document !== 'undefined' && overrides) {
-      const root = document.documentElement;
-      
-      Object.entries(overrides).forEach(([key, value]) => {
-        if (value) {
-          root.style.setProperty(`--accessibility-hc-${key}`, value);
-        }
-      });
-    }
-  }, []);
+  const updateColorOverrides = useCallback(
+    (overrides: HighContrastConfig['colorOverrides']) => {
+      setColorOverrides(overrides);
+
+      if (typeof document !== 'undefined' && overrides) {
+        const root = document.documentElement;
+
+        Object.entries(overrides).forEach(([key, value]) => {
+          if (value) {
+            root.style.setProperty(`--accessibility-hc-${key}`, value);
+          }
+        });
+      }
+    },
+    []
+  );
 
   const resetHighContrast = useCallback(() => {
     setIntensity(5);
     setColorOverrides(undefined);
-    
+
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.style.removeProperty('--accessibility-contrast-intensity');
@@ -530,20 +604,26 @@ export interface ReducedMotionConfig {
  */
 function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
   const theme = useTheme();
-  const [sensitivityLevel, setSensitivityLevel] = useState(config.sensitivityLevel || 3);
-  const [motionPreferences, setMotionPreferences] = useState(config.motionPreferences || {
-    allowEssentialMotion: true,
-    allowHoverEffects: false,
-    allowFocusEffects: true,
-    allowScrollAnimations: false,
-  });
+  const [sensitivityLevel, setSensitivityLevel] = useState(
+    config.sensitivityLevel || 3
+  );
+  const [motionPreferences, setMotionPreferences] = useState(
+    config.motionPreferences || {
+      allowEssentialMotion: true,
+      allowHoverEffects: false,
+      allowFocusEffects: true,
+      allowScrollAnimations: false,
+    }
+  );
 
   // Monitor system reduced motion preference
   useEffect(() => {
-    if (!config.autoApply) return;
+    if (!config.autoApply) {
+      return;
+    }
 
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
+
     const handleMotionChange = () => {
       if (motionQuery.matches && !theme.config.reducedMotion) {
         theme.toggleReducedMotion();
@@ -559,7 +639,7 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
   const adjustSensitivity = useCallback((newLevel: number) => {
     const clampedLevel = Math.max(1, Math.min(5, newLevel));
     setSensitivityLevel(clampedLevel);
-    
+
     // Update CSS custom property
     if (typeof document !== 'undefined') {
       document.documentElement.style.setProperty(
@@ -569,17 +649,23 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
     }
   }, []);
 
-  const updateMotionPreferences = useCallback((preferences: ReducedMotionConfig['motionPreferences']) => {
-    setMotionPreferences(prev => ({ ...prev, ...preferences }));
-    
-    if (typeof document !== 'undefined' && preferences) {
-      const root = document.documentElement;
-      
-      Object.entries(preferences).forEach(([key, value]) => {
-        root.style.setProperty(`--accessibility-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value ? 'true' : 'false');
-      });
-    }
-  }, []);
+  const updateMotionPreferences = useCallback(
+    (preferences: ReducedMotionConfig['motionPreferences']) => {
+      setMotionPreferences((prev) => ({ ...prev, ...preferences }));
+
+      if (typeof document !== 'undefined' && preferences) {
+        const root = document.documentElement;
+
+        Object.entries(preferences).forEach(([key, value]) => {
+          root.style.setProperty(
+            `--accessibility-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`,
+            value ? 'true' : 'false'
+          );
+        });
+      }
+    },
+    []
+  );
 
   const resetReducedMotion = useCallback(() => {
     setSensitivityLevel(3);
@@ -589,7 +675,7 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
       allowFocusEffects: true,
       allowScrollAnimations: false,
     });
-    
+
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.style.removeProperty('--accessibility-motion-sensitivity');
@@ -641,19 +727,30 @@ function useFocusManagementTheme(config: FocusManagementConfig = {}) {
 
   // Enhanced focus indicators
   useEffect(() => {
-    if (!config.enhancedFocusIndicators) return;
+    if (!config.enhancedFocusIndicators) {
+      return;
+    }
 
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
-      
+
       root.style.setProperty('--accessibility-enhanced-focus', 'true');
-      root.style.setProperty('--accessibility-focus-style', config.focusIndicatorStyle || 'ring');
-      
+      root.style.setProperty(
+        '--accessibility-focus-style',
+        config.focusIndicatorStyle || 'ring'
+      );
+
       if (config.focusIndicatorColor) {
-        root.style.setProperty('--accessibility-focus-color', config.focusIndicatorColor);
+        root.style.setProperty(
+          '--accessibility-focus-color',
+          config.focusIndicatorColor
+        );
       }
-      
-      root.style.setProperty('--accessibility-focus-thickness', `${config.focusIndicatorThickness || 2}px`);
+
+      root.style.setProperty(
+        '--accessibility-focus-thickness',
+        `${config.focusIndicatorThickness || 2}px`
+      );
     }
 
     return () => {
@@ -665,22 +762,33 @@ function useFocusManagementTheme(config: FocusManagementConfig = {}) {
         root.style.removeProperty('--accessibility-focus-thickness');
       }
     };
-  }, [config.enhancedFocusIndicators, config.focusIndicatorStyle, config.focusIndicatorColor, config.focusIndicatorThickness]);
+  }, [
+    config.enhancedFocusIndicators,
+    config.focusIndicatorStyle,
+    config.focusIndicatorColor,
+    config.focusIndicatorThickness,
+  ]);
 
   // Focus trap implementation
   useEffect(() => {
-    if (!config.trapFocus || !trapContainerRef.current) return;
+    if (!config.trapFocus || !trapContainerRef.current) {
+      return;
+    }
 
     const container = trapContainerRef.current;
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleTabKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab') {
+        return;
+      }
 
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -696,7 +804,7 @@ function useFocusManagementTheme(config: FocusManagementConfig = {}) {
     };
 
     container.addEventListener('keydown', handleTabKey);
-    
+
     // Focus first element when trap is enabled
     firstElement?.focus();
 
@@ -707,7 +815,7 @@ function useFocusManagementTheme(config: FocusManagementConfig = {}) {
 
   // Focus history management
   const pushFocusHistory = useCallback((element: HTMLElement) => {
-    setFocusHistory(prev => [...prev.slice(-9), element]); // Keep last 10 elements
+    setFocusHistory((prev) => [...prev.slice(-9), element]); // Keep last 10 elements
   }, []);
 
   const restorePreviousFocus = useCallback(() => {
@@ -715,7 +823,7 @@ function useFocusManagementTheme(config: FocusManagementConfig = {}) {
     if (previousElement && config.restoreFocus) {
       try {
         previousElement.focus();
-        setFocusHistory(prev => prev.slice(0, -1));
+        setFocusHistory((prev) => prev.slice(0, -1));
       } catch (error) {
         console.warn('Failed to restore focus:', error);
       }
@@ -757,23 +865,35 @@ export interface MotionSensitivityConfig {
  */
 function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
   const theme = useTheme();
-  const [sensitivityLevel, setSensitivityLevel] = useState(config.sensitivityLevel || 3);
-  const [disabledMotions, setDisabledMotions] = useState(config.disabledMotions || {});
+  const [sensitivityLevel, setSensitivityLevel] = useState(
+    config.sensitivityLevel || 3
+  );
+  const [disabledMotions, setDisabledMotions] = useState(
+    config.disabledMotions || {}
+  );
 
   // Apply motion sensitivity settings to CSS
   useEffect(() => {
-    if (!theme.config.reducedMotion) return;
+    if (!theme.config.reducedMotion) {
+      return;
+    }
 
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
-      
+
       // Set sensitivity level
-      root.style.setProperty('--accessibility-motion-sensitivity', sensitivityLevel.toString());
-      
+      root.style.setProperty(
+        '--accessibility-motion-sensitivity',
+        sensitivityLevel.toString()
+      );
+
       // Apply motion restrictions
       Object.entries(disabledMotions).forEach(([motionType, disabled]) => {
         if (disabled) {
-          root.style.setProperty(`--accessibility-disable-${motionType}`, 'true');
+          root.style.setProperty(
+            `--accessibility-disable-${motionType}`,
+            'true'
+          );
         }
       });
 
@@ -788,18 +908,23 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
         const root = document.documentElement;
         root.style.removeProperty('--accessibility-motion-sensitivity');
         root.style.removeProperty('--accessibility-essential-motion-only');
-        
-        Object.keys(disabledMotions).forEach(motionType => {
+
+        Object.keys(disabledMotions).forEach((motionType) => {
           root.style.removeProperty(`--accessibility-disable-${motionType}`);
         });
       }
     };
-  }, [theme.config.reducedMotion, sensitivityLevel, disabledMotions, config.essentialOnly]);
+  }, [
+    theme.config.reducedMotion,
+    sensitivityLevel,
+    disabledMotions,
+    config.essentialOnly,
+  ]);
 
   const adjustSensitivity = useCallback((newLevel: number) => {
     const clampedLevel = Math.max(1, Math.min(5, newLevel));
     setSensitivityLevel(clampedLevel);
-    
+
     // Auto-adjust disabled motions based on sensitivity
     if (clampedLevel >= 4) {
       setDisabledMotions({
@@ -828,12 +953,18 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
     }
   }, []);
 
-  const toggleMotionType = useCallback((motionType: keyof MotionSensitivityConfig['disabledMotions'], disabled: boolean) => {
-    setDisabledMotions(prev => ({
-      ...prev,
-      [motionType]: disabled,
-    }));
-  }, []);
+  const toggleMotionType = useCallback(
+    (
+      motionType: keyof MotionSensitivityConfig['disabledMotions'],
+      disabled: boolean
+    ) => {
+      setDisabledMotions((prev) => ({
+        ...prev,
+        [motionType]: disabled,
+      }));
+    },
+    []
+  );
 
   return {
     sensitivityLevel,
@@ -854,15 +985,18 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
  * Provides keyboard shortcuts for accessibility features
  */
 function useAccessibilityKeyboardShortcuts(enabled: boolean = true) {
-  const theme = useTheme();
   const accessibility = useAccessibilityTheme();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      return;
+    }
 
     const handleKeyPress = (event: KeyboardEvent) => {
       // Accessibility shortcuts use Ctrl/Cmd + Alt
-      if (!(event.ctrlKey || event.metaKey) || !event.altKey) return;
+      if (!(event.ctrlKey || event.metaKey) || !event.altKey) {
+        return;
+      }
 
       switch (event.key.toLowerCase()) {
         case 'c':

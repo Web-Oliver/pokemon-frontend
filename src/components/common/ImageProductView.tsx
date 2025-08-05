@@ -227,7 +227,9 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           </button>
 
           {isActionsOpen && (
-            <div className={`absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ${elementTheme.border} p-2 min-w-[120px]`}>
+            <div
+              className={`absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ${elementTheme.border} p-2 min-w-[120px]`}
+            >
               {actions.map((action, index) => {
                 const Icon = action.icon;
                 return (
@@ -253,22 +255,20 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   };
 
   // Variant-specific styling
-  const getVariantStyles = () => {
-    const baseStyles =
-      'relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10';
+  const baseStyles =
+    'relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10';
 
-    switch (variant) {
-      case 'detail':
-        return `${baseStyles} shadow-2xl rounded-2xl`;
-      case 'auction':
-        return `${baseStyles} shadow-lg hover:shadow-xl rounded-2xl`;
-      case 'minimal':
-        return `${baseStyles} shadow-sm hover:shadow-md rounded-2xl`;
-      case 'card':
-      default:
-        return `${baseStyles} shadow-lg hover:shadow-xl hover:border-white/20 rounded-2xl`;
-    }
-  };
+  switch (variant) {
+    case 'detail':
+      return `${baseStyles} shadow-2xl rounded-2xl`;
+    case 'auction':
+      return `${baseStyles} shadow-lg hover:shadow-xl rounded-2xl`;
+    case 'minimal':
+      return `${baseStyles} shadow-sm hover:shadow-md rounded-2xl`;
+    case 'card':
+    default:
+      return `${baseStyles} shadow-lg hover:shadow-xl hover:border-white/20 rounded-2xl`;
+  }
 
   return (
     <div

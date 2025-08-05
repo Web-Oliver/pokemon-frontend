@@ -53,7 +53,7 @@ const Analytics: React.FC = () => {
   });
 
   // Context7 Analytics Hooks - Use limited data for analytics
-  const { activities, stats, loading, error, fetchActivities, refresh } =
+  const { activities, loading, fetchActivities, refresh } =
     useActivity({
       limit: 100,
     }); // Limit to 100 recent activities for analytics
@@ -291,13 +291,13 @@ const Analytics: React.FC = () => {
               <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl text-[var(--theme-text-primary)] p-12 relative overflow-hidden">
                 {/* Neural network glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-emerald-500/20 opacity-70 blur-3xl"></div>
-                
+
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
-                
+
                 {/* Top accent line */}
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-emerald-500 opacity-80 animate-pulse"></div>
-                
+
                 {/* Floating analytics icon */}
                 <div className="absolute top-8 right-8 w-16 h-16 border-2 border-cyan-400/40 rounded-2xl rotate-12 animate-pulse opacity-40 flex items-center justify-center">
                   <BarChart3 className="w-8 h-8 text-cyan-400" />
@@ -337,7 +337,9 @@ const Analytics: React.FC = () => {
                   <RefreshCw
                     className={`w-5 h-5 text-[var(--theme-text-secondary)] mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300 relative z-10`}
                   />
-                  <span className="font-medium text-[var(--theme-text-primary)] relative z-10">Refresh</span>
+                  <span className="font-medium text-[var(--theme-text-primary)] relative z-10">
+                    Refresh
+                  </span>
                 </button>
               </div>
             </div>
@@ -349,7 +351,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                
+
                 <div className="flex items-center relative z-10">
                   <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
                     <ActivityIcon className="w-8 h-8 text-white" />
@@ -370,7 +372,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                
+
                 <div className="flex items-center relative z-10">
                   <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                     <TrendingUp className="w-8 h-8 text-white" />
@@ -391,7 +393,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-amber-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                
+
                 <div className="flex items-center relative z-10">
                   <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
                     <DollarSign className="w-8 h-8 text-white" />
@@ -412,7 +414,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-violet-500/15 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                
+
                 <div className="flex items-center relative z-10">
                   <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(147,51,234,0.3)]">
                     <Clock className="w-8 h-8 text-white" />
@@ -505,7 +507,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
-                
+
                 <div className="p-8 relative z-10">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
                     <PieChart className="w-6 h-6 mr-3 text-cyan-400" />
@@ -518,7 +520,9 @@ const Analytics: React.FC = () => {
                         .sort(([, a], [, b]) => b - a) // Sort by count descending
                         .map(([typeLabel, count]) => {
                           // Convert back to type constant for icon/color lookup
-                          const typeKey = typeLabel.toUpperCase().replace(/ /g, '_');
+                          const typeKey = typeLabel
+                            .toUpperCase()
+                            .replace(/ /g, '_');
                           const IconComponent = getActivityIcon(typeKey);
                           const color = getActivityColor(typeKey);
                           const percentage = (
@@ -570,7 +574,7 @@ const Analytics: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-purple-500/5 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
-                
+
                 <div className="p-8 relative z-10">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
                     <Target className="w-6 h-6 mr-3 text-emerald-400" />
@@ -596,7 +600,9 @@ const Analytics: React.FC = () => {
                     <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-400/20 hover:border-purple-400/40 transition-colors duration-300">
                       <div className="flex items-center mb-3">
                         <TrendingUp className="w-5 h-5 text-purple-400 mr-2" />
-                        <h4 className="font-bold text-[var(--theme-text-primary)]">Activity Trend</h4>
+                        <h4 className="font-bold text-[var(--theme-text-primary)]">
+                          Activity Trend
+                        </h4>
                       </div>
                       <p className="text-[var(--theme-text-secondary)]">
                         {analyticsData?.totalActivities
@@ -608,11 +614,13 @@ const Analytics: React.FC = () => {
                     <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/20 hover:border-amber-400/40 transition-colors duration-300">
                       <div className="flex items-center mb-3">
                         <DollarSign className="w-5 h-5 text-amber-400 mr-2" />
-                        <h4 className="font-bold text-[var(--theme-text-primary)]">Value Tracking</h4>
+                        <h4 className="font-bold text-[var(--theme-text-primary)]">
+                          Value Tracking
+                        </h4>
                       </div>
                       <p className="text-[var(--theme-text-secondary)]">
-                        {analyticsData?.valueActivities.length || 0} activities with
-                        price/value data
+                        {analyticsData?.valueActivities.length || 0} activities
+                        with price/value data
                       </p>
                     </div>
                   </div>
@@ -626,7 +634,7 @@ const Analytics: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-indigo-500/5 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
               {/* Holographic border */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
-              
+
               <div className="p-8 relative z-10">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] flex items-center">
@@ -648,7 +656,8 @@ const Analytics: React.FC = () => {
                     {activities
                       .filter(
                         (activity, index, self) =>
-                          index === self.findIndex((a) => a._id === activity._id)
+                          index ===
+                          self.findIndex((a) => a._id === activity._id)
                       )
                       .slice(0, 10)
                       .map((activity, index) => {
@@ -719,7 +728,9 @@ const Analytics: React.FC = () => {
                                   {activity.metadata.priceChangePercentage > 0
                                     ? '+'
                                     : ''}
-                                  {activity.metadata.priceChangePercentage.toFixed(1)}
+                                  {activity.metadata.priceChangePercentage.toFixed(
+                                    1
+                                  )}
                                   %
                                 </p>
                               )}
@@ -737,8 +748,8 @@ const Analytics: React.FC = () => {
                       No Data Available
                     </h4>
                     <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed">
-                      Start using the collection management features to see analytics
-                      here.
+                      Start using the collection management features to see
+                      analytics here.
                     </p>
                   </div>
                 )}

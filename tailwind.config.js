@@ -92,7 +92,7 @@ export default {
         'theme-border-primary': 'var(--theme-border-primary)',
         'theme-border-secondary': 'var(--theme-border-secondary)',
         'theme-border-accent': 'var(--theme-border-accent)',
-        
+
         // Legacy premium colors (maintained for compatibility)
         premium: {
           50: '#f0f9ff',
@@ -106,7 +106,7 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         },
-        
+
         // Enhanced glassmorphism colors (intensity-aware)
         glass: {
           primary: 'var(--bg-glass-primary)',
@@ -119,7 +119,7 @@ export default {
             subtle: 'var(--border-glass-subtle)',
           },
         },
-        
+
         // Pokemon brand colors (static)
         pokemon: {
           red: 'var(--color-pokemon-red)',
@@ -127,7 +127,7 @@ export default {
           yellow: 'var(--color-pokemon-yellow)',
           green: 'var(--color-pokemon-green)',
         },
-        
+
         // Context7 futuristic colors (static)
         cyber: {
           cyan: 'var(--color-cyber-cyan)',
@@ -147,7 +147,7 @@ export default {
         'density-xl': 'var(--density-spacing-xl)',
         'density-2xl': 'var(--density-spacing-2xl)',
         'density-3xl': 'var(--density-spacing-3xl)',
-        
+
         // Legacy spacing (maintained for compatibility)
         18: '4.5rem',
         88: '22rem',
@@ -167,26 +167,27 @@ export default {
         'theme-hover': 'var(--theme-shadow-hover)',
         'glass-main': 'var(--shadow-glass)',
         'glass-hover': 'var(--shadow-glass-hover)',
-        'neural': 'var(--shadow-neural)',
-        'quantum': 'var(--shadow-quantum)',
-        'cosmic': 'var(--shadow-cosmic)',
-        'minimal': 'var(--shadow-minimal)',
-        
+        neural: 'var(--shadow-neural)',
+        quantum: 'var(--shadow-quantum)',
+        cosmic: 'var(--shadow-cosmic)',
+        minimal: 'var(--shadow-minimal)',
+
         // Legacy shadows (maintained for compatibility)
         glow: '0 0 20px rgba(99, 102, 241, 0.4)',
         'glow-lg': '0 0 30px rgba(99, 102, 241, 0.6)',
-        premium: '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        premium:
+          '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
         glass: '0 8px 32px rgba(31, 38, 135, 0.37)',
         float: '0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.2)',
       },
       // THEME-AWARE BACKDROP BLUR
       // Integrates with glassmorphism intensity settings
       backdropBlur: {
-        'theme': 'var(--glass-blur)',
+        theme: 'var(--glass-blur)',
         xs: '2px',
         '4xl': '72px',
       },
-      
+
       // ANIMATION INTENSITY SUPPORT
       // Integrates with ThemeContext animationIntensity settings
       transitionDuration: {
@@ -236,7 +237,7 @@ export default {
           'backdrop-filter': 'blur(var(--glass-blur))',
           border: '1px solid var(--border-glass-subtle)',
         },
-        
+
         // Theme-aware shadows
         '.theme-shadow': {
           'box-shadow': 'var(--theme-shadow-primary)',
@@ -244,23 +245,26 @@ export default {
         '.theme-shadow-hover': {
           'box-shadow': 'var(--theme-shadow-hover)',
         },
-        
+
         // Animation utilities with theme support
         '.shimmer': {
-          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+          background:
+            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
           animation: 'shimmer 2s infinite',
         },
         '.shimmer-theme': {
-          background: 'linear-gradient(90deg, transparent, var(--border-glass-light), transparent)',
+          background:
+            'linear-gradient(90deg, transparent, var(--border-glass-light), transparent)',
           animation: 'shimmer var(--animation-duration-slow) infinite',
         },
-        
+
         // Theme-aware gradient border
         '.gradient-border-theme': {
-          background: 'linear-gradient(var(--theme-bg-primary), var(--theme-bg-primary)) padding-box, var(--theme-signature-gradient) border-box',
+          background:
+            'linear-gradient(var(--theme-bg-primary), var(--theme-bg-primary)) padding-box, var(--theme-signature-gradient) border-box',
           border: '2px solid transparent',
         },
-        
+
         // Legacy utilities (maintained for compatibility)
         '.glass-morphism-dark': {
           background: 'rgba(0, 0, 0, 0.8)',
@@ -268,18 +272,21 @@ export default {
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
         '.gradient-border': {
-          background: 'linear-gradient(white, white) padding-box, linear-gradient(45deg, #6366f1, #8b5cf6, #3b82f6) border-box',
+          background:
+            'linear-gradient(white, white) padding-box, linear-gradient(45deg, #6366f1, #8b5cf6, #3b82f6) border-box',
           border: '2px solid transparent',
         },
         '.premium-shadow': {
-          'box-shadow': '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+          'box-shadow':
+            '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
         },
         '.premium-glow': {
-          'box-shadow': '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(31, 38, 135, 0.37)',
+          'box-shadow':
+            '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(31, 38, 135, 0.37)',
         },
       };
       addUtilities(themeUtilities);
-      
+
       // Theme-aware component classes
       const themeComponents = {
         '.card-theme': {

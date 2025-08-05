@@ -79,18 +79,15 @@ export const useDbaExport = () => {
   const [error, setError] = useState<string | null>(null);
 
   // React Query for DBA selections with proper caching
-  const {
-    data: dbaSelections = [],
-    isLoading: loadingDbaSelections,
-    error: dbaSelectionsError,
-  } = useQuery({
-    queryKey: queryKeys.dbaSelections({ active: true }),
-    queryFn: () => dbaSelectionApi.getDbaSelections({ active: true }),
-    staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
-    gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
-    retry: 2,
-    retryDelay: 1000,
-  });
+  const { data: dbaSelections = [], isLoading: loadingDbaSelections } =
+    useQuery({
+      queryKey: queryKeys.dbaSelections({ active: true }),
+      queryFn: () => dbaSelectionApi.getDbaSelections({ active: true }),
+      staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
+      gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
+      retry: 2,
+      retryDelay: 1000,
+    });
 
   // Debug logging for collection data
   useEffect(() => {
@@ -410,7 +407,10 @@ export const useDbaExport = () => {
       };
 
       if (process.env.NODE_ENV === 'development') {
-        console.log('[DBA EXPORT] Export data being sent to backend:', exportData);
+        console.log(
+          '[DBA EXPORT] Export data being sent to backend:',
+          exportData
+        );
         console.log('[DBA EXPORT] First selected item:', selectedItems[0]);
       }
 

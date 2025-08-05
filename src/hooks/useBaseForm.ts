@@ -135,7 +135,10 @@ export const useBaseForm = <T extends FieldValues>(
           }
 
           // Handle common field transformations
-          if ((key.includes('Date') || key.includes('date')) && typeof value === 'string') {
+          if (
+            (key.includes('Date') || key.includes('date')) &&
+            typeof value === 'string'
+          ) {
             // Date field transformation - convert ISO timestamps to YYYY-MM-DD
             if (value.includes('T')) {
               processedValue = value.split('T')[0];
@@ -176,7 +179,7 @@ export const useBaseForm = <T extends FieldValues>(
         // This would need to be implemented in usePriceHistory if needed
       }
     }
-  }, [isEditing, initialData]);
+  }, [isEditing, initialData, updateWithInitialData, imageUpload]);
 
   return {
     form,

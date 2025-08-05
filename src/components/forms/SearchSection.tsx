@@ -55,7 +55,9 @@ export const SearchSection: React.FC<SearchSectionProps> = ({
         </h4>
       </div>
 
-      <div className={`grid grid-cols-1 ${formType === 'setProducts' ? 'md:grid-cols-2' : 'md:grid-cols-2'} gap-6`}>
+      <div
+        className={`grid grid-cols-1 ${formType === 'setProducts' ? 'md:grid-cols-2' : 'md:grid-cols-2'} gap-6`}
+      >
         {/* Hierarchical Search: SetProduct → Product OR Traditional Search: Set → Card/Product */}
         {formType === 'setProducts' ? (
           <>

@@ -85,7 +85,6 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
 }) => {
   // Group items by category and apply ordering
   const categorizedItems = useMemo(() => {
-    const grouped = groupItemsByCategory(items);
     const orderedItems =
       itemOrder.length > 0 ? applyItemOrder(items, itemOrder) : items;
 

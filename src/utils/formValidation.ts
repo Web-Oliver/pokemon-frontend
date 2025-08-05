@@ -33,9 +33,12 @@ export const validationPatterns = {
 // Common validation messages
 export const validationMessages = {
   required: (fieldName: string) => `${fieldName} is required`,
-  min: (fieldName: string, min: number) => `${fieldName} must be at least ${min}`,
-  max: (fieldName: string, max: number) => `${fieldName} must be at most ${max}`,
-  pattern: (fieldName: string, expected: string) => `${fieldName} must be ${expected}`,
+  min: (fieldName: string, min: number) =>
+    `${fieldName} must be at least ${min}`,
+  max: (fieldName: string, max: number) =>
+    `${fieldName} must be at most ${max}`,
+  pattern: (fieldName: string, expected: string) =>
+    `${fieldName} must be ${expected}`,
   price: 'Must be a positive whole number',
   cardNumber: 'Must be a valid card number',
   year: 'Must be a valid 4-digit year',
@@ -56,7 +59,7 @@ export const commonValidationRules = {
       return undefined;
     },
   },
-  
+
   cardNumber: {
     required: true,
     pattern: validationPatterns.cardNumber,
@@ -68,20 +71,22 @@ export const commonValidationRules = {
       return undefined;
     },
   },
-  
+
   year: {
     pattern: validationPatterns.year,
     custom: (value: string) => {
-      if (!value) return undefined; // Optional field
+      if (!value) {
+        return undefined;
+      } // Optional field
       const year = parseInt(value, 10);
       const currentYear = new Date().getFullYear();
       if (isNaN(year) || year < 1990 || year > currentYear + 5) {
-        return 'Year must be between 1990 and ' + (currentYear + 5);
+        return `Year must be between 1990 and ${currentYear + 5}`;
       }
       return undefined;
     },
   },
-  
+
   availability: {
     required: true,
     min: 0,
@@ -93,7 +98,7 @@ export const commonValidationRules = {
       return undefined;
     },
   },
-  
+
   grade: {
     required: true,
     min: 1,
@@ -106,7 +111,7 @@ export const commonValidationRules = {
       return undefined;
     },
   },
-  
+
   condition: {
     required: true,
     custom: (value: string) => {
@@ -130,7 +135,7 @@ export const formValidationRules = {
     myPrice: commonValidationRules.price,
     dateAdded: { required: true },
   } as FormValidationRules,
-  
+
   psaCard: {
     setName: { required: true },
     cardName: { required: true },
@@ -139,7 +144,7 @@ export const formValidationRules = {
     myPrice: commonValidationRules.price,
     dateAdded: { required: true },
   } as FormValidationRules,
-  
+
   rawCard: {
     setName: { required: true },
     cardName: { required: true },
@@ -148,7 +153,7 @@ export const formValidationRules = {
     myPrice: commonValidationRules.price,
     dateAdded: { required: true },
   } as FormValidationRules,
-  
+
   auction: {
     topText: { required: true },
     bottomText: { required: true },
@@ -159,17 +164,21 @@ export const formValidationRules = {
 /**
  * Validate a single field value against a validation rule
  */
-export const validateField = (value: string, rule: ValidationRule, fieldName: string): string | undefined => {
+export const validateField = (
+  value: string,
+  rule: ValidationRule,
+  fieldName: string
+): string | undefined => {
   // Required validation
   if (rule.required && (!value || value.trim() === '')) {
     return validationMessages.required(fieldName);
   }
-  
+
   // Skip other validations if field is empty and not required
   if (!value || value.trim() === '') {
     return undefined;
   }
-  
+
   // Min validation
   if (rule.min !== undefined) {
     const num = parseFloat(value);
@@ -177,7 +186,7 @@ export const validateField = (value: string, rule: ValidationRule, fieldName: st
       return validationMessages.min(fieldName, rule.min);
     }
   }
-  
+
   // Max validation
   if (rule.max !== undefined) {
     const num = parseFloat(value);
@@ -185,26 +194,29 @@ export const validateField = (value: string, rule: ValidationRule, fieldName: st
       return validationMessages.max(fieldName, rule.max);
     }
   }
-  
+
   // Pattern validation
   if (rule.pattern && !rule.pattern.test(value)) {
     return validationMessages.pattern(fieldName, 'in the correct format');
   }
-  
+
   // Custom validation
   if (rule.custom) {
     return rule.custom(value);
   }
-  
+
   return undefined;
 };
 
 /**
  * Validate all fields in a form data object
  */
-export const validateForm = (formData: Record<string, string>, rules: FormValidationRules): Record<string, string> => {
+export const validateForm = (
+  formData: Record<string, string>,
+  rules: FormValidationRules
+): Record<string, string> => {
   const errors: Record<string, string> = {};
-  
+
   Object.entries(rules).forEach(([fieldName, rule]) => {
     const value = formData[fieldName] || '';
     const error = validateField(value, rule, fieldName);
@@ -212,18 +224,30 @@ export const validateForm = (formData: Record<string, string>, rules: FormValida
       errors[fieldName] = error;
     }
   });
-  
+
   return errors;
 };
 
 /**
  * React Hook Form compatible validation function generator
  */
-export const createRHFValidation = (rule: ValidationRule, fieldName: string) => ({
+export const createRHFValidation = (
+  rule: ValidationRule,
+  fieldName: string
+) => ({
   required: rule.required ? validationMessages.required(fieldName) : undefined,
-  min: rule.min ? { value: rule.min, message: validationMessages.min(fieldName, rule.min) } : undefined,
-  max: rule.max ? { value: rule.max, message: validationMessages.max(fieldName, rule.max) } : undefined,
-  pattern: rule.pattern ? { value: rule.pattern, message: validationMessages.pattern(fieldName, 'in the correct format') } : undefined,
+  min: rule.min
+    ? { value: rule.min, message: validationMessages.min(fieldName, rule.min) }
+    : undefined,
+  max: rule.max
+    ? { value: rule.max, message: validationMessages.max(fieldName, rule.max) }
+    : undefined,
+  pattern: rule.pattern
+    ? {
+        value: rule.pattern,
+        message: validationMessages.pattern(fieldName, 'in the correct format'),
+      }
+    : undefined,
   validate: rule.custom ? rule.custom : undefined,
 });
 
@@ -233,5 +257,7 @@ export const createRHFValidation = (rule: ValidationRule, fieldName: string) => 
 export const getErrorDisplayProps = (error?: string) => ({
   error,
   'aria-invalid': error ? 'true' : 'false',
-  'aria-describedby': error ? `${Math.random().toString(36).substr(2, 9)}-error` : undefined,
+  'aria-describedby': error
+    ? `${Math.random().toString(36).substr(2, 9)}-error`
+    : undefined,
 });

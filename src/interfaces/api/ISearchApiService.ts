@@ -1,17 +1,17 @@
 /**
  * Search API Service Interface
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * UPDATED: Enhanced with hierarchical search abstractions
  * Follows Dependency Inversion Principle - defines abstractions for search operations
- * 
+ *
  * Following CLAUDE.md principles:
  * - ISP: Interface segregation for different search capabilities
  * - DIP: High-level modules depend on abstractions
  * - OCP: Open for extension with new search patterns
  */
 
-import { ICard, ISet } from '../../domain/models/card';
+import { ISet } from '../../domain/models/card';
 import { IProduct } from '../../domain/models/product';
 import { ISetProduct } from '../../domain/models/setProduct';
 
@@ -71,7 +71,10 @@ export interface ISearchApiService {
   getSearchContext(): SearchContext;
 
   // Hierarchical suggestion methods
-  getSetProductSuggestions(query: string, limit?: number): Promise<ISetProduct[]>;
+  getSetProductSuggestions(
+    query: string,
+    limit?: number
+  ): Promise<ISetProduct[]>;
   getHierarchicalProductSuggestions(
     query: string,
     config?: HierarchicalSearchConfig,
@@ -80,11 +83,15 @@ export interface ISearchApiService {
   getHierarchicalSetSuggestions(query: string, limit?: number): Promise<ISet[]>;
 
   // Selection handling methods
-  handleSetProductSelection(setProduct: ISetProduct): Promise<SetProductSelectionResult>;
+  handleSetProductSelection(
+    setProduct: ISetProduct
+  ): Promise<SetProductSelectionResult>;
   handleProductSelection(product: IProduct): Promise<ProductSelectionResult>;
   handleSetSelection(set: ISet): Promise<SetSelectionResult>;
 
   // State validation
-  shouldShowSuggestions(fieldType: 'setProduct' | 'product' | 'set' | 'card'): boolean;
+  shouldShowSuggestions(
+    fieldType: 'setProduct' | 'product' | 'set' | 'card'
+  ): boolean;
   validateHierarchicalState(): { isValid: boolean; issues: string[] };
 }

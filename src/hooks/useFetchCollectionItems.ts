@@ -84,13 +84,12 @@ const validateCollectionItems = <T>(items: T[]): boolean => {
 export const useFetchCollectionItems = <T = any>(
   config: FetchCollectionItemsConfig = {}
 ): UseFetchCollectionItemsReturn<T> => {
-  const { initialData = null, autoFetch = false } = config;
+  const { initialData = null } = config;
 
   const {
     data: items,
     loading,
     error,
-    execute,
     executeWithValidation,
     clearError,
     setData: setItems,

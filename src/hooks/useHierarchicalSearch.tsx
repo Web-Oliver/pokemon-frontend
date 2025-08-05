@@ -31,8 +31,18 @@ interface HierarchicalSearchState {
 
 interface HierarchicalSearchActions {
   setActiveField: (field: SearchFieldType | null) => void;
-  handlePrimarySelection: (result: SearchResult, setValue: Function, clearErrors: Function, onSelection?: Function) => void;
-  handleSecondarySelection: (result: SearchResult, setValue: Function, clearErrors: Function, onSelection: Function) => void;
+  handlePrimarySelection: (
+    result: SearchResult,
+    setValue: Function,
+    clearErrors: Function,
+    onSelection?: Function
+  ) => void;
+  handleSecondarySelection: (
+    result: SearchResult,
+    setValue: Function,
+    clearErrors: Function,
+    onSelection: Function
+  ) => void;
   clearSuggestions: () => void;
 }
 
@@ -42,7 +52,9 @@ interface UseHierarchicalSearchProps {
   secondaryValue: string;
 }
 
-interface UseHierarchicalSearchReturn extends HierarchicalSearchState, HierarchicalSearchActions {}
+interface UseHierarchicalSearchReturn
+  extends HierarchicalSearchState,
+    HierarchicalSearchActions {}
 
 /**
  * Centralized hook for hierarchical search patterns
@@ -62,8 +74,14 @@ export const useHierarchicalSearch = ({
   const search = useSearch();
 
   // Debounced values
-  const debouncedPrimary = useDebouncedValue(primaryValue, config.debounceDelay || 300);
-  const debouncedSecondary = useDebouncedValue(secondaryValue, config.debounceDelay || 300);
+  const debouncedPrimary = useDebouncedValue(
+    primaryValue,
+    config.debounceDelay || 300
+  );
+  const debouncedSecondary = useDebouncedValue(
+    secondaryValue,
+    config.debounceDelay || 300
+  );
 
   // Sync search results to local state
   useEffect(() => {
@@ -78,7 +96,10 @@ export const useHierarchicalSearch = ({
       return;
     }
 
-    const currentValue = activeField === config.primaryField ? debouncedPrimary : debouncedSecondary;
+    const currentValue =
+      activeField === config.primaryField
+        ? debouncedPrimary
+        : debouncedSecondary;
 
     if (!currentValue || typeof currentValue !== 'string') {
       setSuggestions([]);
@@ -94,7 +115,7 @@ export const useHierarchicalSearch = ({
           search.searchSetProducts(currentValue);
         }
         break;
-        
+
       case config.secondaryField: {
         // Hierarchical logic: filter by primary selection
         let searchQuery = currentValue;
@@ -127,13 +148,19 @@ export const useHierarchicalSearch = ({
     search.searchCards,
     search.searchSetProducts,
     search.searchProducts,
+    search,
   ]);
 
   // Handle primary field selection (Set/SetProduct)
   const handlePrimarySelection = useCallback(
-    (result: SearchResult, setValue: Function, clearErrors: Function, onSelection?: Function) => {
+    (
+      result: SearchResult,
+      setValue: Function,
+      clearErrors: Function,
+      onSelection?: Function
+    ) => {
       console.log('[HIERARCHICAL] Primary selection:', result);
-      
+
       if (!result.id || !result.displayName) {
         setValue(config.primaryField, '');
         clearErrors(config.primaryField);
@@ -144,23 +171,24 @@ export const useHierarchicalSearch = ({
       }
 
       // Set primary field value
-      const selectedName = config.mode === 'card' 
-        ? (result.data?.setName || result.displayName)
-        : (result.data?.setProductName || result.displayName);
-      
+      const selectedName =
+        config.mode === 'card'
+          ? result.data?.setName || result.displayName
+          : result.data?.setProductName || result.displayName;
+
       setValue(config.primaryField, selectedName);
       clearErrors(config.primaryField);
-      
+
       // Auto-fill additional fields
       if (config.mode === 'card' && result.data?.year) {
         setValue('year', result.data.year);
         clearErrors('year');
       }
-      
+
       // Clear secondary field for fresh selection
       setValue(config.secondaryField, '');
       clearErrors(config.secondaryField);
-      
+
       // Notify parent
       onSelection?.({
         [config.primaryField]: selectedName,
@@ -179,9 +207,14 @@ export const useHierarchicalSearch = ({
 
   // Handle secondary field selection (Card/Product)
   const handleSecondarySelection = useCallback(
-    (result: SearchResult, setValue: Function, clearErrors: Function, onSelection: Function) => {
+    (
+      result: SearchResult,
+      setValue: Function,
+      clearErrors: Function,
+      onSelection: Function
+    ) => {
       console.log('[HIERARCHICAL] Secondary selection:', result);
-      
+
       if (!result.id || !result.displayName) {
         setValue(config.secondaryField, '');
         clearErrors(config.secondaryField);
@@ -200,7 +233,9 @@ export const useHierarchicalSearch = ({
         onSelection(cardData);
       } else {
         // For products, use autofill pattern
-        const { autoFillFromProductSelection } = require('../utils/searchHelpers');
+        const {
+          autoFillFromProductSelection,
+        } = require('../utils/searchHelpers');
         const autoFillConfig = { setValue, clearErrors };
         autoFillFromProductSelection(autoFillConfig, result, onSelection);
       }
@@ -225,7 +260,7 @@ export const useHierarchicalSearch = ({
     activeField,
     suggestions,
     isLoading,
-    
+
     // Actions
     setActiveField,
     handlePrimarySelection,

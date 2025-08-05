@@ -141,9 +141,11 @@ export const useActivity = (
 
         // FIXED: Always replace activities when filters change (not append)
         // Only append when doing pagination (offset > 0 AND no filter changes)
-        const isFilterChange = newFilters && Object.keys(newFilters).some(key => key !== 'offset');
-        const isPagination = newFilters?.offset && newFilters.offset > 0 && !isFilterChange;
-        
+        const isFilterChange =
+          newFilters && Object.keys(newFilters).some((key) => key !== 'offset');
+        const isPagination =
+          newFilters?.offset && newFilters.offset > 0 && !isFilterChange;
+
         setState((prev) => ({
           ...prev,
           activities: isPagination
@@ -445,7 +447,7 @@ export const useActivity = (
     } else {
       fetchActivities();
     }
-  }, [state.filters]);
+  }, [state.filters, state.searchTerm, searchActivities, fetchActivities]);
 
   return {
     // State

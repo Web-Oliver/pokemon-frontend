@@ -191,7 +191,9 @@ const SetSearch: React.FC = () => {
         <div className="text-2xl font-bold text-[var(--theme-text-primary)]">
           {sets?.length || 0}
         </div>
-        <div className="text-sm text-[var(--theme-text-muted)] font-medium">Sets Found</div>
+        <div className="text-sm text-[var(--theme-text-muted)] font-medium">
+          Sets Found
+        </div>
       </div>
     </div>
   );
@@ -353,7 +355,9 @@ const SetSearch: React.FC = () => {
           ) : (
             <div className="text-center py-12">
               <Package className="w-16 h-16 text-[var(--theme-text-muted)] mx-auto mb-4" />
-              <p className="text-xl text-[var(--theme-text-secondary)] font-medium">No sets found</p>
+              <p className="text-xl text-[var(--theme-text-secondary)] font-medium">
+                No sets found
+              </p>
               <p className="text-sm text-[var(--theme-text-muted)] mt-2">
                 Try adjusting your search criteria
               </p>

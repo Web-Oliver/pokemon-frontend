@@ -1,13 +1,13 @@
 /**
  * Autocomplete Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * UPDATED: Enhanced for dual hierarchical search patterns
  * - Set → Card: Traditional card search within sets
- * - SetProduct → Product: New sealed product hierarchy  
+ * - SetProduct → Product: New sealed product hierarchy
  * - Product selection autofills SetProduct information
  * - No simultaneous suggestions (user specification)
- * 
+ *
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for hierarchical autocomplete logic
  * - DIP: Depends on search and SearchApiService abstractions
@@ -87,7 +87,7 @@ export interface UseAutocompleteReturn extends AutocompleteState {
   setFieldType: (fieldType: 'set' | 'setProduct' | 'product' | 'card') => void;
   clearHierarchicalState: () => void;
   shouldShowSuggestions: () => boolean;
-  
+
   // NEW: Selection handlers with autofill
   selectSetProduct: (setProduct: SearchResult) => void;
   selectProduct: (product: SearchResult) => Promise<{ autofillData?: any }>;
@@ -103,7 +103,7 @@ export const useAutocomplete = (
   onSelect?: (result: SearchResult) => void,
   filters?: { setName?: string; category?: string; setProductId?: string }, // UPDATED: Added setProductId filter
   disabled?: boolean,
-  hierarchicalConfig?: { 
+  hierarchicalConfig?: {
     enableHierarchical?: boolean;
     onAutofill?: (autofillData: any) => void; // NEW: Callback for autofill data
   }
@@ -257,7 +257,7 @@ export const useAutocomplete = (
     });
     search.clearResults();
     search.clearError();
-    
+
     // Clear hierarchical context if enabled
     if (hierarchicalConfig?.enableHierarchical) {
       searchApiService.clearSearchContext();
@@ -265,70 +265,90 @@ export const useAutocomplete = (
   }, [hierarchicalConfig?.enableHierarchical]);
 
   // NEW: Hierarchical methods
-  const selectSetProduct = useCallback((setProduct: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      selectedSetProduct: setProduct,
-      fieldType: 'setProduct'
-    }));
-    
-    if (hierarchicalConfig?.enableHierarchical) {
-      searchApiService.handleSetProductSelection(setProduct.data);
-    }
-  }, [hierarchicalConfig?.enableHierarchical]);
+  const selectSetProduct = useCallback(
+    (setProduct: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        selectedSetProduct: setProduct,
+        fieldType: 'setProduct',
+      }));
 
-  const selectSet = useCallback((set: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      selectedSet: set,
-      fieldType: 'set'
-    }));
-    
-    if (hierarchicalConfig?.enableHierarchical) {
-      searchApiService.handleSetSelection(set.data);
-    }
-  }, [hierarchicalConfig?.enableHierarchical]);
-
-  const selectProduct = useCallback(async (product: SearchResult) => {
-    setState(prev => ({
-      ...prev,
-      fieldType: 'product'
-    }));
-    
-    if (hierarchicalConfig?.enableHierarchical) {
-      try {
-        const result = await searchApiService.handleProductSelection(product.data);
-        if (result.autofillData && hierarchicalConfig?.onAutofill) {
-          hierarchicalConfig.onAutofill(result.autofillData);
-        }
-        return result;
-      } catch (error) {
-        console.error('Product selection failed:', error);
-        return {};
+      if (hierarchicalConfig?.enableHierarchical) {
+        searchApiService.handleSetProductSelection(setProduct.data);
       }
-    }
-    return {};
-  }, [hierarchicalConfig?.enableHierarchical, hierarchicalConfig?.onAutofill]);
+    },
+    [hierarchicalConfig?.enableHierarchical]
+  );
 
-  const setFieldType = useCallback((fieldType: 'set' | 'setProduct' | 'product' | 'card') => {
-    setState(prev => ({ ...prev, fieldType }));
-  }, []);
+  const selectSet = useCallback(
+    (set: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        selectedSet: set,
+        fieldType: 'set',
+      }));
+
+      if (hierarchicalConfig?.enableHierarchical) {
+        searchApiService.handleSetSelection(set.data);
+      }
+    },
+    [hierarchicalConfig?.enableHierarchical]
+  );
+
+  const selectProduct = useCallback(
+    async (product: SearchResult) => {
+      setState((prev) => ({
+        ...prev,
+        fieldType: 'product',
+      }));
+
+      if (hierarchicalConfig?.enableHierarchical) {
+        try {
+          const result = await searchApiService.handleProductSelection(
+            product.data
+          );
+          if (result.autofillData && hierarchicalConfig?.onAutofill) {
+            hierarchicalConfig.onAutofill(result.autofillData);
+          }
+          return result;
+        } catch (error) {
+          console.error('Product selection failed:', error);
+          return {};
+        }
+      }
+      return {};
+    },
+    [
+      hierarchicalConfig?.enableHierarchical,
+      hierarchicalConfig?.onAutofill,
+      searchApiService,
+    ]
+  );
+
+  const setFieldType = useCallback(
+    (fieldType: 'set' | 'setProduct' | 'product' | 'card') => {
+      setState((prev) => ({ ...prev, fieldType }));
+    },
+    []
+  );
 
   const clearHierarchicalState = useCallback(() => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       selectedSetProduct: undefined,
       selectedSet: undefined,
-      fieldType: undefined
+      fieldType: undefined,
     }));
-    
+
     if (hierarchicalConfig?.enableHierarchical) {
       searchApiService.clearSearchContext();
     }
   }, [hierarchicalConfig?.enableHierarchical]);
 
   const shouldShowSuggestions = useCallback(() => {
-    if (!hierarchicalConfig?.enableHierarchical) return true;
+    if (!hierarchicalConfig?.enableHierarchical) {
+      return true;
+    }
     return searchApiService.shouldShowSuggestions(state.fieldType as any);
   }, [hierarchicalConfig?.enableHierarchical, state.fieldType]);
 

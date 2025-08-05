@@ -464,7 +464,10 @@ export const PRODUCTS_CONFIG = createResourceConfig('/products', 'product');
 /**
  * Common configuration for set products (NEW hierarchical structure)
  */
-export const SET_PRODUCTS_CONFIG = createResourceConfig('/set-products', 'set product');
+export const SET_PRODUCTS_CONFIG = createResourceConfig(
+  '/set-products',
+  'set product'
+);
 
 /**
  * Common configuration for DBA selection resources

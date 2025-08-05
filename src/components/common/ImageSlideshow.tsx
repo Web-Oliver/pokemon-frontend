@@ -46,10 +46,10 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     showThumbnails = false,
     themeColor = 'dark',
   }) => {
-    const { config } = useTheme();
+    const {} = useTheme();
     const elementTheme = getElementTheme(themeColor);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [imageIsVertical, setImageIsVertical] = useState(false);
+    const [, setImageIsVertical] = useState(false);
 
     // Optimize: Memoize autoplay plugins to prevent re-creation
     const autoplayPlugins = useMemo(

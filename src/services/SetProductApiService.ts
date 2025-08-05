@@ -1,10 +1,10 @@
 /**
  * SetProduct API Service Implementation
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * NEWLY CREATED: Concrete implementation of ISetProductApiService
  * Provides SetProduct operations for hierarchical search and data management
- * 
+ *
  * Following CLAUDE.md principles:
  * - SRP: Single responsibility for SetProduct business logic
  * - DIP: Depends on API client abstractions
@@ -14,16 +14,16 @@
 
 import * as setProductsApi from '../api/setProductsApi';
 import * as productsApi from '../api/productsApi';
-import { 
+import {
   getBestMatchSetProduct,
   getSetProductSuggestions,
-  searchSetProducts
+  searchSetProducts,
 } from '../api/searchApi';
 import { ISetProduct } from '../domain/models/setProduct';
 import { IProduct } from '../domain/models/product';
-import { 
+import {
   ISetProductApiService,
-  SetProductFilters
+  SetProductFilters,
 } from '../interfaces/api/ISetProductApiService';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
@@ -52,7 +52,9 @@ export class SetProductApiService implements ISetProductApiService {
    */
   private validateUniqueId(uniqueId: number, operation: string): void {
     if (!uniqueId || typeof uniqueId !== 'number' || uniqueId <= 0) {
-      const error = new Error(`Invalid unique ID provided for ${operation}: ${uniqueId}`);
+      const error = new Error(
+        `Invalid unique ID provided for ${operation}: ${uniqueId}`
+      );
       log(`[SETPRODUCT SERVICE] Unique ID validation failed for ${operation}`, {
         uniqueId,
         operation,
@@ -101,13 +103,15 @@ export class SetProductApiService implements ISetProductApiService {
    */
   async getSetProducts(filters?: SetProductFilters): Promise<ISetProduct[]> {
     return this.executeWithErrorHandling('getSetProducts', async () => {
-      const params = filters ? {
-        query: filters.query,
-        limit: filters.limit,
-        page: filters.page,
-        sortBy: filters.sortBy,
-        sortOrder: filters.sortOrder,
-      } : undefined;
+      const params = filters
+        ? {
+            query: filters.query,
+            limit: filters.limit,
+            page: filters.page,
+            sortBy: filters.sortBy,
+            sortOrder: filters.sortOrder,
+          }
+        : undefined;
 
       const result = await setProductsApi.getSetProducts(params);
 
@@ -116,7 +120,9 @@ export class SetProductApiService implements ISetProductApiService {
         log('[SETPRODUCT SERVICE] getSetProducts returned non-array result', {
           result,
         });
-        throw new Error('Invalid response format: expected array of SetProducts');
+        throw new Error(
+          'Invalid response format: expected array of SetProducts'
+        );
       }
 
       return result;
@@ -149,20 +155,25 @@ export class SetProductApiService implements ISetProductApiService {
    * Get SetProduct by unique identifier
    * Used for backend rebuilding and cross-reference operations
    */
-  async getSetProductByUniqueId(uniqueSetProductId: number): Promise<ISetProduct | null> {
+  async getSetProductByUniqueId(
+    uniqueSetProductId: number
+  ): Promise<ISetProduct | null> {
     this.validateUniqueId(uniqueSetProductId, 'getSetProductByUniqueId');
 
-    return this.executeWithErrorHandling('getSetProductByUniqueId', async () => {
-      const params = { uniqueSetProductId };
-      const results = await setProductsApi.getSetProducts(params);
+    return this.executeWithErrorHandling(
+      'getSetProductByUniqueId',
+      async () => {
+        const params = { uniqueSetProductId };
+        const results = await setProductsApi.getSetProducts(params);
 
-      // Return first match or null if none found
-      if (Array.isArray(results) && results.length > 0) {
-        return results[0];
+        // Return first match or null if none found
+        if (Array.isArray(results) && results.length > 0) {
+          return results[0];
+        }
+
+        return null;
       }
-
-      return null;
-    });
+    );
   }
 
   // ===== SEARCH OPERATIONS =====
@@ -171,7 +182,10 @@ export class SetProductApiService implements ISetProductApiService {
    * Search SetProducts using the search API
    * For hierarchical autocomplete functionality
    */
-  async searchSetProducts(query: string, limit: number = 10): Promise<ISetProduct[]> {
+  async searchSetProducts(
+    query: string,
+    limit: number = 10
+  ): Promise<ISetProduct[]> {
     if (!query || typeof query !== 'string' || query.trim() === '') {
       return [];
     }
@@ -192,14 +206,20 @@ export class SetProductApiService implements ISetProductApiService {
    * Get SetProduct suggestions for autocomplete
    * Integrates with hierarchical search system
    */
-  async getSetProductSuggestions(query: string, limit: number = 10): Promise<ISetProduct[]> {
+  async getSetProductSuggestions(
+    query: string,
+    limit: number = 10
+  ): Promise<ISetProduct[]> {
     if (!query || typeof query !== 'string' || query.trim() === '') {
       return [];
     }
 
-    return this.executeWithErrorHandling('getSetProductSuggestions', async () => {
-      return getSetProductSuggestions(query.trim(), limit);
-    });
+    return this.executeWithErrorHandling(
+      'getSetProductSuggestions',
+      async () => {
+        return getSetProductSuggestions(query.trim(), limit);
+      }
+    );
   }
 
   /**
@@ -229,21 +249,29 @@ export class SetProductApiService implements ISetProductApiService {
   async getProductsBySetProductId(setProductId: string): Promise<IProduct[]> {
     this.validateId(setProductId, 'getProductsBySetProductId');
 
-    return this.executeWithErrorHandling('getProductsBySetProductId', async () => {
-      const params = { setProductId };
-      const result = await productsApi.getProducts(params);
+    return this.executeWithErrorHandling(
+      'getProductsBySetProductId',
+      async () => {
+        const params = { setProductId };
+        const result = await productsApi.getProducts(params);
 
-      // Validate result format
-      if (!Array.isArray(result)) {
-        log('[SETPRODUCT SERVICE] getProductsBySetProductId returned non-array result', {
-          setProductId,
-          result,
-        });
-        throw new Error('Invalid response format: expected array of Products');
+        // Validate result format
+        if (!Array.isArray(result)) {
+          log(
+            '[SETPRODUCT SERVICE] getProductsBySetProductId returned non-array result',
+            {
+              setProductId,
+              result,
+            }
+          );
+          throw new Error(
+            'Invalid response format: expected array of Products'
+          );
+        }
+
+        return result;
       }
-
-      return result;
-    });
+    );
   }
 
   /**
@@ -269,13 +297,17 @@ export class SetProductApiService implements ISetProductApiService {
 
       products.forEach((product) => {
         // Add to total value (using cardMarketPrice as reference)
-        if (product.cardMarketPrice && typeof product.cardMarketPrice === 'number') {
+        if (
+          product.cardMarketPrice &&
+          typeof product.cardMarketPrice === 'number'
+        ) {
           stats.totalValue += product.cardMarketPrice;
         }
 
         // Count categories
         const category = product.category || 'Unknown';
-        stats.categoryBreakdown[category] = (stats.categoryBreakdown[category] || 0) + 1;
+        stats.categoryBreakdown[category] =
+          (stats.categoryBreakdown[category] || 0) + 1;
       });
 
       return stats;

@@ -1,20 +1,14 @@
 {
-  "extends": "./tsconfig.json", // Inherit settings from your main tsconfig.json
+  "extends": "./tsconfig.json",
   "include": [
-    "src", // Your main source code
-    "vite.config.ts", // Include Vite config
-    "tailwind.config.js", // Include Tailwind CSS config (even if JS)
-    "postcss.config.js", // Include other config files if you have them
-    "eslint.config.js" // Include ESLint config itself
-  ],
-  "exclude": [
-    "node_modules", // Always exclude node_modules
-    "dist", // Exclude build output
-    "coverage", // Exclude test coverage
-    "public", // Exclude public assets
-    // Ensure test files are excluded as per your main tsconfig
+    "src",
+    "e2e",
+    "vite.config.ts",
+    "vite.config.d.ts",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "eslint.config.js",
     "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/__tests__/**/*"
+    "src/**/*.test.tsx"
   ]
 }

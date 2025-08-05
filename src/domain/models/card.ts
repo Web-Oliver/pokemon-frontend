@@ -25,7 +25,8 @@ export interface ISet {
   setUrl?: string;
   totalCardsInSet?: number;
   uniqueSetId: number; // NEW: Unique identifier for database rebuilding
-  total_grades: { // NEW: Updated PSA grade structure (replaces totalPsaPopulation)
+  total_grades: {
+    // NEW: Updated PSA grade structure (replaces totalPsaPopulation)
     grade_1: number;
     grade_2: number;
     grade_3: number;
