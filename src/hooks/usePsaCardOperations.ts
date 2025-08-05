@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { IPsaGradedCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations } from './useGenericCrudOperations';
+import { useGenericCrudOperations, createPsaCardConfig } from './useGenericCrudOperations';
 
 export interface UsePsaCardOperationsReturn {
   loading: boolean;

@@ -221,7 +221,12 @@ export const getButtontheme = (color: ThemeColor = 'dark'): FormButtonTheme => {
 export const getElementTheme = (
   color: ThemeColor = 'dark'
 ): PremiumElementTheme => {
-  return formThemes[color].element;
+  const theme = formThemes[color];
+  if (!theme) {
+    // Fallback to 'dark' theme if color doesn't exist
+    return formThemes['dark'].element;
+  }
+  return theme.element;
 };
 
 /**

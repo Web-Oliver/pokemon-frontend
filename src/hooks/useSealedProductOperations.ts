@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations } from './useGenericCrudOperations';
+import { useGenericCrudOperations, createSealedProductConfig } from './useGenericCrudOperations';
 
 export interface UseSealedProductOperationsReturn {
   loading: boolean;
@@ -52,7 +52,7 @@ export const useSealedProductOperations = () => {
   );
 
   // Use consolidated operations hook
-  const operations = useConsolidatedCollectionOperations(entityConfig);
+  const operations = useGenericCrudOperations(entityConfig);
 
   // Return interface-compatible methods for backward compatibility
   return {

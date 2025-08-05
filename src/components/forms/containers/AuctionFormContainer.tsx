@@ -12,6 +12,8 @@
  * - Dependency Inversion: Uses abstract form components
  */
 
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
 
 interface AuctionFormContainerProps {

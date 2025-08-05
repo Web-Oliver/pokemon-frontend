@@ -211,7 +211,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   autoFocus = false,
   minLength = 2,
   maxResults = 50,
-  themeColor = 'cyan',
+  themeColor = 'blue',
   
   // Enhanced search props
   searchVariant = 'basic',
@@ -263,24 +263,20 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   const animationTheme = useAnimationTheme();
   
   // Enhanced search hook with all variants
-  const {
-    searchQuery,
-    setSearchQuery,
-    results,
-    isLoading,
-    selectedIndex,
-    setSelectedIndex,
-    isVisible,
-    setIsVisible,
-    inputRef,
-    dropdownRef,
-  } = useOptimizedSearch({
-    searchType,
-    setFilter: hierarchical ? parentValue : setFilter,
-    minLength,
-    maxResults,
-    disabled: disabled || (hierarchical && !parentValue),
+  const optimizedSearch = useOptimizedSearch({
+    hierarchicalMode: hierarchical,
+    onAutofill: onSelectionChange,
   });
+  
+  // Local state for missing functionality
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isVisible, setIsVisible] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Use optimized search results
+  const { results, isLoading } = optimizedSearch;
 
   // Form integration for section variants
   const watchedValues = watch ? watch() : {};
@@ -364,7 +360,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   }, [isVisible, results, selectedIndex, handleResultSelect, setSelectedIndex, onClose]);
 
   // Theme-aware styling
-  const elementTheme = getElementTheme(themeColor, visualTheme);
+  const elementTheme = getElementTheme(themeColor);
   
   // Enhanced container classes based on variant
   const containerClasses = useMemo(() => {

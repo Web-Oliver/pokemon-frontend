@@ -38,6 +38,18 @@ export type { PokemonIconProps } from './PokemonIcon';
 export { PokemonPageContainer } from './PokemonPageContainer';
 export type { PokemonPageContainerProps } from './PokemonPageContainer';
 
+// Form Components
+export { 
+  PokemonForm,
+  PokemonCardForm,
+  PokemonProductForm,
+  PokemonAuctionForm,
+  PokemonSaleForm,
+  PokemonSearchForm,
+  PokemonFilterForm
+} from './PokemonForm';
+export type { PokemonFormProps, PokemonFormField, PokemonFormSection } from './PokemonForm';
+
 // Component aliases for backward compatibility (removed to fix circular dependency)
 // These aliases were causing module loading issues
 // Import components directly by their full names instead

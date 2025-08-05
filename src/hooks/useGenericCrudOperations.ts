@@ -314,7 +314,6 @@ export const createSealedProductConfig = (collectionApi: any): CollectionEntityC
 
 import { useMemo } from 'react';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations } from './useGenericCrudOperations';
 
 // Entity configuration type for different collection items
 export interface CollectionEntityConfig<T> {

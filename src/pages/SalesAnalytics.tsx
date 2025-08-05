@@ -7,6 +7,8 @@
  * Following CLAUDE.md principles for beautiful, award-winning design.
  */
 
+import React, { useState } from 'react';
+import { Calendar, X, TrendingUp, DollarSign, Download } from 'lucide-react';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';

@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { IRawCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations } from './useGenericCrudOperations';
+import { useGenericCrudOperations, createRawCardConfig } from './useGenericCrudOperations';
 
 export interface UseRawCardOperationsReturn {
   loading: boolean;

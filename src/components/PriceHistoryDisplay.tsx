@@ -11,6 +11,7 @@
  * - Stunning animations and hover effects
  */
 
+import { Calendar, Plus } from 'lucide-react';
 import { PokemonButton } from './design-system/PokemonButton';
 import { PokemonInput } from './design-system/PokemonInput';
 import { log } from '../utils/logger';

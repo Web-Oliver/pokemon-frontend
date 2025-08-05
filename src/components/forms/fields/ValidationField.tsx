@@ -10,7 +10,9 @@
  * - NOT over-engineered: Simple, focused validation field component
  */
 
+import React from 'react';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
+import { PokemonInput } from '../../design-system/PokemonInput';
 import { commonValidationRules, ValidationRule } from '../../../hooks/useFormValidation';
 
 export type ValidationFieldType = 'price' | 'email' | 'phone' | 'grade' | 'date' | 'text' | 'select' | 'number';

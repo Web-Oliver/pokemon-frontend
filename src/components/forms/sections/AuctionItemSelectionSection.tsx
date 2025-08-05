@@ -11,6 +11,7 @@
  * - Open/Closed: Extensible through props and callbacks
  */
 
+import { CheckCircle, Eye, Package, Search, X } from 'lucide-react';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
 
 interface UnifiedCollectionItem {

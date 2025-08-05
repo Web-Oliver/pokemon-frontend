@@ -4,6 +4,7 @@
  * Following CLAUDE.md Layer 4 (Views/Pages) principles
  */
 
+import { AlertCircle, ArrowLeft, Calendar, Check, Package, Plus, Save, X } from 'lucide-react';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';

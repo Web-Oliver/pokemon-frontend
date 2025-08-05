@@ -4,7 +4,21 @@
  * Phase 9.1 - Auction List & Detail Pages implementation
  */
 
-import { PokemonModal } from '../components/design-system/PokemonModal';
+import React, { useState, useEffect } from 'react';
+import { 
+  Package, 
+  Calendar, 
+  DollarSign, 
+  X, 
+  Share, 
+  Copy, 
+  FileText, 
+  Download, 
+  Plus, 
+  Check 
+} from 'lucide-react';
+import { PokemonModal, PokemonConfirmModal } from '../components/design-system/PokemonModal';
+import { PokemonButton } from '../components/design-system/PokemonButton';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';

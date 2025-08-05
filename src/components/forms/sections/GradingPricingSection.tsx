@@ -4,6 +4,9 @@
  * Following CLAUDE.md + Context7 principles for award-winning design
  */
 
+import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { Award, Star, TrendingUp, Target, DollarSign, Calendar, Banknote } from 'lucide-react';
+import { PokemonInput } from '../../design-system/PokemonInput';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
 import ValidationField from '../fields/ValidationField';

@@ -14,10 +14,10 @@ import { useForm, UseFormReturn, FieldValues, DefaultValues } from 'react-hook-f
 import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
 import { FormWrapper } from '../common/FormWrapper';
-import { Label } from '../common/Label';
-import { ErrorText } from '../common/ErrorText';
-import { HelperText } from '../common/HelperText';
-import { LoadingSpinner } from '../common/LoadingSpinner';
+import { Label } from '../common/FormElements/Label';
+import { ErrorMessage } from '../common/FormElements/ErrorMessage';
+import { HelperText } from '../common/FormElements/HelperText';
+import LoadingSpinner from '../common/LoadingSpinner';
 import { useVisualTheme } from '../../hooks/theme/useVisualTheme';
 import { useLayoutTheme } from '../../hooks/theme/useLayoutTheme';
 import { useAnimationTheme } from '../../hooks/theme/useAnimationTheme';
@@ -405,7 +405,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
                   </option>
                 ))}
               </select>
-              {fieldError && <ErrorText>{fieldError}</ErrorText>}
+              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
               {field.helper && !fieldError && <HelperText>{field.helper}</HelperText>}
             </div>
           );
@@ -440,7 +440,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
                 )}
                 {...baseFieldProps}
               />
-              {fieldError && <ErrorText>{fieldError}</ErrorText>}
+              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
               {field.helper && !fieldError && <HelperText>{field.helper}</HelperText>}
             </div>
           );
@@ -466,7 +466,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
                   {field.label}
                 </Label>
               )}
-              {fieldError && <ErrorText>{fieldError}</ErrorText>}
+              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
             </div>
           );
           

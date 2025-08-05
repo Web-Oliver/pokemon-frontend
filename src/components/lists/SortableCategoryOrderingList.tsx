@@ -16,7 +16,7 @@ import {
   reorderArray,
   SortableList,
 } from '../../contexts/DragDropContext';
-import { SortableItemCard } from './SortableItemCard';
+import { PokemonCard } from '../design-system/PokemonCard';
 import { CollectionItem, ItemCategory } from '../../domain/models/ordering';
 import { getItemCategory } from '../../utils/orderingUtils';
 
@@ -177,7 +177,7 @@ const SortableCategoryOrderingListComponent: React.FC<
 
     return (
       <div className="rotate-3 opacity-95">
-        <SortableItemCard
+        <PokemonCard
           id={draggedItem.id}
           item={draggedItem}
           index={0}
@@ -263,7 +263,7 @@ const SortableCategoryOrderingListComponent: React.FC<
           <SortableList items={categoryItemIds}>
             <div className="grid gap-2">
               {categoryItems.map((item, index) => (
-                <SortableItemCard
+                <PokemonCard
                   key={item.id}
                   id={item.id}
                   item={item}

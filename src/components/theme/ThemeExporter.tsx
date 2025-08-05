@@ -15,6 +15,7 @@
  */
 
 import React, { useState, useCallback, useRef } from 'react';
+import { Download, Upload } from 'lucide-react';
 import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../../contexts/theme';
 import {
   exportTheme,

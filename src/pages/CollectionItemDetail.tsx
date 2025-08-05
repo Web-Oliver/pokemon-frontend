@@ -4,6 +4,7 @@
  * Following CLAUDE.md principles for detailed information display
  */
 
+import { ArrowLeft, Check, CheckCircle, Download, Edit, Info, Package, Plus, Star } from 'lucide-react';
 import { PokemonModal } from '../components/design-system/PokemonModal';
 import { ImageProductView } from '../components/common/ImageProductView';
 import LoadingSpinner from '../components/common/LoadingSpinner';

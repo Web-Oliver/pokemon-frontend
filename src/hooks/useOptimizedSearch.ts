@@ -380,7 +380,7 @@ export const useSearchResultSelector = <T>(
   dependencies: React.DependencyList = []
 ) => {
   return useMemo(
-    () => results.map(selector),
+    () => Array.isArray(results) ? results.map(selector) : [],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [results, selector, ...dependencies]
   );
