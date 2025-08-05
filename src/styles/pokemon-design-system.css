@@ -5,37 +5,63 @@
  */
 
 /* ================================
-   THEME FOUNDATION
-   Design tokens extracted from existing patterns
+   UNIFIED THEME FOUNDATION
+   Phase 1.1.2: Enhanced CSS Custom Properties System
+   Integration with ThemeContext.tsx comprehensive theme tokens
    ================================ */
 @theme {
-  /* Pokemon Collection Brand Colors */
+  /* THEME-AWARE COLOR TOKENS */
+  /* Dynamic colors controlled by ThemeContext */
+  --theme-primary: var(--theme-primary-gradient, #06b6d4);
+  --theme-primary-hover: var(--theme-primary-hover-gradient, #0891b2);
+  --theme-secondary: var(--theme-secondary-gradient, #6366f1);
+  --theme-accent: var(--theme-accent-gradient, #8b5cf6);
+  
+  /* Theme-aware background system */
+  --theme-bg-primary: var(--theme-header-background, rgba(9, 9, 11, 0.8));
+  --theme-bg-secondary: var(--theme-bg-card, rgba(24, 24, 27, 0.8));
+  --theme-bg-accent: var(--theme-bg-overlay, rgba(39, 39, 42, 0.8));
+  
+  /* Theme-aware border colors */
+  --theme-border-primary: var(--theme-border-color, rgba(113, 113, 122, 0.5));
+  --theme-border-secondary: var(--theme-border-subtle, rgba(113, 113, 122, 0.3));
+  --theme-border-accent: var(--theme-border-focus, rgba(6, 182, 212, 0.5));
+  
+  /* Pokemon Collection Brand Colors (Static) */
   --color-pokemon-red: oklch(0.65 0.25 25);
   --color-pokemon-blue: oklch(0.55 0.20 250);
   --color-pokemon-yellow: oklch(0.85 0.18 85);
   --color-pokemon-green: oklch(0.65 0.20 145);
   
-  /* Context7 2025 Futuristic Palette */
+  /* Context7 2025 Futuristic Palette (Static) */
   --color-cyber-cyan: oklch(0.70 0.15 195);
   --color-neural-purple: oklch(0.60 0.18 305);
   --color-quantum-pink: oklch(0.65 0.22 340);
   --color-plasma-emerald: oklch(0.60 0.18 155);
   
-  /* Glassmorphism Background System */
-  --bg-glass-primary: rgba(255, 255, 255, 0.15);
-  --bg-glass-secondary: rgba(6, 182, 212, 0.12);
-  --bg-glass-accent: rgba(168, 85, 247, 0.15);
+  /* GLASSMORPHISM INTENSITY SYSTEM */
+  /* Dynamic intensity controlled by ThemeContext glassmorphismIntensity */
+  --glass-alpha: var(--glass-alpha, 0.8);
+  --glass-blur: var(--glass-blur, 16px);
   
-  /* Border System for Glassmorphism */
-  --border-glass-light: rgba(255, 255, 255, 0.20);
-  --border-glass-medium: rgba(255, 255, 255, 0.15);
-  --border-glass-subtle: rgba(255, 255, 255, 0.10);
+  /* Glassmorphism Background System (Intensity-aware) */
+  --bg-glass-primary: rgba(255, 255, 255, calc(0.15 * var(--glass-alpha)));
+  --bg-glass-secondary: rgba(6, 182, 212, calc(0.12 * var(--glass-alpha)));
+  --bg-glass-accent: rgba(168, 85, 247, calc(0.15 * var(--glass-alpha)));
+  --bg-glass-overlay: rgba(0, 0, 0, calc(0.3 * var(--glass-alpha)));
   
-  /* Shadow System - Premium Depth */
-  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  --shadow-glass-hover: 0 12px 40px 0 rgba(6, 182, 212, 0.3);
-  --shadow-neural: 0 0 20px rgba(6, 182, 212, 0.3);
-  --shadow-quantum: 0 0 30px rgba(168, 85, 247, 0.3);
+  /* Border System for Glassmorphism (Intensity-aware) */
+  --border-glass-light: rgba(255, 255, 255, calc(0.20 * var(--glass-alpha)));
+  --border-glass-medium: rgba(255, 255, 255, calc(0.15 * var(--glass-alpha)));
+  --border-glass-subtle: rgba(255, 255, 255, calc(0.10 * var(--glass-alpha)));
+  
+  /* Shadow System - Premium Depth (Theme-aware) */
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, calc(0.37 * var(--glass-alpha)));
+  --shadow-glass-hover: 0 12px 40px 0 rgba(6, 182, 212, calc(0.3 * var(--glass-alpha)));
+  --shadow-neural: 0 0 20px rgba(6, 182, 212, calc(0.3 * var(--glass-alpha)));
+  --shadow-quantum: 0 0 30px rgba(168, 85, 247, calc(0.3 * var(--glass-alpha)));
+  --shadow-cosmic: 0 0 40px rgba(139, 92, 246, calc(0.4 * var(--glass-alpha)));
+  --shadow-minimal: 0 4px 16px 0 rgba(0, 0, 0, calc(0.1 * var(--glass-alpha)));
   
   /* Typography Scale */
   --text-xs: 0.75rem;
@@ -48,7 +74,17 @@
   --text-4xl: 2.25rem;
   --text-5xl: 3rem;
   
-  /* Spacing Scale - Consistent with existing patterns */
+  /* DENSITY-AWARE SPACING TOKENS */
+  /* Dynamic spacing controlled by ThemeContext density setting */
+  --density-spacing-xs: var(--density-spacing-xs, 0.25rem);
+  --density-spacing-sm: var(--density-spacing-sm, 0.5rem);
+  --density-spacing-md: var(--density-spacing-md, 1rem);
+  --density-spacing-lg: var(--density-spacing-lg, 1.5rem);
+  --density-spacing-xl: var(--density-spacing-xl, 2rem);
+  --density-spacing-2xl: calc(var(--density-spacing-xl) * 1.5);
+  --density-spacing-3xl: calc(var(--density-spacing-xl) * 2);
+  
+  /* Legacy spacing scale (maintained for compatibility) */
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
   --spacing-3: 0.75rem;
@@ -59,15 +95,25 @@
   --spacing-12: 3rem;
   --spacing-16: 4rem;
   
-  /* Border Radius Scale */
+  /* THEME-AWARE BORDER RADIUS */
+  /* Visual theme specific radius values */
+  --radius-xs: 0.25rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
   --radius-3xl: 2rem;
+  --radius-full: 9999px;
   
-  /* Animation System */
+  /* ANIMATION INTENSITY SYSTEM */
+  /* Dynamic durations controlled by ThemeContext animationIntensity */
+  --animation-duration-fast: var(--animation-duration-fast, 0.15s);
+  --animation-duration-normal: var(--animation-duration-normal, 0.3s);
+  --animation-duration-slow: var(--animation-duration-slow, 0.5s);
+  --animation-duration-slower: 1s;
+  
+  /* Legacy animation durations (maintained for compatibility) */
   --duration-fast: 0.15s;
   --duration-normal: 0.3s;
   --duration-slow: 0.5s;
@@ -455,5 +501,157 @@
 
 .glass-bg {
   background: var(--bg-glass-primary);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.cosmic-glow {
+  box-shadow: var(--shadow-cosmic);
+}
+
+.minimal-shadow {
+  box-shadow: var(--shadow-minimal);
+}
+
+/* ================================
+   VISUAL THEME CLASSES
+   ThemeContext integration for different visual themes
+   ================================ */
+
+/* Context7 Premium Theme (Default) */
+.theme-context7-premium {
+  --theme-signature-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+  --theme-card-background: var(--bg-glass-primary);
+  --theme-card-border: var(--border-glass-light);
+  --theme-shadow-primary: var(--shadow-glass);
+  --theme-shadow-hover: var(--shadow-glass-hover);
+}
+
+/* Context7 2025 Futuristic Theme */
+.theme-context7-futuristic {
+  --theme-signature-gradient: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #6600cc 100%);
+  --theme-card-background: rgba(0, 212, 255, 0.1);
+  --theme-card-border: rgba(0, 212, 255, 0.3);
+  --theme-shadow-primary: var(--shadow-neural);
+  --theme-shadow-hover: 0 0 40px rgba(0, 212, 255, 0.4);
+}
+
+/* DBA Cosmic Theme */
+.theme-dba-cosmic {
+  --theme-signature-gradient: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%);
+  --theme-card-background: rgba(139, 92, 246, 0.15);
+  --theme-card-border: rgba(139, 92, 246, 0.3);
+  --theme-shadow-primary: var(--shadow-cosmic);
+  --theme-shadow-hover: 0 0 50px rgba(139, 92, 246, 0.5);
+}
+
+/* Minimal Clean Theme */
+.theme-minimal {
+  --theme-signature-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --theme-card-background: rgba(255, 255, 255, 0.9);
+  --theme-card-border: rgba(0, 0, 0, 0.1);
+  --theme-shadow-primary: var(--shadow-minimal);
+  --theme-shadow-hover: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   DENSITY CLASSES
+   ThemeContext density setting support
+   ================================ */
+
+.density-compact {
+  --spacing-multiplier: 0.8;
+}
+
+.density-compact .card-glass,
+.density-compact .btn-pokemon,
+.density-compact .filter-pill {
+  padding: calc(var(--density-spacing-sm) * 0.8) calc(var(--density-spacing-md) * 0.8);
+}
+
+.density-comfortable {
+  --spacing-multiplier: 1;
+}
+
+.density-spacious {
+  --spacing-multiplier: 1.2;
+}
+
+.density-spacious .card-glass,
+.density-spacious .btn-pokemon,
+.density-spacious .filter-pill {
+  padding: calc(var(--density-spacing-md) * 1.2) calc(var(--density-spacing-lg) * 1.2);
+}
+
+/* ================================
+   ANIMATION INTENSITY CLASSES
+   ThemeContext animationIntensity setting support
+   ================================ */
+
+.animation-disabled * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+.animation-subtle {
+  --animation-scale: 0.5;
+}
+
+.animation-subtle .hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.animation-subtle .hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.animation-normal {
+  --animation-scale: 1;
+}
+
+.animation-enhanced {
+  --animation-scale: 1.5;
+}
+
+.animation-enhanced .hover-scale:hover {
+  transform: scale(1.08);
+}
+
+.animation-enhanced .hover-lift:hover {
+  transform: translateY(-8px);
+}
+
+.animation-enhanced .card-glass:hover {
+  transform: scale(1.03) translateY(-6px) rotateX(2deg);
+}
+
+/* ================================
+   ACCESSIBILITY CLASSES
+   ThemeContext accessibility settings support
+   ================================ */
+
+.high-contrast {
+  --theme-border-primary: rgba(255, 255, 255, 0.8);
+  --theme-border-secondary: rgba(255, 255, 255, 0.6);
+  --bg-glass-primary: rgba(0, 0, 0, 0.9);
+  --bg-glass-secondary: rgba(255, 255, 255, 0.9);
+}
+
+.reduced-motion {
+  --animation-duration-fast: 0s;
+  --animation-duration-normal: 0s;
+  --animation-duration-slow: 0s;
+}
+
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.no-particles .particles,
+.no-particles .particle {
+  display: none !important;
 }
