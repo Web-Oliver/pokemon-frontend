@@ -69,16 +69,10 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         <div className="relative">
           {/* Multi-layer rotating rings with theme colors */}
           <div
-            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r ${elementTheme.gradient} animate-spin ${sizeClasses[size]}`}
-            style={{ clipPath: 'polygon(0% 0%, 25% 0%, 25% 25%, 0% 25%)' }}
+            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r ${elementTheme.gradient} animate-spin ${sizeClasses[size]} [clip-path:polygon(0%_0%,25%_0%,25%_25%,0%_25%)]`}
           ></div>
           <div
-            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l ${elementTheme.glow} animate-spin ${sizeClasses[size]} opacity-60`}
-            style={{
-              clipPath: 'polygon(75% 75%, 100% 75%, 100% 100%, 75% 100%)',
-              animationDuration: '1.5s',
-              animationDirection: 'reverse',
-            }}
+            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l ${elementTheme.glow} animate-spin ${sizeClasses[size]} opacity-60 [clip-path:polygon(75%_75%,100%_75%,100%_100%,75%_100%)] [animation-duration:1.5s] [animation-direction:reverse]`}
           ></div>
 
           {/* Inner pulsing circle with enhanced glow */}
@@ -92,12 +86,10 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
           {/* Premium shimmer effect with enhanced animation */}
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-30 ${sizeClasses[size]}`}
-            style={{ animationDelay: '0.5s' }}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-30 ${sizeClasses[size]} [animation-delay:0.5s]`}
           ></div>
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-20 ${sizeClasses[size]}`}
-            style={{ animationDelay: '1s' }}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-20 ${sizeClasses[size]} [animation-delay:1s]`}
           ></div>
         </div>
 

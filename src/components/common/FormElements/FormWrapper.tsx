@@ -44,27 +44,25 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   return (
     <div 
       className={`${widthClass} group ${className}`}
-      style={cssProperties}
+      style={{
+        ...cssProperties,
+        '--form-transition-duration': animationDuration,
+        '--form-blur-intensity': `${config.glassmorphismIntensity / 20}px`,
+      }}
     >
       <div className={`relative ${widthClass}`}>
         {/* Theme-aware Background Gradient */}
         <div 
-          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${backgroundGradient} opacity-0 group-focus-within:opacity-100 pointer-events-none`}
-          style={{ 
-            transitionProperty: 'opacity',
-            transitionDuration: animationDuration,
-            transitionTimingFunction: 'ease-out'
-          }}
+          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${backgroundGradient} opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity ease-out`}
+          style={{ transitionDuration: 'var(--form-transition-duration)' }}
         ></div>
 
         {/* Theme-aware Glow Effect */}
         <div 
-          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${primaryGradient} opacity-0 group-focus-within:opacity-100 blur-sm -z-10 pointer-events-none`}
+          className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${primaryGradient} opacity-0 group-focus-within:opacity-100 blur-sm -z-10 pointer-events-none transition-opacity ease-out`}
           style={{ 
-            transitionProperty: 'opacity',
-            transitionDuration: animationDuration,
-            transitionTimingFunction: 'ease-out',
-            filter: `blur(${config.glassmorphismIntensity / 20}px)`
+            transitionDuration: 'var(--form-transition-duration)',
+            filter: `blur(var(--form-blur-intensity))`
           }}
         ></div>
 
