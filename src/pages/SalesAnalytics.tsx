@@ -7,64 +7,25 @@
  * Following CLAUDE.md principles for beautiful, award-winning design.
  */
 
-import {
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  Calendar,
-  DollarSign,
-  Download,
-  Minus,
-  PieChart,
-  RefreshCcw,
-  TrendingUp,
-  X,
-} from 'lucide-react';
+import { Calendar, DollarSign, Download, TrendingUp, X } from 'lucide-react';
 import React, { useState } from 'react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart as RechartsPieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import Button from '../components/common/Button';
-import DateRangeFilter, {
-  DateRangeState,
-} from '../components/common/DateRangeFilter';
+import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../utils/errorHandler';
 import { displayPrice } from '../utils/formatting';
 import '../styles/context7-premium.css';
 
 const SalesAnalytics: React.FC = () => {
-  const {
-    sales,
-    graphData,
-    loading,
-    error,
-    kpis,
-    categoryBreakdown,
-    trendAnalysis: _trendAnalysis,
-    dateRange,
-    setDateRange,
-    refreshData,
-  } = useSalesAnalytics();
+  const { sales, loading, error, dateRange, setDateRange } =
+    useSalesAnalytics();
 
   const [localDateRange, setLocalDateRange] = useState<DateRangeState>({
     startDate: dateRange?.startDate,
     endDate: dateRange?.endDate,
   });
-
-  // Chart colors
-  const chartColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
   // Use centralized price formatting from utils/formatting.ts
 
@@ -82,60 +43,6 @@ const SalesAnalytics: React.FC = () => {
     } catch (error) {
       console.error('Export error:', error);
       showSuccessToast('Export completed despite some formatting issues');
-    }
-  };
-
-  // Format percentage
-  const _formatPercentage = (value: number) => {
-    return `${value.toFixed(1)}%`;
-  };
-
-  // Handle date range changes from the DateRangeFilter component
-  const handleDateRangeChange = (newDateRange: DateRangeState) => {
-    setLocalDateRange(newDateRange);
-    setDateRange({
-      startDate: newDateRange.startDate,
-      endDate: newDateRange.endDate,
-    });
-  };
-
-  // Prepare pie chart data
-  const pieChartData = categoryBreakdown
-    ? Object.entries(categoryBreakdown)
-        .map(([category, data]) => {
-          let displayName = category;
-          // Shorten category names for better display
-          switch (category) {
-            case 'psaGradedCard':
-              displayName = 'PSA Cards';
-              break;
-            case 'rawCard':
-              displayName = 'Raw Cards';
-              break;
-            case 'sealedProduct':
-              displayName = 'Sealed';
-              break;
-            default:
-              displayName = category.replace(/([A-Z])/g, ' $1').trim();
-          }
-          return {
-            name: displayName,
-            value: data?.revenue || 0,
-            count: data?.count || 0,
-          };
-        })
-        .filter((item) => item.value > 0)
-    : [];
-
-  // Get trend icon
-  const _getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <ArrowUp className="w-4 h-4 text-green-500" />;
-      case 'down':
-        return <ArrowDown className="w-4 h-4 text-red-500" />;
-      default:
-        return <Minus className="w-4 h-4 text-zinc-500" />;
     }
   };
 
@@ -254,7 +161,7 @@ const SalesAnalytics: React.FC = () => {
                     Sales Overview
                   </h2>
                   <p className="text-[var(--theme-text-secondary)]">
-                    Track your collection's performance
+                    Track your collection&apos;s performance
                   </p>
                 </div>
 

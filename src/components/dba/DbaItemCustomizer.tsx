@@ -160,4 +160,6 @@ const DbaItemCustomizer: React.FC<DbaItemCustomizerProps> = React.memo(
   }
 );
 
+DbaItemCustomizer.displayName = 'DbaItemCustomizer';
+
 export default DbaItemCustomizer;

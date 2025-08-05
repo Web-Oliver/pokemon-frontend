@@ -14,7 +14,7 @@ import { log } from './utils/logger';
 import { Toaster } from 'react-hot-toast';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { queryClient } from './lib/queryClient';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ComposedThemeProvider as ThemeProvider } from './contexts/theme/ComposedThemeProvider';
 import { ThemeDebugger } from './components/theme';
 // Cache debugging removed - overengineered development utility not needed
 
@@ -201,7 +201,7 @@ function App() {
               buttonPosition="bottom-left"
               position="bottom"
             />
-            <ThemeDebugger position="bottom-right" />
+            {/* ThemeDebugger temporarily disabled during refactoring */}
           </>
         )}
         <Toaster

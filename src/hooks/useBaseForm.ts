@@ -161,7 +161,7 @@ export const useBaseForm = <T extends FieldValues>(
         }
       });
     },
-    [fieldMapping]
+    [fieldMapping, form]
   );
 
   // Handle initialData on mount and when it changes (for async loading)

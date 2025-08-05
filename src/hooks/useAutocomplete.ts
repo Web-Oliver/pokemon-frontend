@@ -153,6 +153,7 @@ export const useAutocomplete = (
     } else {
       search.clearResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     state.value,
     state.isOpen,
@@ -203,7 +204,7 @@ export const useAutocomplete = (
       onSelect?.(result);
       search.clearResults();
     },
-    [onSelect]
+    [onSelect, search]
   );
 
   // Select by index
@@ -262,6 +263,7 @@ export const useAutocomplete = (
     if (hierarchicalConfig?.enableHierarchical) {
       searchApiService.clearSearchContext();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hierarchicalConfig?.enableHierarchical]);
 
   // NEW: Hierarchical methods
@@ -318,11 +320,7 @@ export const useAutocomplete = (
       }
       return {};
     },
-    [
-      hierarchicalConfig?.enableHierarchical,
-      hierarchicalConfig?.onAutofill,
-      searchApiService,
-    ]
+    [hierarchicalConfig]
   );
 
   const setFieldType = useCallback(

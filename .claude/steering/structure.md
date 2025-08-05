@@ -60,17 +60,19 @@ src/
 ## 🏗️ Architectural Patterns
 
 ### Layered Dependency Flow
+
 ```
-Layer 4 (Pages) 
+Layer 4 (Pages)
     ↓ depends on
-Layer 3 (Components) 
-    ↓ depends on  
+Layer 3 (Components)
+    ↓ depends on
 Layer 2 (Services/Hooks/Domain)
     ↓ depends on
 Layer 1 (Core/API/Utils)
 ```
 
 ### Component Organization
+
 - **Generic First**: Most reusable components in `components/common/`
 - **Feature Grouping**: Related components grouped by functionality
 - **Index Exports**: Clean imports through `index.ts` files
@@ -79,6 +81,7 @@ Layer 1 (Core/API/Utils)
 ## 📋 Naming Conventions
 
 ### Files & Directories
+
 - **Components**: PascalCase (e.g., `CollectionItemCard.tsx`)
 - **Hooks**: camelCase with "use" prefix (e.g., `useCollectionState.ts`)
 - **Services**: PascalCase with "Service" suffix (e.g., `CollectionApiService.ts`)
@@ -87,6 +90,7 @@ Layer 1 (Core/API/Utils)
 - **Directories**: kebab-case or camelCase (e.g., `forms/`, `searchApi/`)
 
 ### Code Conventions
+
 - **Interfaces**: PascalCase with "I" prefix (e.g., `ICollectionApiService`)
 - **Types**: PascalCase (e.g., `CollectionItem`, `SearchResult`)
 - **Constants**: SCREAMING_SNAKE_CASE (e.g., `API_BASE_URL`)
@@ -96,12 +100,14 @@ Layer 1 (Core/API/Utils)
 ## 🔄 Feature Development Process
 
 ### Branch Strategy
+
 - **main**: Production-ready code
-- **develop**: Integration branch for features  
+- **develop**: Integration branch for features
 - **feature/<name>**: New feature development (e.g., `feature/auction-export`)
 - **bugfix/<description>**: Bug fixes (e.g., `bugfix/search-autocomplete`)
 
 ### Feature Implementation Flow
+
 1. **Requirements**: Define user stories and acceptance criteria
 2. **Design**: Create technical design following layered architecture
 3. **Tasks**: Break down into atomic, layer-respecting tasks
@@ -110,7 +116,9 @@ Layer 1 (Core/API/Utils)
 6. **Integration**: Merge through develop branch
 
 ### New Feature Structure
+
 When adding new features, follow this organization:
+
 ```
 # Example: Adding new "Price History" feature
 src/
@@ -124,7 +132,9 @@ src/
 ## 📦 Import/Export Standards
 
 ### Index Files
+
 Every directory with multiple files should have an `index.ts`:
+
 ```typescript
 // src/components/common/index.ts
 export { default as Button } from './Button';
@@ -133,15 +143,18 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 ```
 
 ### Import Order
+
 1. React and external libraries
 2. Internal utilities and config (Layer 1)
-3. Hooks and services (Layer 2)  
+3. Hooks and services (Layer 2)
 4. Components (Layer 3)
 5. Types and interfaces
 6. Relative imports
 
 ### Barrel Exports
+
 Use barrel exports for clean imports:
+
 ```typescript
 // Good
 import { Button, Modal } from 'components/common';
@@ -154,6 +167,7 @@ import Modal from 'components/common/Modal';
 ## 🧪 Testing Structure
 
 ### Test File Organization
+
 ```
 src/
 ├── hooks/
@@ -168,6 +182,7 @@ src/
 ```
 
 ### Test Naming
+
 - **Unit Tests**: `ComponentName.test.tsx`
 - **Integration Tests**: `featureName.integration.test.ts`
 - **Hook Tests**: `useHookName.test.ts`
@@ -175,6 +190,7 @@ src/
 ## 🔧 Build & Configuration Files
 
 ### Root Level
+
 - `package.json`: Dependencies and scripts
 - `vite.config.ts`: Build configuration
 - `tsconfig.json`: TypeScript configuration
@@ -182,6 +198,7 @@ src/
 - `eslint.config.js`: Code quality rules
 
 ### Development Standards
+
 - **No Nested Ternaries**: Use early returns or separate functions
 - **Component Size**: Keep components under 200 lines
 - **Hook Complexity**: Extract complex logic into separate services
@@ -190,6 +207,7 @@ src/
 ## 📋 Code Organization Principles
 
 ### SOLID Architecture Compliance
+
 - **Single Responsibility**: Each file/component has one clear purpose
 - **Open/Closed**: Extend functionality without modifying existing code
 - **Liskov Substitution**: Interfaces and abstract components are replaceable
@@ -197,6 +215,7 @@ src/
 - **Dependency Inversion**: Depend on abstractions, not concrete implementations
 
 ### DRY Implementation
+
 - **Shared Utilities**: Common logic in `src/utils/`
 - **Reusable Components**: Generic components in `components/common/`
 - **Hook Extraction**: Reusable stateful logic in custom hooks

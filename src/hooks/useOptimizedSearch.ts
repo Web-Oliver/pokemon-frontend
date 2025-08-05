@@ -17,7 +17,6 @@
 
 import { useState, useCallback, useMemo, useRef, useTransition } from 'react';
 import { useSearch, SearchResult } from './useSearch';
-import { useDebouncedValue } from './useDebounce';
 import { searchApiService } from '../services/SearchApiService';
 
 interface OptimizedSearchConfig {
@@ -47,7 +46,7 @@ interface OptimizedSearchState {
 export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
   const {
     minLength = 1,
-    debounceMs = 300,
+    debounceMs: _debounceMs = 300,
     enableTransitions = true,
     hierarchicalMode = true, // Enable hierarchical mode by default
     allowSimultaneousSuggestions = false, // Per user specification - no simultaneous suggestions
@@ -75,7 +74,7 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
       query: string,
       searchType: 'sets' | 'products' | 'cards' | 'setProducts', // UPDATED: Added setProducts
       setFilter?: string,
-      setProductFilter?: string // NEW: SetProduct filtering
+      _setProductFilter?: string // NEW: SetProduct filtering
     ) => {
       if (!query || query.length < minLength) {
         setState((prev) => ({
@@ -207,7 +206,16 @@ export const useOptimizedSearch = (config: OptimizedSearchConfig = {}) => {
         await searchOperation();
       }
     },
-    [search, minLength, enableTransitions, startTransition]
+    [
+      search,
+      minLength,
+      enableTransitions,
+      startTransition,
+      allowSimultaneousSuggestions,
+      hierarchicalMode,
+      state.selectedSet,
+      state.selectedSetProduct,
+    ]
   );
 
   // Context7 Pattern: Memoized handlers with stable references
@@ -373,6 +381,7 @@ export const useSearchResultSelector = <T>(
 ) => {
   return useMemo(
     () => results.map(selector),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [results, selector, ...dependencies]
   );
 };

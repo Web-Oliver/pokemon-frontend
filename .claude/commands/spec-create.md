@@ -3,11 +3,13 @@
 Create a new feature specification following the spec-driven workflow.
 
 ## Usage
+
 ```
 /spec-create <feature-name> [description]
 ```
 
 ## Instructions
+
 You are helping create a new feature specification. Follow these steps:
 
 **WORKFLOW SEQUENCE**: Requirements → Design → Tasks → Generate Commands
@@ -65,9 +67,11 @@ You are helping create a new feature specification. Follow these steps:
    - **DO NOT** run scripts during /spec-create - only create requirements
 
 ## Example
+
 ```
 /spec-create user-authentication "Allow users to sign up and log in securely"
 ```
 
 ## Next Steps
+
 After user approval, proceed to `/spec-design` phase.

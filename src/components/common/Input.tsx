@@ -14,14 +14,9 @@
 import React, { forwardRef, InputHTMLAttributes } from 'react';
 import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
 import { StandardInputProps } from '../../types/themeTypes';
-import {
-  cn,
-  inputStyleConfig,
-  generateThemeClasses,
-  getFocusClasses,
-} from '../../utils/themeUtils';
+import { cn } from '../../utils/themeUtils';
 import { inputClasses } from '../../utils/classNameUtils';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 
 export interface InputProps
   extends InputHTMLAttributes<HTMLInputElement>,
@@ -48,7 +43,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       disabled = false,
       readOnly = false,
       theme,
-      colorScheme,
+      _colorScheme,
       density,
       animationIntensity,
       className = '',
@@ -61,13 +56,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const themeContext = useTheme();
+    const { visualTheme } = useVisualTheme();
+    const { density: contextDensity } = useLayoutTheme();
+    const { animationIntensity: contextAnimationIntensity } = useAnimationTheme();
 
     // Merge context theme with component props
-    const effectiveTheme = theme || themeContext?.config.visualTheme;
-    const effectiveDensity = density || themeContext?.config.density;
+    const effectiveTheme = theme || visualTheme;
+    const effectiveDensity = density || contextDensity;
     const effectiveAnimationIntensity =
-      animationIntensity || themeContext?.config.animationIntensity;
+      animationIntensity || contextAnimationIntensity;
 
     // Generate unique input ID
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;

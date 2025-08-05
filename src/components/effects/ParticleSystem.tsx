@@ -13,7 +13,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useCentralizedTheme, themeUtils } from '../../utils/themeConfig';
 
 export interface ParticleSystemProps {
   /** Number of particles to render */
@@ -41,10 +41,10 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({
   animationType = 'pulse',
   className = '',
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   // Respect theme settings for particle effects
-  if (!config.particleEffectsEnabled) {
+  if (!themeUtils.shouldShowParticles(themeConfig)) {
     return null;
   }
 

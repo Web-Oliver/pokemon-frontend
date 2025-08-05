@@ -137,6 +137,7 @@ export const SortableList: React.FC<SortableListProps> = ({
 /**
  * Hook to use drag & drop context
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useDragDrop = () => {
   const context = useContext(DragDropContext);
   if (!context) {
@@ -148,6 +149,7 @@ export const useDragDrop = () => {
 /**
  * Utility function to create drag & drop transform styles
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const createDragStyle = (
   transform: { x: number; y: number } | null,
   transition?: string | null,
@@ -166,6 +168,7 @@ export const createDragStyle = (
 /**
  * Utility function to handle array reordering
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const reorderArray = <T,>(
   array: T[],
   activeId: string | number,
@@ -186,6 +189,7 @@ export const reorderArray = <T,>(
 /**
  * Utility function to check if drag operation is allowed
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const isDragAllowed = (
   activeId: string,
   overId: string,
@@ -220,6 +224,7 @@ export const isDragAllowed = (
 /**
  * Utility function to generate drag feedback styles
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const getDragFeedbackStyles = (
   isDragging: boolean,
   isOver?: boolean

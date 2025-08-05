@@ -76,7 +76,7 @@ export const useDbaExport = () => {
   const [customDescription, setCustomDescription] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportResult, setExportResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, _setError] = useState<string | null>(null);
 
   // React Query for DBA selections with proper caching
   const { data: dbaSelections = [], isLoading: loadingDbaSelections } =

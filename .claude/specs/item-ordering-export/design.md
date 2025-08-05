@@ -7,13 +7,15 @@ This feature introduces a comprehensive item ordering system for the collection 
 ## Code Reuse Analysis
 
 ### Existing Components to Leverage
+
 - **CollectionExportModal.tsx**: Base modal for export functionality - will be extended with ordering UI
-- **useCollectionExport.ts**: Hook for export operations - will add ordering logic 
+- **useCollectionExport.ts**: Hook for export operations - will add ordering logic
 - **exportUtils.ts**: Export utilities - will add ordering helper functions
 - **ExportApiService.ts**: API service - will integrate ordered export requests
 - **CreateAuction.tsx**: Contains drag-and-drop patterns for item reordering (lines 8-29 show GripVertical, ArrowUpDown icons)
 
 ### Existing Patterns
+
 - **Drag & Drop**: CreateAuction page already implements item reordering with GripVertical icons
 - **Price Sorting**: Price-based sorting patterns exist in data tables and auction creation
 - **Item Display**: Consistent item card layouts across PSA Cards, Raw Cards, and Sealed Products
@@ -22,6 +24,7 @@ This feature introduces a comprehensive item ordering system for the collection 
 ## Architecture
 
 ### Data Flow
+
 ```mermaid
 graph TD
     A[Export Modal] --> B[Item Ordering Controls]
@@ -35,6 +38,7 @@ graph TD
 ```
 
 ### Component Hierarchy
+
 ```mermaid
 graph TD
     A[CollectionExportModal] --> B[ItemOrderingSection]
@@ -48,7 +52,9 @@ graph TD
 ## Components and Interfaces
 
 ### 1. ItemOrderingSection Component
+
 **Layer 3: UI Building Blocks**
+
 ```typescript
 interface ItemOrderingSectionProps {
   items: CollectionItem[];
@@ -60,7 +66,9 @@ interface ItemOrderingSectionProps {
 ```
 
 ### 2. CategoryOrderingList Component
+
 **Layer 3: UI Building Blocks**
+
 ```typescript
 interface CategoryOrderingListProps {
   categoryItems: CollectionItem[];
@@ -72,7 +80,9 @@ interface CategoryOrderingListProps {
 ```
 
 ### 3. OrderableItemCard Component
+
 **Layer 3: UI Building Blocks**
+
 ```typescript
 interface OrderableItemCardProps {
   item: CollectionItem;
@@ -85,13 +95,16 @@ interface OrderableItemCardProps {
 ```
 
 ### 4. Enhanced Export Hook
+
 **Layer 2: Business Logic & Data Orchestration**
+
 ```typescript
-interface UseCollectionExportWithOrderingReturn extends UseCollectionExportReturn {
+interface UseCollectionExportWithOrderingReturn
+  extends UseCollectionExportReturn {
   // Ordering state
   itemOrder: string[];
   orderedItems: CollectionItem[];
-  
+
   // Ordering functions
   reorderItems: (newOrder: string[]) => void;
   moveItemUp: (itemId: string) => void;
@@ -105,6 +118,7 @@ interface UseCollectionExportWithOrderingReturn extends UseCollectionExportRetur
 ## Data Models
 
 ### Item Ordering State
+
 ```typescript
 interface ItemOrderingState {
   globalOrder: string[]; // All items in desired order
@@ -119,6 +133,7 @@ interface ItemOrderingState {
 ```
 
 ### Export Request Enhancement
+
 ```typescript
 interface OrderedExportRequest extends ExportRequest {
   itemOrder?: string[]; // Specific order for items
@@ -128,6 +143,7 @@ interface OrderedExportRequest extends ExportRequest {
 ```
 
 ### Ordered Collection Item
+
 ```typescript
 interface OrderedCollectionItem extends CollectionItem {
   orderIndex: number;
@@ -139,10 +155,11 @@ interface OrderedCollectionItem extends CollectionItem {
 ## Error Handling
 
 ### Ordering Error States
+
 ```typescript
-type OrderingError = 
+type OrderingError =
   | 'INVALID_ORDER_SEQUENCE'
-  | 'MISSING_ITEMS_IN_ORDER' 
+  | 'MISSING_ITEMS_IN_ORDER'
   | 'DUPLICATE_ITEMS_IN_ORDER'
   | 'CATEGORY_MISMATCH'
   | 'SORT_OPERATION_FAILED';
@@ -155,6 +172,7 @@ interface OrderingErrorContext {
 ```
 
 ### Error Recovery
+
 - **Invalid Order**: Reset to original item order
 - **Missing Items**: Add missing items to end of order
 - **Duplicates**: Remove duplicates, keep first occurrence
@@ -163,18 +181,21 @@ interface OrderingErrorContext {
 ## Testing Strategy
 
 ### Unit Tests
+
 - **Order Validation**: Test order array validation and error detection
 - **Price Sorting**: Test automatic sorting by price in both directions
 - **Category Filtering**: Test ordering within specific categories
 - **State Management**: Test order state updates and persistence
 
-### Integration Tests  
+### Integration Tests
+
 - **Export Integration**: Test ordered export generation with Facebook text format
 - **Drag & Drop**: Test manual reordering via drag and drop interactions
 - **Mixed Operations**: Test combining manual reordering with auto-sorting
 - **Performance**: Test ordering with large item collections (100+ items)
 
 ### E2E Tests
+
 - **Full Workflow**: Select items → Reorder manually → Export → Verify text order
 - **Auto-Sort Workflow**: Select items → Auto-sort by price → Export → Verify price order
 - **Mixed Categories**: Test ordering across all three item categories
@@ -183,13 +204,17 @@ interface OrderingErrorContext {
 ## Implementation Details
 
 ### Drag & Drop Integration
+
 _Leverage: CreateAuction.tsx drag patterns, react-beautiful-dnd or similar_
+
 - Reuse existing drag handle styling from CreateAuction
 - Implement category-aware drag constraints
 - Provide visual feedback during drag operations
 
-### Price Sorting Algorithm  
+### Price Sorting Algorithm
+
 _Leverage: Existing price comparison utilities_
+
 ```typescript
 const sortByPrice = (items: CollectionItem[], ascending: boolean = false) => {
   return items.sort((a, b) => {
@@ -201,13 +226,17 @@ const sortByPrice = (items: CollectionItem[], ascending: boolean = false) => {
 ```
 
 ### Export Text Generation
+
 _Leverage: exportUtils.ts formatting functions_
+
 - Apply item order before text generation
 - Maintain category grouping in ordered output
 - Preserve existing Facebook post formatting
 
 ### State Persistence
+
 _Leverage: Existing localStorage patterns_
+
 - Save ordering preferences per export session
 - Restore previous ordering on modal re-open
 - Clear state after successful export
@@ -215,16 +244,19 @@ _Leverage: Existing localStorage patterns_
 ## Performance Considerations
 
 ### Virtualization
+
 - Use existing VirtualizedItemGrid for large collections
 - Implement virtualized drag & drop for 100+ items
 - Lazy load ordering controls for better initial render
 
 ### Memoization
+
 - Memoize sorted item arrays to prevent unnecessary re-sorts
 - Cache drag & drop handlers to avoid recreation
 - Optimize order validation functions
 
 ### Debouncing
+
 - Debounce manual reordering operations
 - Throttle auto-sort triggers during rapid changes
 - Batch order state updates
@@ -232,15 +264,18 @@ _Leverage: Existing localStorage patterns_
 ## Technical Requirements
 
 ### Dependencies
+
 - **react-beautiful-dnd** or **@dnd-kit/sortable**: Drag & drop functionality
 - **lodash**: Array manipulation utilities (if not already included)
 
 ### Browser Support
+
 - Modern browsers with ES2018+ support
 - Touch device support for mobile drag & drop
 - Keyboard navigation for accessibility
 
 ### Accessibility
+
 - ARIA labels for drag handles and sort buttons
 - Keyboard shortcuts for reordering (Ctrl+Up/Down)
 - Screen reader announcements for order changes
@@ -249,16 +284,19 @@ _Leverage: Existing localStorage patterns_
 ## Migration Strategy
 
 ### Phase 1: Core Ordering
+
 - Implement basic manual reordering with up/down buttons
 - Add auto-sort by price functionality
 - Integrate with existing export modal
 
 ### Phase 2: Enhanced UX
+
 - Add drag & drop interface
 - Implement category-specific ordering
 - Add order persistence
 
 ### Phase 3: Advanced Features
+
 - Bulk ordering operations
 - Custom sort criteria beyond price
 - Export preview with ordering applied

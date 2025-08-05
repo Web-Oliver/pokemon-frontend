@@ -438,6 +438,7 @@ export const useActivity = (
         abortControllerRef.current.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
 
   // Context7 Filter Change Effect

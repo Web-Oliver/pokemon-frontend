@@ -15,7 +15,8 @@
  */
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useCentralizedTheme } from '../utils/themeConfig';
+import { useAccessibilityTheme as useAccessibilityProvider } from '../contexts/theme/AccessibilityThemeProvider';
 
 // ================================
 // ACCESSIBILITY INTERFACES
@@ -112,7 +113,8 @@ export interface AccessibilityThemeState {
 function useAccessibilityTheme(
   config: AccessibilityThemeConfig = {}
 ): AccessibilityThemeState & AccessibilityThemeActions {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
+  const accessibilityProvider = useAccessibilityProvider();
   const [systemPreferences, setSystemPreferences] =
     useState<AccessibilitySystemPreferences | null>(null);
   const [accessibilityConfig, setAccessibilityConfig] =
@@ -190,14 +192,14 @@ function useAccessibilityTheme(
     });
 
     // Auto-apply system preferences if enabled
-    if (initialPreferences.prefersHighContrast && !theme.config.highContrast) {
-      theme.toggleHighContrast();
+    if (initialPreferences.prefersHighContrast && !themeConfig.highContrast) {
+      accessibilityProvider.toggleHighContrast();
     }
     if (
       initialPreferences.prefersReducedMotion &&
-      !theme.config.reducedMotion
+      !themeConfig.reducedMotion
     ) {
-      theme.toggleReducedMotion();
+      accessibilityProvider.toggleReducedMotion();
     }
 
     return () => {
@@ -205,7 +207,7 @@ function useAccessibilityTheme(
         mql.removeEventListener('change', handler);
       });
     };
-  }, [config.autoDetectPreferences, theme]);
+  }, [config.autoDetectPreferences, themeConfig, accessibilityProvider]);
 
   // ================================
   // KEYBOARD SHORTCUTS
@@ -248,6 +250,7 @@ function useAccessibilityTheme(
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.enableKeyboardShortcuts]);
 
   // ================================
@@ -265,7 +268,7 @@ function useAccessibilityTheme(
     }
   }, [config.focusManagement?.restoreFocus]);
 
-  const restoreFocus = useCallback(() => {
+  const _restoreFocus = useCallback(() => {
     if (!config.focusManagement?.restoreFocus || !previousFocusRef.current) {
       return;
     }
@@ -283,22 +286,22 @@ function useAccessibilityTheme(
   // ================================
 
   const toggleHighContrast = useCallback(() => {
-    theme.toggleHighContrast();
+    accessibilityProvider.toggleHighContrast();
     manageFocus();
-  }, [theme, manageFocus]);
+  }, [accessibilityProvider, manageFocus]);
 
   const toggleReducedMotion = useCallback(() => {
-    theme.toggleReducedMotion();
+    accessibilityProvider.toggleReducedMotion();
     manageFocus();
-  }, [theme, manageFocus]);
+  }, [accessibilityProvider, manageFocus]);
 
   const setHighContrast = useCallback(
     (
       enabled: boolean,
       overrides?: AccessibilityThemeConfig['highContrastOverrides']
     ) => {
-      if (enabled !== theme.config.highContrast) {
-        theme.toggleHighContrast();
+      if (enabled !== themeConfig.highContrast) {
+        accessibilityProvider.toggleHighContrast();
       }
 
       if (overrides) {
@@ -310,7 +313,7 @@ function useAccessibilityTheme(
 
       manageFocus();
     },
-    [theme, manageFocus]
+    [themeConfig.highContrast, accessibilityProvider, manageFocus]
   );
 
   const setReducedMotion = useCallback(
@@ -318,8 +321,8 @@ function useAccessibilityTheme(
       enabled: boolean,
       overrides?: AccessibilityThemeConfig['reducedMotionOverrides']
     ) => {
-      if (enabled !== theme.config.reducedMotion) {
-        theme.toggleReducedMotion();
+      if (enabled !== themeConfig.reducedMotion) {
+        accessibilityProvider.toggleReducedMotion();
       }
 
       if (overrides) {
@@ -331,7 +334,7 @@ function useAccessibilityTheme(
 
       manageFocus();
     },
-    [theme, manageFocus]
+    [themeConfig.reducedMotion, accessibilityProvider, manageFocus]
   );
 
   const syncWithSystemPreferences = useCallback(() => {
@@ -341,13 +344,13 @@ function useAccessibilityTheme(
 
     let changes = false;
 
-    if (systemPreferences.prefersHighContrast && !theme.config.highContrast) {
-      theme.toggleHighContrast();
+    if (systemPreferences.prefersHighContrast && !themeConfig.highContrast) {
+      accessibilityProvider.toggleHighContrast();
       changes = true;
     }
 
-    if (systemPreferences.prefersReducedMotion && !theme.config.reducedMotion) {
-      theme.toggleReducedMotion();
+    if (systemPreferences.prefersReducedMotion && !themeConfig.reducedMotion) {
+      accessibilityProvider.toggleReducedMotion();
       changes = true;
     }
 
@@ -356,14 +359,15 @@ function useAccessibilityTheme(
         'Synced with system accessibility preferences'
       );
     }
-  }, [systemPreferences, theme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemPreferences, themeConfig, accessibilityProvider]);
 
   const resetAccessibilitySettings = useCallback(() => {
-    if (theme.config.highContrast) {
-      theme.toggleHighContrast();
+    if (themeConfig.highContrast) {
+      accessibilityProvider.toggleHighContrast();
     }
-    if (theme.config.reducedMotion) {
-      theme.toggleReducedMotion();
+    if (themeConfig.reducedMotion) {
+      accessibilityProvider.toggleReducedMotion();
     }
 
     setAccessibilityConfig({
@@ -373,7 +377,8 @@ function useAccessibilityTheme(
 
     announceAccessibilityChange('Accessibility settings reset to defaults');
     manageFocus();
-  }, [theme, manageFocus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [themeConfig, accessibilityProvider, manageFocus]);
 
   const applyAccessibilityPreset = useCallback(
     (preset: 'maximum' | 'moderate' | 'minimal' | 'off') => {
@@ -420,6 +425,7 @@ function useAccessibilityTheme(
 
       announceAccessibilityChange(`Applied ${preset} accessibility preset`);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setHighContrast, setReducedMotion, resetAccessibilitySettings]
   );
 
@@ -450,9 +456,9 @@ function useAccessibilityTheme(
   // ================================
 
   const isAccessibilityModeActive =
-    theme.config.highContrast || theme.config.reducedMotion;
-  const isHighContrastActive = theme.config.highContrast;
-  const isReducedMotionActive = theme.config.reducedMotion;
+    themeConfig.highContrast || themeConfig.reducedMotion;
+  const isHighContrastActive = themeConfig.highContrast;
+  const isReducedMotionActive = themeConfig.reducedMotion;
   const isFocusManagementActive = Boolean(
     config.focusManagement?.trapFocus || config.focusManagement?.restoreFocus
   );
@@ -500,7 +506,8 @@ export interface HighContrastConfig {
  * Specialized hook for high contrast mode management
  */
 function useHighContrastTheme(config: HighContrastConfig = {}) {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
+  const accessibilityProvider = useAccessibilityProvider();
   const [intensity, setIntensity] = useState(config.intensity || 5);
   const [colorOverrides, setColorOverrides] = useState(config.colorOverrides);
 
@@ -513,8 +520,8 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
     const contrastQuery = window.matchMedia('(prefers-contrast: high)');
 
     const handleContrastChange = () => {
-      if (contrastQuery.matches && !theme.config.highContrast) {
-        theme.toggleHighContrast();
+      if (contrastQuery.matches && !themeConfig.highContrast) {
+        accessibilityProvider.toggleHighContrast();
       }
     };
 
@@ -523,7 +530,7 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
 
     return () =>
       contrastQuery.removeEventListener('change', handleContrastChange);
-  }, [config.autoApply, theme]);
+  }, [config.autoApply, themeConfig.highContrast, accessibilityProvider]);
 
   const adjustIntensity = useCallback((newIntensity: number) => {
     const clampedIntensity = Math.max(1, Math.min(10, newIntensity));
@@ -570,12 +577,12 @@ function useHighContrastTheme(config: HighContrastConfig = {}) {
   }, []);
 
   return {
-    isHighContrastEnabled: theme.config.highContrast,
+    isHighContrastEnabled: themeConfig.highContrast,
     intensity,
     colorOverrides,
     adjustIntensity,
     updateColorOverrides,
-    toggleHighContrast: theme.toggleHighContrast,
+    toggleHighContrast: accessibilityProvider.toggleHighContrast,
     resetHighContrast,
   };
 }
@@ -603,7 +610,8 @@ export interface ReducedMotionConfig {
  * Specialized hook for motion sensitivity management
  */
 function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
+  const accessibilityProvider = useAccessibilityProvider();
   const [sensitivityLevel, setSensitivityLevel] = useState(
     config.sensitivityLevel || 3
   );
@@ -625,8 +633,8 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const handleMotionChange = () => {
-      if (motionQuery.matches && !theme.config.reducedMotion) {
-        theme.toggleReducedMotion();
+      if (motionQuery.matches && !themeConfig.reducedMotion) {
+        accessibilityProvider.toggleReducedMotion();
       }
     };
 
@@ -634,7 +642,7 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
     motionQuery.addEventListener('change', handleMotionChange);
 
     return () => motionQuery.removeEventListener('change', handleMotionChange);
-  }, [config.autoApply, theme]);
+  }, [config.autoApply, themeConfig.reducedMotion, accessibilityProvider]);
 
   const adjustSensitivity = useCallback((newLevel: number) => {
     const clampedLevel = Math.max(1, Math.min(5, newLevel));
@@ -687,12 +695,12 @@ function useReducedMotionTheme(config: ReducedMotionConfig = {}) {
   }, []);
 
   return {
-    isReducedMotionEnabled: theme.config.reducedMotion,
+    isReducedMotionEnabled: themeConfig.reducedMotion,
     sensitivityLevel,
     motionPreferences,
     adjustSensitivity,
     updateMotionPreferences,
-    toggleReducedMotion: theme.toggleReducedMotion,
+    toggleReducedMotion: accessibilityProvider.toggleReducedMotion,
     resetReducedMotion,
   };
 }
@@ -721,7 +729,7 @@ export interface FocusManagementConfig {
  * Provides theme-aware focus management capabilities
  */
 function useFocusManagementTheme(config: FocusManagementConfig = {}) {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
   const [focusHistory, setFocusHistory] = useState<HTMLElement[]>([]);
   const trapContainerRef = useRef<HTMLElement | null>(null);
 
@@ -864,7 +872,8 @@ export interface MotionSensitivityConfig {
  * Advanced motion sensitivity management for users with vestibular disorders
  */
 function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
+  const accessibilityProvider = useAccessibilityProvider();
   const [sensitivityLevel, setSensitivityLevel] = useState(
     config.sensitivityLevel || 3
   );
@@ -874,7 +883,7 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
 
   // Apply motion sensitivity settings to CSS
   useEffect(() => {
-    if (!theme.config.reducedMotion) {
+    if (!themeConfig.reducedMotion) {
       return;
     }
 
@@ -915,7 +924,7 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
       }
     };
   }, [
-    theme.config.reducedMotion,
+    themeConfig.reducedMotion,
     sensitivityLevel,
     disabledMotions,
     config.essentialOnly,
@@ -969,10 +978,10 @@ function useMotionSensitivity(config: MotionSensitivityConfig = {}) {
   return {
     sensitivityLevel,
     disabledMotions,
-    isReducedMotionEnabled: theme.config.reducedMotion,
+    isReducedMotionEnabled: themeConfig.reducedMotion,
     adjustSensitivity,
     toggleMotionType,
-    toggleReducedMotion: theme.toggleReducedMotion,
+    toggleReducedMotion: accessibilityProvider.toggleReducedMotion,
   };
 }
 

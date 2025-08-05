@@ -5,12 +5,14 @@ This directory contains components and utilities for exporting and importing the
 ## Files Created
 
 ### `ThemeExporter.tsx`
+
 - Complete theme export/import UI component
 - Handles single theme and theme collection operations
 - Provides backup and restore functionality
 - Manages custom presets
 
 ### `themeExport.ts` (in utils/)
+
 - Core export/import utilities
 - JSON file handling for themes
 - Theme validation and conversion
@@ -25,7 +27,7 @@ import { ThemeExporter } from '../components/theme';
 <ThemeExporter />
 
 // With custom configuration
-<ThemeExporter 
+<ThemeExporter
   size="lg"
   showAdvanced={true}
   onThemeImported={(themeName) => console.log(`Imported: ${themeName}`)}
@@ -35,16 +37,19 @@ import { ThemeExporter } from '../components/theme';
 ## Features
 
 ### Export Features
+
 - **Export Current Theme**: Save the currently active theme configuration
 - **Export All Presets**: Export all custom presets as a collection
 - **Export as Collection**: Export selected presets with custom metadata
 
-### Import Features  
+### Import Features
+
 - **Import Theme File**: Load and apply theme from JSON file
 - **Import as Preset**: Save imported theme as a custom preset
 - **Batch Import**: Import theme collections with multiple themes
 
 ### Management Features
+
 - **Automatic Backups**: Created before major theme changes
 - **Backup Restore**: Restore from automatic backups
 - **Custom Presets**: Save, load, and delete custom theme presets
@@ -83,6 +88,7 @@ Themes are exported in JSON format with the following structure:
 ## Integration
 
 The theme export/import system integrates with:
+
 - `ThemeContext.tsx` for theme configuration access
 - `fileOperations.ts` for consistent file download patterns
 - `exportUtils.ts` for standardized export operations

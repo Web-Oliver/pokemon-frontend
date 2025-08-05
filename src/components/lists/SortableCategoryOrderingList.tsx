@@ -9,7 +9,7 @@
  */
 
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
+import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { ArrowUpDown, Grid3X3, Package, Users } from 'lucide-react';
 import {
   DragDropProvider,
@@ -58,7 +58,7 @@ const SortableCategoryOrderingListComponent: React.FC<
   showSelection = false,
   showDragHandles = true,
   showMoveButtons = true,
-  enableCategoryCollapse = true,
+  enableCategoryCollapse: _enableCategoryCollapse = true,
   dragConstraints = {},
   className = '',
 }) => {
@@ -91,7 +91,7 @@ const SortableCategoryOrderingListComponent: React.FC<
   }, [items, itemOrder]);
 
   // Get the active dragged item
-  const activeItem = useMemo(() => {
+  const _activeItem = useMemo(() => {
     if (!activeId) {
       return null;
     }

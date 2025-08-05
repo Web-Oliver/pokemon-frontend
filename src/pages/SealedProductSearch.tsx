@@ -14,9 +14,8 @@ import {
   Package,
   Search,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { searchProducts, getPaginatedProducts } from '../api/productsApi';
-import { searchSetProducts } from '../api/setProductsApi';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { IProduct, ProductCategory } from '../domain/models/product';
@@ -49,91 +48,94 @@ const ProductSearch: React.FC = () => {
   const categories = Object.values(ProductCategory);
 
   // Fetch products with pagination using new SetProduct → Product hierarchy
-  const fetchProducts = async (page: number = 1) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchProducts = useCallback(
+    async (page: number = 1) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      log('Fetching products with params:', {
-        page,
-        limit: itemsPerPage,
-        categoryFilter,
-        setProductFilter: setProductFilter?.setProductName,
-        availableOnly,
-        searchTerm,
-      });
-
-      let fetchedProducts: IProduct[] = [];
-      let paginationData = {
-        currentPage: page,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPrevPage: false,
-        total: 0,
-      };
-
-      if (searchTerm.trim()) {
-        // Use consolidated search API when there's a search term
-        const searchParams = {
-          query: searchTerm.trim(),
+        log('Fetching products with params:', {
           page,
           limit: itemsPerPage,
-          ...(categoryFilter && { category: categoryFilter }),
-          ...(setProductFilter && { setProductId: setProductFilter.id }),
-          ...(availableOnly && { availableOnly: true }),
-        };
-
-        const searchResponse = await searchProducts(searchParams);
-        fetchedProducts = searchResponse.data || [];
-
-        // Calculate pagination for search results
-        const totalResults = searchResponse.count || 0;
-        const totalPages = Math.ceil(totalResults / itemsPerPage);
-        paginationData = {
-          currentPage: page,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-          total: totalResults,
-        };
-      } else {
-        // Use paginated products API for browsing
-        const response = await getPaginatedProducts({
-          page,
-          limit: itemsPerPage,
-          ...(categoryFilter && { category: categoryFilter }),
-          ...(setProductFilter && { setProductId: setProductFilter.id }),
-          ...(availableOnly && { available: availableOnly }),
+          categoryFilter,
+          setProductFilter: setProductFilter?.setProductName,
+          availableOnly,
+          searchTerm,
         });
 
-        fetchedProducts = response.products || [];
-        paginationData = {
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          hasNextPage: response.hasNextPage,
-          hasPrevPage: response.hasPrevPage,
-          total: response.total,
+        let fetchedProducts: IProduct[] = [];
+        let paginationData = {
+          currentPage: page,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+          total: 0,
         };
+
+        if (searchTerm.trim()) {
+          // Use consolidated search API when there's a search term
+          const searchParams = {
+            query: searchTerm.trim(),
+            page,
+            limit: itemsPerPage,
+            ...(categoryFilter && { category: categoryFilter }),
+            ...(setProductFilter && { setProductId: setProductFilter.id }),
+            ...(availableOnly && { availableOnly: true }),
+          };
+
+          const searchResponse = await searchProducts(searchParams);
+          fetchedProducts = searchResponse.data || [];
+
+          // Calculate pagination for search results
+          const totalResults = searchResponse.count || 0;
+          const totalPages = Math.ceil(totalResults / itemsPerPage);
+          paginationData = {
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            total: totalResults,
+          };
+        } else {
+          // Use paginated products API for browsing
+          const response = await getPaginatedProducts({
+            page,
+            limit: itemsPerPage,
+            ...(categoryFilter && { category: categoryFilter }),
+            ...(setProductFilter && { setProductId: setProductFilter.id }),
+            ...(availableOnly && { available: availableOnly }),
+          });
+
+          fetchedProducts = response.products || [];
+          paginationData = {
+            currentPage: response.currentPage,
+            totalPages: response.totalPages,
+            hasNextPage: response.hasNextPage,
+            hasPrevPage: response.hasPrevPage,
+            total: response.total,
+          };
+        }
+
+        setProducts(fetchedProducts);
+        setPagination(paginationData);
+
+        log(
+          'Products fetched successfully:',
+          fetchedProducts.length,
+          'products',
+          'page',
+          paginationData.currentPage
+        );
+      } catch (error) {
+        const errorMessage = 'Failed to fetch products';
+        setError(errorMessage);
+        handleApiError(error, errorMessage);
+      } finally {
+        setLoading(false);
       }
-
-      setProducts(fetchedProducts);
-      setPagination(paginationData);
-
-      log(
-        'Products fetched successfully:',
-        fetchedProducts.length,
-        'products',
-        'page',
-        paginationData.currentPage
-      );
-    } catch (error) {
-      const errorMessage = 'Failed to fetch products';
-      setError(errorMessage);
-      handleApiError(error, errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [searchTerm, categoryFilter, setProductFilter, availableOnly]
+  );
 
   // Handle search submit
   const handleSearch = () => {
@@ -177,7 +179,7 @@ const ProductSearch: React.FC = () => {
   // Initial load
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   const headerActions = (
     <div className="bg-gradient-to-r from-[var(--theme-status-success)]/10 via-[var(--theme-accent-secondary)]/10 to-[var(--theme-accent-secondary)]/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-[var(--theme-border)]">

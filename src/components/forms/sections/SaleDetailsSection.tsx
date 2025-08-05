@@ -9,6 +9,7 @@ import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { Banknote } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
+import ValidationField from '../fields/ValidationField';
 
 interface SaleDetailsSectionProps {
   register: UseFormRegister<Record<string, unknown>>;
@@ -21,7 +22,7 @@ interface SaleDetailsSectionProps {
 
 const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
   register,
-  errors: _errors,
+  errors,
   watch,
   isVisible = true,
   itemName = 'item',
@@ -63,25 +64,13 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <Input
+              <ValidationField
+                name="actualSoldPrice"
                 label="Actual Sold Price (kr.)"
-                type="text"
-                inputMode="numeric"
-                {...register('actualSoldPrice', {
-                  pattern: {
-                    value: /^\d+$/,
-                    message: 'Price must be a whole number only',
-                  },
-                  validate: (value) => {
-                    const num = parseInt(value, 10);
-                    if (isNaN(num) || num < 0) {
-                      return 'Price must be a positive whole number';
-                    }
-                    return true;
-                  },
-                })}
+                type="price"
                 placeholder="0"
-                className=""
+                register={register}
+                error={errors.actualSoldPrice}
               />
             </div>
 
@@ -120,11 +109,12 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <Input
+              <ValidationField
+                name="dateSold"
                 label="Date Sold"
                 type="date"
-                {...register('dateSold')}
-                className=""
+                register={register}
+                error={errors.dateSold}
               />
             </div>
           </div>
@@ -147,22 +137,24 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <Input
+              <ValidationField
+                name="buyerPhoneNumber"
                 label="Buyer Phone"
-                type="text"
-                {...register('buyerPhoneNumber')}
+                type="phone"
                 placeholder="Enter buyer phone"
-                className=""
+                register={register}
+                error={errors.buyerPhoneNumber}
               />
             </div>
 
             <div className="md:col-span-2">
-              <Input
+              <ValidationField
+                name="buyerEmail"
                 label="Buyer Email"
                 type="email"
-                {...register('buyerEmail')}
                 placeholder="Enter buyer email"
-                className=""
+                register={register}
+                error={errors.buyerEmail}
               />
             </div>
           </div>

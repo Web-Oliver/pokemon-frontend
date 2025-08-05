@@ -60,8 +60,8 @@ export const useAuction = (
   const {
     data: auctions = [],
     isLoading: loading,
-    error: queryError,
-    refetch: refetchAuctions,
+    error: _queryError,
+    refetch: _refetchAuctions,
   } = useQuery({
     queryKey: queryKeys.auctionsList(params),
     queryFn: () => auctionsApi.getAuctions(params),
@@ -247,6 +247,7 @@ export const useAuction = (
         handleApiError(err, errorMessage);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentAuction?.id, deleteAuctionMutation]
   );
 
@@ -365,6 +366,7 @@ export const useAuction = (
         throw err;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentAuction?._id]
   );
 

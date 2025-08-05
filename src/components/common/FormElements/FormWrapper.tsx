@@ -10,7 +10,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useCentralizedTheme } from '../../../utils/themeConfig';
 
 interface FormWrapperProps {
   children: ReactNode;
@@ -25,31 +25,29 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   className = '',
   error = false,
 }) => {
-  const { config, getCSSProperties } = useTheme();
+  const themeConfig = useCentralizedTheme();
   const widthClass = fullWidth ? 'w-full' : '';
 
-  // Get theme-aware CSS properties
-  const cssProperties = getCSSProperties();
-  const animationDuration = config.reducedMotion
+  // Animation duration based on theme settings
+  const animationDuration = themeConfig.reducedMotion
     ? '0s'
     : 'var(--animation-duration-normal, 0.3s)';
 
-  // Theme-aware gradient colors
+  // Theme-aware gradient colors using visual theme
   const primaryGradient = error
     ? 'from-red-500/20 via-rose-500/20 to-red-500/20'
-    : `from-${config.primaryColor}-500/20 via-blue-500/20 to-${config.primaryColor}-500/20`;
+    : `from-${themeConfig.visualTheme}-500/20 via-blue-500/20 to-${themeConfig.visualTheme}-500/20`;
 
   const backgroundGradient = error
     ? 'from-red-500/10 via-rose-500/10 to-red-500/10'
-    : `from-${config.primaryColor}-500/10 via-blue-500/10 to-${config.primaryColor}-500/10`;
+    : `from-${themeConfig.visualTheme}-500/10 via-blue-500/10 to-${themeConfig.visualTheme}-500/10`;
 
   return (
     <div
       className={`${widthClass} group ${className}`}
       style={{
-        ...cssProperties,
         '--form-transition-duration': animationDuration,
-        '--form-blur-intensity': `${config.glassmorphismIntensity / 20}px`,
+        '--form-blur-intensity': `${themeConfig.glassmorphismIntensity / 20}px`,
       }}
     >
       <div className={`relative ${widthClass}`}>

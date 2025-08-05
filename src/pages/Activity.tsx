@@ -46,7 +46,6 @@ import {
   PokemonButton,
   PokemonInput,
   PokemonBadge,
-  PokemonIcon,
   PokemonPageContainer,
 } from '../components/design-system';
 

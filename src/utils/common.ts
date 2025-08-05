@@ -119,7 +119,7 @@ export const debounce = <T extends (...args: any[]) => any>(
     }
 
     timeoutId = setTimeout(() => {
-      func.apply(null, args);
+      func(...args);
     }, wait);
   };
 };
@@ -136,7 +136,7 @@ export const throttle = <T extends (...args: any[]) => any>(
 
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
-      func.apply(null, args);
+      func(...args);
       inThrottle = true;
       setTimeout(() => {
         inThrottle = false;
@@ -265,7 +265,7 @@ export const createArray = <T>(
   fillValue: T | ((index: number) => T)
 ): T[] => {
   return Array.from({ length }, (_, index) =>
-    typeof fillValue === 'function' ? (fillValue as Function)(index) : fillValue
+    typeof fillValue === 'function' ? (fillValue as (index: number) => T)(index) : fillValue
   );
 };
 

@@ -158,7 +158,7 @@ const AddEditRawCardForm: React.FC<AddEditRawCardFormProps> = ({
     imageUpload,
     priceHistory,
     logContext: 'RAW CARD',
-    validateBeforeSubmission: (data) => {
+    validateBeforeSubmission: (_data) => {
       if (!selectedCardId) {
         throw FormSubmissionPatterns.createSelectionRequiredError(
           'raw cards',

@@ -15,13 +15,9 @@ import React, { forwardRef, SelectHTMLAttributes } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { ErrorMessage, HelperText, Label, FormWrapper } from './FormElements';
 import { StandardSelectProps } from '../../types/themeTypes';
-import {
-  cn,
-  inputStyleConfig,
-  generateThemeClasses,
-} from '../../utils/themeUtils';
+import { cn } from '../../utils/themeUtils';
 import { inputClasses } from '../../utils/classNameUtils';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 
 export interface SelectOption {
   value: string;
@@ -46,13 +42,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       size = 'md',
       fullWidth = true,
       multiple = false,
-      searchable = false,
+      _searchable = false,
       error,
       helperText,
       required = false,
       disabled = false,
       theme,
-      colorScheme,
+      _colorScheme,
       density,
       animationIntensity,
       className = '',
@@ -64,13 +60,15 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     },
     ref
   ) => {
-    const themeContext = useTheme();
+    const { visualTheme, resolvedTheme } = useVisualTheme();
+    const { density: contextDensity } = useLayoutTheme();
+    const { animationIntensity: contextAnimationIntensity } = useAnimationTheme();
 
     // Merge context theme with component props
-    const effectiveTheme = theme || themeContext?.config.visualTheme;
-    const effectiveDensity = density || themeContext?.config.density;
+    const effectiveTheme = theme || visualTheme;
+    const effectiveDensity = density || contextDensity;
     const effectiveAnimationIntensity =
-      animationIntensity || themeContext?.config.animationIntensity;
+      animationIntensity || contextAnimationIntensity;
 
     // Generate unique select ID
     const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
@@ -133,7 +131,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     // Option classes with theme support
     const optionClasses = cn(
       'py-2',
-      themeContext?.resolvedTheme === 'dark'
+      resolvedTheme === 'dark'
         ? 'text-zinc-100 bg-zinc-900'
         : 'text-zinc-900 bg-white'
     );

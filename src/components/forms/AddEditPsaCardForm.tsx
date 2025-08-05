@@ -209,7 +209,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
     imageUpload,
     priceHistory,
     logContext: 'PSA CARD',
-    validateBeforeSubmission: (data) => {
+    validateBeforeSubmission: (_data) => {
       if (!selectedCardId && !isEditing) {
         throw FormSubmissionPatterns.createSelectionRequiredError(
           'PSA cards',
@@ -282,7 +282,7 @@ const AddEditPsaCardForm: React.FC<AddEditPsaCardFormProps> = ({
         };
       }
     },
-    submitToApi: async (cardData, isEditing, itemId) => {
+    submitToApi: async (cardData, isEditing, _itemId) => {
       if (isEditing && initialData?.id) {
         const cardId =
           typeof initialData.id === 'string'

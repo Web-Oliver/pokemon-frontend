@@ -5,18 +5,15 @@
  */
 
 import {
-  ArrowLeft,
   Calendar,
   Check,
   Copy,
   DollarSign,
   Download,
-  Edit,
   FileText,
   Package,
   Plus,
   Share,
-  Trash2,
   X,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -249,7 +246,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   };
 
   // Handle delete auction
-  const handleDeleteAuction = () => {
+  const _handleDeleteAuction = () => {
     setShowDeleteConfirmation(true);
   };
 
@@ -262,7 +259,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       showSuccessToast('Auction deleted successfully');
       setShowDeleteConfirmation(false);
       navigateToAuctions();
-    } catch (err) {
+    } catch (_err) {
       // Error handled by the hook
     } finally {
       setDeleting(false);
@@ -307,7 +304,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       showSuccessToast('Item removed from auction');
       setShowRemoveItemConfirmation(false);
       setItemToRemove(null);
-    } catch (err) {
+    } catch (_err) {
       // Error handled by the hook
     } finally {
       setRemovingItem(false);
@@ -416,7 +413,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       const postText = await generateFacebookPost(currentAuctionId);
       setGeneratedFacebookPost(postText);
       setShowFacebookPost(true);
-    } catch (err) {
+    } catch (_err) {
       // Error handled by the hook
     }
   };
@@ -426,7 +423,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     try {
       await navigator.clipboard.writeText(generatedFacebookPost);
       showSuccessToast('Facebook post copied to clipboard!');
-    } catch (err) {
+    } catch (_err) {
       // Fallback for older browsers
       try {
         const textArea = document.createElement('textarea');
@@ -446,7 +443,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const handleDownloadTextFile = async () => {
     try {
       await downloadAuctionTextFile(currentAuctionId);
-    } catch (err) {
+    } catch (_err) {
       // Error handled by the hook
     }
   };
@@ -455,7 +452,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const handleDownloadImagesZip = async () => {
     try {
       await downloadAuctionImagesZip(currentAuctionId);
-    } catch (err) {
+    } catch (_err) {
       // Error handled by the hook
     }
   };
@@ -512,8 +509,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   Auction not found
                 </h3>
                 <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed mb-8">
-                  The auction you're looking for doesn't exist or has been
-                  deleted.
+                  The auction you&apos;re looking for doesn&apos;t exist or has
+                  been deleted.
                 </p>
                 <Button onClick={navigateToAuctions}>Back to Auctions</Button>
               </div>

@@ -3,11 +3,13 @@
 Execute specific tasks from the approved task list.
 
 ## Usage
+
 ```
 /spec-execute [task-id] [feature-name]
 ```
 
 ## Instructions
+
 You are executing implementation tasks from the spec workflow.
 
 1. **Prerequisites**
@@ -44,18 +46,22 @@ You are executing implementation tasks from the spec workflow.
    - Confirm task completion status to user
 
 ## Task Selection
+
 If no task-id specified:
+
 - Look at tasks.md for the spec
 - Recommend the next pending task
 - Ask user to confirm before proceeding
 
 ## Examples
+
 ```
 /spec-execute 1 user-authentication
 /spec-execute 2.1 user-authentication
 ```
 
 ## Important Rules
+
 - Only execute ONE task at a time
 - **ALWAYS** mark completed tasks as [x] in tasks.md
 - Always stop after completing a task

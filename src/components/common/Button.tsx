@@ -20,7 +20,7 @@ import {
   generateThemeClasses,
   getFocusClasses,
 } from '../../utils/themeUtils';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
@@ -41,7 +41,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       startIcon,
       endIcon,
       theme,
-      colorScheme,
+      _colorScheme,
       density,
       animationIntensity,
       className = '',
@@ -51,13 +51,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const themeContext = useTheme();
+    const { visualTheme } = useVisualTheme();
+    const { density: contextDensity } = useLayoutTheme();
+    const { animationIntensity: contextAnimationIntensity } = useAnimationTheme();
 
     // Merge context theme with component props
-    const effectiveTheme = theme || themeContext?.config.visualTheme;
-    const effectiveDensity = density || themeContext?.config.density;
+    const effectiveTheme = theme || visualTheme;
+    const effectiveDensity = density || contextDensity;
     const effectiveAnimationIntensity =
-      animationIntensity || themeContext?.config.animationIntensity;
+      animationIntensity || contextAnimationIntensity;
 
     // Generate theme-aware classes
     const themeClasses = generateThemeClasses(

@@ -18,7 +18,7 @@ import {
   ThemeConfiguration,
   ThemePreset,
   VisualTheme,
-} from '../contexts/ThemeContext';
+} from '../types/themeTypes';
 import { exportToJSON } from './fileOperations';
 
 // ================================
@@ -341,7 +341,7 @@ export const parseThemeJSON = (jsonContent: string): ThemeImportResult => {
       error:
         'Invalid theme file format. Expected exported theme or theme collection.',
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       success: false,
       error: 'Invalid JSON format in theme file',

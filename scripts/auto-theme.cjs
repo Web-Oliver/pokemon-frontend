@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { glob } = require('glob');
 
 // Smart color mappings for light -> dark conversion
@@ -21,7 +21,7 @@ const COLOR_MAPPINGS = {
   'bg-slate-100': 'dark:bg-zinc-900',
   'bg-slate-200': 'dark:bg-zinc-800',
   'bg-slate-300': 'dark:bg-zinc-700',
-  
+
   // Text colors
   'text-black': 'dark:text-white',
   'text-gray-900': 'dark:text-white',
@@ -35,14 +35,14 @@ const COLOR_MAPPINGS = {
   'text-slate-700': 'dark:text-zinc-200',
   'text-slate-600': 'dark:text-zinc-300',
   'text-slate-500': 'dark:text-zinc-400',
-  
+
   // Borders
   'border-gray-200': 'dark:border-zinc-700',
   'border-gray-300': 'dark:border-zinc-600',
   'border-slate-200': 'dark:border-zinc-700',
   'border-slate-300': 'dark:border-zinc-600',
   'border-white': 'dark:border-zinc-800',
-  
+
   // Opacity variants
   'bg-white/90': 'dark:bg-zinc-950/90',
   'bg-white/80': 'dark:bg-zinc-950/80',
@@ -84,7 +84,7 @@ const SKIP_CLASSES = [
 ];
 
 function shouldSkipClass(className) {
-  return SKIP_CLASSES.some(pattern => {
+  return SKIP_CLASSES.some((pattern) => {
     if (pattern instanceof RegExp) {
       return pattern.test(className);
     }
@@ -97,42 +97,42 @@ function processClassName(className) {
   if (shouldSkipClass(className)) {
     return className;
   }
-  
+
   // Check if we have a mapping for this class
   const darkVariant = COLOR_MAPPINGS[className];
   if (darkVariant) {
     return `${className} ${darkVariant}`;
   }
-  
+
   return className;
 }
 
 function processFile(filePath) {
   console.log(`Processing: ${filePath}`);
-  
+
   let content = fs.readFileSync(filePath, 'utf8');
   let modified = false;
-  
+
   // Find all className attributes (both single and double quotes)
   const classNameRegex = /className=['"`]([^'"`]+)['"`]/g;
-  
+
   content = content.replace(classNameRegex, (match, classes) => {
-    const classArray = classes.split(/\s+/).filter(c => c.length > 0);
+    const classArray = classes.split(/\s+/).filter((c) => c.length > 0);
     const processedClasses = [];
-    
-    classArray.forEach(className => {
+
+    classArray.forEach((className) => {
       const processed = processClassName(className);
       if (processed !== className) {
         modified = true;
       }
       processedClasses.push(processed);
     });
-    
+
     // Join classes and maintain original quote style
-    const quote = match.includes('"') ? '"' : (match.includes('`') ? '`' : "'");
+    const quote = match.includes('"') ? '"' : match.includes('`') ? '`' : "'";
     return `className=${quote}${processedClasses.join(' ')}${quote}`;
   });
-  
+
   if (modified) {
     fs.writeFileSync(filePath, content, 'utf8');
     console.log(`✅ Modified: ${filePath}`);
@@ -144,8 +144,10 @@ function processFile(filePath) {
 }
 
 async function main() {
-  console.log('🎨 Auto-Theme Script - Adding dark: variants intelligently...\n');
-  
+  console.log(
+    '🎨 Auto-Theme Script - Adding dark: variants intelligently...\n'
+  );
+
   // Find all React/TypeScript files
   const files = await glob('src/**/*.{tsx,jsx,ts,js}', {
     ignore: [
@@ -153,14 +155,14 @@ async function main() {
       '**/dist/**',
       '**/build/**',
       '**/*.test.*',
-      '**/*.spec.*'
-    ]
+      '**/*.spec.*',
+    ],
   });
-  
+
   console.log(`Found ${files.length} files to process\n`);
-  
+
   let modifiedCount = 0;
-  
+
   for (const file of files) {
     try {
       if (processFile(file)) {
@@ -170,12 +172,16 @@ async function main() {
       console.error(`❌ Error processing ${file}:`, error.message);
     }
   }
-  
-  console.log(`\n🎉 Complete! Modified ${modifiedCount} files with dark: variants`);
+
+  console.log(
+    `\n🎉 Complete! Modified ${modifiedCount} files with dark: variants`
+  );
   console.log('\n📝 Next steps:');
   console.log('1. Test your app to make sure nothing broke');
-  console.log('2. Adjust any colors that don\'t look right');
-  console.log('3. Run: git add . && git commit -m "feat: auto-add dark mode variants"');
+  console.log("2. Adjust any colors that don't look right");
+  console.log(
+    '3. Run: git add . && git commit -m "feat: auto-add dark mode variants"'
+  );
 }
 
 // Run the script

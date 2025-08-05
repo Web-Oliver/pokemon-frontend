@@ -3,11 +3,13 @@
 Generate design document based on approved requirements.
 
 ## Usage
+
 ```
 /spec-design [feature-name]
 ```
 
 ## Instructions
+
 You are working on the design phase of the spec workflow.
 
 1. **Prerequisites**
@@ -56,30 +58,39 @@ You are working on the design phase of the spec workflow.
    - Continue until explicit approval
 
 ## Design Structure
+
 ```markdown
 # Design Document
 
 ## Overview
+
 [High-level description]
 
 ## Code Reuse Analysis
+
 [What existing code will be leveraged, extended, or integrated]
 
 ## Architecture
+
 [System architecture building on existing patterns]
 
 ## Components and Interfaces
+
 [Detailed component specifications with reuse opportunities]
 
 ## Data Models
+
 [Data structures following established patterns]
 
 ## Error Handling
+
 [Error scenarios consistent with current approach]
 
 ## Testing Strategy
+
 [Testing approach using existing utilities and patterns]
 ```
 
 ## Next Phase
+
 After approval, proceed to `/spec-tasks`.

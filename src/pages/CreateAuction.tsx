@@ -22,7 +22,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Gavel, ArrowLeft, Sparkles, Cpu, Zap, Target } from 'lucide-react';
+import { Gavel, ArrowLeft, Sparkles } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { IAuctionItem } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
@@ -35,7 +36,7 @@ import { processImageUrl } from '../utils/formatting';
 import { log } from '../utils/logger';
 import AuctionFormContainer from '../components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../components/forms/sections/AuctionItemSelectionSection';
-import { useTheme } from '../contexts/ThemeContext';
+import { useCentralizedTheme } from '../utils/themeConfig';
 import {
   ParticleSystem,
   NeuralNetworkBackground,
@@ -72,11 +73,11 @@ interface UnifiedCollectionItem {
 }
 
 const CreateAuction: React.FC = () => {
-  const { config, getCSSProperties } = useTheme();
+  const themeConfig = useCentralizedTheme();
   const {
     createAuction,
     loading: auctionLoading,
-    error,
+    error: _error,
     clearError,
   } = useAuction();
 
@@ -554,11 +555,11 @@ const CreateAuction: React.FC = () => {
       // Navigate to auction detail page
       const auctionId = createdAuction.id || createdAuction._id;
       if (auctionId) {
-        alert('✅ Auction created successfully!');
+        toast.success('✅ Auction created successfully!');
         window.history.pushState({}, '', `/auctions/${auctionId}`);
         window.dispatchEvent(new PopStateEvent('popstate'));
       } else {
-        alert('✅ Auction created successfully! Redirecting to auctions list.');
+        toast.success('✅ Auction created successfully! Redirecting to auctions list.');
         navigateToAuctions();
       }
     } catch (err) {
@@ -575,7 +576,7 @@ const CreateAuction: React.FC = () => {
   // Theme-aware background while preserving Context7 2025 futuristic aesthetic
   const backgroundStyles = {
     background:
-      config.visualTheme === 'context7-futuristic'
+      themeConfig.visualTheme === 'context7-futuristic'
         ? 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)'
         : 'linear-gradient(135deg, var(--theme-background-start, rgb(2 6 23)) 0%, var(--theme-background-mid, rgba(88 28 135 / 0.2)) 50%, var(--theme-background-end, rgba(49 46 129 / 0.3)) 100%)',
   };
@@ -619,10 +620,10 @@ const CreateAuction: React.FC = () => {
                 className="backdrop-blur-xl border rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden"
                 style={{
                   background: `linear-gradient(135deg, 
-                    rgba(255, 255, 255, ${0.15 * (config.glassmorphismIntensity / 100)}) 0%, 
-                    rgba(6, 182, 212, ${0.12 * (config.glassmorphismIntensity / 100)}) 50%, 
-                    rgba(168, 85, 247, ${0.15 * (config.glassmorphismIntensity / 100)}) 100%)`,
-                  borderColor: `rgba(255, 255, 255, ${0.2 * (config.glassmorphismIntensity / 100)})`,
+                    rgba(255, 255, 255, ${0.15 * (themeConfig.glassmorphismIntensity / 100)}) 0%, 
+                    rgba(6, 182, 212, ${0.12 * (themeConfig.glassmorphismIntensity / 100)}) 50%, 
+                    rgba(168, 85, 247, ${0.15 * (themeConfig.glassmorphismIntensity / 100)}) 100%)`,
+                  borderColor: `rgba(255, 255, 255, ${0.2 * (themeConfig.glassmorphismIntensity / 100)})`,
                 }}
               >
                 {/* Neural network glow effect */}
@@ -694,10 +695,10 @@ const CreateAuction: React.FC = () => {
                 className="relative backdrop-blur-xl border rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] hover:shadow-[0_20px_50px_0_rgba(6,182,212,0.15)] transition-all duration-500"
                 style={{
                   background: `linear-gradient(135deg, 
-                    rgba(255, 255, 255, ${0.08 * (config.glassmorphismIntensity / 100)}) 0%, 
-                    rgba(100, 116, 139, ${0.03 * (config.glassmorphismIntensity / 100)}) 50%, 
-                    rgba(168, 85, 247, ${0.08 * (config.glassmorphismIntensity / 100)}) 100%)`,
-                  borderColor: `rgba(255, 255, 255, ${0.12 * (config.glassmorphismIntensity / 100)})`,
+                    rgba(255, 255, 255, ${0.08 * (themeConfig.glassmorphismIntensity / 100)}) 0%, 
+                    rgba(100, 116, 139, ${0.03 * (themeConfig.glassmorphismIntensity / 100)}) 50%, 
+                    rgba(168, 85, 247, ${0.08 * (themeConfig.glassmorphismIntensity / 100)}) 100%)`,
+                  borderColor: `rgba(255, 255, 255, ${0.12 * (themeConfig.glassmorphismIntensity / 100)})`,
                 }}
               >
                 {/* Neural network grid pattern */}

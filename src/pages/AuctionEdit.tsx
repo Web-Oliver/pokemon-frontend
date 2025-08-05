@@ -135,7 +135,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         status: formData.status,
       });
       showSuccessToast('Auction updated successfully!');
-    } catch (error) {
+    } catch (_error) {
       // Error handled by hook
     } finally {
       setIsEditing(false);

@@ -20,13 +20,12 @@ import {
   ComponentSize,
   ComponentVariant,
   ComponentState,
-  BaseThemeProps,
 } from '../types/themeTypes';
 import {
   VisualTheme,
   Density,
   AnimationIntensity,
-} from '../contexts/ThemeContext';
+} from '../types/themeTypes';
 
 // ================================
 // ENHANCED CLASSNAME UTILITIES

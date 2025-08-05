@@ -12,6 +12,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { SearchResult, useSearch } from './useSearch';
 import { useDebouncedValue } from './useDebounce';
+import { autoFillFromProductSelection } from '../utils/searchHelpers';
 
 export type SearchFieldType = 'setName' | 'productName' | 'cardName';
 export type SearchMode = 'card' | 'product';
@@ -33,15 +34,15 @@ interface HierarchicalSearchActions {
   setActiveField: (field: SearchFieldType | null) => void;
   handlePrimarySelection: (
     result: SearchResult,
-    setValue: Function,
-    clearErrors: Function,
-    onSelection?: Function
+    setValue: (field: string, value: any) => void,
+    clearErrors: (field: string) => void,
+    onSelection?: (data: any) => void
   ) => void;
   handleSecondarySelection: (
     result: SearchResult,
-    setValue: Function,
-    clearErrors: Function,
-    onSelection: Function
+    setValue: (field: string, value: any) => void,
+    clearErrors: (field: string) => void,
+    onSelection: (data: any) => void
   ) => void;
   clearSuggestions: () => void;
 }
@@ -155,9 +156,9 @@ export const useHierarchicalSearch = ({
   const handlePrimarySelection = useCallback(
     (
       result: SearchResult,
-      setValue: Function,
-      clearErrors: Function,
-      onSelection?: Function
+      setValue: (field: string, value: any) => void,
+      clearErrors: (field: string) => void,
+      onSelection?: (data: any) => void
     ) => {
       console.log('[HIERARCHICAL] Primary selection:', result);
 
@@ -202,16 +203,16 @@ export const useHierarchicalSearch = ({
         setActiveField(null);
       }, 10);
     },
-    [config, setValue, clearErrors]
+    [config]
   );
 
   // Handle secondary field selection (Card/Product)
   const handleSecondarySelection = useCallback(
     (
       result: SearchResult,
-      setValue: Function,
-      clearErrors: Function,
-      onSelection: Function
+      setValue: (field: string, value: any) => void,
+      clearErrors: (field: string) => void,
+      onSelection: (data: any) => void
     ) => {
       console.log('[HIERARCHICAL] Secondary selection:', result);
 
@@ -233,9 +234,6 @@ export const useHierarchicalSearch = ({
         onSelection(cardData);
       } else {
         // For products, use autofill pattern
-        const {
-          autoFillFromProductSelection,
-        } = require('../utils/searchHelpers');
         const autoFillConfig = { setValue, clearErrors };
         autoFillFromProductSelection(autoFillConfig, result, onSelection);
       }
@@ -246,7 +244,7 @@ export const useHierarchicalSearch = ({
         setActiveField(null);
       }, 10);
     },
-    [config, setValue, clearErrors]
+    [config]
   );
 
   // Clear suggestions utility

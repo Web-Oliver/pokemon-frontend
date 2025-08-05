@@ -173,7 +173,7 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   // Load initial data on component mount
   useEffect(() => {
     fetchSalesData();
-  }, []);
+  }, [fetchSalesData]);
 
   // Computed values based on current data
   const kpis = calculateKPIs(Array.isArray(sales) ? sales : []);

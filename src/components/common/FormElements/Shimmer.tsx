@@ -10,31 +10,31 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useCentralizedTheme } from '../../../utils/themeConfig';
 
 interface ShimmerProps {
   className?: string;
 }
 
 export const Shimmer: React.FC<ShimmerProps> = ({ className = '' }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   // Theme-aware shimmer colors
   const shimmerColor =
-    config.primaryColor === 'dark'
+    themeConfig.visualTheme === 'dark'
       ? 'via-cyan-200/20'
-      : `via-${config.primaryColor}-200/20`;
+      : `via-${themeConfig.visualTheme}-200/20`;
 
   // Animation duration based on theme settings
-  const animationDuration = config.reducedMotion
+  const animationDuration = themeConfig.reducedMotion
     ? '0s'
-    : config.animationIntensity === 'enhanced'
+    : themeConfig.animationIntensity === 'enhanced'
       ? '1200ms'
       : '1000ms';
 
   return (
     <div
-      className={`absolute inset-0 bg-gradient-to-r from-transparent ${shimmerColor} to-transparent -translate-x-full group-hover:translate-x-full transition-transform ease-out ${className} ${config.animationIntensity === 'disabled' ? 'opacity-0' : ''}`}
+      className={`absolute inset-0 bg-gradient-to-r from-transparent ${shimmerColor} to-transparent -translate-x-full group-hover:translate-x-full transition-transform ease-out ${className} ${themeConfig.animationIntensity === 'disabled' ? 'opacity-0' : ''}`}
       style={{
         '--shimmer-duration': animationDuration,
         transitionDuration: 'var(--shimmer-duration)',

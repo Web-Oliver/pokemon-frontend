@@ -1,9 +1,11 @@
 # Implementation Plan
 
 ## Task Overview
+
 [Brief description of the implementation approach]
 
 ## Steering Document Compliance
+
 [How tasks follow structure.md conventions and tech.md patterns]
 
 ## Tasks

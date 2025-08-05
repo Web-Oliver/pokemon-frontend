@@ -13,7 +13,6 @@
 import React, { useState } from 'react';
 import { Calendar, Filter, X } from 'lucide-react';
 import Button from './Button';
-import { useTheme } from '../../contexts/ThemeContext';
 import {
   getElementTheme,
   getHeaderTheme,
@@ -65,7 +64,6 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   className = '',
   themeColor = 'dark',
 }) => {
-  const {} = useTheme();
   const elementTheme = getElementTheme(themeColor);
   const headerTheme = getHeaderTheme(themeColor);
   const [localCustomRange, setLocalCustomRange] = useState({

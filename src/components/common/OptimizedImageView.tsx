@@ -13,7 +13,6 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 interface OptimizedImageViewProps {
@@ -35,7 +34,6 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
   onError,
   themeColor = 'dark',
 }) => {
-  const {} = useTheme();
   const elementTheme = getElementTheme(themeColor);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);

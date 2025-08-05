@@ -250,11 +250,12 @@ export const useCardSelection = (config: CardSelectionConfig) => {
     },
     [
       formType,
-      setValue,
-      clearErrors,
       onCardIdSelected,
       onSelectionComplete,
       debug,
+      preserveSetName,
+      clearErrors,
+      setValue,
     ]
   );
 

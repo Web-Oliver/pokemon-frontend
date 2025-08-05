@@ -20,11 +20,7 @@ import {
 } from 'lucide-react';
 import { OrderableItemCard } from './OrderableItemCard';
 import { CollectionItem, ItemCategory } from '../../domain/models/ordering';
-import {
-  applyItemOrder,
-  getItemCategory,
-  groupItemsByCategory,
-} from '../../utils/orderingUtils';
+import { applyItemOrder, getItemCategory } from '../../utils/orderingUtils';
 
 export interface CategoryOrderingListProps {
   items: CollectionItem[];
@@ -73,7 +69,7 @@ const CategoryOrderingListComponent: React.FC<CategoryOrderingListProps> = ({
   items,
   itemOrder,
   selectedItemIds = [],
-  onReorderItems,
+  onReorderItems: _onReorderItems,
   onMoveItemUp,
   onMoveItemDown,
   onSortCategoryByPrice,

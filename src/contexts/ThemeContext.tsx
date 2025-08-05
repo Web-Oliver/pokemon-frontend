@@ -122,6 +122,7 @@ export interface ThemeContextType {
 // THEME PRESETS
 // ================================
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const themePresets: ThemePreset[] = [
   {
     id: 'context7-premium',
@@ -205,7 +206,7 @@ export const themePresets: ThemePreset[] = [
 // DEFAULT CONFIGURATION
 // ================================
 
-const defaultConfig: ThemeConfiguration = {
+export const defaultConfig: ThemeConfiguration = {
   visualTheme: 'context7-premium',
   colorScheme: 'system',
   density: 'comfortable',
@@ -258,7 +259,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const {
-    theme: nextTheme,
+    theme: _nextTheme,
     setTheme: setNextTheme,
     resolvedTheme,
   } = useNextTheme();
@@ -320,6 +321,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       saveConfig(config);
       updateCSSProperties(config);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, isThemeLoaded]);
 
   // Update CSS custom properties based on theme configuration
@@ -626,6 +628,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
  * Custom hook to access theme context
  * Provides type-safe access to all theme functionality
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -638,13 +641,41 @@ export const useTheme = (): ThemeContextType => {
  * HOC for theme-aware components
  * Automatically provides theme configuration as props
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const withTheme = <P extends object>(
   Component: React.ComponentType<P & { theme: ThemeContextType }>
 ) => {
-  return (props: P) => {
+  const ThemedComponent = (props: P) => {
     const theme = useTheme();
     return <Component {...props} theme={theme} />;
   };
+  ThemedComponent.displayName = `withTheme(${Component.displayName || Component.name || 'Component'})`;
+  return ThemedComponent;
 };
 
+// ================================
+// NEW DECOMPOSED THEME SYSTEM
+// ================================
+
+// Export the new composed theme provider
+export { ComposedThemeProvider } from './theme/ComposedThemeProvider';
+
+// For backward compatibility, also export the original provider
+// Components can gradually migrate to the new focused providers
+export { ThemeProvider as LegacyThemeProvider };
+
+// Re-export focused providers for direct usage
+export { VisualThemeProvider, useVisualTheme } from './theme/VisualThemeProvider';
+export { LayoutThemeProvider, useLayoutTheme } from './theme/LayoutThemeProvider';
+export { AnimationThemeProvider, useAnimationTheme } from './theme/AnimationThemeProvider';
+export { AccessibilityThemeProvider, useAccessibilityTheme } from './theme/AccessibilityThemeProvider';
+export { ThemeStorageProvider, useThemeStorage } from './theme/ThemeStorageProvider';
+
+// New composite hook that uses the decomposed system
+export { useTheme as useComposedTheme } from '../hooks/theme/useTheme';
+
+// Keep the original monolithic useTheme for backward compatibility during migration
+export { useTheme as useLegacyTheme };
+
+// Default export for seamless migration
 export default ThemeContext;

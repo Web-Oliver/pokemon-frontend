@@ -16,6 +16,13 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-    "include": ["src", "src/**/__tests__/**/*", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "include": [
+    "src",
+    "src/**/__tests__/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "vite.config.ts",
+    "vite.config.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

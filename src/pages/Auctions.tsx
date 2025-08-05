@@ -13,13 +13,7 @@
  * - Preserved Context7 2025 futuristic header design as specified
  */
 
-import {
-  ArrowLeft,
-  Sparkles,
-  Zap,
-  Award,
-  Clock,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, Filter, Package, Plus, Sparkles, X, Zap, Award, Clock } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';

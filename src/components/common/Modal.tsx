@@ -14,13 +14,9 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { StandardModalProps, ComponentSize } from '../../types/themeTypes';
-import {
-  cn,
-  cardStyleConfig,
-  generateThemeClasses,
-} from '../../utils/themeUtils';
-import { cardClasses, glassmorphism } from '../../utils/classNameUtils';
-import { useTheme } from '../../contexts/ThemeContext';
+import { cn } from '../../utils/themeUtils';
+import { cardClasses } from '../../utils/classNameUtils';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 
 export interface ModalProps extends Omit<StandardModalProps, 'size'> {
   maxWidth?: ComponentSize | 'fullscreen';
@@ -38,20 +34,22 @@ const Modal: React.FC<ModalProps> = ({
   closeOnEscape = true,
   showCloseButton = true,
   theme,
-  colorScheme,
+  _colorScheme,
   density,
   animationIntensity,
   className = '',
   testId,
 }) => {
-  const themeContext = useTheme();
+  const visualTheme = useVisualTheme();
+  const layoutTheme = useLayoutTheme();
+  const animationTheme = useAnimationTheme();
 
   // Merge context theme with component props
-  const effectiveTheme = theme || themeContext?.config.visualTheme;
-  const effectiveDensity = density || themeContext?.config.density;
+  const effectiveTheme = theme || visualTheme?.visualTheme;
+  const effectiveDensity = density || layoutTheme?.density;
   const effectiveAnimationIntensity =
-    animationIntensity || themeContext?.config.animationIntensity;
-  const particleEffectsEnabled = themeContext?.config.particleEffectsEnabled;
+    animationIntensity || animationTheme?.animationIntensity;
+  const particleEffectsEnabled = visualTheme?.particleEffectsEnabled;
 
   // Handle escape key and body scroll
   useEffect(() => {

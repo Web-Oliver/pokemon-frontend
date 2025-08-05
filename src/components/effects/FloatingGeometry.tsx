@@ -13,7 +13,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useCentralizedTheme, themeUtils } from '../../utils/themeConfig';
 
 export interface GeometricElement {
   type: 'square' | 'circle' | 'triangle' | 'diamond';
@@ -62,11 +62,10 @@ const FloatingGeometry: React.FC<FloatingGeometryProps> = ({
   elements = defaultElements,
   className = '',
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   // Respect animation settings
-  const animationIntensity = config.animationIntensity;
-  if (animationIntensity === 'disabled') {
+  if (themeUtils.shouldDisableAnimations(themeConfig)) {
     return null;
   }
 

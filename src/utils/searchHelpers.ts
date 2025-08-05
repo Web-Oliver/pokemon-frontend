@@ -468,7 +468,7 @@ export const getResultMetadata = (result: SearchResult) => {
  */
 export const isValidSearchQuery = (
   query: string,
-  minLength: number = 0 // Default to 0 for immediate search
+  _minLength: number = 0 // Default to 0 for immediate search
 ): boolean => {
   // CRITICAL FIX: Always return true for any string (including empty)
   // Let the backend handle empty queries with wildcard "*"

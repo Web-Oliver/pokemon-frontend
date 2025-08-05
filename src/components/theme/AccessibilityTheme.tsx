@@ -15,7 +15,7 @@
  */
 
 import { useEffect, ReactNode } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme';
 import { useAccessibilityTheme } from '../../hooks/useAccessibilityTheme';
 import { cn } from '../../utils/themeUtils';
 
@@ -87,7 +87,7 @@ const AccessibilityTheme: React.FC<
   indicatorPosition = 'top-right',
   indicatorClassName,
 }) => {
-  const theme = useTheme();
+  const theme = useAccessibilityThemeContext();
   const accessibility = useAccessibilityTheme({
     autoDetectPreferences,
     enableKeyboardShortcuts,
@@ -367,8 +367,8 @@ const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
   colorOverrides,
   autoDetect = true,
 }) => {
-  const theme = useTheme();
-  const accessibility = useAccessibilityTheme({
+  const theme = useAccessibilityThemeContext();
+  const _accessibility = useAccessibilityTheme({
     autoDetectPreferences: autoDetect,
   });
 
@@ -479,8 +479,8 @@ const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
   },
   autoDetect = true,
 }) => {
-  const theme = useTheme();
-  const accessibility = useAccessibilityTheme({
+  const theme = useAccessibilityThemeContext();
+  const _accessibility = useAccessibilityTheme({
     autoDetectPreferences: autoDetect,
   });
 
@@ -586,7 +586,7 @@ const FocusManagementTheme: React.FC<FocusManagementThemeProps> = ({
   focusIndicatorColor,
   focusIndicatorThickness = 2,
 }) => {
-  useTheme();
+  useAccessibilityThemeContext();
   useAccessibilityTheme();
 
   useEffect(() => {
@@ -687,7 +687,7 @@ const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
   enableQuickToggles = true,
   controlClassName,
 }) => {
-  const theme = useTheme();
+  const theme = useAccessibilityThemeContext();
   const accessibility = useAccessibilityTheme();
 
   if (!showControls) {

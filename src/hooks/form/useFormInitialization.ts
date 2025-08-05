@@ -191,6 +191,7 @@ export const useFormInitialization = (
         itemId
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing, formType]); // FIXED: Removed initialData from dependencies to prevent infinite loop
 };
 

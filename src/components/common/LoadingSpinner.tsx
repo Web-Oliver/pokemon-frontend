@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme } from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 export interface LoadingSpinnerProps {
@@ -31,7 +31,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   fullScreen = false,
   themeColor = 'dark',
 }) => {
-  const {} = useTheme();
+  const { visualTheme } = useVisualTheme();
   const elementTheme = getElementTheme(themeColor);
   const sizeClasses = {
     sm: 'w-5 h-5',

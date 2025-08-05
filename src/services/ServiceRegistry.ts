@@ -2,13 +2,26 @@
  * Service Registry
  * Layer 1: Core/Foundation/API Client
  * Central registry for all API services following Dependency Inversion Principle
+ * 
+ * UPDATED: Now supports both monolithic and decomposed collection services
+ * Implements dependency injection with HTTP client abstraction
  */
 
-import { ICollectionApiService } from '../interfaces/api/ICollectionApiService';
+import { ICollectionApiService, IPsaCardApiService, IRawCardApiService, ISealedProductApiService } from '../interfaces/api/ICollectionApiService';
 import { IExportApiService } from '../interfaces/api/IExportApiService';
 import { ISearchApiService } from '../interfaces/api/ISearchApiService';
 import { IUploadApiService } from '../interfaces/api/IUploadApiService';
-import { collectionApiService } from './CollectionApiService';
+
+// Import HTTP client abstraction
+import { unifiedHttpClient } from './base/UnifiedHttpClient';
+
+// Import focused services
+import { PsaCardApiService } from './collection/PsaCardApiService';
+import { RawCardApiService } from './collection/RawCardApiService';
+import { SealedProductApiService } from './collection/SealedProductApiService';
+import { CompositeCollectionApiService } from './CompositeCollectionApiService';
+
+// Import other services
 import { exportApiService } from './ExportApiService';
 import { searchApiService } from './SearchApiService';
 import { uploadApiService } from './UploadApiService';
@@ -16,18 +29,38 @@ import { uploadApiService } from './UploadApiService';
 /**
  * Service Registry for dependency injection
  * Allows easy swapping of implementations for testing or different environments
+ * Now supports both composite and focused service access patterns
  */
 export class ServiceRegistry {
   private static instance: ServiceRegistry;
 
+  // Composite service for backward compatibility
   private _collectionApiService: ICollectionApiService;
+  
+  // Focused services for direct access
+  private _psaCardApiService: IPsaCardApiService;
+  private _rawCardApiService: IRawCardApiService;
+  private _sealedProductApiService: ISealedProductApiService;
+  
+  // Other services
   private _exportApiService: IExportApiService;
   private _uploadApiService: IUploadApiService;
   private _searchApiService: ISearchApiService;
 
   private constructor() {
-    // Default concrete implementations
-    this._collectionApiService = collectionApiService;
+    // Create focused services with dependency injection
+    this._psaCardApiService = new PsaCardApiService(unifiedHttpClient);
+    this._rawCardApiService = new RawCardApiService(unifiedHttpClient);
+    this._sealedProductApiService = new SealedProductApiService(unifiedHttpClient);
+    
+    // Create composite service for backward compatibility
+    this._collectionApiService = new CompositeCollectionApiService(
+      this._psaCardApiService,
+      this._rawCardApiService,
+      this._sealedProductApiService
+    );
+    
+    // Initialize other services
     this._exportApiService = exportApiService;
     this._uploadApiService = uploadApiService;
     this._searchApiService = searchApiService;
@@ -45,6 +78,19 @@ export class ServiceRegistry {
     return this._collectionApiService;
   }
 
+  // Focused service getters for direct access
+  get psaCardApiService(): IPsaCardApiService {
+    return this._psaCardApiService;
+  }
+
+  get rawCardApiService(): IRawCardApiService {
+    return this._rawCardApiService;
+  }
+
+  get sealedProductApiService(): ISealedProductApiService {
+    return this._sealedProductApiService;
+  }
+
   get exportApiService(): IExportApiService {
     return this._exportApiService;
   }
@@ -60,6 +106,37 @@ export class ServiceRegistry {
   // Setters for dependency injection (useful for testing)
   setCollectionApiService(service: ICollectionApiService): void {
     this._collectionApiService = service;
+  }
+
+  // Focused service setters for direct access
+  setPsaCardApiService(service: IPsaCardApiService): void {
+    this._psaCardApiService = service;
+    // Update composite service with new focused service
+    this._collectionApiService = new CompositeCollectionApiService(
+      this._psaCardApiService,
+      this._rawCardApiService,
+      this._sealedProductApiService
+    );
+  }
+
+  setRawCardApiService(service: IRawCardApiService): void {
+    this._rawCardApiService = service;
+    // Update composite service with new focused service
+    this._collectionApiService = new CompositeCollectionApiService(
+      this._psaCardApiService,
+      this._rawCardApiService,
+      this._sealedProductApiService
+    );
+  }
+
+  setSealedProductApiService(service: ISealedProductApiService): void {
+    this._sealedProductApiService = service;
+    // Update composite service with new focused service
+    this._collectionApiService = new CompositeCollectionApiService(
+      this._psaCardApiService,
+      this._rawCardApiService,
+      this._sealedProductApiService
+    );
   }
 
   setExportApiService(service: IExportApiService): void {
@@ -81,6 +158,16 @@ export const serviceRegistry = ServiceRegistry.getInstance();
 // Export convenience getters for direct access
 export const getCollectionApiService = (): ICollectionApiService =>
   serviceRegistry.collectionApiService;
+
+// Focused service getters for direct access
+export const getPsaCardApiService = (): IPsaCardApiService =>
+  serviceRegistry.psaCardApiService;
+
+export const getRawCardApiService = (): IRawCardApiService =>
+  serviceRegistry.rawCardApiService;
+
+export const getSealedProductApiService = (): ISealedProductApiService =>
+  serviceRegistry.sealedProductApiService;
 
 export const getExportApiService = (): IExportApiService =>
   serviceRegistry.exportApiService;

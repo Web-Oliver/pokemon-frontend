@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useCentralizedTheme, themeUtils } from '../../utils/themeConfig';
 import {
   generateCosmicBackground,
   COSMIC_GRADIENTS,
@@ -36,10 +36,10 @@ const CosmicBackground: React.FC<CosmicBackgroundProps> = ({
   className = '',
   respectThemeSettings = true,
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   // Respect theme settings for particle effects
-  if (respectThemeSettings && !config.particleEffectsEnabled) {
+  if (respectThemeSettings && !themeUtils.shouldShowParticles(themeConfig)) {
     return (
       <div className={`absolute inset-0 overflow-hidden ${className}`}>
         {/* Static gradient background only */}

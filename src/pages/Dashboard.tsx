@@ -32,13 +32,8 @@ import {
   Trash2,
   TrendingUp,
   Database,
-  ArrowLeft,
   Sparkles,
   Cpu,
-  Zap,
-  Target,
-  Clock,
-  Activity as ActivityIcon,
 } from 'lucide-react';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -53,6 +48,7 @@ import {
   GlassmorphismContainer,
   IconGlassmorphism,
 } from '../components/effects/GlassmorphismContainer';
+import { ParticleSystem } from '../components/effects';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
@@ -167,24 +163,14 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Floating Particle Systems */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Floating particles */}
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full opacity-20 animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 6 + 2}px`,
-                height: `${Math.random() * 6 + 2}px`,
-                background: `radial-gradient(circle, ${['#06b6d4', '#a855f7', '#ec4899', '#10b981'][Math.floor(Math.random() * 4)]}, transparent)`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${Math.random() * 4 + 3}s`,
-              }}
-            />
-          ))}
-        </div>
+        <ParticleSystem
+          particleCount={15}
+          colors={['#06b6d4', '#a855f7', '#ec4899', '#10b981']}
+          sizeRange={[2, 8]}
+          durationRange={[3, 7]}
+          opacity={0.2}
+          animationType="pulse"
+        />
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
@@ -447,26 +433,28 @@ const Dashboard: React.FC = () => {
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
-                {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(245,158,11,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
-                  {/* Achievement pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
+                <GlassmorphismContainer
+                  variant="intense"
+                  colorScheme="custom"
+                  customGradient={{
+                    from: 'amber-500/20',
+                    via: 'orange-500/15',
+                    to: 'red-500/20',
+                  }}
+                  size="md"
+                  rounded="2xl"
+                  pattern="dots"
+                  glow="medium"
+                  interactive={true}
+                  className="hover:shadow-[0_12px_40px_0_rgba(245,158,11,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
+                >
                   {/* Quantum glow effect */}
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60 animate-pulse"></div>
 
                   <div className="relative z-10 flex items-center">
                     {/* Advanced neumorphic icon container */}
                     <div className="relative mr-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-amber-500/30 via-orange-500/20 to-red-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        {/* Inner holographic glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <IconGlassmorphism variant="md" colorScheme="custom" className="from-amber-500/30 via-orange-500/20 to-red-500/30">
                         <Star className="w-8 h-8 text-amber-300 relative z-10 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)] animate-pulse" />
 
                         {/* Achievement sparkles */}
@@ -491,7 +479,7 @@ const Dashboard: React.FC = () => {
                             }}
                           ></div>
                         </div>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
                     <div className="flex-1">
@@ -503,7 +491,7 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </GlassmorphismContainer>
               </div>
 
               {/* SetProducts - Quantum Database Card */}
@@ -511,26 +499,23 @@ const Dashboard: React.FC = () => {
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
 
-                {/* Main card with advanced glassmorphism */}
-                <div className="relative backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(236,72,153,0.3)] transition-all duration-500 group-hover:scale-[1.02] group-hover:-translate-y-1">
-                  {/* Database pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundSize: '30px 30px',
-                    }}
-                  ></div>
-
+                <GlassmorphismContainer
+                  variant="intense"
+                  colorScheme="danger"
+                  size="md"
+                  rounded="2xl"
+                  pattern="grid"
+                  glow="medium"
+                  interactive={true}
+                  className="hover:shadow-[0_12px_40px_0_rgba(236,72,153,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
+                >
                   {/* Quantum glow effect */}
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-pink-400 to-transparent opacity-60 animate-pulse"></div>
 
                   <div className="relative z-10 flex items-center">
                     {/* Advanced neumorphic icon container */}
                     <div className="relative mr-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-pink-500/30 via-rose-500/20 to-red-500/30 backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        {/* Inner holographic glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-pink-400/20 to-rose-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <IconGlassmorphism variant="md" colorScheme="danger">
                         <Database className="w-8 h-8 text-pink-300 relative z-10 drop-shadow-[0_0_10px_rgba(236,72,153,0.5)] animate-pulse" />
 
                         {/* Database sync animation */}
@@ -555,7 +540,7 @@ const Dashboard: React.FC = () => {
                             }}
                           ></div>
                         </div>
-                      </div>
+                      </IconGlassmorphism>
                     </div>
 
                     <div className="flex-1">
@@ -569,13 +554,20 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </GlassmorphismContainer>
               </div>
             </div>
 
             {/* Context7 Premium Quick Actions */}
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface)]/50 to-[var(--theme-surface-secondary)]/50"></div>
+            <GlassmorphismContainer
+              variant="intense"
+              colorScheme="primary"
+              size="full"
+              rounded="3xl"
+              pattern="neural"
+              glow="medium"
+              className="relative overflow-hidden"
+            >
               <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
                 <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
                   Quick Actions
@@ -632,11 +624,18 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </GlassmorphismContainer>
 
             {/* Context7 Premium Recent Activity */}
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface)]/50 to-[var(--theme-surface-secondary)]/50"></div>
+            <GlassmorphismContainer
+              variant="intense"
+              colorScheme="secondary"
+              size="full"  
+              rounded="3xl"
+              pattern="waves"
+              glow="medium"
+              className="relative overflow-hidden"
+            >
 
               {/* Header */}
               <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
@@ -792,7 +791,7 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </GlassmorphismContainer>
           </div>
         </div>
       </div>

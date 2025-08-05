@@ -8,13 +8,35 @@ import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../domain/models/common';
 
+// Filter interfaces for better type safety
+export interface PsaGradedCardsParams {
+  grade?: string;
+  setName?: string;
+  cardName?: string;
+  sold?: boolean;
+}
+
+export interface RawCardsParams {
+  condition?: string;
+  setName?: string;
+  cardName?: string;
+  sold?: boolean;
+}
+
+export interface SealedProductCollectionParams {
+  category?: string;
+  setName?: string;
+  sold?: boolean;
+  search?: string;
+}
+
 /**
  * Interface for PSA Card operations
  * Abstracts the concrete implementation details
  */
 export interface IPsaCardApiService {
   // Read operations
-  getPsaGradedCards(filters?: { sold?: boolean }): Promise<IPsaGradedCard[]>;
+  getPsaGradedCards(filters?: PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
   getPsaGradedCardById(id: string): Promise<IPsaGradedCard>;
 
   // Write operations
@@ -36,7 +58,7 @@ export interface IPsaCardApiService {
  */
 export interface IRawCardApiService {
   // Read operations
-  getRawCards(filters?: { sold?: boolean }): Promise<IRawCard[]>;
+  getRawCards(filters?: RawCardsParams): Promise<IRawCard[]>;
   getRawCardById(id: string): Promise<IRawCard>;
 
   // Write operations
@@ -52,7 +74,7 @@ export interface IRawCardApiService {
  */
 export interface ISealedProductApiService {
   // Read operations
-  getSealedProducts(filters?: { sold?: boolean }): Promise<ISealedProduct[]>;
+  getSealedProducts(filters?: SealedProductCollectionParams): Promise<ISealedProduct[]>;
   getSealedProductById(id: string): Promise<ISealedProduct>;
 
   // Write operations

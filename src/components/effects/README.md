@@ -5,45 +5,48 @@ This directory contains reusable visual effect components following CLAUDE.md La
 ## Components
 
 ### CosmicBackground
+
 Enhanced version of DbaCosmicBackground with configurable particle systems and gradient patterns.
 
 **Usage:**
+
 ```tsx
 import { CosmicBackground } from '../effects';
 
-<CosmicBackground 
+<CosmicBackground
   gradientKey="holographicBase"
   particleConfig={{
     count: 12,
     colors: ['#06b6d4', '#8b5cf6'],
-    animationType: 'bounce'
+    animationType: 'bounce',
   }}
-/>
+/>;
 ```
 
 ### HolographicBorder
+
 Reusable holographic border effect component extracted from border-holographic pattern.
 
 **Usage:**
+
 ```tsx
 import { HolographicBorder } from '../effects';
 
-<HolographicBorder 
-  intensity={0.3}
-  colorTheme="cosmic"
-  showOnHover={true}
->
+<HolographicBorder intensity={0.3} colorTheme="cosmic" showOnHover={true}>
   <div>Content with holographic border</div>
-</HolographicBorder>
+</HolographicBorder>;
 ```
 
 ### ParticleSystem
+
 Configurable particle system for dynamic visual effects.
 
 ### NeuralNetworkBackground
+
 Neural network pattern background for futuristic themes.
 
 ### FloatingGeometry
+
 Geometric shapes with floating animations.
 
 ## Integration with CSS Custom Properties
@@ -71,6 +74,7 @@ The effects use standardized animations:
 ## Theme Compatibility
 
 All effects respect ThemeContext settings:
+
 - `particleEffectsEnabled`: Controls particle rendering
 - `animationIntensity`: Affects animation playback
 - `reducedMotion`: Provides accessibility compliance

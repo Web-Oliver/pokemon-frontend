@@ -35,15 +35,8 @@ export class ExportApiService implements IExportApiService {
     request: OrderedExportRequest,
     items: CollectionItem[]
   ): Promise<ExportResult> {
-    const {
-      itemType,
-      format,
-      itemIds,
-      options,
-      itemOrder,
-      sortByPrice,
-      sortAscending,
-    } = request;
+    const { itemType, format, options, itemOrder, sortByPrice, sortAscending } =
+      request;
 
     // Prepare items with ordering applied
     const { orderedItems, validation, orderingApplied } =
@@ -115,7 +108,7 @@ export class ExportApiService implements IExportApiService {
    * Eliminates duplication by routing to appropriate specialized methods
    */
   async export(request: ExportRequest): Promise<ExportResult> {
-    const { itemType, format, itemIds, options } = request;
+    const { itemType, format, itemIds } = request;
 
     // Validate request using consolidated validation
     validateExportRequest(itemType, format, itemIds);
@@ -272,7 +265,7 @@ export class ExportApiService implements IExportApiService {
     const result = await this.exportData({
       itemType: 'psa-card', // Default, but ignored for facebook-text
       format: 'facebook-text',
-      itemIds,
+      itemIds: itemIds,
     });
     return result.blob;
   }

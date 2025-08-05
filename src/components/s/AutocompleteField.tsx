@@ -68,7 +68,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
     if (value !== autocomplete.value) {
       autocomplete.setValue(value);
     }
-  }, [value]); // Only depend on external value prop
+  }, [value, autocomplete]); // Only depend on external value prop and autocomplete object
 
   // Handle keyboard navigation - memoized for performance
   const handleKeyDown = useCallback(
@@ -97,13 +97,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           break;
       }
     },
-    [
-      autocomplete.isOpen,
-      autocomplete.moveDown,
-      autocomplete.moveUp,
-      autocomplete.selectActive,
-      autocomplete.close,
-    ]
+    [autocomplete]
   );
 
   return (
@@ -146,20 +140,14 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
             type="text"
             value={autocomplete.value}
             onChange={(e) => autocomplete.setValue(e.target.value)}
-            onFocus={useCallback(
-              (e) => {
-                autocomplete.onFocus();
-                onFocusChange?.(true);
-              },
-              [autocomplete.onFocus, onFocusChange]
-            )}
-            onBlur={useCallback(
-              (e) => {
-                autocomplete.onBlur();
-                onFocusChange?.(false);
-              },
-              [autocomplete.onBlur, onFocusChange]
-            )}
+            onFocus={(_e) => {
+              autocomplete.onFocus();
+              onFocusChange?.(true);
+            }}
+            onBlur={(_e) => {
+              autocomplete.onBlur();
+              onFocusChange?.(false);
+            }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
@@ -176,7 +164,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
           {autocomplete.value && !disabled && (
             <button
               type="button"
-              onClick={useCallback(() => {
+              onClick={() => {
                 autocomplete.clear();
                 onSelect({
                   id: '',
@@ -191,7 +179,7 @@ export const AutocompleteField: React.FC<AutocompleteFieldProps> = ({
                           : 'card',
                   data: {},
                 } as SearchResult);
-              }, [autocomplete.clear, onSelect, searchType])}
+              }}
               className="absolute inset-y-0 right-16 flex items-center group/clear z-10"
             >
               <div className="p-2 rounded-xl bg-gradient-to-br from-red-500/20 to-pink-600/20 backdrop-blur-xl border border-white/10 shadow-lg hover:scale-110 hover:rotate-3 transition-all duration-300 opacity-70 group-hover/clear:opacity-100">

@@ -11,7 +11,7 @@ import {
   Package,
   Search,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import * as setsApi from '../api/setsApi';
 import { searchSets } from '../api/searchApi';
 import Input from '../components/common/Input';
@@ -47,81 +47,84 @@ const SetSearch: React.FC = () => {
   const itemsPerPage = 12;
 
   // Fetch sets with pagination and filters
-  const fetchSets = async (params: SearchParams = {}) => {
-    await handleAsyncAction(async () => {
-      const page = params.page || 1;
-      const limit = params.limit || itemsPerPage;
+  const fetchSets = useCallback(
+    async (params: SearchParams = {}) => {
+      await handleAsyncAction(async () => {
+        const page = params.page || 1;
+        const limit = params.limit || itemsPerPage;
 
-      log('Fetching sets with params:', {
-        page,
-        limit,
-        search: params.search,
-        year: params.year,
-      });
-
-      let fetchedSets: any[] = [];
-      let paginationData = {
-        currentPage: page,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPrevPage: false,
-        total: 0,
-      };
-
-      if (params.search?.trim()) {
-        // Use consolidated search API when there's a search term
-        const searchParams = {
-          query: params.search.trim(),
+        log('Fetching sets with params:', {
           page,
           limit,
-          ...(params.year && { year: params.year }),
-        };
+          search: params.search,
+          year: params.year,
+        });
 
-        const optimizedResponse = await searchSets(searchParams);
-        fetchedSets = optimizedResponse.data;
-
-        // Calculate pagination for optimized search
-        const totalResults = optimizedResponse.count;
-        const totalPages = Math.ceil(totalResults / limit);
-        paginationData = {
+        let fetchedSets: any[] = [];
+        let paginationData = {
           currentPage: page,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-          total: totalResults,
-        };
-      } else {
-        // Use paginated API when no search term
-        const requestParams = {
-          page,
-          limit,
-          ...(params.year && { year: params.year }),
+          totalPages: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+          total: 0,
         };
 
-        const response: setsApi.PaginatedSetsResponse =
-          await setsApi.getPaginatedSets(requestParams);
-        fetchedSets = response.sets;
-        paginationData = {
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          hasNextPage: response.hasNextPage,
-          hasPrevPage: response.hasPrevPage,
-          total: response.total,
-        };
-      }
+        if (params.search?.trim()) {
+          // Use consolidated search API when there's a search term
+          const searchParams = {
+            query: params.search.trim(),
+            page,
+            limit,
+            ...(params.year && { year: params.year }),
+          };
 
-      setSets(fetchedSets);
-      setPagination(paginationData);
+          const optimizedResponse = await searchSets(searchParams);
+          fetchedSets = optimizedResponse.data;
 
-      log('Sets fetched successfully:', fetchedSets.length, 'sets');
-      return fetchedSets;
-    });
-  };
+          // Calculate pagination for optimized search
+          const totalResults = optimizedResponse.count;
+          const totalPages = Math.ceil(totalResults / limit);
+          paginationData = {
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            total: totalResults,
+          };
+        } else {
+          // Use paginated API when no search term
+          const requestParams = {
+            page,
+            limit,
+            ...(params.year && { year: params.year }),
+          };
+
+          const response: setsApi.PaginatedSetsResponse =
+            await setsApi.getPaginatedSets(requestParams);
+          fetchedSets = response.sets;
+          paginationData = {
+            currentPage: response.currentPage,
+            totalPages: response.totalPages,
+            hasNextPage: response.hasNextPage,
+            hasPrevPage: response.hasPrevPage,
+            total: response.total,
+          };
+        }
+
+        setSets(fetchedSets);
+        setPagination(paginationData);
+
+        log('Sets fetched successfully:', fetchedSets.length, 'sets');
+        return fetchedSets;
+      });
+    },
+    [handleAsyncAction, setSets]
+  );
 
   // Initial load
   useEffect(() => {
     fetchSets();
-  }, []);
+  }, [fetchSets]);
 
   // Handle search input change
   const handleSearchChange = (value: string) => {

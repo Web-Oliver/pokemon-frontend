@@ -26,7 +26,7 @@ import {
   ComponentAnimationConfig,
 } from '../types/themeTypes';
 import { ThemeColor, getFormTheme } from '../theme/formThemes';
-import { VisualTheme } from '../contexts/ThemeContext';
+import { VisualTheme } from '../types/themeTypes';
 
 // ================================
 // UTILITY FUNCTIONS

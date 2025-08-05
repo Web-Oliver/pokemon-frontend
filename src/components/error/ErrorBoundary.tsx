@@ -40,6 +40,8 @@ interface ErrorBoundaryProps {
   componentName?: string;
 }
 
+import { updateErrorMetrics } from './errorBoundaryUtils';
+
 // Context7: Global error tracking for performance monitoring
 const errorMetrics = {
   totalErrors: 0,
@@ -104,6 +106,7 @@ export class ErrorBoundary extends Component<
     if (errorMetrics.errorHistory.length > 100) {
       errorMetrics.errorHistory.shift();
     }
+    updateErrorMetrics(errorMetrics);
 
     // Context7: Standard error logging with performance context
     console.group(`🚨 [ERROR BOUNDARY] Error in ${componentName}`);
@@ -429,18 +432,5 @@ export class ErrorBoundary extends Component<
     return <>{children}</>;
   }
 }
-
-// Context7: Export error metrics for performance monitoring integration
-export const getErrorMetrics = () => ({
-  ...errorMetrics,
-  errorHistory: [...errorMetrics.errorHistory],
-  errorsByComponent: new Map(errorMetrics.errorsByComponent),
-});
-
-export const clearErrorMetrics = () => {
-  errorMetrics.totalErrors = 0;
-  errorMetrics.errorsByComponent.clear();
-  errorMetrics.errorHistory.length = 0;
-};
 
 export default ErrorBoundary;

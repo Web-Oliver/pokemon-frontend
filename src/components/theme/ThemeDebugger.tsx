@@ -21,8 +21,6 @@ import {
   EyeOff,
   Code,
   Palette,
-  Settings,
-  Monitor,
   CheckCircle,
   AlertTriangle,
   Copy,
@@ -32,7 +30,8 @@ import {
   Layers,
   Clock,
 } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../../contexts/theme';
+import { useCentralizedTheme } from '../../utils/themeConfig';
 import {
   buttonStyleConfig,
   inputStyleConfig,
@@ -40,12 +39,10 @@ import {
   badgeStyleConfig,
   cn,
 } from '../../utils/themeUtils';
-import { formThemes } from '../../theme/formThemes';
 import {
   validateThemeConfiguration,
   getThemePerformanceMetrics,
   extractCSSCustomProperties,
-  getComponentVariantInfo,
 } from '../../utils/themeDebug';
 
 export interface ThemeDebuggerProps {
@@ -74,9 +71,13 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
   position = 'bottom-right',
   defaultPanel = 'overview',
 }) => {
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
+  const visualTheme = useVisualTheme();
+  const layoutTheme = useLayoutTheme();
+  const animationTheme = useAnimationTheme();
+  const accessibilityTheme = useAccessibilityTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [activePanel, setActivePanel] = useState<DebugPanel>(defaultPanel);
+  const [activePanel, setActivePanel] = useState<DebugPanel>(defaultPanel as DebugPanel);
   const [performanceData, setPerformanceData] = useState(() =>
     getThemePerformanceMetrics()
   );
@@ -112,7 +113,20 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
     'top-left': 'top-4 left-4',
   }[position];
 
-  const validationResults = validateThemeConfiguration(theme.config);
+  // Construct theme configuration for validation from centralized theme
+  const themeConfigForValidation = {
+    visualTheme: themeConfig.visualTheme,
+    colorScheme: 'dark' as const, // Assume dark for now
+    density: themeConfig.density,
+    animationIntensity: themeConfig.animationIntensity,
+    primaryColor: 'blue' as const, // Default primary color
+    highContrast: themeConfig.highContrast,
+    reducedMotion: themeConfig.reducedMotion,
+    glassmorphismIntensity: themeConfig.glassmorphismIntensity,
+    particleEffectsEnabled: themeConfig.particleEffectsEnabled,
+  };
+
+  const validationResults = validateThemeConfiguration(themeConfigForValidation);
   const cssProperties = extractCSSCustomProperties();
 
   const copyToClipboard = (text: string) => {
@@ -121,7 +135,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
 
   const downloadThemeConfig = () => {
     const config = {
-      ...theme.config,
+      ...themeConfigForValidation,
       cssProperties,
       performance: performanceData,
       validation: validationResults,
@@ -146,26 +160,26 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             <div className="space-y-2">
               <div className="font-semibold text-cyan-400">Current Theme</div>
               <div className="bg-zinc-800/50 p-2 rounded">
-                <div>Visual: {theme.config.visualTheme}</div>
-                <div>Color: {theme.config.colorScheme}</div>
-                <div>Primary: {theme.config.primaryColor}</div>
-                <div>Density: {theme.config.density}</div>
-                <div>Animation: {theme.config.animationIntensity}</div>
+                <div>Visual: {themeConfig.visualTheme}</div>
+                <div>Color: {themeConfigForValidation.colorScheme}</div>
+                <div>Primary: {themeConfigForValidation.primaryColor}</div>
+                <div>Density: {themeConfig.density}</div>
+                <div>Animation: {themeConfig.animationIntensity}</div>
               </div>
             </div>
             <div className="space-y-2">
               <div className="font-semibold text-purple-400">Settings</div>
               <div className="bg-zinc-800/50 p-2 rounded">
                 <div>
-                  High Contrast: {theme.config.highContrast ? 'ON' : 'OFF'}
+                  High Contrast: {themeConfig.highContrast ? 'ON' : 'OFF'}
                 </div>
                 <div>
-                  Reduced Motion: {theme.config.reducedMotion ? 'ON' : 'OFF'}
+                  Reduced Motion: {themeConfig.reducedMotion ? 'ON' : 'OFF'}
                 </div>
-                <div>Glassmorphism: {theme.config.glassmorphismIntensity}%</div>
+                <div>Glassmorphism: {themeConfig.glassmorphismIntensity}%</div>
                 <div>
                   Particles:{' '}
-                  {theme.config.particleEffectsEnabled ? 'ON' : 'OFF'}
+                  {themeConfig.particleEffectsEnabled ? 'ON' : 'OFF'}
                 </div>
               </div>
             </div>
@@ -176,7 +190,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
               Applied CSS Classes
             </div>
             <div className="bg-zinc-800/50 p-2 rounded text-xs font-mono break-all">
-              {theme.getThemeClasses()}
+              theme-{themeConfig.visualTheme} density-{themeConfig.density} animation-{themeConfig.animationIntensity}
             </div>
           </div>
 
@@ -190,7 +204,7 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
             </button>
             <button
               onClick={() =>
-                copyToClipboard(JSON.stringify(theme.config, null, 2))
+                copyToClipboard(JSON.stringify(themeConfigForValidation, null, 2))
               }
               className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600/50 hover:bg-green-600/70 rounded transition-colors"
             >
@@ -228,7 +242,15 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
               Computed Theme Properties
             </div>
             <div className="max-h-48 overflow-y-auto bg-zinc-800/50 p-2 rounded">
-              {Object.entries(theme.getCSSProperties()).map(
+              {Object.entries({
+                '--theme-visual': themeConfig.visualTheme,
+                '--theme-density': themeConfig.density,
+                '--theme-animation': themeConfig.animationIntensity,
+                '--theme-glassmorphism': `${themeConfig.glassmorphismIntensity}%`,
+                '--theme-particles': themeConfig.particleEffectsEnabled ? 'enabled' : 'disabled',
+                '--theme-contrast': themeConfig.highContrast ? 'high' : 'normal',
+                '--theme-motion': themeConfig.reducedMotion ? 'reduced' : 'normal',
+              }).map(
                 ([property, value]) => (
                   <div
                     key={property}
@@ -270,7 +292,6 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
               { name: 'Card', config: cardStyleConfig },
               { name: 'Badge', config: badgeStyleConfig },
             ].map(({ name, config }) => {
-              getComponentVariantInfo(name.toLowerCase(), config);
               return (
                 <div key={name} className="bg-zinc-800/50 p-3 rounded">
                   <div className="font-semibold text-cyan-400 mb-2">

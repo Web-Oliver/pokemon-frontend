@@ -66,9 +66,9 @@ const Collection: React.FC = () => {
   }, [refreshCollection]);
 
   // Get all collection items for export functionality
-  const getAllCollectionItems = (): CollectionItem[] => {
+  const getAllCollectionItems = useCallback((): CollectionItem[] => {
     return [...psaCards, ...rawCards, ...sealedProducts];
-  };
+  }, [psaCards, rawCards, sealedProducts]);
 
   // Handle navigation to add new item
   const handleAddNewItem = useCallback(() => {
@@ -120,7 +120,7 @@ const Collection: React.FC = () => {
   const handleExportAllItems = useCallback(async () => {
     const allItems = getAllCollectionItems();
     await exportAllItems(allItems);
-  }, [exportAllItems, psaCards, rawCards, sealedProducts]);
+  }, [exportAllItems, getAllCollectionItems]);
 
   const handleExportSelectedItems = useCallback(async () => {
     await exportSelectedItems(selectedItemsForExport);
@@ -133,7 +133,7 @@ const Collection: React.FC = () => {
       return; // useCollectionExport hook will handle the warning
     }
     setIsExportModalOpen(true);
-  }, [psaCards, rawCards, sealedProducts]);
+  }, [getAllCollectionItems]);
 
   const handleSelectAllItems = useCallback(() => {
     const allItems = getAllCollectionItems();

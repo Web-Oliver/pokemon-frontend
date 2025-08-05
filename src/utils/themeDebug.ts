@@ -14,14 +14,8 @@
  * - formThemes.ts for color scheme validation
  */
 
-import {
-  ThemeConfiguration,
-  VisualTheme,
-  ColorScheme,
-  Density,
-  AnimationIntensity,
-} from '../contexts/ThemeContext';
-import { ThemeColor, formThemes } from '../theme/formThemes';
+import { VisualTheme, ThemeConfiguration } from '../types/themeTypes';
+import { formThemes } from '../theme/formThemes';
 import { ComponentStyleConfig } from '../types/themeTypes';
 
 // ================================
@@ -244,7 +238,7 @@ export function trackThemeSwitch(startTime: number, endTime: number): void {
 
   try {
     localStorage.setItem('pokemon-theme-performance', JSON.stringify(newData));
-  } catch (error) {
+  } catch (_error) {
     console.warn('Failed to store theme performance data:', error);
   }
 }
@@ -263,7 +257,7 @@ function getStoredPerformanceData() {
   try {
     const stored = localStorage.getItem('pokemon-theme-performance');
     return stored ? { ...defaultData, ...JSON.parse(stored) } : defaultData;
-  } catch (error) {
+  } catch (_error) {
     return defaultData;
   }
 }

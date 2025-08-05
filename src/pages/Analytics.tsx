@@ -46,6 +46,7 @@ import {
 } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
+import { GlassmorphismContainer } from '../components/effects/GlassmorphismContainer';
 
 const Analytics: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRangeState>({
@@ -53,10 +54,9 @@ const Analytics: React.FC = () => {
   });
 
   // Context7 Analytics Hooks - Use limited data for analytics
-  const { activities, loading, fetchActivities, refresh } =
-    useActivity({
-      limit: 100,
-    }); // Limit to 100 recent activities for analytics
+  const { activities, loading, fetchActivities, refresh } = useActivity({
+    limit: 100,
+  }); // Limit to 100 recent activities for analytics
 
   const { stats: activityStats } = useActivityStats();
 
@@ -232,7 +232,7 @@ const Analytics: React.FC = () => {
             : 'month';
 
     fetchActivities({ dateRange: rangeParam });
-  }, [dateRange]); // Use dateRange instead of timeRange
+  }, [dateRange, fetchActivities]); // Add fetchActivities dependency
 
   return (
     <PageLayout title="Analytics" subtitle="Collection analytics and insights">
@@ -288,10 +288,20 @@ const Analytics: React.FC = () => {
           <div className="max-w-7xl mx-auto space-y-12">
             {/* Context7 2025 Futuristic Glassmorphism Header */}
             <div className="relative group">
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl text-[var(--theme-text-primary)] p-12 relative overflow-hidden">
-                {/* Neural network glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-emerald-500/20 opacity-70 blur-3xl"></div>
-
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="custom"
+                size="xl"
+                rounded="3xl"
+                pattern="neural"
+                glow="intense"
+                animated={true}
+                customGradient={{
+                  from: 'cyan-500/20',
+                  via: 'purple-500/15',
+                  to: 'emerald-500/20'
+                }}
+              >
                 {/* Holographic border animation */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
 
@@ -311,7 +321,7 @@ const Analytics: React.FC = () => {
                     Comprehensive analytics and insights for your collection
                   </p>
                 </div>
-              </div>
+              </GlassmorphismContainer>
             </div>
 
             {/* Analytics Controls */}
@@ -327,10 +337,14 @@ const Analytics: React.FC = () => {
                 />
               </div>
               <div className="flex items-end">
-                <button
+                <GlassmorphismContainer
+                  variant="medium"
+                  colorScheme="primary"
+                  size="sm"
+                  rounded="2xl"
+                  interactive={true}
                   onClick={refresh}
-                  className="w-full lg:w-auto px-6 py-3 rounded-2xl backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-all duration-300 group shadow-xl flex items-center justify-center text-[var(--theme-text-primary)] relative overflow-hidden"
-                  disabled={loading}
+                  className="w-full lg:w-auto flex items-center justify-center cursor-pointer disabled:opacity-50"
                 >
                   {/* Button glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -346,9 +360,20 @@ const Analytics: React.FC = () => {
 
             {/* Context7 Key Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="custom"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+                customGradient={{
+                  from: 'indigo-500/20',
+                  via: 'purple-500/15',
+                  to: 'cyan-500/20'
+                }}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
 
@@ -365,11 +390,17 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="success"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
 
@@ -386,11 +417,17 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="warning"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-amber-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
 
@@ -407,11 +444,22 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-violet-500/15 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="custom"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+                customGradient={{
+                  from: 'purple-500/20',
+                  via: 'violet-500/15',
+                  to: 'pink-500/20'
+                }}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
 
@@ -430,12 +478,19 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
             </div>
 
             {/* Context7 Category Overview */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+              <GlassmorphismContainer
+                variant="medium"
+                colorScheme="success"
+                size="md"
+                rounded="2xl"
+                glow="subtle"
+                interactive={true}
+              >
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform duration-300">
                     <Package className="w-6 h-6 text-white" />
@@ -449,9 +504,21 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+              <GlassmorphismContainer
+                variant="medium"
+                colorScheme="custom"
+                size="md"
+                rounded="2xl"
+                glow="subtle"
+                interactive={true}
+                customGradient={{
+                  from: 'purple-500/20',
+                  via: 'violet-500/15',
+                  to: 'pink-500/20'
+                }}
+              >
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(147,51,234,0.3)] group-hover:scale-110 transition-transform duration-300">
                     <Gavel className="w-6 h-6 text-white" />
@@ -465,9 +532,16 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+              <GlassmorphismContainer
+                variant="medium"
+                colorScheme="success"
+                size="md"
+                rounded="2xl"
+                glow="subtle"
+                interactive={true}
+              >
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform duration-300">
                     <DollarSign className="w-6 h-6 text-white" />
@@ -481,9 +555,16 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
 
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+              <GlassmorphismContainer
+                variant="medium"
+                colorScheme="secondary"
+                size="md"
+                rounded="2xl"
+                glow="subtle"
+                interactive={true}
+              >
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(100,116,139,0.3)] group-hover:scale-110 transition-transform duration-300">
                     <Settings className="w-6 h-6 text-white" />
@@ -497,18 +578,29 @@ const Analytics: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </GlassmorphismContainer>
             </div>
 
             {/* Context7 Activity Type Distribution */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="custom"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+                customGradient={{
+                  from: 'cyan-500/10',
+                  via: 'purple-500/5',
+                  to: 'pink-500/10'
+                }}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
 
-                <div className="p-8 relative z-10">
+                <div className="relative z-10">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
                     <PieChart className="w-6 h-6 mr-3 text-cyan-400" />
                     Activity Distribution
@@ -569,20 +661,38 @@ const Analytics: React.FC = () => {
                 </div>
               </div>
 
-              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
-                {/* Neural glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-purple-500/5 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+              <GlassmorphismContainer
+                variant="intense"
+                colorScheme="custom"
+                size="lg"
+                rounded="3xl"
+                pattern="neural"
+                glow="medium"
+                interactive={true}
+                customGradient={{
+                  from: 'emerald-500/10',
+                  via: 'purple-500/5',
+                  to: 'amber-500/10'
+                }}
+              >
                 {/* Holographic border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
 
-                <div className="p-8 relative z-10">
+                <div className="relative z-10">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
                     <Target className="w-6 h-6 mr-3 text-emerald-400" />
                     Key Insights
                   </h3>
 
                   <div className="space-y-6">
-                    <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-400/20 hover:border-emerald-400/40 transition-colors duration-300">
+                    <GlassmorphismContainer
+                      variant="medium"
+                      colorScheme="success"
+                      size="md"
+                      rounded="2xl"
+                      interactive={true}
+                      className="hover:border-emerald-400/40 transition-colors duration-300"
+                    >
                       <div className="flex items-center mb-3">
                         <Award className="w-5 h-5 text-emerald-400 mr-2" />
                         <h4 className="font-bold text-[var(--theme-text-primary)]">
@@ -595,9 +705,16 @@ const Analytics: React.FC = () => {
                           ? `${new Date(analyticsData.mostActiveDay[0]).toLocaleDateString()} with ${analyticsData.mostActiveDay[1]} activities`
                           : 'Not enough data yet'}
                       </p>
-                    </div>
+                    </GlassmorphismContainer>
 
-                    <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-400/20 hover:border-purple-400/40 transition-colors duration-300">
+                    <GlassmorphismContainer
+                      variant="medium"
+                      colorScheme="warning"
+                      size="md"
+                      rounded="2xl"
+                      interactive={true}
+                      className="hover:border-purple-400/40 transition-colors duration-300"
+                    >
                       <div className="flex items-center mb-3">
                         <TrendingUp className="w-5 h-5 text-purple-400 mr-2" />
                         <h4 className="font-bold text-[var(--theme-text-primary)]">
@@ -609,7 +726,7 @@ const Analytics: React.FC = () => {
                           ? `${analyticsData.totalActivities} total activities tracked`
                           : 'Start using the app to see trends'}
                       </p>
-                    </div>
+                    </GlassmorphismContainer>
 
                     <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/20 hover:border-amber-400/40 transition-colors duration-300">
                       <div className="flex items-center mb-3">
@@ -629,13 +746,24 @@ const Analytics: React.FC = () => {
             </div>
 
             {/* Context7 Recent Activity Timeline */}
-            <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
-              {/* Neural glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-indigo-500/5 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+            <GlassmorphismContainer
+              variant="intense"
+              colorScheme="custom"
+              size="lg"
+              rounded="3xl"
+              pattern="neural"
+              glow="medium"
+              interactive={true}
+              customGradient={{
+                from: 'cyan-500/10',
+                via: 'indigo-500/5',
+                to: 'purple-500/10'
+              }}
+            >
               {/* Holographic border */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
 
-              <div className="p-8 relative z-10">
+              <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] flex items-center">
                     <LineChart className="w-6 h-6 mr-3 text-indigo-400" />

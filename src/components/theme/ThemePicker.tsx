@@ -17,10 +17,10 @@
 
 import React from 'react';
 import {
-  useTheme,
   themePresets,
   VisualTheme,
 } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme } from '../../contexts/theme';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
 import { cn } from '../../utils/common';
@@ -40,7 +40,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   showTitle = true,
   onThemeChange,
 }) => {
-  const { config, setVisualTheme, applyPreset } = useTheme();
+  const { visualTheme, setVisualTheme, applyPreset, presets } = useVisualTheme();
+  const { density } = useLayoutTheme();
 
   const handleThemeSelect = (themeId: VisualTheme) => {
     // Apply the full preset configuration
@@ -54,7 +55,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   };
 
   const renderThemePreview = (preset: (typeof themePresets)[0]) => {
-    const isSelected = config.visualTheme === preset.id;
+    const isSelected = visualTheme === preset.id;
 
     return (
       <PokemonCard
@@ -200,14 +201,14 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
           <div>
             <span className="text-sm text-zinc-400">Current Theme:</span>
             <h3 className="text-lg font-semibold text-white">
-              {themePresets.find((p) => p.id === config.visualTheme)?.name ||
+              {presets.find((p) => p.id === visualTheme)?.name ||
                 'Unknown'}
             </h3>
           </div>
           <div className="text-right">
             <span className="text-sm text-zinc-400">Density:</span>
             <p className="text-cyan-300 font-medium capitalize">
-              {config.density}
+              {density}
             </p>
           </div>
         </div>
@@ -215,7 +216,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
 
       {/* Theme Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
-        {themePresets.map(renderThemePreview)}
+        {presets.map(renderThemePreview)}
       </div>
 
       {/* Additional Settings Hint */}

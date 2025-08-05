@@ -26,7 +26,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
-import { useTheme } from '../../contexts/ThemeContext';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 export interface ImageProductViewProps {
@@ -95,12 +94,11 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   onShare,
   onFavorite,
 }) => {
-  const { config } = useTheme();
   const elementTheme = getElementTheme(themeColor);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   // Size configuration - Made image much bigger, text smaller
-  const sizeConfig = {
+  const {} = {
     sm: {
       width: 'w-32',
       height: 'h-80',
@@ -132,7 +130,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   }[size];
 
   // Aspect ratio configuration
-  const aspectConfig = {
+  const {} = {
     auto: 'aspect-auto',
     card: 'aspect-[3/5]', // Vertical portrait cards
     square: 'aspect-square',

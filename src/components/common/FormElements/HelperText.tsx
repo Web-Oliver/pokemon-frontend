@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useCentralizedTheme } from '../../../utils/themeConfig';
 
 interface HelperTextProps {
   helperText?: string;
@@ -21,7 +21,7 @@ export const HelperText: React.FC<HelperTextProps> = ({
   helperText,
   className = '',
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   if (!helperText) {
     return null;
@@ -32,21 +32,21 @@ export const HelperText: React.FC<HelperTextProps> = ({
     compact: 'mt-1',
     comfortable: 'mt-2',
     spacious: 'mt-3',
-  }[config.density];
+  }[themeConfig.density];
 
   // Theme-aware text sizing based on density
   const textSize = {
     compact: 'text-xs',
     comfortable: 'text-sm',
     spacious: 'text-base',
-  }[config.density];
+  }[themeConfig.density];
 
   // Theme-aware padding based on density
   const paddingClass = {
     compact: 'pl-0.5',
     comfortable: 'pl-1',
     spacious: 'pl-1.5',
-  }[config.density];
+  }[themeConfig.density];
 
   return (
     <p

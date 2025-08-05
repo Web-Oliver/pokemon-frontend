@@ -3,11 +3,13 @@
 Generate or update requirements document for an existing spec.
 
 ## Usage
+
 ```
 /spec-requirements [feature-name]
 ```
 
 ## Instructions
+
 You are working on the requirements phase of the spec workflow.
 
 1. **Identify Current Spec**
@@ -38,21 +40,26 @@ You are working on the requirements phase of the spec workflow.
    - Continue until explicit approval is received
 
 ## Requirements Format
+
 ```markdown
 # Requirements Document
 
 ## Introduction
+
 [Brief summary of the feature]
 
 ## Requirements
 
 ### Requirement 1
+
 **User Story:** As a [role], I want [feature], so that [benefit]
 
 #### Acceptance Criteria
+
 1. WHEN [event] THEN [system] SHALL [response]
 2. IF [condition] THEN [system] SHALL [response]
 ```
 
 ## Next Phase
+
 After approval, proceed to `/spec-design`.

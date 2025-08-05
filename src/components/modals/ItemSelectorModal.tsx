@@ -263,7 +263,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
       await onSelectItems(selectedItemObjects);
       setSelectedItems(new Set());
       onClose();
-    } catch (err) {
+    } catch (_err) {
       // Error handled by parent component
     } finally {
       setIsSubmitting(false);

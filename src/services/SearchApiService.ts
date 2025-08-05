@@ -14,7 +14,7 @@
  * - OCP: Open for extension through hierarchical patterns
  */
 
-import { ICard, ISet } from '../domain/models/card';
+import { ISet } from '../domain/models/card';
 import { IProduct } from '../domain/models/product';
 import { ISetProduct } from '../domain/models/setProduct';
 import {
@@ -26,15 +26,12 @@ import {
   SetSelectionResult,
 } from '../interfaces/api/ISearchApiService';
 import {
-  getBestMatchProduct,
-  getBestMatchSet,
   getBestMatchSetProduct,
   getProductSuggestions,
   getSetProductSuggestions,
   getSetSuggestions,
   searchProducts,
   searchProductsInSet,
-  searchSetProducts,
 } from '../api/searchApi';
 
 /**

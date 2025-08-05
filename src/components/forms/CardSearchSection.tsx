@@ -6,8 +6,8 @@
  * Handles Set -> Card hierarchical search pattern
  */
 
-import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
-import { LucideIcon, Search } from 'lucide-react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
+import { LucideIcon } from 'lucide-react';
 import {
   FieldErrors,
   UseFormClearErrors,
@@ -60,7 +60,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
     null
   );
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, _setIsLoading] = useState(false);
 
   // Use centralized search hook
   const search = useSearch();
@@ -72,7 +72,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
   // Sync search results to local suggestions state
   useEffect(() => {
     setSuggestions(search.results || []);
-  }, [search.results, search.isLoading]);
+  }, [search.results]);
 
   // Centralized search effect
   useEffect(() => {
@@ -111,14 +111,7 @@ const CardSearchSectionComponent: React.FC<CardSearchSectionProps> = ({
         break;
       }
     }
-  }, [
-    activeField,
-    debouncedSetName,
-    debouncedCardName,
-    setName,
-    search.searchSets,
-    search.searchCards,
-  ]);
+  }, [activeField, debouncedSetName, debouncedCardName, setName, search]);
 
   // Handle set selection
   const handleSetSelection = useCallback(

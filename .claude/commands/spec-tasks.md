@@ -3,11 +3,13 @@
 Generate implementation task list based on approved design.
 
 ## Usage
+
 ```
 /spec-tasks [feature-name]
 ```
 
 ## Instructions
+
 You are working on the tasks phase of the spec workflow.
 
 **WORKFLOW**: This is the FINAL step before command generation.
@@ -37,6 +39,7 @@ You are working on the tasks phase of the spec workflow.
    - Use test-driven development approach leveraging existing test patterns
 
 4. **Task Format**
+
    ```markdown
    - [ ] 1. Task description
      - Sub-bullet with details
@@ -69,6 +72,7 @@ You are working on the tasks phase of the spec workflow.
    - **RESTART REQUIRED**: Inform user to restart Claude Code for new commands to be visible
 
 ## Task Structure
+
 ```markdown
 # Implementation Plan
 
@@ -87,7 +91,9 @@ You are working on the tasks phase of the spec workflow.
 ```
 
 ## Next Phase
+
 After approval and command generation:
+
 1. **RESTART Claude Code** for new commands to be visible
 2. Then you can:
    - Use `/spec-execute` to implement tasks

@@ -18,6 +18,7 @@ import {
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
+import ValidationField from '../fields/ValidationField';
 
 interface GradingPricingSectionProps {
   register: UseFormRegister<Record<string, unknown>>;
@@ -194,14 +195,15 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
               <div className="space-y-4">
                 <div>
-                  <Select
+                  <ValidationField
+                    name={fieldName}
                     label={fieldLabel}
-                    {...register(fieldName, {
-                      required: `${fieldLabel} is required`,
-                    })}
-                    error={errors[fieldName]?.message}
+                    type="select"
                     options={options}
+                    required={true}
                     disabled={disableGradeConditionEdit}
+                    register={register}
+                    error={errors[fieldName]}
                   />
                 </div>
 
@@ -235,38 +237,26 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
               <div className="space-y-4">
                 <div>
-                  <Input
+                  <ValidationField
+                    name="myPrice"
                     label="My Price (kr.)"
-                    type="text"
-                    inputMode="numeric"
-                    {...register('myPrice', {
-                      required: 'Price is required',
-                      pattern: {
-                        value: /^\d+$/,
-                        message: 'Price must be a whole number only',
-                      },
-                      validate: (value) => {
-                        const num = parseInt(value, 10);
-                        if (isNaN(num) || num < 0) {
-                          return 'Price must be a positive whole number';
-                        }
-                        return true;
-                      },
-                    })}
-                    error={errors.myPrice?.message}
+                    type="price"
                     placeholder="Enter your price"
+                    required={true}
+                    register={register}
+                    error={errors.myPrice}
                     className="text-center"
                   />
                 </div>
 
                 <div>
-                  <Input
+                  <ValidationField
+                    name="dateAdded"
                     label="Date Added"
                     type="date"
-                    {...register('dateAdded', {
-                      required: 'Date added is required',
-                    })}
-                    error={errors.dateAdded?.message}
+                    required={true}
+                    register={register}
+                    error={errors.dateAdded}
                     className="text-center"
                   />
                 </div>

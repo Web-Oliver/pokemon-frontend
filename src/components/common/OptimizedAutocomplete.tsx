@@ -26,7 +26,7 @@ import {
   useOptimizedSearch,
   useSearchResultSelector,
 } from '../../hooks/useOptimizedSearch';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 interface OptimizedAutocompleteProps {
@@ -122,6 +122,8 @@ const SuggestionItem = memo(
   }
 );
 
+SuggestionItem.displayName = 'SuggestionItem';
+
 // Context7 Pattern: Memoized loading fallback component with theme integration
 const SearchFallback = memo(() => {
   return (
@@ -131,6 +133,8 @@ const SearchFallback = memo(() => {
     </div>
   );
 });
+
+SearchFallback.displayName = 'SearchFallback';
 
 // Context7 Pattern: Main autocomplete component with comprehensive optimization and theme integration
 export const OptimizedAutocomplete = memo(
@@ -147,7 +151,9 @@ export const OptimizedAutocomplete = memo(
     maxResults = 10,
     themeColor = 'dark',
   }: OptimizedAutocompleteProps) => {
-    const {} = useTheme();
+    const { visualTheme } = useVisualTheme();
+    const { density } = useLayoutTheme();
+    const { animationIntensity } = useAnimationTheme();
     const elementTheme = getElementTheme(themeColor);
     const [inputValue, setInputValue] = useState('');
     const [isOpen, setIsOpen] = useState(false);

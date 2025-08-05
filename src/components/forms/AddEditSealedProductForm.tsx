@@ -27,6 +27,8 @@ import FormActionButtons from '../common/FormActionButtons';
 import { ProductSearchSection } from './ProductSearchSection';
 import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
+import ValidationField from './fields/ValidationField';
+import { FormValidationService, VALIDATION_CONFIGS } from '../../services/forms/FormValidationService';
 import {
   convertObjectIdToString,
   transformRequestData,
@@ -72,41 +74,6 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
   // Check if item is sold - prevent editing of sold items
   const isSold = isEditing && initialData?.sold;
-
-  // If trying to edit a sold item, show message and prevent editing
-  if (isSold) {
-    return (
-      <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8 text-center">
-        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Archive className="w-8 h-8 text-red-400" />
-        </div>
-        <h3 className="text-2xl font-bold text-red-400 mb-4">
-          Item Already Sold
-        </h3>
-        <p className="text-red-300/80 mb-6 text-lg">
-          This sealed product has been sold and cannot be edited. Sold items are
-          locked to preserve transaction history.
-        </p>
-        <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-2xl p-4 mb-6">
-          <p className="text-red-300 font-semibold">
-            Sale Price: {initialData?.saleDetails?.actualSoldPrice || 'N/A'} kr
-          </p>
-          <p className="text-red-300/80 text-sm mt-1">
-            Sold on:{' '}
-            {initialData?.saleDetails?.dateSold
-              ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
-              : 'N/A'}
-          </p>
-        </div>
-        <button
-          onClick={onCancel}
-          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 backdrop-blur-xl border border-red-500/20"
-        >
-          Back to Collection
-        </button>
-      </div>
-    );
-  }
 
   // Validation rules for Sealed Product form
   const validationRules = {
@@ -187,8 +154,6 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     unknown
   > | null>(null);
 
-  // Removed over-engineered autocomplete configuration
-
   // Form-specific useEffect for unique internal state only (following CLAUDE.md SRP)
   useEffect(() => {
     if (isEditing && initialData) {
@@ -212,10 +177,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     }
   }, [isEditing, initialData]);
 
-  // Removed legacy search state sync - using enhanced autocomplete only
-
   // Watch form fields for validation
-  const watchedCategory = watch('category');
   const watchedPrice = watch('myPrice');
   const watchedCardMarketPrice = watch('cardMarketPrice');
 
@@ -254,9 +216,9 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         priceHistory.updateCurrentPrice(price);
       }
     }
-  }, [watchedPrice, priceHistory.updateCurrentPrice]);
+  }, [watchedPrice, priceHistory]);
 
-  const handlePriceUpdate = (newPrice: number, date: string) => {
+  const handlePriceUpdate = (newPrice: number, _date: string) => {
     // Add new price to history using specialized hook
     priceHistory.addPriceEntry(newPrice, 'manual_update');
 
@@ -274,14 +236,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
     imageUpload,
     priceHistory,
     logContext: 'SEALED PRODUCT',
-    validateBeforeSubmission: (data) => {
+    validateBeforeSubmission: (_data) => {
       if (!selectedProductData?._id) {
         throw new Error(
           'Please select a product from the suggestions to ensure reference data link'
         );
       }
     },
-    prepareSubmissionData: async ({ formData, imageUrls, isEditing }) => {
+    prepareSubmissionData: async ({ formData, imageUrls }) => {
       const allImageUrls = FormSubmissionPatterns.combineImages(
         imageUpload.remainingExistingImages,
         imageUrls
@@ -305,7 +267,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         ),
       };
     },
-    submitToApi: async (productData, isEditing, itemId) => {
+    submitToApi: async (productData, isEditing) => {
       if (isEditing && initialData?.id) {
         const productId = convertObjectIdToString(initialData.id);
         await updateSealedProduct(productId, productData);
@@ -314,6 +276,41 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
       }
     },
   });
+
+  // If trying to edit a sold item, show message and prevent editing
+  if (isSold) {
+    return (
+      <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8 text-center">
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Archive className="w-8 h-8 text-red-400" />
+        </div>
+        <h3 className="text-2xl font-bold text-red-400 mb-4">
+          Item Already Sold
+        </h3>
+        <p className="text-red-300/80 mb-6 text-lg">
+          This sealed product has been sold and cannot be edited. Sold items are
+          locked to preserve transaction history.
+        </p>
+        <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-2xl p-4 mb-6">
+          <p className="text-red-300 font-semibold">
+            Sale Price: {initialData?.saleDetails?.actualSoldPrice || 'N/A'} kr
+          </p>
+          <p className="text-red-300/80 text-sm mt-1">
+            Sold on:{' '}
+            {initialData?.saleDetails?.dateSold
+              ? new Date(initialData.saleDetails.dateSold).toLocaleDateString()
+              : 'N/A'}
+          </p>
+        </div>
+        <button
+          onClick={onCancel}
+          className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 backdrop-blur-xl border border-red-500/20"
+        >
+          Back to Collection
+        </button>
+      </div>
+    );
+  }
 
   const onSubmit = (data: FormData) =>
     handleSubmission(data, { isEditing, itemId: initialData?.id });
@@ -478,26 +475,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           </div>
 
           <div>
-            <Input
+            <ValidationField
+              name="myPrice"
               label="My Price (kr.)"
-              type="text"
-              inputMode="numeric"
-              {...register('myPrice', {
-                required: 'Price is required',
-                pattern: {
-                  value: /^\d+$/,
-                  message: 'Price must be a whole number only',
-                },
-                validate: (value) => {
-                  const num = parseInt(value, 10);
-                  if (isNaN(num) || num < 0) {
-                    return 'Price must be a positive whole number';
-                  }
-                  return true;
-                },
-              })}
-              error={errors.myPrice?.message}
+              type="price"
               placeholder="0"
+              required={true}
+              register={register}
+              error={errors.myPrice}
             />
             {watchedPrice && (
               <div className="mt-2 text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-semibold">
@@ -507,14 +492,14 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           </div>
 
           <div>
-            <Input
+            <ValidationField
+              name="dateAdded"
               label="Date Added"
               type="date"
-              {...register('dateAdded', {
-                required: 'Date added is required',
-              })}
-              error={errors.dateAdded?.message}
-              disabled={isEditing} // User can set date when adding, locked when editing
+              required={true}
+              disabled={isEditing}
+              register={register}
+              error={errors.dateAdded}
             />
 
             {/* Investment Analysis */}

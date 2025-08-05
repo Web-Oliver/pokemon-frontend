@@ -176,8 +176,8 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     debouncedSetName,
     debouncedProductName,
     setName, // Add setName to dependencies for proper filtering
-    search.searchSetProducts,
-    search.searchProducts,
+    search,
+    productName,
   ]);
 
   // Context7 Pattern: Memoized configuration following React.dev best practices
@@ -189,7 +189,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
     [setValue, clearErrors]
   );
 
-  // Context7 Pattern: Memoized event handler with stable dependencies
+  // Context7 Pattern: Memoized event handler with stable event handlers
   const handleSetSelection = useCallback(
     (result: SearchResult) => {
       console.log('[SEARCH DEBUG] SET SELECTION TRIGGERED:', result);
@@ -241,7 +241,7 @@ const ProductSearchSectionComponent: React.FC<ProductSearchSectionProps> = ({
         setActiveField(null);
       }, 10);
     },
-    [setValue, clearErrors, onSelectionChange]
+    [setValue, clearErrors, onSelectionChange, setName]
   );
 
   // Context7 Pattern: Memoized selection handler for optimal re-render prevention

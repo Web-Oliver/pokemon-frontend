@@ -13,7 +13,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useCentralizedTheme, themeUtils } from '../../utils/themeConfig';
 
 export interface NeuralNetworkBackgroundProps {
   /** Primary neural network color */
@@ -44,12 +44,12 @@ const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = ({
   animationSpeed = 1,
   className = '',
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   // Respect theme settings
   const shouldShowParticles =
-    config.particleEffectsEnabled && enableQuantumParticles;
-  const adjustedOpacity = opacity * (config.glassmorphismIntensity / 100);
+    themeUtils.shouldShowParticles(themeConfig) && enableQuantumParticles;
+  const adjustedOpacity = themeUtils.getAdjustedOpacity(themeConfig, opacity);
 
   // Create SVG background patterns
   const neuralNetworkPattern = `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='3' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='${encodeURIComponent(primaryColor)}' stroke-width='0.5' filter='url(%23glow)'%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3Cline x1='60' y1='30' x2='60' y2='90'/%3E%3Cline x1='30' y1='60' x2='90' y2='60'/%3E%3Cline x1='40' y1='40' x2='80' y2='80'/%3E%3Cline x1='80' y1='40' x2='40' y2='80'/%3E%3C/g%3E%3C/svg%3E")`;

@@ -21,6 +21,7 @@ import React, {
 } from 'react';
 import { AlertCircle, Camera, Image, Sparkles, Upload, X } from 'lucide-react';
 import ConfirmModal from './common/ConfirmModal';
+import { GlassmorphismContainer } from './effects/GlassmorphismContainer';
 import {
   detectImageAspectRatio,
   getContext7ContainerClasses,
@@ -357,18 +358,36 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       {/* Context7 Premium Analysis Indicator */}
       {isAnalyzing && enableAspectRatioDetection && (
         <div className="mb-6 flex items-center justify-center py-3">
-          <div className="flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200/50 shadow-lg backdrop-blur-sm">
+          <GlassmorphismContainer
+            variant="subtle"
+            colorScheme="custom"
+            size="sm"
+            rounded="2xl"
+            glow="subtle"
+            customGradient={{
+              from: 'indigo-50',
+              to: 'purple-50'
+            }}
+            className="flex items-center space-x-3 border border-indigo-200/50"
+          >
             <Sparkles className="w-5 h-5 text-indigo-600 animate-spin" />
             <span className="text-sm font-bold text-indigo-700 tracking-wide">
               Analyzing image layouts...
             </span>
-          </div>
+          </GlassmorphismContainer>
         </div>
       )}
 
       {/* Context7 Premium Error Message */}
       {error && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200/60 rounded-2xl flex items-center backdrop-blur-sm shadow-lg relative overflow-hidden">
+        <GlassmorphismContainer
+          variant="subtle"
+          colorScheme="danger"
+          size="md"
+          rounded="2xl"
+          glow="subtle"
+          className="mb-6 flex items-center border border-red-200/60"
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-rose-500/5"></div>
           <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-rose-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
             <AlertCircle className="w-4 h-4 text-white" />
@@ -376,7 +395,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           <p className="text-sm text-red-700 font-medium relative z-10">
             {error}
           </p>
-        </div>
+        </GlassmorphismContainer>
       )}
 
       {/* Context7 Premium Upload Area */}

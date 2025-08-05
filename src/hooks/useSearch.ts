@@ -10,7 +10,7 @@
  * - Memory-efficient single source of truth
  */
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   searchCards,

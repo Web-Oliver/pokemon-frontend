@@ -65,7 +65,7 @@ interface UseFormSubmissionReturn<FormData> {
  * @returns Form submission state and handlers
  */
 export const useFormSubmission = <T, FormData = any>(
-  config: FormSubmissionConfig<T>
+  _config: FormSubmissionConfig<T>
 ): UseFormSubmissionReturn<FormData> => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);

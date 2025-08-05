@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useCentralizedTheme } from '../../../utils/themeConfig';
 
 interface ErrorMessageProps {
   error?: string;
@@ -21,7 +21,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   error,
   className = '',
 }) => {
-  const { config } = useTheme();
+  const themeConfig = useCentralizedTheme();
 
   if (!error) {
     return null;
@@ -32,26 +32,26 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
     compact: 'mt-1',
     comfortable: 'mt-2',
     spacious: 'mt-3',
-  }[config.density];
+  }[themeConfig.density];
 
   // Theme-aware sizing based on density
   const iconSize = {
     compact: 'w-3 h-3',
     comfortable: 'w-4 h-4',
     spacious: 'w-5 h-5',
-  }[config.density];
+  }[themeConfig.density];
 
   const textSize = {
     compact: 'text-xs',
     comfortable: 'text-sm',
     spacious: 'text-base',
-  }[config.density];
+  }[themeConfig.density];
 
   const marginClass = {
     compact: 'mr-1',
     comfortable: 'mr-2',
     spacious: 'mr-3',
-  }[config.density];
+  }[themeConfig.density];
 
   return (
     <div className={`${spacingClass} flex items-center ${className}`}>

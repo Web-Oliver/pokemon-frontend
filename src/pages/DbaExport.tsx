@@ -22,7 +22,6 @@ import DbaItemsWithTimers from '../components/dba/DbaItemsWithTimers';
 import DbaItemsWithoutTimers from '../components/dba/DbaItemsWithoutTimers';
 import DbaEmptyStateCosmic from '../components/dba/DbaEmptyStateCosmic';
 import DbaCompactCardCosmic from '../components/dba/DbaCompactCardCosmic';
-import DbaItemCardCosmic from '../components/dba/DbaItemCardCosmic';
 
 const DbaExport: React.FC = () => {
   const {

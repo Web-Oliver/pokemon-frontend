@@ -49,7 +49,7 @@ Based on the approved design document, I'll break down the implementation into a
   - Test backward compatibility with existing response formats
   - Validate error handling scenarios with new structured errors
   - Ensure all existing functionality remains intact
-  - _Leverage: src/__tests__/setup.ts, existing test utilities and mocking patterns_
+  - _Leverage: src/**tests**/setup.ts, existing test utilities and mocking patterns_
   - _Requirements: Response format validation, Error handling verification_
 
 - [x] 7. Validate Service Layer Integration

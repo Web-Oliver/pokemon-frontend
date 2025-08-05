@@ -11,7 +11,7 @@
  * Following CLAUDE.md principles for separation of concerns
  */
 
-import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { Hash, Package, Search, Star, TrendingUp } from 'lucide-react';
 import { getDisplayName as getDisplayNameHelper } from '../../utils/searchHelpers';
 
@@ -125,56 +125,6 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
     useEffect(() => {
       setSelectedIndex(0);
     }, [suggestions]);
-    // Conditional debug logging for development only
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
-        isVisible,
-        activeField,
-        suggestionsCount: suggestions.length,
-        searchTerm,
-        suggestions: suggestions.map((s) => ({
-          name: s.cardName || s.name || s.setName || s.category,
-          id: s._id || s.id,
-          setInfo: s.setInfo,
-          categoryInfo: s.categoryInfo,
-        })),
-      });
-    }
-
-    if (!isVisible || !activeField || (!loading && suggestions.length === 0)) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[SEARCH DROPDOWN DEBUG] Not rendering dropdown:`, {
-          isVisible,
-          activeField,
-          suggestionsLength: suggestions.length,
-          loading,
-        });
-      }
-      return null;
-    }
-
-    // Context7 Award-Winning Design: Premium suggestion categorization
-    const renderSuggestionIcon = (suggestion?: SearchSuggestion) => {
-      if (activeField === 'set') {
-        return (
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            <Package className="w-5 h-5 text-white" />
-          </div>
-        );
-      } else if (activeField === 'category') {
-        return (
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            <Hash className="w-5 h-5 text-white" />
-          </div>
-        );
-      } else {
-        return (
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            <Search className="w-5 h-5 text-white" />
-          </div>
-        );
-      }
-    };
 
     // Context7 Premium: Award-winning metadata badges with glass morphism
     const renderSuggestionMetadata = useCallback(
@@ -367,6 +317,34 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
       return result.length > 0 ? result : text;
     }, []);
 
+    // Conditional debug logging for development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[SEARCH DROPDOWN DEBUG] Component render:`, {
+        isVisible,
+        activeField,
+        suggestionsCount: suggestions.length,
+        searchTerm,
+        suggestions: suggestions.map((s) => ({
+          name: s.cardName || s.name || s.setName || s.category,
+          id: s._id || s.id,
+          setInfo: s.setInfo,
+          categoryInfo: s.categoryInfo,
+        })),
+      });
+    }
+
+    if (!isVisible || !activeField || (!loading && suggestions.length === 0)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[SEARCH DROPDOWN DEBUG] Not rendering dropdown:`, {
+          isVisible,
+          activeField,
+          suggestionsLength: suggestions.length,
+          loading,
+        });
+      }
+      return null;
+    }
+
     return (
       <div className="absolute top-full left-0 right-0 z-[9999] mt-3">
         {/* Context7 Premium Overlay */}
@@ -412,11 +390,11 @@ const SearchDropdown: React.FC<SearchDropdownProps> = memo(
                     </h3>
                     <p className="text-sm text-white/60 font-medium">
                       {suggestions.length} suggestion
-                      {suggestions.length !== 1 ? 's' : ''} for "
+                      {suggestions.length !== 1 ? 's' : ''} for &quot;
                       {searchTerm.length > 20
                         ? `${searchTerm.substring(0, 20)}...`
                         : searchTerm}
-                      "
+                      &quot;
                     </p>
                   </div>
                 </div>

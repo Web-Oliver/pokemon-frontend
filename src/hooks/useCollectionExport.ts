@@ -231,55 +231,62 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   );
 
   // Unified export function - consolidates all export operations
-  const exportItems = useCallback(async (request: ExportRequest) => {
-    if (request.itemIds && request.itemIds.length === 0) {
-      showWarningToast('No items selected for export');
-      return;
-    }
-
-    setIsExporting(true);
-    try {
-      // Validate request using consolidated utilities
-      validateExportRequest(request.itemType, request.format, request.itemIds);
-
-      const result = await exportApiService.export(request);
-      exportApiService.downloadBlob(result.blob, result.filename);
-
-      // Use consolidated success message formatting
-      const successMessage = formatExportSuccessMessage(
-        result.itemCount,
-        request.format,
-        request.itemType
-      );
-      showSuccessToast(successMessage);
-
-      // Clear selection after successful export
-      if (request.itemIds && request.itemIds.length > 0) {
-        setSelectedItemsForExport([]);
-        saveStateToPersistence(undefined, []);
+  const exportItems = useCallback(
+    async (request: ExportRequest) => {
+      if (request.itemIds && request.itemIds.length === 0) {
+        showWarningToast('No items selected for export');
+        return;
       }
 
-      // Clear ordering state if preferences indicate
+      setIsExporting(true);
       try {
-        const cleared = orderingPersistence.clearAfterExport();
-        if (cleared) {
-          console.log('Ordering state cleared after successful export');
+        // Validate request using consolidated utilities
+        validateExportRequest(
+          request.itemType,
+          request.format,
+          request.itemIds
+        );
+
+        const result = await exportApiService.export(request);
+        exportApiService.downloadBlob(result.blob, result.filename);
+
+        // Use consolidated success message formatting
+        const successMessage = formatExportSuccessMessage(
+          result.itemCount,
+          request.format,
+          request.itemType
+        );
+        showSuccessToast(successMessage);
+
+        // Clear selection after successful export
+        if (request.itemIds && request.itemIds.length > 0) {
+          setSelectedItemsForExport([]);
+          saveStateToPersistence(undefined, []);
+        }
+
+        // Clear ordering state if preferences indicate
+        try {
+          const cleared = orderingPersistence.clearAfterExport();
+          if (cleared) {
+            console.log('Ordering state cleared after successful export');
+          }
+        } catch (error) {
+          console.error('Failed to clear ordering state after export:', error);
         }
       } catch (error) {
-        console.error('Failed to clear ordering state after export:', error);
+        // Use consolidated error message formatting
+        const errorMessage = formatExportErrorMessage(
+          request.format,
+          request.itemType,
+          error instanceof Error ? error.message : undefined
+        );
+        handleApiError(error, errorMessage);
+      } finally {
+        setIsExporting(false);
       }
-    } catch (error) {
-      // Use consolidated error message formatting
-      const errorMessage = formatExportErrorMessage(
-        request.format,
-        request.itemType,
-        error instanceof Error ? error.message : undefined
-      );
-      handleApiError(error, errorMessage);
-    } finally {
-      setIsExporting(false);
-    }
-  }, []);
+    },
+    [saveStateToPersistence]
+  );
 
   // Standard export function with ordering support
   const exportOrderedItems = useCallback(
@@ -346,7 +353,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         setIsExporting(false);
       }
     },
-    []
+    [saveStateToPersistence]
   );
 
   // Export all items in collection with specified format

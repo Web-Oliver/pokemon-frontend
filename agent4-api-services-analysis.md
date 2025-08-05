@@ -14,12 +14,14 @@ The API and services architecture shows a **mixed implementation of SOLID/DRY pr
 ### Overall Health Score: **6.5/10**
 
 **Strengths:**
+
 - Excellent unified API client architecture with Strategy pattern
 - Strong generic operations implementation (DRY compliance)
 - Good service registry pattern with dependency injection
 - Comprehensive response transformation layer
 
 **Critical Issues:**
+
 - Multiple API architectural patterns creating inconsistency (LSP violations)
 - Duplicated error handling across service layers (DRY violations)
 - Mixed abstraction levels violating DIP
@@ -32,8 +34,10 @@ The API and services architecture shows a **mixed implementation of SOLID/DRY pr
 ### Critical Violations
 
 #### **1.1 CollectionApiService - Multiple Responsibilities**
+
 **File**: `src/services/CollectionApiService.ts`  
 **Issues**:
+
 - Handles PSA cards, raw cards, AND sealed products in one service
 - Mixes validation, error handling, and API orchestration
 - Contains both business logic and infrastructure concerns
@@ -42,19 +46,25 @@ The API and services architecture shows a **mixed implementation of SOLID/DRY pr
 // VIOLATION: One service handling 3 different entity types
 export class CollectionApiService implements ICollectionApiService {
   // PSA Card operations
-  async getPsaGradedCards(filters?: { sold?: boolean }): Promise<IPsaGradedCard[]>
-  // Raw Card operations  
-  async getRawCards(filters?: { sold?: boolean }): Promise<IRawCard[]>
+  async getPsaGradedCards(filters?: {
+    sold?: boolean;
+  }): Promise<IPsaGradedCard[]>;
+  // Raw Card operations
+  async getRawCards(filters?: { sold?: boolean }): Promise<IRawCard[]>;
   // Sealed Product operations
-  async getSealedProducts(filters?: { sold?: boolean }): Promise<ISealedProduct[]>
+  async getSealedProducts(filters?: {
+    sold?: boolean;
+  }): Promise<ISealedProduct[]>;
 }
 ```
 
 **Impact**: High - Creates bloated service with multiple change reasons
 
 #### **1.2 UnifiedApiClient - God Object Pattern**
+
 **File**: `src/api/unifiedApiClient.ts`  
 **Issues**:
+
 - 722 lines doing HTTP, optimization, validation, logging, and transformation
 - Contains utility functions, strategy management, and CRUD operations
 - Mixes multiple abstraction levels
@@ -63,13 +73,13 @@ export class CollectionApiService implements ICollectionApiService {
 // VIOLATION: Single class with multiple responsibilities
 export class UnifiedApiClient {
   // HTTP operations
-  async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T>
+  async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T>;
   // ID validation
-  validateAndSanitizeId(id: any, paramName: string = 'id'): string
+  validateAndSanitizeId(id: any, paramName: string = 'id'): string;
   // Optimization strategy
-  setOptimizationStrategy(strategy: OptimizationStrategy): void
+  setOptimizationStrategy(strategy: OptimizationStrategy): void;
   // Logging and error handling
-  private async makeRequest<T>()
+  private async makeRequest<T>();
 }
 ```
 
@@ -78,8 +88,10 @@ export class UnifiedApiClient {
 ### Moderate Violations
 
 #### **1.3 Response Transformer - Mixed Concerns**
+
 **File**: `src/utils/responseTransformer.ts`  
 **Issues**:
+
 - Handles response extraction, ID mapping, field mapping, and validation
 - 674 lines with multiple transformation responsibilities
 
@@ -90,8 +102,10 @@ export class UnifiedApiClient {
 ### Critical Violations
 
 #### **2.1 Hard-coded API Endpoints**
+
 **Files**: Multiple API files  
 **Issues**:
+
 - API endpoints hardcoded in multiple locations
 - No centralized endpoint configuration
 - Difficult to extend for new environments
@@ -99,18 +113,20 @@ export class UnifiedApiClient {
 ```typescript
 // VIOLATION: Hard-coded endpoints scattered across files
 export const getPsaGradedCards = async () => {
-  return await unifiedApiClient.get<IPsaGradedCard[]>('/psa-graded-cards')
-}
+  return await unifiedApiClient.get<IPsaGradedCard[]>('/psa-graded-cards');
+};
 export const getRawCards = async () => {
-  return await unifiedApiClient.get<IRawCard[]>('/raw-cards')
-}
+  return await unifiedApiClient.get<IRawCard[]>('/raw-cards');
+};
 ```
 
 **Impact**: High - Cannot extend for different environments without modification
 
 #### **2.2 Fixed Error Handling Patterns**
+
 **Files**: All service files  
 **Issues**:
+
 - Error handling logic embedded in service methods
 - Cannot extend with new error handling strategies
 - Fixed logging patterns
@@ -145,8 +161,10 @@ private async executeWithErrorHandling<T>(
 ### Critical Violations
 
 #### **3.1 Inconsistent API Response Formats**
+
 **Files**: Multiple API files  
 **Issues**:
+
 - Some APIs use `unifiedApiClient`, others use pure `fetch`
 - Inconsistent error handling between API implementations
 - Different response transformation patterns
@@ -154,24 +172,28 @@ private async executeWithErrorHandling<T>(
 ```typescript
 // VIOLATION: Different API patterns cannot be substituted
 // Pattern 1: UnifiedApiClient (auctionsApi.ts)
-export const getAuctions = async (params?: AuctionsParams): Promise<IAuction[]> => {
+export const getAuctions = async (
+  params?: AuctionsParams
+): Promise<IAuction[]> => {
   return await auctionOperations.getAll(params);
-}
+};
 
-// Pattern 2: Pure fetch (searchApi.ts) 
+// Pattern 2: Pure fetch (searchApi.ts)
 const pureFetch = async (url: string): Promise<any> => {
   const response = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
   });
   return response.json();
-}
+};
 ```
 
 **Impact**: Critical - API clients cannot be substituted reliably
 
 #### **3.2 Service Interface Inconsistencies**
+
 **Files**: Service implementations  
 **Issues**:
+
 - Different validation patterns across services
 - Inconsistent error response formats
 - Different data transformation approaches
@@ -183,8 +205,10 @@ const pureFetch = async (url: string): Promise<any> => {
 ### Critical Violations
 
 #### **4.1 Monolithic Collection Service Interface**
+
 **File**: `src/interfaces/api/ICollectionApiService.ts`  
 **Issues**:
+
 - Single interface forcing clients to depend on unused methods
 - PSA card clients must implement sealed product methods
 - Violates client-specific interface principle
@@ -192,23 +216,29 @@ const pureFetch = async (url: string): Promise<any> => {
 ```typescript
 // VIOLATION: Fat interface forcing unnecessary dependencies
 export interface ICollectionApiService
-  extends IPsaCardApiService,    // PSA cards
-    IRawCardApiService,          // Raw cards  
-    ISealedProductApiService {}  // Sealed products
+  extends IPsaCardApiService, // PSA cards
+    IRawCardApiService, // Raw cards
+    ISealedProductApiService {} // Sealed products
 
 // Forces PSA-only clients to implement sealed product methods
 class PsaOnlyClient implements ICollectionApiService {
   // Must implement unused methods
-  async getSealedProducts(): Promise<ISealedProduct[]> { /* unused */ }
-  async createSealedProduct(): Promise<ISealedProduct> { /* unused */ }
+  async getSealedProducts(): Promise<ISealedProduct[]> {
+    /* unused */
+  }
+  async createSealedProduct(): Promise<ISealedProduct> {
+    /* unused */
+  }
 }
 ```
 
 **Impact**: High - Forces unnecessary dependencies and implementation overhead
 
 #### **4.2 Bloated UnifiedApiClient Interface**
+
 **File**: `src/api/unifiedApiClient.ts`  
 **Issues**:
+
 - Single client exposing HTTP methods, optimization, validation, and utilities
 - Clients using only basic GET forced to depend on complex optimization features
 
@@ -219,8 +249,10 @@ class PsaOnlyClient implements ICollectionApiService {
 ### Critical Violations
 
 #### **5.1 Direct HTTP Client Dependencies**
+
 **Files**: Multiple API files  
 **Issues**:
+
 - Services directly importing concrete API clients
 - Hard dependencies on axios/fetch implementations
 - Cannot swap HTTP implementations
@@ -241,8 +273,10 @@ export class CollectionApiService {
 **Impact**: High - Tight coupling prevents testing and implementation swapping
 
 #### **5.2 Utility Dependencies in Business Logic**
+
 **Files**: Service files  
 **Issues**:
+
 - Services directly importing logging and error handling utilities
 - Business logic coupled to infrastructure concerns
 
@@ -268,6 +302,7 @@ export class CollectionApiService {
 ### Critical Violations
 
 #### **6.1 Duplicated Error Handling Patterns**
+
 **Files**: All service files  
 **Count**: 15+ duplicated error handling implementations
 
@@ -296,8 +331,10 @@ private async executeWithErrorHandling<T>(operation: string, apiCall: () => Prom
 **Impact**: Critical - 200+ lines of duplicated code
 
 #### **6.2 Repeated Validation Logic**
+
 **Files**: All service files  
 **Issues**:
+
 - ID validation duplicated across services
 - Data validation patterns repeated
 - Same validation error messages
@@ -319,8 +356,10 @@ private validateId(id: string, operation: string): void {
 **Impact**: High - Maintenance nightmare when validation rules change
 
 #### **6.3 Duplicated API Configuration**
+
 **Files**: Multiple API files  
 **Issues**:
+
 - Resource configurations duplicated
 - Same endpoint patterns repeated
 - Identical transformation logic
@@ -330,34 +369,43 @@ private validateId(id: string, operation: string): void {
 ## 7. Priority Recommendations
 
 ### 1. **CRITICAL: Split CollectionApiService (SRP)**
+
 **Priority**: P0 - Immediate  
 **Effort**: 2-3 days  
 **Impact**: High
 
 Split into separate services:
+
 - `PsaCardApiService`
-- `RawCardApiService` 
+- `RawCardApiService`
 - `SealedProductApiService`
 
 ### 2. **CRITICAL: Implement Generic Error Handling (DRY)**
+
 **Priority**: P0 - Immediate  
 **Effort**: 1-2 days  
 **Impact**: High
 
 Create reusable error handling abstraction:
+
 ```typescript
 interface ApiErrorHandler {
   handleError<T>(operation: string, error: any): never;
-  executeWithHandling<T>(operation: string, apiCall: () => Promise<T>): Promise<T>;
+  executeWithHandling<T>(
+    operation: string,
+    apiCall: () => Promise<T>
+  ): Promise<T>;
 }
 ```
 
 ### 3. **HIGH: Create API Client Abstraction (DIP)**
+
 **Priority**: P1 - Next Sprint  
 **Effort**: 3-4 days  
 **Impact**: High
 
 Abstract HTTP client behind interface:
+
 ```typescript
 interface HttpClient {
   get<T>(url: string, config?: RequestConfig): Promise<T>;
@@ -367,23 +415,33 @@ interface HttpClient {
 ```
 
 ### 4. **HIGH: Segregate Service Interfaces (ISP)**
+
 **Priority**: P1 - Next Sprint  
 **Effort**: 1-2 days  
 **Impact**: Medium
 
 Split fat interfaces into client-specific contracts:
+
 ```typescript
-interface IPsaCardApiService { /* PSA-only methods */ }
-interface IRawCardApiService { /* Raw card-only methods */ }
-interface ISealedProductApiService { /* Sealed product-only methods */ }
+interface IPsaCardApiService {
+  /* PSA-only methods */
+}
+interface IRawCardApiService {
+  /* Raw card-only methods */
+}
+interface ISealedProductApiService {
+  /* Sealed product-only methods */
+}
 ```
 
 ### 5. **MEDIUM: Centralize API Configuration (OCP)**
+
 **Priority**: P2 - Next Sprint  
 **Effort**: 2-3 days  
 **Impact**: Medium
 
 Create configuration-driven API endpoints:
+
 ```typescript
 interface ApiConfig {
   baseUrl: string;
@@ -425,7 +483,7 @@ interface ServiceRegistry {
 ### 8.2 **Implementation Strategy**
 
 1. **Phase 1**: Extract error handling into reusable service
-2. **Phase 2**: Create HTTP client abstraction layer  
+2. **Phase 2**: Create HTTP client abstraction layer
 3. **Phase 3**: Split monolithic services by resource type
 4. **Phase 4**: Implement configuration-driven endpoints
 5. **Phase 5**: Add comprehensive testing for all layers

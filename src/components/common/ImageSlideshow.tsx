@@ -2,7 +2,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
 interface ImageSlideshowProps {
@@ -46,7 +45,6 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     showThumbnails = false,
     themeColor = 'dark',
   }) => {
-    const {} = useTheme();
     const elementTheme = getElementTheme(themeColor);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [, setImageIsVertical] = useState(false);

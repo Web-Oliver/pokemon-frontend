@@ -26,7 +26,7 @@ import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/errorHandler';
 import { log } from '../utils/logger';
 import { navigationHelper } from '../utils/navigation';
-import { useTheme } from '../contexts/ThemeContext';
+import { useCentralizedTheme } from '../utils/themeConfig';
 
 type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -43,7 +43,7 @@ type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 const AddEditItem: React.FC = () => {
   const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
-  const theme = useTheme();
+  const themeConfig = useCentralizedTheme();
   const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
@@ -213,7 +213,7 @@ const AddEditItem: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen relative overflow-hidden ${theme.getThemeClasses()}`}
+      className={`min-h-screen relative overflow-hidden theme-${themeConfig.visualTheme}`}
     >
       {/* Context7 Award-Winning Background - Theme Aware */}
       <div className="absolute inset-0 bg-[var(--theme-bg-primary)]"></div>

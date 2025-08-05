@@ -40,7 +40,7 @@ Based on the approved design and the fact that the backend has already been upgr
   - _Leverage: src/api/collectionApi.ts (existing API patterns and CRUD operations)_
   - _Requirements: Collection data management, Runtime stability_
 
-- [x] 5. Update All Additional API Modules  
+- [x] 5. Update All Additional API Modules
   - Apply same new format handling to `auctionsApi.ts`, `searchApi.ts`, `salesApi.ts`
   - Remove legacy format compatibility code from all modules
   - Add consistent ID validation across all API endpoints
@@ -68,7 +68,7 @@ Based on the approved design and the fact that the backend has already been upgr
 
 - [x] 8. Enhance Navigation Helper with ID Safety
   - Add comprehensive ID validation and sanitization in navigation functions
-  - Implement proper error handling for invalid ID parameters  
+  - Implement proper error handling for invalid ID parameters
   - Add logging for navigation issues and malformed IDs
   - Maintain existing navigation patterns and route structure
   - _Leverage: src/utils/navigation.ts (existing navigation patterns)_
@@ -99,7 +99,7 @@ Based on the approved design and the fact that the backend has already been upgr
   - Fix lucide-react mock exports (add missing Package and other icons)
   - Create standardized mock API response factory for new format
   - Remove all hybrid format testing logic and mocks
-  - _Leverage: src/__tests__/setup.ts (existing test utilities and mocking patterns)_
+  - _Leverage: src/**tests**/setup.ts (existing test utilities and mocking patterns)_
   - _Requirements: Test consistency, Mock reliability_
 
 - [x] 12. Update API Integration Tests
@@ -107,7 +107,7 @@ Based on the approved design and the fact that the backend has already been upgr
   - Update all API integration tests to expect new format only
   - Add comprehensive error handling tests for new format
   - Fix extension property access errors and undefined issues
-  - _Leverage: src/__tests__/api-integration.test.ts (existing integration test patterns)_
+  - _Leverage: src/**tests**/api-integration.test.ts (existing integration test patterns)_
   - _Requirements: API validation, Integration testing reliability_
 
 - [x] 13. Fix Service and Hook Integration Tests
@@ -115,7 +115,7 @@ Based on the approved design and the fact that the backend has already been upgr
   - Fix hook testing issues with proper component mocking
   - Remove complex hybrid format testing scenarios
   - Ensure all 47 currently failing tests are addressed and fixed
-  - _Leverage: src/__tests__/ (existing service and hook test patterns)_
+  - _Leverage: src/**tests**/ (existing service and hook test patterns)_
   - _Requirements: Service testing, Hook validation, Test suite stability_
 
 - [x] 14. Update Performance Tests
@@ -123,7 +123,7 @@ Based on the approved design and the fact that the backend has already been upgr
   - Remove legacy format performance comparisons and benchmarks
   - Test memory usage and performance with new simplified transformer
   - Ensure concurrent processing tests work with new format
-  - _Leverage: src/__tests__/performance-compatibility.test.ts (existing performance test patterns)_
+  - _Leverage: src/**tests**/performance-compatibility.test.ts (existing performance test patterns)_
   - _Requirements: Performance validation, Memory management_
 
 ### **Phase 6: Quality Assurance and Documentation**
@@ -155,8 +155,9 @@ Based on the approved design and the fact that the backend has already been upgr
 ## Implementation Strategy
 
 **Execution Order**: Tasks must be completed sequentially as each builds on previous work:
+
 - Phase 1-2: Core API transformation and client fixes
-- Phase 3-4: Component safety and service layer updates  
+- Phase 3-4: Component safety and service layer updates
 - Phase 5: Comprehensive test suite fixes
 - Phase 6: Final validation and documentation
 

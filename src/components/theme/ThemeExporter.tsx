@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useCallback, useRef } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../../contexts/theme';
 import {
   exportTheme,
   exportThemeCollection,
@@ -58,7 +58,10 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
   onThemeImported,
   className,
 }) => {
-  const theme = useTheme();
+  const visualTheme = useVisualTheme();
+  const layoutTheme = useLayoutTheme();
+  const animationTheme = useAnimationTheme();
+  const accessibilityTheme = useAccessibilityTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Component state
@@ -107,6 +110,7 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
     } finally {
       setIsExporting(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     theme.config,
     theme.getCSSProperties,
@@ -186,7 +190,8 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
 
       handleImportTheme(file);
     },
-    []
+
+    [handleImportTheme]
   );
 
   const handleImportTheme = useCallback(
@@ -289,7 +294,7 @@ export const ThemeExporter: React.FC<ThemeExporterProps> = ({
     [theme, onThemeImported]
   );
 
-  const handleImportAsPreset = useCallback(
+  const _handleImportAsPreset = useCallback(
     async (file: File, presetName: string) => {
       setIsImporting(true);
       setImportMessage(null);

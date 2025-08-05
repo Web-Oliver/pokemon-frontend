@@ -62,6 +62,12 @@ interface ReactProfilerProps {
   className?: string;
 }
 
+import {
+  updateMetricsStore,
+  updateRenderHistory,
+  updateWebVitals,
+} from './profilerUtils';
+
 // Context7: Global metrics store for performance aggregation
 const metricsStore = new Map<string, AggregatedMetrics>();
 const renderHistory: ProfilerMetrics[] = [];
@@ -113,6 +119,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
       if (renderHistory.length > MAX_HISTORY_SIZE) {
         renderHistory.shift();
       }
+      updateRenderHistory(renderHistory);
 
       // Context7: Log slow renders above threshold
       if (actualDuration > onRenderThreshold) {
@@ -160,6 +167,7 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
             : 100;
 
         metricsStore.set(profileId, updated);
+        updateMetricsStore(metricsStore);
 
         // Update local state with proper throttling to prevent infinite re-renders
         if (profileId === id) {
@@ -214,9 +222,10 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
       return;
     }
 
-    const updateWebVitals = (vital: Partial<CoreWebVitals>) => {
+    const _updateVitals = (vital: Partial<CoreWebVitals>) => {
       webVitals = { ...webVitals, ...vital };
       setWebVitalsData({ ...webVitals });
+      updateWebVitals(webVitals);
     };
 
     // First Contentful Paint (FCP)
@@ -473,76 +482,6 @@ export const ReactProfiler: React.FC<ReactProfilerProps> = ({
       )}
     </Profiler>
   );
-};
-
-// Context7: Export utility functions for advanced profiling
-export const getAggregatedMetrics = (): Map<string, AggregatedMetrics> => {
-  return new Map(metricsStore);
-};
-
-export const getRenderHistory = (): ProfilerMetrics[] => {
-  return [...renderHistory];
-};
-
-export const getWebVitals = (): CoreWebVitals => {
-  return { ...webVitals };
-};
-
-export const clearMetrics = (): void => {
-  metricsStore.clear();
-  renderHistory.length = 0;
-  webVitals = {};
-};
-
-// Context7: Performance analysis utilities
-export const analyzeComponentPerformance = (componentId: string) => {
-  const metrics = metricsStore.get(componentId);
-  if (!metrics) {
-    return null;
-  }
-
-  const componentHistory = renderHistory.filter((r) => r.id === componentId);
-  const recentRenders = componentHistory.slice(-10);
-
-  return {
-    ...metrics,
-    trend:
-      recentRenders.length > 1
-        ? recentRenders[recentRenders.length - 1].actualDuration -
-          recentRenders[0].actualDuration
-        : 0,
-    consistency:
-      recentRenders.length > 0
-        ? (metrics.slowestRender - metrics.fastestRender) /
-          metrics.avgActualDuration
-        : 0,
-    recommendations: generateRecommendations(metrics),
-  };
-};
-
-const generateRecommendations = (metrics: AggregatedMetrics): string[] => {
-  const recommendations: string[] = [];
-
-  if (metrics.optimizationScore < 70) {
-    recommendations.push('Consider using React.memo() for this component');
-  }
-
-  if (metrics.avgActualDuration > 33) {
-    recommendations.push(
-      'Component renders are slow, check for expensive calculations'
-    );
-  }
-
-  if (
-    metrics.renderCount > 20 &&
-    metrics.lastUpdateTime > metrics.mountTime * 2
-  ) {
-    recommendations.push(
-      'Frequent re-renders detected, optimize state management'
-    );
-  }
-
-  return recommendations;
 };
 
 export default ReactProfiler;
