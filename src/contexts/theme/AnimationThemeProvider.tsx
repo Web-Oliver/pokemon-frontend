@@ -7,7 +7,7 @@
  */
 
 import React, { createContext, useContext, useCallback } from 'react';
-import { AnimationIntensity } from '../ThemeContext';
+import { AnimationIntensity } from '../../types/themeTypes';
 
 // ================================
 // ANIMATION THEME INTERFACES

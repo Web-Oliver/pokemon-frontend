@@ -7,7 +7,10 @@
  */
 
 import React, { createContext, useContext, useCallback } from 'react';
-import { VisualTheme, ThemePreset, themePresets } from '../ThemeContext';
+import { VisualTheme, ThemePreset } from '../../types/themeTypes';
+
+// Import theme presets from ThemeContext (this is safe - no circular dependency)
+import { themePresets } from '../ThemeContext';
 
 // ================================
 // VISUAL THEME INTERFACES

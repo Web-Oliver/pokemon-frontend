@@ -10,7 +10,7 @@
  */
 
 import { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
-import { SearchResult } from '../hooks/useSearch';
+import { SearchResult, SearchParams } from '../types/searchTypes';
 
 // ===== TYPES =====
 
@@ -19,12 +19,7 @@ export interface AutoFillConfig {
   clearErrors: UseFormClearErrors<any>;
 }
 
-export interface SearchParams {
-  query: string;
-  limit?: number;
-  page?: number;
-  [key: string]: any;
-}
+// SearchParams type moved to ../types/searchTypes.ts
 
 // ===== SET NAME MAPPING =====
 

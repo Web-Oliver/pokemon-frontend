@@ -10,11 +10,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 import { 
-  ThemeConfiguration, 
-  defaultConfig as originalDefaultConfig,
+  ThemeConfiguration,
   ColorScheme,
-  ThemeColor 
+} from '../../types/themeTypes';
+import { 
+  defaultConfig as originalDefaultConfig,
 } from '../ThemeContext';
+import { ThemeColor } from '../../theme/formThemes';
 import { VisualThemeProvider, VisualThemeState } from './VisualThemeProvider';
 import { LayoutThemeProvider, LayoutThemeState } from './LayoutThemeProvider';
 import { AnimationThemeProvider, AnimationThemeState } from './AnimationThemeProvider';

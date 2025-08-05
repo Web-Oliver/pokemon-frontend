@@ -7,7 +7,7 @@
  */
 
 import React, { createContext, useContext, useCallback } from 'react';
-import { Density } from '../ThemeContext';
+import { Density } from '../../types/themeTypes';
 
 // ================================
 // LAYOUT THEME INTERFACES

@@ -23,59 +23,14 @@ import React, {
 } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 import { ThemeColor, formThemes } from '../theme/formThemes';
-
-// ================================
-// THEME INTERFACES & TYPES
-// ================================
-
-export type VisualTheme =
-  | 'context7-premium'
-  | 'context7-futuristic'
-  | 'dba-cosmic'
-  | 'minimal';
-export type ColorScheme = 'light' | 'dark' | 'system';
-export type Density = 'compact' | 'comfortable' | 'spacious';
-export type AnimationIntensity = 'subtle' | 'normal' | 'enhanced' | 'disabled';
-
-/**
- * Comprehensive theme configuration interface
- * Extends existing form theme system with visual themes and settings
- */
-export interface ThemeConfiguration {
-  // Visual Theme Settings
-  visualTheme: VisualTheme;
-  colorScheme: ColorScheme;
-  density: Density;
-  animationIntensity: AnimationIntensity;
-
-  // Color Configuration (extends existing formThemes)
-  primaryColor: ThemeColor;
-
-  // Accessibility Settings
-  highContrast: boolean;
-  reducedMotion: boolean;
-
-  // Advanced Settings
-  glassmorphismIntensity: number; // 0-100
-  particleEffectsEnabled: boolean;
-  customCSSProperties?: Record<string, string>;
-}
-
-/**
- * Theme preset configurations
- * Each preset represents a complete visual style
- */
-export interface ThemePreset {
-  id: VisualTheme;
-  name: string;
-  description: string;
-  config: Partial<ThemeConfiguration>;
-  preview: {
-    gradient: string;
-    backgroundColor: string;
-    textColor: string;
-  };
-}
+import {
+  VisualTheme,
+  ColorScheme,
+  Density,
+  AnimationIntensity,
+  ThemeConfiguration,
+  ThemePreset,
+} from '../types/themeTypes';
 
 /**
  * Theme context interface
@@ -654,25 +609,19 @@ export const withTheme = <P extends object>(
 };
 
 // ================================
-// NEW DECOMPOSED THEME SYSTEM
+// THEME SYSTEM NOTES
 // ================================
 
-// Export the new composed theme provider
-export { ComposedThemeProvider } from './theme/ComposedThemeProvider';
+// Decomposed theme providers are available in ./theme/ directory
+// Use them directly to avoid circular dependencies:
+// - VisualThemeProvider from './theme/VisualThemeProvider'
+// - LayoutThemeProvider from './theme/LayoutThemeProvider'  
+// - AnimationThemeProvider from './theme/AnimationThemeProvider'
+// - AccessibilityThemeProvider from './theme/AccessibilityThemeProvider'
+// - ThemeStorageProvider from './theme/ThemeStorageProvider'
+// - ComposedThemeProvider from './theme/ComposedThemeProvider'
 
-// For backward compatibility, also export the original provider
-// Components can gradually migrate to the new focused providers
-export { ThemeProvider as LegacyThemeProvider };
-
-// Re-export focused providers for direct usage
-export { VisualThemeProvider, useVisualTheme } from './theme/VisualThemeProvider';
-export { LayoutThemeProvider, useLayoutTheme } from './theme/LayoutThemeProvider';
-export { AnimationThemeProvider, useAnimationTheme } from './theme/AnimationThemeProvider';
-export { AccessibilityThemeProvider, useAccessibilityTheme } from './theme/AccessibilityThemeProvider';
-export { ThemeStorageProvider, useThemeStorage } from './theme/ThemeStorageProvider';
-
-// New composite hook that uses the decomposed system
-export { useTheme as useComposedTheme } from '../hooks/theme/useTheme';
+// For backward compatibility, main provider is still available as ThemeProvider
 
 // Keep the original monolithic useTheme for backward compatibility during migration
 export { useTheme as useLegacyTheme };

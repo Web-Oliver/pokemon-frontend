@@ -25,12 +25,8 @@ import { getDisplayName } from '../utils/searchHelpers';
 import { queryKeys } from '../lib/queryClient';
 
 // Focused types
-export interface SearchResult {
-  id: string;
-  displayName: string;
-  data: any; // Original data from API
-  type: 'set' | 'product' | 'card' | 'setProduct';
-}
+// SearchResult type moved to ../types/searchTypes.ts
+import { SearchResult } from '../types/searchTypes';
 
 export interface SearchState {
   loading: boolean;

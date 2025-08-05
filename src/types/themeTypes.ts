@@ -16,11 +16,51 @@
 
 import { ReactNode } from 'react';
 import { ThemeColor } from '../theme/formThemes';
-import {
-  VisualTheme,
-  Density,
-  AnimationIntensity,
-} from '../contexts/ThemeContext';
+
+// Theme types moved here to prevent circular dependencies
+export type VisualTheme =
+  | 'context7-premium'
+  | 'context7-futuristic'
+  | 'dba-cosmic'
+  | 'minimal';
+
+export type ColorScheme = 'light' | 'dark' | 'system';
+export type Density = 'compact' | 'comfortable' | 'spacious';
+export type AnimationIntensity = 'subtle' | 'normal' | 'enhanced' | 'disabled';
+
+// Theme configuration interface
+export interface ThemeConfiguration {
+  // Visual Theme Settings
+  visualTheme: VisualTheme;
+  colorScheme: ColorScheme;
+  density: Density;
+  animationIntensity: AnimationIntensity;
+
+  // Color Configuration
+  primaryColor: ThemeColor;
+
+  // Accessibility Settings
+  highContrast: boolean;
+  reducedMotion: boolean;
+
+  // Advanced Settings
+  glassmorphismIntensity: number; // 0-100
+  particleEffectsEnabled: boolean;
+  customCSSProperties?: Record<string, string>;
+}
+
+// Theme preset interface
+export interface ThemePreset {
+  id: VisualTheme;
+  name: string;
+  description: string;
+  config: Partial<ThemeConfiguration>;
+  preview: {
+    gradient: string;
+    backgroundColor: string;
+    textColor: string;
+  };
+}
 
 // ================================
 // BASE COMPONENT INTERFACES

@@ -7,7 +7,7 @@
  */
 
 import React, { createContext, useContext, useCallback } from 'react';
-import { ThemeConfiguration } from '../ThemeContext';
+import { ThemeConfiguration } from '../../types/themeTypes';
 
 // ================================
 // THEME STORAGE INTERFACES
