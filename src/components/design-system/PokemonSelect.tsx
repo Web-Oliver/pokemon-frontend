@@ -173,4 +173,49 @@ export const PokemonSelect = forwardRef<HTMLSelectElement, PokemonSelectProps>(
               >
                 <X className="w-4 h-4 text-zinc-400 hover:text-zinc-200" />
               </button>
-            )}\n            \n            {/* Loading Spinner */}\n            {loading ? (\n              <div className=\"w-5 h-5 border-2 border-zinc-600 border-t-cyan-400 rounded-full animate-spin\" />\n            ) : (\n              /* Dropdown Icon */\n              <div className={cn(\n                'flex items-center justify-center transition-all duration-300',\n                size === 'sm' ? 'w-6 h-6' : size === 'lg' ? 'w-10 h-10' : 'w-8 h-8',\n                'bg-zinc-800 group-focus-within:bg-cyan-900/50 rounded-lg shadow-sm',\n                'group-focus-within:scale-110 group-focus-within:shadow-md',\n                'group-focus-within:shadow-[0_2px_8px_0_rgb(6,182,212,0.2)]'\n              )}>\n                <ChevronDown className={cn(\n                  'text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300',\n                  'group-focus-within:rotate-180',\n                  size === 'sm' ? 'w-3 h-3' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4'\n                )} />\n              </div>\n            )}\n          </div>\n        </div>\n        \n        {/* Helper Text */}\n        {helper && !error && (\n          <p className=\"text-xs text-cyan-200/60 font-medium\">\n            {helper}\n          </p>\n        )}\n        \n        {/* Error Message */}\n        {error && (\n          <p className=\"text-xs text-red-400 font-medium flex items-center gap-1\">\n            <svg className=\"w-4 h-4\" fill=\"currentColor\" viewBox=\"0 0 20 20\">\n              <path fillRule=\"evenodd\" d=\"M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z\" clipRule=\"evenodd\" />\n            </svg>\n            {error}\n          </p>\n        )}\n      </div>\n    );\n  }\n);\n\nPokemonSelect.displayName = 'PokemonSelect';
+            )}
+            
+            {/* Loading Spinner */}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-zinc-600 border-t-cyan-400 rounded-full animate-spin" />
+            ) : (
+              /* Dropdown Icon */
+              <div className={cn(
+                'flex items-center justify-center transition-all duration-300',
+                size === 'sm' ? 'w-6 h-6' : size === 'lg' ? 'w-10 h-10' : 'w-8 h-8',
+                'bg-zinc-800 group-focus-within:bg-cyan-900/50 rounded-lg shadow-sm',
+                'group-focus-within:scale-110 group-focus-within:shadow-md',
+                'group-focus-within:shadow-[0_2px_8px_0_rgb(6,182,212,0.2)]'
+              )}>
+                <ChevronDown className={cn(
+                  'text-zinc-400 group-focus-within:text-cyan-400 transition-all duration-300',
+                  'group-focus-within:rotate-180',
+                  size === 'sm' ? 'w-3 h-3' : size === 'lg' ? 'w-5 h-5' : 'w-4 h-4'
+                )} />
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Helper Text */}
+        {helper && !error && (
+          <p className="text-xs text-cyan-200/60 font-medium">
+            {helper}
+          </p>
+        )}
+        
+        {/* Error Message */}
+        {error && (
+          <p className="text-xs text-red-400 font-medium flex items-center gap-1">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+);
+
+PokemonSelect.displayName = 'PokemonSelect';

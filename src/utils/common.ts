@@ -20,6 +20,9 @@ export {
 // Re-export React hooks
 export { useDebounce, useDebouncedCallback } from '../hooks/useDebounce';
 
+// Re-export theme utilities
+export { cn } from './themeUtils';
+
 export {
   formatPrice,
   displayPrice,
