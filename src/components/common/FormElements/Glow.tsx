@@ -45,11 +45,12 @@ export const Glow: React.FC<GlowProps> = ({
 
   return (
     <div
-      className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${getGlowVariant(variant)} opacity-0 group-hover:opacity-100 transition-opacity -z-10 ${className}`}
+      className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${getGlowVariant(variant)} opacity-0 group-hover:opacity-100 transition-opacity -z-10 ${className} ${config.animationIntensity === 'disabled' ? '!opacity-0' : ''}`}
       style={{
-        transitionDuration: animationDuration,
-        filter: blurIntensity,
-        opacity: config.animationIntensity === 'disabled' ? 0 : undefined
+        '--glow-duration': animationDuration,
+        '--glow-blur': blurIntensity,
+        transitionDuration: 'var(--glow-duration)',
+        filter: 'var(--glow-blur)',
       }}
     />
   );

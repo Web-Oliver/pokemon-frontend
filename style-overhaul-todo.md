@@ -271,8 +271,8 @@ This document outlines the complete transformation from fragmented styling syste
 
 - [x] **4.1.1** Remove deprecated styling systems
   - [x] Delete unused CSS files and patterns (verified - no deprecated files found)
-  - [x] Remove hardcoded style constants from components (cleaned LoadingSpinner, FormWrapper)
-  - [x] Clean up duplicate animation definitions (identified 247 occurrences, converted to theme tokens)
+  - [x] Remove hardcoded style constants from components (cleaned LoadingSpinner, FormWrapper, Shimmer, Glow, Dashboard)
+  - [x] Clean up duplicate animation definitions (Dashboard converted to theme tokens: --animation-duration-orbit, --animation-duration-particle, --animation-delay-short/medium/long)
   - [x] Remove obsolete FormElements after migration (FormElements are actively used and integrated)
 
 - [ ] **4.1.2** Bundle optimization

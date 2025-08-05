@@ -29,10 +29,10 @@ export const Shimmer: React.FC<ShimmerProps> = ({ className = '' }) => {
   
   return (
     <div
-      className={`absolute inset-0 bg-gradient-to-r from-transparent ${shimmerColor} to-transparent -translate-x-full group-hover:translate-x-full transition-transform ease-out ${className}`}
+      className={`absolute inset-0 bg-gradient-to-r from-transparent ${shimmerColor} to-transparent -translate-x-full group-hover:translate-x-full transition-transform ease-out ${className} ${config.animationIntensity === 'disabled' ? 'opacity-0' : ''}`}
       style={{
-        transitionDuration: animationDuration,
-        opacity: config.animationIntensity === 'disabled' ? 0 : undefined
+        '--shimmer-duration': animationDuration,
+        transitionDuration: 'var(--shimmer-duration)',
       }}
     />
   );

@@ -341,6 +341,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.style.setProperty('--animation-duration-fast', animationDurations.fast);
     root.style.setProperty('--animation-duration-normal', animationDurations.normal);
     root.style.setProperty('--animation-duration-slow', animationDurations.slow);
+    
+    // Animation delays for orchestrated effects
+    root.style.setProperty('--animation-delay-short', '0.2s');
+    root.style.setProperty('--animation-delay-medium', '0.5s');
+    root.style.setProperty('--animation-delay-long', '0.9s');
+    
+    // Complex animation durations for special effects
+    root.style.setProperty('--animation-duration-orbit', '15s');
+    root.style.setProperty('--animation-duration-particle', '20s');
 
     // Glassmorphism intensity
     const glassAlpha = themeConfig.glassmorphismIntensity / 100;

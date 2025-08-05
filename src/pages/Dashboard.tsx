@@ -197,7 +197,7 @@ const Dashboard: React.FC = () => {
                 {/* Floating geometric elements */}
                 <div
                   className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                  style={{ animationDuration: '20s' }}
+                  style={{ animationDuration: 'var(--animation-duration-particle)' }}
                 ></div>
                 <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
 
@@ -213,7 +213,7 @@ const Dashboard: React.FC = () => {
                           {/* Orbiting elements */}
                           <div
                             className="absolute inset-0 animate-spin opacity-40"
-                            style={{ animationDuration: '15s' }}
+                            style={{ animationDuration: 'var(--animation-duration-orbit)' }}
                           >
                             <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
                             <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
@@ -291,7 +291,7 @@ const Dashboard: React.FC = () => {
                         {/* Orbiting quantum particles */}
                         <div
                           className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{ animationDuration: '20s' }}
+                          style={{ animationDuration: 'var(--animation-duration-particle)' }}
                         >
                           <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
                           <div className="w-1 h-1 bg-purple-400 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
@@ -343,15 +343,15 @@ const Dashboard: React.FC = () => {
                           <div className="w-1 h-1 bg-emerald-400 rounded-full absolute top-2 left-2 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-cyan-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{ animationDelay: '0.3s' }}
+                            style={{ animationDelay: 'var(--animation-delay-short)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-blue-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{ animationDelay: '0.6s' }}
+                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-emerald-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{ animationDelay: '0.9s' }}
+                            style={{ animationDelay: 'var(--animation-delay-long)' }}
                           ></div>
                         </div>
                       </div>
@@ -400,7 +400,7 @@ const Dashboard: React.FC = () => {
                         <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
                         <div
                           className="absolute inset-2 rounded-xl border border-pink-400/20 animate-ping opacity-30"
-                          style={{ animationDelay: '0.5s' }}
+                          style={{ animationDelay: 'var(--animation-delay-medium)' }}
                         ></div>
                       </div>
                     </div>
@@ -449,15 +449,15 @@ const Dashboard: React.FC = () => {
                           <div className="w-1 h-1 bg-amber-400 rounded-full absolute top-1 left-3 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-orange-400 rounded-full absolute top-3 right-1 animate-ping"
-                            style={{ animationDelay: '0.2s' }}
+                            style={{ animationDelay: 'var(--animation-delay-short)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-red-400 rounded-full absolute bottom-1 left-1 animate-ping"
-                            style={{ animationDelay: '0.4s' }}
+                            style={{ animationDelay: 'var(--animation-delay-short)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-amber-400 rounded-full absolute bottom-3 right-3 animate-ping"
-                            style={{ animationDelay: '0.6s' }}
+                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
                           ></div>
                         </div>
                       </div>
@@ -507,15 +507,15 @@ const Dashboard: React.FC = () => {
                           <div className="w-1 h-1 bg-pink-400 rounded-full absolute top-2 left-2 animate-ping"></div>
                           <div
                             className="w-1 h-1 bg-rose-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{ animationDelay: '0.3s' }}
+                            style={{ animationDelay: 'var(--animation-delay-short)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-red-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{ animationDelay: '0.6s' }}
+                            style={{ animationDelay: 'var(--animation-delay-medium)' }}
                           ></div>
                           <div
                             className="w-1 h-1 bg-pink-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{ animationDelay: '0.9s' }}
+                            style={{ animationDelay: 'var(--animation-delay-long)' }}
                           ></div>
                         </div>
                       </div>
