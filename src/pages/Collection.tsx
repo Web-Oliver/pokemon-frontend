@@ -1,18 +1,17 @@
 /**
- * Collection Page Component
+ * Collection Page Component - Unified Design System
  *
- * UPDATED: Now handles new data structures (cardNumber, SetProduct → Product hierarchy)
+ * Modern collection management page with unified theme system integration.
  * Main collection management page orchestrating reusable components.
- * Refactored following CLAUDE.md principles:
+ * Refactored following CLAUDE.md unified design principles:
  * - Single Responsibility: Only orchestrates components and manages page state
- * - Open/Closed: Uses extensible component architecture
- * - DRY: Leverages reusable components to eliminate duplication
- * - Layer 4: Application Screen - orchestrates Layer 3 components and Layer 2 hooks
+ * - Open/Closed: Uses extensible component architecture with unified components
+ * - DRY: Leverages unified design system components to eliminate duplication
+ * - Layer 4: Application Screen - orchestrates unified Layer 3 components and Layer 2 hooks
  */
 
 import { Download, FileText, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Modal from '../components/common/Modal';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
 import CollectionExportModal from '../components/lists/CollectionExportModal';
@@ -22,6 +21,12 @@ import CollectionTabs, { TabType } from '../components/lists/CollectionTabs';
 import { useCollectionExport } from '../hooks/useCollectionExport';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { navigationHelper } from '../utils/navigation';
+
+// Import unified design system
+import { 
+  PokemonButton, 
+  PokemonModal 
+} from '../components/design-system';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
@@ -141,29 +146,35 @@ const Collection: React.FC = () => {
   const headerActions = useMemo(
     () => (
       <div className="flex items-center space-x-3">
-        <button
+        <PokemonButton
+          variant="secondary"
+          size="md"
           onClick={handleExportAllItems}
           disabled={isExporting || loading}
-          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <FileText className="w-5 h-5 mr-2" />
           {isExporting ? 'Exporting...' : 'Export All'}
-        </button>
-        <button
+        </PokemonButton>
+        <PokemonButton
+          variant="secondary"
+          size="md"
           onClick={handleOpenExportModal}
           disabled={isExporting || loading}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <Download className="w-5 h-5 mr-2" />
           Export Selected
-        </button>
-        <button
+        </PokemonButton>
+        <PokemonButton
+          variant="primary"
+          size="md"
           onClick={handleAddNewItem}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-indigo-500/20"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <Plus className="w-5 h-5 mr-2" />
           Add New Item
-        </button>
+        </PokemonButton>
       </div>
     ),
     [
@@ -223,12 +234,12 @@ const Collection: React.FC = () => {
         onExportSelected={handleExportSelectedItems}
       />
 
-      {/* Mark as Sold Modal */}
-      <Modal
+      {/* Mark as Sold Modal using PokemonModal */}
+      <PokemonModal
         isOpen={isMarkSoldModalOpen}
         onClose={handleModalClose}
         title={`Mark "${selectedItem?.name}" as Sold`}
-        maxWidth="2xl"
+        size="lg"
       >
         {selectedItem && (
           <MarkSoldForm
@@ -238,7 +249,7 @@ const Collection: React.FC = () => {
             onSuccess={handleMarkSoldSuccess}
           />
         )}
-      </Modal>
+      </PokemonModal>
     </PageLayout>
   );
 };

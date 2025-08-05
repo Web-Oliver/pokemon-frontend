@@ -1,16 +1,17 @@
 /**
- * Collection Stats Component
+ * Collection Stats Component - Unified Design System
  *
- * Displays collection overview statistics with Context7 premium design
- * Following CLAUDE.md principles:
+ * Displays collection overview statistics with unified theme system
+ * Following CLAUDE.md unified design principles:
  * - Single Responsibility: Only handles statistics display
- * - Open/Closed: Extensible for new statistics
- * - DRY: Reusable statistics card pattern
+ * - Open/Closed: Extensible for new statistics using PokemonCard variants
+ * - DRY: Reusable statistics using unified PokemonCard components
  * - Layer 3: UI Building Block component
  */
 
 import React from 'react';
 import { Archive, CheckCircle, Package, Star } from 'lucide-react';
+import { PokemonCard } from '../design-system';
 
 export interface CollectionStatsProps {
   psaGradedCount: number;
@@ -51,13 +52,17 @@ const StatCard: React.FC<StatCardProps> = ({
   onClick,
   tabId,
 }) => (
-  <div
+  <PokemonCard
+    variant="glass"
+    size="md"
+    interactive
     onClick={onClick}
-    className={`group cursor-pointer relative overflow-hidden transition-all duration-300 ${
+    className={`group cursor-pointer transition-all duration-300 ${
       isActive
-        ? 'bg-white/10 border-2 border-white/20 shadow-xl'
-        : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20'
-    } backdrop-blur-xl rounded-2xl p-6`}
+        ? 'border-2 border-white/20 shadow-xl scale-[1.02]'
+        : 'border-white/10 hover:border-white/20'
+    }`}
+    loading={loading}
   >
     {/* Main content layout */}
     <div className="flex flex-col items-center text-center space-y-4">
@@ -88,7 +93,7 @@ const StatCard: React.FC<StatCardProps> = ({
         </div>
       </div>
     </div>
-  </div>
+  </PokemonCard>
 );
 
 export const CollectionStats: React.FC<CollectionStatsProps> = ({
