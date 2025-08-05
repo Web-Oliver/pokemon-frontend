@@ -15,21 +15,11 @@
  * - themeDebug.ts for validation utilities
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  Eye,
-  EyeOff,
-  Code,
-  Palette,
-  CheckCircle,
-  AlertTriangle,
-  Copy,
-  Download,
-  RefreshCw,
-  Zap,
-  Layers,
-  Clock,
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { Bug } from 'lucide-react';
+import { ThemePerformanceMonitor } from './ThemePerformanceMonitor';
+import { ThemeDebugPanel } from './ThemeDebugPanel';
+import { validateThemeConfig } from './utils/themeValidationUtils';
 import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../../contexts/theme';
 import { useCentralizedTheme } from '../../utils/themeConfig';
 import {
@@ -69,141 +59,105 @@ type DebugPanel =
 export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
   enabled = process.env.NODE_ENV === 'development',
   position = 'bottom-right',
-  defaultPanel = 'overview',
+  defaultPanel = 'config',
 }) => {
-  const themeConfig = useCentralizedTheme();
-  const visualTheme = useVisualTheme();
-  const layoutTheme = useLayoutTheme();
-  const animationTheme = useAnimationTheme();
-  const accessibilityTheme = useAccessibilityTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [activePanel, setActivePanel] = useState<DebugPanel>(defaultPanel as DebugPanel);
-  const [performanceData, setPerformanceData] = useState(() =>
-    getThemePerformanceMetrics()
-  );
-  const intervalRef = useRef<NodeJS.Timeout>();
+  
+  // Theme context hooks
+  const visualTheme = useCentralizedTheme();
+  const layoutTheme = useLayoutTheme();
+  const animationTheme = useAnimationConfig();
+  const accessibilityTheme = useAccessibilityTheme();
+  const themeConfig = {
+    visualTheme,
+    layoutTheme,
+    animationTheme,
+    accessibilityTheme,
+    config: {
+      accentPrimary: visualTheme.accentPrimary,
+      accentSecondary: visualTheme.accentSecondary,
+      highContrast: accessibilityTheme.config?.highContrast,
+      reducedMotion: accessibilityTheme.config?.reducedMotion,
+    },
+  };
 
-  // Update performance data every 2 seconds when performance panel is active
-  useEffect(() => {
-    if (activePanel === 'performance' && isOpen) {
-      intervalRef.current = setInterval(() => {
-        setPerformanceData(getThemePerformanceMetrics());
-      }, 2000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+  // Validation
+  const validationResults = validateThemeConfig(themeConfig);
+  
+  // CSS Properties extraction
+  const cssProperties = React.useMemo(() => {
+    const styles = getComputedStyle(document.documentElement);
+    const properties: Record<string, string> = {};
+    
+    // Get all CSS custom properties
+    for (let i = 0; i < styles.length; i++) {
+      const property = styles[i];
+      if (property.startsWith('--theme') || property.startsWith('--accessibility')) {
+        properties[property] = styles.getPropertyValue(property).trim();
       }
     }
+    
+    return properties;
+  }, [themeConfig]);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [activePanel, isOpen]);
+  // Performance issue handler
+  const handlePerformanceIssue = (issue: string) => {
+    console.warn(`Theme Performance Issue: ${issue}`);
+  };
 
   if (!enabled) {
     return null;
   }
 
   const positionClasses = {
-    'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'top-right': 'top-4 right-4',
     'top-left': 'top-4 left-4',
-  }[position];
-
-  // Construct theme configuration for validation from centralized theme
-  const themeConfigForValidation = {
-    visualTheme: themeConfig.visualTheme,
-    colorScheme: 'dark' as const, // Assume dark for now
-    density: themeConfig.density,
-    animationIntensity: themeConfig.animationIntensity,
-    primaryColor: 'blue' as const, // Default primary color
-    highContrast: themeConfig.highContrast,
-    reducedMotion: themeConfig.reducedMotion,
-    glassmorphismIntensity: themeConfig.glassmorphismIntensity,
-    particleEffectsEnabled: themeConfig.particleEffectsEnabled,
+    'top-right': 'top-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
+    'bottom-right': 'bottom-4 right-4',
   };
 
-  const validationResults = validateThemeConfiguration(themeConfigForValidation);
-  const cssProperties = extractCSSCustomProperties();
+  return (
+    <div className={cn('fixed z-50', positionClasses[position])}>
+      {/* Debug Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          'bg-zinc-900/90 hover:bg-zinc-800/90 text-white',
+          'border border-zinc-700/50 rounded-lg p-3',
+          'backdrop-blur-sm shadow-lg transition-all duration-200',
+          'flex items-center gap-2 text-sm font-medium'
+        )}
+      >
+        <Bug className="w-4 h-4" />
+        Theme Debug
+        {validationResults.filter(r => r.type === 'error').length > 0 && (
+          <div className="w-2 h-2 bg-red-400 rounded-full" />
+        )}
+      </button>
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  const downloadThemeConfig = () => {
-    const config = {
-      ...themeConfigForValidation,
-      cssProperties,
-      performance: performanceData,
-      validation: validationResults,
-    };
-
-    const dataStr = JSON.stringify(config, null, 2);
-    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', `theme-debug-${Date.now()}.json`);
-    linkElement.click();
-  };
-
-  const panels = {
-    overview: {
-      icon: Eye,
-      title: 'Theme Overview',
-      content: (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="space-y-2">
-              <div className="font-semibold text-cyan-400">Current Theme</div>
-              <div className="bg-zinc-800/50 p-2 rounded">
-                <div>Visual: {themeConfig.visualTheme}</div>
-                <div>Color: {themeConfigForValidation.colorScheme}</div>
-                <div>Primary: {themeConfigForValidation.primaryColor}</div>
-                <div>Density: {themeConfig.density}</div>
-                <div>Animation: {themeConfig.animationIntensity}</div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="font-semibold text-purple-400">Settings</div>
-              <div className="bg-zinc-800/50 p-2 rounded">
-                <div>
-                  High Contrast: {themeConfig.highContrast ? 'ON' : 'OFF'}
-                </div>
-                <div>
-                  Reduced Motion: {themeConfig.reducedMotion ? 'ON' : 'OFF'}
-                </div>
-                <div>Glassmorphism: {themeConfig.glassmorphismIntensity}%</div>
-                <div>
-                  Particles:{' '}
-                  {themeConfig.particleEffectsEnabled ? 'ON' : 'OFF'}
-                </div>
-              </div>
-            </div>
+      {/* Debug Panel */}
+      {isOpen && (
+        <div className="mt-3 w-96 max-h-[70vh] overflow-hidden">
+          <div className="space-y-4">
+            {/* Performance Monitor */}
+            <ThemePerformanceMonitor
+              enabled={true}
+              onPerformanceIssue={handlePerformanceIssue}
+            />
+            
+            {/* Debug Panel */}
+            <ThemeDebugPanel
+              themeConfig={themeConfig}
+              validationResults={validationResults}
+              cssProperties={cssProperties}
+              defaultPanel={defaultPanel}
+            />
           </div>
-
-          <div className="space-y-2">
-            <div className="font-semibold text-emerald-400">
-              Applied CSS Classes
-            </div>
-            <div className="bg-zinc-800/50 p-2 rounded text-xs font-mono break-all">
-              theme-{themeConfig.visualTheme} density-{themeConfig.density} animation-{themeConfig.animationIntensity}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={downloadThemeConfig}
-              className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600/50 hover:bg-blue-600/70 rounded transition-colors"
-            >
-              <Download className="w-3 h-3" />
-              Export Config
-            </button>
-            <button
-              onClick={() =>
+        </div>
+      )}
+    </div>
+  );
+} =>
                 copyToClipboard(JSON.stringify(themeConfigForValidation, null, 2))
               }
               className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600/50 hover:bg-green-600/70 rounded transition-colors"

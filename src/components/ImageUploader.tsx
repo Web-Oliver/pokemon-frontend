@@ -15,6 +15,7 @@
 import React, {
   ChangeEvent,
   DragEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -32,6 +33,7 @@ import {
   getResponsiveImageConfig,
   type ImageAspectInfo,
 } from '../utils/fileOperations';
+import { cn } from '../utils/themeUtils';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
@@ -64,318 +66,259 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   enableAspectRatioDetection = true,
   adaptiveLayout = true,
 }) => {
+  // State management - Following SRP
   const [previews, setPreviews] = useState<ImagePreview[]>(() => {
-    // Initialize with existing images
-    return existingImageUrls.map((url, index) => {
-      // Convert relative URLs to full URLs
-      const fullUrl = url.startsWith('http')
-        ? url
-        : `http://localhost:3000${url}`;
-      return {
-        id: `existing-${index}`,
-        url: fullUrl,
-        isExisting: true,
-      };
-    });
+    return existingImageUrls.map((url, index) => createExistingImagePreview(url, index));
   });
-  const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [imageToRemove, setImageToRemove] = useState<{
-    id: string;
-    isExisting: boolean;
-  } | null>(null);
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Analyze aspect ratios for existing images
-  useEffect(() => {
-    if (!enableAspectRatioDetection || !existingImageUrls.length) {
-      return;
-    }
+  // Custom hooks - Following DIP and SRP
+  const { isAnalyzing, analyzeExistingImages, analyzeNewImages } = useAspectRatioAnalysis(
+    enableAspectRatioDetection,
+    detectImageAspectRatio
+  );
 
-    const analyzeExistingImages = async () => {
-      setIsAnalyzing(true);
-      try {
-        const aspectPromises = existingImageUrls.map(async (url, index) => {
-          const fullUrl = url.startsWith('http')
-            ? url
-            : `http://localhost:3000${url}`;
-          const aspectInfo = await detectImageAspectRatio(fullUrl);
-          return { index, aspectInfo };
-        });
-
-        const aspectResults = await Promise.all(aspectPromises);
-
-        setPreviews((prev) => {
-          return prev.map((preview, index) => {
-            const result = aspectResults.find((r) => r.index === index);
-            return result
-              ? { ...preview, aspectInfo: result.aspectInfo }
-              : preview;
-          });
-        });
-      } catch (error) {
-        console.warn(
-          '[ImageUploader] Failed to analyze existing image aspects:',
-          error
-        );
-      } finally {
-        setIsAnalyzing(false);
-      }
-    };
-
-    analyzeExistingImages();
-  }, [existingImageUrls, enableAspectRatioDetection]);
-
-  // Validate file
-  const validateFile = (file: File): string | null => {
-    if (!acceptedTypes.includes(file.type)) {
-      return `File type ${file.type} is not supported. Please use: ${acceptedTypes.join(', ')}`;
-    }
-
-    if (file.size > maxFileSize * 1024 * 1024) {
-      return `File size must be less than ${maxFileSize}MB`;
-    }
-
-    return null;
-  };
-
-  // Process selected files
-  const processFiles = async (_files: FileList | File[]) => {
-    console.log(
-      '[IMAGE UPLOADER] processFiles called with:',
-      _files.length,
-      'files'
+  const handleFileDrop = useCallback(async (files: FileList) => {
+    const { newFiles, newPreviews, errorMessage } = await processImageFiles(
+      files,
+      previews,
+      maxFiles,
+      maxFileSize,
+      acceptedTypes
     );
-    const newFiles: File[] = [];
-    const newPreviews: ImagePreview[] = [];
-    let errorMessage = '';
-
-    const fileArray = Array.from(_files);
-
-    // Check total file count
-    const currentFileCount = previews.filter((p) => !p.isExisting).length;
-    const totalNewFiles = Math.min(
-      fileArray.length,
-      maxFiles - currentFileCount
-    );
-
-    if (fileArray.length + currentFileCount > maxFiles) {
-      errorMessage = `Maximum ${maxFiles} files allowed. ${fileArray.length + currentFileCount - maxFiles} files will be ignored.`;
-    }
-
-    for (let i = 0; i < totalNewFiles; i++) {
-      const file = fileArray[i];
-      const validationError = validateFile(file);
-
-      if (validationError) {
-        errorMessage = validationError;
-        break;
-      }
-
-      const preview: ImagePreview = {
-        id: `new-${Date.now()}-${i}`,
-        file,
-        url: URL.createObjectURL(file),
-        isExisting: false,
-      };
-
-      newFiles.push(file);
-      newPreviews.push(preview);
-    }
 
     if (errorMessage) {
       setError(errorMessage);
-      // Clear error after 5 seconds
       setTimeout(() => setError(null), 5000);
     } else {
       setError(null);
     }
 
-    // Update previews first without aspect info
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    // Update previews first
+    const updatedPreviews = [...previews, ...newPreviews];
+    setPreviews(updatedPreviews);
 
-    // Analyze aspect ratios for new images if enabled
-    if (enableAspectRatioDetection && newPreviews.length > 0) {
-      setIsAnalyzing(true);
-      try {
-        const aspectPromises = newPreviews.map(async (preview) => {
-          const aspectInfo = await detectImageAspectRatio(preview.url);
-          return { id: preview.id, aspectInfo };
-        });
-
-        const aspectResults = await Promise.all(aspectPromises);
-
-        // Update previews with aspect info
-        setPreviews((prev) => {
-          return prev.map((preview) => {
-            const result = aspectResults.find((r) => r.id === preview.id);
-            return result
-              ? { ...preview, aspectInfo: result.aspectInfo }
-              : preview;
-          });
-        });
-      } catch (error) {
-        console.warn(
-          '[ImageUploader] Failed to analyze new image aspects:',
-          error
-        );
-      } finally {
-        setIsAnalyzing(false);
+    // Analyze aspect ratios if enabled
+    if (newPreviews.length > 0) {
+      const aspectResults = await analyzeNewImages(newPreviews);
+      if (aspectResults.length > 0) {
+        setPreviews(prev => prev.map(preview => {
+          const result = aspectResults.find(r => r.id === preview.id);
+          return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+        }));
       }
     }
 
-    // Update parent component with all current files and remaining existing URLs
+    // Update parent component
     const allFiles = [
-      ...previews.filter((p) => !p.isExisting && p.file).map((p) => p.file!),
+      ...previews.filter(p => !p.isExisting && p.file).map(p => p.file!),
       ...newFiles,
     ];
     const remainingExistingUrls = previews
-      .filter((p) => p.isExisting)
-      .map((p) => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
+      .filter(p => p.isExisting)
+      .map(p => p.url.replace('http://localhost:3000', ''));
     onImagesChange(allFiles, remainingExistingUrls);
-  };
+  }, [previews, maxFiles, maxFileSize, acceptedTypes, analyzeNewImages, onImagesChange]);
+
+  const { dragActive, handleDrag, handleDragIn, handleDragOut, handleDrop } = useDragAndDrop(
+    handleFileDrop,
+    disabled
+  );
+
+  const handlePreviewsUpdate = useCallback((updatedPreviews: ImagePreview[]) => {
+    setPreviews(updatedPreviews);
+    
+    // Update parent component
+    const remainingFiles = updatedPreviews
+      .filter(p => !p.isExisting && p.file)
+      .map(p => p.file!);
+    const remainingExistingUrls = updatedPreviews
+      .filter(p => p.isExisting)
+      .map(p => p.url.replace('http://localhost:3000', ''));
+    onImagesChange(remainingFiles, remainingExistingUrls);
+  }, [onImagesChange]);
+
+  const {
+    showRemoveConfirm,
+    imageToRemove,
+    isRemoving,
+    handleRemoveImage,
+    confirmRemoveImage,
+    handleCancelRemoveImage,
+  } = useImageRemoval(previews, handlePreviewsUpdate);
 
   // Handle file input change
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      await processFiles(e.target.files);
+      await handleFileDrop(e.target.files);
     }
-    // Reset input value to allow selecting same file again
     e.target.value = '';
-  };
-
-  // Handle drag events
-  const handleDrag = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDragIn = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  };
-
-  const handleDragOut = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-  };
-
-  const handleDrop = async (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (disabled) {
-      return;
-    }
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      await processFiles(e.dataTransfer.files);
-    }
-  };
-
-  // Handle remove image request
-  const handleRemoveImage = (id: string) => {
-    // Prevent multiple clicks/rapid firing
-    if (isRemoving || showRemoveConfirm) {
-      return;
-    }
-
-    const preview = previews.find((p) => p.id === id);
-    if (preview) {
-      setImageToRemove({ id, isExisting: preview.isExisting || false });
-      setShowRemoveConfirm(true);
-    }
-  };
-
-  // Confirm remove image from preview
-  const confirmRemoveImage = () => {
-    if (!imageToRemove || isRemoving) {
-      return;
-    }
-
-    setIsRemoving(true);
-
-    try {
-      const preview = previews.find((p) => p.id === imageToRemove.id);
-      if (preview && !preview.isExisting && preview.url) {
-        // Clean up object URL to prevent memory leaks
-        URL.revokeObjectURL(preview.url);
-      }
-
-      const updatedPreviews = previews.filter((p) => p.id !== imageToRemove.id);
-      setPreviews(updatedPreviews);
-
-      // Update parent component with remaining files and existing URLs
-      const remainingFiles = updatedPreviews
-        .filter((p) => !p.isExisting && p.file)
-        .map((p) => p.file!);
-      const remainingExistingUrls = updatedPreviews
-        .filter((p) => p.isExisting)
-        .map((p) => p.url.replace('http://localhost:3000', '')); // Convert back to relative URLs
-      onImagesChange(remainingFiles, remainingExistingUrls);
-    } finally {
-      // Always reset state, even if there's an error
-      setShowRemoveConfirm(false);
-      setImageToRemove(null);
-      setIsRemoving(false);
-    }
-  };
-
-  const handleCancelRemoveImage = () => {
-    if (isRemoving) {
-      return;
-    }
-    setShowRemoveConfirm(false);
-    setImageToRemove(null);
-  };
+  }, [handleFileDrop]);
 
   // Open file dialog
-  const openFileDialog = () => {
+  const openFileDialog = useCallback(() => {
     if (!disabled && fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
+  }, [disabled]);
 
-  // Clean up object URLs on unmount
-  React.useEffect(() => {
+  // Analyze existing images on mount - Following DIP
+  useEffect(() => {
+    if (!existingImageUrls.length) return;
+
+    const analyzeExisting = async () => {
+      const aspectResults = await analyzeExistingImages(existingImageUrls);
+      if (aspectResults.length > 0) {
+        setPreviews(prev => prev.map((preview, index) => {
+          const result = aspectResults.find(r => r.index === index);
+          return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
+        }));
+      }
+    };
+
+    analyzeExisting();
+  }, [existingImageUrls, analyzeExistingImages]);
+
+  // Cleanup object URLs on unmount - Following proper resource management
+  useEffect(() => {
     return () => {
-      previews.forEach((preview) => {
-        if (!preview.isExisting && preview.url) {
-          URL.revokeObjectURL(preview.url);
-        }
-      });
+      previews.forEach(cleanupObjectURL);
     };
   }, [previews]);
 
   return (
     <div className="w-full">
-      {/* Context7 Premium Analysis Indicator */}
-      {isAnalyzing && enableAspectRatioDetection && (
-        <div className="mb-6 flex items-center justify-center py-3">
-          <GlassmorphismContainer
-            variant="subtle"
-            colorScheme="custom"
-            size="sm"
-            rounded="2xl"
-            glow="subtle"
-            customGradient={{
-              from: 'indigo-50',
-              to: 'purple-50'
-            }}
-            className="flex items-center space-x-3 border border-indigo-200/50"
-          >
-            <Sparkles className="w-5 h-5 text-indigo-600 animate-spin" />
-            <span className="text-sm font-bold text-indigo-700 tracking-wide">
-              Analyzing image layouts...
-            </span>
-          </GlassmorphismContainer>
+      {/* Analysis indicator component - Following SRP */}
+      <ImageAnalysisIndicator 
+        isAnalyzing={isAnalyzing} 
+        enableAspectRatioDetection={enableAspectRatioDetection} 
+      />
+
+      {/* Rest of component continues with drag/drop zone and preview grid... */}
+      {/* Main upload area */}
+      <div
+        className={cn(
+          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300',
+          {
+            'border-blue-400 bg-blue-50/50': dragActive && !disabled,
+            'border-gray-300 hover:border-gray-400': !dragActive && !disabled,
+            'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60': disabled,
+          }
+        )}
+        onDragEnter={handleDragIn}
+        onDragLeave={handleDragOut}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple={multiple}
+          accept={acceptedTypes.join(',')}
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={disabled}
+        />
+
+        {dragActive ? (
+          <div className="py-8">
+            <Upload className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+            <p className="text-lg font-medium text-blue-700">
+              Release to add your beautiful images
+            </p>
+          </div>
+        ) : (
+          <div className="py-4">
+            <Upload className="w-10 h-10 text-gray-400 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-700 mb-2">
+              ✨ Drop your images here!
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              or{' '}
+              <button
+                type="button"
+                onClick={openFileDialog}
+                disabled={disabled}
+                className="text-blue-600 hover:text-blue-700 font-medium underline"
+              >
+                browse files
+              </button>
+            </p>
+            <p className="text-xs text-gray-400">
+              Supports {acceptedTypes.join(', ')} • Max {maxFileSize}MB per file • Up to{' '}
+              {maxFiles} files
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Error display */}
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
         </div>
+      )}
+
+      {/* Image previews grid */}
+      {previews.length > 0 && (
+        <div className="mt-6">
+          <div
+            className={cn('grid gap-4', {
+              'grid-cols-1': adaptiveLayout && previews.length === 1,
+              'grid-cols-2': adaptiveLayout && previews.length === 2,
+              'grid-cols-2 sm:grid-cols-3': adaptiveLayout && previews.length >= 3,
+              'grid-cols-2 sm:grid-cols-3 md:grid-cols-4': !adaptiveLayout,
+            })}
+          >
+            {previews.map((preview) => (
+              <div key={preview.id} className="relative group">
+                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                  <img
+                    src={preview.url}
+                    alt="Preview"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(preview.id)}
+                  disabled={isRemoving}
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 disabled:opacity-50"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                {preview.aspectInfo && (
+                  <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+                    {preview.aspectInfo.category}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation modal for removing images */}
+      {showRemoveConfirm && imageToRemove && (
+        <ConfirmModal
+          isOpen={showRemoveConfirm}
+          onClose={handleCancelRemoveImage}
+          onConfirm={confirmRemoveImage}
+          title="Remove Image"
+          message={`Are you sure you want to remove this ${
+            imageToRemove.isExisting ? 'existing' : 'new'
+          } image?`}
+          confirmText="Remove"
+          confirmVariant="danger"
+          isLoading={isRemoving}
+        />
+      )}
+    </div>
+  );
+}
+  );
+};
       )}
 
       {/* Context7 Premium Error Message */}

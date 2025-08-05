@@ -53,422 +53,141 @@ export interface ThemeExporterProps {
 // ================================
 
 export const ThemeExporter: React.FC<ThemeExporterProps> = ({
-  size = 'md',
-  showAdvanced = true,
+  size = 'comfortable',
+  showAdvanced = false,
   onThemeImported,
   className,
 }) => {
-  const visualTheme = useVisualTheme();
+  const visualTheme = useCentralizedTheme();
   const layoutTheme = useLayoutTheme();
-  const animationTheme = useAnimationTheme();
+  const animationTheme = useAnimationConfig();
   const accessibilityTheme = useAccessibilityTheme();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Component state
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
-  const [importMessage, setImportMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
+  // Local UI state
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [showImportOptions, setShowImportOptions] = useState(false);
   const [showBackups, setShowBackups] = useState(false);
-  const [customPresetName, setCustomPresetName] = useState('');
-  const [exportDescription, setExportDescription] = useState('');
 
-  // Get custom presets and backups
-  const customPresets = getCustomPresetNames();
-  const themeBackups = getThemeBackups();
+  // Get current theme data for backup operations
+  const getCurrentThemeData = useCallback(() => {
+    const config = {
+      accentPrimary: visualTheme.accentPrimary || '#06b6d4',
+      accentSecondary: visualTheme.accentSecondary || '#a855f7',
+      highContrast: accessibilityTheme.config?.highContrast || false,
+      reducedMotion: accessibilityTheme.config?.reducedMotion || false,
+    };
 
-  // ================================
-  // EXPORT HANDLERS
-  // ================================
+    return generateThemeExportData(
+      config,
+      visualTheme,
+      layoutTheme,
+      animationTheme,
+      accessibilityTheme
+    );
+  }, [visualTheme, layoutTheme, animationTheme, accessibilityTheme]);
 
-  const handleExportCurrent = useCallback(async () => {
-    setIsExporting(true);
-    try {
-      createThemeBackup(theme.config);
-      exportTheme(
-        theme.config,
-        customPresetName || 'Current Theme',
-        exportDescription || 'Current theme configuration',
-        theme.getCSSProperties()
-      );
-      setImportMessage({
-        type: 'success',
-        text: 'Theme exported successfully!',
-      });
-      setShowExportOptions(false);
-      setCustomPresetName('');
-      setExportDescription('');
-    } catch (error) {
-      setImportMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'Failed to export theme',
-      });
-    } finally {
-      setIsExporting(false);
+  // Handle theme restoration from backup
+  const handleRestoreBackup = useCallback((backup: ThemeBackup) => {
+    if (onThemeImported) {
+      onThemeImported(backup.data);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    theme.config,
-    theme.getCSSProperties,
-    customPresetName,
-    exportDescription,
-  ]);
+  }, [onThemeImported]);
 
-  const handleExportAllPresets = useCallback(async () => {
-    setIsExporting(true);
-    try {
-      exportAllCustomPresets('My Custom Themes');
-      setImportMessage({
-        type: 'success',
-        text: 'All custom presets exported successfully!',
-      });
-    } catch (error) {
-      setImportMessage({
-        type: 'error',
-        text:
-          error instanceof Error ? error.message : 'Failed to export presets',
-      });
-    } finally {
-      setIsExporting(false);
-    }
-  }, []);
-
-  const handleExportPresetCollection = useCallback(async () => {
-    setIsExporting(true);
-    try {
-      const themes = customPresets.map((name) => {
-        const preset = JSON.parse(
-          localStorage.getItem('pokemon-custom-presets') || '{}'
-        )[name];
-        return {
-          config: preset,
-          name,
-          description: `Custom theme preset: ${name}`,
-        };
-      });
-
-      exportThemeCollection(
-        themes,
-        customPresetName || 'Custom Theme Collection',
-        exportDescription || 'Collection of custom themes'
-      );
-
-      setImportMessage({
-        type: 'success',
-        text: 'Theme collection exported successfully!',
-      });
-      setShowExportOptions(false);
-      setCustomPresetName('');
-      setExportDescription('');
-    } catch (error) {
-      setImportMessage({
-        type: 'error',
-        text:
-          error instanceof Error
-            ? error.message
-            : 'Failed to export theme collection',
-      });
-    } finally {
-      setIsExporting(false);
-    }
-  }, [customPresets, customPresetName, exportDescription]);
-
-  // ================================
-  // IMPORT HANDLERS
-  // ================================
-
-  const handleFileSelect = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) {
-        return;
-      }
-
-      handleImportTheme(file);
-    },
-
-    [handleImportTheme]
-  );
-
-  const handleImportTheme = useCallback(
-    async (file: File) => {
-      setIsImporting(true);
-      setImportMessage(null);
-
-      try {
-        // Validate file
-        const validation = validateThemeFile(file);
-        if (!validation.valid) {
-          setImportMessage({
-            type: 'error',
-            text: validation.error || 'Invalid file',
-          });
-          return;
-        }
-
-        // Import theme
-        const result = await importThemeFromFile(file);
-
-        if (!result.success) {
-          setImportMessage({
-            type: 'error',
-            text: result.error || 'Failed to import theme',
-          });
-          return;
-        }
-
-        // Handle single theme
-        if (result.importedTheme) {
-          // Apply the imported theme configuration
-          const importedConfig = result.importedTheme;
-          theme.setVisualTheme(importedConfig.visualTheme);
-          theme.setColorScheme(importedConfig.colorScheme);
-          theme.setDensity(importedConfig.density);
-          theme.setAnimationIntensity(importedConfig.animationIntensity);
-          theme.setPrimaryColor(importedConfig.primaryColor);
-          theme.setGlassmorphismIntensity(
-            importedConfig.glassmorphismIntensity
-          );
-
-          if (importedConfig.highContrast !== theme.config.highContrast) {
-            theme.toggleHighContrast();
-          }
-          if (importedConfig.reducedMotion !== theme.config.reducedMotion) {
-            theme.toggleReducedMotion();
-          }
-          if (
-            importedConfig.particleEffectsEnabled !==
-            theme.config.particleEffectsEnabled
-          ) {
-            theme.toggleParticleEffects();
-          }
-          if (importedConfig.customCSSProperties) {
-            theme.setCustomProperties(importedConfig.customCSSProperties);
-          }
-
-          setImportMessage({
-            type: 'success',
-            text: `Theme "${result.metadata?.name}" imported and applied successfully!`,
-          });
-          onThemeImported?.(result.metadata?.name || 'Imported Theme');
-          setShowImportOptions(false);
-          return;
-        }
-
-        // Handle theme collection
-        if (result.importedThemes && result.importedThemes.length > 0) {
-          const collectionResult = await importAndSavePresetCollection(file);
-          if (collectionResult.success) {
-            setImportMessage({
-              type: 'success',
-              text: `Imported ${collectionResult.importedCount} themes successfully!${collectionResult.skippedCount ? ` (${collectionResult.skippedCount} skipped)` : ''}`,
-            });
-          } else {
-            setImportMessage({
-              type: 'error',
-              text: collectionResult.error || 'Failed to import themes',
-            });
-          }
-          setShowImportOptions(false);
-          return;
-        }
-
-        setImportMessage({
-          type: 'error',
-          text: 'No valid theme data found in file',
-        });
-      } catch (error) {
-        setImportMessage({
-          type: 'error',
-          text:
-            error instanceof Error ? error.message : 'Failed to import theme',
-        });
-      } finally {
-        setIsImporting(false);
-      }
-    },
-    [theme, onThemeImported]
-  );
-
-  const _handleImportAsPreset = useCallback(
-    async (file: File, presetName: string) => {
-      setIsImporting(true);
-      setImportMessage(null);
-
-      try {
-        const result = await importAndSavePreset(file, presetName);
-
-        if (result.success) {
-          setImportMessage({
-            type: 'success',
-            text: `Theme saved as preset "${result.presetName}" successfully!`,
-          });
-          setShowImportOptions(false);
-        } else {
-          setImportMessage({
-            type: 'error',
-            text: result.error || 'Failed to import theme as preset',
-          });
-        }
-      } catch (error) {
-        setImportMessage({
-          type: 'error',
-          text:
-            error instanceof Error
-              ? error.message
-              : 'Failed to import theme as preset',
-        });
-      } finally {
-        setIsImporting(false);
-      }
-    },
-    []
-  );
-
-  // ================================
-  // BACKUP HANDLERS
-  // ================================
-
-  const handleCreateBackup = useCallback(() => {
-    try {
-      createThemeBackup(theme.config);
-      setImportMessage({
-        type: 'success',
-        text: 'Theme backup created successfully!',
-      });
-    } catch (error) {
-      setImportMessage({
-        type: 'error',
-        text:
-          error instanceof Error ? error.message : 'Failed to create backup',
-      });
-    }
-  }, [theme.config]);
-
-  const handleRestoreBackup = useCallback(
-    (backupIndex: number) => {
-      try {
-        const restoredConfig = restoreThemeFromBackup(backupIndex);
-        if (restoredConfig) {
-          // Apply restored configuration
-          Object.entries(restoredConfig).forEach(([key, value]) => {
-            if (key in theme) {
-              const setter =
-                theme[
-                  `set${key.charAt(0).toUpperCase() + key.slice(1)}` as keyof typeof theme
-                ];
-              if (typeof setter === 'function') {
-                (setter as any)(value);
-              }
-            }
-          });
-
-          setImportMessage({
-            type: 'success',
-            text: 'Theme restored from backup successfully!',
-          });
-          setShowBackups(false);
-        }
-      } catch (error) {
-        setImportMessage({
-          type: 'error',
-          text:
-            error instanceof Error ? error.message : 'Failed to restore backup',
-        });
-      }
-    },
-    [theme]
-  );
-
-  // ================================
-  // PRESET MANAGEMENT
-  // ================================
-
-  const handleDeletePreset = useCallback((presetName: string) => {
-    try {
-      deleteCustomPreset(presetName);
-      setImportMessage({
-        type: 'success',
-        text: `Preset "${presetName}" deleted successfully!`,
-      });
-    } catch (error) {
-      setImportMessage({
-        type: 'error',
-        text:
-          error instanceof Error ? error.message : 'Failed to delete preset',
-      });
-    }
-  }, []);
-
-  // ================================
-  // STYLING
-  // ================================
-
-  const getSizeClasses = () => {
-    switch (size) {
-      case 'sm':
-        return 'p-4 space-y-3';
-      case 'lg':
-        return 'p-8 space-y-6';
-      default:
-        return 'p-6 space-y-4';
-    }
+  // Styling utilities (keeping existing button classes)
+  const getSizeClasses = (size: 'compact' | 'comfortable' | 'expanded') => {
+    const sizeMap = {
+      compact: 'text-sm px-3 py-1.5',
+      comfortable: 'text-sm px-4 py-2',
+      expanded: 'text-base px-6 py-3',
+    };
+    return sizeMap[size];
   };
 
   const buttonBaseClasses = cn(
-    'inline-flex items-center justify-center font-medium rounded-lg',
-    'focus:outline-none focus:ring-2 focus:ring-offset-2',
-    'transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
-    'border backdrop-blur-sm',
-    size === 'sm'
-      ? 'px-3 py-1.5 text-sm'
-      : size === 'lg'
-        ? 'px-6 py-3 text-base'
-        : 'px-4 py-2 text-sm'
+    'inline-flex items-center justify-center rounded-lg font-medium',
+    'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
+    getSizeClasses(size)
   );
 
   const primaryButtonClasses = cn(
     buttonBaseClasses,
-    'bg-gradient-to-r text-white shadow-md hover:shadow-lg',
-    theme.config.primaryColor === 'purple' &&
-      'from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 focus:ring-purple-500/50',
-    theme.config.primaryColor === 'blue' &&
-      'from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:ring-blue-500/50',
-    theme.config.primaryColor === 'emerald' &&
-      'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 focus:ring-emerald-500/50',
-    theme.config.primaryColor === 'amber' &&
-      'from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:ring-amber-500/50',
-    theme.config.primaryColor === 'rose' &&
-      'from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 focus:ring-rose-500/50',
-    theme.config.primaryColor === 'dark' &&
-      'from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 focus:ring-cyan-500/50'
+    'bg-gradient-to-r from-blue-500 to-purple-600',
+    'hover:from-blue-600 hover:to-purple-700',
+    'text-white shadow-lg hover:shadow-xl',
+    'focus:ring-blue-500 focus:ring-offset-zinc-900'
   );
 
   const secondaryButtonClasses = cn(
     buttonBaseClasses,
-    'border-zinc-700/50 bg-zinc-800/50 text-zinc-100 hover:bg-zinc-700/80 focus:ring-zinc-500/50'
+    'bg-zinc-700 hover:bg-zinc-600 text-zinc-100',
+    'border border-zinc-600 hover:border-zinc-500'
   );
 
   const dangerButtonClasses = cn(
     buttonBaseClasses,
-    'border-red-500/50 bg-red-600/20 text-red-400 hover:bg-red-600/40 focus:ring-red-500/50'
+    'bg-red-600 hover:bg-red-700 text-white'
   );
 
-  // ================================
-  // RENDER
-  // ================================
-
   return (
-    <div
-      className={cn(
-        'bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/50 rounded-2xl',
-        'shadow-xl transition-all duration-300',
-        getSizeClasses(),
-        className
+    <div className={cn('space-y-6', className)}>
+      {/* Export Section */}
+      <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-700/50">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+          <Download className="w-5 h-5 mr-2 text-blue-400" />
+          Export Theme
+        </h3>
+        
+        <ThemeExportManager
+          visualTheme={visualTheme}
+          layoutTheme={layoutTheme}
+          animationTheme={animationTheme}
+          accessibilityTheme={accessibilityTheme}
+          primaryButtonClasses={primaryButtonClasses}
+          secondaryButtonClasses={secondaryButtonClasses}
+          showExportOptions={showExportOptions}
+          onToggleExportOptions={() => setShowExportOptions(!showExportOptions)}
+        />
+      </div>
+
+      {/* Import Section */}
+      <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-700/50">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+          <Upload className="w-5 h-5 mr-2 text-green-400" />
+          Import Theme
+        </h3>
+        
+        <ThemeImporter
+          onThemeImported={onThemeImported}
+          primaryButtonClasses={primaryButtonClasses}
+          secondaryButtonClasses={secondaryButtonClasses}
+          showImportOptions={showImportOptions}
+          onToggleImportOptions={() => setShowImportOptions(!showImportOptions)}
+        />
+      </div>
+
+      {/* Backup Section */}
+      {showAdvanced && (
+        <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-700/50">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <Archive className="w-5 h-5 mr-2 text-yellow-400" />
+            Theme Backups
+          </h3>
+          
+          <ThemeBackupManager
+            currentThemeData={getCurrentThemeData()}
+            onRestoreBackup={handleRestoreBackup}
+            primaryButtonClasses={primaryButtonClasses}
+            secondaryButtonClasses={secondaryButtonClasses}
+            dangerButtonClasses={dangerButtonClasses}
+            showBackups={showBackups}
+            onToggleBackups={() => setShowBackups(!showBackups)}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
       )}
     >
       {/* Header */}
