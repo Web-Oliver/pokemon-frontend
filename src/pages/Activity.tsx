@@ -238,7 +238,7 @@ const Activity: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
 
                 {/* Holographic border animation */}
-                <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
 
                 {/* Top accent line with RGB shifting */}
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
@@ -595,10 +595,10 @@ const Activity: React.FC = () => {
                               <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-slate-500/[0.02] to-purple-500/[0.06] border border-white/[0.10] rounded-[1.5rem] p-6 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.2)] transition-all duration-500 group-hover:scale-[1.01] group-hover:-translate-y-1">
                                 {/* Neural activity pattern */}
                                 <div
-                                  className="absolute inset-0 opacity-3 group-hover:opacity-8 transition-opacity duration-500"
+                                  className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
                                   style={{
-                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2306b6d4' stroke-width='0.2'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3Cline x1='10' y1='10' x2='30' y2='30'/%3E%3Cline x1='30' y1='10' x2='10' y2='30'/%3E%3C/g%3E%3C/svg%3E")`,
-                                    backgroundSize: '20px 20px',
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
+                                    backgroundSize: '30px 30px',
                                   }}
                                 ></div>
 
