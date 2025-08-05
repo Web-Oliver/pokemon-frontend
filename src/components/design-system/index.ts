@@ -35,13 +35,6 @@ export type { PokemonIconProps } from './PokemonIcon';
 export { PokemonPageContainer } from './PokemonPageContainer';
 export type { PokemonPageContainerProps } from './PokemonPageContainer';
 
-// Component aliases for backward compatibility
-export const Card = PokemonCard;
-export const Button = PokemonButton;
-export const Input = PokemonInput;
-export const Select = PokemonSelect;
-export const Modal = PokemonModal;
-export const ConfirmModal = PokemonConfirmModal;
-export const Badge = PokemonBadge;
-export const Icon = PokemonIcon;
-export const PageContainer = PokemonPageContainer;
+// Component aliases for backward compatibility (removed to fix circular dependency)
+// These aliases were causing module loading issues
+// Import components directly by their full names instead

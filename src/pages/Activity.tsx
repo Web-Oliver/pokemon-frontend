@@ -188,7 +188,7 @@ const Activity: React.FC = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout title="Activity" subtitle="Recent collection activities and events">
       <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-12">
             {/* Unified Header using PokemonCard */}
@@ -617,7 +617,6 @@ const Activity: React.FC = () => {
                 )}
             </PokemonCard>
           </div>
-        </div>
       </PokemonPageContainer>
     </PageLayout>
   );

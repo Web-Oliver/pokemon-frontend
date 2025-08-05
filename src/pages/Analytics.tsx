@@ -235,7 +235,7 @@ const Analytics: React.FC = () => {
   }, [dateRange]); // Use dateRange instead of timeRange
 
   return (
-    <PageLayout>
+    <PageLayout title="Analytics" subtitle="Collection analytics and insights">
       <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
         {/* Context7 2025 Futuristic Neural Background - Quantum Analytics Field */}
         <div className="absolute inset-0 opacity-15">

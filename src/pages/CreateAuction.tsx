@@ -588,7 +588,7 @@ const CreateAuction: React.FC = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout title="Create Auction" subtitle="Create a new auction for your items">
       <div 
         className="min-h-screen relative overflow-hidden"
         style={backgroundStyles}

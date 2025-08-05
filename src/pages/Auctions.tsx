@@ -39,7 +39,7 @@ import { navigationHelper } from '../utils/navigation';
 
 // Import unified design system
 import { 
-  PokemonCard, 
+  PokemonCard,
   PokemonButton, 
   PokemonSelect, 
   PokemonPageContainer 
@@ -152,7 +152,7 @@ const Auctions: React.FC = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout title="Auctions" subtitle="Manage your collection auctions">
       <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-12">
             {/* Context7 2025 Futuristic Glassmorphism Header */}
@@ -448,7 +448,7 @@ const Auctions: React.FC = () => {
 
             {/* Auction Timeline using PokemonCard */}
             {!loading && (
-            <PokemonCard variant="glass" size="lg" className="relative">
+              <PokemonCard variant="glass" size="lg" className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500/3 via-orange-500/3 to-red-500/3"></div>
               <div className="relative z-10">
                 <div className="mb-6 border-b border-slate-200/50 dark:border-zinc-700/50 pb-6">
@@ -573,7 +573,8 @@ const Auctions: React.FC = () => {
                   </div>
                 )}
               </div>
-          )}
+              </PokemonCard>
+            )}
         </div>
       </PokemonPageContainer>
     </PageLayout>

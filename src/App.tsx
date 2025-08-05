@@ -14,6 +14,8 @@ import { log } from './utils/logger';
 import { Toaster } from 'react-hot-toast';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { queryClient } from './lib/queryClient';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeDebugger } from './components/theme';
 // Cache debugging removed - overengineered development utility not needed
 
 // Layout
@@ -175,30 +177,34 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MainLayout>
-        {/* Context7 Pattern: Suspense boundary with transition state */}
-        <Suspense
-          fallback={
-            <div
-              className={`flex items-center justify-center min-h-[60vh] transition-opacity duration-200 ${
-                isPending ? 'opacity-50' : 'opacity-100'
-              }`}
-            >
-              <LoadingSpinner size="lg" />
-            </div>
-          }
-        >
-          {renderPage()}
-        </Suspense>
-      </MainLayout>
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-          position="bottom"
-        />
-      )}
-      <Toaster
+      <ThemeProvider>
+        <MainLayout>
+          {/* Context7 Pattern: Suspense boundary with transition state */}
+          <Suspense
+            fallback={
+              <div
+                className={`flex items-center justify-center min-h-[60vh] transition-opacity duration-200 ${
+                  isPending ? 'opacity-50' : 'opacity-100'
+                }`}
+              >
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
+            {renderPage()}
+          </Suspense>
+        </MainLayout>
+        {process.env.NODE_ENV === 'development' && (
+          <>
+            <ReactQueryDevtools
+              initialIsOpen={false}
+              buttonPosition="bottom-left"
+              position="bottom"
+            />
+            <ThemeDebugger position="bottom-right" />
+          </>
+        )}
+        <Toaster
         position="top-right"
         reverseOrder={false}
         gutter={8}
@@ -232,6 +238,7 @@ function App() {
           },
         }}
       />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

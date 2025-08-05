@@ -130,7 +130,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout title="Dashboard" subtitle="Professional Pokémon Collection Management">
       <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
         {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
         <div className="absolute inset-0 opacity-20">

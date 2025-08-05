@@ -431,15 +431,6 @@ export function getFocusClasses(variant: ComponentVariant = 'primary'): string {
 // EXPORTS
 // ================================
 
-export {
-  buttonStyleConfig,
-  inputStyleConfig,
-  cardStyleConfig,
-  badgeStyleConfig,
-  defaultAnimationConfig,
-  subtleAnimationConfig,
-  enhancedAnimationConfig,
-};
 
 export default {
   cn,
