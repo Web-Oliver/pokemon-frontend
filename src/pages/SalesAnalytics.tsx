@@ -42,6 +42,7 @@ import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import { handleApiError, showSuccessToast } from '../utils/errorHandler';
 import { displayPrice } from '../utils/formatting';
+import '../styles/context7-premium.css';
 
 const SalesAnalytics: React.FC = () => {
   const {
@@ -598,13 +599,13 @@ const SalesAnalytics: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-20">
-                    <div className="w-16 h-16 bg-zinc-800 rounded-lg mx-auto mb-6 flex items-center justify-center border border-zinc-700">
-                      <TrendingUp className="w-8 h-8 text-zinc-400" />
+                    <div className="w-16 h-16 bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 rounded-xl mx-auto mb-6 flex items-center justify-center border border-[var(--theme-border)] backdrop-blur-sm float">
+                      <TrendingUp className="w-8 h-8 text-[var(--theme-text-muted)]" />
                     </div>
-                    <h3 className="text-lg font-bold text-white mb-3">
+                    <h3 className="text-lg font-bold text-[var(--theme-text-primary)] mb-3">
                       No Sales Yet
                     </h3>
-                    <p className="text-zinc-400 max-w-md mx-auto">
+                    <p className="text-[var(--theme-text-secondary)] max-w-md mx-auto">
                       Your recent sales will appear here once you start selling
                       items.
                     </p>
@@ -612,17 +613,17 @@ const SalesAnalytics: React.FC = () => {
                 )}
               </div>
 
-              {/* Footer with View All Button */}
+              {/* Footer with View All Button - Premium glassmorphism */}
               {Array.isArray(sales) && sales.length > 10 && (
-                <div className="px-8 py-6 border-t border-zinc-700/40 bg-zinc-900/30">
+                <div className="px-8 py-6 border-t border-[var(--theme-border)] bg-gradient-to-r from-zinc-900/10 to-zinc-800/5 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <p className="text-sm text-zinc-400 font-medium">
+                      <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
+                      <p className="text-sm text-[var(--theme-text-secondary)] font-medium">
                         Showing 10 of {sales.length} sales
                       </p>
                     </div>
-                    <button className="px-6 py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 hover:text-blue-200 font-semibold rounded-lg border border-blue-500/30 hover:border-blue-400/50 transition-all duration-200">
+                    <button className="btn-premium px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 hover:text-blue-200 font-semibold rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 backdrop-blur-sm scale-on-hover">
                       <span className="flex items-center">
                         View All Sales
                         <svg
