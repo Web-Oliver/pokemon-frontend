@@ -93,31 +93,31 @@ This document outlines the complete transformation from fragmented styling syste
 ### **2.1 Priority 1: Core Components (Week 3)**
 
 #### **Button Migration**
-- [ ] **2.1.1** Convert `src/components/common/Button.tsx` to use theme tokens
-  - [ ] Replace hardcoded gradients with CSS custom properties
-  - [ ] Implement theme-aware variant system
-  - [ ] Update all button usage across codebase (estimated 25+ files)
-  - [ ] Test theme switching functionality
+- [x] **2.1.1** Convert `src/components/common/Button.tsx` to use theme tokens
+  - [x] Replace hardcoded gradients with CSS custom properties
+  - [x] Implement theme-aware variant system
+  - [x] Update all button usage across codebase (estimated 25+ files)
+  - [x] Test theme switching functionality
 
 #### **Input & Form Components**
-- [ ] **2.1.2** Migrate `src/components/common/Input.tsx`
-  - [ ] Replace hardcoded focus states with theme tokens
-  - [ ] Implement theme-aware validation styling
-  - [ ] Update form validation color system
-  - [ ] Test across all forms (AddEditItem, CreateAuction, etc.)
+- [x] **2.1.2** Migrate `src/components/common/Input.tsx`
+  - [x] Replace hardcoded focus states with theme tokens
+  - [x] Implement theme-aware validation styling
+  - [x] Update form validation color system
+  - [x] Test across all forms (AddEditItem, CreateAuction, etc.)
 
-- [ ] **2.1.3** Convert `src/components/common/Select.tsx`
-  - [ ] Implement theme-aware dropdown styling
-  - [ ] Replace hardcoded border and background colors
-  - [ ] Update icon colors to use theme tokens
-  - [ ] Test dropdown functionality across all select usages
+- [x] **2.1.3** Convert `src/components/common/Select.tsx`
+  - [x] Implement theme-aware dropdown styling
+  - [x] Replace hardcoded border and background colors
+  - [x] Update icon colors to use theme tokens
+  - [x] Test dropdown functionality across all select usages
 
 #### **Modal System**
-- [ ] **2.1.4** Migrate `src/components/common/Modal.tsx`
-  - [ ] Replace glassmorphism hardcoded values with theme tokens
-  - [ ] Implement theme-aware backdrop and border styling
-  - [ ] Update ConfirmModal to use unified theme system
-  - [ ] Test modal functionality across all modal usages
+- [x] **2.1.4** Migrate `src/components/common/Modal.tsx`
+  - [x] Replace glassmorphism hardcoded values with theme tokens
+  - [x] Implement theme-aware backdrop and border styling
+  - [x] Update ConfirmModal to use unified theme system
+  - [x] Test modal functionality across all modal usages
 
 ### **2.2 Priority 2: Complete Page Migration (Week 4)**
 
