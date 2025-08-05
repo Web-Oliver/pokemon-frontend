@@ -14,7 +14,7 @@ import { cn } from '../../utils/common';
 
 export interface PokemonCardProps {
   children: React.ReactNode;
-  variant?: 'glass' | 'solid' | 'outline' | 'gradient';
+  variant?: 'glass' | 'solid' | 'outline' | 'gradient' | 'cosmic';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   status?: 'active' | 'draft' | 'sold' | 'completed' | 'success' | 'warning' | 'danger';
   interactive?: boolean;
@@ -64,6 +64,12 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
     gradient: [
       'bg-gradient-to-br from-cyan-500/20 via-purple-500/15 to-pink-500/20',
       'hover:from-cyan-500/30 hover:via-purple-500/25 hover:to-pink-500/30'
+    ].join(' '),
+    cosmic: [
+      'bg-gradient-to-br from-zinc-800/80 via-cyan-900/30 to-purple-900/30',
+      'border-cyan-600/50',
+      'hover:border-cyan-500 hover:bg-cyan-900/30',
+      'hover:shadow-[0_12px_40px_0_rgba(34,211,238,0.4)]'
     ].join(' ')
   };
 

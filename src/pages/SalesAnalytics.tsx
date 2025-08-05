@@ -138,18 +138,18 @@ const SalesAnalytics: React.FC = () => {
     }
   };
 
-  // Date Range Filter
+  // Context7 Premium Date Range Filter
   const headerActions = (
-    <div className="bg-zinc-900/95 border border-zinc-700/50 rounded-lg p-4 min-w-[380px]">
+    <div className="card-premium p-4 min-w-[380px] bg-[var(--theme-surface)] border-[var(--theme-border)] backdrop-blur-xl">
       <div className="flex items-center space-x-4">
-        {/* Calendar Icon */}
-        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-          <Calendar className="w-5 h-5 text-white" />
+        {/* Calendar Icon with Context7 glow */}
+        <div className="w-10 h-10 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl flex items-center justify-center glow-on-hover border border-cyan-400/30">
+          <Calendar className="w-5 h-5 text-cyan-300" />
         </div>
 
-        {/* Start Date Input */}
+        {/* Start Date Input - Context7 Premium */}
         <div className="flex-1">
-          <label className="block text-xs font-medium text-zinc-400 mb-1">
+          <label className="block text-xs font-medium text-[var(--theme-text-secondary)] mb-1">
             From
           </label>
           <input
@@ -167,20 +167,20 @@ const SalesAnalytics: React.FC = () => {
                 endDate: localDateRange.endDate,
               })
             }
-            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400"
+            className="input-premium w-full px-3 py-2 text-[var(--theme-text-primary)] font-medium"
           />
         </div>
 
-        {/* Separator */}
+        {/* Premium Separator */}
         <div className="flex flex-col items-center">
-          <div className="w-6 h-0.5 bg-zinc-600 rounded-full mb-1"></div>
-          <span className="text-xs text-zinc-400">to</span>
-          <div className="w-6 h-0.5 bg-zinc-600 rounded-full mt-1"></div>
+          <div className="w-6 h-0.5 bg-gradient-to-r from-cyan-400/50 to-purple-400/50 rounded-full mb-1"></div>
+          <span className="text-xs text-[var(--theme-text-muted)]">to</span>
+          <div className="w-6 h-0.5 bg-gradient-to-r from-cyan-400/50 to-purple-400/50 rounded-full mt-1"></div>
         </div>
 
-        {/* End Date Input */}
+        {/* End Date Input - Context7 Premium */}
         <div className="flex-1">
-          <label className="block text-xs font-medium text-zinc-400 mb-1">
+          <label className="block text-xs font-medium text-[var(--theme-text-secondary)] mb-1">
             Until
           </label>
           <input
@@ -198,29 +198,29 @@ const SalesAnalytics: React.FC = () => {
                 endDate: localDateRange.endDate,
               })
             }
-            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400"
+            className="input-premium w-full px-3 py-2 text-[var(--theme-text-primary)] font-medium"
           />
         </div>
 
-        {/* Clear Button - Only show when dates are selected */}
+        {/* Clear Button - Premium glassmorphism */}
         {(localDateRange.startDate || localDateRange.endDate) && (
           <button
             onClick={() => {
               setLocalDateRange({ startDate: '', endDate: '' });
               setDateRange({ startDate: undefined, endDate: undefined });
             }}
-            className="w-8 h-8 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/50 rounded-lg transition-all duration-200 flex items-center justify-center"
+            className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/50 rounded-xl transition-all duration-300 flex items-center justify-center scale-on-hover backdrop-blur-sm"
           >
             <X className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {/* Active Filter Indicator */}
+      {/* Active Filter Indicator - Premium design */}
       {(localDateRange.startDate || localDateRange.endDate) && (
-        <div className="mt-3 pt-3 border-t border-zinc-700/40">
-          <div className="flex items-center text-xs text-blue-300 font-medium">
-            <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+        <div className="mt-3 pt-3 border-t border-[var(--theme-border)]">
+          <div className="flex items-center text-xs text-cyan-300 font-medium">
+            <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full mr-2 animate-pulse"></div>
             Filtering: {localDateRange.startDate || 'Start'} →{' '}
             {localDateRange.endDate || 'End'}
           </div>
@@ -240,70 +240,70 @@ const SalesAnalytics: React.FC = () => {
     >
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Sales Overview Section */}
+          {/* Sales Overview Section - Context7 Premium */}
           <div className="relative mb-8">
-            <div className="bg-zinc-900/95 rounded-2xl border border-zinc-700/50 p-8">
+            <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl p-8 particles">
               <div className="relative z-10">
-                {/* Clean Header */}
+                {/* Premium Header with glassmorphism */}
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-600 mb-4">
-                    <TrendingUp className="w-8 h-8 text-white" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 mb-4 glow border border-cyan-400/30 backdrop-blur-sm">
+                    <TrendingUp className="w-8 h-8 text-cyan-300" />
                   </div>
-                  <h2 className="text-3xl font-bold text-white mb-2">
+                  <h2 className="text-3xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
                     Sales Overview
                   </h2>
-                  <p className="text-zinc-400">
+                  <p className="text-[var(--theme-text-secondary)]">
                     Track your collection's performance
                   </p>
                 </div>
 
-                {/* Error Display */}
+                {/* Error Display - Premium styling */}
                 {error && (
-                  <div className="mb-8 p-4 bg-red-900/20 border border-red-500/30 rounded-xl">
+                  <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
                     <p className="text-sm text-red-300 font-medium">{error}</p>
                   </div>
                 )}
 
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <>
-                    {/* Key Metrics */}
+                    {/* Key Metrics - Context7 Premium Cards */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                      {/* Total Cards Sold */}
-                      <div className="bg-zinc-800/60 rounded-xl border border-zinc-700/50 p-6 h-48">
+                      {/* Total Cards Sold - Premium glassmorphism */}
+                      <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center">
+                          <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center border border-emerald-400/30 backdrop-blur-sm">
                             <span className="text-xl">🃏</span>
                           </div>
                           <div className="text-right">
                             <div className="text-sm text-emerald-400 font-medium mb-1">
                               Total Cards
                             </div>
-                            <div className="text-4xl font-bold text-white">
+                            <div className="text-4xl font-bold text-[var(--theme-text-primary)]">
                               {sales.length}
                             </div>
                           </div>
                         </div>
-                        <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 rounded-full w-full"></div>
+                        <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
+                          <div className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full w-full shimmer"></div>
                         </div>
                         <div className="mt-4 text-center">
-                          <span className="inline-flex items-center px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-medium border border-emerald-400/30">
+                          <span className="inline-flex items-center px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-medium border border-emerald-400/30 backdrop-blur-sm">
                             Cards Conquered
                           </span>
                         </div>
                       </div>
 
-                      {/* Total Revenue */}
-                      <div className="bg-zinc-800/60 rounded-xl border border-zinc-700/50 p-6 h-48">
+                      {/* Total Revenue - Premium glassmorphism */}
+                      <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle">
                         <div className="flex items-center justify-between mb-4">
-                          <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-6 h-6 text-white" />
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center border border-blue-400/30 backdrop-blur-sm glow-on-hover">
+                            <DollarSign className="w-6 h-6 text-cyan-300" />
                           </div>
                           <div className="text-right">
                             <div className="text-sm text-blue-400 font-medium mb-1">
                               Total Revenue
                             </div>
-                            <div className="text-4xl font-bold text-white">
+                            <div className="text-4xl font-bold text-[var(--theme-text-primary)]">
                               {displayPrice(
                                 sales.reduce(
                                   (sum, sale) =>
@@ -317,24 +317,24 @@ const SalesAnalytics: React.FC = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="h-2 bg-zinc-700/50 rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500 rounded-full w-full"></div>
+                        <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
+                          <div className="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full w-full shimmer"></div>
                         </div>
                         <div className="mt-4 text-center">
-                          <span className="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium border border-blue-400/30">
+                          <span className="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium border border-blue-400/30 backdrop-blur-sm">
                             Revenue Generated
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Category Breakdown */}
+                    {/* Category Breakdown - Premium header */}
                     <div className="relative">
                       <div className="text-center mb-8">
-                        <h3 className="text-2xl font-bold text-white mb-2">
+                        <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
                           Category Breakdown
                         </h3>
-                        <p className="text-zinc-400">
+                        <p className="text-[var(--theme-text-secondary)]">
                           Sales performance by item type
                         </p>
                       </div>
@@ -384,20 +384,25 @@ const SalesAnalytics: React.FC = () => {
                             ([category, stats]) => (
                               <div
                                 key={category}
-                                className="bg-zinc-800/60 rounded-xl border border-zinc-700/50 p-6"
+                                className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 scale-on-hover"
                               >
                                 <div className="text-center">
                                   <div
-                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stats.color} mb-4 text-xl`}
+                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${stats.color.replace('bg-', 'bg-gradient-to-r from-').replace('-600', '-500/20 to-cyan-500/20')} mb-4 text-xl border border-opacity-30 backdrop-blur-sm glow-on-hover`}
+                                    style={{
+                                      borderColor: stats.color.includes('yellow') ? 'rgba(251, 191, 36, 0.3)' : 
+                                                 stats.color.includes('blue') ? 'rgba(59, 130, 246, 0.3)' :
+                                                 'rgba(168, 85, 247, 0.3)'
+                                    }}
                                   >
                                     {stats.icon}
                                   </div>
-                                  <h4 className="text-lg font-bold text-white mb-2">
+                                  <h4 className="text-lg font-bold text-[var(--theme-text-primary)] mb-2">
                                     {category}
                                   </h4>
                                   <div className="space-y-2">
                                     <div
-                                      className={`inline-flex items-center px-3 py-1 ${stats.bgColor} ${stats.textColor} rounded-full text-sm font-medium ${stats.borderColor} border`}
+                                      className={`inline-flex items-center px-3 py-1 ${stats.bgColor} ${stats.textColor} rounded-full text-sm font-medium ${stats.borderColor} border backdrop-blur-sm`}
                                     >
                                       {stats.count} cards
                                     </div>
@@ -417,13 +422,13 @@ const SalesAnalytics: React.FC = () => {
                   </>
                 ) : (
                   <div className="text-center py-20">
-                    <div className="w-24 h-24 bg-zinc-800 rounded-full mx-auto mb-8 flex items-center justify-center border border-zinc-700">
-                      <TrendingUp className="w-12 h-12 text-zinc-400" />
+                    <div className="w-24 h-24 bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 rounded-full mx-auto mb-8 flex items-center justify-center border border-[var(--theme-border)] backdrop-blur-sm float">
+                      <TrendingUp className="w-12 h-12 text-[var(--theme-text-muted)]" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">
+                    <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-4">
                       No Sales Data Yet
                     </h3>
-                    <p className="text-zinc-400 max-w-md mx-auto">
+                    <p className="text-[var(--theme-text-secondary)] max-w-md mx-auto">
                       Your sales analytics will appear here once you start
                       selling items from your collection.
                     </p>
@@ -433,15 +438,15 @@ const SalesAnalytics: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent Sales */}
-          <div className="bg-zinc-900/95 rounded-2xl border border-zinc-700/50 relative overflow-hidden">
-            <div className="p-8 border-b border-zinc-700/40">
+          {/* Recent Sales - Context7 Premium */}
+          <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
+            <div className="p-8 border-b border-[var(--theme-border)]">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
+                  <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
                     Recent Sales
                   </h2>
-                  <p className="text-zinc-400">
+                  <p className="text-[var(--theme-text-secondary)]">
                     Your latest sold items with details
                   </p>
                 </div>
@@ -451,7 +456,7 @@ const SalesAnalytics: React.FC = () => {
                     size="sm"
                     onClick={handleExportCSV}
                     disabled={loading}
-                    className="bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/30 text-blue-300 hover:text-blue-200"
+                    className="btn-premium bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-400/30 text-blue-300 hover:text-blue-200 scale-on-hover"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Export CSV
@@ -462,7 +467,7 @@ const SalesAnalytics: React.FC = () => {
               {/* Clean List View Layout */}
               <div className="p-0">
                 {Array.isArray(sales) && sales.length > 0 ? (
-                  <div className="divide-y divide-zinc-700/30">
+                  <div className="divide-y divide-[var(--theme-border)]">
                     {sales.slice(0, 10).map((sale, index) => {
                       const actualPrice = Number(sale.actualSoldPrice) || 0;
                       const myPrice = Number(sale.myPrice) || 0;
@@ -470,12 +475,12 @@ const SalesAnalytics: React.FC = () => {
                       return (
                         <div
                           key={sale.id || `sale-${index}`}
-                          className="group relative px-8 py-6 hover:bg-zinc-800/30 transition-all duration-200"
+                          className="group relative px-8 py-6 hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5 transition-all duration-300 scale-on-hover backdrop-blur-sm"
                         >
                           <div className="flex items-center space-x-6">
-                            {/* Product Thumbnail */}
+                            {/* Product Thumbnail - Premium glassmorphism */}
                             <div className="flex-shrink-0 relative">
-                              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-zinc-700/40 to-zinc-800/40 border border-zinc-600/20 overflow-hidden">
+                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--theme-surface)] to-zinc-800/20 border border-[var(--theme-border)] overflow-hidden backdrop-blur-sm">
                                 {sale.thumbnailUrl ? (
                                   <img
                                     src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : `/${sale.thumbnailUrl}`}`}
@@ -518,8 +523,8 @@ const SalesAnalytics: React.FC = () => {
                                 </div>
                               </div>
 
-                              {/* Category badge */}
-                              <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-xs font-bold bg-blue-600/80 text-white border border-blue-500/30">
+                              {/* Category badge - Premium glassmorphism */}
+                              <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-cyan-300 border border-blue-400/30 backdrop-blur-sm">
                                 {(() => {
                                   const category =
                                     sale.itemCategory || 'Unknown';
@@ -537,12 +542,12 @@ const SalesAnalytics: React.FC = () => {
                               </div>
                             </div>
 
-                            {/* Product Name & Details */}
+                            {/* Product Name & Details - Premium styling */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-lg font-semibold text-white group-hover:text-emerald-200 transition-colors mb-1 truncate">
+                              <h3 className="text-lg font-semibold text-[var(--theme-text-primary)] group-hover:text-cyan-200 transition-colors mb-1 truncate">
                                 {sale.itemName || 'Unknown Item'}
                               </h3>
-                              <div className="flex items-center space-x-4 text-sm text-zinc-400">
+                              <div className="flex items-center space-x-4 text-sm text-[var(--theme-text-secondary)]">
                                 <span>
                                   📅{' '}
                                   {sale.dateSold
@@ -555,7 +560,7 @@ const SalesAnalytics: React.FC = () => {
                                       })
                                     : 'Unknown'}
                                 </span>
-                                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-zinc-700/40 text-zinc-300">
+                                <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 text-[var(--theme-text-secondary)] border border-[var(--theme-border)] backdrop-blur-sm">
                                   {sale.source === 'Facebook'
                                     ? '📘'
                                     : sale.source === 'DBA'
@@ -566,13 +571,13 @@ const SalesAnalytics: React.FC = () => {
                               </div>
                             </div>
 
-                            {/* Price Information */}
+                            {/* Price Information - Premium styling */}
                             <div className="flex items-center space-x-8">
                               <div className="text-right">
-                                <div className="text-xs text-zinc-400 uppercase tracking-wide mb-1">
+                                <div className="text-xs text-[var(--theme-text-muted)] uppercase tracking-wide mb-1">
                                   My Price
                                 </div>
-                                <div className="text-sm font-semibold text-zinc-300">
+                                <div className="text-sm font-semibold text-[var(--theme-text-secondary)]">
                                   {displayPrice(myPrice)}
                                 </div>
                               </div>
@@ -581,7 +586,7 @@ const SalesAnalytics: React.FC = () => {
                                 <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">
                                   Sale Price
                                 </div>
-                                <div className="text-lg font-bold text-emerald-400">
+                                <div className="text-lg font-bold text-emerald-300">
                                   {displayPrice(actualPrice)}
                                 </div>
                               </div>

@@ -235,295 +235,390 @@ const Analytics: React.FC = () => {
   }, [dateRange]); // Use dateRange instead of timeRange
 
   return (
-    <PageLayout
-      title="Analytics Dashboard"
-      subtitle="Comprehensive analytics and insights for your collection"
-      loading={loading}
-      error={error}
-      variant="default"
-    >
-      {/* Analytics Controls */}
-      <div className="mb-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3">
-          <DateRangeFilter
-            value={dateRange}
-            onChange={setDateRange}
-            showPresets={true}
-            showCustomRange={true}
-            presetOptions={timeRangeOptions}
-            loading={loading}
+    <PageLayout>
+      <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
+        {/* Context7 2025 Futuristic Neural Background - Quantum Analytics Field */}
+        <div className="absolute inset-0 opacity-15">
+          {/* Analytics Neural Network Pattern */}
+          <div
+            className="absolute inset-0 animate-pulse"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cfilter id='analyticsglow'%3E%3CfeGaussianBlur stdDeviation='2' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='%2306b6d4' stroke-width='0.3' filter='url(%23analyticsglow)'%3E%3Ccircle cx='70' cy='70' r='3'/%3E%3Cpath d='M20,70 Q45,30 70,70 Q95,110 120,70'/%3E%3Cpath d='M70,20 Q110,45 70,70 Q30,95 70,120'/%3E%3C/g%3E%3C/svg%3E")`,
+              animationDuration: '8s',
+            }}
+          />
+          {/* Chart Visualization Particles */}
+          <div
+            className="absolute inset-0 animate-bounce"
+            style={{
+              animationDuration: '12s',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23a855f7' fill-opacity='0.03'%3E%3Crect x='60' y='180' width='8' height='40'/%3E%3Crect x='80' y='160' width='8' height='60'/%3E%3Crect x='100' y='140' width='8' height='80'/%3E%3Crect x='120' y='120' width='8' height='100'/%3E%3Crect x='140' y='100' width='8' height='120'/%3E%3Crect x='160' y='170' width='8' height='50'/%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+          {/* Data Flow Grid */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `linear-gradient(90deg, transparent 97%, rgba(6, 182, 212, 0.08) 100%), linear-gradient(transparent 97%, rgba(168, 85, 247, 0.08) 100%)`,
+              backgroundSize: '60px 60px',
+            }}
           />
         </div>
-        <div className="flex items-end">
-          <button
-            onClick={refresh}
-            className="w-full lg:w-auto px-6 py-3 rounded-xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-700/20 hover:bg-zinc-800/90 transition-all duration-300 group shadow-lg flex items-center justify-center text-zinc-100"
-            disabled={loading}
-          >
-            <RefreshCw
-              className={`w-5 h-5 text-zinc-300 mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`}
+
+        {/* Floating Analytics Particles */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full opacity-15 animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 4 + 1}px`,
+                height: `${Math.random() * 4 + 1}px`,
+                background: `radial-gradient(circle, ${['#06b6d4', '#a855f7', '#10b981', '#f59e0b'][Math.floor(Math.random() * 4)]}, transparent)`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${Math.random() * 6 + 4}s`,
+              }}
             />
-            <span className="font-medium text-zinc-200">Refresh</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Context7 Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5"></div>
-          <div className="flex items-center relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-              <ActivityIcon className="w-8 h-8 text-white" />
-            </div>
-            <div className="ml-6">
-              <p className="text-sm font-bold text-zinc-400 tracking-wide uppercase">
-                Total Activities
-              </p>
-              <p className="text-3xl font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors duration-300">
-                {analyticsData?.totalActivities || 0}
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
 
-        <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5"></div>
-          <div className="flex items-center relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-              <TrendingUp className="w-8 h-8 text-white" />
-            </div>
-            <div className="ml-6">
-              <p className="text-sm font-bold text-zinc-400 tracking-wide uppercase">
-                This Week
-              </p>
-              <p className="text-3xl font-bold text-zinc-100 group-hover:text-emerald-300 transition-colors duration-300">
-                {activityStats?.week || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+        <div className="relative z-10 p-8">
+          <div className="max-w-7xl mx-auto space-y-12">
+            {/* Context7 2025 Futuristic Glassmorphism Header */}
+            <div className="relative group">
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[2rem] shadow-2xl text-[var(--theme-text-primary)] p-12 relative overflow-hidden">
+                {/* Neural network glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-emerald-500/20 opacity-70 blur-3xl"></div>
+                
+                {/* Holographic border animation */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
+                
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-emerald-500 opacity-80 animate-pulse"></div>
+                
+                {/* Floating analytics icon */}
+                <div className="absolute top-8 right-8 w-16 h-16 border-2 border-cyan-400/40 rounded-2xl rotate-12 animate-pulse opacity-40 flex items-center justify-center">
+                  <BarChart3 className="w-8 h-8 text-cyan-400" />
+                </div>
 
-        <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5"></div>
-          <div className="flex items-center relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-              <DollarSign className="w-8 h-8 text-white" />
+                <div className="relative z-10">
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-300 via-purple-300 to-emerald-300 bg-clip-text text-transparent mb-4">
+                    Analytics Dashboard
+                  </h1>
+                  <p className="text-xl text-[var(--theme-text-secondary)] font-medium">
+                    Comprehensive analytics and insights for your collection
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="ml-6">
-              <p className="text-sm font-bold text-zinc-400 tracking-wide uppercase">
-                Total Value
-              </p>
-              <p className="text-3xl font-bold text-zinc-100 group-hover:text-amber-300 transition-colors duration-300">
-                {totalValueFormatted || '--'}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="group bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-zinc-700/20 hover:scale-105 transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-violet-500/5"></div>
-          <div className="flex items-center relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-              <Clock className="w-8 h-8 text-white" />
+            {/* Analytics Controls */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-3">
+                <DateRangeFilter
+                  value={dateRange}
+                  onChange={setDateRange}
+                  showPresets={true}
+                  showCustomRange={true}
+                  presetOptions={timeRangeOptions}
+                  loading={loading}
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={refresh}
+                  className="w-full lg:w-auto px-6 py-3 rounded-2xl backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] hover:bg-[var(--theme-surface-hover)] transition-all duration-300 group shadow-xl flex items-center justify-center text-[var(--theme-text-primary)] relative overflow-hidden"
+                  disabled={loading}
+                >
+                  {/* Button glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <RefreshCw
+                    className={`w-5 h-5 text-[var(--theme-text-secondary)] mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300 relative z-10`}
+                  />
+                  <span className="font-medium text-[var(--theme-text-primary)] relative z-10">Refresh</span>
+                </button>
+              </div>
             </div>
-            <div className="ml-6">
-              <p className="text-sm font-bold text-zinc-400 tracking-wide uppercase">
-                Last Activity
-              </p>
-              <p className="text-lg font-bold text-zinc-100 group-hover:text-purple-300 transition-colors duration-300">
-                {activityStats?.lastActivity
-                  ? getRelativeTime(activityStats.lastActivity)
-                  : 'No activity'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Context7 Category Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-zinc-700/20">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">
-                Collection
-              </p>
-              <p className="text-2xl font-bold text-zinc-100">
-                {analyticsData?.categoryStats.collection || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+            {/* Context7 Key Metrics Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                
+                <div className="flex items-center relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+                    <ActivityIcon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="ml-6">
+                    <p className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
+                      Total Activities
+                    </p>
+                    <p className="text-3xl font-bold text-[var(--theme-text-primary)] group-hover:text-indigo-300 transition-colors duration-300">
+                      {analyticsData?.totalActivities || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-zinc-700/20">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center">
-              <Gavel className="w-6 h-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">
-                Auctions
-              </p>
-              <p className="text-2xl font-bold text-zinc-100">
-                {analyticsData?.categoryStats.auction || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-teal-500/15 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                
+                <div className="flex items-center relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="ml-6">
+                    <p className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
+                      This Week
+                    </p>
+                    <p className="text-3xl font-bold text-[var(--theme-text-primary)] group-hover:text-emerald-300 transition-colors duration-300">
+                      {activityStats?.week || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-zinc-700/20">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">
-                Sales
-              </p>
-              <p className="text-2xl font-bold text-zinc-100">
-                {analyticsData?.categoryStats.sales || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-amber-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                
+                <div className="flex items-center relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                    <DollarSign className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="ml-6">
+                    <p className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
+                      Total Value
+                    </p>
+                    <p className="text-3xl font-bold text-[var(--theme-text-primary)] group-hover:text-amber-300 transition-colors duration-300">
+                      {totalValueFormatted || '--'}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-zinc-700/20">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
-              <Settings className="w-6 h-6 text-white" />
+              <div className="group backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-violet-500/15 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-purple-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                
+                <div className="flex items-center relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-[0_0_20px_rgba(147,51,234,0.3)]">
+                    <Clock className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="ml-6">
+                    <p className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
+                      Last Activity
+                    </p>
+                    <p className="text-lg font-bold text-[var(--theme-text-primary)] group-hover:text-purple-300 transition-colors duration-300">
+                      {activityStats?.lastActivity
+                        ? getRelativeTime(activityStats.lastActivity)
+                        : 'No activity'}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">
-                System
-              </p>
-              <p className="text-2xl font-bold text-zinc-100">
-                {analyticsData?.categoryStats.system || 0}
-              </p>
+
+            {/* Context7 Category Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform duration-300">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wide">
+                      Collection
+                    </p>
+                    <p className="text-2xl font-bold text-[var(--theme-text-primary)]">
+                      {analyticsData?.categoryStats.collection || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(147,51,234,0.3)] group-hover:scale-110 transition-transform duration-300">
+                    <Gavel className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wide">
+                      Auctions
+                    </p>
+                    <p className="text-2xl font-bold text-[var(--theme-text-primary)]">
+                      {analyticsData?.categoryStats.auction || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform duration-300">
+                    <DollarSign className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wide">
+                      Sales
+                    </p>
+                    <p className="text-2xl font-bold text-[var(--theme-text-primary)]">
+                      {analyticsData?.categoryStats.sales || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300 group">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(100,116,139,0.3)] group-hover:scale-110 transition-transform duration-300">
+                    <Settings className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wide">
+                      System
+                    </p>
+                    <p className="text-2xl font-bold text-[var(--theme-text-primary)]">
+                      {analyticsData?.categoryStats.system || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Context7 Activity Type Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50"></div>
-          <div className="p-8 relative z-10">
-            <h3 className="text-2xl font-bold text-zinc-100 mb-6 flex items-center">
-              <PieChart className="w-6 h-6 mr-3 text-indigo-600" />
-              Activity Distribution
-            </h3>
+            {/* Context7 Activity Type Distribution */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+                
+                <div className="p-8 relative z-10">
+                  <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
+                    <PieChart className="w-6 h-6 mr-3 text-cyan-400" />
+                    Activity Distribution
+                  </h3>
 
-            {analyticsData && (
-              <div className="space-y-4">
-                {Object.entries(analyticsData.typeDistribution)
-                  .sort(([, a], [, b]) => b - a) // Sort by count descending
-                  .map(([typeLabel, count]) => {
-                    // Convert back to type constant for icon/color lookup
-                    const typeKey = typeLabel.toUpperCase().replace(/ /g, '_');
-                    const IconComponent = getActivityIcon(typeKey);
-                    const color = getActivityColor(typeKey);
-                    const percentage = (
-                      (count / (analyticsData?.totalActivities || 1)) *
-                      100
-                    ).toFixed(1);
+                  {analyticsData && (
+                    <div className="space-y-4">
+                      {Object.entries(analyticsData.typeDistribution)
+                        .sort(([, a], [, b]) => b - a) // Sort by count descending
+                        .map(([typeLabel, count]) => {
+                          // Convert back to type constant for icon/color lookup
+                          const typeKey = typeLabel.toUpperCase().replace(/ /g, '_');
+                          const IconComponent = getActivityIcon(typeKey);
+                          const color = getActivityColor(typeKey);
+                          const percentage = (
+                            (count / (analyticsData?.totalActivities || 1)) *
+                            100
+                          ).toFixed(1);
 
-                    return (
-                      <div
-                        key={typeLabel}
-                        className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-50/50 to-white/50 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 group"
-                      >
-                        <div className="flex items-center">
-                          <div
-                            className={`w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300`}
-                          >
-                            <IconComponent className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="font-semibold text-zinc-100">
-                              {typeLabel}
-                            </p>
-                            <p className="text-sm text-zinc-400">
-                              {count} event{count !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors duration-300">
-                            {percentage}%
-                          </p>
-                          <div
-                            className={`w-16 h-2 bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden`}
-                          >
-                            {' '}
+                          return (
                             <div
-                              className={`h-full bg-gradient-to-r from-${color}-500 to-${color}-600 transition-all duration-500 group-hover:animate-pulse`}
-                              style={{ width: `${percentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
+                              key={typeLabel}
+                              className="flex items-center justify-between p-4 rounded-2xl backdrop-blur-sm bg-[var(--theme-surface)]/50 border border-[var(--theme-border)]/30 hover:bg-[var(--theme-surface-hover)]/70 transition-all duration-300 group/item"
+                            >
+                              <div className="flex items-center">
+                                <div
+                                  className={`w-10 h-10 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 group-hover/item:scale-110 transition-transform duration-300 shadow-[0_0_10px_rgba(99,102,241,0.3)]`}
+                                >
+                                  <IconComponent className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-[var(--theme-text-primary)]">
+                                    {typeLabel}
+                                  </p>
+                                  <p className="text-sm text-[var(--theme-text-secondary)]">
+                                    {count} event{count !== 1 ? 's' : ''}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-[var(--theme-text-primary)] group-hover/item:text-cyan-300 transition-colors duration-300">
+                                  {percentage}%
+                                </p>
+                                <div className="w-16 h-2 bg-[var(--theme-surface)] rounded-full overflow-hidden border border-[var(--theme-border)]">
+                                  <div
+                                    className={`h-full bg-gradient-to-r from-${color}-500 to-${color}-600 transition-all duration-500 group-hover/item:animate-pulse`}
+                                    style={{ width: `${percentage}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="backdrop-blur-xl bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-3xl shadow-2xl relative overflow-hidden group">
+                {/* Neural glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-purple-500/5 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"></div>
+                {/* Holographic border */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+                
+                <div className="p-8 relative z-10">
+                  <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 flex items-center">
+                    <Target className="w-6 h-6 mr-3 text-emerald-400" />
+                    Key Insights
+                  </h3>
+
+                  <div className="space-y-6">
+                    <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-400/20 hover:border-emerald-400/40 transition-colors duration-300">
+                      <div className="flex items-center mb-3">
+                        <Award className="w-5 h-5 text-emerald-400 mr-2" />
+                        <h4 className="font-bold text-[var(--theme-text-primary)]">
+                          Most Active Day
+                        </h4>
                       </div>
-                    );
-                  })}
-              </div>
-            )}
-          </div>
-        </div>
+                      <p className="text-[var(--theme-text-secondary)]">
+                        {analyticsData?.mostActiveDay &&
+                        analyticsData.mostActiveDay[1] > 0
+                          ? `${new Date(analyticsData.mostActiveDay[0]).toLocaleDateString()} with ${analyticsData.mostActiveDay[1]} activities`
+                          : 'Not enough data yet'}
+                      </p>
+                    </div>
 
-        <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-slate-50/50"></div>
-          <div className="p-8 relative z-10">
-            <h3 className="text-2xl font-bold text-zinc-100 mb-6 flex items-center">
-              <Target className="w-6 h-6 mr-3 text-indigo-600" />
-              Key Insights
-            </h3>
+                    <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-400/20 hover:border-purple-400/40 transition-colors duration-300">
+                      <div className="flex items-center mb-3">
+                        <TrendingUp className="w-5 h-5 text-purple-400 mr-2" />
+                        <h4 className="font-bold text-[var(--theme-text-primary)]">Activity Trend</h4>
+                      </div>
+                      <p className="text-[var(--theme-text-secondary)]">
+                        {analyticsData?.totalActivities
+                          ? `${analyticsData.totalActivities} total activities tracked`
+                          : 'Start using the app to see trends'}
+                      </p>
+                    </div>
 
-            <div className="space-y-6">
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-50/80 to-teal-50/80 border border-emerald-200/50">
-                <div className="flex items-center mb-3">
-                  <Award className="w-5 h-5 text-emerald-600 mr-2" />
-                  <h4 className="font-bold text-emerald-900">
-                    Most Active Day
-                  </h4>
+                    <div className="p-6 rounded-2xl backdrop-blur-sm bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/20 hover:border-amber-400/40 transition-colors duration-300">
+                      <div className="flex items-center mb-3">
+                        <DollarSign className="w-5 h-5 text-amber-400 mr-2" />
+                        <h4 className="font-bold text-[var(--theme-text-primary)]">Value Tracking</h4>
+                      </div>
+                      <p className="text-[var(--theme-text-secondary)]">
+                        {analyticsData?.valueActivities.length || 0} activities with
+                        price/value data
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-emerald-800">
-                  {analyticsData?.mostActiveDay &&
-                  analyticsData.mostActiveDay[1] > 0
-                    ? `${new Date(analyticsData.mostActiveDay[0]).toLocaleDateString()} with ${analyticsData.mostActiveDay[1]} activities`
-                    : 'Not enough data yet'}
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-purple-50/80 to-violet-50/80 border border-purple-200/50">
-                <div className="flex items-center mb-3">
-                  <TrendingUp className="w-5 h-5 text-purple-600 mr-2" />
-                  <h4 className="font-bold text-purple-900">Activity Trend</h4>
-                </div>
-                <p className="text-purple-800">
-                  {analyticsData?.totalActivities
-                    ? `${analyticsData.totalActivities} total activities tracked`
-                    : 'Start using the app to see trends'}
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-50/80 to-orange-50/80 border border-amber-200/50">
-                <div className="flex items-center mb-3">
-                  <DollarSign className="w-5 h-5 text-amber-600 mr-2" />
-                  <h4 className="font-bold text-amber-900">Value Tracking</h4>
-                </div>
-                <p className="text-amber-800">
-                  {analyticsData?.valueActivities.length || 0} activities with
-                  price/value data
-                </p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
       {/* Context7 Recent Activity Timeline */}
       <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 relative overflow-hidden">

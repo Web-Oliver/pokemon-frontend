@@ -36,6 +36,13 @@ import { processImageUrl } from '../utils/formatting';
 import { log } from '../utils/logger';
 import AuctionFormContainer from '../components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../components/forms/sections/AuctionItemSelectionSection';
+import { useTheme } from '../contexts/ThemeContext';
+import { 
+  ParticleSystem, 
+  NeuralNetworkBackground, 
+  FloatingGeometry,
+  type GeometricElement 
+} from '../components/effects';
 
 // Form data interface
 interface AuctionFormData {
@@ -66,12 +73,38 @@ interface UnifiedCollectionItem {
 }
 
 const CreateAuction: React.FC = () => {
+  const { config, getCSSProperties } = useTheme();
   const {
     createAuction,
     loading: auctionLoading,
     error,
     clearError,
   } = useAuction();
+
+  // Context7 2025 Futuristic Geometric Elements Configuration
+  const futuristicGeometry: GeometricElement[] = [
+    {
+      type: 'square',
+      size: 80,
+      color: '#06b6d4',
+      position: { top: '2rem', right: '2rem' },
+      animation: 'spin',
+      animationDuration: '20s',
+      borderOnly: true,
+      opacity: 0.4,
+      glowEffect: true,
+    },
+    {
+      type: 'circle',
+      size: 64,
+      color: '#a855f7',
+      position: { bottom: '2rem', left: '2rem' },
+      animation: 'pulse',
+      opacity: 0.4,
+      borderOnly: true,
+      glowEffect: true,
+    },
+  ];
 
   // Use separate fetch hooks for better state management (following CLAUDE.md SRP)
   const collectionApiService = getCollectionApiService();
@@ -541,62 +574,55 @@ const CreateAuction: React.FC = () => {
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
+  // Theme-aware background while preserving Context7 2025 futuristic aesthetic
+  const backgroundStyles = {
+    background: config.visualTheme === 'context7-futuristic' 
+      ? 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)'
+      : 'linear-gradient(135deg, var(--theme-background-start, rgb(2 6 23)) 0%, var(--theme-background-mid, rgba(88 28 135 / 0.2)) 50%, var(--theme-background-end, rgba(49 46 129 / 0.3)) 100%)',
+  };
+
   return (
     <PageLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
+      <div 
+        className="min-h-screen relative overflow-hidden"
+        style={backgroundStyles}
+      >
         {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
-        <div className="absolute inset-0 opacity-20">
-          {/* Primary Neural Network Pattern */}
-          <div
-            className="absolute inset-0 animate-pulse"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='3' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='%2306b6d4' stroke-width='0.5' filter='url(%23glow)'%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3Cline x1='60' y1='30' x2='60' y2='90'/%3E%3Cline x1='30' y1='60' x2='90' y2='60'/%3E%3Cline x1='40' y1='40' x2='80' y2='80'/%3E%3Cline x1='80' y1='40' x2='40' y2='80'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-          {/* Secondary Quantum Particles */}
-          <div
-            className="absolute inset-0 animate-bounce"
-            style={{
-              animationDuration: '6s',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23a855f7' fill-opacity='0.05'%3E%3Ccircle cx='100' cy='50' r='1.5'/%3E%3Ccircle cx='50' cy='100' r='1'/%3E%3Ccircle cx='150' cy='100' r='1.5'/%3E%3Ccircle cx='100' cy='150' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-          {/* Holographic Grid Overlay */}
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `linear-gradient(90deg, transparent 98%, rgba(6, 182, 212, 0.1) 100%), linear-gradient(transparent 98%, rgba(168, 85, 247, 0.1) 100%)`,
-              backgroundSize: '40px 40px',
-            }}
-          />
-        </div>
+        <NeuralNetworkBackground
+          primaryColor="#06b6d4"
+          secondaryColor="#a855f7"
+          gridColor="#06b6d4"
+          opacity={0.2}
+          enableQuantumParticles={true}
+          enableGrid={true}
+          animationSpeed={1}
+        />
 
-        {/* Floating Particle Systems */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Floating particles */}
-          {[...Array(12)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full opacity-20 animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 6 + 2}px`,
-                height: `${Math.random() * 6 + 2}px`,
-                background: `radial-gradient(circle, ${['#06b6d4', '#a855f7', '#ec4899', '#10b981'][Math.floor(Math.random() * 4)]}, transparent)`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${Math.random() * 4 + 3}s`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Context7 2025 Futuristic Particle Systems */}
+        <ParticleSystem
+          particleCount={12}
+          colors={['#06b6d4', '#a855f7', '#ec4899', '#10b981']}
+          sizeRange={[2, 8]}
+          durationRange={[3, 7]}
+          opacity={0.2}
+          animationType="pulse"
+        />
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
             {/* Context7 2025 Futuristic Glassmorphism Header */}
             <div className="relative group">
-              {/* Glassmorphism card with neumorphism elements */}
-              <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15] border border-white/[0.20] rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden">
+              {/* Glassmorphism card with neumorphism elements - theme-aware */}
+              <div 
+                className="backdrop-blur-xl border rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(135deg, 
+                    rgba(255, 255, 255, ${0.15 * (config.glassmorphismIntensity / 100)}) 0%, 
+                    rgba(6, 182, 212, ${0.12 * (config.glassmorphismIntensity / 100)}) 50%, 
+                    rgba(168, 85, 247, ${0.15 * (config.glassmorphismIntensity / 100)}) 100%)`,
+                  borderColor: `rgba(255, 255, 255, ${0.20 * (config.glassmorphismIntensity / 100)})`,
+                }}
+              >
                 {/* Neural network glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
 
@@ -606,12 +632,8 @@ const CreateAuction: React.FC = () => {
                 {/* Top accent line with RGB shifting */}
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
 
-                {/* Floating geometric elements */}
-                <div
-                  className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                  style={{ animationDuration: '20s' }}
-                ></div>
-                <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
+                {/* Context7 2025 Futuristic Floating Geometric Elements */}
+                <FloatingGeometry elements={futuristicGeometry} />
 
                 <div className="relative z-10">
                   <div className="flex items-center mb-8">
@@ -664,8 +686,17 @@ const CreateAuction: React.FC = () => {
               {/* Holographic field effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/5 to-pink-500/10 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm"></div>
 
-              {/* Advanced glassmorphism container */}
-              <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.08] via-slate-500/[0.03] to-purple-500/[0.08] border border-white/[0.12] rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] hover:shadow-[0_20px_50px_0_rgba(6,182,212,0.15)] transition-all duration-500">
+              {/* Advanced glassmorphism container - theme-aware */}
+              <div 
+                className="relative backdrop-blur-xl border rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] hover:shadow-[0_20px_50px_0_rgba(6,182,212,0.15)] transition-all duration-500"
+                style={{
+                  background: `linear-gradient(135deg, 
+                    rgba(255, 255, 255, ${0.08 * (config.glassmorphismIntensity / 100)}) 0%, 
+                    rgba(100, 116, 139, ${0.03 * (config.glassmorphismIntensity / 100)}) 50%, 
+                    rgba(168, 85, 247, ${0.08 * (config.glassmorphismIntensity / 100)}) 100%)`,
+                  borderColor: `rgba(255, 255, 255, ${0.12 * (config.glassmorphismIntensity / 100)})`,
+                }}
+              >
                 {/* Neural network grid pattern */}
                 <div
                   className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"

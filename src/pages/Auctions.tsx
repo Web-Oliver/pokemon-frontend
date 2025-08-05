@@ -573,9 +573,7 @@ const Auctions: React.FC = () => {
                   </div>
                 )}
               </div>
-            </PokemonCard>
           )}
-          </div>
         </div>
       </PokemonPageContainer>
     </PageLayout>
