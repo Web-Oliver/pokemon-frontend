@@ -211,17 +211,17 @@ This document outlines the complete transformation from fragmented styling syste
   - [x] **Update ErrorMessage/HelperText** to use theme tokens
 
 #### **Common Components Finalization (18 components)**
-- [ ] **2.3.7** Performance-Optimized Components
-  - [ ] **OptimizedAutocomplete.tsx** - Integrate theme system with performance patterns
-  - [ ] **ImageSlideshow.tsx** - Apply theme-aware styling to Embla carousel
-  - [ ] **OptimizedImageView.tsx** - Unify with main image handling system
-  - [ ] **ImageProductView.tsx** - Consolidate size variants with theme system
+- [x] **2.3.7** Performance-Optimized Components
+  - [x] **OptimizedAutocomplete.tsx** - Integrate theme system with performance patterns
+  - [x] **ImageSlideshow.tsx** - Apply theme-aware styling to Embla carousel
+  - [x] **OptimizedImageView.tsx** - Unify with main image handling system
+  - [x] **ImageProductView.tsx** - Consolidate size variants with theme system
 
-- [ ] **2.3.8** Complete Theme System Extension
-  - [ ] **Extend FormActionButtons/FormHeader** theme usage to all common components
-  - [ ] **Apply centralized theme system** to DateRangeFilter, LoadingSpinner, etc.
-  - [ ] **Unify animation timings** across all components (`duration-300`, `ease-out`)
-  - [ ] **Standardize shadow/gradient** patterns using shared utilities
+- [x] **2.3.8** Complete Theme System Extension
+  - [x] **Extend FormActionButtons/FormHeader** theme usage to all common components
+  - [x] **Apply centralized theme system** to DateRangeFilter, LoadingSpinner, etc.
+  - [x] **Unify animation timings** across all components (`duration-300`, `ease-out`)
+  - [x] **Standardize shadow/gradient** patterns using shared utilities
 
 ---
 
