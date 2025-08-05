@@ -70,9 +70,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   adaptiveLayout = true,
 }) => {
   // State management - Following SRP
-  const [previews, setPreviews] = useState<ImagePreview[]>(() => {
-    return existingImageUrls.map((url, index) => createExistingImagePreview(url, index));
-  });
+  const [previews, setPreviews] = useState<ImagePreview[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -98,6 +96,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   }, [enableAspectRatioDetection]);
 
   const handleFileDrop = useCallback(async (files: FileList) => {
+    console.log('[ImageUploader] handleFileDrop called with files:', Array.from(files).map(f => ({ name: f.name, size: f.size })));
+    console.log('[ImageUploader] Current previews before processing:', previews.length);
+    
     const { newFiles, newPreviews, errorMessage } = await processImageFiles(
       files,
       previews,
@@ -105,6 +106,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       maxFileSize,
       acceptedTypes
     );
+    
+    console.log('[ImageUploader] processImageFiles returned:', { 
+      newFiles: newFiles.map(f => ({ name: f.name, size: f.size })), 
+      newPreviewsCount: newPreviews.length,
+      errorMessage 
+    });
 
     if (errorMessage) {
       setError(errorMessage);
@@ -129,13 +136,18 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
 
     // Update parent component - USE UPDATED PREVIEWS, NOT OLD STATE!
-    const allFiles = [
-      ...updatedPreviews.filter(p => !p.isExisting && p.file).map(p => p.file!),
-      ...newFiles,
-    ];
+    // Only get files from updatedPreviews (newFiles are already included in updatedPreviews)
+    const allFiles = updatedPreviews
+      .filter(p => !p.isExisting && p.file)
+      .map(p => p.file!);
     const remainingExistingUrls = updatedPreviews
       .filter(p => p.isExisting)
       .map(p => p.url.replace('http://localhost:3000', ''));
+    
+    console.log('[ImageUploader] Calling onImagesChange with:', {
+      allFiles: allFiles.map(f => ({ name: f.name, size: f.size })),
+      remainingExistingUrls
+    });
     
     onImagesChange(allFiles, remainingExistingUrls);
   }, [previews, maxFiles, maxFileSize, acceptedTypes, analyzeNewImages, onImagesChange]);
@@ -182,9 +194,26 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   }, [disabled]);
 
-  // Analyze existing images on mount - Following DIP
+  // Reset previews when existingImageUrls changes, but preserve new uploads
   useEffect(() => {
-    if (!existingImageUrls.length) return;
+    console.log('[ImageUploader] existingImageUrls changed:', existingImageUrls);
+    // Remove duplicates from existingImageUrls
+    const uniqueUrls = Array.from(new Set(existingImageUrls));
+    console.log('[ImageUploader] Unique URLs after deduplication:', uniqueUrls);
+    
+    // Preserve any non-existing previews (newly uploaded files) and add existing ones
+    setPreviews(current => {
+      const newUploads = current.filter(p => !p.isExisting);
+      const existingPreviews = uniqueUrls.map((url, index) => createExistingImagePreview(url, index));
+      const combined = [...existingPreviews, ...newUploads];
+      console.log('[ImageUploader] Setting previews to:', combined);
+      return combined;
+    });
+  }, [existingImageUrls]);
+
+  // Analyze existing images when previews change - Following DIP
+  useEffect(() => {
+    if (!existingImageUrls.length || !enableAspectRatioDetection) return;
 
     const analyzeExisting = async () => {
       const aspectResults = await analyzeExistingImages(existingImageUrls);
@@ -197,7 +226,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     };
 
     analyzeExisting();
-  }, [existingImageUrls, analyzeExistingImages]);
+  }, [existingImageUrls, analyzeExistingImages, enableAspectRatioDetection]);
 
   // Cleanup object URLs on unmount - Following proper resource management
   useEffect(() => {
@@ -292,7 +321,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               'grid-cols-2 sm:grid-cols-3 md:grid-cols-4': !adaptiveLayout,
             })}
           >
-            {previews.map((preview) => (
+            {previews.map((preview) => {
+              console.log('[ImageUploader] Rendering preview:', preview.id, preview.url);
+              return (
               <div key={preview.id} className="relative group">
                 <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
                   <img
@@ -315,7 +346,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

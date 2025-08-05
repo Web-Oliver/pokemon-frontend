@@ -12,6 +12,7 @@ import { Calendar, X, TrendingUp, DollarSign, Download } from 'lucide-react';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';
+import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import { showSuccessToast } from '../utils/errorHandler';
@@ -152,18 +153,12 @@ const SalesAnalytics: React.FC = () => {
           <div className="relative mb-8">
             <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl p-8 particles">
               <div className="relative z-10">
-                {/* Premium Header with glassmorphism */}
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 mb-4 glow border border-cyan-400/30 backdrop-blur-sm">
-                    <TrendingUp className="w-8 h-8 text-cyan-300" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
-                    Sales Overview
-                  </h2>
-                  <p className="text-[var(--theme-text-secondary)]">
-                    Track your collection&apos;s performance
-                  </p>
-                </div>
+                <GlassmorphismHeader
+                  icon={TrendingUp}
+                  title="Sales Overview"
+                  description="Track your collection's performance"
+                  className="mb-6"
+                />
 
                 {/* Error Display - Premium styling */}
                 {error && (
@@ -236,16 +231,17 @@ const SalesAnalytics: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Category Breakdown - Premium header */}
+                    {/* Category Breakdown Section */}
                     <div className="relative">
-                      <div className="text-center mb-8">
-                        <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
-                          Category Breakdown
-                        </h3>
-                        <p className="text-[var(--theme-text-secondary)]">
-                          Sales performance by item type
-                        </p>
-                      </div>
+                      <GlassmorphismHeader
+                        title="Category Breakdown"
+                        description="Sales performance by item type"
+                        className="mb-6"
+                      >
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl shadow-2xl flex items-center justify-center border border-white/[0.15]">
+                          <span className="text-2xl">📊</span>
+                        </div>
+                      </GlassmorphismHeader>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(() => {
@@ -350,18 +346,15 @@ const SalesAnalytics: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent Sales - Context7 Premium */}
+          {/* Recent Sales - Context7 Premium */}  
           <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
             <div className="p-8 border-b border-[var(--theme-border)]">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-2 text-gradient">
-                    Recent Sales
-                  </h2>
-                  <p className="text-[var(--theme-text-secondary)]">
-                    Your latest sold items with details
-                  </p>
-                </div>
+              <GlassmorphismHeader
+                icon={TrendingUp}
+                title="Recent Sales"
+                description="Your latest sold items with details"
+                className="mb-6"
+              >
                 {Array.isArray(sales) && sales.length > 0 && (
                   <PokemonButton
                     variant="secondary"
@@ -374,7 +367,7 @@ const SalesAnalytics: React.FC = () => {
                     Export CSV
                   </PokemonButton>
                 )}
-              </div>
+              </GlassmorphismHeader>
 
               {/* Clean List View Layout */}
               <div className="p-0">

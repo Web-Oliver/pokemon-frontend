@@ -157,7 +157,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       {/* Top Navigation Bar - Dark Futuristic */}
-      <header className="bg-white/90 dark:bg-zinc-900/90 dark:bg-zinc-950/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 dark:border-zinc-800/50 sticky top-0 z-50">
+      <header className="bg-zinc-800 border-b border-zinc-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo - Stunning Modern Design */}

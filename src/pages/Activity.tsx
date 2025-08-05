@@ -37,6 +37,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
+import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import { ACTIVITY_TYPES, useActivity } from '../hooks/useActivity';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 
@@ -183,10 +184,7 @@ const Activity: React.FC = () => {
   };
 
   return (
-    <PageLayout
-      title="Activity"
-      subtitle="Recent collection activities and events"
-    >
+    <PageLayout>
       <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-12">
           {/* Unified Header using PokemonCard */}

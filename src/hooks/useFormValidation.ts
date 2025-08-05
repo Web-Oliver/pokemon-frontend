@@ -129,7 +129,21 @@ export const commonValidationRules = {
     pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   },
   phone: {
-    pattern: /^[\+]?[\s\-\(\)]?[\d\s\-\(\)]{10,}$/,
+    pattern: /^(\d{8}|\+45\s?\d{8}|\d{2}\s\d{2}\s\d{2}\s\d{2})$/,
+    custom: (value: string) => {
+      // Remove all spaces and formatting
+      const cleanValue = value.replace(/[\s\-\(\)]/g, '');
+      
+      // Check Danish formats: 8 digits (27102080) or +45 prefix
+      if (cleanValue.match(/^\d{8}$/)) {
+        return undefined; // Valid 8-digit Danish number
+      }
+      if (cleanValue.match(/^\+45\d{8}$/)) {
+        return undefined; // Valid +45 prefixed Danish number
+      }
+      
+      return 'Phone number must be 8 digits (e.g., 27102080) or include +45 prefix';
+    },
   },
   price: {
     min: 0,

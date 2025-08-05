@@ -16,38 +16,34 @@
  */
 
 import {
-  Award,
   BarChart3,
   Calendar,
-  CheckCircle,
+  Cpu,
+  Database,
   DollarSign,
-  Edit,
   Grid3X3,
-  Info,
-  Minus,
   Package,
   Plus,
-  Settings,
-  Star,
-  Trash2,
-  TrendingUp,
-  Database,
   Sparkles,
-  Cpu,
+  Star,
+  TrendingUp,
 } from 'lucide-react';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
+import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import { getDataCounts } from '../api/statusApi';
-import { displayPrice, getRelativeTime } from '../utils/formatting';
+import { displayPrice } from '../utils/formatting';
+import { getActivityIcon, getActivityColor } from '../utils/activityHelpers';
 import { navigationHelper } from '../utils/navigation';
 import {
   GlassmorphismContainer,
   IconGlassmorphism,
 } from '../components/effects/GlassmorphismContainer';
+import { ActivityTimeline } from '../components/analytics/ActivityTimeline';
 import { ParticleSystem } from '../components/effects';
 
 const Dashboard: React.FC = () => {
@@ -77,57 +73,12 @@ const Dashboard: React.FC = () => {
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
-  // Context7 Activity Icon Mapping
-  const getActivityIcon = (type: string) => {
-    const iconMap: Record<string, any> = {
-      card_added: Plus,
-      card_updated: Edit,
-      card_deleted: Trash2,
-      price_update: TrendingUp,
-      auction_created: DollarSign,
-      auction_updated: Edit,
-      auction_deleted: Trash2,
-      auction_item_added: Plus,
-      auction_item_removed: Minus,
-      sale_completed: CheckCircle,
-      sale_updated: Edit,
-      milestone: Award,
-      collection_stats: BarChart3,
-      system: Settings,
-    };
-    return iconMap[type] || Info;
+  // Handle navigation to activity page
+  const handleActivityNavigation = () => {
+    handleNavigation('/activitys');
   };
 
-  const getColorClasses = (color: string) => {
-    const colorMap = {
-      emerald: {
-        bg: 'from-emerald-500 to-teal-600',
-        badge: 'bg-emerald-100 text-emerald-800',
-        dot: 'bg-emerald-400',
-      },
-      amber: {
-        bg: 'from-amber-500 to-orange-600',
-        badge: 'bg-amber-100 text-amber-800',
-        dot: 'bg-amber-400',
-      },
-      purple: {
-        bg: 'from-purple-500 to-violet-600',
-        badge: 'bg-purple-100 text-purple-800',
-        dot: 'bg-purple-400',
-      },
-      indigo: {
-        bg: 'from-indigo-500 to-blue-600',
-        badge: 'bg-indigo-100 text-indigo-800',
-        dot: 'bg-indigo-400',
-      },
-      red: {
-        bg: 'from-red-500 to-rose-600',
-        badge: 'bg-red-100 text-red-800',
-        dot: 'bg-red-400',
-      },
-    };
-    return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
-  };
+
 
   return (
     <PageLayout
@@ -174,105 +125,12 @@ const Dashboard: React.FC = () => {
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
-            {/* Context7 2025 Futuristic Glassmorphism Header */}
-            <div className="relative group">
-              <GlassmorphismContainer
-                variant="intense"
-                colorScheme="default"
-                size="xl"
-                rounded="3xl"
-                pattern="neural"
-                glow="intense"
-                animated={true}
-              >
-                {/* Top accent line with RGB shifting */}
-                <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
-
-                {/* Floating geometric elements */}
-                <div
-                  className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                  style={{
-                    animationDuration: 'var(--animation-duration-particle)',
-                  }}
-                ></div>
-                <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
-
-                <div className="flex items-center justify-between mb-8">
-                  {/* Holographic icon container */}
-                  <div className="flex items-center">
-                    <div className="relative mr-8">
-                      <IconGlassmorphism variant="lg" colorScheme="default">
-                        <Cpu className="w-10 h-10 text-[var(--theme-accent-primary)] relative z-10 animate-pulse" />
-                        {/* Orbiting elements */}
-                        <div
-                          className="absolute inset-0 animate-spin opacity-40"
-                          style={{
-                            animationDuration:
-                              'var(--animation-duration-orbit)',
-                          }}
-                        >
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
-                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
-                        </div>
-                      </IconGlassmorphism>
-                    </div>
-
-                    {/* Title section with cyberpunk styling */}
-                    <div className="flex-1">
-                      <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                        Command Center
-                      </h1>
-                      <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
-                        <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                        Neural-powered collection management for your universe
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex items-center space-x-4">
-                    <GlassmorphismContainer
-                      variant="subtle"
-                      colorScheme="custom"
-                      customGradient={{
-                        from: 'cyan-500/20',
-                        to: 'purple-500/20',
-                      }}
-                      size="xs"
-                      rounded="2xl"
-                      interactive={true}
-                      onClick={() => navigationHelper.navigateToCreate.item()}
-                      className="px-6 py-4 border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center cursor-pointer"
-                    >
-                      <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                      Add Item
-                    </GlassmorphismContainer>
-                    <GlassmorphismContainer
-                      variant="subtle"
-                      colorScheme="custom"
-                      customGradient={{
-                        from: 'emerald-500/20',
-                        to: 'cyan-500/20',
-                      }}
-                      size="xs"
-                      rounded="2xl"
-                      interactive={true}
-                      onClick={() =>
-                        navigationHelper.navigateToCreate.auction()
-                      }
-                      className="px-6 py-4 border border-emerald-400/30 hover:border-emerald-400/50 text-emerald-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center cursor-pointer"
-                    >
-                      <Calendar className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                      Create Auction
-                    </GlassmorphismContainer>
-                  </div>
-                </div>
-              </GlassmorphismContainer>
-
-              {/* Premium floating elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-zinc-800/10 rounded-full animate-pulse delay-75"></div>
-            </div>
+            <GlassmorphismHeader
+              icon={Cpu}
+              title="Command Center"
+              description="Neural-powered collection management for your universe"
+              className="mb-6"
+            />
 
             {/* Context7 2025 Futuristic Neural Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
@@ -655,7 +513,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Context7 Premium Timeline Activity Feed */}
+              {/* Simple Activity Display */}
               <div className="p-8 relative z-10">
                 {activitiesLoading ? (
                   <div className="flex justify-center py-8">
@@ -664,9 +522,7 @@ const Dashboard: React.FC = () => {
                       text="Loading recent activities..."
                     />
                   </div>
-                ) : recentActivities &&
-                  Array.isArray(recentActivities) &&
-                  recentActivities.length > 0 ? (
+                ) : recentActivities && Array.isArray(recentActivities) && recentActivities.length > 0 ? (
                   <div className="space-y-6">
                     {recentActivities
                       .filter(
@@ -677,19 +533,11 @@ const Dashboard: React.FC = () => {
                           activity.title &&
                           activity.description
                       )
+                      .slice(0, 5)
                       .map((activity) => {
-                        const IconComponent = getActivityIcon(
-                          activity.type || 'system'
-                        );
-                        const colors = getColorClasses(
-                          activity.metadata?.color || 'indigo'
-                        );
-
-                        // Generate safe key with fallback
-                        const activityKey =
-                          activity._id ||
-                          activity.id ||
-                          `activity-${Date.now()}-${Math.random()}`;
+                        const IconComponent = getActivityIcon(activity.type || 'system');
+                        const activityColor = getActivityColor(activity.type || 'system');
+                        const activityKey = activity._id || activity.id || `activity-${Date.now()}-${Math.random()}`;
 
                         return (
                           <div
@@ -697,9 +545,7 @@ const Dashboard: React.FC = () => {
                             className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-[var(--theme-surface-secondary)]/50 hover:to-[var(--theme-surface-secondary)]/30 rounded-2xl p-4 transition-all duration-300"
                           >
                             <div className="flex-shrink-0">
-                              <div
-                                className={`w-12 h-12 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                              >
+                              <div className={`w-12 h-12 bg-gradient-to-br from-${activityColor}-500 to-${activityColor}-600 rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                                 <IconComponent className="w-6 h-6 text-white" />
                               </div>
                             </div>
@@ -709,52 +555,14 @@ const Dashboard: React.FC = () => {
                                   {activity.title}
                                 </p>
                                 <span className="text-xs text-[var(--theme-text-muted)] font-medium">
-                                  {activity.timestamp
-                                    ? getRelativeTime(activity.timestamp)
-                                    : 'Unknown time'}
+                                  {activity.relativeTime || 'Recently'}
                                 </span>
                               </div>
                               <p className="text-sm text-[var(--theme-text-muted)] mt-1">
                                 {activity.description}
                               </p>
-                              <div className="flex items-center mt-2 space-x-3">
-                                {Array.isArray(activity.metadata?.badges) &&
-                                  activity.metadata.badges
-                                    .filter(
-                                      (badge) =>
-                                        badge && typeof badge === 'string'
-                                    )
-                                    .map((badge, index) => (
-                                      <span
-                                        key={`badge-${activityKey}-${index}`}
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colors.badge}`}
-                                      >
-                                        {badge}
-                                      </span>
-                                    ))}
-                                {(activity.metadata?.newPrice ||
-                                  activity.metadata?.salePrice ||
-                                  activity.metadata?.estimatedValue) && (
-                                  <span className="text-xs text-[var(--theme-text-muted)]">
-                                    {activity.metadata?.newPrice &&
-                                      typeof activity.metadata.newPrice ===
-                                        'number' &&
-                                      displayPrice(activity.metadata.newPrice)}
-                                    {activity.metadata?.salePrice &&
-                                      typeof activity.metadata.salePrice ===
-                                        'number' &&
-                                      displayPrice(activity.metadata.salePrice)}
-                                    {activity.metadata?.estimatedValue &&
-                                      typeof activity.metadata
-                                        .estimatedValue === 'number' &&
-                                      `Est. ${displayPrice(activity.metadata.estimatedValue)}`}
-                                  </span>
-                                )}
-                              </div>
                             </div>
-                            <div
-                              className={`w-2 h-2 ${colors.dot} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                            ></div>
+                            <div className={`w-2 h-2 bg-${activityColor}-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
                           </div>
                         );
                       })}
@@ -768,16 +576,15 @@ const Dashboard: React.FC = () => {
                       No recent activity
                     </h3>
                     <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed">
-                      Start adding items to your collection to see activity
-                      here.
+                      Start adding items to your collection to see activity here.
                     </p>
                   </div>
                 )}
 
-                {/* Context7 Premium Show More Section */}
+                {/* Show More Button */}
                 <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
                   <button
-                    onClick={() => handleNavigation('/activity')}
+                    onClick={() => handleNavigation('/activitys')}
                     className="w-full group bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 border-2 border-[var(--theme-accent-primary)]/50 hover:border-[var(--theme-accent-primary)] rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--theme-accent-primary)]/20"
                   >
                     <div className="flex items-center justify-center space-x-3">

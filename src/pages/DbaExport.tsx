@@ -85,19 +85,11 @@ const DbaExport: React.FC = () => {
     // Implement export all logic
   };
 
-  const headerActions = (
-    <DbaHeaderActions
-      onExportAll={() => exportCollectionData(allItems, 'all')}
-    />
-  );
 
   return (
     <PageLayout
-      title="DBA Export Galaxy"
-      subtitle="Transform your collection items into perfect DBA.dk posts with cosmic precision"
       loading={loading}
       error={error}
-      actions={headerActions}
       variant="default"
     >
       <DbaCosmicBackground />

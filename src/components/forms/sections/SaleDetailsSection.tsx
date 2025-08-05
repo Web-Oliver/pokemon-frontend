@@ -4,7 +4,11 @@
  * Following CLAUDE.md principles for component separation and reusability
  */
 
+import React from 'react';
+import { UseFormRegister, UseFormWatch, FieldErrors } from 'react-hook-form';
+import { Banknote } from 'lucide-react';
 import { PokemonSelect } from '../../design-system/PokemonSelect';
+import { PokemonInput } from '../../design-system/PokemonInput';
 import ValidationField from '../fields/ValidationField';
 
 interface SaleDetailsSectionProps {

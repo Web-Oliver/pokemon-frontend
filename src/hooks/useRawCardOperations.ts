@@ -39,7 +39,17 @@ export const useRawCardOperations = (): UseRawCardOperationsReturn => {
     [collectionApi]
   );
 
-  const operations = useGenericCrudOperations(entityConfig);
+  // Use consolidated operations hook with correct parameters
+  const operations = useGenericCrudOperations(
+    entityConfig.apiMethods,
+    {
+      entityName: entityConfig.entityName,
+      addSuccess: entityConfig.messages.addSuccess,
+      updateSuccess: entityConfig.messages.updateSuccess,
+      deleteSuccess: entityConfig.messages.deleteSuccess,
+      soldSuccess: entityConfig.messages.soldSuccess,
+    }
+  );
 
   return {
     loading: operations.loading,

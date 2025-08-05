@@ -1,14 +1,15 @@
 /**
  * Hierarchical Product Search Component
- * Following CLAUDE.md principles with live autocomplete search for products
+ * Following CLAUDE.md principles with live autocomplete search for sealed products
  *
  * Features:
- * - Set Name autocomplete (searches sets with live suggestions)
+ * - Set Product Name autocomplete (searches set products with live suggestions)
  * - Product Name autocomplete (searches products with live suggestions) 
- * - Hierarchical filtering: Set selection filters Product results
- * - Autofill: Product selection autofills Set information
+ * - Hierarchical filtering: SetProduct selection filters Product results
+ * - Autofill: Product selection autofills SetProduct information
  * - Single field focus: Only one field shows suggestions at a time
  * - ONLY for ADD pages, not EDIT pages
+ * - Proper SetProduct → Product hierarchy for sealed products
  */
 
 import React from 'react';
@@ -72,14 +73,18 @@ const HierarchicalProductSearch: React.FC<HierarchicalProductSearchProps> = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      {/* Set Name Search - Primary Field */}
+      {/* Set Name Search - Primary Field (SetProduct search) */}
       <div className="relative">
         <label className="block text-sm font-medium text-zinc-300 mb-2">
           Set Name <span className="text-red-400">*</span>
         </label>
         <PokemonSearch
           searchType="sets"
-          placeholder="Search for a Pokemon set..."
+          placeholder="Search for a Pokemon set (min 2 characters)..."
+          value={watch('setName') || ''}
+          useExternalSearch={true}
+          externalResults={activeField === 'setName' ? suggestions : []}
+          externalLoading={activeField === 'setName' && isLoading}
           onSelect={(result) => {
             handlePrimarySelection(result, setValue, clearErrors, onSelectionChange);
             setActiveField(null);
@@ -111,7 +116,11 @@ const HierarchicalProductSearch: React.FC<HierarchicalProductSearchProps> = ({
         </label>
         <PokemonSearch
           searchType="products"
-          placeholder="Search for a Pokemon product..."
+          placeholder="Search for a Pokemon product (min 2 characters)..."
+          value={watch('productName') || ''}
+          useExternalSearch={true}
+          externalResults={activeField === 'productName' ? suggestions : []}
+          externalLoading={activeField === 'productName' && isLoading}
           onSelect={(result) => {
             handleSecondarySelection(result, setValue, clearErrors, onSelectionChange);
             setActiveField(null);

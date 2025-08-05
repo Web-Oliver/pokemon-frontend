@@ -161,7 +161,8 @@ export const useBaseForm = <T extends FieldValues>(
         }
       });
     },
-    [fieldMapping, form]
+    [fieldMapping] // FIXED: Removed 'form' from dependencies to prevent infinite loops
+    // form.setValue is stable and doesn't need to be in the dependency array
   );
 
   // Handle initialData on mount and when it changes (for async loading)
@@ -179,7 +180,9 @@ export const useBaseForm = <T extends FieldValues>(
         // This would need to be implemented in usePriceHistory if needed
       }
     }
-  }, [isEditing, initialData, updateWithInitialData, imageUpload]);
+    // FIXED: Removed updateWithInitialData and imageUpload from dependencies to prevent infinite loops
+    // These functions are stable or their changes shouldn't retrigger the initialization
+  }, [isEditing, initialData]);
 
   return {
     form,

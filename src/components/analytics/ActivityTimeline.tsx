@@ -17,12 +17,13 @@ import { LineChart } from 'lucide-react';
 
 export interface ActivityTimelineProps {
   activities: any[];
-  analyticsData: any;
+  analyticsData?: any; // Made optional
   loading: boolean;
   onNavigate?: (path: string) => void;
   showHeader?: boolean;
   maxItems?: number;
   className?: string;
+  containerless?: boolean; // Option to render without container
 }
 
 export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
@@ -33,6 +34,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   showHeader = true,
   maxItems = 10,
   className = '',
+  containerless = false,
 }) => {
   const handleNavigation = (path: string) => {
     if (onNavigate) {
@@ -43,24 +45,12 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
     }
   };
 
-  return (
-    <GlassmorphismContainer
-      variant="intense"
-      colorScheme="custom"
-      size="lg"
-      rounded="3xl"
-      pattern="neural"
-      glow="medium"
-      interactive={true}
-      customGradient={{
-        from: 'cyan-500/10',
-        via: 'indigo-500/5',
-        to: 'purple-500/10'
-      }}
-      className={`group ${className}`}
-    >
-      {/* Holographic border */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+  const content = (
+    <div className={`relative z-10 ${containerless ? '' : 'group'} ${className}`}>
+      {/* Holographic border - only when not containerless */}
+      {!containerless && (
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+      )}
 
       <div className="relative z-10">
         {showHeader && (
@@ -80,7 +70,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
 
         {loading ? (
           <ContentLoading text="Loading analytics..." />
-        ) : analyticsData?.totalActivities ? (
+        ) : activities && activities.length > 0 ? (
           <div className="space-y-4">
             {activities
               .filter(
@@ -187,6 +177,28 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
           </div>
         )}
       </div>
+    </div>
+  );
+
+  // Return with or without container based on containerless prop
+  return containerless ? (
+    content
+  ) : (
+    <GlassmorphismContainer
+      variant="intense"
+      colorScheme="custom"
+      size="lg"
+      rounded="3xl"
+      pattern="neural"
+      glow="medium"
+      interactive={true}
+      customGradient={{
+        from: 'cyan-500/10',
+        via: 'indigo-500/5',
+        to: 'purple-500/10'
+      }}
+    >
+      {content}
     </GlassmorphismContainer>
   );
 };

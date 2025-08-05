@@ -16,6 +16,7 @@
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
 import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
 import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
@@ -233,62 +234,30 @@ const AddEditItem: React.FC = () => {
 
       <div className="relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Context7 Award-Winning Hero Section */}
-          <div className="relative mb-12">
-            {/* Background Glass Effects */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-green-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/5 via-purple-400/5 to-green-400/5 rounded-[2.5rem] blur-xl"></div>
-
-            <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-8 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
-              {/* Premium Gradient Border */}
-              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-green-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-
-              {/* Floating Orbs */}
-              <div className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-              <div
-                className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-green-500/10 to-teal-500/10 rounded-full blur-2xl animate-pulse"
-                style={{ animationDelay: '1s' }}
-              ></div>
-
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center space-x-6">
-                  <button
-                    onClick={handleBackToCollection}
-                    className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
-                    aria-label="Back to collection"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                  </button>
-
-                  <div>
-                    <h1 className="text-4xl font-bold text-gradient-primary leading-tight">
-                      {isEditing ? 'Edit Collection Item' : 'Add New Item'}
-                    </h1>
-                    <p className="text-lg text-[var(--theme-text-muted)] font-medium mt-2">
-                      {isEditing
-                        ? 'Update your precious collection item with care'
-                        : 'Expand your collection with a new treasure'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Premium Status Indicator */}
-                <div className="flex items-center space-x-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-2xl shadow-lg">
-                  <div className="relative">
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                    <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
-                  </div>
-                  <span className="text-sm font-semibold text-green-300">
-                    Collection Active
-                  </span>
-                </div>
+          <GlassmorphismHeader
+            icon={isEditing ? Package : Star}
+            title={isEditing ? 'Edit Collection Item' : 'Add New Item'}
+            description={isEditing ? 'Update your precious collection item with care' : 'Expand your collection with a new treasure'}
+            className="mb-12"
+          >
+            <button
+              onClick={handleBackToCollection}
+              className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
+              aria-label="Back to collection"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+            </button>
+            <div className="flex items-center space-x-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-2xl shadow-lg">
+              <div className="relative">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
               </div>
-
-              {/* Breathing Animation */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-green-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
+              <span className="text-sm font-semibold text-green-300">
+                Collection Active
+              </span>
             </div>
-          </div>
+          </GlassmorphismHeader>
 
           {/* Loading State */}
           {fetchLoading && (

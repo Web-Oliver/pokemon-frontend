@@ -90,7 +90,7 @@ export const useHierarchicalSearch = ({
     setIsLoading(search.isLoading);
   }, [search.results, search.isLoading]);
 
-  // Centralized search effect
+  // Centralized search effect with proper minLength validation
   useEffect(() => {
     if (!activeField) {
       setSuggestions([]);
@@ -102,7 +102,8 @@ export const useHierarchicalSearch = ({
         ? debouncedPrimary
         : debouncedSecondary;
 
-    if (!currentValue || typeof currentValue !== 'string') {
+    // FIXED: Proper minLength validation to prevent glitchy search behavior
+    if (!currentValue || typeof currentValue !== 'string' || currentValue.trim().length < 2) {
       setSuggestions([]);
       return;
     }
@@ -120,14 +121,11 @@ export const useHierarchicalSearch = ({
       case config.secondaryField: {
         // Hierarchical logic: filter by primary selection
         let searchQuery = currentValue;
-        if (!currentValue || currentValue.trim() === '') {
-          // Show all from primary selection if exists
-          if (primaryValue && primaryValue.trim()) {
-            searchQuery = '*';
-          } else {
-            setSuggestions([]);
-            return;
-          }
+        
+        // FIXED: Better validation for secondary field searches
+        if (currentValue.trim().length < 2) {
+          setSuggestions([]);
+          return;
         }
 
         // Search within primary selection context
@@ -226,10 +224,34 @@ export const useHierarchicalSearch = ({
         return;
       }
 
-      // For cards, use direct selection without autofill
+      // FIXED: For cards, autofill set information from card data
       if (config.mode === 'card') {
+        // Set the card name
+        setValue(config.secondaryField, result.displayName);
+        clearErrors(config.secondaryField);
+        
+        // CRITICAL FIX: Autofill Set Name from card data
+        if (result.data?.setName) {
+          setValue('setName', result.data.setName);
+          clearErrors('setName');
+        }
+        
+        // Autofill other card fields if available
+        if (result.data?.cardNumber) {
+          setValue('cardNumber', result.data.cardNumber);
+          clearErrors('cardNumber');
+        }
+        if (result.data?.variety) {
+          setValue('variety', result.data.variety);
+          clearErrors('variety');
+        }
+        
         const cardData = {
           _id: result.id,
+          cardName: result.displayName,
+          setName: result.data?.setName,
+          cardNumber: result.data?.cardNumber,
+          variety: result.data?.variety,
           ...result.data,
         };
         onSelection(cardData);

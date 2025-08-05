@@ -78,7 +78,8 @@ const HierarchicalCardSearch: React.FC<HierarchicalCardSearchProps> = ({
         </label>
         <PokemonSearch
           searchType="sets"
-          placeholder="Search for a Pokemon set..."
+          placeholder="Search for a Pokemon set (min 2 characters)..."
+          value={watch('setName') || ''}
           onSelect={(result) => {
             handlePrimarySelection(result, setValue, clearErrors, onSelectionChange);
             setActiveField(null);
@@ -110,7 +111,8 @@ const HierarchicalCardSearch: React.FC<HierarchicalCardSearchProps> = ({
         </label>
         <PokemonSearch
           searchType="cards"
-          placeholder="Search for a Pokemon card..."
+          placeholder="Search for a Pokemon card (min 2 characters)..."
+          value={watch('cardName') || ''}
           onSelect={(result) => {
             handleSecondarySelection(result, setValue, clearErrors, onSelectionChange);
             setActiveField(null);

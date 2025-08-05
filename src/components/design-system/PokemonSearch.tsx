@@ -56,6 +56,7 @@ export interface PokemonSearchProps {
   placeholder?: string;
   searchType: 'sets' | 'products' | 'cards';
   setFilter?: string;
+  value?: string; // ADDED: External value prop for controlled input
   onSelect: (result: SearchResult) => void;
   onInputChange?: (value: string) => void;
   className?: string;
@@ -64,6 +65,9 @@ export interface PokemonSearchProps {
   minLength?: number;
   maxResults?: number;
   themeColor?: ThemeColor;
+  useExternalSearch?: boolean; // ADDED: Skip internal search when using hierarchical search
+  externalResults?: SearchResult[]; // ADDED: External search results
+  externalLoading?: boolean; // ADDED: External loading state
 
   // Enhanced search system (consolidation)
   searchVariant?: 'basic' | 'dropdown' | 'section' | 'field' | 'lazy';
@@ -204,6 +208,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   placeholder = 'Search...',
   searchType,
   setFilter,
+  value, // ADDED: External value prop
   onSelect,
   onInputChange,
   className = '',
@@ -212,6 +217,9 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   minLength = 2,
   maxResults = 50,
   themeColor = 'blue',
+  useExternalSearch = false, // ADDED: Default to internal search
+  externalResults = [], // ADDED: Default empty external results
+  externalLoading = false, // ADDED: Default external loading state
   
   // Enhanced search props
   searchVariant = 'basic',
@@ -266,14 +274,25 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   const search = useSearch();
   
   // Local state for search functionality
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(value || '');
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
+  // FIXED: Sync internal state with external value prop
+  useEffect(() => {
+    if (value !== undefined && value !== searchQuery) {
+      setSearchQuery(value);
+    }
+  }, [value]);
+  
   // Use direct search results with proper API integration
-  const { results, isLoading } = search;
+  const { results: internalResults, isLoading: internalLoading } = search;
+  
+  // FIXED: Use external results when using hierarchical search
+  const results = useExternalSearch ? externalResults : internalResults;
+  const isLoading = useExternalSearch ? externalLoading : internalLoading;
 
   // Form integration for section variants
   const watchedValues = watch ? watch() : {};
@@ -312,27 +331,37 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   const handleInputChange = useCallback((value: string) => {
     setSearchQuery(value);
     
-    // CRITICAL FIX: Actually trigger the search API calls based on searchType
-    if (value.length >= minLength) {
-      setIsVisible(true);
-      
-      // Trigger the appropriate search based on searchType
-      switch (searchType) {
-        case 'sets':
-          search.searchSets(value);
-          break;
-        case 'cards':
-          search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
-          break;
-        case 'products':
-          search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
-          break;
-        default:
-          console.warn(`[POKEMON SEARCH] Unknown searchType: ${searchType}`);
+    // FIXED: Skip internal search when using external search (hierarchical search)
+    if (!useExternalSearch) {
+      // CRITICAL FIX: Actually trigger the search API calls based on searchType
+      if (value.length >= minLength) {
+        setIsVisible(true);
+        
+        // Trigger the appropriate search based on searchType
+        switch (searchType) {
+          case 'sets':
+            search.searchSets(value);
+            break;
+          case 'cards':
+            search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
+            break;
+          case 'products':
+            search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
+            break;
+          default:
+            console.warn(`[POKEMON SEARCH] Unknown searchType: ${searchType}`);
+        }
+      } else {
+        setIsVisible(false);
+        search.clearResults();
       }
     } else {
-      setIsVisible(false);
-      search.clearResults();
+      // When using external search, just show/hide dropdown based on minLength
+      if (value.length >= minLength) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
     }
     
     if (searchVariant === 'section' && setValue && fieldName) {
@@ -539,7 +568,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
         <div ref={dropdownRef} className={dropdownClasses}>
           <div className="px-4 py-3 text-center text-zinc-400">
             {searchQuery.length < minLength 
-              ? `Type at least ${minLength} characters to search ${searchType}`
+              ? `Type at least ${minLength} characters to search ${searchType}...`
               : `No ${searchType} found for "${searchQuery}"`
             }
           </div>

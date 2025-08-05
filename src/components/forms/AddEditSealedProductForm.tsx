@@ -461,14 +461,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               disabled={true} // Always disabled - autofilled from product selection
             />
             {watchedCardMarketPrice && (
-              <div className="mt-2 text-sm text-purple-600 font-semibold">
-                Market: {parseFloat(watchedCardMarketPrice || '0')} kr.
-              </div>
-            )}
-            {selectedProductData && selectedProductData.price && (
-              <div className="mt-2 text-sm text-green-600 font-semibold">
-                CardMarket Price:{' '}
-                {Math.round(parseFloat(selectedProductData.price))} kr.
+              <div className="mt-2 text-sm text-emerald-600 font-semibold">
+                CardMarket Price: {parseFloat(watchedCardMarketPrice || '0')} kr.
               </div>
             )}
           </div>

@@ -22,9 +22,10 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Gavel, ArrowLeft, Sparkles } from 'lucide-react';
+import { Gavel, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageLayout } from '../components/layouts/PageLayout';
+import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import { IAuctionItem } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
@@ -40,8 +41,6 @@ import { useCentralizedTheme } from '../utils/themeConfig';
 import {
   ParticleSystem,
   NeuralNetworkBackground,
-  FloatingGeometry,
-  type GeometricElement,
 } from '../components/effects';
 
 // Form data interface
@@ -80,31 +79,6 @@ const CreateAuction: React.FC = () => {
     error: _error,
     clearError,
   } = useAuction();
-
-  // Context7 2025 Futuristic Geometric Elements Configuration
-  const futuristicGeometry: GeometricElement[] = [
-    {
-      type: 'square',
-      size: 80,
-      color: '#06b6d4',
-      position: { top: '2rem', right: '2rem' },
-      animation: 'spin',
-      animationDuration: '20s',
-      borderOnly: true,
-      opacity: 0.4,
-      glowEffect: true,
-    },
-    {
-      type: 'circle',
-      size: 64,
-      color: '#a855f7',
-      position: { bottom: '2rem', left: '2rem' },
-      animation: 'pulse',
-      opacity: 0.4,
-      borderOnly: true,
-      glowEffect: true,
-    },
-  ];
 
   // Use separate fetch hooks for better state management (following CLAUDE.md SRP)
   const collectionApiService = getCollectionApiService();
@@ -587,10 +561,7 @@ const CreateAuction: React.FC = () => {
   };
 
   return (
-    <PageLayout
-      title="Create Auction"
-      subtitle="Create a new auction for your items"
-    >
+    <PageLayout>
       <div
         className="min-h-screen relative overflow-hidden"
         style={backgroundStyles}
@@ -618,77 +589,19 @@ const CreateAuction: React.FC = () => {
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
-            {/* Context7 2025 Futuristic Glassmorphism Header */}
-            <div className="relative group">
-              {/* Glassmorphism card with neumorphism elements - theme-aware */}
-              <div
-                className="backdrop-blur-xl border rounded-[2rem] shadow-2xl text-white p-12 relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, 
-                    rgba(255, 255, 255, ${0.15 * (themeConfig.glassmorphismIntensity / 100)}) 0%, 
-                    rgba(6, 182, 212, ${0.12 * (themeConfig.glassmorphismIntensity / 100)}) 50%, 
-                    rgba(168, 85, 247, ${0.15 * (themeConfig.glassmorphismIntensity / 100)}) 100%)`,
-                  borderColor: `rgba(255, 255, 255, ${0.2 * (themeConfig.glassmorphismIntensity / 100)})`,
-                }}
+            <GlassmorphismHeader
+              icon={Gavel}
+              title="Create Auction"
+              description="Neural-powered auction creation for your collection universe"
+              className="mb-8"
+            >
+              <button
+                onClick={() => handleNavigation('/auctions')}
+                className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
               >
-                {/* Neural network glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/15 to-pink-500/20 opacity-70 blur-3xl"></div>
-
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse"></div>
-
-                {/* Top accent line with RGB shifting */}
-                <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse"></div>
-
-                {/* Context7 2025 Futuristic Floating Geometric Elements */}
-                <FloatingGeometry elements={futuristicGeometry} />
-
-                <div className="relative z-10">
-                  <div className="flex items-center mb-8">
-                    {/* Neumorphism back button */}
-                    <button
-                      onClick={() => handleNavigation('/auctions')}
-                      className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-                    >
-                      <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
-                    </button>
-
-                    {/* Holographic icon container */}
-                    <div className="relative mr-8">
-                      <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
-                        {/* Inner glow */}
-                        <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
-                        <Gavel className="w-10 h-10 text-cyan-300 relative z-10 animate-pulse" />
-                        {/* Orbiting elements */}
-                        <div
-                          className="absolute inset-0 animate-spin opacity-40"
-                          style={{ animationDuration: '15s' }}
-                        >
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
-                          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Title section with cyberpunk styling */}
-                    <div className="flex-1">
-                      <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
-                        Create Auction
-                      </h1>
-                      <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
-                        <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-                        Neural-powered auction creation for your collection
-                        universe
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Premium floating elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-zinc-800/20 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-zinc-800/10 rounded-full animate-pulse delay-75"></div>
-            </div>
+                <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
+              </button>
+            </GlassmorphismHeader>
 
             {/* Context7 2025 Futuristic Form Container */}
             <div className="relative group overflow-hidden">

@@ -11,11 +11,17 @@
  * - Stunning animations and hover effects
  */
 
-import { Calendar, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, Plus, Banknote, TrendingUp, TrendingDown } from 'lucide-react';
 import { PokemonButton } from './design-system/PokemonButton';
 import { PokemonInput } from './design-system/PokemonInput';
 import { log } from '../utils/logger';
 import { showWarningToast } from '../utils/errorHandler';
+
+interface IPriceHistoryEntry {
+  price: number;
+  dateUpdated: string;
+}
 
 export interface PriceHistoryDisplayProps {
   priceHistory: IPriceHistoryEntry[];
