@@ -279,11 +279,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
   return (
     <div className="max-w-2xl mx-auto">
       {/* Error Display */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg">
-          <p className="text-red-300">Error: {error.message}</p>
-        </div>
-      )}
+      <FormErrorMessage error={error?.message} variant="toast" />
 
       <PokemonForm
         formType="sale"

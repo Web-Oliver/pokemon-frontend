@@ -18,6 +18,7 @@ import { PokemonButton } from '../../../shared/components/atoms/design-system/Po
 import { DateRangeState } from '../../../shared/components/molecules/common/DateRangeFilter';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
+import { FormErrorMessage } from '../../../shared/components/molecules/common/FormElements';
 import SalesStatCard from '../../../shared/components/molecules/common/SalesStatCard';
 import CategorySalesCard from '../../../shared/components/molecules/common/CategorySalesCard';
 import RecentSaleListItem from '../../../shared/components/molecules/common/RecentSaleListItem';
@@ -90,11 +91,7 @@ const SalesAnalytics: React.FC = () => {
                 />
 
                 {/* Error Display - Premium styling */}
-                {error && (
-                  <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
-                    <p className="text-sm text-red-300 font-medium">{error}</p>
-                  </div>
-                )}
+                <FormErrorMessage error={error} variant="toast" />
 
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <>
