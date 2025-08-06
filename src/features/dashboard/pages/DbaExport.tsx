@@ -11,18 +11,14 @@
 
 import React, { lazy, Suspense } from 'react';
 import { Archive, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
+import ErrorBoundary from '../../../shared/components/organisms/ui/ErrorBoundary';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { useDbaExport } from '../../../shared/hooks/useDbaExport';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
 
-// CONSOLIDATED: UnifiedHeader lazy import (replaces DbaHeaderGalaxyCosmic)
-const UnifiedHeader = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "header-unified" */ '../../../shared/components/molecules/common/UnifiedHeader'
-    )
-);
+// CONSOLIDATED: Direct import instead of lazy to debug the issue
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 
 // Dynamic imports for heavy DBA components (code splitting optimization)
 const DbaCosmicBackground = lazy(
@@ -66,6 +62,7 @@ const DbaItemsWithoutTimers = lazy(
 import EmptyState from '../../../shared/components/molecules/common/EmptyState';
 
 const DbaExport: React.FC = () => {
+  console.log('DbaExport: Component rendering');
   const {
     psaCards,
     rawCards,
@@ -87,6 +84,14 @@ const DbaExport: React.FC = () => {
     handleExportToDba,
     downloadZip,
   } = useDbaExport();
+
+  console.log('DbaExport: Hook data loaded:', { 
+    psaCardsCount: psaCards?.length, 
+    rawCardsCount: rawCards?.length, 
+    sealedProductsCount: sealedProducts?.length, 
+    loading, 
+    error: error?.message 
+  });
 
   // CONSOLIDATED: Stats calculation matching original DbaHeaderGalaxyCosmic
   const urgentCount =
@@ -153,24 +158,27 @@ const DbaExport: React.FC = () => {
     // Implement export all logic
   };
 
-  return (
-    <PageLayout loading={loading} error={error} variant="default">
-      <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
-        <DbaCosmicBackground />
-      </Suspense>
+  try {
+    console.log('DbaExport: About to render JSX');
+    
+    return (
+      <PageLayout loading={loading} error={error} variant="default">
+        <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
+          <DbaCosmicBackground />
+        </Suspense>
 
-      {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
-      <Suspense fallback={<GenericLoadingState variant="spinner" size="lg" />}>
-        <UnifiedHeader
-          title="DBA Export"
-          subtitle="Export your collection items to DBA.dk"
-          icon={Archive}
-          variant="cosmic"
-          size="lg"
-          stats={headerStats}
-          className="mb-6"
-        />
-      </Suspense>
+        {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
+        <ErrorBoundary fallback={<div className="p-4 bg-yellow-100 text-yellow-800">UnifiedHeader failed to load</div>}>
+          <UnifiedHeader
+            title="DBA Export"
+            subtitle="Export your collection items to DBA.dk"
+            icon={Archive}
+            variant="cosmic"
+            size="lg"
+            stats={headerStats}
+            className="mb-6"
+          />
+        </ErrorBoundary>
 
       {/* Content wrapper with original cosmic background styling */}
       <div className="relative z-10 p-8">
@@ -225,7 +233,15 @@ const DbaExport: React.FC = () => {
       </div>
     </PageLayout>
   );
+  } catch (error) {
+    console.error('DbaExport: Render error:', error);
+    return (
+      <div className="p-8 bg-red-100 text-red-800">
+        <h2>DbaExport Error</h2>
+        <pre>{String(error)}</pre>
+      </div>
+    );
+  }
 };
 
 export default DbaExport;
-EOF < /dev/null

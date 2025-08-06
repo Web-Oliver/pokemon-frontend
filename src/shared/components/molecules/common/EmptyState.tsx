@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { LucideIcon, Sparkles, Star } from 'lucide-react';
-import { PokemonButton } from '../design-system/PokemonButton';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
 
 interface EmptyStateProps {
   /** Icon to display in the empty state */

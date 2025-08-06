@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { PokemonButton } from '../design-system/PokemonButton';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
 
 // Header style variants
 export type HeaderVariant =
@@ -107,6 +107,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   centered = false,
   showDivider = true,
 }) => {
+  console.log('UnifiedHeader: Rendering with props:', { title, subtitle, variant, size, stats, actions });
+
   // Size configurations
   const sizeConfigs = {
     sm: {

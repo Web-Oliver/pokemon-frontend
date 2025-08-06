@@ -528,9 +528,12 @@ export {
   DeliveryMethod,
   Source,
   SEARCH_CONFIG,
+} from './constants';
+
+export {
   getStatusColor,
   getStatusPriority,
-} from './constants';
+} from './auctionStatusUtils';
 
 // Re-export debounce hooks
 export {

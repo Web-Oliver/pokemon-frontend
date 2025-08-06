@@ -45,9 +45,12 @@ export {
   DeliveryMethod,
   Source,
   SEARCH_CONFIG,
+} from './constants';
+
+export {
   getStatusColor,
   getStatusPriority,
-} from './constants';
+} from './auctionStatusUtils';
 
 /**
  * Safe array access utility
