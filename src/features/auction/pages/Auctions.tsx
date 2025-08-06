@@ -28,7 +28,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import {
   getStatusColor,
@@ -155,41 +155,33 @@ const Auctions: React.FC = () => {
     <PageLayout>
       <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-12">
-          <GlassmorphismHeader
+          <UnifiedHeader
             icon={DollarSign}
             title="Auction Hub"
-            description="Neural-powered auction management for your collection universe"
+            subtitle="Neural-powered auction management for your collection universe"
+            variant="glassmorphism"
+            size="lg"
+            showBackButton={true}
+            onBack={() => handleNavigation('/dashboard')}
             className="mb-8"
-          >
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => handleNavigation('/dashboard')}
-                className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-              >
-                <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
-              </button>
-              <PokemonButton
-                variant="ghost"
-                size="md"
-                onClick={() => {
+            actions={[
+              {
+                label: 'Refresh',
+                onClick: () => {
                   console.log('[Auctions] Manual refresh triggered');
                   fetchAuctions();
-                }}
-                className="p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-              >
-                <Zap className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:rotate-180 transition-all duration-300 text-cyan-300" />
-              </PokemonButton>
-              <PokemonButton
-                variant="secondary"
-                size="lg"
-                onClick={navigateToCreateAuction}
-                className="px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 hover:border-cyan-400/50 text-cyan-300 hover:text-white transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center"
-              >
-                <Plus className="w-5 h-5 mr-3 group-hover/btn:scale-110 transition-all duration-300" />
-                Create Auction
-              </PokemonButton>
-            </div>
-          </GlassmorphismHeader>
+                },
+                icon: Zap,
+                variant: 'outline',
+              },
+              {
+                label: 'Create Auction',
+                onClick: navigateToCreateAuction,
+                icon: Plus,
+                variant: 'primary',
+              },
+            ]}
+          />
 
           {/* Stats Grid using PokemonCard System */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

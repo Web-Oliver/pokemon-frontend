@@ -22,7 +22,7 @@ import {
 } from './wrappers/FormSubmissionWrapper';
 import { PokemonInput } from '../atoms/design-system/PokemonInput';
 import LoadingSpinner from '../molecules/common/LoadingSpinner';
-import FormHeader from '../molecules/common/FormHeader';
+import UnifiedHeader from '../molecules/common/UnifiedHeader';
 import FormActionButtons from '../molecules/common/FormActionButtons';
 import { PokemonSearch } from '../design-system/PokemonSearch';
 import ImageUploader from '../../../components/ImageUploader';
@@ -341,16 +341,16 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Reusable Form Header */}
-      <FormHeader
+      <UnifiedHeader
         icon={Archive}
         title={isEditing ? 'Edit Sealed Product' : 'Add Sealed Product'}
-        description={
+        subtitle={
           isEditing
             ? 'Update your sealed product information'
             : 'Add a new sealed product to your premium collection'
         }
-        isEditing={isEditing}
-        primaryColorClass="purple"
+        variant="form"
+        size="md"
       />
 
       {/* Item Status Indicator for editing mode */}

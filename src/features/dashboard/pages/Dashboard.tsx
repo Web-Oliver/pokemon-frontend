@@ -32,7 +32,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
@@ -133,10 +133,12 @@ const Dashboard: React.FC = () => {
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
-            <GlassmorphismHeader
+            <UnifiedHeader
               icon={Cpu}
               title="Command Center"
-              description="Neural-powered collection management for your universe"
+              subtitle="Neural-powered collection management for your universe"
+              variant="glassmorphism"
+              size="lg"
               className="mb-6"
             />
 

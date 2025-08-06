@@ -25,7 +25,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Gavel, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { IAuctionItem } from '../../../shared/domain/models/auction';
 import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
@@ -387,19 +387,16 @@ const CreateAuction: React.FC = () => {
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
-            <GlassmorphismHeader
+            <UnifiedHeader
               icon={Gavel}
               title="Create Auction"
-              description="Neural-powered auction creation for your collection universe"
+              subtitle="Neural-powered auction creation for your collection universe"
+              variant="glassmorphism"
+              size="lg"
+              showBackButton={true}
+              onBack={() => handleNavigation('/auctions')}
               className="mb-8"
-            >
-              <button
-                onClick={() => handleNavigation('/auctions')}
-                className="mr-6 p-4 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] hover:bg-white/[0.12] hover:border-cyan-400/30 transition-all duration-500 group/btn shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-              >
-                <ArrowLeft className="w-6 h-6 group-hover/btn:scale-110 group-hover/btn:-translate-x-1 transition-all duration-300 text-cyan-300" />
-              </button>
-            </GlassmorphismHeader>
+            />
 
             {/* Context7 2025 Futuristic Form Container */}
             <div className="relative group overflow-hidden">

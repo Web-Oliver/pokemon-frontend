@@ -10,7 +10,7 @@
 import React from 'react';
 import { ArrowLeft, Edit, Check, Trash2, Star } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import GlassmorphismHeader from '../../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
 import FormActionButtons from '../../../../shared/components/molecules/common/FormActionButtons';
 
 export interface CollectionItemHeaderProps {
@@ -42,11 +42,15 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
 }) => {
   return (
     <div className={`mb-8 ${className}`}>
-      {/* Glassmorphism Header */}
-      <GlassmorphismHeader
+      {/* Unified Header */}
+      <UnifiedHeader
         icon={Star}
         title={title}
-        description={subtitle}
+        subtitle={subtitle}
+        variant="glassmorphism"
+        size="lg"
+        showBackButton={true}
+        onBack={onBackToCollection}
         className="mb-8"
       />
 

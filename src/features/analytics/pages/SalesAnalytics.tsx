@@ -17,7 +17,7 @@ import { TrendingUp, DollarSign, Download } from 'lucide-react';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { DateRangeState } from '../../../shared/components/molecules/common/DateRangeFilter';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import SalesStatCard from '../../../shared/components/molecules/common/SalesStatCard';
 import CategorySalesCard from '../../../shared/components/molecules/common/CategorySalesCard';
 import RecentSaleListItem from '../../../shared/components/molecules/common/RecentSaleListItem';
@@ -80,10 +80,12 @@ const SalesAnalytics: React.FC = () => {
           <div className="relative mb-8">
             <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl p-8 particles">
               <div className="relative z-10">
-                <GlassmorphismHeader
+                <UnifiedHeader
                   icon={TrendingUp}
                   title="Sales Overview"
-                  description="Track your collection's performance"
+                  subtitle="Track your collection's performance"
+                  variant="analytics"
+                  size="md"
                   className="mb-6"
                 />
 
@@ -139,15 +141,17 @@ const SalesAnalytics: React.FC = () => {
 
                     {/* Category Breakdown Section */}
                     <div className="relative">
-                      <GlassmorphismHeader
+                      <UnifiedHeader
                         title="Category Breakdown"
-                        description="Sales performance by item type"
+                        subtitle="Sales performance by item type"
+                        variant="analytics"
+                        size="md"
                         className="mb-6"
                       >
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl shadow-2xl flex items-center justify-center border border-white/[0.15]">
                           <span className="text-2xl">📊</span>
                         </div>
-                      </GlassmorphismHeader>
+                      </UnifiedHeader>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(() => {
@@ -226,25 +230,27 @@ const SalesAnalytics: React.FC = () => {
           {/* Recent Sales - Context7 Premium */}
           <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
             <div className="p-8 border-b border-[var(--theme-border)]">
-              <GlassmorphismHeader
+              <UnifiedHeader
                 icon={TrendingUp}
                 title="Recent Sales"
-                description="Your latest sold items with details"
+                subtitle="Your latest sold items with details"
+                variant="analytics"
+                size="md"
                 className="mb-6"
-              >
-                {Array.isArray(sales) && sales.length > 0 && (
-                  <PokemonButton
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleExportCSV}
-                    disabled={loading}
-                    className="btn-premium bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-400/30 text-blue-300 hover:text-blue-200 scale-on-hover"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Export CSV
-                  </PokemonButton>
-                )}
-              </GlassmorphismHeader>
+                actions={
+                  Array.isArray(sales) && sales.length > 0
+                    ? [
+                        {
+                          label: 'Export CSV',
+                          onClick: handleExportCSV,
+                          icon: Download,
+                          variant: 'secondary',
+                          loading: loading,
+                        },
+                      ]
+                    : []
+                }
+              />
 
               {/* Clean List View Layout */}
               <div className="p-0">

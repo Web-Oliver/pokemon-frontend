@@ -9,7 +9,7 @@
 
 import { BarChart3 } from 'lucide-react';
 import React from 'react';
-import GlassmorphismHeader from '../common/GlassmorphismHeader';
+import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
 
 export interface AnalyticsHeaderProps {
   title?: string;
@@ -23,10 +23,12 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
   className = '',
 }) => {
   return (
-    <GlassmorphismHeader
+    <UnifiedHeader
       icon={BarChart3}
       title={title}
-      description={subtitle}
+      subtitle={subtitle}
+      variant="analytics"
+      size="lg"
       className={className}
     />
   );

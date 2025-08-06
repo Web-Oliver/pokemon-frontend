@@ -16,7 +16,7 @@
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 // Lazy load form components for better bundle splitting
 const AddEditCardForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditCardForm')
@@ -30,6 +30,7 @@ import { log } from '../../../shared/utils/performance/logger';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import { CollectionItemService, CollectionItem, ItemType } from '../services/CollectionItemService';
+import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 
 type ItemTypeOption = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -223,24 +224,20 @@ const AddEditItem: React.FC = () => {
 
       <div className="relative z-10 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <GlassmorphismHeader
+          <UnifiedHeader
             icon={isEditing ? Package : Star}
             title={isEditing ? 'Edit Collection Item' : 'Add New Item'}
-            description={
+            subtitle={
               isEditing
                 ? 'Update your precious collection item with care'
                 : 'Expand your collection with a new treasure'
             }
+            variant="glassmorphism"
+            size="lg"
+            showBackButton={true}
+            onBack={handleBackToCollection}
             className="mb-12"
           >
-            <button
-              onClick={handleBackToCollection}
-              className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
-              aria-label="Back to collection"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-            </button>
             <div className="flex items-center space-x-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-2xl shadow-lg">
               <div className="relative">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -250,7 +247,7 @@ const AddEditItem: React.FC = () => {
                 Collection Active
               </span>
             </div>
-          </GlassmorphismHeader>
+          </UnifiedHeader>
 
           {/* Loading State */}
           {fetchLoading && (

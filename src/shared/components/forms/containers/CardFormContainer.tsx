@@ -21,7 +21,7 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
-import FormHeader from '../../molecules/common/FormHeader';
+import UnifiedHeader from '../../molecules/common/UnifiedHeader';
 import FormActionButtons from '../../molecules/common/FormActionButtons';
 import HierarchicalCardSearch from '../sections/HierarchicalCardSearch';
 import CardInformationDisplaySection from '../sections/CardInformationDisplaySection';
@@ -128,11 +128,12 @@ const CardFormContainer: React.FC<CardFormContainerProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Standardized Form Header */}
-      <FormHeader
+      <UnifiedHeader
         icon={icon}
         title={title}
-        description={description}
-        primaryColorClass={primaryColorClass}
+        subtitle={description}
+        variant="form"
+        size="md"
       />
 
       {/* Card Information Section - Hidden for sold items */}

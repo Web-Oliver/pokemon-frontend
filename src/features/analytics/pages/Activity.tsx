@@ -41,7 +41,7 @@ import ActivityStatCard from '../../../shared/components/molecules/common/Activi
 import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
 import ActivityFilterHub from '../../../shared/components/molecules/common/ActivityFilterHub';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { ACTIVITY_TYPES, useActivity } from '../../../shared/hooks/useActivity';
 import {
   displayPrice,

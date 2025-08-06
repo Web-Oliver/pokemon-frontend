@@ -7,7 +7,7 @@
 
 import React from 'react';
 import LoadingSpinner from '../../molecules/common/LoadingSpinner';
-import GlassmorphismHeader from '../../molecules/common/GlassmorphismHeader';
+import UnifiedHeader from '../../molecules/common/UnifiedHeader';
 
 export interface PageLayoutProps {
   title: string;
@@ -80,13 +80,15 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Premium Page Header - Only render if title is provided */}
           {title && (
-            <GlassmorphismHeader
+            <UnifiedHeader
               title={title}
-              description={subtitle}
+              subtitle={subtitle}
+              variant="glassmorphism"
+              size="lg"
               className="mb-6"
             >
               {actions}
-            </GlassmorphismHeader>
+            </UnifiedHeader>
           )}
 
           {/* Error Display */}
