@@ -43,7 +43,7 @@
 ### Generic Operations Integration
 - [x] Integrate `shared/api/genericApiOperations.ts` patterns into `useGenericCrudOperations` hook
 - [x] Create factory function for collection API logging/fetching
-- [ ] Implement `createLoggedCollectionOperation<T>` factory
+- [x] Implement `createLoggedCollectionOperation<T>` factory
 - [ ] Refactor repetitive patterns in collectionApi.ts using factory
 
 ### Feature Services Update
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 13/91 (14%)**
+- [ ] **Completed: 14/91 (15%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 78/91 (86%)**
+- [ ] **Remaining: 77/91 (85%)**
 
 ---
 
