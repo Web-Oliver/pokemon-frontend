@@ -78,8 +78,8 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         ></div>
       </div>
 
-      <div className="relative z-10 p-4 sm:p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto space-y-8 lg:space-y-10">
+      <div className="relative z-10 p-2 sm:p-4 lg:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 lg:space-y-6">
           {/* Premium Page Header - Only render if title is provided */}
           {title && (
             <UnifiedHeader

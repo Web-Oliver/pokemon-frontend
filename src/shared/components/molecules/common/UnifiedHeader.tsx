@@ -109,35 +109,35 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 }) => {
   console.log('UnifiedHeader: Rendering with props:', { title, subtitle, variant, size, stats, actions });
 
-  // Size configurations
+  // Size configurations - More compact sizing
   const sizeConfigs = {
     sm: {
+      container: 'p-3',
+      title: 'text-lg',
+      subtitle: 'text-xs',
+      icon: 'w-6 h-6',
+      iconContainer: 'w-10 h-10',
+    },
+    md: {
       container: 'p-4',
-      title: 'text-2xl',
+      title: 'text-xl',
       subtitle: 'text-sm',
       icon: 'w-8 h-8',
       iconContainer: 'w-12 h-12',
     },
-    md: {
-      container: 'p-6',
-      title: 'text-3xl',
-      subtitle: 'text-base',
+    lg: {
+      container: 'p-4 sm:p-6',
+      title: 'text-2xl sm:text-3xl',
+      subtitle: 'text-sm sm:text-base',
       icon: 'w-10 h-10',
       iconContainer: 'w-16 h-16',
     },
-    lg: {
-      container: 'p-8 sm:p-12',
-      title: 'text-4xl sm:text-5xl',
-      subtitle: 'text-lg sm:text-xl',
-      icon: 'w-12 h-12',
-      iconContainer: 'w-20 h-20',
-    },
     xl: {
-      container: 'p-12 sm:p-16',
-      title: 'text-5xl sm:text-6xl',
-      subtitle: 'text-xl sm:text-2xl',
-      icon: 'w-16 h-16',
-      iconContainer: 'w-24 h-24',
+      container: 'p-6 sm:p-8',
+      title: 'text-3xl sm:text-4xl',
+      subtitle: 'text-base sm:text-lg',
+      icon: 'w-12 h-12',
+      iconContainer: 'w-18 h-18',
     },
   };
 
@@ -282,7 +282,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
       <div className="relative z-10">
         {/* Main content */}
         <div
-          className={`flex items-start ${centered ? 'justify-center text-center' : 'justify-between'} mb-6`}
+          className={`flex items-start ${centered ? 'justify-center text-center' : 'justify-between'} mb-3`}
         >
           <div className="flex items-center flex-1">
             {/* Back button */}
@@ -371,12 +371,12 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
         {/* Stats grid */}
         {stats.length > 0 && (
           <div
-            className={`grid gap-4 mb-6 ${stats.length <= 2 ? 'grid-cols-2' : stats.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3 md:grid-cols-5'}`}
+            className={`grid gap-2 mb-3 ${stats.length <= 2 ? 'grid-cols-2' : stats.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3 md:grid-cols-5'}`}
           >
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-zinc-700/50 backdrop-blur-sm rounded-lg p-3"
+                className="bg-zinc-700/50 backdrop-blur-sm rounded-lg p-2"
               >
                 <StatItem stat={stat} />
               </div>
@@ -386,7 +386,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 
         {/* Centered actions */}
         {actions.length > 0 && centered && (
-          <div className="flex justify-center space-x-3 mb-6">
+          <div className="flex justify-center space-x-3 mb-3">
             {actions.map((action, index) => {
               const ActionIcon = action.icon;
               return (
@@ -407,7 +407,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
         )}
 
         {/* Additional children */}
-        {children && <div className="mt-6">{children}</div>}
+        {children && <div className="mt-3">{children}</div>}
       </div>
 
       {/* Bottom divider */}

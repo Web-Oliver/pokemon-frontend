@@ -118,9 +118,29 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
     preset: config.selectionPreset,
   });
 
+  // Set up default values based on card type
+  const getDefaultValues = () => {
+    const defaultValues: any = {
+      myPrice: '',
+      images: [],
+      sold: false,
+      saleDetails: {},
+    };
+    
+    if (cardType === 'psa-graded') {
+      defaultValues.grade = '';
+    } else {
+      defaultValues.condition = '';
+    }
+    
+    return defaultValues;
+  };
+
   const baseForm = useBaseForm({
     validationRules: commonValidationRules[config.validationPreset],
     initialData,
+    defaultValues: getDefaultValues(),
+    isEditing,
   });
 
   const collectionOps = useCollectionOperations();
@@ -189,12 +209,12 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
       {/* Grading & Pricing Section - PSA only */}
       {config.showGrading && (
         <GradingPricingSection
-          grade={baseForm.values.grade}
+          grade={baseForm.values?.grade || ''}
           onGradeChange={(grade) => baseForm.setValue('grade', grade)}
-          price={baseForm.values.myPrice}
+          price={baseForm.values?.myPrice || ''}
           onPriceChange={(price) => baseForm.setValue('myPrice', price)}
           priceLabel={config.priceLabel}
-          error={baseForm.errors.grade || baseForm.errors.myPrice}
+          error={baseForm.errors?.grade?.message || baseForm.errors?.myPrice?.message}
         />
       )}
 
@@ -206,7 +226,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
               Condition
             </label>
             <select
-              value={baseForm.values.condition || ''}
+              value={baseForm.values?.condition || ''}
               onChange={(e) => baseForm.setValue('condition', e.target.value)}
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
             >
@@ -226,10 +246,10 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
             <input
               type="number"
               step="0.01"
-              value={baseForm.values.myPrice || ''}
+              value={baseForm.values?.myPrice || ''}
               onChange={(e) =>
                 baseForm.setValue('myPrice', parseFloat(e.target.value) || 0)
-              }
+              )
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               placeholder="0.00"
             />
@@ -239,17 +259,17 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
 
       {/* Sale Details Section */}
       <SaleDetailsSection
-        saleDetails={baseForm.values.saleDetails}
+        saleDetails={baseForm.values?.saleDetails || {}}
         onSaleDetailsChange={(details) =>
           baseForm.setValue('saleDetails', details)
         }
-        sold={baseForm.values.sold}
+        sold={baseForm.values?.sold || false}
         onSoldChange={(sold) => baseForm.setValue('sold', sold)}
       />
 
       {/* Image Upload Section */}
       <ImageUploadSection
-        images={baseForm.values.images || []}
+        images={baseForm.values?.images || []}
         onImagesChange={(images) => baseForm.setValue('images', images)}
         maxImages={5}
       />
@@ -265,7 +285,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
         </button>
         <button
           type="submit"
-          onClick={() => formSubmission.handleSubmit(baseForm.values)}
+          onClick={() => formSubmission.handleSubmit(baseForm.values || {})}
           disabled={baseForm.isSubmitting || !cardSelection.selectedCard}
           className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl transition-all disabled:opacity-50"
         >

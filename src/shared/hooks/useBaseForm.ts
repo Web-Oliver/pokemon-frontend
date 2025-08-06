@@ -35,6 +35,13 @@ export interface UseBaseFormReturn<T extends FieldValues> {
   form: UseFormReturn<T>;
   isSubmitting: boolean;
 
+  // Convenience accessors for backward compatibility
+  values: T;
+  setValue: (name: keyof T, value: any) => void;
+  errors: Record<string, any>;
+  error?: Error;
+  setError: (name: string, error: Error) => void;
+
   // Image upload
   imageUpload: ReturnType<typeof useImageUpload>;
 
@@ -73,12 +80,16 @@ export const useBaseForm = <T extends FieldValues>(
   } = config;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<Error | undefined>(undefined);
 
   // Initialize form with react-hook-form
   const form = useForm<T>({
     defaultValues,
     mode,
   });
+
+  // Watch all form values for convenience accessor
+  const values = form.watch();
 
   // Initialize validation
   const { validateField, isFormValid } = useFormValidation(validationRules);
@@ -184,9 +195,30 @@ export const useBaseForm = <T extends FieldValues>(
     // These functions are stable or their changes shouldn't retrigger the initialization
   }, [isEditing, initialData]);
 
+  // Convenience methods for backward compatibility
+  const setValue = useCallback((name: keyof T, value: any) => {
+    form.setValue(name as any, value);
+  }, [form]);
+
+  const setError = useCallback((name: string, error: Error) => {
+    if (name === 'submit') {
+      setFormError(error);
+    } else {
+      form.setError(name as any, { message: error.message });
+    }
+  }, [form]);
+
   return {
     form,
     isSubmitting,
+    
+    // Convenience accessors
+    values: values as T,
+    setValue,
+    errors: form.formState.errors,
+    error: formError,
+    setError,
+
     imageUpload,
     priceHistory,
     validateField,
