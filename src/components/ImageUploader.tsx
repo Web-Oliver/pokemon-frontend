@@ -22,15 +22,15 @@ import React, {
 import { Upload, X } from 'lucide-react';
 import { PokemonConfirmModal } from './design-system/PokemonModal';
 import { ImageAnalysisIndicator } from './common/ImageAnalysisIndicator';
-import { useDragAndDrop } from '../hooks/useDragAndDrop';
-import { useImageRemoval } from '../hooks/useImageRemoval';
+import { useDragAndDrop } from '../../../shared/hooks/useDragAndDrop';
+import { useImageRemoval } from '../../../shared/hooks/useImageRemoval';
 import {
   createExistingImagePreview,
   processImageFiles,
   cleanupObjectURL,
   type ImagePreview,
-} from '../utils/imageUtils';
-import { cn } from '../utils/unifiedUtilities';
+} from '../../../shared/utils/imageUtils';
+import { cn } from '../../../shared/utils/unifiedUtilities';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
