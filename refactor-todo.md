@@ -47,7 +47,7 @@
 - [x] Refactor repetitive patterns in collectionApi.ts using factory
 
 ### Feature Services Update
-- [ ] Update `features/*/services` to use UnifiedApiService
+- [x] Update `features/*/services` to use UnifiedApiService
 - [ ] Ensure feature services are thin layers for UI-specific data mapping
 - [ ] Remove duplicate HTTP logic from feature services
 
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 15/91 (16%)**
+- [ ] **Completed: 16/91 (18%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 76/91 (84%)**
+- [ ] **Remaining: 75/91 (82%)**
 
 ---
 

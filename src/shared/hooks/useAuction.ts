@@ -5,6 +5,7 @@
 
 import { useCallback, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import * as auctionsApi from '../api/auctionsApi';
 import * as exportApi from '../api/exportApi';
 import { IAuction } from '../domain/models/auction';
@@ -64,7 +65,7 @@ export const useAuction = (
     refetch: _refetchAuctions,
   } = useQuery({
     queryKey: queryKeys.auctionsList(params),
-    queryFn: () => auctionsApi.getAuctions(params),
+    queryFn: () => unifiedApiService.auctions.getAuctions(params),
     staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
     gcTime: CACHE_TIMES.COLLECTION_DATA.gcTime,
   });
@@ -98,7 +99,7 @@ export const useAuction = (
         setError(null);
         const auction = await queryClient.fetchQuery({
           queryKey: queryKeys.auctionDetail(id),
-          queryFn: () => auctionsApi.getAuctionById(id),
+          queryFn: () => unifiedApiService.auctions.getAuctionById(id),
           staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
         });
         setCurrentAuction(auction);
@@ -113,7 +114,7 @@ export const useAuction = (
 
   // Create auction mutation
   const createAuctionMutation = useMutation({
-    mutationFn: (data: Partial<IAuction>) => auctionsApi.createAuction(data),
+    mutationFn: (data: Partial<IAuction>) => unifiedApiService.auctions.createAuction(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
     },
@@ -122,7 +123,7 @@ export const useAuction = (
   // Update auction mutation
   const updateAuctionMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<IAuction> }) =>
-      auctionsApi.updateAuction(id, data),
+      unifiedApiService.auctions.updateAuction(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -131,7 +132,7 @@ export const useAuction = (
 
   // Delete auction mutation
   const deleteAuctionMutation = useMutation({
-    mutationFn: (id: string) => auctionsApi.deleteAuction(id),
+    mutationFn: (id: string) => unifiedApiService.auctions.deleteAuction(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
     },
@@ -145,7 +146,7 @@ export const useAuction = (
     }: {
       id: string;
       itemData: auctionsApi.AddItemToAuctionData;
-    }) => auctionsApi.addItemToAuction(id, itemData),
+    }) => auctionsApi.addItemToAuction(id, itemData), // TODO: Add to UnifiedApiService
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -349,7 +350,7 @@ export const useAuction = (
     async (id: string): Promise<string> => {
       try {
         setError(null);
-        const postText = await exportApi.generateAuctionFacebookPost(id);
+        const postText = await exportApi.generateAuctionFacebookPost(id); // TODO: Add to UnifiedApiService
 
         // Update the current auction with the generated post
         if ((currentAuction?.id || currentAuction?._id) === id) {
@@ -377,7 +378,7 @@ export const useAuction = (
     async (id: string): Promise<void> => {
       try {
         setError(null);
-        const blob = await exportApi.getAuctionFacebookTextFile(id);
+        const blob = await exportApi.getAuctionFacebookTextFile(id); // TODO: Add to UnifiedApiService
         const filename = `auction-${id}-facebook-post.txt`;
         exportApi.downloadBlob(blob, filename);
       } catch (err) {
@@ -396,7 +397,7 @@ export const useAuction = (
     async (id: string): Promise<void> => {
       try {
         setError(null);
-        const blob = await exportApi.zipAuctionImages(id);
+        const blob = await unifiedApiService.export.exportAuctionImages(id);
         const filename = `auction-${id}-images.zip`;
         exportApi.downloadBlob(blob, filename);
       } catch (err) {
