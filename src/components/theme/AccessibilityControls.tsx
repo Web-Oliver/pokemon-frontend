@@ -8,7 +8,7 @@
 
 import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme';
 import { useAccessibilityTheme } from '../../hooks/useAccessibilityTheme';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 
 export interface AccessibilityControlsProps {
   /** Show accessibility control panel */

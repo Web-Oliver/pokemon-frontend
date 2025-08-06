@@ -2,16 +2,34 @@
  * Theme-Aware Component Utilities
  * Phase 1.2.1: Component Architecture Foundation
  *
+ * ROLE & RESPONSIBILITY:
+ * Central theme configuration and integration system. Defines the "WHAT" of styling -
+ * theme configurations, style presets, and component style definitions that work with
+ * theme contexts and provide consistent design system integration.
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme utility functions only
  * - Open/Closed: Extensible for new theme patterns
  * - DRY: Centralized theme logic for all components
  * - Dependency Inversion: Abstracts theme implementation details
  *
+ * SEPARATION FROM classNameUtils.ts:  
+ * - themeUtils.ts: Defines theme configurations and integration (WHAT to style)
+ * - classNameUtils.ts: Generates class strings (HOW to style)
+ *
+ * USE CASES:
+ * - Component style configurations (buttonStyleConfig, inputStyleConfig)
+ * - Theme context integration and configuration
+ * - Style preset definitions and management
+ * - Theme property merging and overrides
+ * - Animation configuration objects
+ * - Base cn() utility function (single source of truth)
+ *
  * Integrates with:
  * - ThemeContext.tsx for theme configuration
  * - themeTypes.ts for standardized interfaces
  * - formThemes.ts for color schemes
+ * - classNameUtils.ts for className generation utilities
  */
 
 import { clsx, type ClassValue } from 'clsx';
@@ -94,50 +112,7 @@ export function themeOverrideToClasses(override: ThemeOverride): string {
   return cn(...classes);
 }
 
-/**
- * Generate animation classes based on animation configuration
- */
-export function generateAnimationClasses(
-  config: ComponentAnimationConfig,
-  state: ComponentState = 'default'
-): string {
-  if (config.disabled) {
-    return '';
-  }
-
-  const classes: string[] = [];
-
-  switch (state) {
-    case 'hover':
-      if (config.hover) {
-        classes.push(config.hover);
-      }
-      break;
-    case 'focus':
-      if (config.focus) {
-        classes.push(config.focus);
-      }
-      break;
-    case 'active':
-      if (config.active) {
-        classes.push(config.active);
-      }
-      break;
-    default:
-      // Base animation classes are handled in component styles
-      break;
-  }
-
-  // Add duration and easing if specified
-  if (config.duration) {
-    classes.push(`[animation-duration:${config.duration}ms]`);
-  }
-  if (config.easing) {
-    classes.push(`[animation-timing-function:${config.easing}]`);
-  }
-
-  return cn(...classes);
-}
+// generateAnimationClasses consolidated into animationClasses in classNameUtils.ts
 
 // ================================
 // COMPONENT STYLE CONFIGURATIONS
@@ -400,54 +375,9 @@ export function mergeThemeProps(
   };
 }
 
-/**
- * Get responsive classes based on screen size
- */
-export function getResponsiveClasses(
-  mobile: string,
-  tablet?: string,
-  desktop?: string,
-  large?: string
-): string {
-  const classes = [mobile];
+// getResponsiveClasses consolidated into unifiedUtilities.ts
 
-  if (tablet) {
-    classes.push(`md:${tablet}`);
-  }
-  if (desktop) {
-    classes.push(`lg:${desktop}`);
-  }
-  if (large) {
-    classes.push(`xl:${large}`);
-  }
-
-  return cn(...classes);
-}
-
-/**
- * Generate focus-visible classes for accessibility
- */
-export function getFocusClasses(variant: ComponentVariant = 'primary'): string {
-  const baseClasses =
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
-
-  switch (variant) {
-    case 'primary':
-      return cn(baseClasses, 'focus-visible:ring-theme-primary');
-    case 'secondary':
-      return cn(baseClasses, 'focus-visible:ring-zinc-500');
-    case 'success':
-      return cn(baseClasses, 'focus-visible:ring-emerald-500');
-    case 'warning':
-      return cn(baseClasses, 'focus-visible:ring-amber-500');
-    case 'danger':
-      return cn(baseClasses, 'focus-visible:ring-red-500');
-    case 'info':
-      return cn(baseClasses, 'focus-visible:ring-blue-500');
-    default:
-      return cn(baseClasses, 'focus-visible:ring-theme-primary');
-  }
-}
+// getFocusClasses consolidated into focusRing in classNameUtils.ts
 
 // ================================
 // EXPORTS
@@ -456,11 +386,8 @@ export function getFocusClasses(variant: ComponentVariant = 'primary'): string {
 export default {
   cn,
   generateThemeClasses,
-  generateAnimationClasses,
   getThemeConfiguration,
   mergeThemeProps,
-  getResponsiveClasses,
-  getFocusClasses,
   buttonStyleConfig,
   inputStyleConfig,
   cardStyleConfig,

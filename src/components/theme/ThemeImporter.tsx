@@ -8,7 +8,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 import type { ThemeExportData } from './utils/themeExportUtils';
 import { parseThemeFile, validateThemeData } from './utils/themeExportUtils';
 

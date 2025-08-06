@@ -1,5 +1,5 @@
-/* Pokemon Collection - Unified Design System */
-@import './styles/pokemon-design-system.css';
+/* Pokemon Collection - Ultra-Consolidated Design System */
+@import './styles/unified-design-system.css';
 
 /* Context7 Premium Design System - Using Tailwind Configuration */
 @tailwind base;
@@ -64,11 +64,11 @@ body {
 @layer components {
   /* Legacy support - Updated to use new design tokens */
   .btn-premium {
-    @apply btn-pokemon btn-primary;
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
   .card-premium {
-    @apply card-glass;
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-xl;
   }
 
   .text-gradient {
@@ -86,7 +86,7 @@ body {
 
   /* Enhanced component patterns based on analysis */
   .page-container {
-    @apply bg-pokemon relative overflow-hidden min-h-screen;
+    @apply bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden min-h-screen;
   }
 
   .content-wrapper {

@@ -9,28 +9,30 @@ import {
   Package, 
   Calendar, 
   DollarSign, 
-  X, 
   Share, 
   Copy, 
   FileText, 
   Download, 
   Plus, 
-  Check 
+  Edit
 } from 'lucide-react';
 import { PokemonModal, PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
+import { AuctionItemCard } from '../components/auction/AuctionItemCard';
 import { ISaleDetails } from '../domain/models/common';
 import { useAuction } from '../hooks/useAuction';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
+import { useModal, useConfirmModal } from '../hooks/useModal';
 import {
   handleApiError,
   showSuccessToast,
   showWarningToast,
 } from '../utils/errorHandler';
-import { navigationHelper } from '../utils/navigation';
+import { navigationHelper } from '../utils/navigationHelper';
+import { formatCurrency, formatDate } from '../utils/itemDisplayHelpers';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -62,27 +64,25 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
-  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
-  const [generatedFacebookPost, setGeneratedFacebookPost] =
-    useState<string>('');
-  const [showFacebookPost, setShowFacebookPost] = useState(false);
-  const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
+  const [generatedFacebookPost, setGeneratedFacebookPost] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<{
     id: string;
     type: 'psa' | 'raw' | 'sealed';
     name: string;
     itemCategory?: string;
   } | null>(null);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] =
-    useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [removingItem, setRemovingItem] = useState(false);
   const [itemToRemove, setItemToRemove] = useState<{
     id: string;
     name: string;
     category: string;
   } | null>(null);
+  
+  // Modal management using new hooks
+  const addItemModal = useModal();
+  const facebookPostModal = useModal();
+  const markSoldModal = useModal();
+  const deleteConfirmModal = useConfirmModal();
+  const removeItemConfirmModal = useConfirmModal();
 
   useEffect(() => {
     // Extract auction ID from URL
@@ -108,165 +108,27 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     navigationHelper.navigateToEdit.auction(currentAuctionId);
   };
 
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return 'Invalid Date';
-    }
-  };
+  // Removed utility functions - now using itemDisplayHelpers
 
-  // Extract item display data from populated structure - UPDATED for new field structure
-  const getItemDisplayData = (item: any) => {
-    const defaultData = {
-      itemName: 'Unknown Item',
-      itemImage: undefined,
-      setName: undefined,
-      cardNumber: undefined, // NEW: Add cardNumber support
-      grade: undefined,
-      condition: undefined,
-      price: undefined,
-    };
+  // Removed: now using formatCurrency from itemDisplayHelpers
 
-    if (!item.itemData) {
-      return defaultData;
-    }
+  // Removed: now using getStatusColor from itemDisplayHelpers
 
-    const { itemData, itemCategory } = item;
+  // Removed: now using getItemCategoryColor from itemDisplayHelpers
 
-    // Helper function to get full image URL
-    const getImageUrl = (imagePath: string | undefined) => {
-      if (!imagePath) {
-        return undefined;
-      }
-      // If it's already a full URL, return as is
-      if (imagePath.startsWith('http')) {
-        return imagePath;
-      }
-      // If it's a relative path, prepend the backend server URL
-      return `http://localhost:3000${imagePath}`;
-    };
+  // Removed: now using formatItemCategory from itemDisplayHelpers
 
-    switch (itemCategory) {
-      case 'PsaGradedCard':
-      case 'RawCard':
-        return {
-          itemName:
-            itemData.cardId?.cardName || itemData.cardName || 'Unknown Item', // REMOVED: baseName reference (deprecated)
-          itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.cardId?.setId?.setName || itemData.setName,
-          cardNumber: itemData.cardId?.cardNumber || itemData.cardNumber, // NEW: cardNumber support
-          grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
-          condition:
-            itemCategory === 'RawCard' ? itemData.condition : undefined,
-          price: itemData.myPrice,
-        };
-      case 'SealedProduct':
-        return {
-          itemName:
-            itemData.name ||
-            itemData.productId?.productName ||
-            itemData.productName ||
-            'Unknown Item', // UPDATED: Support new Product model structure
-          itemImage: getImageUrl(itemData.images?.[0]),
-          setName:
-            itemData.setName ||
-            itemData.productId?.setProductName ||
-            itemData.setProductName ||
-            undefined, // UPDATED: Support SetProduct hierarchy
-          cardNumber: undefined, // N/A for sealed products
-          grade: undefined,
-          condition: undefined,
-          price: itemData.myPrice,
-        };
-      default:
-        return defaultData;
-    }
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    const formatted = new Intl.NumberFormat('da-DK', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-    return `${formatted} kr.`;
-  };
-
-  // Get status color - Theme-aware design system
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] border border-[var(--theme-border)]';
-      case 'active':
-        return 'bg-[var(--theme-accent-primary)]/20 text-[var(--theme-accent-primary)] border border-[var(--theme-accent-primary)]/50';
-      case 'sold':
-        return 'bg-[var(--theme-status-success)]/20 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/50';
-      case 'expired':
-        return 'bg-[var(--theme-status-error)]/20 text-[var(--theme-status-error)] border border-[var(--theme-status-error)]/50';
-      default:
-        return 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] border border-[var(--theme-border)]';
-    }
-  };
-
-  // Get item category color - Theme-aware design system
-  const getItemCategoryColor = (category: string) => {
-    switch (category) {
-      case 'PsaGradedCard':
-        return 'bg-purple-500/20 text-purple-300 border border-purple-500/50';
-      case 'RawCard':
-        return 'bg-[var(--theme-accent-primary)]/20 text-[var(--theme-accent-primary)] border border-[var(--theme-accent-primary)]/50';
-      case 'SealedProduct':
-        return 'bg-[var(--theme-status-success)]/20 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/50';
-      default:
-        return 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] border border-[var(--theme-border)]';
-    }
-  };
-
-  // Format item category for display
-  const formatItemCategory = (category: string) => {
-    switch (category) {
-      case 'PsaGradedCard':
-        return 'PSA Graded Card';
-      case 'RawCard':
-        return 'Raw Card';
-      case 'SealedProduct':
-        return 'Sealed Product';
-      default:
-        return category;
-    }
-  };
-
-  // Handle delete auction
-  const _handleDeleteAuction = () => {
-    setShowDeleteConfirmation(true);
+  // Handle delete auction with new modal hook
+  const handleDeleteAuction = () => {
+    deleteConfirmModal.openModal();
   };
 
   const confirmDeleteAuction = async () => {
-    try {
-      setDeleting(true);
+    await deleteConfirmModal.confirmAction(async () => {
       await deleteAuction(currentAuctionId);
-      // Set a flag in sessionStorage to indicate auctions list needs refresh
-      sessionStorage.setItem('auctionsNeedRefresh', 'true');
       showSuccessToast('Auction deleted successfully');
-      setShowDeleteConfirmation(false);
       navigateToAuctions();
-    } catch (_err) {
-      // Error handled by the hook
-    } finally {
-      setDeleting(false);
-    }
-  };
-
-  const handleCancelDeleteAuction = () => {
-    setShowDeleteConfirmation(false);
+    });
   };
 
   // Handle add items to auction
@@ -276,59 +138,44 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     for (const item of items) {
       await addItemToAuction(currentAuctionId, item);
     }
+    addItemModal.closeModal();
+    showSuccessToast('Items added to auction successfully');
   };
 
-  // Handle remove item from auction
-  const handleRemoveItem = (
-    itemId: string,
-    itemName: string,
-    itemCategory: string
-  ) => {
-    setItemToRemove({ id: itemId, name: itemName, category: itemCategory });
-    setShowRemoveItemConfirmation(true);
+  // Handle remove item from auction with new modal hook
+  const handleRemoveItem = (item: any) => {
+    const displayData = getItemDisplayData(item);
+    setItemToRemove({
+      id: item.itemId || item._id,
+      name: displayData.itemName,
+      category: item.itemCategory
+    });
+    removeItemConfirmModal.openModal();
   };
 
   const confirmRemoveItem = async () => {
-    if (!itemToRemove) {
-      return;
-    }
-
-    try {
-      setRemovingItem(true);
-      await removeItemFromAuction(
-        currentAuctionId,
-        itemToRemove.id,
-        itemToRemove.category
-      );
-      showSuccessToast('Item removed from auction');
-      setShowRemoveItemConfirmation(false);
+    if (!itemToRemove) return;
+    
+    await removeItemConfirmModal.confirmAction(async () => {
+      await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
+      showSuccessToast('Item removed from auction successfully');
       setItemToRemove(null);
-    } catch (_err) {
-      // Error handled by the hook
-    } finally {
-      setRemovingItem(false);
-    }
-  };
-
-  const handleCancelRemoveItem = () => {
-    setShowRemoveItemConfirmation(false);
-    setItemToRemove(null);
+    });
   };
 
   // Handle mark item as sold - open modal with item details
   const handleMarkSold = (item: any) => {
     // Don't allow marking already sold items as sold
-    if (item.sold || (item.itemData && item.itemData.sold)) {
+    if (isItemSold(item)) {
       return;
     }
 
     const itemId = item.itemId || item.itemData?._id;
-    const itemCategory = item.itemCategory;
     const displayData = getItemDisplayData(item);
-
+    
     // Determine item type based on category
     let itemType: 'psa' | 'raw' | 'sealed';
-    switch (itemCategory) {
+    switch (item.itemCategory) {
       case 'PsaGradedCard':
         itemType = 'psa';
         break;
@@ -340,7 +187,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         break;
       default:
         handleApiError(
-          new Error(`Unknown item category: ${itemCategory}`),
+          new Error(`Unknown item category: ${item.itemCategory}`),
           'Invalid item category'
         );
         return;
@@ -350,9 +197,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       id: itemId,
       type: itemType,
       name: displayData.itemName || 'Unknown Item',
-      itemCategory, // Store category for auction sale tracking
+      itemCategory: item.itemCategory,
     });
-    setIsMarkSoldModalOpen(true);
+    markSoldModal.openModal();
   };
 
   // Check if item is sold
@@ -390,11 +237,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       }
 
       // Close modal and reset selected item
-      setIsMarkSoldModalOpen(false);
+      markSoldModal.closeModal();
       setSelectedItem(null);
-
-      // Refresh the auction to show updated sold status (already handled by markAuctionItemSold)
-      // await fetchAuctionById(currentAuctionId);
+      showSuccessToast('Item marked as sold successfully');
     } catch (error) {
       handleApiError(error, 'Failed to mark item as sold');
     }
@@ -402,7 +247,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Handle modal close
   const handleModalClose = () => {
-    setIsMarkSoldModalOpen(false);
+    markSoldModal.closeModal();
     setSelectedItem(null);
   };
 
@@ -411,7 +256,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     try {
       const postText = await generateFacebookPost(currentAuctionId);
       setGeneratedFacebookPost(postText);
-      setShowFacebookPost(true);
+      facebookPostModal.openModal();
     } catch (_err) {
       // Error handled by the hook
     }
@@ -704,7 +549,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                       <Share className="w-4 h-4 mr-2" />
                       Generate Post
                     </PokemonButton>
-                    {showFacebookPost && generatedFacebookPost && (
+                    {facebookPostModal.isOpen && generatedFacebookPost && (
                       <PokemonButton
                         onClick={handleCopyToClipboard}
                         className="w-full flex items-center justify-center"
@@ -751,14 +596,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
               </div>
 
               {/* Generated Facebook Post Display */}
-              {showFacebookPost && generatedFacebookPost && (
+              {facebookPostModal.isOpen && generatedFacebookPost && (
                 <div className="mt-8">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
                       Generated Facebook Post
                     </h4>
                     <PokemonButton
-                      onClick={() => setShowFacebookPost(false)}
+                      onClick={facebookPostModal.closeModal}
                       variant="outline"
                       size="sm"
                     >
@@ -796,7 +641,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   Auction Items ({currentAuction.items.length})
                 </h2>
                 <PokemonButton
-                  onClick={() => setIsAddItemModalOpen(true)}
+                  onClick={addItemModal.openModal}
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20"
                 >
                   <Plus className="w-5 h-5 mr-3" />
@@ -816,7 +661,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                     Add items from your collection to this auction.
                   </p>
                   <PokemonButton
-                    onClick={() => setIsAddItemModalOpen(true)}
+                    onClick={addItemModal.openModal}
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <Plus className="w-5 h-5 mr-3" />
@@ -825,179 +670,16 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 </div>
               ) : (
                 <div className="p-8 space-y-6">
-                  {currentAuction.items.map((item: any, index: number) => {
-                    const displayData = getItemDisplayData(item);
-                    return (
-                      <div
-                        key={`${item.itemId || item.itemData?._id}-${index}`}
-                        className="group bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl shadow-lg border border-[var(--theme-border)] p-6 hover:bg-[var(--theme-surface-secondary)]/80 hover:shadow-xl hover:scale-102 transition-all duration-300 relative overflow-hidden"
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/5 via-teal-500/5 to-[var(--theme-accent-primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div className="relative z-10">
-                          <div className="flex items-start space-x-6">
-                            {/* Regular Image Display */}
-                            <div className="flex-shrink-0">
-                              {displayData.itemImage ? (
-                                <img
-                                  src={displayData.itemImage}
-                                  alt={displayData.itemName}
-                                  className="w-32 h-52 object-cover rounded-xl border border-zinc-600 shadow-lg"
-                                />
-                              ) : (
-                                <div className="w-32 h-52 bg-[var(--theme-surface-secondary)] rounded-xl border border-[var(--theme-border)] flex items-center justify-center">
-                                  <Package className="w-8 h-8 text-[var(--theme-text-muted)]" />
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Card Details */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center space-x-3">
-                                  <h3 className="text-xl font-bold text-[var(--theme-text-primary)] group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
-                                    {displayData.itemName}
-                                  </h3>
-                                  <span
-                                    className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide ${getItemCategoryColor(item.itemCategory)}`}
-                                  >
-                                    {formatItemCategory(item.itemCategory)}
-                                  </span>
-                                  {isItemSold(item) && (
-                                    <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                      <Check className="w-3 h-3 mr-1" />
-                                      Sold
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div className="flex items-center space-x-2">
-                                  {!isItemSold(item) && (
-                                    <PokemonButton
-                                      onClick={() => handleMarkSold(item)}
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-emerald-600 hover:text-emerald-700 border-emerald-200 hover:border-emerald-300"
-                                    >
-                                      Mark Sold
-                                    </PokemonButton>
-                                  )}
-                                  <PokemonButton
-                                    onClick={() =>
-                                      handleRemoveItem(
-                                        item.itemId || item.itemData?._id,
-                                        displayData.itemName,
-                                        item.itemCategory
-                                      )
-                                    }
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-                                  >
-                                    Remove
-                                  </PokemonButton>
-                                </div>
-                              </div>
-
-                              {/* Card Information Grid */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div className="space-y-2">
-                                  <div className="flex items-center space-x-2 text-sm">
-                                    <span className="font-medium text-[var(--theme-text-secondary)]">
-                                      Item ID:
-                                    </span>
-                                    <span className="text-[var(--theme-text-primary)] font-mono text-xs">
-                                      {item.itemId || item.itemData?._id}
-                                    </span>
-                                  </div>
-                                  {displayData.itemName &&
-                                    displayData.itemName !== 'Unknown Item' && (
-                                      <div className="flex items-center space-x-2 text-sm">
-                                        <span className="font-medium text-[var(--theme-text-secondary)]">
-                                          {item.itemCategory === 'SealedProduct'
-                                            ? 'Product Name:'
-                                            : 'Card Name:'}
-                                        </span>
-                                        <span className="text-[var(--theme-text-primary)] font-medium">
-                                          {displayData.itemName}
-                                        </span>
-                                      </div>
-                                    )}
-                                  {/* NEW: Card Number display for card items */}
-                                  {(item.itemCategory === 'PsaGradedCard' ||
-                                    item.itemCategory === 'RawCard') &&
-                                    displayData.cardNumber && (
-                                      <div className="flex items-center space-x-2 text-sm">
-                                        <span className="font-medium text-[var(--theme-text-secondary)]">
-                                          Card Number:
-                                        </span>
-                                        <span className="text-[var(--theme-text-primary)] font-bold text-yellow-500">
-                                          #{displayData.cardNumber}
-                                        </span>
-                                      </div>
-                                    )}
-                                  {item.itemCategory === 'PsaGradedCard' &&
-                                    displayData.grade && (
-                                      <div className="flex items-center space-x-2 text-sm">
-                                        <span className="font-medium text-[var(--theme-text-secondary)]">
-                                          PSA Grade:
-                                        </span>
-                                        <span className="text-[var(--theme-text-primary)] font-bold text-[var(--theme-accent-primary)]">
-                                          Grade {displayData.grade}
-                                        </span>
-                                      </div>
-                                    )}
-                                  {item.itemCategory === 'RawCard' &&
-                                    displayData.condition && (
-                                      <div className="flex items-center space-x-2 text-sm">
-                                        <span className="font-medium text-[var(--theme-text-secondary)]">
-                                          Condition:
-                                        </span>
-                                        <span className="text-[var(--theme-text-primary)] font-medium">
-                                          {displayData.condition}
-                                        </span>
-                                      </div>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                  {displayData.setName && (
-                                    <div className="flex items-center space-x-2 text-sm">
-                                      <span className="font-medium text-[var(--theme-text-secondary)]">
-                                        Set:
-                                      </span>
-                                      <span className="text-[var(--theme-text-primary)] font-medium">
-                                        {displayData.setName}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {displayData.price && (
-                                    <div className="flex items-center space-x-2 text-sm">
-                                      <span className="font-medium text-[var(--theme-text-secondary)]">
-                                        Listed Price:
-                                      </span>
-                                      <span className="text-[var(--theme-text-primary)] font-bold text-[var(--theme-status-success)]">
-                                        {formatCurrency(displayData.price)}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {item.salePrice && (
-                                    <div className="flex items-center space-x-2 text-sm">
-                                      <span className="font-medium text-[var(--theme-text-secondary)]">
-                                        Sale Price:
-                                      </span>
-                                      <span className="text-[var(--theme-status-success)] font-bold">
-                                        {formatCurrency(item.salePrice)}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {currentAuction.items.map((item: any, index: number) => (
+                    <AuctionItemCard
+                      key={`${item.itemId || item.itemData?._id}-${index}`}
+                      item={item}
+                      isItemSold={isItemSold}
+                      onMarkSold={handleMarkSold}
+                      onRemoveItem={handleRemoveItem}
+                      disabled={loading || collectionLoading}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -1055,8 +737,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Add Item to Auction Modal */}
           <AddItemToAuctionModal
-            isOpen={isAddItemModalOpen}
-            onClose={() => setIsAddItemModalOpen(false)}
+            isOpen={addItemModal.isOpen}
+            onClose={addItemModal.closeModal}
             onAddItems={handleAddItems}
             currentAuctionItems={
               currentAuction?.items?.map((item) => ({
@@ -1068,7 +750,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Mark as Sold Modal */}
           <PokemonModal
-            isOpen={isMarkSoldModalOpen}
+            isOpen={markSoldModal.isOpen}
             onClose={handleModalClose}
             title={`Mark "${selectedItem?.name}" as Sold`}
             maxWidth="2xl"
@@ -1086,26 +768,26 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Delete Auction Confirmation Modal */}
           <PokemonConfirmModal
-            isOpen={showDeleteConfirmation}
-            onClose={handleCancelDeleteAuction}
+            isOpen={deleteConfirmModal.isOpen}
+            onClose={deleteConfirmModal.closeModal}
             onConfirm={confirmDeleteAuction}
             title="Delete Auction"
             confirmMessage={`Are you sure you want to delete the auction "${currentAuction?.topText || 'Untitled Auction'}"? This action cannot be undone and will permanently remove the auction and all its associated data.`}
             confirmText="Delete Auction"
             variant="danger"
-            loading={deleting}
+            loading={deleteConfirmModal.isConfirming}
           />
 
           {/* Remove Item Confirmation Modal */}
           <PokemonConfirmModal
-            isOpen={showRemoveItemConfirmation}
-            onClose={handleCancelRemoveItem}
+            isOpen={removeItemConfirmModal.isOpen}
+            onClose={removeItemConfirmModal.closeModal}
             onConfirm={confirmRemoveItem}
             title="Remove Item from Auction"
             confirmMessage={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
             confirmText="Remove Item"
             variant="warning"
-            loading={removingItem}
+            loading={removeItemConfirmModal.isConfirming}
           />
         </div>
       </div>

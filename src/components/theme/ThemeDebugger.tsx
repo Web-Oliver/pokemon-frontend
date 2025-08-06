@@ -15,7 +15,7 @@
  * - themeDebug.ts for validation utilities
  */
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Bug } from 'lucide-react';
 import { ThemePerformanceMonitor } from './ThemePerformanceMonitor';
 import { ThemeDebugPanel } from './ThemeDebugPanel';
@@ -28,12 +28,24 @@ import {
   cardStyleConfig,
   badgeStyleConfig,
   cn,
-} from '../../utils/themeUtils';
-import {
-  validateThemeConfiguration,
-  getThemePerformanceMetrics,
-  extractCSSCustomProperties,
-} from '../../utils/themeDebug';
+} from '../../utils/unifiedUtilities';
+// Lazy load theme debug utilities to reduce bundle size
+const themeDebugUtils = {
+  validateThemeConfiguration: null as any,
+  getThemePerformanceMetrics: null as any,  
+  extractCSSCustomProperties: null as any,
+  initialized: false,
+  
+  async init() {
+    if (!this.initialized && process.env.NODE_ENV === 'development') {
+      const module = await import('../../utils/themeDebug');
+      this.validateThemeConfiguration = module.validateThemeConfiguration;
+      this.getThemePerformanceMetrics = module.getThemePerformanceMetrics;
+      this.extractCSSCustomProperties = module.extractCSSCustomProperties;
+      this.initialized = true;
+    }
+  }
+};
 
 export interface ThemeDebuggerProps {
   /** Show debugger by default in development */
@@ -380,7 +392,12 @@ export const ThemeDebugger: React.FC<ThemeDebuggerProps> = ({
           </div>
 
           <button
-            onClick={() => setPerformanceData(getThemePerformanceMetrics())}
+            onClick={async () => {
+              await themeDebugUtils.init();
+              if (themeDebugUtils.getThemePerformanceMetrics) {
+                setPerformanceData(themeDebugUtils.getThemePerformanceMetrics());
+              }
+            }}
             className="flex items-center gap-1 px-2 py-1 text-xs bg-emerald-600/50 hover:bg-emerald-600/70 rounded transition-colors w-full justify-center"
           >
             <RefreshCw className="w-3 h-3" />

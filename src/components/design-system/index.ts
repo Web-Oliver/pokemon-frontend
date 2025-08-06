@@ -32,22 +32,11 @@ export type {
 export { PokemonBadge } from './PokemonBadge';
 export type { PokemonBadgeProps } from './PokemonBadge';
 
-export { PokemonIcon } from './PokemonIcon';
-export type { PokemonIconProps } from './PokemonIcon';
-
 export { PokemonPageContainer } from './PokemonPageContainer';
 export type { PokemonPageContainerProps } from './PokemonPageContainer';
 
-// Form Components
-export { 
-  PokemonForm,
-  PokemonCardForm,
-  PokemonProductForm,
-  PokemonAuctionForm,
-  PokemonSaleForm,
-  PokemonSearchForm,
-  PokemonFilterForm
-} from './PokemonForm';
+// Form Components (only used components)
+export { PokemonForm } from './PokemonForm';
 export type { PokemonFormProps, PokemonFormField, PokemonFormSection } from './PokemonForm';
 
 // Component aliases for backward compatibility (removed to fix circular dependency)

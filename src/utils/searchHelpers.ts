@@ -95,12 +95,11 @@ export const autoFillField = (
   value: any
 ) => {
   if (value !== undefined && value !== null) {
-    console.log('[AUTOFILL] Setting', fieldName, '=', value);
+    // Set field value
     config.setValue(fieldName, value, { shouldValidate: true });
     config.clearErrors(fieldName);
-  } else {
-    console.log('[AUTOFILL] Skipping field (undefined/null):', fieldName);
   }
+  // Field validation handled by setValue
 };
 
 /**
@@ -111,7 +110,7 @@ export const autoFillProductSetData = (
   config: AutoFillConfig,
   result: SearchResult
 ) => {
-  console.log('[AUTOFILL DEBUG] Product set data received:', result.data);
+  // Process product set data
 
   // For sealed products: Use setProductId.setProductName or setName or setProductName
   const setName =
@@ -120,18 +119,15 @@ export const autoFillProductSetData = (
     result.data.setProductName;
 
   if (setName) {
-    console.log('[AUTOFILL DEBUG] Setting setName (SetProduct name):', setName);
+    // Auto-fill set name from product
     autoFillField(config, 'setName', setName);
   } else {
-    console.log(
-      '[AUTOFILL DEBUG] No setName found in product data:',
-      result.data
-    );
+    // No set name available in product data
   }
 
   const year = result.data.year;
   if (year) {
-    console.log('[AUTOFILL DEBUG] Setting year:', year);
+    // Auto-fill year from product
     autoFillField(config, 'year', year);
   }
 };
@@ -171,22 +167,22 @@ export const autoFillProductData = (
 ) => {
   const { data } = result;
 
-  console.log('[AUTOFILL DEBUG] Product data received:', data);
+  // Process product data for auto-fill
 
   if (data.productName || data.name) {
     const productName = data.productName || data.name;
-    console.log('[AUTOFILL DEBUG] Setting productName:', productName);
+    // Auto-fill product name
     autoFillField(config, 'productName', productName);
   }
 
   if (data.category) {
-    console.log('[AUTOFILL DEBUG] Setting category:', data.category);
+    // Auto-fill product category
     autoFillField(config, 'category', data.category);
   }
 
   if (data.available !== undefined) {
     const availability = Number(data.available);
-    console.log('[AUTOFILL DEBUG] Setting availability:', availability);
+    // Auto-fill product availability
     autoFillField(config, 'availability', availability);
   }
 
@@ -204,28 +200,15 @@ export const autoFillProductData = (
     );
     if (!isNaN(numericPrice) && numericPrice > 0) {
       const roundedPrice = Math.round(numericPrice).toString();
-      console.log(
-        '[AUTOFILL DEBUG] Setting cardMarketPrice:',
-        roundedPrice,
-        'from original:',
-        data.price
-      );
+      // Auto-fill parsed price
       autoFillField(config, 'cardMarketPrice', roundedPrice);
     } else {
-      console.log(
-        '[AUTOFILL DEBUG] Price could not be parsed as valid number:',
-        data.price,
-        'parsed as:',
-        numericPrice
-      );
+      // Price parsing failed - using fallback
       // Don't set cardMarketPrice for invalid prices - leave it empty/0
       autoFillField(config, 'cardMarketPrice', '0');
     }
   } else {
-    console.log(
-      '[AUTOFILL DEBUG] No valid price data found (N/A or missing):',
-      data.price
-    );
+    // No valid price data available
     // Set cardMarketPrice to 0 for N/A prices
     autoFillField(config, 'cardMarketPrice', '0');
   }
@@ -265,52 +248,26 @@ export const autoFillFromProductSelection = (
   result: SearchResult,
   onSelectionChange?: (data: Record<string, unknown>) => void
 ) => {
-  console.log(
-    '[AUTOFILL WORKFLOW] Starting product selection autofill with result:',
-    result
-  );
-  console.log('[AUTOFILL WORKFLOW] Result data structure:', result.data);
-  console.log('[AUTOFILL WORKFLOW] Config received:', config);
+  // Process product selection for auto-fill
 
   // Auto-fill set data for products
-  console.log('[AUTOFILL WORKFLOW] Step 1: Auto-filling set data');
+  // Step 1: Auto-fill set data
   autoFillProductSetData(config, result);
 
   // Auto-fill product data
-  console.log('[AUTOFILL WORKFLOW] Step 2: Auto-filling product data');
+  // Step 2: Auto-fill product data
   autoFillProductData(config, result);
 
   // Call parent callback if provided (maintains existing behavior)
   if (onSelectionChange) {
-    console.log(
-      '[AUTOFILL WORKFLOW] Step 3: Calling parent callback with data:',
-      {
-        _id: result.id || result.data._id,
-        ...result.data,
-      }
-    );
+    // Step 3: Execute parent callback
     onSelectionChange({
       _id: result.id || result.data._id,
       ...result.data,
     });
   }
 
-  // Enhanced logging for debugging
-  console.log(
-    '[AUTOFILL WORKFLOW] Complete - Summary of what should be filled:',
-    {
-      setName:
-        result.data.setProductId?.setProductName ||
-        result.data.setName ||
-        result.data.setProductName,
-      productName: result.data.productName || result.data.name,
-      category: result.data.category,
-      availability: result.data.available,
-      cardMarketPrice: result.data.price
-        ? Math.round(parseFloat(result.data.price))
-        : null,
-    }
-  );
+  // Auto-fill workflow complete
 };
 
 /**
@@ -470,21 +427,8 @@ export const isValidSearchQuery = (
   return typeof query === 'string';
 };
 
-/**
- * Debounce utility for search operations
- * Generic debounce implementation
- */
-export const createDebouncedSearch = <T extends any[]>(
-  fn: (...args: T) => void,
-  delay: number = 300
-) => {
-  let timeoutId: NodeJS.Timeout;
-
-  return (...args: T) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-};
+// createDebouncedSearch removed - use debounce from common.ts instead
+// import { debounce } from './common';
 
 // ===== DISPLAY HELPERS (Consolidated) =====
 // getDisplayName function already exists above - removed duplicate

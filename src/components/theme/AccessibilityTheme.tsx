@@ -17,7 +17,7 @@
 import { useEffect, ReactNode } from 'react';
 import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme';
 import { useAccessibilityTheme } from '../../hooks/useAccessibilityTheme';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 
 // CLAUDE.md COMPLIANCE: Following SRP by separating large components into focused modules
 // This file now contains only the main AccessibilityTheme component and small helper components

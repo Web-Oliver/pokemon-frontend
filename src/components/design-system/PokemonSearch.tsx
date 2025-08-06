@@ -40,7 +40,7 @@ import {
 } from '../../hooks/useOptimizedSearch';
 import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 
 // Enhanced search interfaces for consolidation
 interface SearchSuggestion {

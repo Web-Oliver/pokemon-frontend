@@ -32,43 +32,5 @@ export const SEARCH_CONFIG = {
   CACHE_TTL_OTHERS: 180000, // 3 minutes
 } as const;
 
-// Auction Status Utilities
-// Moved from Auctions.tsx following DRY principles
-
-/**
- * Get status color - Premium design system
- * Returns Tailwind CSS classes for auction status styling
- */
-export const getStatusColor = (status: string): string => {
-  switch (status) {
-    case 'draft':
-      return 'bg-slate-100 text-slate-800 border border-slate-200';
-    case 'active':
-      return 'bg-blue-100 text-blue-800 border border-blue-200';
-    case 'sold':
-      return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-    case 'expired':
-      return 'bg-red-100 text-red-800 border border-red-200';
-    default:
-      return 'bg-slate-100 text-slate-800 border border-slate-200';
-  }
-};
-
-/**
- * Get status priority for sorting
- * Returns numeric priority for auction status ordering
- */
-export const getStatusPriority = (status: string): number => {
-  switch (status) {
-    case 'active':
-      return 1;
-    case 'draft':
-      return 2;
-    case 'sold':
-      return 3;
-    case 'expired':
-      return 4;
-    default:
-      return 5;
-  }
-};
+// Auction Status Utilities moved to auctionStatusUtils.ts
+// Import from: import { getStatusColor, getStatusPriority } from './auctionStatusUtils';

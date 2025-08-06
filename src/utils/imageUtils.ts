@@ -5,8 +5,7 @@
  * Dependency Inversion: Uses abstractions, not concretions
  */
 
-// Simple UUID generation without external dependencies
-const generateId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
+import { generateId } from './common';
 
 export interface ImagePreview {
   id: string;
@@ -21,7 +20,7 @@ export interface ImagePreview {
  * SRP: Only handles existing image preview creation
  */
 export const createExistingImagePreview = (url: string, index: number): ImagePreview => ({
-  id: `existing-${index}-${generateId()}`,
+  id: `existing-${index}-${generateId('img')}`,
   url: url.startsWith('http') ? url : `http://localhost:3000${url}`,
   isExisting: true,
 });
@@ -67,7 +66,7 @@ export const processImageFiles = async (
 
     // Create preview
     const preview: ImagePreview = {
-      id: `new-${generateId()}`,
+      id: `new-${generateId('img')}`,
       file,
       url: URL.createObjectURL(file),
       isExisting: false,

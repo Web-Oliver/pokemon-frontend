@@ -32,7 +32,7 @@ import {
   getThemeBackups,
   restoreThemeFromBackup,
 } from '../../utils/themeExport';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 
 // ================================
 // COMPONENT INTERFACES

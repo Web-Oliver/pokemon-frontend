@@ -84,31 +84,8 @@ const pureFetch = async (url: string): Promise<any> => {
   return response.json();
 };
 
-/**
- * Helper function to map _id to id for MongoDB compatibility
- * Context7 Pattern: Minimal transformation for performance
- */
-const mapCardIds = (card: unknown): unknown => {
-  if (!card) {
-    return card;
-  }
-  if (Array.isArray(card)) {
-    return card.map(mapCardIds);
-  }
-
-  if (
-    typeof card === 'object' &&
-    card !== null &&
-    '_id' in card &&
-    !('id' in card)
-  ) {
-    (card as Record<string, unknown>).id = (
-      card as Record<string, unknown>
-    )._id;
-  }
-
-  return card;
-};
+// Import unified transformation system
+import { ApiTransformers } from '../utils/unifiedResponseTransformer';
 
 // ===== CONTEXT7 PURE TANSTACK QUERY CARDS API =====
 
@@ -130,14 +107,8 @@ export const searchCards = async (
     `http://localhost:3000/api/search/cards?${queryParams.toString()}`
   );
 
-  return {
-    success: fullResponse.success || true,
-    query: fullResponse.meta?.query || params.query,
-    count: fullResponse.meta?.totalResults || fullResponse.data?.total || 0,
-    data: mapCardIds(
-      fullResponse.data?.cards || fullResponse.data || []
-    ) as ICard[],
-  };
+  // Use unified transformation system for consistent response handling
+  return ApiTransformers.search<SearchResponse<ICard>>(fullResponse);
 };
 
 /**
@@ -163,7 +134,7 @@ export const getCardSuggestions = async (
 
   const cardSuggestions =
     response.suggestions?.cards?.data || response.data?.cards || [];
-  return mapCardIds(cardSuggestions) as ICard[];
+  return ApiTransformers.direct<ICard[]>(cardSuggestions);
 };
 
 /**

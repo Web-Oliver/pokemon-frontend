@@ -11,7 +11,6 @@
 
 import React from 'react';
 import { PokemonButton } from '../design-system/PokemonButton';
-import { ButtonLoading } from './LoadingStates';
 import { buildThemeClasses, ThemeColor } from '../../theme/formThemes';
 
 interface FormActionButtonsProps {

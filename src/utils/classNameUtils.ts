@@ -2,20 +2,35 @@
  * Enhanced ClassName Utilities
  * Phase 1.2.2: Advanced className generation and theme integration
  *
+ * ROLE & RESPONSIBILITY:
+ * Primary utility for generating Tailwind CSS class strings based on component props,
+ * states, and configurations. Focuses on the "HOW" of styling - the mechanics of
+ * className generation, conditional logic, and responsive patterns.
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: ClassName generation and management only
  * - Open/Closed: Extensible for new className patterns
  * - DRY: Centralized className logic across all components
  * - Interface Segregation: Specific utilities for different use cases
  *
+ * SEPARATION FROM themeUtils.ts:
+ * - classNameUtils.ts: Generates class strings (HOW to style)
+ * - themeUtils.ts: Defines theme configurations and integration (WHAT to style)
+ *
+ * USE CASES:
+ * - Component state classes (hover, focus, disabled, loading)
+ * - Responsive breakpoint classes  
+ * - Size, variant, and animation utilities
+ * - Conditional className application
+ * - Accessibility and interaction patterns
+ *
  * Integrates with:
- * - themeUtils.ts for base cn() utility
+ * - themeUtils.ts for base cn() utility and theme configs
  * - ThemeContext.tsx for theme-aware class generation
  * - CSS custom properties for dynamic styling
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue } from 'clsx';
 import {
   ComponentSize,
   ComponentVariant,
@@ -26,18 +41,13 @@ import {
   Density,
   AnimationIntensity,
 } from '../types/themeTypes';
+import { cn } from './themeUtils';
 
 // ================================
 // ENHANCED CLASSNAME UTILITIES
 // ================================
 
-/**
- * Enhanced className utility with theme-aware merging
- * Extends the base cn() utility with advanced features
- */
-export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
-}
+// cn function imported from themeUtils.ts - single source of truth
 
 /**
  * Conditional className utility
@@ -66,6 +76,7 @@ export function cvn(conditions: Record<string, boolean>): string {
 /**
  * Responsive className utility
  * Generate responsive classes for different breakpoints
+ * @deprecated Use getResponsiveClasses from unifiedUtilities.ts instead
  */
 export function responsive(config: {
   base?: string;
@@ -567,7 +578,6 @@ export function cardClasses(config: {
 }
 
 export default {
-  cn,
   cva,
   cvn,
   responsive,
@@ -587,3 +597,6 @@ export default {
   inputClasses,
   cardClasses,
 };
+
+// Re-export cn from themeUtils for convenience
+export { cn };

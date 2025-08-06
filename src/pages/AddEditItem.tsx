@@ -14,12 +14,12 @@
  */
 
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
-import AddEditPsaCardForm from '../components/forms/AddEditPsaCardForm';
-import AddEditRawCardForm from '../components/forms/AddEditRawCardForm';
-import AddEditSealedProductForm from '../components/forms/AddEditSealedProductForm';
+// Lazy load form components for better bundle splitting
+const AddEditCardForm = React.lazy(() => import('../components/forms/AddEditCardForm'));
+const AddEditSealedProductForm = React.lazy(() => import('../components/forms/AddEditSealedProductForm'));
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
@@ -182,30 +182,38 @@ const AddEditItem: React.FC = () => {
     switch (selectedItemType) {
       case 'psa-graded':
         return (
-          <AddEditPsaCardForm
-            onCancel={handleFormCancel}
-            onSuccess={handleFormSuccess}
-            isEditing={isEditing}
-            initialData={isEditing ? (itemData as IPsaGradedCard) : undefined}
-          />
+          <Suspense fallback={<LoadingSpinner text="Loading PSA Card Form..." />}>
+            <AddEditCardForm
+              cardType="psa-graded"
+              onCancel={handleFormCancel}
+              onSuccess={handleFormSuccess}
+              isEditing={isEditing}
+              initialData={isEditing ? (itemData as IPsaGradedCard) : undefined}
+            />
+          </Suspense>
         );
       case 'raw-card':
         return (
-          <AddEditRawCardForm
-            onCancel={handleFormCancel}
-            onSuccess={handleFormSuccess}
-            isEditing={isEditing}
-            initialData={isEditing ? (itemData as IRawCard) : undefined}
-          />
+          <Suspense fallback={<LoadingSpinner text="Loading Raw Card Form..." />}>
+            <AddEditCardForm
+              cardType="raw-card"
+              onCancel={handleFormCancel}
+              onSuccess={handleFormSuccess}
+              isEditing={isEditing}
+              initialData={isEditing ? (itemData as IRawCard) : undefined}
+            />
+          </Suspense>
         );
       case 'sealed-product':
         return (
-          <AddEditSealedProductForm
-            onCancel={handleFormCancel}
-            onSuccess={handleFormSuccess}
-            isEditing={isEditing}
-            initialData={isEditing ? (itemData as ISealedProduct) : undefined}
-          />
+          <Suspense fallback={<LoadingSpinner text="Loading Sealed Product Form..." />}>
+            <AddEditSealedProductForm
+              onCancel={handleFormCancel}
+              onSuccess={handleFormSuccess}
+              isEditing={isEditing}
+              initialData={isEditing ? (itemData as ISealedProduct) : undefined}
+            />
+          </Suspense>
         );
       default:
         return null;

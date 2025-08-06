@@ -9,7 +9,6 @@
  */
 
 import { ItemOrderingState, SortMethod } from '../domain/models/ordering';
-import toast from 'react-hot-toast';
 
 // Storage keys for different data types
 export const STORAGE_KEYS = {
@@ -82,7 +81,6 @@ class StorageManager {
       return true;
     } catch (error) {
       console.error('Failed to save to storage:', key, error);
-      toast.error('Failed to save ordering preferences');
       return false;
     }
   }
@@ -409,7 +407,6 @@ export const storageHelpers = {
       return orderingPersistence.saveOrderingState(state);
     } catch (error) {
       console.error('Failed to save ordering state:', error);
-      toast.error('Failed to save ordering preferences');
       return false;
     }
   },

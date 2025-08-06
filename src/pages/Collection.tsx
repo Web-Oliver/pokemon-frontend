@@ -11,10 +11,11 @@
  */
 
 import { Download, FileText, Plus } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { MarkSoldForm } from '../components/forms/MarkSoldForm';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+// Lazy load modal/form components for better performance
+const MarkSoldForm = React.lazy(() => import('../components/forms/MarkSoldForm').then(m => ({ default: m.MarkSoldForm })));
+const CollectionExportModal = React.lazy(() => import('../components/lists/CollectionExportModal'));
 import { PageLayout } from '../components/layouts/PageLayout';
-import CollectionExportModal from '../components/lists/CollectionExportModal';
 import { CollectionItem } from '../components/lists/CollectionItemCard';
 import CollectionStats from '../components/lists/CollectionStats';
 import CollectionTabs, { TabType } from '../components/lists/CollectionTabs';
@@ -219,17 +220,19 @@ const Collection: React.FC = () => {
       />
 
       {/* Export Selection Modal */}
-      <CollectionExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        items={getAllCollectionItems()}
-        selectedItemIds={selectedItemsForExport}
-        isExporting={isExporting}
-        onToggleItemSelection={toggleItemSelection}
-        onSelectAllItems={handleSelectAllItems}
-        onClearSelection={clearSelection}
-        onExportSelected={handleExportSelectedItems}
-      />
+      <Suspense fallback={<div>Loading export modal...</div>}>
+        <CollectionExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          items={getAllCollectionItems()}
+          selectedItemIds={selectedItemsForExport}
+          isExporting={isExporting}
+          onToggleItemSelection={toggleItemSelection}
+          onSelectAllItems={handleSelectAllItems}
+          onClearSelection={clearSelection}
+          onExportSelected={handleExportSelectedItems}
+        />
+      </Suspense>
 
       {/* Mark as Sold Modal using PokemonModal */}
       <PokemonModal
@@ -239,12 +242,14 @@ const Collection: React.FC = () => {
         size="lg"
       >
         {selectedItem && (
-          <MarkSoldForm
-            itemId={selectedItem.id}
-            itemType={selectedItem.type}
-            onCancel={handleModalClose}
-            onSuccess={handleMarkSoldSuccess}
-          />
+          <Suspense fallback={<div>Loading form...</div>}>
+            <MarkSoldForm
+              itemId={selectedItem.id}
+              itemType={selectedItem.type}
+              onCancel={handleModalClose}
+              onSuccess={handleMarkSoldSuccess}
+            />
+          </Suspense>
         )}
       </PokemonModal>
     </PageLayout>

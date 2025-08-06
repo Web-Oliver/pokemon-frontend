@@ -1,22 +1,23 @@
 /**
- * Sealed Product Search Page Component - SetProduct → Product Hierarchy
+ * Sealed Product Search Page Component - Unified Design System
  * Layer 4: Views/Pages (Application Screens)
  * Following CLAUDE.md principles: Beautiful design, SRP, and integration with new hierarchical product structure
  * UPDATED: Now uses SetProduct → Product hierarchy instead of CardMarketReferenceProduct
+ * 
+ * Following CLAUDE.md principles:
+ * - REFACTORED: Extracted reusable components to eliminate DRY violations
+ * - ProductSearchFilters: Reusable search and filter inputs
+ * - ProductCard: Reusable individual product card components
+ * - PaginationControls: Reusable pagination UI with smart page number generation
  */
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  Euro,
-  ExternalLink,
-  Filter,
-  Package,
-  Search,
-} from 'lucide-react';
+import { Euro, Package, Search } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
 import { searchProducts, getPaginatedProducts } from '../api/productsApi';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductSearchFilters from '../components/common/ProductSearchFilters';
+import ProductCard from '../components/common/ProductCard';
+import PaginationControls from '../components/common/PaginationControls';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { IProduct, ProductCategory } from '../domain/models/product';
 import { ISetProduct } from '../domain/models/setProduct';
@@ -43,9 +44,6 @@ const ProductSearch: React.FC = () => {
   });
 
   const itemsPerPage = 20;
-
-  // Available categories from ProductCategory enum
-  const categories = Object.values(ProductCategory);
 
   // Fetch products with pagination using new SetProduct → Product hierarchy
   const fetchProducts = useCallback(
@@ -222,164 +220,23 @@ const ProductSearch: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-text-primary)]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
       </div>
 
-      {/* Premium Search Filters */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-status-success)]/5 to-teal-500/5"></div>
-        <div className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Product Name Search */}
-            <div className="lg:col-span-4">
-              <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
-                Product Name
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-status-success)] transition-colors duration-300 z-10" />
-                <input
-                  type="text"
-                  placeholder="Search product names..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="w-full pl-10 pr-4 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-status-success)]/50 focus:border-[var(--theme-status-success)] focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] placeholder-[var(--theme-text-muted)] transition-all duration-300 hover:shadow-xl"
-                />
-              </div>
-            </div>
-
-            {/* Category Filter */}
-            <div className="lg:col-span-3">
-              <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
-                Category
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/10 via-cyan-500/10 to-emerald-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-teal-400 transition-colors duration-300 z-10" />
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full pl-10 pr-10 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-400 focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer"
-                >
-                  <option
-                    value=""
-                    className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-                  >
-                    All Categories
-                  </option>
-                  {categories.map((category) => (
-                    <option
-                      key={category}
-                      value={category}
-                      className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-                    >
-                      {category.replace(/-/g, ' ')}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10">
-                  <svg
-                    className="w-5 h-5 text-[var(--theme-text-muted)]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Set Name Filter */}
-            <div className="lg:col-span-3">
-              <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
-                Set Name
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-                <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300 z-10" />
-                <input
-                  type="text"
-                  placeholder="Filter by set name..."
-                  value={setNameFilter}
-                  onChange={(e) => setSetNameFilter(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="w-full pl-10 pr-4 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-primary)]/50 focus:border-[var(--theme-accent-primary)] focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] placeholder-[var(--theme-text-muted)] transition-all duration-300 hover:shadow-xl"
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons and Available Filter */}
-            <div className="lg:col-span-2 flex flex-col gap-4">
-              {/* Available Only Filter */}
-              <div className="flex flex-col justify-center">
-                <label className="flex items-center space-x-3 cursor-pointer group">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={availableOnly}
-                      onChange={(e) => setAvailableOnly(e.target.checked)}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 ${
-                        availableOnly
-                          ? 'bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 border-[var(--theme-status-success)]'
-                          : 'border-[var(--theme-border)] bg-[var(--theme-surface-secondary)] group-hover:border-[var(--theme-status-success)]'
-                      }`}
-                    >
-                      {availableOnly && (
-                        <svg
-                          className="w-4 h-4 text-white absolute top-0.5 left-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-sm font-bold text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
-                    Available Only
-                  </span>
-                </label>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={handleSearch}
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-[var(--theme-status-success)] to-teal-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--theme-status-success)]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-[var(--theme-text-secondary)]/30 border-t-[var(--theme-text-secondary)] rounded-full animate-spin mr-2"></div>
-                      Searching...
-                    </div>
-                  ) : (
-                    'Search'
-                  )}
-                </button>
-                <button
-                  onClick={handleClearFilters}
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] px-6 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--theme-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Premium Search Filters using ProductSearchFilters component */}
+      <ProductSearchFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        setProductFilter={setProductFilter}
+        setSetProductFilter={setSetProductFilter}
+        setNameFilter={setNameFilter}
+        setSetNameFilter={setSetNameFilter}
+        availableOnly={availableOnly}
+        setAvailableOnly={setAvailableOnly}
+        loading={loading}
+        handleSearch={handleSearch}
+        handleClearFilters={handleClearFilters}
+        handleKeyPress={handleKeyPress}
+      />
 
       {/* Premium Search Results */}
       <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
@@ -461,161 +318,22 @@ const ProductSearch: React.FC = () => {
                 </div>
               </div>
 
-              {/* Products Grid */}
+              {/* Products Grid using ProductCard component */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
-                  <div
+                  <ProductCard
                     key={product._id}
-                    className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/5 via-teal-500/5 to-[var(--theme-accent-primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10 space-y-4">
-                      <div>
-                        <h3 className="font-bold text-[var(--theme-text-primary)] text-lg leading-tight line-clamp-2 group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
-                          {product.productName}
-                        </h3>
-                        <p className="text-[var(--theme-text-secondary)] font-medium mt-1">
-                          {product.setProductName || 'Unknown SetProduct'}
-                        </p>
-                        <span className="inline-block px-3 py-1 text-xs font-bold bg-gradient-to-r from-[var(--theme-status-success)]/50 to-teal-900/50 text-[var(--theme-status-success)] rounded-full mt-2 border border-[var(--theme-status-success)]/30">
-                          {product.category?.replace(/-/g, ' ') || 'Unknown'}
-                        </span>
-                      </div>
-
-                      <div className="space-y-3 pt-3 border-t border-[var(--theme-border)]">
-                        {product.price && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-[var(--theme-text-secondary)] font-medium">
-                              Price:
-                            </span>
-                            <div className="text-right">
-                              <div className="font-bold text-[var(--theme-text-primary)]">
-                                {convertToDKK(parseFloat(product.price))} DKK
-                              </div>
-                              <div className="text-xs text-[var(--theme-text-muted)]">
-                                €{product.price}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--theme-text-secondary)] font-medium">
-                            Available:
-                          </span>
-                          <span
-                            className={`font-bold px-2 py-1 rounded-lg text-sm ${
-                              product.available > 0
-                                ? 'text-[var(--theme-status-success)] bg-[var(--theme-status-success)]/30 border border-[var(--theme-status-success)]/30'
-                                : 'text-[var(--theme-status-error)] bg-[var(--theme-status-error)]/30 border border-[var(--theme-status-error)]/30'
-                            }`}
-                          >
-                            {product.available > 0
-                              ? `${product.available} in stock`
-                              : 'Out of stock'}
-                          </span>
-                        </div>
-
-                        {product.lastUpdated && (
-                          <div className="text-xs text-[var(--theme-text-muted)] text-center pt-2">
-                            Updated:{' '}
-                            {new Date(product.lastUpdated).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* External Link */}
-                      {product.url && (
-                        <div className="pt-3 border-t border-[var(--theme-border)]">
-                          <a
-                            href={product.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group/link"
-                          >
-                            <ExternalLink className="w-4 h-4 mr-2 group-hover/link:scale-110 transition-transform duration-300" />
-                            View Product
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                    product={product}
+                    convertToDKK={convertToDKK}
+                  />
                 ))}
               </div>
 
-              {/* Premium Pagination */}
-              {pagination.totalPages > 1 && (
-                <div className="mt-12 flex items-center justify-center">
-                  <div className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl shadow-xl border border-[var(--theme-border)] p-6">
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() =>
-                          handlePageChange(pagination.currentPage - 1)
-                        }
-                        disabled={!pagination.hasPrevPage}
-                        className="flex items-center px-4 py-3 bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
-                      >
-                        <ChevronLeft className="w-5 h-5 mr-2" />
-                        Previous
-                      </button>
-
-                      <div className="flex items-center space-x-2">
-                        {/* Page numbers */}
-                        {Array.from(
-                          { length: Math.min(7, pagination.totalPages) },
-                          (_, index) => {
-                            let pageNumber;
-                            if (pagination.totalPages <= 7) {
-                              pageNumber = index + 1;
-                            } else if (pagination.currentPage <= 4) {
-                              pageNumber = index + 1;
-                            } else if (
-                              pagination.currentPage >=
-                              pagination.totalPages - 3
-                            ) {
-                              pageNumber = pagination.totalPages - 6 + index;
-                            } else {
-                              pageNumber = pagination.currentPage - 3 + index;
-                            }
-
-                            const isCurrentPage =
-                              pageNumber === pagination.currentPage;
-                            return (
-                              <button
-                                key={pageNumber}
-                                onClick={() => handlePageChange(pageNumber)}
-                                className={`w-12 h-12 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
-                                  isCurrentPage
-                                    ? 'bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 text-white'
-                                    : 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] hover:bg-gradient-to-r hover:from-[var(--theme-status-success)]/50 hover:to-teal-900/50 hover:text-[var(--theme-status-success)] border border-[var(--theme-border)]'
-                                }`}
-                              >
-                                {pageNumber}
-                              </button>
-                            );
-                          }
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          handlePageChange(pagination.currentPage + 1)
-                        }
-                        disabled={!pagination.hasNextPage}
-                        className="flex items-center px-4 py-3 bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
-                      >
-                        Next
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </button>
-                    </div>
-
-                    <div className="mt-4 text-center text-sm text-[var(--theme-text-muted)]">
-                      Page {pagination.currentPage} of {pagination.totalPages} •{' '}
-                      {pagination.total} total products
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Premium Pagination using PaginationControls component */}
+              <PaginationControls
+                pagination={pagination}
+                onPageChange={handlePageChange}
+              />
             </>
           )}
         </div>

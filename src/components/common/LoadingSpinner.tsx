@@ -31,7 +31,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   fullScreen = false,
   themeColor = 'dark',
 }) => {
-  const { visualTheme } = useVisualTheme();
+  const { visualTheme: _visualTheme } = useVisualTheme();
   const elementTheme = getElementTheme(themeColor);
   const sizeClasses = {
     sm: 'w-5 h-5',

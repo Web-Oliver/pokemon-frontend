@@ -14,15 +14,13 @@
 
 import React, {
   ChangeEvent,
-  DragEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { AlertCircle, Camera, Image, Sparkles, Upload, X } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import { PokemonConfirmModal } from './design-system/PokemonModal';
-import { GlassmorphismContainer } from './effects/GlassmorphismContainer';
 import { ImageAnalysisIndicator } from './common/ImageAnalysisIndicator';
 import { useDragAndDrop } from '../hooks/useDragAndDrop';
 import { useImageRemoval } from '../hooks/useImageRemoval';
@@ -32,17 +30,7 @@ import {
   cleanupObjectURL,
   type ImagePreview,
 } from '../utils/imageUtils';
-import {
-  detectImageAspectRatio,
-  getContext7ContainerClasses,
-  getContext7GlassOverlay,
-  getContext7ImageClasses,
-  getContext7ShimmerEffect,
-  getOptimalGridLayout,
-  getResponsiveImageConfig,
-  type ImageAspectInfo,
-} from '../utils/fileOperations';
-import { cn } from '../utils/themeUtils';
+import { cn } from '../utils/unifiedUtilities';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

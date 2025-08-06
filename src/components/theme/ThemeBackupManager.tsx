@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { Trash2, Download, Upload } from 'lucide-react';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 import type { ThemeBackup, ThemeExportData } from './utils/themeExportUtils';
 import { 
   createThemeBackup, 

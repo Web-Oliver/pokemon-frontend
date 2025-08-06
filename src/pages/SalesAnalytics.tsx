@@ -1,23 +1,32 @@
 /**
- * Sales Analytics Page Component
+ * Sales Analytics Page Component - Unified Design System
  *
  * Financial tracking and analytics dashboard for sales data.
  * Complete implementation with real data integration and charts.
  *
- * Following CLAUDE.md principles for beautiful, award-winning design.
+ * Following CLAUDE.md principles for beautiful, award-winning design:
+ * - REFACTORED: Extracted reusable components to eliminate DRY violations
+ * - SalesStatCard: Reusable statistics cards for key metrics
+ * - CategorySalesCard: Reusable category breakdown cards
+ * - RecentSaleListItem: Reusable individual sale item components
+ * - SalesDateRangeFilter: Reusable date filter component
  */
 
 import React, { useState } from 'react';
-import { Calendar, X, TrendingUp, DollarSign, Download } from 'lucide-react';
+import { TrendingUp, DollarSign, Download } from 'lucide-react';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';
 import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
+import SalesStatCard from '../components/common/SalesStatCard';
+import CategorySalesCard from '../components/common/CategorySalesCard';
+import RecentSaleListItem from '../components/common/RecentSaleListItem';
+import SalesDateRangeFilter from '../components/common/SalesDateRangeFilter';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
 import { showSuccessToast } from '../utils/errorHandler';
 import { displayPrice } from '../utils/formatting';
-import '../styles/context7-premium.css';
+import '../styles/unified-design-system.css';
 
 const SalesAnalytics: React.FC = () => {
   const { sales, loading, error, dateRange, setDateRange } =
@@ -47,95 +56,13 @@ const SalesAnalytics: React.FC = () => {
     }
   };
 
-  // Context7 Premium Date Range Filter
+  // Context7 Premium Date Range Filter using SalesDateRangeFilter component
   const headerActions = (
-    <div className="card-premium p-4 min-w-[380px] bg-[var(--theme-surface)] border-[var(--theme-border)] backdrop-blur-xl">
-      <div className="flex items-center space-x-4">
-        {/* Calendar Icon with Context7 glow */}
-        <div className="w-10 h-10 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl flex items-center justify-center glow-on-hover border border-cyan-400/30">
-          <Calendar className="w-5 h-5 text-cyan-300" />
-        </div>
-
-        {/* Start Date Input - Context7 Premium */}
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-[var(--theme-text-secondary)] mb-1">
-            From
-          </label>
-          <input
-            type="date"
-            value={localDateRange.startDate || ''}
-            onChange={(e) =>
-              setLocalDateRange((prev) => ({
-                ...prev,
-                startDate: e.target.value,
-              }))
-            }
-            onBlur={() =>
-              setDateRange({
-                startDate: localDateRange.startDate,
-                endDate: localDateRange.endDate,
-              })
-            }
-            className="input-premium w-full px-3 py-2 text-[var(--theme-text-primary)] font-medium"
-          />
-        </div>
-
-        {/* Premium Separator */}
-        <div className="flex flex-col items-center">
-          <div className="w-6 h-0.5 bg-gradient-to-r from-cyan-400/50 to-purple-400/50 rounded-full mb-1"></div>
-          <span className="text-xs text-[var(--theme-text-muted)]">to</span>
-          <div className="w-6 h-0.5 bg-gradient-to-r from-cyan-400/50 to-purple-400/50 rounded-full mt-1"></div>
-        </div>
-
-        {/* End Date Input - Context7 Premium */}
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-[var(--theme-text-secondary)] mb-1">
-            Until
-          </label>
-          <input
-            type="date"
-            value={localDateRange.endDate || ''}
-            onChange={(e) =>
-              setLocalDateRange((prev) => ({
-                ...prev,
-                endDate: e.target.value,
-              }))
-            }
-            onBlur={() =>
-              setDateRange({
-                startDate: localDateRange.startDate,
-                endDate: localDateRange.endDate,
-              })
-            }
-            className="input-premium w-full px-3 py-2 text-[var(--theme-text-primary)] font-medium"
-          />
-        </div>
-
-        {/* Clear Button - Premium glassmorphism */}
-        {(localDateRange.startDate || localDateRange.endDate) && (
-          <button
-            onClick={() => {
-              setLocalDateRange({ startDate: '', endDate: '' });
-              setDateRange({ startDate: undefined, endDate: undefined });
-            }}
-            className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/50 rounded-xl transition-all duration-300 flex items-center justify-center scale-on-hover backdrop-blur-sm"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Active Filter Indicator - Premium design */}
-      {(localDateRange.startDate || localDateRange.endDate) && (
-        <div className="mt-3 pt-3 border-t border-[var(--theme-border)]">
-          <div className="flex items-center text-xs text-cyan-300 font-medium">
-            <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full mr-2 animate-pulse"></div>
-            Filtering: {localDateRange.startDate || 'Start'} →{' '}
-            {localDateRange.endDate || 'End'}
-          </div>
-        </div>
-      )}
-    </div>
+    <SalesDateRangeFilter
+      localDateRange={localDateRange}
+      setLocalDateRange={setLocalDateRange}
+      setDateRange={setDateRange}
+    />
   );
 
   return (
@@ -169,66 +96,43 @@ const SalesAnalytics: React.FC = () => {
 
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <>
-                    {/* Key Metrics - Context7 Premium Cards */}
+                    {/* Key Metrics - Context7 Premium Cards using SalesStatCard */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                      {/* Total Cards Sold - Premium glassmorphism */}
-                      <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center border border-emerald-400/30 backdrop-blur-sm">
-                            <span className="text-xl">🃏</span>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm text-emerald-400 font-medium mb-1">
-                              Total Cards
-                            </div>
-                            <div className="text-4xl font-bold text-[var(--theme-text-primary)]">
-                              {sales.length}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
-                          <div className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full w-full shimmer"></div>
-                        </div>
-                        <div className="mt-4 text-center">
-                          <span className="inline-flex items-center px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-medium border border-emerald-400/30 backdrop-blur-sm">
-                            Cards Conquered
-                          </span>
-                        </div>
-                      </div>
+                      {/* Total Cards Sold */}
+                      <SalesStatCard
+                        title="Total Cards"
+                        value={sales.length}
+                        emoji="🃏"
+                        colorScheme={{
+                          iconBg: "from-emerald-500/20 to-cyan-500/20",
+                          iconBorder: "border-emerald-400/30",
+                          titleColor: "text-emerald-400",
+                          progressGradient: "from-emerald-400 to-cyan-400",
+                          badgeColors: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30"
+                        }}
+                        badgeText="Cards Conquered"
+                      />
 
-                      {/* Total Revenue - Premium glassmorphism */}
-                      <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center border border-blue-400/30 backdrop-blur-sm glow-on-hover">
-                            <DollarSign className="w-6 h-6 text-cyan-300" />
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm text-blue-400 font-medium mb-1">
-                              Total Revenue
-                            </div>
-                            <div className="text-4xl font-bold text-[var(--theme-text-primary)]">
-                              {displayPrice(
-                                sales.reduce(
-                                  (sum, sale) =>
-                                    sum + (Number(sale.actualSoldPrice) || 0),
-                                  0
-                                )
-                              ).replace(' kr.', '')}
-                            </div>
-                            <div className="text-sm text-blue-300 font-medium">
-                              kr.
-                            </div>
-                          </div>
-                        </div>
-                        <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
-                          <div className="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full w-full shimmer"></div>
-                        </div>
-                        <div className="mt-4 text-center">
-                          <span className="inline-flex items-center px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium border border-blue-400/30 backdrop-blur-sm">
-                            Revenue Generated
-                          </span>
-                        </div>
-                      </div>
+                      {/* Total Revenue */}
+                      <SalesStatCard
+                        title="Total Revenue"
+                        value={displayPrice(
+                          sales.reduce(
+                            (sum, sale) =>
+                              sum + (Number(sale.actualSoldPrice) || 0),
+                            0
+                          )
+                        ).replace(' kr.', '')}
+                        icon={DollarSign}
+                        colorScheme={{
+                          iconBg: "from-blue-500/20 to-purple-500/20",
+                          iconBorder: "border-blue-400/30",
+                          titleColor: "text-blue-400",
+                          progressGradient: "from-blue-400 to-purple-400",
+                          badgeColors: "bg-blue-500/20 text-blue-300 border-blue-400/30"
+                        }}
+                        badgeText="Revenue Generated"
+                      />
                     </div>
 
                     {/* Category Breakdown Section */}
@@ -247,6 +151,7 @@ const SalesAnalytics: React.FC = () => {
                         {(() => {
                           const categoryStats = {
                             'PSA Graded Card': {
+                              name: 'PSA Graded Card',
                               count: 0,
                               revenue: 0,
                               icon: '🏆',
@@ -256,6 +161,7 @@ const SalesAnalytics: React.FC = () => {
                               borderColor: 'border-yellow-400/30',
                             },
                             'Raw Card': {
+                              name: 'Raw Card',
                               count: 0,
                               revenue: 0,
                               icon: '🃏',
@@ -265,6 +171,7 @@ const SalesAnalytics: React.FC = () => {
                               borderColor: 'border-blue-400/30',
                             },
                             'Sealed Product': {
+                              name: 'Sealed Product',
                               count: 0,
                               revenue: 0,
                               icon: '📦',
@@ -285,43 +192,11 @@ const SalesAnalytics: React.FC = () => {
                           });
 
                           return Object.entries(categoryStats).map(
-                            ([category, stats]) => (
-                              <div
-                                key={category}
-                                className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 scale-on-hover"
-                              >
-                                <div className="text-center">
-                                  <div
-                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${stats.color.replace('bg-', 'bg-gradient-to-r from-').replace('-600', '-500/20 to-cyan-500/20')} mb-4 text-xl border border-opacity-30 backdrop-blur-sm glow-on-hover`}
-                                    style={{
-                                      borderColor: stats.color.includes(
-                                        'yellow'
-                                      )
-                                        ? 'rgba(251, 191, 36, 0.3)'
-                                        : stats.color.includes('blue')
-                                          ? 'rgba(59, 130, 246, 0.3)'
-                                          : 'rgba(168, 85, 247, 0.3)',
-                                    }}
-                                  >
-                                    {stats.icon}
-                                  </div>
-                                  <h4 className="text-lg font-bold text-[var(--theme-text-primary)] mb-2">
-                                    {category}
-                                  </h4>
-                                  <div className="space-y-2">
-                                    <div
-                                      className={`inline-flex items-center px-3 py-1 ${stats.bgColor} ${stats.textColor} rounded-full text-sm font-medium ${stats.borderColor} border backdrop-blur-sm`}
-                                    >
-                                      {stats.count} cards
-                                    </div>
-                                    <div
-                                      className={`text-2xl font-bold ${stats.textColor}`}
-                                    >
-                                      {displayPrice(stats.revenue)}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                            ([categoryKey, categoryData]) => (
+                              <CategorySalesCard
+                                key={categoryKey}
+                                category={categoryData}
+                              />
                             )
                           );
                         })()}
@@ -373,133 +248,13 @@ const SalesAnalytics: React.FC = () => {
               <div className="p-0">
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <div className="divide-y divide-[var(--theme-border)]">
-                    {sales.slice(0, 10).map((sale, index) => {
-                      const actualPrice = Number(sale.actualSoldPrice) || 0;
-                      const myPrice = Number(sale.myPrice) || 0;
-
-                      return (
-                        <div
-                          key={sale.id || `sale-${index}`}
-                          className="group relative px-8 py-6 hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5 transition-all duration-300 scale-on-hover backdrop-blur-sm"
-                        >
-                          <div className="flex items-center space-x-6">
-                            {/* Product Thumbnail - Premium glassmorphism */}
-                            <div className="flex-shrink-0 relative">
-                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--theme-surface)] to-zinc-800/20 border border-[var(--theme-border)] overflow-hidden backdrop-blur-sm">
-                                {sale.thumbnailUrl ? (
-                                  <img
-                                    src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : `/${sale.thumbnailUrl}`}`}
-                                    alt={sale.itemName}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      // Fallback to emoji if image fails to load
-                                      const target = e.currentTarget;
-                                      target.style.display = 'none';
-                                      const fallbackDiv =
-                                        target.nextElementSibling as HTMLElement;
-                                      if (fallbackDiv) {
-                                        fallbackDiv.style.display = 'flex';
-                                      }
-                                    }}
-                                  />
-                                ) : null}
-                                <div
-                                  className="w-full h-full flex items-center justify-center text-zinc-400 text-lg"
-                                  style={{
-                                    display: sale.thumbnailUrl
-                                      ? 'none'
-                                      : 'flex',
-                                  }}
-                                >
-                                  {(() => {
-                                    const category =
-                                      sale.itemCategory || 'Unknown';
-                                    if (category.includes('PSA')) {
-                                      return '🏆';
-                                    }
-                                    if (category.includes('Sealed')) {
-                                      return '📦';
-                                    }
-                                    if (category.includes('Raw')) {
-                                      return '🃏';
-                                    }
-                                    return '🎴';
-                                  })()}
-                                </div>
-                              </div>
-
-                              {/* Category badge - Premium glassmorphism */}
-                              <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-cyan-300 border border-blue-400/30 backdrop-blur-sm">
-                                {(() => {
-                                  const category =
-                                    sale.itemCategory || 'Unknown';
-                                  if (category.includes('PSA')) {
-                                    return 'PSA';
-                                  }
-                                  if (category.includes('Sealed')) {
-                                    return 'Sealed';
-                                  }
-                                  if (category.includes('Raw')) {
-                                    return 'Raw';
-                                  }
-                                  return 'Card';
-                                })()}
-                              </div>
-                            </div>
-
-                            {/* Product Name & Details - Premium styling */}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-lg font-semibold text-[var(--theme-text-primary)] group-hover:text-cyan-200 transition-colors mb-1 truncate">
-                                {sale.itemName || 'Unknown Item'}
-                              </h3>
-                              <div className="flex items-center space-x-4 text-sm text-[var(--theme-text-secondary)]">
-                                <span>
-                                  📅{' '}
-                                  {sale.dateSold
-                                    ? new Date(
-                                        sale.dateSold
-                                      ).toLocaleDateString('da-DK', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
-                                      })
-                                    : 'Unknown'}
-                                </span>
-                                <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 text-[var(--theme-text-secondary)] border border-[var(--theme-border)] backdrop-blur-sm">
-                                  {sale.source === 'Facebook'
-                                    ? '📘'
-                                    : sale.source === 'DBA'
-                                      ? '🏪'
-                                      : '🌐'}{' '}
-                                  {sale.source || 'Unknown'}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Price Information - Premium styling */}
-                            <div className="flex items-center space-x-8">
-                              <div className="text-right">
-                                <div className="text-xs text-[var(--theme-text-muted)] uppercase tracking-wide mb-1">
-                                  My Price
-                                </div>
-                                <div className="text-sm font-semibold text-[var(--theme-text-secondary)]">
-                                  {displayPrice(myPrice)}
-                                </div>
-                              </div>
-
-                              <div className="text-right">
-                                <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">
-                                  Sale Price
-                                </div>
-                                <div className="text-lg font-bold text-emerald-300">
-                                  {displayPrice(actualPrice)}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {sales.slice(0, 10).map((sale, index) => (
+                      <RecentSaleListItem
+                        key={sale.id || `sale-${index}`}
+                        sale={sale}
+                        index={index}
+                      />
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center py-20">

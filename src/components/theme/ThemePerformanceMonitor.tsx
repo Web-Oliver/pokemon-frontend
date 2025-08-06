@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Activity, Zap, Clock, TrendingUp } from 'lucide-react';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 
 interface PerformanceData {
   renderTime: number;

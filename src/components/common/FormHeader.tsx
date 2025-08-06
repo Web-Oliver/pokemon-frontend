@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { getHeaderTheme, ThemeColor } from '../../theme/formThemes';
+import { ThemeColor } from '../../theme/formThemes';
 import GlassmorphismHeader from './GlassmorphismHeader';
 
 interface FormHeaderProps {
@@ -33,7 +33,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   icon,
   title,
   description,
-  primaryColorClass = 'purple',
+  primaryColorClass: _primaryColorClass = 'purple',
   className = '',
 }) => {
   return (

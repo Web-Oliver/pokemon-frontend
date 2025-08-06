@@ -1,6 +1,6 @@
 import { error as logError } from './logger';
-import toast from 'react-hot-toast';
 import { APIResponse } from './responseTransformer';
+import { showErrorToast, showStatusErrorToast } from '../ui/toastNotifications';
 
 /**
  * Standard API Error class for new API format
@@ -159,16 +159,7 @@ export const handleApiError = (error: unknown, userMessage?: string): void => {
   }
 
   // Use toast notification for better user experience
-  toast.error(displayMessage, {
-    duration: 5000,
-    position: 'top-right',
-    style: {
-      background: '#FEF2F2',
-      border: '1px solid #FECACA',
-      color: '#DC2626',
-    },
-    icon: '⚠️',
-  });
+  showErrorToast(displayMessage);
 
   // Store the last error for debugging purposes
   if (typeof window !== 'undefined') {
@@ -201,45 +192,7 @@ export const handleEnhancedApiError = (
   logError('Standard API Error Details:', error.getDebugInfo());
 
   // Show appropriate toast based on error status
-  const toastConfig = {
-    duration: 5000,
-    position: 'top-right' as const,
-  };
-
-  if (error.statusCode && error.statusCode >= 500) {
-    // Server errors - show different styling
-    toast.error(displayMessage, {
-      ...toastConfig,
-      style: {
-        background: '#FEF2F2',
-        border: '1px solid #FECACA',
-        color: '#DC2626',
-      },
-      icon: '🚫',
-    });
-  } else if (error.statusCode === 401 || error.statusCode === 403) {
-    // Authentication/authorization errors
-    toast.error(displayMessage, {
-      ...toastConfig,
-      style: {
-        background: '#FEF2F2',
-        border: '1px solid #FECACA',
-        color: '#DC2626',
-      },
-      icon: '🔒',
-    });
-  } else {
-    // General client errors
-    toast.error(displayMessage, {
-      ...toastConfig,
-      style: {
-        background: '#FEF2F2',
-        border: '1px solid #FECACA',
-        color: '#DC2626',
-      },
-      icon: '⚠️',
-    });
-  }
+  showStatusErrorToast(displayMessage, error.statusCode);
 
   // Store for debugging
   if (typeof window !== 'undefined') {
@@ -247,68 +200,5 @@ export const handleEnhancedApiError = (
   }
 };
 
-/**
- * Show success toast notification
- * @param message - Success message to display
- * @param options - Optional toast configuration
- */
-export const showSuccessToast = (
-  message: string,
-  options?: Record<string, unknown>
-): void => {
-  toast.success(message, {
-    duration: 4000,
-    position: 'top-right',
-    style: {
-      background: '#F0FDF4',
-      border: '1px solid #BBF7D0',
-      color: '#16A34A',
-    },
-    icon: '✅',
-    ...options,
-  });
-};
-
-/**
- * Show info toast notification
- * @param message - Info message to display
- * @param options - Optional toast configuration
- */
-export const showInfoToast = (
-  message: string,
-  options?: Record<string, unknown>
-): void => {
-  toast(message, {
-    duration: 4000,
-    position: 'top-right',
-    style: {
-      background: '#EFF6FF',
-      border: '1px solid #BFDBFE',
-      color: '#2563EB',
-    },
-    icon: 'ℹ️',
-    ...options,
-  });
-};
-
-/**
- * Show warning toast notification
- * @param message - Warning message to display
- * @param options - Optional toast configuration
- */
-export const showWarningToast = (
-  message: string,
-  options?: Record<string, unknown>
-): void => {
-  toast(message, {
-    duration: 4000,
-    position: 'top-right',
-    style: {
-      background: '#FFFBEB',
-      border: '1px solid #FDE68A',
-      color: '#D97706',
-    },
-    icon: '⚠️',
-    ...options,
-  });
-};
+// Toast notification functions moved to ../ui/toastNotifications.ts
+// Import them from there: showSuccessToast, showInfoToast, showWarningToast, showErrorToast

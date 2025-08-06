@@ -116,7 +116,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   condition,
   category,
   sold = false,
-  saleDate,
+  saleDate: _saleDate,
   showBadge = true,
   showPrice = true,
   showActions = false,

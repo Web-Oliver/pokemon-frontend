@@ -19,7 +19,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
 import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
 import { useAuction } from '../hooks/useAuction';
-import { getStatusColor, getStatusPriority } from '../utils/constants';
+import { getStatusColor, getStatusPriority } from '../utils/auctionStatusUtils';
 import { formatDateWithTime } from '../utils/formatting';
 import { navigationHelper } from '../utils/navigation';
 

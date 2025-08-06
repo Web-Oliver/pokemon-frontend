@@ -8,20 +8,37 @@
  * - DIP: Depends on hook abstractions and component interfaces
  */
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { PageLayout } from '../components/layouts/PageLayout';
 import { useDbaExport } from '../hooks/useDbaExport';
-
-// DBA Components
-import DbaCosmicBackground from '../components/dba/DbaCosmicBackground';
-import DbaHeaderGalaxyCosmic from '../components/dba/DbaHeaderGalaxyCosmic';
-import DbaHeaderActions from '../components/dba/DbaHeaderActions';
-import DbaExportConfiguration from '../components/dba/DbaExportConfiguration';
-import DbaExportSuccess from '../components/dba/DbaExportSuccess';
-import DbaItemsWithTimers from '../components/dba/DbaItemsWithTimers';
-import DbaItemsWithoutTimers from '../components/dba/DbaItemsWithoutTimers';
-import DbaEmptyStateCosmic from '../components/dba/DbaEmptyStateCosmic';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PokemonCard } from '../components/design-system/PokemonCard';
+
+// Dynamic imports for heavy DBA components (code splitting optimization)
+const DbaCosmicBackground = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaCosmicBackground')
+);
+const DbaHeaderGalaxyCosmic = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderGalaxyCosmic')
+);
+const DbaHeaderActions = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderActions')
+);
+const DbaExportConfiguration = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportConfiguration')
+);
+const DbaExportSuccess = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportSuccess')
+);
+const DbaItemsWithTimers = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithTimers')
+);
+const DbaItemsWithoutTimers = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithoutTimers')
+);
+const DbaEmptyStateCosmic = lazy(() => 
+  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaEmptyStateCosmic')
+);
 
 const DbaExport: React.FC = () => {
   const {
@@ -92,12 +109,15 @@ const DbaExport: React.FC = () => {
       error={error}
       variant="default"
     >
-      <DbaCosmicBackground />
+      <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
+        <DbaCosmicBackground />
+      </Suspense>
 
       {/* Use the new cosmic header component that wraps content */}
-      <DbaHeaderGalaxyCosmic
-        dbaSelections={dbaSelections}
-        selectedItems={selectedItems}
+      <Suspense fallback={<LoadingSpinner size="lg" />}>
+        <DbaHeaderGalaxyCosmic
+          dbaSelections={dbaSelections}
+          selectedItems={selectedItems}
       >
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
@@ -147,6 +167,7 @@ const DbaExport: React.FC = () => {
           </div>
         </div>
       </DbaHeaderGalaxyCosmic>
+      </Suspense>
     </PageLayout>
   );
 };

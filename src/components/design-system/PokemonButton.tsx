@@ -19,10 +19,16 @@ import { Glow, Shimmer } from '../common/FormElements';
 import { StandardButtonProps } from '../../types/themeTypes';
 import {
   cn,
-  buttonStyleConfig,
+  getSizeClasses,
+  getVariantClasses,
+  getStateClasses,
+  getAnimationClasses,
+  getA11yClasses,
+} from '../../utils/unifiedUtilities';
+import {
   generateThemeClasses,
-  getFocusClasses,
 } from '../../utils/themeUtils';
+import { focusRing } from '../../utils/classNameUtils';
 import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 
 export interface PokemonButtonProps
@@ -96,7 +102,11 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
   ) => {
     // Theme context integration
     const visualTheme = useVisualTheme();
-    const layoutTheme = useLayoutTheme();  
+    const layoutTheme = useLayoutTheme();
+    
+    // Theme variables kept for future theming enhancements
+    void visualTheme;
+    void layoutTheme;  
     const animationTheme = useAnimationTheme();
 
     // Determine icons (legacy vs theme system)
@@ -232,7 +242,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
       generateThemeClasses('button', { theme, colorScheme: _colorScheme }) : '';
 
     // Focus classes from theme system
-    const focusClasses = getFocusClasses();
+    const focusClasses = focusRing(variant);
 
     const finalClassName = cn(
       baseClasses,

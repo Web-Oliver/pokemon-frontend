@@ -14,8 +14,7 @@ import { log } from './utils/logger';
 import { Toaster } from 'react-hot-toast';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import { queryClient } from './lib/queryClient';
-import { ComposedThemeProvider as ThemeProvider } from './contexts/theme/ComposedThemeProvider';
-import { ThemeDebugger } from './components/theme';
+import { UnifiedThemeProvider as ThemeProvider } from './contexts/theme/UnifiedThemeProvider';
 // Cache debugging removed - overengineered development utility not needed
 
 // Layout

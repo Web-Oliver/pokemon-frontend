@@ -45,6 +45,13 @@ import {
 } from '../components/effects/GlassmorphismContainer';
 import { ActivityTimeline } from '../components/analytics/ActivityTimeline';
 import { ParticleSystem } from '../components/effects';
+import {
+  DashboardItemsCard,
+  DashboardValueCard,
+  DashboardSalesCard,
+  DashboardGradedCard,
+  DashboardDataCard
+} from '../components/dashboard';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
@@ -134,288 +141,51 @@ const Dashboard: React.FC = () => {
 
             {/* Context7 2025 Futuristic Neural Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
-              {/* Total Items - Cyberpunk Quantum Card */}
-              <div className="group relative overflow-hidden">
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
+              <DashboardItemsCard
+                value={statsLoading ? 0 : totalItems}
+                loading={statsLoading}
+                label="Neural Items"
+                icon={Package}
+                colorScheme="default"
+              />
 
-                <GlassmorphismContainer
-                  variant="intense"
-                  colorScheme="default"
-                  size="md"
-                  rounded="2xl"
-                  pattern="neural"
-                  glow="medium"
-                  interactive={true}
-                  className="hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
-                >
-                  {/* Quantum glow effect */}
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60 animate-pulse"></div>
+              <DashboardValueCard
+                value={totalValueFormatted}
+                loading={statsLoading}
+                label="Quantum Value"
+                icon={DollarSign}
+                colorScheme="success"
+              />
 
-                  <div className="flex items-center">
-                    <div className="relative mr-4">
-                      <IconGlassmorphism variant="md" colorScheme="default">
-                        <Package className="w-8 h-8 text-cyan-300 relative z-10 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)] animate-pulse" />
-                        {/* Orbiting quantum particles */}
-                        <div
-                          className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{
-                            animationDuration:
-                              'var(--animation-duration-particle)',
-                          }}
-                        >
-                          <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
-                          <div className="w-1 h-1 bg-purple-400 rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm"></div>
-                        </div>
-                      </IconGlassmorphism>
-                    </div>
+              <DashboardSalesCard
+                value={statsLoading ? 0 : totalSales}
+                loading={statsLoading}
+                label="Temporal Sales"
+                icon={TrendingUp}
+                colorScheme="warning"
+              />
 
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-[var(--theme-accent-primary)]/90 mb-2 tracking-wider uppercase">
-                        Neural Items
-                      </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-accent-primary)] via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {statsLoading ? '--' : totalItems.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </GlassmorphismContainer>
-              </div>
+              <DashboardGradedCard
+                value={statsLoading ? 0 : topGradedCards}
+                loading={statsLoading}
+                label="Elite Graded"
+                icon={Star}
+                colorScheme="custom"
+                customGradient={{
+                  from: 'amber-500/20',
+                  via: 'orange-500/15',
+                  to: 'red-500/20',
+                }}
+              />
 
-              {/* Total Value - Holographic Currency Card */}
-              <div className="group relative overflow-hidden">
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
-
-                <GlassmorphismContainer
-                  variant="intense"
-                  colorScheme="success"
-                  size="md"
-                  rounded="2xl"
-                  pattern="neural"
-                  glow="medium"
-                  interactive={true}
-                  className="hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
-                >
-                  {/* Quantum glow effect */}
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-60 animate-pulse"></div>
-
-                  <div className="flex items-center">
-                    <div className="relative mr-4">
-                      <IconGlassmorphism variant="md" colorScheme="success">
-                        <DollarSign className="w-8 h-8 text-[var(--theme-status-success)] relative z-10 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
-                        {/* Success flow animation */}
-                        <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
-                          <div className="w-1 h-1 bg-emerald-400 rounded-full absolute top-2 left-2 animate-ping"></div>
-                          <div
-                            className="w-1 h-1 bg-cyan-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-short)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-blue-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-medium)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-emerald-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-long)',
-                            }}
-                          ></div>
-                        </div>
-                      </IconGlassmorphism>
-                    </div>
-
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-[var(--theme-status-success)]/90 mb-2 tracking-wider uppercase">
-                        Quantum Value
-                      </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-status-success)] via-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {statsLoading ? '--' : totalValueFormatted}
-                      </p>
-                    </div>
-                  </div>
-                </GlassmorphismContainer>
-              </div>
-
-              {/* Sales - Temporal Analytics Card */}
-              <div className="group relative overflow-hidden">
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
-
-                <GlassmorphismContainer
-                  variant="intense"
-                  colorScheme="warning"
-                  size="md"
-                  rounded="2xl"
-                  pattern="neural"
-                  glow="medium"
-                  interactive={true}
-                  className="hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
-                >
-                  {/* Quantum glow effect */}
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 animate-pulse"></div>
-
-                  <div className="flex items-center">
-                    <div className="relative mr-4">
-                      <IconGlassmorphism variant="md" colorScheme="warning">
-                        <TrendingUp className="w-8 h-8 text-[var(--theme-accent-secondary)] relative z-10 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse" />
-                        {/* Temporal ripple effect */}
-                        <div className="absolute inset-0 rounded-[1.2rem] border border-purple-400/30 animate-ping opacity-40"></div>
-                        <div
-                          className="absolute inset-2 rounded-xl border border-pink-400/20 animate-ping opacity-30"
-                          style={{
-                            animationDelay: 'var(--animation-delay-medium)',
-                          }}
-                        ></div>
-                      </IconGlassmorphism>
-                    </div>
-
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-[var(--theme-accent-secondary)]/90 mb-2 tracking-wider uppercase">
-                        Temporal Sales
-                      </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-[var(--theme-accent-secondary)] via-pink-300 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {statsLoading ? '--' : totalSales.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </GlassmorphismContainer>
-              </div>
-
-              {/* Top Graded - Elite Achievement Card */}
-              <div className="group relative overflow-hidden">
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
-
-                <GlassmorphismContainer
-                  variant="intense"
-                  colorScheme="custom"
-                  customGradient={{
-                    from: 'amber-500/20',
-                    via: 'orange-500/15',
-                    to: 'red-500/20',
-                  }}
-                  size="md"
-                  rounded="2xl"
-                  pattern="dots"
-                  glow="medium"
-                  interactive={true}
-                  className="hover:shadow-[0_12px_40px_0_rgba(245,158,11,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
-                >
-                  {/* Quantum glow effect */}
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60 animate-pulse"></div>
-
-                  <div className="relative z-10 flex items-center">
-                    {/* Advanced neumorphic icon container */}
-                    <div className="relative mr-4">
-                      <IconGlassmorphism variant="md" colorScheme="custom" className="from-amber-500/30 via-orange-500/20 to-red-500/30">
-                        <Star className="w-8 h-8 text-amber-300 relative z-10 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)] animate-pulse" />
-
-                        {/* Achievement sparkles */}
-                        <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
-                          <div className="w-1 h-1 bg-amber-400 rounded-full absolute top-1 left-3 animate-ping"></div>
-                          <div
-                            className="w-1 h-1 bg-orange-400 rounded-full absolute top-3 right-1 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-short)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-red-400 rounded-full absolute bottom-1 left-1 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-short)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-amber-400 rounded-full absolute bottom-3 right-3 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-medium)',
-                            }}
-                          ></div>
-                        </div>
-                      </IconGlassmorphism>
-                    </div>
-
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-amber-200/90 mb-2 tracking-wider uppercase">
-                        Elite Graded
-                      </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-amber-300 via-orange-300 to-red-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {statsLoading ? '--' : topGradedCards.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </GlassmorphismContainer>
-              </div>
-
-              {/* SetProducts - Quantum Database Card */}
-              <div className="group relative overflow-hidden">
-                {/* Holographic border animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-red-500/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 animate-pulse blur-sm"></div>
-
-                <GlassmorphismContainer
-                  variant="intense"
-                  colorScheme="danger"
-                  size="md"
-                  rounded="2xl"
-                  pattern="grid"
-                  glow="medium"
-                  interactive={true}
-                  className="hover:shadow-[0_12px_40px_0_rgba(236,72,153,0.3)] group-hover:scale-[1.02] group-hover:-translate-y-1"
-                >
-                  {/* Quantum glow effect */}
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-pink-400 to-transparent opacity-60 animate-pulse"></div>
-
-                  <div className="relative z-10 flex items-center">
-                    {/* Advanced neumorphic icon container */}
-                    <div className="relative mr-4">
-                      <IconGlassmorphism variant="md" colorScheme="danger">
-                        <Database className="w-8 h-8 text-pink-300 relative z-10 drop-shadow-[0_0_10px_rgba(236,72,153,0.5)] animate-pulse" />
-
-                        {/* Database sync animation */}
-                        <div className="absolute inset-0 opacity-50 group-hover:opacity-80 transition-opacity duration-500">
-                          <div className="w-1 h-1 bg-pink-400 rounded-full absolute top-2 left-2 animate-ping"></div>
-                          <div
-                            className="w-1 h-1 bg-rose-400 rounded-full absolute top-2 right-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-short)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-red-400 rounded-full absolute bottom-2 left-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-medium)',
-                            }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-pink-400 rounded-full absolute bottom-2 right-2 animate-ping"
-                            style={{
-                              animationDelay: 'var(--animation-delay-long)',
-                            }}
-                          ></div>
-                        </div>
-                      </IconGlassmorphism>
-                    </div>
-
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-pink-200/90 mb-2 tracking-wider uppercase">
-                        Quantum Sets
-                      </p>
-                      <p className="text-3xl font-black bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(236,72,153,0.3)] group-hover:scale-105 transition-transform duration-300">
-                        {dataCountsLoading
-                          ? '--'
-                          : dataCounts?.setProducts?.toLocaleString() || '0'}
-                      </p>
-                    </div>
-                  </div>
-                </GlassmorphismContainer>
-              </div>
+              <DashboardDataCard
+                value={dataCountsLoading ? 0 : (dataCounts?.setProducts || 0)}
+                loading={dataCountsLoading}
+                label="Quantum Sets"
+                icon={Database}
+                colorScheme="danger"
+              />
             </div>
-
             {/* Context7 Premium Quick Actions */}
             <GlassmorphismContainer
               variant="intense"

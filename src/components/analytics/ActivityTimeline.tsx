@@ -28,7 +28,7 @@ export interface ActivityTimelineProps {
 
 export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   activities,
-  analyticsData,
+  analyticsData: _analyticsData,
   loading,
   onNavigate,
   showHeader = true,

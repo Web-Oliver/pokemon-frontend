@@ -20,7 +20,8 @@ import activityApi, {
   ActivityFilters,
   ActivityStats,
 } from '../api/activityApi';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { handleApiError } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 import { log } from '../utils/logger';
 
 // Context7 Hook State Interface

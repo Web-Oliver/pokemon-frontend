@@ -17,9 +17,9 @@
  */
 
 import React, { useEffect, forwardRef } from 'react';
-import { X, Check, AlertTriangle, Info, HelpCircle } from 'lucide-react';
+import { X, Check, AlertTriangle, Info } from 'lucide-react';
 import { StandardModalProps, ComponentSize } from '../../types/themeTypes';
-import { cn } from '../../utils/themeUtils';
+import { cn, getGlassmorphismClasses, getAnimationClasses, getA11yClasses } from '../../utils/unifiedUtilities';
 import { cardClasses } from '../../utils/classNameUtils';
 import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
 import { PokemonButton } from './PokemonButton';

@@ -132,42 +132,11 @@ export const COSMIC_GRADIENTS = {
   },
 } as const;
 
-/**
- * Generate holographic border animation styles
- * Extracted from border-holographic pattern
- */
-export const getHolographicBorderStyles = (
-  intensity: number = 0.3,
-  duration: number = 2
-): React.CSSProperties => ({
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    inset: 0,
-    borderRadius: 'inherit',
-    background: `linear-gradient(90deg, transparent, rgba(6, 182, 212, ${intensity}), transparent)`,
-    opacity: 0,
-    transition: `opacity ${duration}s ease-in-out`,
-    animation: `pulse ${duration}s ease-in-out infinite`,
-  } as any,
-  '&:hover::before': {
-    opacity: 1,
-  } as any,
-});
+// getHolographicBorderStyles moved to ../../ui/context7Styles.ts
+// Import from: import { getContext7HolographicBorderStyles } from '../../ui/context7Styles';
 
-/**
- * Timer badge configuration for cosmic theme
- * Supports PokemonBadge timer variant integration
- */
-export const COSMIC_TIMER_CONFIG = {
-  variant: 'gradient' as const,
-  style: 'glass' as const,
-  size: 'sm' as const,
-  shape: 'pill' as const,
-  pulse: true,
-  className: 'cosmic-glow',
-};
+// COSMIC_TIMER_CONFIG moved to components/design-system/PokemonBadge.tsx
+// Import from: import { COSMIC_TIMER_CONFIG } from '../components/design-system/PokemonBadge';
 
 /**
  * Animation system for cosmic effects

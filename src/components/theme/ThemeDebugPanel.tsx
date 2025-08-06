@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { Bug, Copy, Download, CheckCircle, AlertTriangle, Info } from 'lucide-react';
-import { cn } from '../../utils/themeUtils';
+import { cn } from '../../utils/unifiedUtilities';
 import type { ValidationResult } from './utils/themeValidationUtils';
 
 interface DebugPanel {

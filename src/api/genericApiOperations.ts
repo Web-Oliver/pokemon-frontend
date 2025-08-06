@@ -12,6 +12,7 @@
  */
 
 import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
+import { ApiTransformers } from '../utils/unifiedResponseTransformer';
 
 // ========== INTERFACES ==========
 
@@ -31,10 +32,16 @@ export interface ResourceConfig {
 }
 
 /**
+ * Transformation strategy options
+ */
+export type TransformationStrategy = 'standard' | 'search' | 'direct' | 'raw' | 'auto';
+
+/**
  * Options for API operations
  */
 export interface OperationOptions extends Partial<EnhancedRequestConfig> {
-  transform?: (data: any) => any; // Optional data transformation
+  transform?: (data: any) => any; // Optional custom data transformation
+  transformStrategy?: TransformationStrategy; // Use unified transformation strategy
 }
 
 // ========== GENERIC CRUD OPERATIONS ==========
@@ -48,7 +55,7 @@ export async function getCollection<T>(
   params?: GenericParams,
   options?: OperationOptions
 ): Promise<T[]> {
-  const { transform, ...requestOptions } = options || {};
+  const { transform, transformStrategy = 'auto', ...requestOptions } = options || {};
 
   const data = await unifiedApiClient.apiGet<T[]>(
     config.endpoint,
@@ -59,7 +66,13 @@ export async function getCollection<T>(
     }
   );
 
-  return transform ? transform(data) : data;
+  // Apply transformation strategy if no custom transform provided
+  if (transform) {
+    return transform(data);
+  }
+
+  // Use unified transformation system
+  return ApiTransformers[transformStrategy]<T[]>(data);
 }
 
 /**
@@ -71,7 +84,7 @@ export async function getResource<T>(
   id: string,
   options?: OperationOptions
 ): Promise<T> {
-  const { transform, ...requestOptions } = options || {};
+  const { transform, transformStrategy = 'auto', ...requestOptions } = options || {};
 
   const data = await unifiedApiClient.apiGet<T>(
     `${config.endpoint}/${id}`,
@@ -79,7 +92,13 @@ export async function getResource<T>(
     requestOptions
   );
 
-  return transform ? transform(data) : data;
+  // Apply transformation strategy if no custom transform provided
+  if (transform) {
+    return transform(data);
+  }
+
+  // Use unified transformation system
+  return ApiTransformers[transformStrategy]<T>(data);
 }
 
 /**

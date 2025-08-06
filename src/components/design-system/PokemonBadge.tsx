@@ -242,3 +242,19 @@ export const PokemonBadge: React.FC<PokemonBadgeProps> = ({
     </span>
   );
 };
+
+/**
+ * Timer badge configuration for cosmic theme
+ * Supports PokemonBadge timer variant integration
+ * Moved from cosmicEffects.ts for better component-specific organization
+ */
+export const COSMIC_TIMER_CONFIG = {
+  variant: 'gradient' as const,
+  style: 'glass' as const,
+  size: 'sm' as const,
+  shape: 'pill' as const,
+  pulse: true,
+  className: 'cosmic-glow',
+};
+
+export default PokemonBadge;

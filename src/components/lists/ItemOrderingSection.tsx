@@ -19,7 +19,7 @@ import {
   SortAsc,
   SortDesc,
 } from 'lucide-react';
-import { SortableCategoryOrderingList } from './SortableCategoryOrderingList';
+import { UnifiedCategoryList } from './UnifiedCategoryList';
 import {
   CollectionItem,
   ItemCategory,
@@ -310,23 +310,15 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
 
       {/* Ordering Content */}
       {viewMode === 'categories' ? (
-        <SortableCategoryOrderingList
+        <UnifiedCategoryList
+          mode="sortable"
           items={items}
           itemOrder={itemOrder}
-          selectedItemIds={selectedItemIds}
-          onReorderItems={onReorderItems}
-          onMoveItemUp={onMoveItemUp}
-          onMoveItemDown={onMoveItemDown}
-          onSortCategoryByPrice={onSortCategoryByPrice}
-          onToggleItemSelection={onToggleItemSelection}
-          showSelection={showSelection}
-          showDragHandles={true} // Now enabled with drag & drop implementation
-          showMoveButtons={true}
-          enableCategoryCollapse={true}
-          dragConstraints={{
-            allowCrossCategoryDrag: false, // Restrict to same category for better UX
-            restrictToSelectedItems: false,
-          }}
+          onOrderChange={onReorderItems}
+          selectable={showSelection}
+          selectedItems={selectedItemIds}
+          onSelectionChange={onToggleItemSelection}
+          showCategoryHeaders={true}
         />
       ) : (
         // List view - simplified single list (future implementation)
