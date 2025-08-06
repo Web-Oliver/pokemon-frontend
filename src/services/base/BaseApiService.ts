@@ -12,19 +12,24 @@
  * - DRY: Eliminates duplicate service patterns
  */
 
-import { IHttpClient } from './HttpClientInterface';
+import { ITypeSafeHttpClient } from '../../api/TypeSafeApiClient';
 import { ErrorHandlingService } from './ErrorHandlingService';
 import { EnhancedRequestConfig } from '../../api/unifiedApiClient';
+import {
+  ApiSuccessResponse,
+  ResourceResponse,
+  CollectionResponse,
+} from '../../types/api/ApiResponse';
 
 /**
  * Abstract base API service
  * Provides common functionality and patterns for all API services
  */
 export abstract class BaseApiService {
-  protected httpClient: IHttpClient;
+  protected httpClient: ITypeSafeHttpClient;
   protected serviceName: string;
 
-  constructor(httpClient: IHttpClient, serviceName: string) {
+  constructor(httpClient: ITypeSafeHttpClient, serviceName: string) {
     this.httpClient = httpClient;
     this.serviceName = serviceName;
   }
@@ -39,7 +44,7 @@ export abstract class BaseApiService {
   /**
    * Validate data object
    */
-  protected validateData(data: any, operation: string): void {
+  protected validateData<T = unknown>(data: T, operation: string): void {
     ErrorHandlingService.validateData(data, operation);
   }
 
@@ -127,11 +132,8 @@ export abstract class BaseApiService {
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<T> {
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.get<T>(url, config);
-      return this.validateObjectResponse<T>(result, operation);
-    });
+  ): Promise<ResourceResponse<T>> {
+    return await this.httpClient.getResource<T>(url, operation, config);
   }
 
   /**
@@ -141,11 +143,8 @@ export abstract class BaseApiService {
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<T[]> {
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.get<T[]>(url, config);
-      return this.validateArrayResponse<T>(result, operation);
-    });
+  ): Promise<CollectionResponse<T>> {
+    return await this.httpClient.getCollection<T>(url, operation, config);
   }
 
   /**
@@ -156,47 +155,33 @@ export abstract class BaseApiService {
     id: string,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<T> {
-    this.validateId(id, operation);
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.getById<T>(basePath, id, undefined, config);
-      return this.validateObjectResponse<T>(result, operation, id);
-    });
+  ): Promise<ResourceResponse<T>> {
+    return await this.httpClient.getById<T>(basePath, id, operation, config);
   }
 
   /**
    * Common CREATE operation with validation
    */
-  protected async createResource<T extends { [key: string]: any }>(
+  protected async createResource<TResponse, TRequest = Partial<TResponse>>(
     url: string,
-    data: Partial<T>,
+    data: TRequest,
     operation: string,
-    requiredField: string,
     config?: EnhancedRequestConfig
-  ): Promise<T> {
-    this.validateData(data, operation);
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.post<T>(url, data, config);
-      return this.validateCreatedResponse<T>(result, operation, requiredField, data);
-    });
+  ): Promise<ApiSuccessResponse<TResponse>> {
+    return await this.httpClient.post<TResponse, TRequest>(url, data, operation, config);
   }
 
   /**
    * Common UPDATE operation with validation
    */
-  protected async updateResource<T>(
+  protected async updateResource<TResponse, TRequest = Partial<TResponse>>(
     basePath: string,
     id: string,
-    data: Partial<T>,
+    data: TRequest,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<T> {
-    this.validateId(id, operation);
-    this.validateData(data, operation);
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.putById<T>(basePath, id, data, undefined, config);
-      return this.validateObjectResponse<T>(result, operation, id);
-    });
+  ): Promise<ResourceResponse<TResponse>> {
+    return await this.httpClient.putById<TResponse, TRequest>(basePath, id, data, operation, config);
   }
 
   /**
@@ -207,34 +192,27 @@ export abstract class BaseApiService {
     id: string,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<void> {
-    this.validateId(id, operation);
-    return this.executeWithErrorHandling(operation, async () => {
-      await this.httpClient.deleteById(basePath, id, undefined, config);
-    });
+  ): Promise<ApiSuccessResponse<void>> {
+    return await this.httpClient.deleteById(basePath, id, operation, config);
   }
 
   /**
    * Common mark as sold operation with validation
    */
-  protected async markResourceSold<T extends { sold?: boolean }>(
+  protected async markResourceSold<TResponse extends { sold?: boolean }, TSaleDetails = unknown>(
     basePath: string,
     id: string,
-    saleDetails: any,
+    saleDetails: TSaleDetails,
     operation: string,
     config?: EnhancedRequestConfig
-  ): Promise<T> {
-    this.validateId(id, operation);
-    this.validateData(saleDetails, operation);
-    return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.postById<T>(
-        basePath,
-        id,
-        saleDetails,
-        'sold',
-        config
-      );
-      return this.validateSoldResponse<T>(result, operation, id, saleDetails);
-    });
+  ): Promise<ResourceResponse<TResponse>> {
+    return await this.httpClient.postById<TResponse, TSaleDetails>(
+      basePath,
+      id,
+      saleDetails,
+      'sold',
+      operation,
+      config
+    );
   }
 }

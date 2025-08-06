@@ -7,7 +7,7 @@
 
 import React from 'react';
 import LoadingSpinner from '../common/LoadingSpinner';
-import GlassmorphismHeader from '../common/GlassmorphismHeader';
+import { SectionContainer } from '../common';
 
 export interface PageLayoutProps {
   title: string;
@@ -79,14 +79,16 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Premium Page Header - Only render if title is provided */}
-          {title && (
-            <GlassmorphismHeader
+{title && (
+            <SectionContainer
               title={title}
-              description={subtitle}
+              subtitle={subtitle}
+              variant="glassmorphism"
+              size="lg"
               className="mb-6"
             >
               {actions}
-            </GlassmorphismHeader>
+            </SectionContainer>
           )}
 
           {/* Error Display */}

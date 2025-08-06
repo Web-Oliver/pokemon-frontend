@@ -4,19 +4,19 @@
  * Following CLAUDE.md Layer 4 (Views/Pages) principles
  */
 
-import { AlertCircle, ArrowLeft, Calendar, Check, Package, Plus, Save, Trash2, X } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
+import AuctionEditLayout from '../components/auction/AuctionEditLayout';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../components/design-system/PokemonModal';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import { PageLayout } from '../components/layouts/PageLayout';
-import CollectionItemCard, {
-  CollectionItem,
-} from '../components/lists/CollectionItemCard';
+import { PokemonCard } from '../components/design-system/PokemonCard';
+import { CollectionItem } from '../components/lists/CollectionItemCard';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { useAuction } from '../hooks/useAuction';
+import { useAuctionFormData } from '../hooks/useAuctionFormData';
+import { usePageNavigation } from '../hooks/usePageNavigation';
+import { useModalManager, useConfirmationModal } from '../hooks/useModalManager';
 import { showSuccessToast } from '../ui/toastNotifications';
-import { navigationHelper } from '../utils/navigation';
 
 interface AuctionEditProps {
   auctionId?: string;
@@ -35,30 +35,27 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     clearCurrentAuction,
   } = useAuction();
 
+  // Use shared auction form data hook for form management
+  const { form, formErrors, updateFormValues } = useAuctionFormData();
+  
+  // Use shared navigation hook
+  const {
+    navigateToAuctionDetail,
+    navigateToAuctions,
+    extractAuctionIdFromUrl,
+  } = usePageNavigation();
+  
+  // Use shared modal management hooks
+  const addItemModal = useModalManager();
+  const removeItemModal = useConfirmationModal();
+
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
-  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [showRemoveItemConfirmation, setShowRemoveItemConfirmation] =
-    useState(false);
-  const [removingItem, setRemovingItem] = useState(false);
-  const [itemToRemove, setItemToRemove] = useState<{
-    id: string;
-    name: string;
-    category: string;
-  } | null>(null);
-
-  // Form state for editing auction details
-  const [formData, setFormData] = useState({
-    topText: '',
-    bottomText: '',
-    auctionDate: '',
-    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
-  });
 
   useEffect(() => {
-    // Extract auction ID from URL using navigationHelper
-    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
+    // Extract auction ID from URL using shared navigation hook
+    const urlAuctionId = auctionId || extractAuctionIdFromUrl();
 
     if (urlAuctionId && urlAuctionId !== 'auctions') {
       setCurrentAuctionId(urlAuctionId);
@@ -68,12 +65,12 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     return () => {
       clearCurrentAuction();
     };
-  }, [auctionId, fetchAuctionById, clearCurrentAuction]);
+  }, [auctionId, fetchAuctionById, clearCurrentAuction, extractAuctionIdFromUrl]);
 
-  // Update form data when auction is loaded
+  // Update form data when auction is loaded using shared hook
   useEffect(() => {
     if (currentAuction) {
-      setFormData({
+      updateFormValues({
         topText: currentAuction.topText || '',
         bottomText: currentAuction.bottomText || '',
         auctionDate: currentAuction.auctionDate
@@ -82,39 +79,20 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         status: currentAuction.status || 'draft',
       });
     }
-  }, [currentAuction]);
+  }, [currentAuction, updateFormValues]);
 
-  // Navigation using navigationHelper
-  const navigateToAuctionDetail = () => {
-    if (currentAuctionId) {
-      navigationHelper.navigateToAuctionDetail(currentAuctionId);
-    }
+  // Navigation handlers using shared navigation hook
+  const handleBackToAuction = () => {
+    navigateToAuctionDetail(currentAuctionId);
   };
 
-  const navigateToAuctions = () => {
-    navigationHelper.navigateToAuctions();
-  };
-
-  const handleCancelEdit = () => {
-    navigateToAuctionDetail();
-  };
-
-  // Handle form input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle save auction changes
+  // Handle save auction changes using shared form data
   const handleSaveChanges = async () => {
     if (!currentAuctionId) {
       return;
     }
 
+    const formData = form.getValues();
     try {
       setIsEditing(true);
       await updateAuction(currentAuctionId, {
@@ -141,42 +119,32 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     showSuccessToast(`Added ${items.length} item(s) to auction`);
   };
 
-  // Handle remove item from auction - show confirmation modal
+  // Handle remove item from auction using shared modal management
   const handleRemoveItem = (
     itemId: string,
     itemName: string,
     itemCategory: string
   ) => {
-    setItemToRemove({ id: itemId, name: itemName, category: itemCategory });
-    setShowRemoveItemConfirmation(true);
+    removeItemModal.open({ id: itemId, name: itemName, category: itemCategory });
   };
 
   // Confirm remove item from auction
   const confirmRemoveItem = async () => {
-    if (!itemToRemove) {
+    if (!removeItemModal.data) {
       return;
     }
 
-    try {
-      setRemovingItem(true);
-      await removeItemFromAuction(
-        currentAuctionId,
-        itemToRemove.id,
-        itemToRemove.category
-      );
-      showSuccessToast('Item removed from auction');
-      setShowRemoveItemConfirmation(false);
-      setItemToRemove(null);
-    } catch {
-      // Error handled by the hook
-    } finally {
-      setRemovingItem(false);
-    }
-  };
-
-  const handleCancelRemoveItem = () => {
-    setShowRemoveItemConfirmation(false);
-    setItemToRemove(null);
+    await removeItemModal.confirm(
+      removeItemModal.data,
+      async (data) => {
+        await removeItemFromAuction(
+          currentAuctionId,
+          data.id,
+          data.category || ''
+        );
+        showSuccessToast('Item removed from auction');
+      }
+    );
   };
 
   // Convert auction item to CollectionItem format
@@ -273,368 +241,122 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     }
   };
 
-  const headerActions = (
-    <div className="flex items-center space-x-3">
-      <button
-        onClick={handleSaveChanges}
-        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-      >
-        Save Changes
-      </button>
-      <button
-        onClick={handleCancelEdit}
-        className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-      >
-        Cancel
-      </button>
-    </div>
-  );
-
-  if (loading) {
-    return (
-      <PageLayout
-        title="Edit Auction"
-        subtitle="Modify your auction details"
-        loading={true}
-        error={error}
-        actions={headerActions}
-        variant="default"
-      >
-        <div className="absolute inset-0 opacity-30">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className="relative z-10 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-12 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-[var(--theme-status-error)]/5"></div>
-              <div className="relative z-10">
-                <LoadingSpinner text="Loading auction details..." />
-              </div>
-            </div>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
-
-  if (!currentAuction) {
-    return (
-      <PageLayout
-        title="Auction Not Found"
-        subtitle="The auction you're trying to edit doesn't exist or has been deleted"
-        loading={false}
-        error="Auction not found"
-        actions={
-          <button
-            onClick={navigateToAuctions}
-            className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-          >
-            Back to Auctions
-          </button>
-        }
-        variant="default"
-      />
-    );
-  }
 
   return (
-    <PageLayout
-      title="Edit Auction"
-      subtitle="Modify your auction details and manage items"
+    <AuctionEditLayout
+      currentAuction={currentAuction}
       loading={loading}
       error={error}
-      actions={headerActions}
-      variant="default"
+      isEditing={isEditing}
+      form={form}
+      onBackToAuction={handleBackToAuction}
+      onSaveChanges={handleSaveChanges}
+      onClearError={clearError}
+      getStatusColor={getStatusColor}
     >
-      {/* Context7 Premium Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
-      </div>
+      {/* Context7 Premium Auction Items Management */}
+      <AuctionItemsSection
+        items={currentAuction?.items || []}
+        onAddItems={() => addItemModal.open()}
+      >
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {currentAuction?.items?.map(
+            (auctionItem: any, index: number) => {
+              const collectionItem =
+                convertAuctionItemToCollectionItem(auctionItem);
+              const itemType = getItemTypeFromCategory(
+                auctionItem.itemCategory
+              );
 
-      <div className="relative z-10 p-8">
-        <div className="max-w-7xl mx-auto space-y-10">
-          {/* Context7 Premium Header */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-[var(--theme-status-error)]/5"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
-                <PokemonButton
-                  onClick={navigateToAuctionDetail}
-                  variant="outline"
-                  className="inline-flex items-center border-[var(--theme-border)] hover:border-[var(--theme-border-hover)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
+              return (
+                <div
+                  key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
+                  className="relative"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Auction
-                </PokemonButton>
-
-                <div className="flex items-center space-x-3">
-                  <PokemonButton
-                    onClick={handleSaveChanges}
-                    disabled={isEditing}
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    {isEditing ? (
-                      <LoadingSpinner size="sm" className="mr-2" />
-                    ) : (
-                      <Save className="w-4 h-4 mr-2" />
-                    )}
-                    Save Changes
-                  </PokemonButton>
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <h1 className="text-4xl font-bold text-[var(--theme-text-primary)] tracking-wide bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                      Edit Auction
-                    </h1>
-                    <span
-                      className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
-                    >
-                      {currentAuction.status.charAt(0).toUpperCase() +
-                        currentAuction.status.slice(1)}
-                    </span>
-                  </div>
-
-                  <p className="text-xl text-[var(--theme-text-secondary)] font-medium leading-relaxed mb-6">
-                    Update auction details, manage items, and modify settings
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-text-primary)]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-          </div>
-
-          {/* Context7 Premium Error Message */}
-          {error && (
-            <div className="bg-[var(--theme-status-error)]/10 backdrop-blur-sm border border-[var(--theme-status-error)]/30 rounded-3xl p-6 shadow-lg">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[var(--theme-status-error)] to-rose-600 rounded-2xl shadow-lg flex items-center justify-center">
-                    <AlertCircle className="h-5 w-5 text-white" />
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-[var(--theme-status-error)] font-medium">
-                    {error}
-                  </p>
-                </div>
-                <div className="ml-auto pl-3">
-                  <button
-                    onClick={clearError}
-                    className="inline-flex text-[var(--theme-status-error)]/70 hover:text-[var(--theme-status-error)] p-2 rounded-lg hover:bg-[var(--theme-status-error)]/10 transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Context7 Premium Auction Details Form */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-secondary)]/3 via-purple-500/3 to-pink-500/3"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
-                  Auction Details
-                </h2>
-                <Edit3 className="w-6 h-6 text-[var(--theme-accent-secondary)]" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Top Text */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="topText"
-                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-                  >
-                    Auction Title
-                  </label>
-                  <input
-                    type="text"
-                    id="topText"
-                    name="topText"
-                    value={formData.topText}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-                    placeholder="Enter auction title..."
+                  <PokemonCard
+                    cardType="collection"
+                    variant="glass"
+                    size="md"
+                    images={collectionItem.images || []}
+                    title={collectionItem.cardName || collectionItem.name || 'Unknown Item'}
+                    subtitle={collectionItem.setName || 'Unknown Set'}
+                    price={collectionItem.myPrice}
+                    grade={'grade' in collectionItem ? collectionItem.grade : undefined}
+                    condition={'condition' in collectionItem ? collectionItem.condition : undefined}
+                    category={itemType}
+                    sold={collectionItem.sold}
+                    saleDate={collectionItem.saleDetails?.dateSold}
+                    showActions={true}
+                    onViewDetails={() => handleViewItemDetail(collectionItem._id, itemType)}
+                    interactive={true}
                   />
-                </div>
 
-                {/* Auction Date */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="auctionDate"
-                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-                  >
-                    Auction Date
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      id="auctionDate"
-                      name="auctionDate"
-                      value={formData.auctionDate}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 pr-10 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--theme-text-muted)]" />
-                  </div>
-                </div>
-
-                {/* Status */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="status"
-                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-                  >
-                    Status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="active">Active</option>
-                    <option value="sold">Sold</option>
-                    <option value="expired">Expired</option>
-                  </select>
-                </div>
-
-                {/* Bottom Text - Full Width */}
-                <div className="md:col-span-2 space-y-2">
-                  <label
-                    htmlFor="bottomText"
-                    className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="bottomText"
-                    name="bottomText"
-                    value={formData.bottomText}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                    placeholder="Enter auction description..."
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Context7 Premium Auction Items Management */}
-          <AuctionItemsSection
-            items={currentAuction.items}
-            onAddItems={() => setIsAddItemModalOpen(true)}
-          >
-            <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {currentAuction.items.map(
-                (auctionItem: any, index: number) => {
-                  const collectionItem =
-                    convertAuctionItemToCollectionItem(auctionItem);
-                  const itemType = getItemTypeFromCategory(
-                    auctionItem.itemCategory
-                  );
-
-                  return (
-                    <div
-                      key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
-                      className="relative"
+                  {/* Remove from Auction Button - Overlay */}
+                  <div className="absolute top-4 right-4 z-20">
+                    <PokemonButton
+                      onClick={() => {
+                        const itemName =
+                          auctionItem.itemData?.cardId?.cardName ||
+                          auctionItem.itemData?.cardName ||
+                          auctionItem.itemData?.name ||
+                          'Unknown Item';
+                        handleRemoveItem(
+                          auctionItem.itemId ||
+                            auctionItem.itemData?._id,
+                          itemName,
+                          auctionItem.itemCategory
+                        );
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
                     >
-                      <CollectionItemCard
-                        item={collectionItem}
-                        itemType={itemType}
-                        activeTab="psa-graded" // Not really used in this context
-                        showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
-                        onViewDetails={handleViewItemDetail}
-                        onMarkAsSold={handleMarkAsSold}
-                      />
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Remove
+                    </PokemonButton>
+                  </div>
 
-                      {/* Remove from Auction Button - Overlay */}
-                      <div className="absolute top-4 right-4 z-20">
-                        <PokemonButton
-                          onClick={() => {
-                            const itemName =
-                              auctionItem.itemData?.cardId?.cardName ||
-                              auctionItem.itemData?.cardName ||
-                              auctionItem.itemData?.name ||
-                              'Unknown Item';
-                            handleRemoveItem(
-                              auctionItem.itemId ||
-                                auctionItem.itemData?._id,
-                              itemName,
-                              auctionItem.itemCategory
-                            );
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          Remove
-                        </PokemonButton>
-                      </div>
-
-                      {/* Auction Specific Badge */}
-                      {auctionItem.sold && (
-                        <div className="absolute top-4 left-4 z-20">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
-                            <Check className="w-3 h-3 mr-1" />
-                            Sold in Auction
-                          </span>
-                        </div>
-                      )}
+                  {/* Auction Specific Badge */}
+                  {auctionItem.sold && (
+                    <div className="absolute top-4 left-4 z-20">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
+                        <Check className="w-3 h-3 mr-1" />
+                        Sold in Auction
+                      </span>
                     </div>
-                  );
-                }
-              )}
-            </div>
-          </AuctionItemsSection>
-
-          {/* Add Item to Auction Modal */}
-          <AddItemToAuctionModal
-            isOpen={isAddItemModalOpen}
-            onClose={() => setIsAddItemModalOpen(false)}
-            onAddItems={handleAddItems}
-            currentAuctionItems={
-              currentAuction?.items?.map((item) => ({
-                itemId: item.itemId,
-                itemCategory: item.itemCategory,
-              })) || []
+                  )}
+                </div>
+              );
             }
-          />
-
-          {/* Remove Item Confirmation Modal */}
-          <PokemonConfirmModal
-            isOpen={showRemoveItemConfirmation}
-            onClose={handleCancelRemoveItem}
-            onConfirm={confirmRemoveItem}
-            title="Remove Item from Auction"
-            confirmMessage={`Are you sure you want to remove "${itemToRemove?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
-            confirmText="Remove Item"
-            variant="warning"
-            loading={removingItem}
-          />
+          )}
         </div>
-      </div>
-    </PageLayout>
+      </AuctionItemsSection>
+
+      {/* Add Item to Auction Modal */}
+      <AddItemToAuctionModal
+        isOpen={addItemModal.isOpen}
+        onClose={addItemModal.close}
+        onAddItems={handleAddItems}
+        currentAuctionItems={
+          currentAuction?.items?.map((item) => ({
+            itemId: item.itemId,
+            itemCategory: item.itemCategory,
+          })) || []
+        }
+      />
+
+      {/* Remove Item Confirmation Modal */}
+      <PokemonConfirmModal
+        isOpen={removeItemModal.isOpen}
+        onClose={removeItemModal.close}
+        onConfirm={confirmRemoveItem}
+        title="Remove Item from Auction"
+        confirmMessage={`Are you sure you want to remove "${removeItemModal.data?.name || 'this item'}" from the auction? This will not delete the item from your collection, only remove it from this auction.`}
+        confirmText="Remove Item"
+        variant="warning"
+        loading={removeItemModal.loading}
+      />
+    </AuctionEditLayout>
   );
 };
 

@@ -34,15 +34,15 @@ interface HierarchicalSearchActions {
   setActiveField: (field: SearchFieldType | null) => void;
   handlePrimarySelection: (
     result: SearchResult,
-    setValue: (field: string, value: any) => void,
+    setValue: <T>(field: string, value: T) => void,
     clearErrors: (field: string) => void,
-    onSelection?: (data: any) => void
+    onSelection?: <T>(data: T) => void
   ) => void;
   handleSecondarySelection: (
     result: SearchResult,
-    setValue: (field: string, value: any) => void,
+    setValue: <T>(field: string, value: T) => void,
     clearErrors: (field: string) => void,
-    onSelection: (data: any) => void
+    onSelection: <T>(data: T) => void
   ) => void;
   clearSuggestions: () => void;
 }

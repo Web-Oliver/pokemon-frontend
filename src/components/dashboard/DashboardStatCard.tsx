@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { GlassmorphismContainer, IconGlassmorphism } from '../effects/GlassmorphismContainer';
+import { PokemonCard } from '../design-system/PokemonCard';
 
 export interface DashboardStatCardProps {
   title: string;
@@ -25,19 +25,31 @@ export interface DashboardStatCardProps {
 export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
   title,
   value,
+  valueColor = 'text-white',
+  subtitle,
   icon: Icon,
-  colorScheme = 'default',
-  pattern = 'neural',
+  colorScheme = 'primary',
   customGradient,
-  loading = false,
+  className = '',
   children,
-  onClick,
 }) => {
-  const isClickable = !!onClick;
-  
   return (
-    <div 
-      className={`group relative overflow-hidden ${isClickable ? 'cursor-pointer' : ''}`}
+    <PokemonCard
+      cardType="metric"
+      variant="cosmic"
+      size="lg"
+      title={title}
+      value={value}
+      icon={Icon}
+      subtitle={subtitle}
+      colorScheme={colorScheme}
+      customGradient={customGradient}
+      className={`${valueColor} ${className}`}
+    >
+      {children}
+    </PokemonCard>
+  );
+}
       onClick={onClick}
     >
       {/* Holographic border animation */}

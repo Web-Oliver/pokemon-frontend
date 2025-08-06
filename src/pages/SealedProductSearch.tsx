@@ -7,7 +7,7 @@
  * Following CLAUDE.md principles:
  * - REFACTORED: Extracted reusable components to eliminate DRY violations
  * - ProductSearchFilters: Reusable search and filter inputs
- * - ProductCard: Reusable individual product card components
+ * - PokemonCard: Unified card component for all displays
  * - PaginationControls: Reusable pagination UI with smart page number generation
  */
 
@@ -16,9 +16,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { searchProducts, getPaginatedProducts } from '../api/productsApi';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ProductSearchFilters from '../components/common/ProductSearchFilters';
-import ProductCard from '../components/common/ProductCard';
+import { PokemonCard } from '../components/design-system/PokemonCard';
 import PaginationControls from '../components/common/PaginationControls';
 import { PageLayout } from '../components/layouts/PageLayout';
+import { SectionContainer } from '../components/common';
 import { IProduct, ProductCategory } from '../domain/models/product';
 import { ISetProduct } from '../domain/models/setProduct';
 import { handleApiError } from '../utils/errorHandler';
@@ -194,31 +195,7 @@ const ProductSearch: React.FC = () => {
       actions={headerActions}
       variant="emerald"
     >
-      {/* Premium Page Header */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-10 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/5 via-teal-500/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-[var(--theme-text-primary)] tracking-wide mb-3 bg-gradient-to-r from-[var(--theme-status-success)] to-teal-400 bg-clip-text text-transparent">
-                Product Search
-              </h1>
-              <p className="text-xl text-[var(--theme-text-secondary)] font-medium leading-relaxed">
-                Browse CardMarket reference products and pricing
-              </p>
-            </div>
-            <div className="flex items-center bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 rounded-2xl px-6 py-3 text-white shadow-xl">
-              <Package className="w-6 h-6 mr-3" />
-              <div className="text-right">
-                <div className="text-2xl font-bold">{pagination.total}</div>
-                <div className="text-sm opacity-90">Total Products</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Premium shimmer effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-text-primary)]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-      </div>
+
 
       {/* Premium Search Filters using ProductSearchFilters component */}
       <ProductSearchFilters
@@ -239,9 +216,12 @@ const ProductSearch: React.FC = () => {
       />
 
       {/* Premium Search Results */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface-secondary)]/30 to-[var(--theme-status-success)]/10"></div>
-        <div className="p-8 relative z-10">
+      <SectionContainer
+        title="Search Results"
+        variant="glassmorphism"
+        size="lg"
+        icon={Search}
+      >
           {loading && (
             <div className="flex justify-center items-center py-20">
               <div className="text-center">
@@ -318,13 +298,20 @@ const ProductSearch: React.FC = () => {
                 </div>
               </div>
 
-              {/* Products Grid using ProductCard component */}
+              {/* Products Grid using PokemonCard component */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
-                  <ProductCard
+                  <PokemonCard
                     key={product._id}
-                    product={product}
-                    convertToDKK={convertToDKK}
+                    cardType="product"
+                    variant="glass"
+                    size="md"
+                    title={product.name}
+                    subtitle={product.setName}
+                    category={product.category}
+                    price={convertToDKK ? product.cardMarketPrice * 7.5 : product.cardMarketPrice}
+                    images={product.images}
+                    interactive={true}
                   />
                 ))}
               </div>
@@ -336,8 +323,7 @@ const ProductSearch: React.FC = () => {
               />
             </>
           )}
-        </div>
-      </div>
+      </SectionContainer>
     </PageLayout>
   );
 };

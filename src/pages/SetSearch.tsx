@@ -16,6 +16,7 @@ import * as setsApi from '../api/setsApi';
 import { searchSets } from '../api/searchApi';
 import { PokemonInput } from '../components/design-system/PokemonInput';
 import { PageLayout } from '../components/layouts/PageLayout';
+import { SectionContainer } from '../components/common';
 import { useFetchCollectionItems } from '../hooks/useFetchCollectionItems';
 import { usePageLayout } from '../hooks/usePageLayout';
 import { log } from '../utils/logger';
@@ -221,9 +222,12 @@ const SetSearch: React.FC = () => {
       variant="default"
     >
       {/* Premium Search Filters */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
+      <SectionContainer
+        title="Search Filters"
+        variant="glassmorphism"
+        size="lg"
+        icon={Search}
+      >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Set Name Search */}
             <div className="md:col-span-2">
@@ -280,13 +284,15 @@ const SetSearch: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-      </div>
+      </SectionContainer>
 
       {/* Results Section */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
+      <SectionContainer
+        title={`Search Results (${sets ? sets.length : 0})`}
+        variant="glassmorphism"
+        size="lg"
+        icon={Package}
+      >
           {sets && sets.length > 0 ? (
             <>
               {/* Results Grid */}
@@ -376,8 +382,7 @@ const SetSearch: React.FC = () => {
               </p>
             </div>
           )}
-        </div>
-      </div>
+      </SectionContainer>
     </PageLayout>
   );
 };

@@ -6,9 +6,7 @@
  *
  * Following CLAUDE.md principles for beautiful, award-winning design:
  * - REFACTORED: Extracted reusable components to eliminate DRY violations
- * - SalesStatCard: Reusable statistics cards for key metrics
- * - CategorySalesCard: Reusable category breakdown cards
- * - RecentSaleListItem: Reusable individual sale item components
+ * - PokemonCard: Unified card component for all metric, category, and sale displays
  * - SalesDateRangeFilter: Reusable date filter component
  */
 
@@ -17,10 +15,8 @@ import { TrendingUp, DollarSign, Download } from 'lucide-react';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { DateRangeState } from '../components/common/DateRangeFilter';
 import { PageLayout } from '../components/layouts/PageLayout';
-import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
-import SalesStatCard from '../components/common/SalesStatCard';
-import CategorySalesCard from '../components/common/CategorySalesCard';
-import RecentSaleListItem from '../components/common/RecentSaleListItem';
+import { SectionContainer } from '../components/common';
+import { PokemonCard } from '../components/design-system/PokemonCard';
 import SalesDateRangeFilter from '../components/common/SalesDateRangeFilter';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
@@ -76,16 +72,14 @@ const SalesAnalytics: React.FC = () => {
     >
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Sales Overview Section - Context7 Premium */}
-          <div className="relative mb-8">
-            <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl p-8 particles">
-              <div className="relative z-10">
-                <GlassmorphismHeader
-                  icon={TrendingUp}
-                  title="Sales Overview"
-                  description="Track your collection's performance"
-                  className="mb-6"
-                />
+          {/* Sales Overview Section */}
+          <SectionContainer
+            title="Sales Overview"
+            subtitle="Track your collection's performance"
+            variant="glassmorphism"
+            size="lg"
+            icon={TrendingUp}
+          >
 
                 {/* Error Display - Premium styling */}
                 {error && (
@@ -96,25 +90,23 @@ const SalesAnalytics: React.FC = () => {
 
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <>
-                    {/* Key Metrics - Context7 Premium Cards using SalesStatCard */}
+                    {/* Key Metrics - Context7 Premium Cards using PokemonCard */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       {/* Total Cards Sold */}
-                      <SalesStatCard
+                      <PokemonCard
+                        cardType="metric"
+                        variant="glass"
+                        size="md"
                         title="Total Cards"
                         value={sales.length}
-                        emoji="🃏"
-                        colorScheme={{
-                          iconBg: "from-emerald-500/20 to-cyan-500/20",
-                          iconBorder: "border-emerald-400/30",
-                          titleColor: "text-emerald-400",
-                          progressGradient: "from-emerald-400 to-cyan-400",
-                          badgeColors: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30"
-                        }}
-                        badgeText="Cards Conquered"
+                        colorScheme="success"
                       />
 
                       {/* Total Revenue */}
-                      <SalesStatCard
+                      <PokemonCard
+                        cardType="metric"
+                        variant="glass"
+                        size="md"
                         title="Total Revenue"
                         value={displayPrice(
                           sales.reduce(
@@ -124,28 +116,16 @@ const SalesAnalytics: React.FC = () => {
                           )
                         ).replace(' kr.', '')}
                         icon={DollarSign}
-                        colorScheme={{
-                          iconBg: "from-blue-500/20 to-purple-500/20",
-                          iconBorder: "border-blue-400/30",
-                          titleColor: "text-blue-400",
-                          progressGradient: "from-blue-400 to-purple-400",
-                          badgeColors: "bg-blue-500/20 text-blue-300 border-blue-400/30"
-                        }}
-                        badgeText="Revenue Generated"
+                        colorScheme="primary"
                       />
                     </div>
 
                     {/* Category Breakdown Section */}
                     <div className="relative">
-                      <GlassmorphismHeader
-                        title="Category Breakdown"
-                        description="Sales performance by item type"
-                        className="mb-6"
-                      >
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl shadow-2xl flex items-center justify-center border border-white/[0.15]">
-                          <span className="text-2xl">📊</span>
-                        </div>
-                      </GlassmorphismHeader>
+                      <div className="mb-6">
+                        <h3 className="text-xl font-bold text-zinc-100 mb-2">Category Breakdown</h3>
+                        <p className="text-zinc-400">Sales performance by item type</p>
+                      </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {(() => {
@@ -193,9 +173,15 @@ const SalesAnalytics: React.FC = () => {
 
                           return Object.entries(categoryStats).map(
                             ([categoryKey, categoryData]) => (
-                              <CategorySalesCard
+                              <PokemonCard
                                 key={categoryKey}
-                                category={categoryData}
+                                cardType="metric"
+                                variant="glass"
+                                size="md"
+                                title={categoryData.name}
+                                value={categoryData.count}
+                                subtitle={`Total Revenue: $${categoryData.revenue.toFixed(2)}`}
+                                colorScheme="success"
                               />
                             )
                           );
@@ -217,42 +203,44 @@ const SalesAnalytics: React.FC = () => {
                     </p>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
+          </SectionContainer>
 
-          {/* Recent Sales - Context7 Premium */}  
-          <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
-            <div className="p-8 border-b border-[var(--theme-border)]">
-              <GlassmorphismHeader
-                icon={TrendingUp}
-                title="Recent Sales"
-                description="Your latest sold items with details"
-                className="mb-6"
-              >
-                {Array.isArray(sales) && sales.length > 0 && (
-                  <PokemonButton
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleExportCSV}
-                    disabled={loading}
-                    className="btn-premium bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-400/30 text-blue-300 hover:text-blue-200 scale-on-hover"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Export CSV
-                  </PokemonButton>
-                )}
-              </GlassmorphismHeader>
+          {/* Recent Sales */}
+          <SectionContainer
+            title="Recent Sales"
+            subtitle="Your latest sold items with details"
+            variant="glassmorphism"
+            size="lg"
+            icon={TrendingUp}
+            actions={
+              Array.isArray(sales) && sales.length > 0 ? [
+                {
+                  icon: Download,
+                  label: "Export CSV",
+                  onClick: handleExportCSV,
+                  variant: 'secondary' as const,
+                  loading: loading
+                }
+              ] : []
+            }
+          >
 
-              {/* Clean List View Layout */}
-              <div className="p-0">
+            <div>
                 {Array.isArray(sales) && sales.length > 0 ? (
                   <div className="divide-y divide-[var(--theme-border)]">
                     {sales.slice(0, 10).map((sale, index) => (
-                      <RecentSaleListItem
+                      <PokemonCard
                         key={sale.id || `sale-${index}`}
-                        sale={sale}
-                        index={index}
+                        cardType="sale"
+                        variant="glass"
+                        size="sm"
+                        title={sale.itemName || 'Unknown Item'}
+                        subtitle={sale.itemCategory || 'Unknown Category'}
+                        price={Number(sale.actualSoldPrice) || 0}
+                        saleDate={sale.dateSold}
+                        images={sale.images}
+                        sold={true}
+                        interactive={false}
                       />
                     ))}
                   </div>
@@ -270,41 +258,25 @@ const SalesAnalytics: React.FC = () => {
                     </p>
                   </div>
                 )}
-              </div>
-
-              {/* Footer with View All Button - Premium glassmorphism */}
-              {Array.isArray(sales) && sales.length > 10 && (
-                <div className="px-8 py-6 border-t border-[var(--theme-border)] bg-gradient-to-r from-zinc-900/10 to-zinc-800/5 backdrop-blur-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
-                      <p className="text-sm text-[var(--theme-text-secondary)] font-medium">
+                
+                {/* Footer with View All Button */}
+                {Array.isArray(sales) && sales.length > 10 && (
+                  <div className="pt-4 mt-6 border-t border-zinc-700/50">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-zinc-400 font-medium">
                         Showing 10 of {sales.length} sales
                       </p>
-                    </div>
-                    <button className="btn-premium px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 hover:text-blue-200 font-semibold rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 backdrop-blur-sm scale-on-hover">
-                      <span className="flex items-center">
+                      <PokemonButton
+                        variant="ghost"
+                        size="sm"
+                      >
                         View All Sales
-                        <svg
-                          className="w-4 h-4 ml-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
-                          />
-                        </svg>
-                      </span>
-                    </button>
+                      </PokemonButton>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
-          </div>
+          </SectionContainer>
         </div>
       </div>
     </PageLayout>

@@ -18,7 +18,12 @@ import {
   createResourceOperations,
   idMapper,
 } from './genericApiOperations';
-import { unifiedApiClient } from './unifiedApiClient';
+import { typeSafeApiClient } from './TypeSafeApiClient';
+import {
+  ActivityResponse,
+  PaginatedResponse,
+  ApiSuccessResponse,
+} from '../types/api/ApiResponse';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -243,11 +248,11 @@ export const exportActivities = activityOperations.export;
 /**
  * Get activities with advanced filtering and pagination
  * @param filters - Activity filter parameters
- * @returns Promise<ActivityResponse> - Paginated activity response
+ * @returns Promise<PaginatedResponse<ActivityResponse>> - Type-safe paginated activity response
  */
 export const getActivities = async (
   filters: ActivityFilters = {}
-): Promise<ActivityResponse> => {
+): Promise<PaginatedResponse<ActivityResponse>> => {
   const queryParams = {
     ...(filters.limit && { limit: filters.limit.toString() }),
     ...(filters.offset && { offset: filters.offset.toString() }),
@@ -259,119 +264,38 @@ export const getActivities = async (
     ...(filters.search && { search: filters.search }),
   };
 
-  // The unifiedApiClient.apiGet returns the transformed data, but we need the full ActivityResponse structure
-  // Since this is a paginated endpoint, we need to check what the backend actually returns
-  const response = await unifiedApiClient.apiGet<any>(
+  // Use type-safe client to eliminate 'any' type violations
+  return await typeSafeApiClient.getPaginated<ActivityResponse>(
     '/activities',
     'activities with filters',
     { params: queryParams }
   );
 
-  // Handle the transformed response - the backend should return {success, data: Activity[], meta: {...}}
-  // But unifiedApiClient transforms it to just the data portion
-  if (Array.isArray(response)) {
-    // If we get an array directly, it means the transformation extracted the data array
-    // We need to create the expected ActivityResponse structure
-    return {
-      success: true,
-      data: response,
-      meta: {
-        total: response.length,
-        limit: filters.limit || 50,
-        offset: filters.offset || 0,
-        hasMore: false, // We don't have this info from the transformed response
-        page: Math.floor((filters.offset || 0) / (filters.limit || 50)) + 1,
-        totalPages: 1, // We don't have this info from the transformed response
-      },
-    };
-  }
-
-  // If response has the expected structure, return it as is
-  if (
-    response &&
-    typeof response === 'object' &&
-    'data' in response &&
-    'meta' in response
-  ) {
-    return response as ActivityResponse;
-  }
-
-  // Fallback for unexpected response format
-  return {
-    success: true,
-    data: Array.isArray(response) ? response : [],
-    meta: {
-      total: 0,
-      limit: filters.limit || 50,
-      offset: filters.offset || 0,
-      hasMore: false,
-      page: 1,
-      totalPages: 1,
-    },
-  };
 };
 
 /**
  * Get recent activities (last 10 by default)
  * @param limit - Number of recent activities to fetch
- * @returns Promise<{success: boolean; data: Activity[]}> - Recent activities
+ * @returns Promise<ApiSuccessResponse<ActivityResponse[]>> - Type-safe recent activities response
  */
 export const getRecentActivities = async (
   limit: number = 10
-): Promise<{ success: boolean; data: Activity[] }> => {
-  const response = await unifiedApiClient.apiGet<Activity[]>(
+): Promise<ApiSuccessResponse<ActivityResponse[]>> => {
+  return await typeSafeApiClient.get<ActivityResponse[]>(
     `/activities/recent?limit=${limit}`,
     'recent activities'
   );
-
-  // The unifiedApiClient.apiGet returns the transformed data (just the activities array)
-  // We need to wrap it in the expected format for backward compatibility
-  return {
-    success: true,
-    data: Array.isArray(response) ? response : [],
-  };
 };
 
 /**
  * Get activity statistics and analytics
  * @returns Promise<ActivityStatsResponse> - Activity statistics
  */
-export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
-  const response = await unifiedApiClient.apiGet<any>(
+export const getActivityStats = async (): Promise<ApiSuccessResponse<ActivityStatsResponse>> => {
+  return await typeSafeApiClient.get<ActivityStatsResponse>(
     '/activities/stats',
     'activity statistics'
   );
-
-  // Handle the transformed response - unifiedApiClient extracts the data field
-  // If response is the stats object directly, wrap it in the expected format
-  if (response && typeof response === 'object' && !('success' in response)) {
-    return {
-      success: true,
-      data: response,
-    };
-  }
-
-  // If response already has the expected structure, return it as is
-  if (
-    response &&
-    typeof response === 'object' &&
-    'success' in response &&
-    'data' in response
-  ) {
-    return response as ActivityStatsResponse;
-  }
-
-  // Fallback for unexpected response format
-  return {
-    success: true,
-    data: {
-      total: 0,
-      today: 0,
-      week: 0,
-      month: 0,
-      lastActivity: undefined,
-    },
-  };
 };
 
 // getActivityTypes removed - not used by any frontend components
@@ -385,11 +309,10 @@ export const getActivityStats = async (): Promise<ActivityStatsResponse> => {
 export const searchActivities = async (
   searchTerm: string,
   filters: Omit<ActivityFilters, 'search'> = {}
-): Promise<{
-  success: boolean;
-  data: Activity[];
+): Promise<ApiSuccessResponse<{
+  activities: ActivityResponse[];
   meta: { searchTerm: string; resultCount: number };
-}> => {
+}>> => {
   const queryParams = {
     q: searchTerm,
     ...(filters.type && { type: filters.type }),
@@ -397,44 +320,14 @@ export const searchActivities = async (
     ...(filters.entityType && { entityType: filters.entityType }),
   };
 
-  const response = await unifiedApiClient.apiGet<any>(
+  return await typeSafeApiClient.get<{
+    activities: ActivityResponse[];
+    meta: { searchTerm: string; resultCount: number };
+  }>(
     '/activities/search',
     'activity search',
     { params: queryParams }
   );
-
-  // Handle the transformed response - unifiedApiClient extracts the data field
-  if (Array.isArray(response)) {
-    // If we get an array directly, it means the transformation extracted the data array
-    return {
-      success: true,
-      data: response,
-      meta: {
-        searchTerm,
-        resultCount: response.length,
-      },
-    };
-  }
-
-  // If response has the expected structure, return it as is
-  if (
-    response &&
-    typeof response === 'object' &&
-    'data' in response &&
-    'meta' in response
-  ) {
-    return response;
-  }
-
-  // Fallback for unexpected response format
-  return {
-    success: true,
-    data: [],
-    meta: {
-      searchTerm,
-      resultCount: 0,
-    },
-  };
 };
 
 /**
@@ -446,7 +339,7 @@ export const searchActivities = async (
 export const getActivitiesForEntity = async (
   entityType: string,
   entityId: string
-): Promise<{ success: boolean; data: Activity[] }> => {
+): Promise<ApiSuccessResponse<ActivityResponse[]>> => {
   // Validate both entityType and entityId to prevent [object Object] URLs
   const validEntityType = String(entityType).trim();
   const validEntityId = String(entityId).trim();
@@ -460,35 +353,10 @@ export const getActivitiesForEntity = async (
     throw new Error('Invalid entityType or entityId provided');
   }
 
-  const response = await unifiedApiClient.apiGet<any>(
+  return await typeSafeApiClient.get<ActivityResponse[]>(
     `/activities/entity/${validEntityType}/${validEntityId}`,
     'activities for entity'
   );
-
-  // Handle the transformed response - unifiedApiClient extracts the data field
-  if (Array.isArray(response)) {
-    // If we get an array directly, it means the transformation extracted the data array
-    return {
-      success: true,
-      data: response,
-    };
-  }
-
-  // If response has the expected structure, return it as is
-  if (
-    response &&
-    typeof response === 'object' &&
-    'success' in response &&
-    'data' in response
-  ) {
-    return response;
-  }
-
-  // Fallback for unexpected response format
-  return {
-    success: true,
-    data: [],
-  };
 };
 
 /**

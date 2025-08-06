@@ -11,7 +11,7 @@ import React from 'react';
 import { Download } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import { PokemonCard } from '../design-system/PokemonCard';
-import { ImageProductView } from '../common/ImageProductView';
+
 import LoadingSpinner from '../common/LoadingSpinner';
 import { navigationHelper } from '../../utils/navigation';
 
@@ -36,7 +36,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
   downloadingZip = false,
   className = '',
 }) => {
-  // Get item type for ImageProductView
+  // Get item type for PokemonCard display
   const getItemType = () => {
     const { type } = navigationHelper.getCollectionItemParams();
     return type as 'psa' | 'raw' | 'sealed';
@@ -50,24 +50,22 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
       className={`h-full ${className}`}
     >
       <div className="h-[500px]">
-        <ImageProductView
+        <PokemonCard
+          cardType="collection"
+          variant="glass"
+          size="xl"
           images={item.images || []}
           title={title}
           subtitle={setName}
           price={item.myPrice}
-          type={getItemType()}
           grade={'grade' in item ? item.grade : undefined}
           condition={'condition' in item ? item.condition : undefined}
           category={'category' in item ? item.category : undefined}
           sold={item.sold}
           saleDate={item.saleDetails?.dateSold}
-          variant="detail"
-          size="xl"
-          aspectRatio="auto"
           showBadge={false}
           showPrice={false}
           showActions={true}
-          enableInteractions={false}
           className="h-full"
         />
       </div>

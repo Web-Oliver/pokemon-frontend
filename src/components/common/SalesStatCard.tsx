@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { PokemonCard } from '../design-system/PokemonCard';
 
 interface SalesStatCardProps {
   /** Display title of the statistic */
@@ -45,40 +46,28 @@ interface SalesStatCardProps {
 const SalesStatCard: React.FC<SalesStatCardProps> = ({
   title,
   value,
+  subtitle,
   icon: Icon,
-  emoji,
-  colorScheme,
-  badgeText,
+  trend,
+  trendLabel,
+  colorScheme = 'primary',
+  onClick,
   className = '',
 }) => {
   return (
-    <div className={`card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle ${className}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 bg-gradient-to-r ${colorScheme.iconBg} rounded-xl flex items-center justify-center border ${colorScheme.iconBorder} backdrop-blur-sm ${Icon ? 'glow-on-hover' : ''}`}>
-          {Icon ? (
-            <Icon className="w-6 h-6 text-cyan-300" />
-          ) : (
-            <span className="text-xl">{emoji}</span>
-          )}
-        </div>
-        <div className="text-right">
-          <div className={`text-sm ${colorScheme.titleColor} font-medium mb-1`}>
-            {title}
-          </div>
-          <div className="text-4xl font-bold text-[var(--theme-text-primary)]">
-            {value}
-          </div>
-        </div>
-      </div>
-      <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
-        <div className={`h-full bg-gradient-to-r ${colorScheme.progressGradient} rounded-full w-full shimmer`}></div>
-      </div>
-      <div className="mt-4 text-center">
-        <span className={`inline-flex items-center px-3 py-1 ${colorScheme.badgeColors} rounded-full text-sm font-medium border backdrop-blur-sm`}>
-          {badgeText}
-        </span>
-      </div>
-    </div>
+    <PokemonCard
+      cardType="metric"
+      variant="glass"
+      size="md"
+      title={title}
+      value={value}
+      icon={Icon}
+      subtitle={subtitle || trendLabel}
+      colorScheme={colorScheme}
+      onClick={onClick}
+      interactive={!!onClick}
+      className={className}
+    />
   );
 };
 

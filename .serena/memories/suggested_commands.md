@@ -1,46 +1,87 @@
-# Suggested Development Commands
+# Suggested Commands
 
-## Development Server
+## Development Commands
 ```bash
-npm run dev              # Start development server
+# Start development server
+npm run dev
+
+# Build for production 
+npm run build
+
+# Build with TypeScript checking
+npm run build:with-typecheck
+
+# Analyze bundle size
+npm run build:analyze
 ```
 
-## Build & Analysis
+## Code Quality Commands
 ```bash
-npm run build           # Production build
-npm run build:analyze   # Build with bundle analyzer
-npm run preview         # Preview production build
+# Lint code
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Type checking
+npm run type-check
 ```
 
-## Code Quality
+## Testing Commands
 ```bash
-npm run lint            # ESLint checking
-npm run lint:fix        # Fix ESLint issues
-npm run format          # Format with Prettier
-npm run format:check    # Check Prettier formatting
-npm run type-check      # TypeScript type checking
+# Run tests
+npm test
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests once
+npm run test:run
+
+# Test coverage report
+npm run test:coverage
+
+# Watch tests
+npm run test:watch
 ```
 
-## Testing
+## Analysis Commands
 ```bash
-npm run test           # Run tests
-npm run test:ui        # Run tests with UI
-npm run test:run       # Run tests once
-npm run test:coverage  # Run with coverage
-npm run test:watch     # Watch mode
+# Analyze frontend architecture
+npm run analyze:frontend
+
+# Watch frontend analysis
+npm run analyze:frontend:watch
 ```
 
-## Analysis Tools
+## Preview Commands
 ```bash
-madge --circular --extensions ts,tsx,js,jsx src/  # Check circular dependencies
-npx depcheck --json                              # Check unused dependencies
-npm run build:analyze                            # Bundle analysis
+# Preview production build
+npm run preview
 ```
 
-## Git Workflow
+## System Commands (Linux)
 ```bash
-git status
-git add .
-git commit -m "message"
-git push
+# File operations
+ls -la          # List files with details
+find . -name    # Find files by name
+grep -r "text"  # Search text in files
+cd path/        # Change directory
+mkdir dirname   # Create directory
+rm filename     # Remove file
+mv old new      # Move/rename file
+cp source dest  # Copy file
+
+# Git operations  
+git status      # Check status
+git add .       # Add all changes
+git commit -m   # Commit changes
+git push        # Push to remote
+git pull        # Pull from remote
 ```

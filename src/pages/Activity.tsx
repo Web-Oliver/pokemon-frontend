@@ -41,7 +41,7 @@ import ActivityStatCard from '../components/common/ActivityStatCard';
 import ActivityListItem from '../components/common/ActivityListItem';
 import ActivityFilterHub from '../components/common/ActivityFilterHub';
 import { PageLayout } from '../components/layouts/PageLayout';
-import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
+
 import { ACTIVITY_TYPES, useActivity } from '../hooks/useActivity';
 import { displayPrice, getRelativeTime } from '../utils/formatting';
 

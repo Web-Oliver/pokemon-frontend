@@ -14,15 +14,18 @@ import {
   FileText, 
   Download, 
   Plus, 
-  Edit
+  Edit,
+  X
 } from 'lucide-react';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonModal, PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
 import { PageLayout } from '../components/layouts/PageLayout';
+import { SectionContainer, EmptyState } from '../components/common';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
-import { AuctionItemCard } from '../components/auction/AuctionItemCard';
+import { PokemonCard } from '../components/design-system/PokemonCard';
+import { getItemDisplayData } from '../utils/itemDisplayHelpers';
 import { ISaleDetails } from '../domain/models/common';
 import { useAuction } from '../hooks/useAuction';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
@@ -30,7 +33,7 @@ import { useModal, useConfirmModal } from '../hooks/useModal';
 import { handleApiError } from '../utils/errorHandler';
 import { showSuccessToast, showWarningToast } from '../ui/toastNotifications';
 import { navigationHelper } from '../utils/navigation';
-import { formatCurrency, formatDate } from '../utils/itemDisplayHelpers';
+import { formatCurrency, formatDate, getStatusColor, getItemDisplayData } from '../utils/itemDisplayHelpers';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -341,22 +344,17 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         </div>
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-16 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-error)]/5 via-rose-500/5 to-pink-500/5"></div>
-              <div className="relative z-10 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-text-secondary)] to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                  <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
-                </div>
-                <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
-                  Auction not found
-                </h3>
-                <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed mb-8">
-                  The auction you&apos;re looking for doesn&apos;t exist or has
-                  been deleted.
-                </p>
-                <PokemonButton onClick={navigateToAuctions}>Back to Auctions</PokemonButton>
-              </div>
-            </div>
+            <EmptyState
+              icon={Package}
+              title="Auction not found"
+              description="The auction you're looking for doesn't exist or has been deleted."
+              action={{
+                label: "Back to Auctions",
+                onClick: navigateToAuctions,
+                variant: "primary"
+              }}
+              variant="error"
+            />
           </div>
         </div>
       </PageLayout>
@@ -385,9 +383,12 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
           {/* Context7 Premium Header */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-            <div className="relative z-10">
+          <SectionContainer
+            title="Auction Information"
+            variant="glassmorphism"
+            size="lg"
+            icon={Package}
+          >
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-3 mb-6">
@@ -401,27 +402,21 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                     <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                        <Calendar className="w-4 h-4 text-white" />
-                      </div>
+                      <Calendar className="w-5 h-5 text-[var(--theme-accent-secondary)] mr-3" />
                       <span className="font-medium">
                         {formatDate(currentAuction.auctionDate)}
                       </span>
                     </div>
 
                     <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-xl flex items-center justify-center mr-3">
-                        <Package className="w-4 h-4 text-white" />
-                      </div>
+                      <Package className="w-5 h-5 text-[var(--theme-status-success)] mr-3" />
                       <span className="font-medium">
                         {totalItems} item{totalItems !== 1 ? 's' : ''}
                       </span>
                     </div>
 
                     <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3">
-                        <DollarSign className="w-4 h-4 text-white" />
-                      </div>
+                      <DollarSign className="w-5 h-5 text-amber-500 mr-3" />
                       <span className="font-medium">
                         Total Value: {formatCurrency(currentAuction.totalValue)}
                       </span>
@@ -429,19 +424,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
                 </div>
               </div>
-            </div>
-            {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-          </div>
+          </SectionContainer>
 
           {/* Context7 Premium Error Message */}
           {error && (
             <div className="bg-[var(--theme-status-error)]/10 backdrop-blur-sm border border-[var(--theme-status-error)]/30 rounded-3xl p-6 shadow-lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[var(--theme-status-error)] to-rose-600 rounded-2xl shadow-lg flex items-center justify-center">
-                    <X className="h-5 w-5 text-white" />
-                  </div>
+                  <X className="h-6 w-6 text-[var(--theme-status-error)]" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-[var(--theme-status-error)] font-medium">
@@ -462,9 +452,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
           {/* Context7 Premium Progress and Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-secondary)]/5 to-purple-500/5"></div>
-              <div className="relative z-10">
+            <SectionContainer
+              title="Sales Progress"
+              variant="glassmorphism"
+              size="md"
+            >
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-bold text-[var(--theme-accent-secondary)] tracking-wide uppercase">
                     Sales Progress
@@ -482,15 +474,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                 <p className="text-xs text-[var(--theme-text-muted)] font-medium">
                   {progress.toFixed(1)}% of items sold
                 </p>
-              </div>
-            </div>
+            </SectionContainer>
 
-            <div className="group bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-[var(--theme-border)] hover:scale-105 transition-all duration-500 hover:shadow-[var(--theme-status-success)]/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/5 to-teal-500/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <DollarSign className="w-8 h-8 text-white" />
-                </div>
+            <SectionContainer
+              title="Sold Value"
+              variant="glassmorphism"
+              size="md"
+              icon={DollarSign}
+            >
+              <div className="flex items-center">
                 <div className="ml-6">
                   <p className="text-sm font-bold text-[var(--theme-status-success)] tracking-wide uppercase mb-1">
                     Sold Value
@@ -500,14 +492,15 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </SectionContainer>
 
-            <div className="group bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-[var(--theme-border)] hover:scale-105 transition-all duration-500 hover:shadow-[var(--theme-accent-primary)]/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/5 to-[var(--theme-accent-secondary)]/5"></div>
-              <div className="flex items-center relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <DollarSign className="w-8 h-8 text-white" />
-                </div>
+            <SectionContainer
+              title="Remaining Value"
+              variant="glassmorphism"
+              size="md"
+              icon={DollarSign}
+            >
+              <div className="flex items-center">
                 <div className="ml-6">
                   <p className="text-sm font-bold text-[var(--theme-accent-primary)] tracking-wide uppercase mb-1">
                     Remaining Value
@@ -520,7 +513,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </SectionContainer>
           </div>
 
           {/* Context7 Premium Export and Social Media Tools */}
@@ -637,25 +630,42 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           >
             <div className="p-8 space-y-6">
               {currentAuction.items.map((item: any, index: number) => (
-                <AuctionItemCard
-                  key={`${item.itemId || item.itemData?._id}-${index}`}
-                  item={item}
-                  isItemSold={isItemSold}
-                  onMarkSold={handleMarkSold}
-                  onRemoveItem={handleRemoveItem}
-                  disabled={loading || collectionLoading}
-                />
+                {(() => {
+                  const displayData = getItemDisplayData(item);
+                  const isSold = isItemSold(item);
+                  return (
+                    <PokemonCard
+                      key={`${item.itemId || item.itemData?._id}-${index}`}
+                      cardType="auction"
+                      variant="glass"
+                      size="md"
+                      item={item}
+                      title={displayData.itemName}
+                      subtitle={displayData.setName}
+                      category={displayData.itemCategory}
+                      images={displayData.itemImage ? [displayData.itemImage] : undefined}
+                      price={displayData.itemPrice}
+                      sold={isSold}
+                      isItemSold={isItemSold}
+                      onMarkSold={handleMarkSold}
+                      onRemoveItem={handleRemoveItem}
+                      disabled={loading || collectionLoading}
+                      interactive={!loading && !collectionLoading}
+                      className="group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300"
+                    />
+                  );
+                })()}
               ))}
             </div>
           </AuctionItemsSection>
 
           {/* Context7 Premium Auction Metadata */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-surface-secondary)]/30 via-gray-500/3 to-[var(--theme-surface-secondary)]/30"></div>
-            <div className="relative z-10">
-              <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 tracking-wide">
-                Auction Details
-              </h3>
+          <SectionContainer
+            title="Auction Details"
+            variant="glassmorphism"
+            size="lg"
+            icon={FileText}
+          >
               <dl className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                 <div>
                   <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
@@ -696,8 +706,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
                 )}
               </dl>
-            </div>
-          </div>
+          </SectionContainer>
 
           {/* Add Item to Auction Modal */}
           <AddItemToAuctionModal

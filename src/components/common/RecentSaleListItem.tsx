@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { displayPrice } from '../../utils/formatting';
+import { PokemonCard } from '../design-system/PokemonCard';
 
 interface SaleItem {
   id?: string;
@@ -42,114 +42,21 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
   const actualPrice = Number(sale.actualSoldPrice) || 0;
   const myPrice = Number(sale.myPrice) || 0;
 
-  const getCategoryEmoji = (category?: string) => {
-    if (!category) return '🎴';
-    if (category.includes('PSA')) return '🏆';
-    if (category.includes('Sealed')) return '📦';
-    if (category.includes('Raw')) return '🃏';
-    return '🎴';
-  };
-
-  const getCategoryBadge = (category?: string) => {
-    if (!category) return 'Card';
-    if (category.includes('PSA')) return 'PSA';
-    if (category.includes('Sealed')) return 'Sealed';
-    if (category.includes('Raw')) return 'Raw';
-    return 'Card';
-  };
-
-  const getSourceEmoji = (source?: string) => {
-    if (source === 'Facebook') return '📘';
-    if (source === 'DBA') return '🏪';
-    return '🌐';
-  };
-
   return (
-    <div
-      key={sale.id || `sale-${index}`}
-      className={`group relative px-8 py-6 hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5 transition-all duration-300 scale-on-hover backdrop-blur-sm ${className}`}
-    >
-      <div className="flex items-center space-x-6">
-        {/* Product Thumbnail - Premium glassmorphism */}
-        <div className="flex-shrink-0 relative">
-          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--theme-surface)] to-zinc-800/20 border border-[var(--theme-border)] overflow-hidden backdrop-blur-sm">
-            {sale.thumbnailUrl ? (
-              <img
-                src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : `/${sale.thumbnailUrl}`}`}
-                alt={sale.itemName}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Fallback to emoji if image fails to load
-                  const target = e.currentTarget;
-                  target.style.display = 'none';
-                  const fallbackDiv = target.nextElementSibling as HTMLElement;
-                  if (fallbackDiv) {
-                    fallbackDiv.style.display = 'flex';
-                  }
-                }}
-              />
-            ) : null}
-            <div
-              className="w-full h-full flex items-center justify-center text-zinc-400 text-lg"
-              style={{
-                display: sale.thumbnailUrl ? 'none' : 'flex',
-              }}
-            >
-              {getCategoryEmoji(sale.itemCategory)}
-            </div>
-          </div>
-
-          {/* Category badge - Premium glassmorphism */}
-          <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-cyan-300 border border-blue-400/30 backdrop-blur-sm">
-            {getCategoryBadge(sale.itemCategory)}
-          </div>
-        </div>
-
-        {/* Product Name & Details - Premium styling */}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-[var(--theme-text-primary)] group-hover:text-cyan-200 transition-colors mb-1 truncate">
-            {sale.itemName || 'Unknown Item'}
-          </h3>
-          <div className="flex items-center space-x-4 text-sm text-[var(--theme-text-secondary)]">
-            <span>
-              📅{' '}
-              {sale.dateSold
-                ? new Date(sale.dateSold).toLocaleDateString('da-DK', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })
-                : 'Unknown'}
-            </span>
-            <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 text-[var(--theme-text-secondary)] border border-[var(--theme-border)] backdrop-blur-sm">
-              {getSourceEmoji(sale.source)} {sale.source || 'Unknown'}
-            </span>
-          </div>
-        </div>
-
-        {/* Price Information - Premium styling */}
-        <div className="flex items-center space-x-8">
-          <div className="text-right">
-            <div className="text-xs text-[var(--theme-text-muted)] uppercase tracking-wide mb-1">
-              My Price
-            </div>
-            <div className="text-sm font-semibold text-[var(--theme-text-secondary)]">
-              {displayPrice(myPrice)}
-            </div>
-          </div>
-
-          <div className="text-right">
-            <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">
-              Sale Price
-            </div>
-            <div className="text-lg font-bold text-emerald-300">
-              {displayPrice(actualPrice)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PokemonCard
+      cardType="sale"
+      variant="glass"
+      size="sm"
+      sale={sale}
+      title={sale.itemName}
+      category={sale.itemCategory}
+      actualSoldPrice={actualPrice}
+      myPrice={myPrice}
+      source={sale.source}
+      dateSold={sale.dateSold}
+      index={index}
+      interactive={true}
+      className={`transition-all duration-300 hover:scale-[1.01] ${className}`}
+    />
   );
 };
-
-export default RecentSaleListItem;

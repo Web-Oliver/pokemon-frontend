@@ -12,7 +12,8 @@
 import React, { memo } from 'react';
 import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
 import LoadingSpinner from '../common/LoadingSpinner';
-import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
+import { PokemonCard } from '../design-system/PokemonCard';
+import { CollectionItem } from './CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
@@ -255,12 +256,24 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
 
             return (
               <div key={uniqueKey} className="w-full aspect-[3/5]">
-                <CollectionItemCard
-                  item={item}
-                  itemType={itemType}
-                  activeTab={activeTab}
-                  onViewDetails={onViewItemDetail}
-                  onMarkAsSold={onMarkAsSold}
+                <PokemonCard
+                  cardType="collection"
+                  variant="glass"
+                  size="md"
+                  images={item.images || []}
+                  title={item.cardName || item.name || 'Unknown Item'}
+                  subtitle={item.setName || 'Unknown Set'}
+                  price={item.myPrice}
+                  grade={'grade' in item ? item.grade : undefined}
+                  condition={'condition' in item ? item.condition : undefined}
+                  category={itemType}
+                  sold={item.sold}
+                  saleDate={item.saleDetails?.dateSold}
+                  showActions={true}
+                  onViewDetails={() => onViewItemDetail(item._id, itemType)}
+                  onMarkAsSold={() => onMarkAsSold(item, itemType)}
+                  interactive={true}
+                  className="h-full"
                 />
               </div>
             );

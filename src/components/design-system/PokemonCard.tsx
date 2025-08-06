@@ -31,8 +31,8 @@ export interface PokemonCardProps {
   className?: string;
   onClick?: () => void;
 
-  // Metric card variant (from MetricCard.tsx)
-  cardType?: 'base' | 'metric' | 'collection' | 'dba' | 'sortable';
+  // Enhanced card type system - NOW INCLUDES ALL TYPES
+  cardType?: 'base' | 'metric' | 'collection' | 'dba' | 'sortable' | 'auction' | 'product' | 'sale';
   title?: string;
   value?: string | number;
   icon?: React.ComponentType<any>;
@@ -44,7 +44,7 @@ export interface PokemonCardProps {
   };
 
   // DBA card variant (from DbaItemCard.tsx)
-  item?: any; // DBA item data
+  item?: any; // Item data
   itemType?: 'psa' | 'raw' | 'sealed';
   isSelected?: boolean;
   dbaInfo?: any;
@@ -54,7 +54,7 @@ export interface PokemonCardProps {
 
   // Collection card variant (from CollectionItemCard.tsx)
   images?: string[];
-  price?: number;
+  price?: number | string;
   grade?: number;
   condition?: string;
   category?: string;
@@ -76,6 +76,24 @@ export interface PokemonCardProps {
   
   // Cosmic theming (from cosmic variants)
   cosmic?: boolean;
+
+  // NEW: Auction card props
+  onRemoveItem?: () => void;
+  disabled?: boolean;
+  isItemSold?: (item: any) => boolean;
+
+  // NEW: Product card props
+  product?: any;
+  convertToDKK?: (price: number) => string;
+  availability?: string;
+
+  // NEW: Sale card props
+  sale?: any;
+  index?: number;
+  actualSoldPrice?: number;
+  myPrice?: number;
+  source?: string;
+  dateSold?: string;
 }
 
 /**
@@ -305,6 +323,230 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
             <img 
               src={images[0]} 
               alt={title || displayName || 'Collection item'}
+  // Render auction card content
+  const renderAuctionContent = () => {
+    if (cardType !== 'auction') return null;
+    
+    return (
+      <div className="flex gap-4">
+        {/* Item Image */}
+        <div className="flex-shrink-0">
+          <div className="relative w-20 h-28 rounded-xl overflow-hidden bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700">
+            {images && images.length > 0 ? (
+              <img
+                src={images[0]}
+                alt={title || displayName || 'Auction item'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Item Details */}
+        <div className="flex-1 space-y-3">
+          <div>
+            <h3 className="font-medium text-white truncate">{title || displayName}</h3>
+            {subtitle && (
+              <p className="text-sm text-zinc-400 truncate">{subtitle}</p>
+            )}
+            {category && (
+              <span className="inline-block mt-1 px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">
+                {category}
+              </span>
+            )}
+          </div>
+
+          {/* Price and Status */}
+          <div className="flex items-center justify-between">
+            {price && (
+              <span className="text-emerald-400 font-medium">
+                {typeof price === 'string' ? price : `$${price}`}
+              </span>
+            )}
+            {sold && (
+              <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">
+                SOLD
+              </span>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          {!disabled && (
+            <div className="flex gap-2">
+              {!sold && onMarkSold && isItemSold && !isItemSold(item) && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMarkSold();
+                  }}
+                  className="px-3 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-sm rounded transition-colors"
+                >
+                  Mark Sold
+                </button>
+              )}
+              {onRemoveItem && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveItem();
+                  }}
+                  className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm rounded transition-colors"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Render product search card content
+  const renderProductContent = () => {
+    if (cardType !== 'product') return null;
+    
+    const productData = product || {};
+    
+    return (
+      <div className="space-y-4">
+        {/* Product Header */}
+        <div>
+          <h3 className="font-bold text-white truncate">{productData.name || title}</h3>
+          {(productData.setName || subtitle) && (
+            <p className="text-sm text-zinc-400 truncate">{productData.setName || subtitle}</p>
+          )}
+        </div>
+
+        {/* Category Badge */}
+        {(productData.category || category) && (
+          <span className="inline-block px-3 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 text-sm rounded-full border border-cyan-500/30">
+            {productData.category || category}
+          </span>
+        )}
+
+        {/* Price Information */}
+        {(productData.price || price) && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-emerald-400 font-bold text-lg">
+                €{productData.price || price}
+              </span>
+              {convertToDKK && (
+                <span className="text-zinc-400 text-sm">
+                  {convertToDKK(Number(productData.price || price))}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Availability Status */}
+        {(productData.available !== undefined || availability) && (
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${productData.available || availability === 'available' ? 'bg-emerald-400' : 'bg-red-400'}`} />
+            <span className={`text-sm ${productData.available || availability === 'available' ? 'text-emerald-400' : 'text-red-400'}`}>
+              {productData.available || availability === 'available' ? 'Available' : 'Out of Stock'}
+            </span>
+          </div>
+        )}
+
+        {/* Additional Product Info */}
+        {productData.url && (
+          <div className="pt-2 border-t border-zinc-700/50">
+            <span className="text-xs text-zinc-500">CardMarket Product</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Render sale history card content
+  const renderSaleContent = () => {
+    if (cardType !== 'sale') return null;
+    
+    const saleData = sale || {};
+    const actualPrice = Number(saleData.actualSoldPrice || actualSoldPrice) || 0;
+    const myPriceValue = Number(saleData.myPrice || myPrice) || 0;
+    const profit = actualPrice - myPriceValue;
+    const profitPercentage = myPriceValue > 0 ? ((profit / myPriceValue) * 100) : 0;
+
+    const getCategoryIcon = (category?: string) => {
+      if (!category) return 'card';
+      if (category.includes('PSA')) return 'trophy';
+      if (category.includes('Sealed')) return 'package';
+      return 'card';
+    };
+
+    const formatDate = (dateString?: string) => {
+      if (!dateString) return 'Unknown';
+      return new Date(dateString).toLocaleDateString('da-DK', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    };
+
+    return (
+      <div className="space-y-3">
+        {/* Sale Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="font-medium text-white truncate">{saleData.itemName || title}</h3>
+            <p className="text-sm text-zinc-400">
+              {formatDate(saleData.dateSold || dateSold)}
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-emerald-400 font-bold">${actualPrice.toFixed(2)}</div>
+            <div className="text-xs text-zinc-400">Sold</div>
+          </div>
+        </div>
+
+        {/* Category and Source Badges */}
+        <div className="flex flex-wrap gap-2">
+          {(saleData.itemCategory || category) && (
+            <span className={`px-2 py-1 text-xs rounded ${
+              (saleData.itemCategory || category)?.includes('PSA') 
+                ? 'bg-yellow-500/20 text-yellow-400' 
+                : (saleData.itemCategory || category)?.includes('Sealed')
+                ? 'bg-blue-500/20 text-blue-400'
+                : 'bg-zinc-500/20 text-zinc-400'
+            }`}>
+              {saleData.itemCategory || category}
+            </span>
+          )}
+          {(saleData.source || source) && (
+            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">
+              {saleData.source || source}
+            </span>
+          )}
+        </div>
+
+        {/* Profit/Loss Analysis */}
+        <div className="flex items-center justify-between pt-2 border-t border-zinc-700/50">
+          <div className="text-sm">
+            <span className="text-zinc-400">My Price: </span>
+            <span className="text-white">${myPriceValue.toFixed(2)}</span>
+          </div>
+          <div className="text-right">
+            <div className={`text-sm font-medium ${profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {profit >= 0 ? '+' : ''}${profit.toFixed(2)}
+            </div>
+            <div className={`text-xs ${profit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              ({profitPercentage >= 0 ? '+' : ''}{profitPercentage.toFixed(1)}%)
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
               className="w-full h-full object-cover"
             />
           </div>
@@ -402,6 +644,9 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
         {cardType === 'metric' && renderMetricContent()}
         {cardType === 'dba' && renderDbaContent()}
         {cardType === 'collection' && renderCollectionContent()}
+        {cardType === 'auction' && renderAuctionContent()}
+        {cardType === 'product' && renderProductContent()}
+        {cardType === 'sale' && renderSaleContent()}
         {cardType === 'base' && children}
         {cardType === 'sortable' && (
           <div className={cn('transition-transform', isDragging && 'scale-95')}>

@@ -21,6 +21,7 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
+import { CardFormData } from '../../../types/form/FormTypes';
 import FormHeader from '../../common/FormHeader';
 import FormActionButtons from '../../common/FormActionButtons';
 import HierarchicalCardSearch from '../sections/HierarchicalCardSearch';
@@ -42,21 +43,21 @@ interface CardFormContainerProps {
   primaryColorClass: string;
 
   /** React Hook Form Functions */
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
-  setValue: UseFormSetValue<any>;
-  watch: UseFormWatch<any>;
-  clearErrors: UseFormClearErrors<any>;
+  register: UseFormRegister<CardFormData>;
+  errors: FieldErrors<CardFormData>;
+  setValue: UseFormSetValue<CardFormData>;
+  watch: UseFormWatch<CardFormData>;
+  clearErrors: UseFormClearErrors<CardFormData>;
   handleSubmit: (
-    onValid: (data: any) => void | Promise<void>
+    onValid: (data: CardFormData) => void | Promise<void>
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
   /** Form Submission */
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: CardFormData) => Promise<void>;
   onCancel: () => void;
 
   /** Card Selection */
-  onSelectionChange: (selectedData: any) => void;
+  onSelectionChange: <T = unknown>(selectedData: T) => void;
 
   /** Conditional Rendering */
   showCardInformation?: boolean;

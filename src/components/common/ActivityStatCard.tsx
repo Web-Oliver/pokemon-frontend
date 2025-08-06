@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { PokemonCard } from '../design-system';
+import { PokemonCard } from '../design-system/PokemonCard';
 
 interface ActivityStatCardProps {
   /** Display title of the statistic */
@@ -47,30 +47,32 @@ interface ActivityStatCardProps {
 const ActivityStatCard: React.FC<ActivityStatCardProps> = ({
   title,
   value,
+  subtitle,
   icon: Icon,
-  colorScheme,
-  animationChildren,
+  trend,
+  trendLabel,
+  colorScheme = 'primary',
+  customGradient,
+  onClick,
+  className = '',
 }) => {
   return (
     <PokemonCard
+      cardType="metric"
       variant="glass"
       size="md"
-      interactive
-      className="group"
-    >
-      <div className="relative z-10 flex items-center">
-        <div className="relative mr-4">
-          <div className={`w-16 h-16 bg-gradient-to-br ${colorScheme.bg} backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-            <Icon className={`w-8 h-8 ${colorScheme.iconColor} relative z-10 animate-pulse`} />
-            
-            {/* Default orbital animation if no custom children provided */}
-            {!animationChildren && (
-              <div
-                className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ animationDuration: '20s' }}
-              >
-                <div className={`w-1.5 h-1.5 ${colorScheme.dotColors.primary} rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm`}></div>
-                <div className={`w-1 h-1 ${colorScheme.dotColors.secondary} rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm`}></div>
+      title={title}
+      value={value}
+      icon={Icon}
+      subtitle={subtitle || trendLabel}
+      colorScheme={colorScheme}
+      customGradient={customGradient}
+      onClick={onClick}
+      interactive={!!onClick}
+      className={className}
+    />
+  );
+}></div>
               </div>
             )}
             

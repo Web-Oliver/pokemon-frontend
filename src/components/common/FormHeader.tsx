@@ -1,18 +1,20 @@
 /**
- * FormHeader Component
- * Reusable form header with premium gradient design and theming
+ * FormHeader Component - LEGACY WRAPPER
+ * 
+ * MIGRATED to UnifiedHeader system for DRY compliance
+ * This component now serves as a backward-compatible wrapper
  *
  * Following CLAUDE.md principles + DRY optimization:
- * - Single Responsibility: Handles only form header presentation
- * - Open/Closed: Extensible through theme configuration
- * - DRY: Eliminates repetitive header code across forms + uses centralized themes
- * - Theme centralization: Uses formThemes system to eliminate duplication
+ * - DRY: Eliminates repetitive header code (now in UnifiedHeader)
+ * - Single Responsibility: Provides legacy API compatibility  
+ * - Open/Closed: Maintains existing API while extending through UnifiedHeader
+ * - Theme centralization: Uses UnifiedHeader variant system
  */
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { ThemeColor } from '../../theme/formThemes';
-import GlassmorphismHeader from './GlassmorphismHeader';
+import UnifiedHeader from './UnifiedHeader';
 
 interface FormHeaderProps {
   /** Icon component from lucide-react */
@@ -27,8 +29,10 @@ interface FormHeaderProps {
   className?: string;
 }
 
-// Theme configuration now centralized in formThemes system
-
+/**
+ * @deprecated Use UnifiedHeader with variant="form" instead
+ * This wrapper is maintained for backward compatibility
+ */
 const FormHeader: React.FC<FormHeaderProps> = ({
   icon,
   title,
@@ -37,10 +41,12 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   className = '',
 }) => {
   return (
-    <GlassmorphismHeader
-      icon={icon}
+    <UnifiedHeader
       title={title}
-      description={description}
+      subtitle={description}
+      icon={icon}
+      variant="form"
+      size="lg"
       className={className}
     />
   );

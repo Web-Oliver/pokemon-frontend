@@ -26,3 +26,9 @@ export type { CosmicBackgroundProps } from './CosmicBackground';
 
 export { default as HolographicBorder } from './HolographicBorder';
 export type { HolographicBorderProps } from './HolographicBorder';
+
+export { default as Context7Background } from './Context7Background';
+export type { Context7BackgroundProps } from './Context7Background';
+
+export { GlassmorphismContainer, IconGlassmorphism } from './GlassmorphismContainer';
+export type { GlassmorphismContainerProps, IconGlassmorphismProps } from './GlassmorphismContainer';

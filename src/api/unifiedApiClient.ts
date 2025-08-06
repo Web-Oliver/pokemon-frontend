@@ -21,6 +21,7 @@ import {
   transformApiResponse,
   transformRequestData,
 } from '../utils/responseTransformer';
+import { detectCacheStrategy } from '../utils/performanceOptimization';
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -171,8 +172,8 @@ export class UnifiedApiClient {
       baseURL,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        Pragma: 'no-cache',
+        'Cache-Control': 'max-age=300', // ✅ 5 minutes browser cache for static data
+        Pragma: 'cache',
       },
       timeout: 10000,
     });
@@ -317,11 +318,11 @@ export class UnifiedApiClient {
   async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
     const { optimization, ...axiosConfig } = config;
 
+    // ✅ INTELLIGENT CACHING - Auto-detect optimal strategy per URL
+    const intelligentCache = detectCacheStrategy(url);
     const defaultOptimization: OptimizationConfig = {
-      enableCache: false, // ❌ DISABLED - Using pure TanStack Query caching strategy (Context7 best practice)
-      cacheTTL: 0, // No internal caching - TanStack Query handles all caching
-      enableDeduplication: false, // ❌ DISABLED - TanStack Query handles deduplication natively
-      ...optimization,
+      ...intelligentCache,
+      ...optimization, // User config overrides intelligent defaults
     };
 
     return this.makeRequest(() => this.client.get<T>(url, axiosConfig), {
@@ -342,8 +343,8 @@ export class UnifiedApiClient {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
+      enableCache: false, // POST requests should not be cached
+      enableDeduplication: true, // ✅ Still prevent duplicate POSTs
       ...optimization,
     };
 
@@ -373,8 +374,8 @@ export class UnifiedApiClient {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
+      enableCache: false, // PUT requests should not be cached (mutations)
+      enableDeduplication: true, // ✅ Still prevent duplicate PUTs  
       ...optimization,
     };
 
@@ -404,8 +405,8 @@ export class UnifiedApiClient {
     const { optimization, ...axiosConfig } = config;
 
     const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
+      enableCache: false, // DELETE requests should not be cached (mutations)
+      enableDeduplication: true, // ✅ Still prevent duplicate DELETEs
       ...optimization,
     };
 
@@ -659,7 +660,7 @@ export class UnifiedApiClient {
         ...config,
         optimization: {
           enableCache: true,
-          cacheTTL: 10 * 60 * 1000, // 10 minutes for prefetched data
+          cacheTTL: 10 * 60 * 1000, // ✅ 10 minutes for prefetched data  
           enableDeduplication: true,
           ...config.optimization,
         },

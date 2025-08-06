@@ -22,7 +22,7 @@ interface PriceHistoryHook {
   priceHistory: Array<{ price: number; dateUpdated?: string }>;
 }
 
-interface FormSubmissionConfig<T> {
+interface FormSubmissionConfig<T extends Record<string, unknown>> {
   isEditing: boolean;
   initialData?: Partial<T>;
   imageUpload: ImageUploadHook;
@@ -32,7 +32,7 @@ interface FormSubmissionConfig<T> {
   submitFunction: (data: Partial<T>) => Promise<T>;
   updateFunction?: (id: string, data: Partial<T>) => Promise<T>;
   prepareFormData: (
-    formData: any,
+    formData: Record<string, unknown>,
     uploadedImages: string[],
     config: {
       isEditing: boolean;
@@ -45,7 +45,7 @@ interface FormSubmissionConfig<T> {
   ) => Partial<T>;
 }
 
-interface UseFormSubmissionReturn<FormData> {
+interface UseFormSubmissionReturn<FormData extends Record<string, unknown>> {
   isSubmitting: boolean;
   handleSubmit: (
     handleSubmit: UseFormHandleSubmit<FormData>
@@ -64,7 +64,10 @@ interface UseFormSubmissionReturn<FormData> {
  * @param config - Configuration object containing submission logic and dependencies
  * @returns Form submission state and handlers
  */
-export const useFormSubmission = <T, FormData = any>(
+export const useFormSubmission = <
+  T extends Record<string, unknown>, 
+  FormData extends Record<string, unknown> = Record<string, unknown>
+>(
   _config: FormSubmissionConfig<T>
 ): UseFormSubmissionReturn<FormData> => {
   const [isSubmitting, setIsSubmitting] = useState(false);

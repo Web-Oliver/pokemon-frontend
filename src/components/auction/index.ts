@@ -4,5 +4,6 @@
  * Exports all auction-related components
  */
 
-export { AuctionItemCard } from './AuctionItemCard';
-export type { AuctionItemCardProps } from './AuctionItemCard';
+// AuctionItemCard has been replaced with PokemonCard auction type
+
+export { default as RefactoredAuctionContent } from './RefactoredAuctionContent';

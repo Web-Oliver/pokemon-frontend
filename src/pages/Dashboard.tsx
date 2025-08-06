@@ -32,7 +32,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { PageLayout } from '../components/layouts/PageLayout';
-import GlassmorphismHeader from '../components/common/GlassmorphismHeader';
+import { SectionContainer } from '../components/common';
 import { useRecentActivities } from '../hooks/useActivity';
 import { useCollectionStats } from '../hooks/useCollectionStats';
 import { getDataCounts } from '../api/statusApi';
@@ -132,10 +132,12 @@ const Dashboard: React.FC = () => {
 
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto space-y-12">
-            <GlassmorphismHeader
-              icon={Cpu}
+            <SectionContainer
               title="Command Center"
-              description="Neural-powered collection management for your universe"
+              subtitle="Neural-powered collection management for your universe"
+              variant="glassmorphism"
+              size="lg"
+              icon={Cpu}
               className="mb-6"
             />
 

@@ -11,7 +11,7 @@
  * - Theme Integration: Uses unified theme system for consistent styling
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { useVisualTheme } from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 
@@ -24,7 +24,7 @@ export interface LoadingSpinnerProps {
   themeColor?: ThemeColor;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(({
   size = 'md',
   color = 'blue',
   text,
@@ -105,6 +105,6 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   );
 
   return SpinnerElement;
-};
+});
 
 export default LoadingSpinner;
