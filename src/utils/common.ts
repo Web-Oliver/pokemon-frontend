@@ -105,25 +105,10 @@ export const isEmpty = (value: any): boolean => {
 };
 
 /**
- * Debounce utility function
- * Delays function execution until after wait milliseconds have elapsed since the last invocation
+ * Debounce utility function - CONSOLIDATED
+ * Re-exported from debounceUtils to eliminate duplication
  */
-export const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout | null = null;
-
-  return (...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, wait);
-  };
-};
+export { debounce } from './debounceUtils';
 
 /**
  * Throttle utility function

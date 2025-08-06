@@ -13,7 +13,7 @@ import {
   exportToJSON,
   exportToPDF,
 } from '../utils/fileOperations';
-import { showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 
 export interface ExportConfig {
   filename?: string;

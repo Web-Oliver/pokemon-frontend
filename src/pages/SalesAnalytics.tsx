@@ -24,7 +24,7 @@ import RecentSaleListItem from '../components/common/RecentSaleListItem';
 import SalesDateRangeFilter from '../components/common/SalesDateRangeFilter';
 import { useExportOperations } from '../hooks/useExportOperations';
 import { useSalesAnalytics } from '../hooks/useSalesAnalytics';
-import { showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 import { displayPrice } from '../utils/formatting';
 import '../styles/unified-design-system.css';
 

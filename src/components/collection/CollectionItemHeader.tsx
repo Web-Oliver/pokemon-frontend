@@ -10,8 +10,8 @@
 import React from 'react';
 import { ArrowLeft, Edit, Check, Trash2, Star } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import { GlassmorphismHeader } from '../common/GlassmorphismHeader';
-import { FormActionButtons } from '../common/FormActionButtons';
+import GlassmorphismHeader from '../common/GlassmorphismHeader';
+import FormActionButtons from '../common/FormActionButtons';
 
 export interface CollectionItemHeaderProps {
   item: CollectionItem;

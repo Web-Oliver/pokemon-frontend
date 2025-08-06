@@ -16,7 +16,7 @@ import { Calendar, Plus, Banknote, TrendingUp, TrendingDown } from 'lucide-react
 import { PokemonButton } from './design-system/PokemonButton';
 import { PokemonInput } from './design-system/PokemonInput';
 import { log } from '../utils/logger';
-import { showWarningToast } from '../utils/errorHandler';
+import { showWarningToast } from '../ui/toastNotifications';
 
 interface IPriceHistoryEntry {
   price: number;

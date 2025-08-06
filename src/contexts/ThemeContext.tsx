@@ -23,6 +23,7 @@ import React, {
 } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 import { ThemeColor, formThemes } from '../theme/formThemes';
+import { ThemePropertyManager } from '../utils/theme/ThemePropertyManager';
 import {
   VisualTheme,
   ColorScheme,
@@ -295,70 +296,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       spacious: 1.2,
     }[themeConfig.density];
 
-    // Animation tokens
-    const animationDurations = {
-      subtle: { fast: '0.1s', normal: '0.2s', slow: '0.3s' },
-      normal: { fast: '0.15s', normal: '0.3s', slow: '0.5s' },
-      enhanced: { fast: '0.2s', normal: '0.4s', slow: '0.7s' },
-      disabled: { fast: '0s', normal: '0s', slow: '0s' },
-    }[themeConfig.animationIntensity];
-
-    // Apply theme tokens
-    root.style.setProperty(
-      '--theme-primary-gradient',
-      formTheme.button.primary
-    );
-    root.style.setProperty(
-      '--theme-primary-hover',
-      formTheme.button.primaryHover
-    );
-    root.style.setProperty(
-      '--theme-header-background',
-      formTheme.header.background
-    );
-    root.style.setProperty('--theme-border-color', formTheme.element.border);
-    root.style.setProperty('--theme-focus-ring', formTheme.element.focus);
-
-    // Density spacing
-    root.style.setProperty(
-      '--density-spacing-xs',
-      `${0.25 * densityMultiplier}rem`
-    );
-    root.style.setProperty(
-      '--density-spacing-sm',
-      `${0.5 * densityMultiplier}rem`
-    );
-    root.style.setProperty(
-      '--density-spacing-md',
-      `${1 * densityMultiplier}rem`
-    );
-    root.style.setProperty(
-      '--density-spacing-lg',
-      `${1.5 * densityMultiplier}rem`
-    );
+    // Apply theme properties using consolidated utility (eliminates duplication)
+    ThemePropertyManager.applyLegacyThemeProperties(root, formTheme, themeConfig, densityMultiplier);
+    // Additional XL spacing (not included in legacy method to maintain compatibility)
     root.style.setProperty(
       '--density-spacing-xl',
       `${2 * densityMultiplier}rem`
     );
-
-    // Animation durations
-    root.style.setProperty(
-      '--animation-duration-fast',
-      animationDurations.fast
-    );
-    root.style.setProperty(
-      '--animation-duration-normal',
-      animationDurations.normal
-    );
-    root.style.setProperty(
-      '--animation-duration-slow',
-      animationDurations.slow
-    );
-
-    // Animation delays for orchestrated effects
-    root.style.setProperty('--animation-delay-short', '0.2s');
-    root.style.setProperty('--animation-delay-medium', '0.5s');
-    root.style.setProperty('--animation-delay-long', '0.9s');
 
     // Complex animation durations for special effects
     root.style.setProperty('--animation-duration-orbit', '15s');

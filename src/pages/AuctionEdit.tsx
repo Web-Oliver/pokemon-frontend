@@ -4,7 +4,8 @@
  * Following CLAUDE.md Layer 4 (Views/Pages) principles
  */
 
-import { AlertCircle, ArrowLeft, Calendar, Check, Package, Plus, Save, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, Check, Package, Plus, Save, Trash2, X } from 'lucide-react';
+import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -14,7 +15,7 @@ import CollectionItemCard, {
 } from '../components/lists/CollectionItemCard';
 import AddItemToAuctionModal from '../components/modals/AddItemToAuctionModal';
 import { useAuction } from '../hooks/useAuction';
-import { showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 import { navigationHelper } from '../utils/navigation';
 
 interface AuctionEditProps {
@@ -539,107 +540,73 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Items Management */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/3 via-teal-500/3 to-[var(--theme-accent-primary)]/3"></div>
-            <div className="relative z-10">
-              <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
-                  Auction Items ({currentAuction.items.length})
-                </h2>
-                <PokemonButton
-                  onClick={() => setIsAddItemModalOpen(true)}
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20"
-                >
-                  <Plus className="w-5 h-5 mr-3" />
-                  Add Items
-                </PokemonButton>
-              </div>
+          <AuctionItemsSection
+            items={currentAuction.items}
+            onAddItems={() => setIsAddItemModalOpen(true)}
+          >
+            <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {currentAuction.items.map(
+                (auctionItem: any, index: number) => {
+                  const collectionItem =
+                    convertAuctionItemToCollectionItem(auctionItem);
+                  const itemType = getItemTypeFromCategory(
+                    auctionItem.itemCategory
+                  );
 
-              {currentAuction.items.length === 0 ? (
-                <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-text-secondary)] to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                    <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
-                    No items in auction
-                  </h3>
-                  <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-8">
-                    Add items from your collection to this auction.
-                  </p>
-                  <PokemonButton
-                    onClick={() => setIsAddItemModalOpen(true)}
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    <Plus className="w-5 h-5 mr-3" />
-                    Add First Item
-                  </PokemonButton>
-                </div>
-              ) : (
-                <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {currentAuction.items.map(
-                    (auctionItem: any, index: number) => {
-                      const collectionItem =
-                        convertAuctionItemToCollectionItem(auctionItem);
-                      const itemType = getItemTypeFromCategory(
-                        auctionItem.itemCategory
-                      );
+                  return (
+                    <div
+                      key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
+                      className="relative"
+                    >
+                      <CollectionItemCard
+                        item={collectionItem}
+                        itemType={itemType}
+                        activeTab="psa-graded" // Not really used in this context
+                        showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
+                        onViewDetails={handleViewItemDetail}
+                        onMarkAsSold={handleMarkAsSold}
+                      />
 
-                      return (
-                        <div
-                          key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
-                          className="relative"
+                      {/* Remove from Auction Button - Overlay */}
+                      <div className="absolute top-4 right-4 z-20">
+                        <PokemonButton
+                          onClick={() => {
+                            const itemName =
+                              auctionItem.itemData?.cardId?.cardName ||
+                              auctionItem.itemData?.cardName ||
+                              auctionItem.itemData?.name ||
+                              'Unknown Item';
+                            handleRemoveItem(
+                              auctionItem.itemId ||
+                                auctionItem.itemData?._id,
+                              itemName,
+                              auctionItem.itemCategory
+                            );
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
                         >
-                          <CollectionItemCard
-                            item={collectionItem}
-                            itemType={itemType}
-                            activeTab="psa-graded" // Not really used in this context
-                            showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
-                            onViewDetails={handleViewItemDetail}
-                            onMarkAsSold={handleMarkAsSold}
-                          />
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Remove
+                        </PokemonButton>
+                      </div>
 
-                          {/* Remove from Auction Button - Overlay */}
-                          <div className="absolute top-4 right-4 z-20">
-                            <PokemonButton
-                              onClick={() => {
-                                const itemName =
-                                  auctionItem.itemData?.cardId?.cardName ||
-                                  auctionItem.itemData?.cardName ||
-                                  auctionItem.itemData?.name ||
-                                  'Unknown Item';
-                                handleRemoveItem(
-                                  auctionItem.itemId ||
-                                    auctionItem.itemData?._id,
-                                  itemName,
-                                  auctionItem.itemCategory
-                                );
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
-                            >
-                              <Trash2 className="w-4 h-4 mr-1" />
-                              Remove
-                            </PokemonButton>
-                          </div>
-
-                          {/* Auction Specific Badge */}
-                          {auctionItem.sold && (
-                            <div className="absolute top-4 left-4 z-20">
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
-                                <Check className="w-3 h-3 mr-1" />
-                                Sold in Auction
-                              </span>
-                            </div>
-                          )}
+                      {/* Auction Specific Badge */}
+                      {auctionItem.sold && (
+                        <div className="absolute top-4 left-4 z-20">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
+                            <Check className="w-3 h-3 mr-1" />
+                            Sold in Auction
+                          </span>
                         </div>
-                      );
-                    }
-                  )}
-                </div>
+                      )}
+                    </div>
+                  );
+                }
               )}
             </div>
-          </div>
+          </AuctionItemsSection>
 
           {/* Add Item to Auction Modal */}
           <AddItemToAuctionModal

@@ -16,6 +16,7 @@ import {
   Plus, 
   Edit
 } from 'lucide-react';
+import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonModal, PokemonConfirmModal } from '../components/design-system/PokemonModal';
 import { PokemonButton } from '../components/design-system/PokemonButton';
 import { MarkSoldForm } from '../components/forms/MarkSoldForm';
@@ -26,12 +27,9 @@ import { ISaleDetails } from '../domain/models/common';
 import { useAuction } from '../hooks/useAuction';
 import { useCollectionOperations } from '../hooks/useCollectionOperations';
 import { useModal, useConfirmModal } from '../hooks/useModal';
-import {
-  handleApiError,
-  showSuccessToast,
-  showWarningToast,
-} from '../utils/errorHandler';
-import { navigationHelper } from '../utils/navigationHelper';
+import { handleApiError } from '../utils/errorHandler';
+import { showSuccessToast, showWarningToast } from '../ui/toastNotifications';
+import { navigationHelper } from '../utils/navigation';
 import { formatCurrency, formatDate } from '../utils/itemDisplayHelpers';
 
 interface AuctionDetailProps {
@@ -633,57 +631,23 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
           </div>
 
           {/* Context7 Premium Auction Items */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/3 via-teal-500/3 to-[var(--theme-accent-primary)]/3"></div>
-            <div className="relative z-10">
-              <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
-                  Auction Items ({currentAuction.items.length})
-                </h2>
-                <PokemonButton
-                  onClick={addItemModal.openModal}
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20"
-                >
-                  <Plus className="w-5 h-5 mr-3" />
-                  Add Items
-                </PokemonButton>
-              </div>
-
-              {currentAuction.items.length === 0 ? (
-                <div className="p-16 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-text-secondary)] to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                    <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
-                    No items in auction
-                  </h3>
-                  <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-8">
-                    Add items from your collection to this auction.
-                  </p>
-                  <PokemonButton
-                    onClick={addItemModal.openModal}
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    <Plus className="w-5 h-5 mr-3" />
-                    Add First Item
-                  </PokemonButton>
-                </div>
-              ) : (
-                <div className="p-8 space-y-6">
-                  {currentAuction.items.map((item: any, index: number) => (
-                    <AuctionItemCard
-                      key={`${item.itemId || item.itemData?._id}-${index}`}
-                      item={item}
-                      isItemSold={isItemSold}
-                      onMarkSold={handleMarkSold}
-                      onRemoveItem={handleRemoveItem}
-                      disabled={loading || collectionLoading}
-                    />
-                  ))}
-                </div>
-              )}
+          <AuctionItemsSection
+            items={currentAuction.items}
+            onAddItems={addItemModal.openModal}
+          >
+            <div className="p-8 space-y-6">
+              {currentAuction.items.map((item: any, index: number) => (
+                <AuctionItemCard
+                  key={`${item.itemId || item.itemData?._id}-${index}`}
+                  item={item}
+                  isItemSold={isItemSold}
+                  onMarkSold={handleMarkSold}
+                  onRemoveItem={handleRemoveItem}
+                  disabled={loading || collectionLoading}
+                />
+              ))}
             </div>
-          </div>
+          </AuctionItemsSection>
 
           {/* Context7 Premium Auction Metadata */}
           <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">

@@ -10,7 +10,8 @@
 import { useCallback } from 'react';
 import { CollectionItem, ItemType } from './useCollectionItem';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../../utils/errorHandler';
+import { handleApiError } from '../../utils/errorHandler';
+import { showSuccessToast } from '../../ui/toastNotifications';
 import { navigationHelper } from '../../utils/navigation';
 import { useConfirmModal } from '../useModal';
 

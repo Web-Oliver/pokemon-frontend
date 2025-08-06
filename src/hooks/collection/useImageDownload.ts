@@ -10,7 +10,8 @@
 import { useState, useCallback } from 'react';
 import { CollectionItem } from './useCollectionItem';
 import { getExportApiService } from '../../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../../utils/errorHandler';
+import { handleApiError } from '../../utils/errorHandler';
+import { showSuccessToast } from '../../ui/toastNotifications';
 import { log } from '../../utils/logger';
 import { navigationHelper } from '../../utils/navigation';
 

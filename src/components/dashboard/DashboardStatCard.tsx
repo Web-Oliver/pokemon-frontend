@@ -8,8 +8,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { GlassmorphismContainer } from '../effects/GlassmorphismContainer';
-import { IconGlassmorphism } from '../effects/IconGlassmorphism';
+import { GlassmorphismContainer, IconGlassmorphism } from '../effects/GlassmorphismContainer';
 
 export interface DashboardStatCardProps {
   title: string;

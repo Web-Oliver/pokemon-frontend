@@ -18,6 +18,7 @@ import {
   EXPORT_CONFIG,
 } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
+import { ZipImageUtility } from '../utils/api/ZipImageUtility';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -280,33 +281,8 @@ export const zipAuctionImages = async (auctionId: string): Promise<Blob> => {
     }
   });
 
-  if (imageUrls.length === 0) {
-    throw new Error('No images found in auction items');
-  }
-
-  // Import JSZip dynamically
-  const JSZip = (await import('jszip')).default;
-  const zip = new JSZip();
-
-  // Fetch all images and add them to the zip
-  const imagePromises = imageUrls.map(async (url, index) => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status}`);
-      }
-      const blob = await response.blob();
-      zip.file(itemNames[index], blob);
-    } catch (error) {
-      console.warn(`Failed to fetch image ${url}:`, error);
-    }
-  });
-
-  await Promise.all(imagePromises);
-
-  // Generate the zip file
-  const zipBlob = await zip.generateAsync({ type: 'blob' });
-  return zipBlob;
+  // Use consolidated ZIP utility to eliminate duplication
+  return await ZipImageUtility.createAuctionImageZip(imageUrls, itemNames);
 };
 
 /**
@@ -439,33 +415,8 @@ const createImageZip = async (
     }
   });
 
-  if (imageUrls.length === 0) {
-    throw new Error(`No images found in ${itemType}s`);
-  }
-
-  // Import JSZip dynamically
-  const JSZip = (await import('jszip')).default;
-  const zip = new JSZip();
-
-  // Fetch all images and add them to the zip
-  const imagePromises = imageUrls.map(async (url, index) => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${response.status}`);
-      }
-      const blob = await response.blob();
-      zip.file(itemNames[index], blob);
-    } catch (error) {
-      console.warn(`Failed to fetch image ${url}:`, error);
-    }
-  });
-
-  await Promise.all(imagePromises);
-
-  // Generate the zip file
-  const zipBlob = await zip.generateAsync({ type: 'blob' });
-  return zipBlob;
+  // Use consolidated ZIP utility to eliminate duplication
+  return await ZipImageUtility.createCollectionImageZip(imageUrls, itemNames, itemType);
 };
 
 /**

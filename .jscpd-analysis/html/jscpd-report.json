@@ -1,0 +1,150 @@
+{
+  "statistics": {
+    "detectionDate": "2025-08-06T05:54:45.421Z",
+    "formats": {
+      "javascript": {
+        "sources": {
+          "src/components/dba/DbaExportConfiguration.tsx": {
+            "lines": 215,
+            "tokens": 1436,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 210,
+            "duplicatedTokens": 1338,
+            "percentage": 97.67,
+            "percentageTokens": 93.18,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 215,
+          "tokens": 1436,
+          "sources": 1,
+          "clones": 1,
+          "duplicatedLines": 105,
+          "duplicatedTokens": 669,
+          "percentage": 48.84,
+          "percentageTokens": 46.59,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "tsx": {
+        "sources": {
+          "src/components/dba/DbaExportConfiguration.tsx": {
+            "lines": 314,
+            "tokens": 2071,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 34,
+            "duplicatedTokens": 334,
+            "percentage": 10.83,
+            "percentageTokens": 16.13,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 314,
+          "tokens": 2071,
+          "sources": 1,
+          "clones": 1,
+          "duplicatedLines": 17,
+          "duplicatedTokens": 167,
+          "percentage": 5.41,
+          "percentageTokens": 8.06,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 529,
+      "tokens": 3507,
+      "sources": 2,
+      "clones": 2,
+      "duplicatedLines": 122,
+      "duplicatedTokens": 836,
+      "percentage": 23.06,
+      "percentageTokens": 23.84,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "javascript",
+      "lines": 106,
+      "fragment": "}\n                                placeholder=\"Enter custom description...\"\n                                className=\"w-full h-32 px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none\"\n                              />\n                            </div>\n                          </div>\n                        </div>\n\n                        {/* Desktop Layout */}\n                        <div className=\"hidden lg:flex gap-4\">\n                          {/* Left side - Item name and Thumbnail Image */}\n                          <div className=\"flex-shrink-0 w-64\">\n                            {/* Item name above image - same width */}\n                            <div className=\"mb-3\">\n                              <span className=\"text-sm font-medium text-white\">\n                                {item.productId?.productName ||\n                                  item.name ||\n                                  generateTitle(item)}\n                              </span>\n                              <p className=\"text-xs text-zinc-400 mt-1\">\n                                {item.productId?.setProductId ||\n                                  item.setName ||\n                                  'Unknown Set'}{' '}\n                                • {item.type.toUpperCase()}\n                              </p>\n                            </div>\n\n                            {/* Image */}\n                            {item.images && item.images[0] ? (\n                              <img\n                                src={(() => {\n                                  const imageUrl = item.images[0];\n                                  const ext = imageUrl.substring(\n                                    imageUrl.lastIndexOf('.')\n                                  );\n                                  const nameWithoutExt = imageUrl.substring(\n                                    0,\n                                    imageUrl.lastIndexOf('.')\n                                  );\n                                  const thumbnailUrl = `${nameWithoutExt}-thumb${ext}`;\n                                  return thumbnailUrl.startsWith('http')\n                                    ? thumbnailUrl\n                                    : `http://localhost:3000${thumbnailUrl}`;\n                                })()}\n                                alt={item.name || 'Item'}\n                                className=\"w-64 h-64 object-contain rounded-lg border border-zinc-600 bg-zinc-800\"\n                              />\n                            ) : (\n                              <div className=\"w-64 h-64 bg-zinc-700 rounded-lg border border-zinc-600 flex items-center justify-center\">\n                                <span className=\"text-zinc-500 text-xs text-center\">\n                                  No Image\n                                </span>\n                              </div>\n                            )}\n                          </div>\n\n                          {/* Right side - Text fields */}\n                          <div className=\"flex-1 h-64 flex flex-col\">\n                            <div className=\"mb-12\">\n                              <label className=\"block text-xs font-medium text-zinc-400 mb-1\">\n                                Custom Title\n                              </label>\n                              <textarea\n                                value={item.customTitle || generateTitle(item)}\n                                onChange={(e) => {\n                                  updateItemCustomization(\n                                    item.id,\n                                    'customTitle',\n                                    e.target.value\n                                  );\n                                }}\n                                placeholder=\"Enter custom title...\"\n                                className=\"w-full h-[100px] px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none\"\n                              />\n                            </div>\n\n                            <div>\n                              <label className=\"block text-xs font-medium text-zinc-400 mb-1\">\n                                Custom Description\n                              </label>\n                              <textarea\n                                value={\n                                  item.customDescription ||\n                                  generateDescription(item)\n                                }\n                                onChange={(e) => {\n                                  updateItemCustomization(\n                                    item.id,\n                                    'customDescription',\n                                    e.target.value\n                                  );\n                                }}\n                                placeholder=\"Enter custom description...\"\n                                className=\"w-full h-[135px] px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none\"\n                              />\n                            </div>\n                          </div>\n                        </div>\n                      </div>\n                    ))}\n                  </div>\n                </div>\n\n                {/* Export Actions */}\n                <DbaExportActionsCosmic\n                  onExportToDba={(",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/dba/DbaExportConfiguration.tsx",
+        "start": 194,
+        "end": 299,
+        "startLoc": {
+          "line": 194,
+          "column": 2,
+          "position": 1319
+        },
+        "endLoc": {
+          "line": 299,
+          "column": 2,
+          "position": 1988
+        }
+      },
+      "secondFile": {
+        "name": "src/components/dba/DbaExportConfiguration.tsx",
+        "start": 109,
+        "end": 257,
+        "startLoc": {
+          "line": 109,
+          "column": 3,
+          "position": 747
+        },
+        "endLoc": {
+          "line": 257,
+          "column": 5,
+          "position": 1788
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 18,
+      "fragment": "{item.images && item.images[0] ? (\n                              <img\n                                src={(() => {\n                                  const imageUrl = item.images[0];\n                                  const ext = imageUrl.substring(\n                                    imageUrl.lastIndexOf('.')\n                                  );\n                                  const nameWithoutExt = imageUrl.substring(\n                                    0,\n                                    imageUrl.lastIndexOf('.')\n                                  );\n                                  const thumbnailUrl = `${nameWithoutExt}-thumb${ext}`;\n                                  return thumbnailUrl.startsWith('http')\n                                    ? thumbnailUrl\n                                    : `http://localhost:3000${thumbnailUrl}`;\n                                })()}\n                                alt={item.name || 'Item'}\n                                className=\"w-64 h-64 object-contain rounded-lg border border-zinc-600 bg-zinc-800\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/dba/DbaExportConfiguration.tsx",
+        "start": 222,
+        "end": 239,
+        "startLoc": {
+          "line": 222,
+          "column": 29,
+          "position": 1506
+        },
+        "endLoc": {
+          "line": 239,
+          "column": 73,
+          "position": 1673
+        }
+      },
+      "secondFile": {
+        "name": "src/components/dba/DbaExportConfiguration.tsx",
+        "start": 131,
+        "end": 148,
+        "startLoc": {
+          "line": 131,
+          "column": 29,
+          "position": 907
+        },
+        "endLoc": {
+          "line": 148,
+          "column": 73,
+          "position": 1074
+        }
+      }
+    }
+  ],
+  "filename": "/home/oliver/apps/pokemon-collection/pokemon-collection-frontend/node_modules/@jscpd/html-reporter/dist/templates/main.pug"
+}

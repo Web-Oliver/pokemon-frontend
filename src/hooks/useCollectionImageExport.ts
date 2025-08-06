@@ -6,7 +6,7 @@
 
 import { useCallback } from 'react';
 import { getExportApiService } from '../services/ServiceRegistry';
-import { showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 import { log } from '../utils/logger';
 import { useAsyncOperation } from './useAsyncOperation';
 

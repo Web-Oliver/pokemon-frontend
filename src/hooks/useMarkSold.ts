@@ -13,7 +13,8 @@ import { ISaleDetails } from '../domain/models/common';
 import { useCollectionOperations } from './useCollectionOperations';
 import { navigationHelper } from '../utils/navigation';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { handleApiError, showSuccessToast } from '../utils/errorHandler';
+import { handleApiError } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 
 interface UseMarkSoldOptions {
   /** Item type being sold */

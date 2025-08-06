@@ -14,7 +14,7 @@ import * as dbaSelectionApi from '../api/dbaSelectionApi';
 import * as exportApi from '../api/exportApi';
 import { useCollectionOperations } from './useCollectionOperations';
 import { handleApiError } from '../utils/errorHandler';
-import { showSuccessToast } from '../utils/errorHandler';
+import { showSuccessToast } from '../ui/toastNotifications';
 import { queryKeys } from '../lib/queryClient';
 import { CACHE_TTL } from '../config/cacheConfig';
 
