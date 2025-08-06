@@ -249,7 +249,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
               value={baseForm.values?.myPrice || ''}
               onChange={(e) =>
                 baseForm.setValue('myPrice', parseFloat(e.target.value) || 0)
-              )
+              }
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               placeholder="0.00"
             />
