@@ -36,7 +36,7 @@ import {
 } from './wrappers/FormSubmissionWrapper';
 
 // Import unified sections
-import CardFormContainer from './containers/CardFormContainer';
+import SimpleFormContainer from './containers/SimpleFormContainer';
 import HierarchicalCardSearch from './sections/HierarchicalCardSearch';
 import CardInformationFields from './fields/CardInformationFields';
 import GradingPricingSection from './sections/GradingPricingSection';
@@ -181,7 +181,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
   }, [initialData, formInitialization]);
 
   return (
-    <CardFormContainer
+    <SimpleFormContainer
       icon={config.icon}
       title={config.title}
       description={config.description}
@@ -292,7 +292,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
           {baseForm.isSubmitting ? 'Saving...' : config.submitButtonText}
         </button>
       </div>
-    </CardFormContainer>
+    </SimpleFormContainer>
   );
 };
 
