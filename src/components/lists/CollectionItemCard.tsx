@@ -11,8 +11,8 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { PokemonCard } from '../design-system/PokemonCard';
-import { formatCardNameForDisplay } from '../../utils/formatting';
+import { ImageProductView } from '../common/ImageProductView';
+import { formatCardNameForDisplay } from '../../utils/helpers/formatting';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
@@ -89,30 +89,13 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   }, [onMarkAsSold, item, itemType]);
 
   return (
-    <PokemonCard
-      cardType="collection"
-      variant="glass"
-      size="md"
+    <ImageProductView
       images={item.images || []}
       title={itemName}
       subtitle={setName}
       price={item.myPrice}
+      type={itemType}
       grade={activeTab === 'psa-graded' ? (item as any).grade : undefined}
-      condition={activeTab === 'raw' ? (item as any).condition : undefined}
-      category={itemType}
-      sold={item.sold}
-      saleDate={item.saleDate}
-      showBadge={true}
-      showPrice={true}
-      showActions={showMarkAsSoldButton}
-      onView={handleClick}
-      onMarkSold={handleMarkSold}
-      interactive={true}
-      onClick={handleClick}
-      className="transition-all duration-200 hover:scale-[1.02]"
-    />
-  );
-}
       condition={
         activeTab === 'raw-cards' ? (item as any).condition : undefined
       }

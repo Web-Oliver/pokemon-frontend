@@ -1,87 +1,46 @@
-# Suggested Commands
+# Suggested Development Commands
 
-## Development Commands
+## Development Server
 ```bash
-# Start development server
-npm run dev
-
-# Build for production 
-npm run build
-
-# Build with TypeScript checking
-npm run build:with-typecheck
-
-# Analyze bundle size
-npm run build:analyze
+npm run dev              # Start development server
 ```
 
-## Code Quality Commands
+## Build & Analysis
 ```bash
-# Lint code
-npm run lint
-
-# Fix linting issues
-npm run lint:fix
-
-# Format code with Prettier
-npm run format
-
-# Check formatting
-npm run format:check
-
-# Type checking
-npm run type-check
+npm run build           # Production build
+npm run build:analyze   # Build with bundle analyzer
+npm run preview         # Preview production build
 ```
 
-## Testing Commands
+## Code Quality
 ```bash
-# Run tests
-npm test
-
-# Run tests with UI
-npm run test:ui
-
-# Run tests once
-npm run test:run
-
-# Test coverage report
-npm run test:coverage
-
-# Watch tests
-npm run test:watch
+npm run lint            # ESLint checking
+npm run lint:fix        # Fix ESLint issues
+npm run format          # Format with Prettier
+npm run format:check    # Check Prettier formatting
+npm run type-check      # TypeScript type checking
 ```
 
-## Analysis Commands
+## Testing
 ```bash
-# Analyze frontend architecture
-npm run analyze:frontend
-
-# Watch frontend analysis
-npm run analyze:frontend:watch
+npm run test           # Run tests
+npm run test:ui        # Run tests with UI
+npm run test:run       # Run tests once
+npm run test:coverage  # Run with coverage
+npm run test:watch     # Watch mode
 ```
 
-## Preview Commands
+## Analysis Tools
 ```bash
-# Preview production build
-npm run preview
+madge --circular --extensions ts,tsx,js,jsx src/  # Check circular dependencies
+npx depcheck --json                              # Check unused dependencies
+npm run build:analyze                            # Bundle analysis
 ```
 
-## System Commands (Linux)
+## Git Workflow
 ```bash
-# File operations
-ls -la          # List files with details
-find . -name    # Find files by name
-grep -r "text"  # Search text in files
-cd path/        # Change directory
-mkdir dirname   # Create directory
-rm filename     # Remove file
-mv old new      # Move/rename file
-cp source dest  # Copy file
-
-# Git operations  
-git status      # Check status
-git add .       # Add all changes
-git commit -m   # Commit changes
-git push        # Push to remote
-git pull        # Pull from remote
+git status
+git add .
+git commit -m "message"
+git push
 ```

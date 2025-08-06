@@ -1,0 +1,375 @@
+.
+├── App.tsx
+├── New Text Document.txt
+├── api
+│   ├── .gitkeep
+│   ├── activityApi.ts
+│   ├── auctionsApi.ts
+│   ├── cardMarket
+│   │   └── cardMarketApi.ts
+│   ├── cardsApi.ts
+│   ├── collectionApi.ts
+│   ├── dbaSelectionApi.ts
+│   ├── exportApi.ts
+│   ├── genericApiOperations.ts
+│   ├── productsApi.ts
+│   ├── salesApi.ts
+│   ├── searchApi.ts
+│   ├── setProductsApi.ts
+│   ├── setsApi.ts
+│   ├── statusApi.ts
+│   ├── unifiedApiClient.ts
+│   └── uploadApi.ts
+├── assets
+│   └── react.svg
+├── components
+│   ├── ImageUploader.tsx
+│   ├── PriceHistoryDisplay.tsx
+│   ├── analytics
+│   │   ├── ActivityTimeline.tsx
+│   │   ├── AnalyticsBackground.tsx
+│   │   ├── AnalyticsHeader.tsx
+│   │   ├── CategoryStats.tsx
+│   │   ├── MetricsGrid.tsx
+│   │   └── index.ts
+│   ├── auction
+│   │   ├── AuctionItemCard.tsx
+│   │   └── index.ts
+│   ├── collection
+│   │   ├── CollectionItemHeader.tsx
+│   │   ├── ItemDetailSection.tsx
+│   │   ├── ItemEssentialDetails.tsx
+│   │   ├── ItemImageGallery.tsx
+│   │   ├── ItemPriceHistory.tsx
+│   │   ├── ItemSaleDetails.tsx
+│   │   └── index.ts
+│   ├── common
+│   │   ├── .gitkeep
+│   │   ├── ActivityFilterHub.tsx
+│   │   ├── ActivityListItem.tsx
+│   │   ├── ActivityStatCard.tsx
+│   │   ├── CategorySalesCard.tsx
+│   │   ├── DateRangeFilter.tsx
+│   │   ├── FormActionButtons.tsx
+│   │   ├── FormElements
+│   │   │   ├── ErrorMessage.tsx
+│   │   │   ├── FormWrapper.tsx
+│   │   │   ├── Glow.tsx
+│   │   │   ├── HelperText.tsx
+│   │   │   ├── Label.tsx
+│   │   │   ├── Shimmer.tsx
+│   │   │   ├── UnifiedFormElement.tsx
+│   │   │   └── index.ts
+│   │   ├── FormHeader.tsx
+│   │   ├── GlassmorphismHeader.tsx
+│   │   ├── ImageAnalysisIndicator.tsx
+│   │   ├── ImageProductView.tsx
+│   │   ├── ImageSlideshow.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── LoadingStates.tsx
+│   │   ├── OptimizedImageView.tsx
+│   │   ├── PaginationControls.tsx
+│   │   ├── ProductCard.tsx
+│   │   ├── ProductSearchFilters.tsx
+│   │   ├── RecentSaleListItem.tsx
+│   │   ├── SalesDateRangeFilter.tsx
+│   │   └── SalesStatCard.tsx
+│   ├── dashboard
+│   │   ├── DashboardStatCard.tsx
+│   │   └── index.ts
+│   ├── dba
+│   │   ├── DbaCosmicBackground.tsx
+│   │   ├── DbaCustomDescriptionInput.tsx
+│   │   ├── DbaEmptyState.tsx
+│   │   ├── DbaEmptyStateCosmic.tsx
+│   │   ├── DbaExportActions.tsx
+│   │   ├── DbaExportActionsCosmic.tsx
+│   │   ├── DbaExportConfiguration.tsx
+│   │   ├── DbaExportSuccess.tsx
+│   │   ├── DbaHeaderActions.tsx
+│   │   ├── DbaHeaderGalaxy.tsx
+│   │   ├── DbaHeaderGalaxyCosmic.tsx
+│   │   ├── DbaItemCustomizer.tsx
+│   │   ├── DbaItemsWithTimers.tsx
+│   │   ├── DbaItemsWithoutTimers.tsx
+│   │   └── UnifiedDbaEmptyState.tsx
+│   ├── debug
+│   │   ├── PerformanceMonitor.tsx
+│   │   ├── ReactProfiler.tsx
+│   │   └── profilerUtils.ts
+│   ├── design-system
+│   │   ├── PokemonBadge.tsx
+│   │   ├── PokemonButton.tsx
+│   │   ├── PokemonCard.tsx
+│   │   ├── PokemonForm.tsx
+│   │   ├── PokemonIcon.tsx
+│   │   ├── PokemonInput.tsx
+│   │   ├── PokemonModal.tsx
+│   │   ├── PokemonPageContainer.tsx
+│   │   ├── PokemonSearch.tsx
+│   │   ├── PokemonSelect.tsx
+│   │   └── index.ts
+│   ├── effects
+│   │   ├── CosmicBackground.tsx
+│   │   ├── FloatingGeometry.tsx
+│   │   ├── GlassmorphismContainer.tsx
+│   │   ├── HolographicBorder.tsx
+│   │   ├── NeuralNetworkBackground.tsx
+│   │   ├── ParticleSystem.tsx
+│   │   ├── README.md
+│   │   ├── UnifiedEffectSystem.tsx
+│   │   └── index.ts
+│   ├── error
+│   │   ├── ErrorBoundary.tsx
+│   │   └── errorBoundaryUtils.ts
+│   ├── forms
+│   │   ├── .gitkeep
+│   │   ├── AddEditCardForm.tsx
+│   │   ├── AddEditSealedProductForm.tsx
+│   │   ├── MarkSoldForm.tsx
+│   │   ├── containers
+│   │   │   ├── AuctionFormContainer.tsx
+│   │   │   └── CardFormContainer.tsx
+│   │   ├── fields
+│   │   │   ├── CardInformationFields.tsx
+│   │   │   ├── InformationFieldRenderer.tsx
+│   │   │   ├── ProductInformationFields.tsx
+│   │   │   ├── ValidationField.tsx
+│   │   │   └── index.ts
+│   │   ├── sections
+│   │   │   ├── AuctionItemSelectionSection.tsx
+│   │   │   ├── CardInformationDisplaySection.tsx
+│   │   │   ├── GradingPricingSection.tsx
+│   │   │   ├── HierarchicalCardSearch.tsx
+│   │   │   ├── HierarchicalProductSearch.tsx
+│   │   │   ├── ImageUploadSection.tsx
+│   │   │   └── SaleDetailsSection.tsx
+│   │   └── wrappers
+│   │       └── FormSubmissionWrapper.tsx
+│   ├── layouts
+│   │   ├── .gitkeep
+│   │   ├── MainLayout.tsx
+│   │   └── PageLayout.tsx
+│   ├── lists
+│   │   ├── .gitkeep
+│   │   ├── CollectionExportModal.tsx
+│   │   ├── CollectionItemCard.tsx
+│   │   ├── CollectionStats.tsx
+│   │   ├── CollectionTabs.tsx
+│   │   ├── ItemOrderingSection.tsx
+│   │   └── UnifiedCategoryList.tsx
+│   ├── modals
+│   │   ├── AddItemToAuctionModal.tsx
+│   │   └── ItemSelectorModal.tsx
+│   ├── theme
+│   │   ├── AccessibilityControls.tsx
+│   │   ├── AccessibilityTheme.tsx
+│   │   ├── FocusManagementTheme.tsx
+│   │   ├── HighContrastTheme.tsx
+│   │   ├── README.md
+│   │   ├── ReducedMotionTheme.tsx
+│   │   ├── ThemeBackupManager.tsx
+│   │   ├── ThemeDebugPanel.tsx
+│   │   ├── ThemeDebugger.tsx
+│   │   ├── ThemeExportManager.tsx
+│   │   ├── ThemeExporter.tsx
+│   │   ├── ThemeImporter.tsx
+│   │   ├── ThemePerformanceMonitor.tsx
+│   │   ├── ThemePicker.tsx
+│   │   ├── index.ts
+│   │   └── utils
+│   │       ├── themeExportUtils.ts
+│   │       └── themeValidationUtils.ts
+│   └── ui
+│       └── ThemeToggle.tsx
+├── config
+│   └── cacheConfig.ts
+├── contexts
+│   ├── DragDropContext.tsx
+│   ├── ThemeContext.tsx
+│   └── theme
+│       ├── AccessibilityThemeProvider.tsx
+│       ├── AnimationThemeProvider.tsx
+│       ├── ComposedThemeProvider.tsx
+│       ├── LayoutThemeProvider.tsx
+│       ├── ThemeStorageProvider.tsx
+│       ├── UnifiedThemeProvider.tsx
+│       ├── VisualThemeProvider.tsx
+│       └── index.ts
+├── domain
+│   ├── models
+│   │   ├── .gitkeep
+│   │   ├── auction.ts
+│   │   ├── card.ts
+│   │   ├── common.ts
+│   │   ├── ordering.ts
+│   │   ├── product.ts
+│   │   ├── sale.ts
+│   │   ├── sealedProduct.ts
+│   │   └── setProduct.ts
+│   └── services
+│       ├── .gitkeep
+│       └── SalesAnalyticsService.ts
+├── file_tree.txt
+├── generate_tree.sh
+├── hooks
+│   ├── .gitkeep
+│   ├── collection
+│   │   ├── useCollectionItem.ts
+│   │   ├── useImageDownload.ts
+│   │   ├── useItemOperations.ts
+│   │   └── usePriceManagement.ts
+│   ├── form
+│   │   ├── useCardSelection.ts
+│   │   └── useFormInitialization.ts
+│   ├── index.ts
+│   ├── theme
+│   │   ├── useAccessibilityTheme.ts
+│   │   ├── useAnimationTheme.ts
+│   │   ├── useLayoutTheme.ts
+│   │   ├── useTheme.ts
+│   │   ├── useThemeStorage.ts
+│   │   └── useVisualTheme.ts
+│   ├── useAccessibilityTheme.ts
+│   ├── useActivity.ts
+│   ├── useAnalyticsData.ts
+│   ├── useAsyncOperation.ts
+│   ├── useAuction.ts
+│   ├── useAutocomplete.ts
+│   ├── useBaseForm.ts
+│   ├── useCollectionExport.ts
+│   ├── useCollectionImageExport.ts
+│   ├── useCollectionOperations.ts
+│   ├── useCollectionState.ts
+│   ├── useCollectionStats.ts
+│   ├── useDataTable.ts
+│   ├── useDbaExport.ts
+│   ├── useDebounce.ts
+│   ├── useDragAndDrop.ts
+│   ├── useExportOperations.ts
+│   ├── useFetchCollectionItems.ts
+│   ├── useFormSubmission.ts
+│   ├── useFormValidation.ts
+│   ├── useGenericCrudOperations.ts
+│   ├── useHierarchicalSearch.tsx
+│   ├── useImageRemoval.ts
+│   ├── useImageUpload.ts
+│   ├── useItemActions.ts
+│   ├── useItemDisplayData.ts
+│   ├── useMarkSold.ts
+│   ├── useModal.ts
+│   ├── useOptimizedSearch.ts
+│   ├── usePageLayout.ts
+│   ├── usePriceHistory.ts
+│   ├── usePsaCardOperations.ts
+│   ├── useRawCardOperations.ts
+│   ├── useSalesAnalytics.ts
+│   ├── useSealedProductOperations.ts
+│   ├── useSearch.ts
+│   ├── useThemeSwitch.ts
+│   └── useUnifiedSearch.ts
+├── index.css
+├── interfaces
+│   └── api
+│       ├── ICollectionApiService.ts
+│       ├── IExportApiService.ts
+│       ├── ISearchApiService.ts
+│       ├── ISetProductApiService.ts
+│       └── IUploadApiService.ts
+├── lib
+│   └── queryClient.ts
+├── main.tsx
+├── pages
+│   ├── .gitkeep
+│   ├── Activity.tsx
+│   ├── AddEditItem.tsx
+│   ├── Analytics.tsx
+│   ├── AuctionDetail.tsx
+│   ├── AuctionEdit.tsx
+│   ├── Auctions.tsx
+│   ├── Collection.tsx
+│   ├── CollectionItemDetail.tsx
+│   ├── CreateAuction.tsx
+│   ├── Dashboard.tsx
+│   ├── DbaExport.tsx
+│   ├── REFACTOR-PAGES.md
+│   ├── REFACTOR-PAGES2.MD
+│   ├── SalesAnalytics.tsx
+│   ├── SealedProductSearch.tsx
+│   └── SetSearch.tsx
+├── services
+│   ├── CollectionApiService.ts
+│   ├── CompositeCollectionApiService.ts
+│   ├── ExportApiService.ts
+│   ├── SearchApiService.ts
+│   ├── ServiceRegistry.ts
+│   ├── SetProductApiService.ts
+│   ├── UploadApiService.ts
+│   ├── base
+│   │   ├── BaseApiService.ts
+│   │   ├── ErrorHandlingService.ts
+│   │   ├── HttpClientInterface.ts
+│   │   ├── UnifiedHttpClient.ts
+│   │   └── index.ts
+│   ├── collection
+│   │   ├── PsaCardApiService.ts
+│   │   ├── RawCardApiService.ts
+│   │   ├── SealedProductApiService.ts
+│   │   └── index.ts
+│   └── forms
+│       └── FormValidationService.ts
+├── styles
+│   └── unified-design-system.css
+├── test
+│   └── setup.ts
+├── theme
+│   └── formThemes.ts
+├── types
+│   ├── searchTypes.ts
+│   └── themeTypes.ts
+├── ui
+│   ├── context7Styles.ts
+│   └── toastNotifications.ts
+├── utils
+│   ├── .gitkeep
+│   ├── API_TRANSFORMATION_MIGRATION.md
+│   ├── TODO.txt
+│   ├── activityHelpers.ts
+│   ├── apiLogger.ts
+│   ├── apiOptimization.ts
+│   ├── auctionStatusUtils.ts
+│   ├── classNameUtils.ts
+│   ├── common.ts
+│   ├── constants.ts
+│   ├── cosmicEffects.ts
+│   ├── errorHandler.ts
+│   ├── exportUtils.ts
+│   ├── file
+│   │   ├── csvExport.ts
+│   │   ├── exportFormats.ts
+│   │   └── imageProcessing.ts
+│   ├── fileOperations.ts
+│   ├── formValidation.ts
+│   ├── formatting.ts
+│   ├── imageUtils.ts
+│   ├── itemDisplayHelpers.ts
+│   ├── lazyImports.ts
+│   ├── logger.ts
+│   ├── navigation.ts
+│   ├── orderingUtils.ts
+│   ├── responseTransformer.ts
+│   ├── searchHelpers.ts
+│   ├── storageUtils.ts
+│   ├── theme
+│   │   ├── debugging.ts
+│   │   ├── performance.ts
+│   │   └── validation.ts
+│   ├── themeConfig.ts
+│   ├── themeDebug.ts
+│   ├── themeExport.ts
+│   ├── themeUtils.ts
+│   ├── unifiedResponseTransformer.ts
+│   └── unifiedUtilities.ts
+└── vite-env.d.ts
+
+53 directories, 320 files
