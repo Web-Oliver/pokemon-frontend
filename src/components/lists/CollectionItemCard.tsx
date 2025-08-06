@@ -16,6 +16,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { Package, Star, CheckCircle, DollarSign, Eye } from 'lucide-react';
 import { BaseCard } from '../../shared/components/molecules/common/BaseCard';
 import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
+import { getImageUrl } from '../../shared/utils/ui/imageUtils';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 
@@ -144,7 +145,7 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
         <div className="aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50">
           {item.images && item.images.length > 0 ? (
             <img
-              src={item.images[0]}
+              src={getImageUrl(item.images[0])}
               alt={itemName}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

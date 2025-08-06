@@ -5,6 +5,8 @@
  * Following CLAUDE.md principles: DRY, Single Responsibility, and consistent data handling
  */
 
+import { getImageUrl } from '../ui/imageUtils';
+
 // Core item display data interface
 export interface ItemDisplayData {
   itemName: string;
@@ -69,19 +71,12 @@ export const formatItemCategory = (category: string): string => {
   }
 };
 
-// Helper function to get full image URL
-export const getImageUrl = (
-  imagePath: string | undefined
-): string | undefined => {
+// Helper function to get full image URL (uses centralized utility)
+const getItemImageUrl = (imagePath: string | undefined): string | undefined => {
   if (!imagePath) {
     return undefined;
   }
-  // If it's already a full URL, return as is
-  if (imagePath.startsWith('http')) {
-    return imagePath;
-  }
-  // If it's a relative path, prepend the backend server URL
-  return `http://localhost:3000${imagePath}`;
+  return getImageUrl(imagePath);
 };
 
 // Extract standardized display data from any item type
@@ -110,7 +105,7 @@ export const getItemDisplayData = (item: any): ItemDisplayData => {
         return {
           itemName:
             itemData.cardId?.cardName || itemData.cardName || 'Unknown Item',
-          itemImage: getImageUrl(itemData.images?.[0]),
+          itemImage: getItemImageUrl(itemData.images?.[0]),
           setName: itemData.cardId?.setId?.setName || itemData.setName,
           cardNumber: itemData.cardId?.cardNumber || itemData.cardNumber,
           grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
@@ -125,7 +120,7 @@ export const getItemDisplayData = (item: any): ItemDisplayData => {
             itemData.productId?.productName ||
             itemData.productName ||
             'Unknown Item',
-          itemImage: getImageUrl(itemData.images?.[0]),
+          itemImage: getItemImageUrl(itemData.images?.[0]),
           setName:
             itemData.setName ||
             itemData.productId?.setProductName ||
@@ -145,7 +140,7 @@ export const getItemDisplayData = (item: any): ItemDisplayData => {
     // PSA or Raw card
     return {
       itemName: item.cardId?.cardName || item.cardName || 'Unknown Card',
-      itemImage: getImageUrl(item.images?.[0]),
+      itemImage: getItemImageUrl(item.images?.[0]),
       setName: item.cardId?.setId?.setName || item.setName,
       cardNumber: item.cardId?.cardNumber || item.cardNumber,
       grade: 'grade' in item ? item.grade : undefined,
@@ -158,7 +153,7 @@ export const getItemDisplayData = (item: any): ItemDisplayData => {
     // Sealed product
     return {
       itemName: item.productId?.productName || item.name || 'Unknown Product',
-      itemImage: getImageUrl(item.images?.[0]),
+      itemImage: getItemImageUrl(item.images?.[0]),
       setName: item.productId?.setProductName || item.setName,
       cardNumber: undefined,
       grade: undefined,

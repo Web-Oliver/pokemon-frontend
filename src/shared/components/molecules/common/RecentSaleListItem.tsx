@@ -14,6 +14,7 @@
 import React from 'react';
 import BaseListItem from './BaseListItem';
 import { displayPrice } from '../../../utils/helpers/formatting';
+import { getImageUrl } from '../../../utils/ui/imageUtils';
 
 interface SaleItem {
   id?: string;
@@ -71,7 +72,7 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--theme-surface)] to-zinc-800/20 border border-[var(--theme-border)] overflow-hidden backdrop-blur-sm">
         {sale.thumbnailUrl ? (
           <img
-            src={`http://localhost:3000${sale.thumbnailUrl.startsWith('/') ? sale.thumbnailUrl : `/${sale.thumbnailUrl}`}`}
+            src={getImageUrl(sale.thumbnailUrl)}
             alt={sale.itemName}
             className="w-full h-full object-cover"
             onError={(e) => {

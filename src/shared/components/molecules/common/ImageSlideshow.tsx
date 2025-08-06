@@ -3,6 +3,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
 import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
+import { getImageUrl, getThumbnailUrl } from '../../utils/ui/imageUtils';
 
 interface ImageSlideshowProps {
   images: string[];
@@ -14,26 +15,6 @@ interface ImageSlideshowProps {
   themeColor?: ThemeColor;
 }
 
-// Helper function to get image URL without assumptions
-const getImageUrl = (imageUrl: string): string => {
-  return imageUrl.startsWith('http')
-    ? imageUrl
-    : `http://localhost:3000${imageUrl}`;
-};
-
-// Helper function to get thumbnail URL
-const getThumbnailUrl = (imageUrl: string): string => {
-  // Extract the file extension and name
-  const ext = imageUrl.substring(imageUrl.lastIndexOf('.'));
-  const nameWithoutExt = imageUrl.substring(0, imageUrl.lastIndexOf('.'));
-
-  // Create thumbnail filename with -thumb suffix
-  const thumbnailUrl = `${nameWithoutExt}-thumb${ext}`;
-
-  return thumbnailUrl.startsWith('http')
-    ? thumbnailUrl
-    : `http://localhost:3000${thumbnailUrl}`;
-};
 
 export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
   ({

@@ -14,6 +14,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
+import { getImageUrl } from '../../utils/ui/imageUtils';
 
 interface OptimizedImageViewProps {
   src: string;
@@ -77,7 +78,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
     onError?.(e);
   };
 
-  const imageSrc = src.startsWith('http') ? src : `http://localhost:3000${src}`;
+  const imageSrc = getImageUrl(src);
 
   if (hasError) {
     return (

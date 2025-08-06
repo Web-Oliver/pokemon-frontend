@@ -11,6 +11,8 @@
  * - Number and string formatting utilities
  */
 
+import { getImageUrl } from '../ui/imageUtils';
+
 // ========================================
 // CARD FORMATTING UTILITIES
 // ========================================
@@ -364,7 +366,7 @@ export const formatDateWithTime = (dateString: string): string => {
 // ========================================
 
 /**
- * Process image URLs for consistent display
+ * Process image URLs for consistent display (uses centralized utility)
  * Handles localhost prefix cleanup and proper URL construction
  * Moved from CreateAuction.tsx following DRY principles
  */
@@ -375,22 +377,5 @@ export const processImageUrl = (
     return undefined;
   }
 
-  // Use regex for more efficient multiple localhost prefix cleanup
-  const cleanPath = imagePath.replace(
-    /(http:\/\/localhost:3000)+/g,
-    'http://localhost:3000'
-  );
-
-  // If it's already a full URL after cleaning, return as-is
-  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-    return cleanPath;
-  }
-
-  // If it starts with /, it's already a proper absolute path
-  if (cleanPath.startsWith('/')) {
-    return `http://localhost:3000${cleanPath}`;
-  }
-
-  // Otherwise, assume it needs to be prefixed with the uploads path
-  return `http://localhost:3000/uploads/${cleanPath}`;
+  return getImageUrl(imagePath);
 };

@@ -6,6 +6,65 @@
  */
 
 import { generateId } from '../helpers/common';
+import { API_BASE_URL } from '../helpers/constants';
+
+/**
+ * Get the server base URL for images (without /api suffix)
+ * SRP: Only handles server base URL calculation
+ */
+const getServerBaseUrl = (): string => {
+  return API_BASE_URL.replace('/api', '');
+};
+
+/**
+ * Converts a relative image path to a full URL
+ * SRP: Only handles image URL construction
+ */
+export const getImageUrl = (imagePath: string): string => {
+  if (!imagePath) return '';
+  
+  // If already a full URL, return as-is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // If starts with blob: (for object URLs), return as-is
+  if (imagePath.startsWith('blob:')) {
+    return imagePath;
+  }
+  
+  const serverBase = getServerBaseUrl();
+  const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  
+  return `${serverBase}${cleanPath}`;
+};
+
+/**
+ * Converts a relative image path to a thumbnail URL
+ * SRP: Only handles thumbnail URL construction
+ */
+export const getThumbnailUrl = (imagePath: string): string => {
+  if (!imagePath) return '';
+  
+  // If already a full URL, convert to thumbnail
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    const ext = imagePath.substring(imagePath.lastIndexOf('.'));
+    const nameWithoutExt = imagePath.substring(0, imagePath.lastIndexOf('.'));
+    return `${nameWithoutExt}-thumb${ext}`;
+  }
+  
+  // If starts with blob:, return original (object URLs don't have thumbnails)
+  if (imagePath.startsWith('blob:')) {
+    return imagePath;
+  }
+  
+  // Create thumbnail path
+  const ext = imagePath.substring(imagePath.lastIndexOf('.'));
+  const nameWithoutExt = imagePath.substring(0, imagePath.lastIndexOf('.'));
+  const thumbnailPath = `${nameWithoutExt}-thumb${ext}`;
+  
+  return getImageUrl(thumbnailPath);
+};
 
 export interface ImagePreview {
   id: string;
@@ -24,7 +83,7 @@ export const createExistingImagePreview = (
   index: number
 ): ImagePreview => ({
   id: `existing-${index}-${generateId('img')}`,
-  url: url.startsWith('http') ? url : `http://localhost:3000${url}`,
+  url: getImageUrl(url),
   isExisting: true,
 });
 
