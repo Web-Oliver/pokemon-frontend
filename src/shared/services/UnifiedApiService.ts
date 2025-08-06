@@ -34,6 +34,33 @@ import * as exportApi from '../api/exportApi';
 import * as uploadApi from '../api/uploadApi';
 import * as statusApi from '../api/statusApi';
 
+// ========== TYPE DEFINITIONS ==========
+
+/**
+ * Products query parameters interface
+ */
+export interface ProductsParams {
+  category?: string;
+  setProductId?: string;
+  setName?: string;
+  available?: boolean;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+/**
+ * Paginated products response interface
+ */
+export interface PaginatedProductsResponse {
+  products: IProduct[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 // ========== DOMAIN SERVICE INTERFACES ==========
 
 /**
@@ -111,6 +138,7 @@ export interface IProductsService {
   searchProducts(params: searchApi.ProductSearchParams): Promise<searchApi.SearchResponse<IProduct>>;
   getProductSuggestions(query: string, limit?: number): Promise<IProduct[]>;
   getSetProducts(params?: any): Promise<ISetProduct[]>;
+  getPaginatedProducts(params?: ProductsParams): Promise<PaginatedProductsResponse>;
 }
 
 /**
@@ -301,6 +329,65 @@ export class UnifiedApiService {
     
     async getSetProducts(params?: any): Promise<ISetProduct[]> {
       return productsApi.getSetProducts(params);
+    },
+    
+    async getPaginatedProducts(params?: ProductsParams): Promise<PaginatedProductsResponse> {
+      const {
+        page = 1,
+        limit = 20,
+        category,
+        setName,
+        setProductId,
+        available,
+        search,
+      } = params || {};
+
+      if (search && search.trim()) {
+        // Use optimized search when there's a search term
+        const searchParams = {
+          query: search.trim(),
+          page,
+          limit,
+          category,
+          setName,
+          setProductId,
+          availableOnly: available,
+        };
+
+        const response = await searchApi.searchProducts(searchParams);
+
+        // Calculate pagination for optimized search
+        const totalPages = Math.ceil(response.count / limit);
+        return {
+          products: response.data,
+          total: response.count,
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+        };
+      } else {
+        // Use the main /api/products endpoint for browsing without search
+        const queryParams = {
+          page: page.toString(),
+          limit: limit.toString(),
+          ...(category && { category }),
+          ...(setName && { setName }),
+          ...(setProductId && { setProductId }),
+          ...(available !== undefined && { available: available.toString() }),
+        };
+
+        const response = await unifiedHttpClient.get<PaginatedProductsResponse>('/products', { params: queryParams });
+
+        return {
+          products: response.products || [],
+          total: response.total || 0,
+          currentPage: response.currentPage || page,
+          totalPages: response.totalPages || 1,
+          hasNextPage: response.hasNextPage || false,
+          hasPrevPage: response.hasPrevPage || false,
+        };
+      }
     }
   };
 

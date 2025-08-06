@@ -1,6 +1,12 @@
 /**
  * Products API Client (Updated from CardMarket Reference Products)
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.products instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.products.searchProducts(), unifiedApiService.products.getPaginatedProducts()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * MIGRATION: Updated to use new SetProduct → Product hierarchy
  * - Old: CardMarketReferenceProduct (single model)

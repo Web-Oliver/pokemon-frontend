@@ -1,6 +1,12 @@
 /**
  * Cards API Client
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.cards instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.cards.searchCards(), unifiedApiService.cards.getCardById()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * SOLID Principles Implementation:
  * - SRP: Single responsibility for card-related API operations

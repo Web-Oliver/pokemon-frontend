@@ -13,10 +13,7 @@
 
 import { Euro, Package, Search } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  searchProducts,
-  getPaginatedProducts,
-} from '../../../shared/api/productsApi';
+import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import ProductSearchFilters from '../../../shared/components/molecules/common/ProductSearchFilters';
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
@@ -87,7 +84,7 @@ const ProductSearch: React.FC = () => {
             ...(availableOnly && { availableOnly: true }),
           };
 
-          const searchResponse = await searchProducts(searchParams);
+          const searchResponse = await unifiedApiService.products.searchProducts(searchParams);
           fetchedProducts = searchResponse.data || [];
 
           // Calculate pagination for search results
@@ -102,7 +99,7 @@ const ProductSearch: React.FC = () => {
           };
         } else {
           // Use paginated products API for browsing
-          const response = await getPaginatedProducts({
+          const response = await unifiedApiService.products.getPaginatedProducts({
             page,
             limit: itemsPerPage,
             ...(categoryFilter && { category: categoryFilter }),

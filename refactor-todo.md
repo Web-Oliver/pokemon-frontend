@@ -33,7 +33,7 @@
 - [x] Replace direct imports of individual API files (setsApi, collectionApi, etc.)
 
 ### API Files Cleanup
-- [ ] Deprecate individual `shared/api/*.ts` files
+- [x] Deprecate individual `shared/api/*.ts` files
 - [ ] Move logic to UnifiedApiService or feature-specific services
 - [ ] Remove: `shared/api/setsApi.ts`
 - [ ] Remove: `shared/api/searchApi.ts` 

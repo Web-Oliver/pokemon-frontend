@@ -1,6 +1,12 @@
 /**
  * Auctions API Client
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.auctions instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.auctions.getAuctions(), unifiedApiService.auctions.createAuction()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * SOLID Principles Implementation:
  * - SRP: Single responsibility for auction-related API operations

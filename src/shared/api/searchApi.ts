@@ -1,6 +1,12 @@
 /**
  * Pure TanStack Query Search API - Context7 Optimal Caching Strategy
  * Layer 1: Core/Foundation/API Client
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.sets.searchSets(), UnifiedApiService.cards.searchCards(), UnifiedApiService.products.searchProducts() instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.sets.searchSets(), unifiedApiService.products.searchProducts()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * CONTEXT7 PURE TANSTACK QUERY IMPLEMENTATION:
  * - Eliminates all UnifiedApiClient dependencies for pure native fetch

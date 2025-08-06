@@ -1,6 +1,12 @@
 /**
  * Collection API Client
  * Handles CRUD operations for collection management (PSA cards, raw cards, sealed products)
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.collection instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.collection.psaCards.getAll(), unifiedApiService.collection.rawCards.create()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * OPTIMIZED: Now uses conditional logging system for production-ready code
  * Following CLAUDE.md principles - removed excessive debug logging

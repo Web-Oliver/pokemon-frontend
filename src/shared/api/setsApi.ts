@@ -1,6 +1,12 @@
 /**
  * Sets API Client
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.sets instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.sets.getPaginatedSets(), unifiedApiService.sets.searchSets()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
  *
  * SOLID Principles Implementation:
  * - SRP: Single responsibility for set-related API operations

@@ -1,5 +1,12 @@
 /**
  * Export API Client
+ * 
+ * @deprecated This file is deprecated. Use UnifiedApiService.export instead.
+ * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Usage: unifiedApiService.export.exportCollectionImages(), unifiedApiService.export.exportAuctionImages()
+ * 
+ * This file will be removed in a future version as part of API consolidation.
+ *
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
  *
  * SOLID Principles Implementation:
