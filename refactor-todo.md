@@ -37,7 +37,7 @@
 - [x] Move logic to UnifiedApiService or feature-specific services
 - [x] Remove: `shared/api/setsApi.ts`
 - [x] Remove: `shared/api/searchApi.ts` 
-- [ ] Remove: `shared/api/collectionApi.ts`
+- [x] Remove: `shared/api/collectionApi.ts`
 - [ ] Remove: `shared/api/productsApi.ts`
 
 ### Generic Operations Integration
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 0/91 (0%)**
+- [ ] **Completed: 10/91 (11%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 91/91 (100%)**
+- [ ] **Remaining: 81/91 (89%)**
 
 ---
 

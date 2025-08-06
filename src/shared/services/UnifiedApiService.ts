@@ -25,7 +25,6 @@ import { ISaleDetails } from '../domain/models/common';
 
 // Import type definitions from deprecated API files for interface compatibility
 import type * as auctionsApi from '../api/auctionsApi';
-import type * as collectionApi from '../api/collectionApi';
 import type * as cardsApi from '../api/cardsApi';
 import type * as productsApi from '../api/productsApi';
 import type * as exportApi from '../api/exportApi';
@@ -90,6 +89,30 @@ export interface SearchResponse<T> {
 }
 
 /**
+ * Collection interfaces (from deprecated collectionApi)
+ */
+export interface PsaGradedCardsParams {
+  grade?: string;
+  setName?: string;
+  cardName?: string;
+  sold?: boolean;
+}
+
+export interface RawCardsParams {
+  condition?: string;
+  setName?: string;
+  cardName?: string;
+  sold?: boolean;
+}
+
+export interface SealedProductCollectionParams {
+  category?: string;
+  setName?: string;
+  sold?: boolean;
+  search?: string;
+}
+
+/**
  * Products query parameters interface
  */
 export interface ProductsParams {
@@ -136,7 +159,7 @@ export interface IAuctionService {
 export interface ICollectionService {
   // PSA Cards
   psaCards: {
-    getAll(params?: collectionApi.PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
+    getAll(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
     getById(id: string): Promise<IPsaGradedCard>;
     create(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
     update(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
@@ -146,7 +169,7 @@ export interface ICollectionService {
   
   // Raw Cards
   rawCards: {
-    getAll(params?: collectionApi.RawCardsParams): Promise<IRawCard[]>;
+    getAll(params?: RawCardsParams): Promise<IRawCard[]>;
     getById(id: string): Promise<IRawCard>;
     create(data: Partial<IRawCard>): Promise<IRawCard>;
     update(id: string, data: Partial<IRawCard>): Promise<IRawCard>;
@@ -156,7 +179,7 @@ export interface ICollectionService {
   
   // Sealed Products
   sealedProducts: {
-    getAll(params?: collectionApi.SealedProductCollectionParams): Promise<ISealedProduct[]>;
+    getAll(params?: SealedProductCollectionParams): Promise<ISealedProduct[]>;
     getById(id: string): Promise<ISealedProduct>;
     create(data: Partial<ISealedProduct>): Promise<ISealedProduct>;
     update(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct>;
@@ -259,7 +282,7 @@ export class UnifiedApiService {
   
   public readonly collection: ICollectionService = {
     psaCards: {
-      async getAll(params?: collectionApi.PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
+      async getAll(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
         const response = await unifiedHttpClient.get<IPsaGradedCard[]>('/psa-graded-cards', { params });
         return response.data || response;
       },
@@ -289,7 +312,7 @@ export class UnifiedApiService {
     },
     
     rawCards: {
-      async getAll(params?: collectionApi.RawCardsParams): Promise<IRawCard[]> {
+      async getAll(params?: RawCardsParams): Promise<IRawCard[]> {
         const response = await unifiedHttpClient.get<IRawCard[]>('/raw-cards', { 
           params: {
             ...params,
@@ -329,7 +352,7 @@ export class UnifiedApiService {
     },
     
     sealedProducts: {
-      async getAll(params?: collectionApi.SealedProductCollectionParams): Promise<ISealedProduct[]> {
+      async getAll(params?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
         const response = await unifiedHttpClient.get<ISealedProduct[]>('/sealed-products', { params });
         return response.data || response;
       },
@@ -447,7 +470,7 @@ export class UnifiedApiService {
           availableOnly: available,
         };
 
-        const response = await searchApi.searchProducts(searchParams);
+        const response = await this.products.searchProducts(searchParams);
 
         // Calculate pagination for optimized search
         const totalPages = Math.ceil(response.count / limit);
