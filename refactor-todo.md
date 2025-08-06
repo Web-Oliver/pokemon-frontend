@@ -91,8 +91,8 @@
 - [ ] Remove custom layout implementations
 
 ### Effect Components
-- [ ] Ensure `shared/components/organisms/effects/CosmicBackground.tsx` is used consistently
-- [ ] Refactor `features/dashboard/components/dba/DbaCosmicBackground.tsx` to re-export
+- [x] Ensure `shared/components/organisms/effects/CosmicBackground.tsx` is used consistently
+- [x] Refactor `features/dashboard/components/dba/DbaCosmicBackground.tsx` to re-export
 - [ ] Remove duplicate background effect implementations
 
 ### Generic Card/List Components
