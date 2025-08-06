@@ -41,7 +41,7 @@
 - [x] Remove: `shared/api/productsApi.ts`
 
 ### Generic Operations Integration
-- [ ] Integrate `shared/api/genericApiOperations.ts` patterns into `useGenericCrudOperations` hook
+- [x] Integrate `shared/api/genericApiOperations.ts` patterns into `useGenericCrudOperations` hook
 - [ ] Create factory function for collection API logging/fetching
 - [ ] Implement `createLoggedCollectionOperation<T>` factory
 - [ ] Refactor repetitive patterns in collectionApi.ts using factory
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 11/91 (12%)**
+- [ ] **Completed: 12/91 (13%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 80/91 (88%)**
+- [ ] **Remaining: 79/91 (87%)**
 
 ---
 
