@@ -26,7 +26,6 @@ import { ISaleDetails } from '../domain/models/common';
 // Import type definitions from deprecated API files for interface compatibility
 import type * as auctionsApi from '../api/auctionsApi';
 import type * as cardsApi from '../api/cardsApi';
-import type * as productsApi from '../api/productsApi';
 import type * as exportApi from '../api/exportApi';
 import type * as uploadApi from '../api/uploadApi';
 import type * as statusApi from '../api/statusApi';
@@ -135,6 +134,16 @@ export interface PaginatedProductsResponse {
   totalPages: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
+}
+
+/**
+ * Optimized product search response (from deprecated productsApi)
+ */
+export interface OptimizedProductSearchResponse {
+  success: boolean;
+  query: string;
+  count: number;
+  data: IProduct[];
 }
 
 // ========== DOMAIN SERVICE INTERFACES ==========
