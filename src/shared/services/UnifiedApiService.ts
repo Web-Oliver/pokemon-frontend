@@ -28,7 +28,6 @@ import type * as auctionsApi from '../api/auctionsApi';
 import type * as collectionApi from '../api/collectionApi';
 import type * as cardsApi from '../api/cardsApi';
 import type * as productsApi from '../api/productsApi';
-import type * as searchApi from '../api/searchApi';
 import type * as exportApi from '../api/exportApi';
 import type * as uploadApi from '../api/uploadApi';
 import type * as statusApi from '../api/statusApi';
@@ -43,6 +42,51 @@ export interface PaginatedSetsParams {
   limit?: number;
   search?: string;
   year?: number;
+}
+
+/**
+ * Search interfaces (from deprecated searchApi)
+ */
+export interface CardSearchParams {
+  query: string;
+  setId?: string;
+  setName?: string;
+  year?: number;
+  pokemonNumber?: string;
+  variety?: string;
+  minPsaPopulation?: number;
+  limit?: number;
+  page?: number;
+}
+
+export interface SetSearchParams {
+  query: string;
+  year?: number;
+  minYear?: number;
+  maxYear?: number;
+  minPsaPopulation?: number;
+  minCardCount?: number;
+  limit?: number;
+  page?: number;
+}
+
+export interface ProductSearchParams {
+  query: string;
+  category?: string;
+  setName?: string;
+  setProductId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  availableOnly?: boolean;
+  limit?: number;
+  page?: number;
+}
+
+export interface SearchResponse<T> {
+  success: boolean;
+  query: string;
+  count: number;
+  data: T[];
 }
 
 /**
@@ -127,7 +171,7 @@ export interface ICollectionService {
 export interface ISetsService {
   getPaginatedSets(params?: PaginatedSetsParams): Promise<{ sets: ISet[]; totalPages: number; currentPage: number; }>;
   getSetById(id: string): Promise<ISet>;
-  searchSets(params: searchApi.SetSearchParams): Promise<searchApi.SearchResponse<ISet>>;
+  searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>>;
   getSetSuggestions(query: string, limit?: number): Promise<ISet[]>;
 }
 
@@ -135,7 +179,7 @@ export interface ISetsService {
  * Cards domain service interface  
  */
 export interface ICardsService {
-  searchCards(params: searchApi.CardSearchParams): Promise<searchApi.SearchResponse<ICard>>;
+  searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>>;
   getCardSuggestions(query: string, limit?: number): Promise<ICard[]>;
   getCardById(id: string): Promise<ICard>;
 }
@@ -144,7 +188,7 @@ export interface ICardsService {
  * Products domain service interface
  */
 export interface IProductsService {
-  searchProducts(params: searchApi.ProductSearchParams): Promise<searchApi.SearchResponse<IProduct>>;
+  searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>>;
   getProductSuggestions(query: string, limit?: number): Promise<IProduct[]>;
   getSetProducts(params?: any): Promise<ISetProduct[]>;
   getPaginatedProducts(params?: ProductsParams): Promise<PaginatedProductsResponse>;
@@ -327,8 +371,8 @@ export class UnifiedApiService {
       return await unifiedHttpClient.getById<ISet>('/sets', id);
     },
     
-    async searchSets(params: searchApi.SetSearchParams): Promise<searchApi.SearchResponse<ISet>> {
-      const response = await unifiedHttpClient.get<searchApi.SearchResponse<ISet>>('/search/sets', { params });
+    async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
+      const response = await unifiedHttpClient.get<SearchResponse<ISet>>('/search/sets', { params });
       return response.data || response;
     },
     
@@ -343,8 +387,8 @@ export class UnifiedApiService {
   // ========== CARDS DOMAIN ==========
   
   public readonly cards: ICardsService = {
-    async searchCards(params: searchApi.CardSearchParams): Promise<searchApi.SearchResponse<ICard>> {
-      const response = await unifiedHttpClient.get<searchApi.SearchResponse<ICard>>('/search/cards', { params });
+    async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
+      const response = await unifiedHttpClient.get<SearchResponse<ICard>>('/search/cards', { params });
       return response.data || response;
     },
     
@@ -363,8 +407,8 @@ export class UnifiedApiService {
   // ========== PRODUCTS DOMAIN ==========
   
   public readonly products: IProductsService = {
-    async searchProducts(params: searchApi.ProductSearchParams): Promise<searchApi.SearchResponse<IProduct>> {
-      const response = await unifiedHttpClient.get<searchApi.SearchResponse<IProduct>>('/search/products', { params });
+    async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
+      const response = await unifiedHttpClient.get<SearchResponse<IProduct>>('/search/products', { params });
       return response.data || response;
     },
     
