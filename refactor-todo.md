@@ -34,7 +34,7 @@
 
 ### API Files Cleanup
 - [x] Deprecate individual `shared/api/*.ts` files
-- [ ] Move logic to UnifiedApiService or feature-specific services
+- [x] Move logic to UnifiedApiService or feature-specific services
 - [ ] Remove: `shared/api/setsApi.ts`
 - [ ] Remove: `shared/api/searchApi.ts` 
 - [ ] Remove: `shared/api/collectionApi.ts`
