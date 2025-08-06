@@ -29,7 +29,7 @@
 
 ### Unified API Service
 - [x] Create/enhance `shared/services/UnifiedApiService.ts` as single API facade
-- [ ] Structure as domain-based service (e.g., `unifiedApiService.auctions.getById()`)
+- [x] Structure as domain-based service (e.g., `unifiedApiService.auctions.getById()`)
 - [ ] Replace direct imports of individual API files (setsApi, collectionApi, etc.)
 
 ### API Files Cleanup
