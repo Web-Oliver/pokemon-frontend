@@ -1,23 +1,23 @@
 /**
  * Collection Components
- * 
+ *
  * Exports all collection-related components
  */
 
 // Detail section components (existing)
-export { 
+export {
   ItemDetailSection,
   PsaCardDetailSection,
   RawCardDetailSection,
-  SealedProductDetailSection
+  SealedProductDetailSection,
 } from './ItemDetailSection';
 
-export type { 
+export type {
   ItemDetailSectionProps,
   DetailItem,
   PsaCardDetailProps,
   RawCardDetailProps,
-  SealedProductDetailProps
+  SealedProductDetailProps,
 } from './ItemDetailSection';
 
 // New refactored components
@@ -27,12 +27,12 @@ export { ItemImageGallery } from './ItemImageGallery';
 export { ItemPriceHistory } from './ItemPriceHistory';
 export { ItemSaleDetails } from './ItemSaleDetails';
 
-export type { 
+export type {
   CollectionItemHeaderProps,
   ItemEssentialDetailsProps,
   ItemImageGalleryProps,
   ItemPriceHistoryProps,
-  ItemSaleDetailsProps
+  ItemSaleDetailsProps,
 } from './CollectionItemHeader';
 export type { ItemEssentialDetailsProps } from './ItemEssentialDetails';
 export type { ItemImageGalleryProps } from './ItemImageGallery';

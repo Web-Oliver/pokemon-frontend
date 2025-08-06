@@ -1,6 +1,6 @@
 /**
  * Price Management Hook
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles price updates and management
  * - DRY: Eliminates duplicated price logic across components
@@ -19,7 +19,10 @@ export interface UsePriceManagementReturn {
   newPrice: string;
   setNewPrice: (price: string) => void;
   handlePriceInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handlePriceUpdate: (newPrice: number, date: string) => Promise<CollectionItem | null>;
+  handlePriceUpdate: (
+    newPrice: number,
+    date: string
+  ) => Promise<CollectionItem | null>;
   handleCustomPriceUpdate: () => Promise<void>;
   isValidPrice: boolean;
   isPriceChanged: boolean;
@@ -41,76 +44,81 @@ export const usePriceManagement = (
   }, []);
 
   // Handle price input change (only allow whole numbers)
-  const handlePriceInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numericValue = value.replace(/[^0-9]/g, '');
-    setNewPrice(numericValue);
-  }, []);
+  const handlePriceInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setNewPrice(numericValue);
+    },
+    []
+  );
 
   // Update item price through API
-  const handlePriceUpdate = useCallback(async (
-    price: number, 
-    date: string
-  ): Promise<CollectionItem | null> => {
-    if (!item) {
-      return null;
-    }
-
-    try {
-      const { type, id } = getUrlParams();
-
-      if (!type || !id) {
-        throw new Error('Invalid URL parameters');
+  const handlePriceUpdate = useCallback(
+    async (price: number, date: string): Promise<CollectionItem | null> => {
+      if (!item) {
+        return null;
       }
 
-      // Create updated price history with new entry
-      const updatedPriceHistory = [
-        ...(item.priceHistory || []),
-        { price, dateUpdated: date },
-      ];
+      try {
+        const { type, id } = getUrlParams();
 
-      const collectionApi = getCollectionApiService();
-      let updatedItem: CollectionItem;
+        if (!type || !id) {
+          throw new Error('Invalid URL parameters');
+        }
 
-      // Update item based on type - backend will automatically sync myPrice to latest price
-      switch (type) {
-        case 'psa':
-          updatedItem = await collectionApi.updatePsaCard(id, {
-            priceHistory: updatedPriceHistory,
-          });
-          break;
-        case 'raw':
-          updatedItem = await collectionApi.updateRawCard(id, {
-            priceHistory: updatedPriceHistory,
-          });
-          break;
-        case 'sealed':
-          updatedItem = await collectionApi.updateSealedProduct(id, {
-            priceHistory: updatedPriceHistory,
-          });
-          break;
-        default:
-          throw new Error('Unknown item type');
+        // Create updated price history with new entry
+        const updatedPriceHistory = [
+          ...(item.priceHistory || []),
+          { price, dateUpdated: date },
+        ];
+
+        const collectionApi = getCollectionApiService();
+        let updatedItem: CollectionItem;
+
+        // Update item based on type - backend will automatically sync myPrice to latest price
+        switch (type) {
+          case 'psa':
+            updatedItem = await collectionApi.updatePsaCard(id, {
+              priceHistory: updatedPriceHistory,
+            });
+            break;
+          case 'raw':
+            updatedItem = await collectionApi.updateRawCard(id, {
+              priceHistory: updatedPriceHistory,
+            });
+            break;
+          case 'sealed':
+            updatedItem = await collectionApi.updateSealedProduct(id, {
+              priceHistory: updatedPriceHistory,
+            });
+            break;
+          default:
+            throw new Error('Unknown item type');
+        }
+
+        // Notify parent component of update
+        if (onItemUpdate) {
+          onItemUpdate(updatedItem);
+        }
+
+        showSuccessToast(
+          'Price updated successfully! My Price synced to latest entry.'
+        );
+        log('[PriceManagement] Price updated successfully', {
+          newPrice: price,
+          itemId: id,
+        });
+
+        return updatedItem;
+      } catch (err: any) {
+        const errorMessage = 'Failed to update price';
+        handleApiError(err, errorMessage);
+        throw err; // Re-throw to let calling component handle loading states
       }
-
-      // Notify parent component of update
-      if (onItemUpdate) {
-        onItemUpdate(updatedItem);
-      }
-
-      showSuccessToast('Price updated successfully! My Price synced to latest entry.');
-      log('[PriceManagement] Price updated successfully', {
-        newPrice: price,
-        itemId: id,
-      });
-
-      return updatedItem;
-    } catch (err: any) {
-      const errorMessage = 'Failed to update price';
-      handleApiError(err, errorMessage);
-      throw err; // Re-throw to let calling component handle loading states
-    }
-  }, [item, getUrlParams, onItemUpdate]);
+    },
+    [item, getUrlParams, onItemUpdate]
+  );
 
   // Handle custom price update from input
   const handleCustomPriceUpdate = useCallback(async () => {

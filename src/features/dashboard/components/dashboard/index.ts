@@ -1,16 +1,16 @@
 /**
  * Dashboard Components
- * 
+ *
  * Exports all dashboard-related components
  */
 
-export { 
+export {
   DashboardStatCard,
   DashboardItemsCard,
   DashboardSalesCard,
   DashboardValueCard,
   DashboardGradedCard,
-  DashboardDataCard
+  DashboardDataCard,
 } from './DashboardStatCard';
 
 export type { DashboardStatCardProps } from './DashboardStatCard';

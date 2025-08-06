@@ -4,7 +4,17 @@
  * Following CLAUDE.md Layer 4 (Views/Pages) principles
  */
 
-import { AlertCircle, ArrowLeft, Calendar, Check, Package, Plus, Save, Trash2, X } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  Check,
+  Package,
+  Plus,
+  Save,
+  Trash2,
+  X,
+} from 'lucide-react';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
@@ -545,66 +555,63 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
             onAddItems={() => setIsAddItemModalOpen(true)}
           >
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {currentAuction.items.map(
-                (auctionItem: any, index: number) => {
-                  const collectionItem =
-                    convertAuctionItemToCollectionItem(auctionItem);
-                  const itemType = getItemTypeFromCategory(
-                    auctionItem.itemCategory
-                  );
+              {currentAuction.items.map((auctionItem: any, index: number) => {
+                const collectionItem =
+                  convertAuctionItemToCollectionItem(auctionItem);
+                const itemType = getItemTypeFromCategory(
+                  auctionItem.itemCategory
+                );
 
-                  return (
-                    <div
-                      key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
-                      className="relative"
-                    >
-                      <CollectionItemCard
-                        item={collectionItem}
-                        itemType={itemType}
-                        activeTab="psa-graded" // Not really used in this context
-                        showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
-                        onViewDetails={handleViewItemDetail}
-                        onMarkAsSold={handleMarkAsSold}
-                      />
+                return (
+                  <div
+                    key={`${auctionItem.itemId || auctionItem.itemData?._id}-${index}`}
+                    className="relative"
+                  >
+                    <CollectionItemCard
+                      item={collectionItem}
+                      itemType={itemType}
+                      activeTab="psa-graded" // Not really used in this context
+                      showMarkAsSoldButton={false} // Hide mark as sold, show remove instead
+                      onViewDetails={handleViewItemDetail}
+                      onMarkAsSold={handleMarkAsSold}
+                    />
 
-                      {/* Remove from Auction Button - Overlay */}
-                      <div className="absolute top-4 right-4 z-20">
-                        <PokemonButton
-                          onClick={() => {
-                            const itemName =
-                              auctionItem.itemData?.cardId?.cardName ||
-                              auctionItem.itemData?.cardName ||
-                              auctionItem.itemData?.name ||
-                              'Unknown Item';
-                            handleRemoveItem(
-                              auctionItem.itemId ||
-                                auctionItem.itemData?._id,
-                              itemName,
-                              auctionItem.itemCategory
-                            );
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          Remove
-                        </PokemonButton>
-                      </div>
-
-                      {/* Auction Specific Badge */}
-                      {auctionItem.sold && (
-                        <div className="absolute top-4 left-4 z-20">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
-                            <Check className="w-3 h-3 mr-1" />
-                            Sold in Auction
-                          </span>
-                        </div>
-                      )}
+                    {/* Remove from Auction Button - Overlay */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <PokemonButton
+                        onClick={() => {
+                          const itemName =
+                            auctionItem.itemData?.cardId?.cardName ||
+                            auctionItem.itemData?.cardName ||
+                            auctionItem.itemData?.name ||
+                            'Unknown Item';
+                          handleRemoveItem(
+                            auctionItem.itemId || auctionItem.itemData?._id,
+                            itemName,
+                            auctionItem.itemCategory
+                          );
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="text-[var(--theme-status-error)] hover:text-[var(--theme-status-error)]/80 border-[var(--theme-status-error)]/40 hover:border-[var(--theme-status-error)]/60 bg-[var(--theme-surface)] backdrop-blur-sm shadow-lg"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Remove
+                      </PokemonButton>
                     </div>
-                  );
-                }
-              )}
+
+                    {/* Auction Specific Badge */}
+                    {auctionItem.sold && (
+                      <div className="absolute top-4 left-4 z-20">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--theme-status-success)]/30 text-[var(--theme-status-success)] border border-[var(--theme-status-success)]/40 backdrop-blur-sm shadow-lg">
+                          <Check className="w-3 h-3 mr-1" />
+                          Sold in Auction
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </AuctionItemsSection>
 

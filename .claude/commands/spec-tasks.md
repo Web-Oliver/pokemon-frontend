@@ -17,26 +17,26 @@ You are working on the tasks phase of the spec workflow.
 **DO NOT** run any scripts until tasks are approved.
 
 1. **Prerequisites**
-   - Ensure design.md exists and is approved
-   - Load both requirements.md and design.md for context
-   - **Load structure.md**: Check for project structure conventions
-   - Understand the complete feature scope
+    - Ensure design.md exists and is approved
+    - Load both requirements.md and design.md for context
+    - **Load structure.md**: Check for project structure conventions
+    - Understand the complete feature scope
 
 2. **Generate Task List** (prioritize code reuse and follow conventions)
-   - Break design into atomic, executable coding tasks
-   - **Follow structure.md**: Ensure tasks respect project file organization
-   - **Prioritize extending/adapting existing code** over building from scratch
-   - Use checkbox format with numbered hierarchy
-   - Each task should reference specific requirements AND existing code to leverage
-   - Focus ONLY on coding tasks (no deployment, user testing, etc.)
+    - Break design into atomic, executable coding tasks
+    - **Follow structure.md**: Ensure tasks respect project file organization
+    - **Prioritize extending/adapting existing code** over building from scratch
+    - Use checkbox format with numbered hierarchy
+    - Each task should reference specific requirements AND existing code to leverage
+    - Focus ONLY on coding tasks (no deployment, user testing, etc.)
 
 3. **Task Guidelines**
-   - Tasks should be concrete and actionable
-   - **Reference existing code to reuse**: Include specific files/components to extend or adapt
-   - Include specific file names and components
-   - Build incrementally (each task builds on previous)
-   - Reference requirements using _Requirements: X.Y_ format
-   - Use test-driven development approach leveraging existing test patterns
+    - Tasks should be concrete and actionable
+    - **Reference existing code to reuse**: Include specific files/components to extend or adapt
+    - Include specific file names and components
+    - Build incrementally (each task builds on previous)
+    - Reference requirements using _Requirements: X.Y_ format
+    - Use test-driven development approach leveraging existing test patterns
 
 4. **Task Format**
 
@@ -49,27 +49,27 @@ You are working on the tasks phase of the spec workflow.
    ```
 
 5. **Excluded Tasks**
-   - User acceptance testing
-   - Deployment to production
-   - Performance metrics gathering
-   - User training or documentation
-   - Business process changes
+    - User acceptance testing
+    - Deployment to production
+    - Performance metrics gathering
+    - User training or documentation
+    - Business process changes
 
 6. **Approval Process**
-   - Present the complete task list
-   - Ask: "Do the tasks look good?"
-   - Make revisions based on feedback
-   - Continue until explicit approval
+    - Present the complete task list
+    - Ask: "Do the tasks look good?"
+    - Make revisions based on feedback
+    - Continue until explicit approval
 
 7. **Generate Task Commands** (ONLY after tasks approval)
-   - **WAIT**: Do not run script until user explicitly approves tasks
-   - **THEN EXECUTE**: `./.claude/scripts/generate-commands-launcher.sh {feature-name}`
-   - **PURPOSE**: Creates individual task commands in `.claude/commands/{feature-name}/`
-   - **RESULT**: Each task gets its own command: `/{feature-name}-task-{task-id}`
-   - **EXAMPLE**: Creates `/{feature-name}-task-1`, `/{feature-name}-task-2.1`, etc.
-   - **IMPORTANT**: Do NOT edit the scripts - just run them as-is
-   - **PLATFORM**: Automatically detects OS and runs appropriate script (Windows/macOS/Linux)
-   - **RESTART REQUIRED**: Inform user to restart Claude Code for new commands to be visible
+    - **WAIT**: Do not run script until user explicitly approves tasks
+    - **THEN EXECUTE**: `./.claude/scripts/generate-commands-launcher.sh {feature-name}`
+    - **PURPOSE**: Creates individual task commands in `.claude/commands/{feature-name}/`
+    - **RESULT**: Each task gets its own command: `/{feature-name}-task-{task-id}`
+    - **EXAMPLE**: Creates `/{feature-name}-task-1`, `/{feature-name}-task-2.1`, etc.
+    - **IMPORTANT**: Do NOT edit the scripts - just run them as-is
+    - **PLATFORM**: Automatically detects OS and runs appropriate script (Windows/macOS/Linux)
+    - **RESTART REQUIRED**: Inform user to restart Claude Code for new commands to be visible
 
 ## Task Structure
 
@@ -96,6 +96,6 @@ After approval and command generation:
 
 1. **RESTART Claude Code** for new commands to be visible
 2. Then you can:
-   - Use `/spec-execute` to implement tasks
-   - Use individual task commands: `/{feature-name}-task-1`, `/{feature-name}-task-2`, etc.
-   - Check progress with `/spec-status {feature-name}`
+    - Use `/spec-execute` to implement tasks
+    - Use individual task commands: `/{feature-name}-task-1`, `/{feature-name}-task-2`, etc.
+    - Check progress with `/spec-status {feature-name}`

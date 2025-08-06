@@ -41,21 +41,12 @@ export interface FormTheme {
  * Eliminates duplication between ThemeContext and ComposedThemeProvider
  */
 export class ThemePropertyManager {
-  private static getAnimationDurations(animationIntensity: string) {
-    return {
-      subtle: { fast: '0.1s', normal: '0.2s', slow: '0.3s' },
-      normal: { fast: '0.15s', normal: '0.3s', slow: '0.5s' },
-      enhanced: { fast: '0.2s', normal: '0.4s', slow: '0.7s' },
-      disabled: { fast: '0s', normal: '0s', slow: '0s' },
-    }[animationIntensity] || { fast: '0.15s', normal: '0.3s', slow: '0.5s' };
-  }
-
   /**
    * Apply core theme tokens to CSS custom properties
    * Consolidates the duplicated CSS property setting logic
    */
   static applyThemeTokens(
-    root: HTMLElement, 
+    root: HTMLElement,
     formTheme: FormTheme,
     densityMultiplier: number = 1
   ): void {
@@ -145,5 +136,14 @@ export class ThemePropertyManager {
 
     this.applyThemeTokens(root, formTheme, densityMultiplier);
     this.applyAnimationProperties(root, modernConfig);
+  }
+
+  private static getAnimationDurations(animationIntensity: string) {
+    return {
+      subtle: { fast: '0.1s', normal: '0.2s', slow: '0.3s' },
+      normal: { fast: '0.15s', normal: '0.3s', slow: '0.5s' },
+      enhanced: { fast: '0.2s', normal: '0.4s', slow: '0.7s' },
+      disabled: { fast: '0s', normal: '0s', slow: '0s' },
+    }[animationIntensity] || { fast: '0.15s', normal: '0.3s', slow: '0.5s' };
   }
 }

@@ -15,29 +15,53 @@ import LoadingSpinner from '../../../shared/components/molecules/common/LoadingS
 import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
 
 // Dynamic imports for heavy DBA components (code splitting optimization)
-const DbaCosmicBackground = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaCosmicBackground')
+const DbaCosmicBackground = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaCosmicBackground'
+    )
 );
-const DbaHeaderGalaxyCosmic = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderGalaxyCosmic')
+const DbaHeaderGalaxyCosmic = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderGalaxyCosmic'
+    )
 );
-const DbaHeaderActions = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderActions')
+const DbaHeaderActions = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderActions'
+    )
 );
-const DbaExportConfiguration = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportConfiguration')
+const DbaExportConfiguration = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportConfiguration'
+    )
 );
-const DbaExportSuccess = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportSuccess')
+const DbaExportSuccess = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaExportSuccess'
+    )
 );
-const DbaItemsWithTimers = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithTimers')
+const DbaItemsWithTimers = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithTimers'
+    )
 );
-const DbaItemsWithoutTimers = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithoutTimers')
+const DbaItemsWithoutTimers = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithoutTimers'
+    )
 );
-const DbaEmptyStateCosmic = lazy(() => 
-  import(/* webpackChunkName: "dba-heavy" */ '../components/dba/DbaEmptyStateCosmic')
+const DbaEmptyStateCosmic = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaEmptyStateCosmic'
+    )
 );
 
 const DbaExport: React.FC = () => {
@@ -102,13 +126,8 @@ const DbaExport: React.FC = () => {
     // Implement export all logic
   };
 
-
   return (
-    <PageLayout
-      loading={loading}
-      error={error}
-      variant="default"
-    >
+    <PageLayout loading={loading} error={error} variant="default">
       <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
         <DbaCosmicBackground />
       </Suspense>
@@ -118,55 +137,55 @@ const DbaExport: React.FC = () => {
         <DbaHeaderGalaxyCosmic
           dbaSelections={dbaSelections}
           selectedItems={selectedItems}
-      >
-        <div className="relative z-10 p-8">
-          <div className="max-w-7xl mx-auto space-y-12">
-            {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
-            <DbaExportConfiguration
-              selectedItems={selectedItems}
-              customDescription={customDescription}
-              setCustomDescription={setCustomDescription}
-              updateItemCustomization={updateItemCustomization}
-              generateTitle={generateDefaultTitle}
-              generateDescription={generateDefaultDescription}
-              exportCollectionData={handleExportToDba}
-              downloadZip={downloadZip}
-              isExporting={isExporting}
-              exportResult={exportResult}
-            />
-
-            <DbaExportSuccess exportResult={exportResult} />
-
-            {/* Item Selection - Split into 2 sections */}
-            <div className="space-y-8">
-              {/* Section 1: Items with DBA Timers (Previously Selected) */}
-              <DbaItemsWithTimers
-                psaCards={psaCards}
-                rawCards={rawCards}
-                sealedProducts={sealedProducts}
-                getDbaInfo={getDbaInfo}
-                renderItemCard={renderItemCard}
+        >
+          <div className="relative z-10 p-8">
+            <div className="max-w-7xl mx-auto space-y-12">
+              {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
+              <DbaExportConfiguration
+                selectedItems={selectedItems}
+                customDescription={customDescription}
+                setCustomDescription={setCustomDescription}
+                updateItemCustomization={updateItemCustomization}
+                generateTitle={generateDefaultTitle}
+                generateDescription={generateDefaultDescription}
+                exportCollectionData={handleExportToDba}
+                downloadZip={downloadZip}
+                isExporting={isExporting}
+                exportResult={exportResult}
               />
 
-              {/* Section 2: Items without DBA Timers (Available for Selection) */}
-              <DbaItemsWithoutTimers
-                psaCards={psaCards}
-                rawCards={rawCards}
-                sealedProducts={sealedProducts}
-                getDbaInfo={getDbaInfo}
-                renderItemCard={renderItemCard}
+              <DbaExportSuccess exportResult={exportResult} />
+
+              {/* Item Selection - Split into 2 sections */}
+              <div className="space-y-8">
+                {/* Section 1: Items with DBA Timers (Previously Selected) */}
+                <DbaItemsWithTimers
+                  psaCards={psaCards}
+                  rawCards={rawCards}
+                  sealedProducts={sealedProducts}
+                  getDbaInfo={getDbaInfo}
+                  renderItemCard={renderItemCard}
+                />
+
+                {/* Section 2: Items without DBA Timers (Available for Selection) */}
+                <DbaItemsWithoutTimers
+                  psaCards={psaCards}
+                  rawCards={rawCards}
+                  sealedProducts={sealedProducts}
+                  getDbaInfo={getDbaInfo}
+                  renderItemCard={renderItemCard}
+                />
+              </div>
+
+              {/* 🌌 COSMIC EMPTY STATE */}
+              <DbaEmptyStateCosmic
+                psaCardsLength={psaCards.length}
+                rawCardsLength={rawCards.length}
+                sealedProductsLength={sealedProducts.length}
               />
             </div>
-
-            {/* 🌌 COSMIC EMPTY STATE */}
-            <DbaEmptyStateCosmic
-              psaCardsLength={psaCards.length}
-              rawCardsLength={rawCards.length}
-              sealedProductsLength={sealedProducts.length}
-            />
           </div>
-        </div>
-      </DbaHeaderGalaxyCosmic>
+        </DbaHeaderGalaxyCosmic>
       </Suspense>
     </PageLayout>
   );

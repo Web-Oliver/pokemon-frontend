@@ -1,6 +1,9 @@
 import { error as logError } from './logger';
 import { APIResponse } from './responseTransformer';
-import { showErrorToast, showStatusErrorToast } from '../components/organisms/ui/toastNotifications';
+import {
+  showErrorToast,
+  showStatusErrorToast,
+} from '../components/organisms/ui/toastNotifications';
 
 /**
  * Standard API Error class for new API format

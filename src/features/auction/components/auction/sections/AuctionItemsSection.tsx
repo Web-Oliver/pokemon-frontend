@@ -33,13 +33,13 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
   title = 'Auction Items',
   emptyStateMessage = 'No items in auction',
   emptyStateDescription = 'Add items from your collection to this auction.',
-  children
+  children,
 }) => {
   return (
     <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
       {/* Gradient background overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/3 via-teal-500/3 to-[var(--theme-accent-primary)]/3"></div>
-      
+
       <div className="relative z-10">
         {/* Section Header */}
         <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between">

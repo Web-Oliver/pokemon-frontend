@@ -19,10 +19,10 @@ export default tseslint.config(
       '.git',
     ],
   },
-  
+
   // Base TypeScript configuration
   ...tseslint.configs.recommended,
-  
+
   // TypeScript files with type checking
   {
     files: ['**/*.{ts,tsx}'],
@@ -31,14 +31,14 @@ export default tseslint.config(
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: { 
-          jsx: true 
+        ecmaFeatures: {
+          jsx: true,
         },
         project: ['./tsconfig.json'],
       },
-      globals: { 
-        ...globals.browser, 
-        ...globals.node 
+      globals: {
+        ...globals.browser,
+        ...globals.node,
       },
     },
     plugins: {
@@ -55,17 +55,17 @@ export default tseslint.config(
       'react/display-name': 'error',
       'react/jsx-no-undef': 'error',
       'react/no-unescaped-entities': 'error',
-      
+
       // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // React Refresh rules
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
-      
+
       // TypeScript rules
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -80,7 +80,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      
+
       // General ESLint rules (relaxed for development)
       'no-console': 'off',
       'no-debugger': 'error',
@@ -95,16 +95,16 @@ export default tseslint.config(
       reportUnusedDisableDirectives: true,
     },
   },
-  
+
   // JavaScript and config files without type checking
   {
     files: ['**/*.{js,jsx,cjs,mjs}', '*.config.js', 'scripts/**/*'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: { 
-        ...globals.browser, 
-        ...globals.node 
+      globals: {
+        ...globals.browser,
+        ...globals.node,
       },
     },
     plugins: {
@@ -126,16 +126,16 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-      
+
       // Allow console in config files
       'no-console': 'off',
-      
+
       // React rules for JSX files
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
     },
   },
-  
+
   // Prettier config must be last to override conflicting rules
   prettierConfig
 );

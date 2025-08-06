@@ -1,10 +1,10 @@
 /**
  * Sealed Product API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Focused service for sealed product operations following SRP
  * Extends BaseApiService for common functionality
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for sealed product operations only
  * - DIP: Depends on HTTP client abstraction
@@ -17,13 +17,19 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
-import { ISealedProductApiService, SealedProductCollectionParams } from '../../interfaces/api/ICollectionApiService';
+import {
+  ISealedProductApiService,
+  SealedProductCollectionParams,
+} from '../../interfaces/api/ICollectionApiService';
 
 /**
  * Sealed Product API Service
  * Handles all sealed product operations with proper validation and error handling
  */
-export class SealedProductApiService extends BaseApiService implements ISealedProductApiService {
+export class SealedProductApiService
+  extends BaseApiService
+  implements ISealedProductApiService
+{
   constructor(httpClient: IHttpClient) {
     super(httpClient, 'SEALED PRODUCT SERVICE');
   }
@@ -31,10 +37,15 @@ export class SealedProductApiService extends BaseApiService implements ISealedPr
   /**
    * Get sealed products with optional filters
    */
-  async getSealedProducts(filters?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
+  async getSealedProducts(
+    filters?: SealedProductCollectionParams
+  ): Promise<ISealedProduct[]> {
     return this.executeWithErrorHandling('getSealedProducts', async () => {
       const result = await collectionApi.getSealedProductCollection(filters);
-      return this.validateArrayResponse<ISealedProduct>(result, 'getSealedProducts');
+      return this.validateArrayResponse<ISealedProduct>(
+        result,
+        'getSealedProducts'
+      );
     });
   }
 
@@ -52,7 +63,9 @@ export class SealedProductApiService extends BaseApiService implements ISealedPr
   /**
    * Create new sealed product
    */
-  async createSealedProduct(productData: Partial<ISealedProduct>): Promise<ISealedProduct> {
+  async createSealedProduct(
+    productData: Partial<ISealedProduct>
+  ): Promise<ISealedProduct> {
     return this.createResource<ISealedProduct>(
       '/sealed-products',
       productData,
@@ -92,7 +105,7 @@ export class SealedProductApiService extends BaseApiService implements ISealedPr
   ): Promise<ISealedProduct> {
     this.validateId(id, 'markSealedProductSold');
     this.validateData(saleDetails, 'markSealedProductSold');
-    
+
     return this.executeWithErrorHandling('markSealedProductSold', async () => {
       const result = await this.httpClient.postById<ISealedProduct>(
         '/sealed-products',

@@ -2,7 +2,8 @@
 
 ## 🏗️ Architecture Philosophy
 
-Strict adherence to SOLID principles with hierarchical layered architecture ensuring maintainability, scalability, and code reusability. No circular dependencies allowed.
+Strict adherence to SOLID principles with hierarchical layered architecture ensuring maintainability, scalability, and
+code reusability. No circular dependencies allowed.
 
 ## 🛠️ Technology Stack
 

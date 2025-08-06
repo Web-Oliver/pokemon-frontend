@@ -46,7 +46,8 @@ export const getContext7ImageClasses = (
   config: ResponsiveImageConfig,
   withHoverEffects: boolean = true
 ): string => {
-  const baseClasses = 'w-full h-full object-cover transition-all duration-theme-normal';
+  const baseClasses =
+    'w-full h-full object-cover transition-all duration-theme-normal';
   const hoverClasses = withHoverEffects
     ? 'group-hover:scale-110 group-hover:brightness-110'
     : '';
@@ -116,7 +117,8 @@ export const getContext7HolographicBorderStyles = (
     animation: `holographic-border ${duration}s ease-in-out infinite`,
     mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
     maskComposite: 'xor',
-    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+    WebkitMask:
+      'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
     WebkitMaskComposite: 'xor',
     opacity: intensity,
   },
@@ -168,8 +170,10 @@ export const getContext7AnimationClasses = (
   type: 'hover' | 'focus' | 'loading' = 'hover'
 ): string => {
   const animationMap = {
-    hover: 'transition-all duration-theme-normal hover:scale-102 hover:shadow-theme-hover',
-    focus: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary/50 focus-visible:ring-offset-2',
+    hover:
+      'transition-all duration-theme-normal hover:scale-102 hover:shadow-theme-hover',
+    focus:
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary/50 focus-visible:ring-offset-2',
     loading: 'animate-pulse',
   };
 

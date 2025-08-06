@@ -1,10 +1,10 @@
 /**
  * Composite Collection API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Combines focused services to maintain backward compatibility with existing CollectionApiService
  * Implements composition pattern to delegate to specialized services
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for composing collection services
  * - DIP: Depends on service abstractions, not concrete implementations
@@ -15,7 +15,15 @@
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
-import { ICollectionApiService, IPsaCardApiService, IRawCardApiService, ISealedProductApiService, PsaGradedCardsParams, RawCardsParams, SealedProductCollectionParams } from '../interfaces/api/ICollectionApiService';
+import {
+  ICollectionApiService,
+  IPsaCardApiService,
+  IRawCardApiService,
+  ISealedProductApiService,
+  PsaGradedCardsParams,
+  RawCardsParams,
+  SealedProductCollectionParams,
+} from '../interfaces/api/ICollectionApiService';
 
 /**
  * Composite Collection API Service
@@ -29,7 +37,9 @@ export class CompositeCollectionApiService implements ICollectionApiService {
   ) {}
 
   // PSA Card operations - delegate to PsaCardApiService
-  async getPsaGradedCards(filters?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
+  async getPsaGradedCards(
+    filters?: PsaGradedCardsParams
+  ): Promise<IPsaGradedCard[]> {
     return this.psaCardService.getPsaGradedCards(filters);
   }
 
@@ -37,7 +47,9 @@ export class CompositeCollectionApiService implements ICollectionApiService {
     return this.psaCardService.getPsaGradedCardById(id);
   }
 
-  async createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+  async createPsaCard(
+    cardData: Partial<IPsaGradedCard>
+  ): Promise<IPsaGradedCard> {
     return this.psaCardService.createPsaCard(cardData);
   }
 
@@ -72,7 +84,10 @@ export class CompositeCollectionApiService implements ICollectionApiService {
     return this.rawCardService.createRawCard(cardData);
   }
 
-  async updateRawCard(id: string, cardData: Partial<IRawCard>): Promise<IRawCard> {
+  async updateRawCard(
+    id: string,
+    cardData: Partial<IRawCard>
+  ): Promise<IRawCard> {
     return this.rawCardService.updateRawCard(id, cardData);
   }
 
@@ -80,12 +95,17 @@ export class CompositeCollectionApiService implements ICollectionApiService {
     return this.rawCardService.deleteRawCard(id);
   }
 
-  async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
+  async markRawCardSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<IRawCard> {
     return this.rawCardService.markRawCardSold(id, saleDetails);
   }
 
   // Sealed Product operations - delegate to SealedProductApiService
-  async getSealedProducts(filters?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
+  async getSealedProducts(
+    filters?: SealedProductCollectionParams
+  ): Promise<ISealedProduct[]> {
     return this.sealedProductService.getSealedProducts(filters);
   }
 

@@ -1,7 +1,7 @@
 /**
  * Animation Theme Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 1.3
- * 
+ *
  * Focused context for animation and motion management following ISP
  * Handles: animation intensity, durations, delays, and motion settings
  */
@@ -37,10 +37,10 @@ export interface ComplexAnimationDurations {
 export interface AnimationThemeContextType {
   // Current State
   animationIntensity: AnimationIntensity;
-  
+
   // Animation Management
   setAnimationIntensity: (intensity: AnimationIntensity) => void;
-  
+
   // Utility Functions
   getAnimationDurations: () => AnimationDurations;
   getAnimationDelays: () => AnimationDelays;
@@ -75,7 +75,9 @@ const complexAnimationDurations: ComplexAnimationDurations = {
 // CONTEXT SETUP
 // ================================
 
-const AnimationThemeContext = createContext<AnimationThemeContextType | null>(null);
+const AnimationThemeContext = createContext<AnimationThemeContextType | null>(
+  null
+);
 
 export interface AnimationThemeProviderProps {
   children: React.ReactNode;
@@ -94,9 +96,12 @@ export const AnimationThemeProvider: React.FC<AnimationThemeProviderProps> = ({
   onStateChange,
 }) => {
   // Animation manipulation functions
-  const setAnimationIntensity = useCallback((intensity: AnimationIntensity) => {
-    onStateChange({ animationIntensity: intensity });
-  }, [onStateChange]);
+  const setAnimationIntensity = useCallback(
+    (intensity: AnimationIntensity) => {
+      onStateChange({ animationIntensity: intensity });
+    },
+    [onStateChange]
+  );
 
   // Utility functions
   const getAnimationDurations = useCallback((): AnimationDurations => {
@@ -107,9 +112,10 @@ export const AnimationThemeProvider: React.FC<AnimationThemeProviderProps> = ({
     return animationDelays;
   }, []);
 
-  const getComplexAnimationDurations = useCallback((): ComplexAnimationDurations => {
-    return complexAnimationDurations;
-  }, []);
+  const getComplexAnimationDurations =
+    useCallback((): ComplexAnimationDurations => {
+      return complexAnimationDurations;
+    }, []);
 
   const getAnimationClasses = useCallback((): string => {
     return `animation-${state.animationIntensity}`;
@@ -122,10 +128,10 @@ export const AnimationThemeProvider: React.FC<AnimationThemeProviderProps> = ({
   const contextValue: AnimationThemeContextType = {
     // Current State
     animationIntensity: state.animationIntensity,
-    
+
     // Animation Management
     setAnimationIntensity,
-    
+
     // Utility Functions
     getAnimationDurations,
     getAnimationDelays,
@@ -148,7 +154,9 @@ export const AnimationThemeProvider: React.FC<AnimationThemeProviderProps> = ({
 export const useAnimationTheme = (): AnimationThemeContextType => {
   const context = useContext(AnimationThemeContext);
   if (!context) {
-    throw new Error('useAnimationTheme must be used within an AnimationThemeProvider');
+    throw new Error(
+      'useAnimationTheme must be used within an AnimationThemeProvider'
+    );
   }
   return context;
 };

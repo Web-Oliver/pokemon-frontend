@@ -1,6 +1,6 @@
 /**
  * Collection Item Data Management Hook
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles data fetching and state management
  * - DRY: Eliminates duplicated fetching logic across item types
@@ -29,7 +29,10 @@ export interface UseCollectionItemReturn {
  * Custom hook for managing collection item data
  * Handles fetching, caching, and refreshing of item data
  */
-export const useCollectionItem = (type?: string, id?: string): UseCollectionItemReturn => {
+export const useCollectionItem = (
+  type?: string,
+  id?: string
+): UseCollectionItemReturn => {
   const [item, setItem] = useState<CollectionItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,20 +46,23 @@ export const useCollectionItem = (type?: string, id?: string): UseCollectionItem
   }, [type, id]);
 
   // Fetch item data based on type
-  const fetchItemData = useCallback(async (itemType: string, itemId: string): Promise<CollectionItem> => {
-    const collectionApi = getCollectionApiService();
+  const fetchItemData = useCallback(
+    async (itemType: string, itemId: string): Promise<CollectionItem> => {
+      const collectionApi = getCollectionApiService();
 
-    switch (itemType) {
-      case 'psa':
-        return await collectionApi.getPsaGradedCardById(itemId);
-      case 'raw':
-        return await collectionApi.getRawCardById(itemId);
-      case 'sealed':
-        return await collectionApi.getSealedProductById(itemId);
-      default:
-        throw new Error(`Unknown item type: ${itemType}`);
-    }
-  }, []);
+      switch (itemType) {
+        case 'psa':
+          return await collectionApi.getPsaGradedCardById(itemId);
+        case 'raw':
+          return await collectionApi.getRawCardById(itemId);
+        case 'sealed':
+          return await collectionApi.getSealedProductById(itemId);
+        default:
+          throw new Error(`Unknown item type: ${itemType}`);
+      }
+    },
+    []
+  );
 
   // Main fetch function
   const fetchItem = useCallback(async () => {
@@ -71,7 +77,7 @@ export const useCollectionItem = (type?: string, id?: string): UseCollectionItem
     try {
       setLoading(true);
       setError(null);
-      
+
       log(`Fetching ${itemType} item with ID: ${itemId}`);
       const fetchedItem = await fetchItemData(itemType, itemId);
 

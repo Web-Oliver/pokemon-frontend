@@ -1,12 +1,12 @@
 /**
  * Unified Grade Display Component - PSA Grade Breakdown
- * 
+ *
  * Following CLAUDE.md principles:
  * - DRY: Eliminates repeated PSA grade display patterns
  * - SRP: Single responsibility for PSA grade visualization
  * - Reusable: Works across forms, cards, and analytics
  * - Open/Closed: Extensible through props
- * 
+ *
  * Consolidates grade display patterns from:
  * - CardInformationFields (8 occurrences)
  * - Analytics grade charts
@@ -17,49 +17,49 @@ import React from 'react';
 import { IGrades } from '../../domain/models/card';
 
 // Display modes for different contexts
-export type GradeDisplayMode = 
-  | 'full'      // Complete 1-10 breakdown with totals
-  | 'compact'   // Simplified display with highlights
-  | 'summary'   // Total only with key metrics
-  | 'chart'     // Optimized for chart/analytics display
-  | 'inline';   // Horizontal compact display
+export type GradeDisplayMode =
+  | 'full' // Complete 1-10 breakdown with totals
+  | 'compact' // Simplified display with highlights
+  | 'summary' // Total only with key metrics
+  | 'chart' // Optimized for chart/analytics display
+  | 'inline'; // Horizontal compact display
 
 // Visual themes for different contexts
-export type GradeDisplayTheme = 
-  | 'default'   // Standard colors
-  | 'vibrant'   // High contrast colors
-  | 'minimal'   // Subtle grays
-  | 'premium'   // Premium gradient styling
+export type GradeDisplayTheme =
+  | 'default' // Standard colors
+  | 'vibrant' // High contrast colors
+  | 'minimal' // Subtle grays
+  | 'premium' // Premium gradient styling
   | 'analytics'; // Optimized for data visualization
 
 export interface UnifiedGradeDisplayProps {
   /** PSA grade data to display */
   grades: IGrades;
-  
+
   /** Display mode */
   mode?: GradeDisplayMode;
-  
+
   /** Visual theme */
   theme?: GradeDisplayTheme;
-  
+
   /** Show individual grade labels */
   showLabels?: boolean;
-  
+
   /** Show total graded count */
   showTotal?: boolean;
-  
+
   /** Highlight specific grade (for analytics) */
   highlightGrade?: number;
-  
+
   /** Custom title */
   title?: string;
-  
+
   /** Custom className */
   className?: string;
-  
+
   /** Click handler for individual grades */
   onGradeClick?: (grade: number, count: number) => void;
-  
+
   /** Loading state */
   loading?: boolean;
 }
@@ -81,7 +81,7 @@ const UnifiedGradeDisplay: React.FC<UnifiedGradeDisplayProps> = ({
     const colorMaps = {
       default: {
         1: 'text-red-600 dark:text-red-400',
-        2: 'text-red-500 dark:text-red-400', 
+        2: 'text-red-500 dark:text-red-400',
         3: 'text-orange-600 dark:text-orange-400',
         4: 'text-orange-500 dark:text-orange-400',
         5: 'text-yellow-600 dark:text-yellow-400',
@@ -140,8 +140,11 @@ const UnifiedGradeDisplay: React.FC<UnifiedGradeDisplayProps> = ({
         10: 'text-purple-500',
       },
     };
-    
-    return colorMaps[gradeTheme][grade as keyof typeof colorMaps[gradeTheme]] || 'text-zinc-500';
+
+    return (
+      colorMaps[gradeTheme][grade as keyof (typeof colorMaps)[gradeTheme]] ||
+      'text-zinc-500'
+    );
   };
 
   // Get grade value with proper handling
@@ -157,7 +160,10 @@ const UnifiedGradeDisplay: React.FC<UnifiedGradeDisplayProps> = ({
         <div className="bg-gray-200 dark:bg-zinc-700 h-4 w-1/3 mb-2 rounded"></div>
         <div className="grid grid-cols-5 gap-2">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="bg-gray-200 dark:bg-zinc-700 h-12 rounded"></div>
+            <div
+              key={i}
+              className="bg-gray-200 dark:bg-zinc-700 h-12 rounded"
+            ></div>
           ))}
         </div>
       </div>
@@ -185,7 +191,7 @@ const UnifiedGradeDisplay: React.FC<UnifiedGradeDisplayProps> = ({
         {Array.from({ length: 10 }, (_, i) => i + 1).map((grade) => {
           const count = getGradeValue(grade);
           if (count === 0) return null;
-          
+
           return (
             <span
               key={grade}
@@ -210,7 +216,7 @@ const UnifiedGradeDisplay: React.FC<UnifiedGradeDisplayProps> = ({
   // Compact mode - key highlights only
   if (mode === 'compact') {
     const topGrades = Array.from({ length: 10 }, (_, i) => i + 1)
-      .map(grade => ({ grade, count: getGradeValue(grade) }))
+      .map((grade) => ({ grade, count: getGradeValue(grade) }))
       .filter(({ count }) => count > 0)
       .sort((a, b) => b.count - a.count)
       .slice(0, 3);

@@ -19,7 +19,10 @@ export interface ImagePreview {
  * Creates a preview object for existing images
  * SRP: Only handles existing image preview creation
  */
-export const createExistingImagePreview = (url: string, index: number): ImagePreview => ({
+export const createExistingImagePreview = (
+  url: string,
+  index: number
+): ImagePreview => ({
   id: `existing-${index}-${generateId('img')}`,
   url: url.startsWith('http') ? url : `http://localhost:3000${url}`,
   isExisting: true,

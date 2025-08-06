@@ -74,7 +74,9 @@ export interface IRawCardApiService {
  */
 export interface ISealedProductApiService {
   // Read operations
-  getSealedProducts(filters?: SealedProductCollectionParams): Promise<ISealedProduct[]>;
+  getSealedProducts(
+    filters?: SealedProductCollectionParams
+  ): Promise<ISealedProduct[]>;
   getSealedProductById(id: string): Promise<ISealedProduct>;
 
   // Write operations

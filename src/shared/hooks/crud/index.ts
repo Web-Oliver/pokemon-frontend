@@ -14,10 +14,8 @@ export {
   type GenericCrudOperationsReturn,
 } from './useGenericCrudOperations';
 
-// Collection-specific operations  
-export {
-  useCollectionOperations,
-} from './useCollectionOperations';
+// Collection-specific operations
+export { useCollectionOperations } from './useCollectionOperations';
 
 // Entity configurations
 export {
@@ -32,6 +30,6 @@ export {
 // Entity-specific hooks (backward compatibility)
 export {
   usePsaCardOperations,
-  useRawCardOperations, 
+  useRawCardOperations,
   useSealedProductOperations,
 } from './entitySpecificHooks';

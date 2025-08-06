@@ -2,7 +2,8 @@
 
 ## Platform-Specific Script Execution
 
-The command generation system now uses platform-specific scripts instead of JavaScript to avoid conflicts and ensure cross-platform compatibility.
+The command generation system now uses platform-specific scripts instead of JavaScript to avoid conflicts and ensure
+cross-platform compatibility.
 
 ### Available Scripts:
 
@@ -38,13 +39,14 @@ The command generation system now uses platform-specific scripts instead of Java
 
 2. **IMPORTANT**: After script completion, inform the user to restart Claude Code for the new commands to be visible.
 
-3. **OS Detection**: The launcher script automatically detects the operating system and runs the appropriate platform-specific script.
+3. **OS Detection**: The launcher script automatically detects the operating system and runs the appropriate
+   platform-specific script.
 
 4. **Functionality**: All scripts provide the same functionality:
-   - Parse tasks.md files
-   - Support hierarchical task numbering (1, 2, 2.1, 2.2, etc.)
-   - Generate command files in .claude/commands/{spec-name}/ directory
-   - Create individual task commands like /{spec-name}-task-{id}
+    - Parse tasks.md files
+    - Support hierarchical task numbering (1, 2, 2.1, 2.2, etc.)
+    - Generate command files in .claude/commands/{spec-name}/ directory
+    - Create individual task commands like /{spec-name}-task-{id}
 
 5. **Integration**: These scripts replace the old `node .claude/scripts/generate-commands.js` command.
 

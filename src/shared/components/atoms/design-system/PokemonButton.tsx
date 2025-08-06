@@ -1,7 +1,7 @@
 /**
  * Pokemon Button Component - THE Button to Rule Them All
  * Enhanced with advanced theme integration from common/Button
- * 
+ *
  * Consolidates ALL button patterns across the entire codebase:
  * - PokemonButton (heavily used design system)
  * - common/Button (advanced theme integration)
@@ -25,11 +25,13 @@ import {
   getAnimationClasses,
   getA11yClasses,
 } from '../../../utils/unifiedUtilities';
-import {
-  generateThemeClasses,
-} from '../../../utils/themeUtils';
+import { generateThemeClasses } from '../../../utils/themeUtils';
 import { focusRing } from '../../../utils/ui/classNameUtils';
-import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
+import {
+  useVisualTheme,
+  useLayoutTheme,
+  useAnimationTheme,
+} from '../../contexts/theme';
 
 export interface PokemonButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
@@ -55,17 +57,17 @@ export interface PokemonButtonProps
   startIcon?: React.ReactNode; // Theme system support
   endIcon?: React.ReactNode; // Theme system support
   rounded?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  
+
   // Enhanced theme integration
   theme?: string;
   _colorScheme?: string;
   density?: 'compact' | 'normal' | 'spacious';
   animationIntensity?: 'none' | 'reduced' | 'normal' | 'enhanced';
   testId?: string;
-  
+
   // Form action patterns (from FormActionButtons)
   actionType?: 'submit' | 'cancel' | 'save' | 'delete' | 'create' | 'update';
-  
+
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -103,27 +105,31 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     // Theme context integration
     const visualTheme = useVisualTheme();
     const layoutTheme = useLayoutTheme();
-    
+
     // Theme variables kept for future theming enhancements
     void visualTheme;
-    void layoutTheme;  
+    void layoutTheme;
     const animationTheme = useAnimationTheme();
 
     // Determine icons (legacy vs theme system)
-    const resolvedStartIcon = startIcon || (icon && iconPosition === 'left' ? icon : null);
-    const resolvedEndIcon = endIcon || (icon && iconPosition === 'right' ? icon : null);
+    const resolvedStartIcon =
+      startIcon || (icon && iconPosition === 'left' ? icon : null);
+    const resolvedEndIcon =
+      endIcon || (icon && iconPosition === 'right' ? icon : null);
 
     // Action type variant mapping (from FormActionButtons)
     const actionVariantMap = {
       submit: 'primary',
-      save: 'success', 
+      save: 'success',
       create: 'primary',
       update: 'secondary',
       cancel: 'outline',
       delete: 'danger',
     };
-    
-    const finalVariant = actionType ? actionVariantMap[actionType] || variant : variant;
+
+    const finalVariant = actionType
+      ? actionVariantMap[actionType] || variant
+      : variant;
 
     // Base foundation classes
     const baseClasses = [
@@ -148,7 +154,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
       ].join(' '),
       secondary: [
         'bg-gradient-to-r from-slate-600 to-slate-700',
-        'hover:from-slate-700 hover:to-slate-800', 
+        'hover:from-slate-700 hover:to-slate-800',
         'text-white border-slate-500/20',
         'shadow-[0_4px_14px_0_rgb(71,85,105,0.3)]',
         'hover:shadow-[0_6px_20px_0_rgb(71,85,105,0.4)]',
@@ -220,7 +226,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     // Rounded system
     const roundedClasses = {
       sm: 'rounded-md',
-      md: 'rounded-lg', 
+      md: 'rounded-lg',
       lg: 'rounded-xl',
       xl: 'rounded-2xl',
       full: 'rounded-full',
@@ -228,18 +234,25 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
 
     // Animation intensity aware effects
     const getAnimationClasses = () => {
-      const intensity = animationIntensity || animationTheme?.intensity || 'normal';
+      const intensity =
+        animationIntensity || animationTheme?.intensity || 'normal';
       switch (intensity) {
-        case 'none': return '';
-        case 'reduced': return 'hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200';
-        case 'enhanced': return 'transform hover:scale-110 active:scale-90 hover:shadow-2xl focus:shadow-2xl transition-all duration-300';
-        default: return 'transform hover:scale-105 active:scale-95 hover:shadow-xl focus:shadow-2xl transition-all duration-300';
+        case 'none':
+          return '';
+        case 'reduced':
+          return 'hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200';
+        case 'enhanced':
+          return 'transform hover:scale-110 active:scale-90 hover:shadow-2xl focus:shadow-2xl transition-all duration-300';
+        default:
+          return 'transform hover:scale-105 active:scale-95 hover:shadow-xl focus:shadow-2xl transition-all duration-300';
       }
     };
 
     // Generate theme classes if theme system is being used
-    const themeClasses = theme || _colorScheme ? 
-      generateThemeClasses('button', { theme, colorScheme: _colorScheme }) : '';
+    const themeClasses =
+      theme || _colorScheme
+        ? generateThemeClasses('button', { theme, colorScheme: _colorScheme })
+        : '';
 
     // Focus classes from theme system
     const focusClasses = focusRing(variant);
@@ -257,25 +270,25 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     );
 
     // Loading content
-    const loadingContent = loading ? (
-      loadingIndicator || (
-        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle
-            className="opacity-30"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="3"
-          />
-          <path
-            className="opacity-90"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
-      )
-    ) : null;
+    const loadingContent = loading
+      ? loadingIndicator || (
+          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle
+              className="opacity-30"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="3"
+            />
+            <path
+              className="opacity-90"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        )
+      : null;
 
     return (
       <button
@@ -287,7 +300,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
       >
         {/* Shimmer effect (from common/Button theme integration) */}
         <Shimmer enabled={!loading && !disabled} />
-        
+
         {/* Glow effect (from common/Button theme integration) */}
         <Glow enabled={!loading && !disabled} />
 

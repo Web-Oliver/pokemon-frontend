@@ -1,10 +1,10 @@
 /**
  * PSA Card API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Focused service for PSA graded card operations following SRP
  * Extends BaseApiService for common functionality
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for PSA graded card operations only
  * - DIP: Depends on HTTP client abstraction
@@ -17,13 +17,19 @@ import { IPsaGradedCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
-import { IPsaCardApiService, PsaGradedCardsParams } from '../../interfaces/api/ICollectionApiService';
+import {
+  IPsaCardApiService,
+  PsaGradedCardsParams,
+} from '../../interfaces/api/ICollectionApiService';
 
 /**
  * PSA Card API Service
  * Handles all PSA graded card operations with proper validation and error handling
  */
-export class PsaCardApiService extends BaseApiService implements IPsaCardApiService {
+export class PsaCardApiService
+  extends BaseApiService
+  implements IPsaCardApiService
+{
   constructor(httpClient: IHttpClient) {
     super(httpClient, 'PSA CARD SERVICE');
   }
@@ -31,10 +37,15 @@ export class PsaCardApiService extends BaseApiService implements IPsaCardApiServ
   /**
    * Get PSA graded cards with optional filters
    */
-  async getPsaGradedCards(filters?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
+  async getPsaGradedCards(
+    filters?: PsaGradedCardsParams
+  ): Promise<IPsaGradedCard[]> {
     return this.executeWithErrorHandling('getPsaGradedCards', async () => {
       const result = await collectionApi.getPsaGradedCards(filters);
-      return this.validateArrayResponse<IPsaGradedCard>(result, 'getPsaGradedCards');
+      return this.validateArrayResponse<IPsaGradedCard>(
+        result,
+        'getPsaGradedCards'
+      );
     });
   }
 
@@ -52,7 +63,9 @@ export class PsaCardApiService extends BaseApiService implements IPsaCardApiServ
   /**
    * Create new PSA graded card
    */
-  async createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+  async createPsaCard(
+    cardData: Partial<IPsaGradedCard>
+  ): Promise<IPsaGradedCard> {
     return this.createResource<IPsaGradedCard>(
       '/psa-graded-cards',
       cardData,
@@ -92,7 +105,7 @@ export class PsaCardApiService extends BaseApiService implements IPsaCardApiServ
   ): Promise<IPsaGradedCard> {
     this.validateId(id, 'markPsaCardSold');
     this.validateData(saleDetails, 'markPsaCardSold');
-    
+
     return this.executeWithErrorHandling('markPsaCardSold', async () => {
       const result = await this.httpClient.postById<IPsaGradedCard>(
         '/psa-graded-cards',

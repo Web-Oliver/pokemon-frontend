@@ -23,42 +23,58 @@ import { CACHE_TTL } from '../config/cacheConfig';
  */
 export const detectCacheStrategy = (url: string) => {
   // Static reference data - long cache
-  if (url.includes('/sets') || url.includes('/cards-reference') || url.includes('/products-reference')) {
+  if (
+    url.includes('/sets') ||
+    url.includes('/cards-reference') ||
+    url.includes('/products-reference')
+  ) {
     return {
       enableCache: true,
       cacheTTL: CACHE_TTL.SETS, // 10 minutes
       enableDeduplication: true,
-      reason: 'static-reference-data'
+      reason: 'static-reference-data',
     };
   }
 
   // Search and autocomplete - medium cache
-  if (url.includes('/search') || url.includes('/suggestions') || url.includes('/autocomplete')) {
+  if (
+    url.includes('/search') ||
+    url.includes('/suggestions') ||
+    url.includes('/autocomplete')
+  ) {
     return {
       enableCache: true,
       cacheTTL: CACHE_TTL.SEARCH_SUGGESTIONS, // 3 minutes
       enableDeduplication: true,
-      reason: 'search-data'
+      reason: 'search-data',
     };
   }
 
   // Collection data - short cache
-  if (url.includes('/psa-cards') || url.includes('/raw-cards') || url.includes('/sealed-products')) {
+  if (
+    url.includes('/psa-cards') ||
+    url.includes('/raw-cards') ||
+    url.includes('/sealed-products')
+  ) {
     return {
       enableCache: true,
       cacheTTL: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes
       enableDeduplication: true,
-      reason: 'collection-data'
+      reason: 'collection-data',
     };
   }
 
   // Analytics and status - medium cache
-  if (url.includes('/analytics') || url.includes('/status') || url.includes('/stats')) {
+  if (
+    url.includes('/analytics') ||
+    url.includes('/status') ||
+    url.includes('/stats')
+  ) {
     return {
       enableCache: true,
       cacheTTL: CACHE_TTL.PRICE_HISTORY, // 5 minutes
       enableDeduplication: true,
-      reason: 'analytics-data'
+      reason: 'analytics-data',
     };
   }
 
@@ -67,7 +83,7 @@ export const detectCacheStrategy = (url: string) => {
     enableCache: true,
     cacheTTL: CACHE_TTL.UNIFIED_CLIENT_DEFAULT, // 5 minutes
     enableDeduplication: true,
-    reason: 'default-get-cache'
+    reason: 'default-get-cache',
   };
 };
 
@@ -118,14 +134,14 @@ export const prefetchCommonRoutes = async (currentPath: string) => {
   const prefetchPatterns: Record<string, string[]> = {
     '/dashboard': ['/collection', '/analytics', '/activity'],
     '/collection': ['/collection/add', '/analytics'],
-    '/': ['/collection', '/dashboard']
+    '/': ['/collection', '/dashboard'],
   };
 
   const routesToPrefetch = prefetchPatterns[currentPath];
   if (!routesToPrefetch) return;
 
   // Prefetch in background without blocking current operations
-  routesToPrefetch.forEach(route => {
+  routesToPrefetch.forEach((route) => {
     // This would integrate with your routing system
     // Implementation depends on your specific router
     console.log(`[PREFETCH] Preparing route: ${route}`);
@@ -156,10 +172,13 @@ export const throttle = <T extends (...args: any[]) => any>(
       lastExecTime = currentTime;
     } else {
       if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        fn(...args);
-        lastExecTime = Date.now();
-      }, delay - (currentTime - lastExecTime));
+      timeoutId = setTimeout(
+        () => {
+          fn(...args);
+          lastExecTime = Date.now();
+        },
+        delay - (currentTime - lastExecTime)
+      );
     }
   };
 };
@@ -167,7 +186,7 @@ export const throttle = <T extends (...args: any[]) => any>(
 /**
  * Debounced function execution to reduce API calls
  * Critical for search and autocomplete performance
- * @param fn - Function to debounce  
+ * @param fn - Function to debounce
  * @param delay - Debounce delay in milliseconds
  */
 export const debounce = <T extends (...args: any[]) => any>(
@@ -192,7 +211,7 @@ export const debounce = <T extends (...args: any[]) => any>(
  */
 export const cleanupExpiredCache = () => {
   const cacheEntries = performance.getEntriesByType('navigation');
-  
+
   // Clean up any expired entries
   // This would integrate with your specific caching implementation
   console.log('[CACHE CLEANUP] Cleaning expired entries:', cacheEntries.length);
@@ -207,8 +226,8 @@ export const trackMemoryUsage = () => {
     const memInfo = (performance as any).memory;
     return {
       used: Math.round(memInfo.usedJSHeapSize / 1048576), // MB
-      total: Math.round(memInfo.totalJSHeapSize / 1048576), // MB  
-      limit: Math.round(memInfo.jsHeapSizeLimit / 1048576) // MB
+      total: Math.round(memInfo.totalJSHeapSize / 1048576), // MB
+      limit: Math.round(memInfo.jsHeapSizeLimit / 1048576), // MB
     };
   }
   return null;
@@ -223,23 +242,30 @@ export const trackMemoryUsage = () => {
  * Tracks key performance indicators to measure improvement
  */
 export const collectPerformanceMetrics = () => {
-  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+  const navigation = performance.getEntriesByType(
+    'navigation'
+  )[0] as PerformanceNavigationTiming;
   const paint = performance.getEntriesByType('paint');
-  
+
   return {
     // Core Web Vitals approximations
-    loadTime: navigation ? Math.round(navigation.loadEventEnd - navigation.fetchStart) : 0,
-    domContentLoaded: navigation ? Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart) : 0,
-    firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
-    firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0,
-    
+    loadTime: navigation
+      ? Math.round(navigation.loadEventEnd - navigation.fetchStart)
+      : 0,
+    domContentLoaded: navigation
+      ? Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart)
+      : 0,
+    firstPaint: paint.find((p) => p.name === 'first-paint')?.startTime || 0,
+    firstContentfulPaint:
+      paint.find((p) => p.name === 'first-contentful-paint')?.startTime || 0,
+
     // Memory metrics
     memory: trackMemoryUsage(),
-    
+
     // Cache efficiency
     cacheHitRate: calculateCacheHitRate(),
-    
-    timestamp: Date.now()
+
+    timestamp: Date.now(),
   };
 };
 
@@ -269,7 +295,10 @@ export const dynamicImportWithFallback = async <T>(
     const module = await importFn();
     return module.default;
   } catch (error) {
-    console.warn('[DYNAMIC IMPORT] Failed to load module, using fallback:', error);
+    console.warn(
+      '[DYNAMIC IMPORT] Failed to load module, using fallback:',
+      error
+    );
     return fallback;
   }
 };
@@ -279,11 +308,11 @@ export const dynamicImportWithFallback = async <T>(
  * Improves perceived performance by loading key assets early
  */
 export const preloadCriticalResources = (resources: string[]) => {
-  resources.forEach(resource => {
+  resources.forEach((resource) => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.href = resource;
-    
+
     // Determine resource type
     if (resource.endsWith('.js')) {
       link.as = 'script';
@@ -292,7 +321,7 @@ export const preloadCriticalResources = (resources: string[]) => {
     } else if (resource.match(/\.(jpg|jpeg|png|webp)$/)) {
       link.as = 'image';
     }
-    
+
     document.head.appendChild(link);
   });
 };
@@ -307,5 +336,5 @@ export default {
   trackMemoryUsage,
   collectPerformanceMetrics,
   dynamicImportWithFallback,
-  preloadCriticalResources
+  preloadCriticalResources,
 };

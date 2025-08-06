@@ -10,7 +10,9 @@
 
 import { RefreshCw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import DateRangeFilter, { DateRangeState } from '../../../shared/components/molecules/common/DateRangeFilter';
+import DateRangeFilter, {
+  DateRangeState,
+} from '../../../shared/components/molecules/common/DateRangeFilter';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import {
@@ -20,7 +22,10 @@ import {
   CategoryStats,
   MetricsGrid,
 } from '../../../shared/components/analytics';
-import { useActivity, useActivityStats } from '../../../shared/hooks/useActivity';
+import {
+  useActivity,
+  useActivityStats,
+} from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { useAnalyticsData } from '../../../shared/hooks/useAnalyticsData';
 
@@ -36,7 +41,7 @@ const Analytics: React.FC = () => {
 
   const { stats: activityStats } = useActivityStats();
   const { totalValueFormatted } = useCollectionStats();
-  
+
   // Process analytics data using extracted hook
   const analyticsData = useAnalyticsData({ activities });
 

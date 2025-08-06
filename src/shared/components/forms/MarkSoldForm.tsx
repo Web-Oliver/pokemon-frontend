@@ -8,7 +8,10 @@ import React from 'react';
 import { DollarSign } from 'lucide-react';
 import { IBuyerAddress, ISaleDetails } from '../../../domain/models/common';
 import { DeliveryMethod, PaymentMethod, Source } from '../../utils/constants';
-import { PokemonForm, PokemonFormSection } from '../atoms/design-system/PokemonForm';
+import {
+  PokemonForm,
+  PokemonFormSection,
+} from '../atoms/design-system/PokemonForm';
 import { useMarkSold } from '../../hooks/useMarkSold';
 
 interface MarkSoldFormProps {
@@ -50,14 +53,21 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     // Format data for submission
     const formattedData: ISaleDetails = {
       ...data,
-      dateSold: data.dateSold ? new Date(data.dateSold).toISOString() : undefined,
+      dateSold: data.dateSold
+        ? new Date(data.dateSold).toISOString()
+        : undefined,
     };
 
     // Remove empty buyer address if not needed
     const deliveryMethod = data.deliveryMethod;
     const showBuyerInfo = deliveryMethod === DeliveryMethod.SENT;
-    
-    if (!showBuyerInfo || (!data.buyerAddress?.streetName && !data.buyerAddress?.postnr && !data.buyerAddress?.city)) {
+
+    if (
+      !showBuyerInfo ||
+      (!data.buyerAddress?.streetName &&
+        !data.buyerAddress?.postnr &&
+        !data.buyerAddress?.city)
+    ) {
       delete formattedData.buyerAddress;
     }
 
@@ -79,12 +89,12 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           required: true,
           validation: {
             required: 'Sale price is required',
-            min: { value: 0.01, message: 'Price must be greater than 0' }
+            min: { value: 0.01, message: 'Price must be greater than 0' },
           },
           leftIcon: <DollarSign className="w-4 h-4" />,
           step: 0.01,
           min: 0.01,
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'select',
@@ -94,10 +104,14 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           validation: { required: 'Payment method is required' },
           options: Object.values(PaymentMethod).map((method) => ({
             value: method,
-            label: method === PaymentMethod.MOBILEPAY ? 'MobilePay' : 
-                   method === PaymentMethod.BANK_TRANSFER ? 'Bank Transfer' : method,
+            label:
+              method === PaymentMethod.MOBILEPAY
+                ? 'MobilePay'
+                : method === PaymentMethod.BANK_TRANSFER
+                  ? 'Bank Transfer'
+                  : method,
           })),
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'select',
@@ -109,7 +123,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             value: method,
             label: method,
           })),
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'select',
@@ -121,7 +135,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             value: source,
             label: source,
           })),
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'date',
@@ -129,9 +143,9 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           label: 'Date Sold',
           required: true,
           validation: { required: 'Sale date is required' },
-          fullWidth: true
-        }
-      ]
+          fullWidth: true,
+        },
+      ],
     },
     {
       id: 'buyer-info',
@@ -146,10 +160,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.LOCAL_MEETUP,
-            operator: '='
+            operator: '=',
           },
           validation: { required: 'Buyer name is required' },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'input',
@@ -159,10 +173,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
           validation: { required: 'Buyer name is required' },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'input',
@@ -172,10 +186,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
           validation: { required: 'Street address is required' },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'input',
@@ -185,10 +199,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
           validation: { required: 'Postal code is required' },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'input',
@@ -198,10 +212,10 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
           validation: { required: 'City is required' },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'tel',
@@ -211,9 +225,9 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'email',
@@ -223,9 +237,9 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
-          fullWidth: true
+          fullWidth: true,
         },
         {
           type: 'input',
@@ -235,12 +249,12 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           conditionalOn: {
             field: 'deliveryMethod',
             value: DeliveryMethod.SENT,
-            operator: '='
+            operator: '=',
           },
-          fullWidth: true
-        }
-      ]
-    }
+          fullWidth: true,
+        },
+      ],
+    },
   ];
 
   // Default values

@@ -1,7 +1,7 @@
 /**
  * LAZY IMPORTS UTILITY
  * Phase 2 Bundle Optimization - Development/Production Splitting
- * 
+ *
  * Following CLAUDE.md principles for performance optimization
  * ARCHITECTURE LAYER: Layer 1 (Foundation/API Client)
  */
@@ -19,7 +19,7 @@ export const lazyLoadDevComponent = <T extends ComponentType<any>>(
     // Return empty component for production
     return (() => null) as T;
   }
-  
+
   return lazy(importFn) as T;
 };
 
@@ -64,10 +64,10 @@ export const themeUtilsLazy = {
 export const bundleConfig = {
   // Development-only chunks
   devOnly: ['themeDebug'],
-  
+
   // Heavy utility chunks
   utilityChunks: ['themeExport', 'fileOperations', 'responseTransformer'],
-  
+
   // Core utilities (keep in main bundle)
   core: ['common', 'formatting', 'constants'],
 };

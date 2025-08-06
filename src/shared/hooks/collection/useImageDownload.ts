@@ -1,6 +1,6 @@
 /**
  * Image Download Hook
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles image download operations
  * - DRY: Eliminates duplicated download logic
@@ -36,21 +36,24 @@ export const useImageDownload = (
   }, []);
 
   // Generate filename for download
-  const generateFileName = useCallback((type: string, title: string): string => {
-    const timestamp = new Date().toISOString().split('T')[0];
-    const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '-');
-    
-    switch (type) {
-      case 'psa':
-        return `psa-card-${sanitizedTitle}-${timestamp}.zip`;
-      case 'raw':
-        return `raw-card-${sanitizedTitle}-${timestamp}.zip`;
-      case 'sealed':
-        return `sealed-product-${sanitizedTitle}-${timestamp}.zip`;
-      default:
-        return `item-${sanitizedTitle}-${timestamp}.zip`;
-    }
-  }, []);
+  const generateFileName = useCallback(
+    (type: string, title: string): string => {
+      const timestamp = new Date().toISOString().split('T')[0];
+      const sanitizedTitle = title.replace(/[^a-zA-Z0-9]/g, '-');
+
+      switch (type) {
+        case 'psa':
+          return `psa-card-${sanitizedTitle}-${timestamp}.zip`;
+        case 'raw':
+          return `raw-card-${sanitizedTitle}-${timestamp}.zip`;
+        case 'sealed':
+          return `sealed-product-${sanitizedTitle}-${timestamp}.zip`;
+        default:
+          return `item-${sanitizedTitle}-${timestamp}.zip`;
+      }
+    },
+    []
+  );
 
   // Download images as ZIP
   const handleDownloadImages = useCallback(async () => {
@@ -91,7 +94,7 @@ export const useImageDownload = (
       // Download the ZIP file
       exportApi.downloadBlob(zipBlob, filename);
       showSuccessToast('Images downloaded successfully!');
-      
+
       log('[ImageDownload] Images zip downloaded successfully', {
         itemId: id,
         type,

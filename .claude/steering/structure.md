@@ -221,4 +221,5 @@ src/
 - **Hook Extraction**: Reusable stateful logic in custom hooks
 - **Constant Definitions**: Shared constants in `utils/constants.ts`
 
-This structure ensures maintainable, scalable code that follows established patterns and makes future development predictable and efficient.
+This structure ensures maintainable, scalable code that follows established patterns and makes future development
+predictable and efficient.

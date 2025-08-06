@@ -1,6 +1,6 @@
 /**
  * Modal Management Hook
- * 
+ *
  * Abstracts common modal state management patterns used across AuctionDetail and CollectionItemDetail
  * Following CLAUDE.md principles: DRY, Single Responsibility, reusable logic extraction
  */
@@ -34,7 +34,7 @@ export const useModal = (initialOpen = false): UseModalReturn => {
   }, []);
 
   const toggleModal = useCallback(() => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   }, []);
 
   return {
@@ -51,7 +51,9 @@ export const useModal = (initialOpen = false): UseModalReturn => {
 export const useConfirmModal = (initialOpen = false): UseConfirmModalReturn => {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [isConfirming, setIsConfirming] = useState(false);
-  const [pendingAction, setPendingAction] = useState<(() => void | Promise<void>) | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    (() => void | Promise<void>) | null
+  >(null);
 
   const openModal = useCallback(() => {
     setIsOpen(true);
@@ -64,23 +66,26 @@ export const useConfirmModal = (initialOpen = false): UseConfirmModalReturn => {
   }, []);
 
   const toggleModal = useCallback(() => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   }, []);
 
-  const confirmAction = useCallback(async (callback: () => void | Promise<void>) => {
-    if (isConfirming) return;
+  const confirmAction = useCallback(
+    async (callback: () => void | Promise<void>) => {
+      if (isConfirming) return;
 
-    setIsConfirming(true);
-    try {
-      await callback();
-      closeModal();
-    } catch (error) {
-      console.error('Confirm action failed:', error);
-      // Keep modal open on error so user can retry
-    } finally {
-      setIsConfirming(false);
-    }
-  }, [isConfirming, closeModal]);
+      setIsConfirming(true);
+      try {
+        await callback();
+        closeModal();
+      } catch (error) {
+        console.error('Confirm action failed:', error);
+        // Keep modal open on error so user can retry
+      } finally {
+        setIsConfirming(false);
+      }
+    },
+    [isConfirming, closeModal]
+  );
 
   return {
     isOpen,
@@ -105,30 +110,33 @@ export interface UseMultiModalReturn {
 }
 
 export const useMultiModal = (modalKeys: string[]): UseMultiModalReturn => {
-  const initialState = modalKeys.reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {} as Record<string, boolean>);
+  const initialState = modalKeys.reduce(
+    (acc, key) => {
+      acc[key] = false;
+      return acc;
+    },
+    {} as Record<string, boolean>
+  );
 
   const [modals, setModals] = useState(initialState);
 
   const openModal = useCallback((modalKey: string) => {
-    setModals(prev => ({ ...prev, [modalKey]: true }));
+    setModals((prev) => ({ ...prev, [modalKey]: true }));
   }, []);
 
   const closeModal = useCallback((modalKey: string) => {
-    setModals(prev => ({ ...prev, [modalKey]: false }));
+    setModals((prev) => ({ ...prev, [modalKey]: false }));
   }, []);
 
   const toggleModal = useCallback((modalKey: string) => {
-    setModals(prev => ({ ...prev, [modalKey]: !prev[modalKey] }));
+    setModals((prev) => ({ ...prev, [modalKey]: !prev[modalKey] }));
   }, []);
 
   const closeAllModals = useCallback(() => {
     setModals(initialState);
   }, [initialState]);
 
-  const isAnyModalOpen = Object.values(modals).some(isOpen => isOpen);
+  const isAnyModalOpen = Object.values(modals).some((isOpen) => isOpen);
 
   return {
     modals,

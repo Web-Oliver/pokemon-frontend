@@ -1,10 +1,10 @@
 /**
  * Base API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Abstract base class providing common functionality for all API services
  * Implements SOLID principles with dependency injection and error handling
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for common API service functionality
  * - DIP: Depends on HTTP client abstraction, not concrete implementation
@@ -159,7 +159,12 @@ export abstract class BaseApiService {
   ): Promise<T> {
     this.validateId(id, operation);
     return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.getById<T>(basePath, id, undefined, config);
+      const result = await this.httpClient.getById<T>(
+        basePath,
+        id,
+        undefined,
+        config
+      );
       return this.validateObjectResponse<T>(result, operation, id);
     });
   }
@@ -177,7 +182,12 @@ export abstract class BaseApiService {
     this.validateData(data, operation);
     return this.executeWithErrorHandling(operation, async () => {
       const result = await this.httpClient.post<T>(url, data, config);
-      return this.validateCreatedResponse<T>(result, operation, requiredField, data);
+      return this.validateCreatedResponse<T>(
+        result,
+        operation,
+        requiredField,
+        data
+      );
     });
   }
 
@@ -194,7 +204,13 @@ export abstract class BaseApiService {
     this.validateId(id, operation);
     this.validateData(data, operation);
     return this.executeWithErrorHandling(operation, async () => {
-      const result = await this.httpClient.putById<T>(basePath, id, data, undefined, config);
+      const result = await this.httpClient.putById<T>(
+        basePath,
+        id,
+        data,
+        undefined,
+        config
+      );
       return this.validateObjectResponse<T>(result, operation, id);
     });
   }

@@ -234,7 +234,9 @@ export const createArray = <T>(
   fillValue: T | ((index: number) => T)
 ): T[] => {
   return Array.from({ length }, (_, index) =>
-    typeof fillValue === 'function' ? (fillValue as (index: number) => T)(index) : fillValue
+    typeof fillValue === 'function'
+      ? (fillValue as (index: number) => T)(index)
+      : fillValue
   );
 };
 
@@ -379,13 +381,15 @@ export const getSetName = (item: any): string => {
   return 'Unknown Set';
 };
 
-export const getItemType = (item: any): 'psa' | 'raw' | 'sealed' | 'unknown' => {
+export const getItemType = (
+  item: any
+): 'psa' | 'raw' | 'sealed' | 'unknown' => {
   if (!item) return 'unknown';
-  
+
   if ('grade' in item) return 'psa';
   if ('condition' in item) return 'raw';
   if ('category' in item) return 'sealed';
-  
+
   return 'unknown';
 };
 

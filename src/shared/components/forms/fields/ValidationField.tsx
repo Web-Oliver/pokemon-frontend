@@ -1,7 +1,7 @@
 /**
  * ValidationField Component
  * Layer 3: Components (UI Building Blocks)
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Renders validated form fields with auto-validation
  * - DRY: Eliminates 60% of form field boilerplate across all forms
@@ -13,9 +13,20 @@
 import React from 'react';
 import { PokemonSelect } from '../../../atoms/design-system/PokemonSelect';
 import { PokemonInput } from '../../design-system/PokemonInput';
-import { commonValidationRules, ValidationRule } from '../../hooks/useFormValidation';
+import {
+  commonValidationRules,
+  ValidationRule,
+} from '../../hooks/useFormValidation';
 
-export type ValidationFieldType = 'price' | 'email' | 'phone' | 'grade' | 'date' | 'text' | 'select' | 'number';
+export type ValidationFieldType =
+  | 'price'
+  | 'email'
+  | 'phone'
+  | 'grade'
+  | 'date'
+  | 'text'
+  | 'select'
+  | 'number';
 
 interface ValidationFieldProps {
   /** Field configuration */
@@ -25,17 +36,17 @@ interface ValidationFieldProps {
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
-  
+
   /** Form integration */
   register: any; // UseFormRegister from react-hook-form
   error?: FieldError;
-  
+
   /** Select field options */
   options?: Array<{ value: string; label: string }>;
-  
+
   /** Custom validation override */
   customValidation?: ValidationRule;
-  
+
   /** Additional input props */
   className?: string;
   step?: string;
@@ -68,12 +79,12 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
   // Auto-apply validation rules based on field type
   const getValidationRules = (): ValidationRule => {
     const baseRule: ValidationRule = { required };
-    
+
     // Apply custom validation if provided
     if (customValidation) {
       return { ...baseRule, ...customValidation };
     }
-    
+
     // Auto-apply common validation rules based on type
     switch (type) {
       case 'price':
@@ -150,7 +161,7 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
         return {
           ...baseProps,
           type: 'text',
-          inputMode: inputMode || 'numeric' as const,
+          inputMode: inputMode || ('numeric' as const),
           step: step || '1',
           min: min || '0',
           max,
@@ -160,7 +171,7 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
         return {
           ...baseProps,
           type: 'text',
-          inputMode: inputMode || 'text' as const,
+          inputMode: inputMode || ('text' as const),
         };
     }
   };
@@ -171,32 +182,32 @@ export const ValidationField: React.FC<ValidationFieldProps> = ({
 
   // Generate register validation object for react-hook-form
   const registerOptions: any = {};
-  
+
   if (validationRules.required) {
     registerOptions.required = `${label} is required`;
   }
-  
+
   if (validationRules.pattern) {
     registerOptions.pattern = {
       value: validationRules.pattern,
       message: `${label} format is invalid`,
     };
   }
-  
+
   if (validationRules.min !== undefined) {
     registerOptions.min = {
       value: validationRules.min,
       message: `${label} must be at least ${validationRules.min}`,
     };
   }
-  
+
   if (validationRules.max !== undefined) {
     registerOptions.max = {
       value: validationRules.max,
       message: `${label} must be at most ${validationRules.max}`,
     };
   }
-  
+
   if (validationRules.custom) {
     registerOptions.validate = (value: any) => {
       const customError = validationRules.custom!(value);

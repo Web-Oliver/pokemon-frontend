@@ -7,7 +7,12 @@
  * - Layer 3: UI component that composes MetricCard components
  */
 
-import { Activity as ActivityIcon, Clock, DollarSign, TrendingUp } from 'lucide-react';
+import {
+  Activity as ActivityIcon,
+  Clock,
+  DollarSign,
+  TrendingUp,
+} from 'lucide-react';
 import React from 'react';
 import { MetricCard } from './MetricCard';
 import { getRelativeTime } from '../../utils/helpers/formatting';
@@ -26,7 +31,9 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ${className}`}>
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ${className}`}
+    >
       <MetricCard
         title="Total Activities"
         value={analyticsData?.totalActivities || 0}
@@ -35,7 +42,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
         customGradient={{
           from: 'indigo-500/20',
           via: 'purple-500/15',
-          to: 'cyan-500/20'
+          to: 'cyan-500/20',
         }}
       />
 
@@ -65,7 +72,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
         customGradient={{
           from: 'purple-500/20',
           via: 'violet-500/15',
-          to: 'pink-500/20'
+          to: 'pink-500/20',
         }}
       />
     </div>

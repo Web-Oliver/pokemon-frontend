@@ -13,7 +13,7 @@
  * - DRY: Centralized theme logic for all components
  * - Dependency Inversion: Abstracts theme implementation details
  *
- * SEPARATION FROM classNameUtils.ts:  
+ * SEPARATION FROM classNameUtils.ts:
  * - themeUtils.ts: Defines theme configurations and integration (WHAT to style)
  * - classNameUtils.ts: Generates class strings (HOW to style)
  *

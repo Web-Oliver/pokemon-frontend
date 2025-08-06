@@ -1,23 +1,23 @@
 /**
  * PokemonSearch - THE definitive search component
- * 
+ *
  * Consolidates ALL search patterns following CLAUDE.md principles:
  * - SearchDropdown.tsx (601 lines) → searchVariant="dropdown"
  * - ProductSearchSection.tsx (621 lines) → searchVariant="section" + searchType="products"
- * - CardSearchSection.tsx (396 lines) → searchVariant="section" + searchType="cards"  
+ * - CardSearchSection.tsx (396 lines) → searchVariant="section" + searchType="cards"
  * - AutocompleteField.tsx (414 lines) → searchVariant="field"
  * - LazySearchDropdown.tsx → searchVariant="lazy"
  * - SearchField.tsx → searchVariant="basic"
  * - SearchSection.tsx → searchVariant="section"
  * - SearchSectionContainer.tsx → containerVariant variants
- * 
+ *
  * SOLID Principles:
  * - SRP: Each variant has focused responsibility
  * - OCP: New search types added via props, no modification
  * - LSP: All variants substitutable through same interface
  * - ISP: Interface segregated by search variant
  * - DIP: Depends on search abstractions, not concrete implementations
- * 
+ *
  * DRY Achievement: 8 components → 1 unified component
  */
 
@@ -32,13 +32,23 @@ import React, {
   startTransition,
 } from 'react';
 import { Search, Loader2, LucideIcon } from 'lucide-react';
-import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormClearErrors } from 'react-hook-form';
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch,
+  UseFormClearErrors,
+} from 'react-hook-form';
 import { SearchResult, useSearch } from '../../hooks/useSearch';
 import {
   useOptimizedSearch,
   useSearchResultSelector,
 } from '../../hooks/useOptimizedSearch';
-import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
+import {
+  useVisualTheme,
+  useLayoutTheme,
+  useAnimationTheme,
+} from '../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../theme/formThemes';
 import { cn } from '../../../utils/unifiedUtilities';
 
@@ -71,7 +81,7 @@ export interface PokemonSearchProps {
 
   // Enhanced search system (consolidation)
   searchVariant?: 'basic' | 'dropdown' | 'section' | 'field' | 'lazy';
-  
+
   // Dropdown variant (from SearchDropdown.tsx - 601 lines)
   suggestions?: SearchSuggestion[];
   loading?: boolean;
@@ -79,7 +89,7 @@ export interface PokemonSearchProps {
   onClose?: () => void;
   suggestionsCount?: number;
   activeField?: string;
-  
+
   // Section variant (from ProductSearchSection.tsx/CardSearchSection.tsx)
   register?: UseFormRegister<any>;
   errors?: FieldErrors<any>;
@@ -93,23 +103,23 @@ export interface PokemonSearchProps {
   readOnlyFields?: Record<string, boolean>;
   productCategories?: Array<{ value: string; label: string }> | string[];
   loadingOptions?: boolean;
-  
+
   // Field variant (from AutocompleteField.tsx - 414 lines)
   fieldName?: string;
   label?: string;
   required?: boolean;
   helpText?: string;
-  
+
   // Lazy variant (from LazySearchDropdown.tsx)
   lazyLoad?: boolean;
   loadMore?: () => void;
   hasMore?: boolean;
-  
+
   // Hierarchical search (Set -> Product/Card pattern)
   hierarchical?: boolean;
   parentField?: string;
   parentValue?: string;
-  
+
   // Search container integration
   containerVariant?: 'inline' | 'modal' | 'sidebar' | 'floating';
 }
@@ -220,10 +230,10 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   useExternalSearch = false, // ADDED: Default to internal search
   externalResults = [], // ADDED: Default empty external results
   externalLoading = false, // ADDED: Default external loading state
-  
+
   // Enhanced search props
   searchVariant = 'basic',
-  
+
   // Dropdown variant props
   suggestions = [],
   loading = false,
@@ -231,7 +241,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   onClose,
   suggestionsCount = 0,
   activeField,
-  
+
   // Section variant props
   register,
   errors,
@@ -245,23 +255,23 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   readOnlyFields,
   productCategories,
   loadingOptions = false,
-  
+
   // Field variant props
   fieldName,
   label,
   required = false,
   helpText,
-  
+
   // Lazy variant props
   lazyLoad = false,
   loadMore,
   hasMore = false,
-  
+
   // Hierarchical search props
   hierarchical = false,
   parentField,
   parentValue,
-  
+
   // Container variant props
   containerVariant = 'inline',
 }) => {
@@ -269,27 +279,27 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   const visualTheme = useVisualTheme();
   const layoutTheme = useLayoutTheme();
   const animationTheme = useAnimationTheme();
-  
+
   // Direct search hook integration - FIXED to actually trigger searches
   const search = useSearch();
-  
+
   // Local state for search functionality
   const [searchQuery, setSearchQuery] = useState(value || '');
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // FIXED: Sync internal state with external value prop
   useEffect(() => {
     if (value !== undefined && value !== searchQuery) {
       setSearchQuery(value);
     }
   }, [value]);
-  
+
   // Use direct search results with proper API integration
   const { results: internalResults, isLoading: internalLoading } = search;
-  
+
   // FIXED: Use external results when using hierarchical search
   const results = useExternalSearch ? externalResults : internalResults;
   const isLoading = useExternalSearch ? externalLoading : internalLoading;
@@ -297,126 +307,163 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   // Form integration for section variants
   const watchedValues = watch ? watch() : {};
   const fieldError = errors?.[fieldName || ''];
-  
+
   // Direct result selection handler - FIXED!
-  const handleResultSelect = useCallback((result: SearchResult) => {
-    console.log('[POKEMON SEARCH] Result selected:', result);
-    
-    // Handle different selection patterns
-    if (searchVariant === 'section' && setValue && onSelectionChange) {
-      // Form integration - auto-fill related fields
-      if (searchType === 'products') {
-        setValue('productName', result.displayName);
-        setValue('setName', result.data?.setName || '');
-        setValue('category', result.data?.category || '');
-        setValue('availability', result.data?.availability || '');
-      } else if (searchType === 'cards') {
-        setValue('cardName', result.displayName);
-        setValue('setName', result.data?.setName || '');
-        setValue('cardNumber', result.data?.cardNumber || '');
+  const handleResultSelect = useCallback(
+    (result: SearchResult) => {
+      console.log('[POKEMON SEARCH] Result selected:', result);
+
+      // Handle different selection patterns
+      if (searchVariant === 'section' && setValue && onSelectionChange) {
+        // Form integration - auto-fill related fields
+        if (searchType === 'products') {
+          setValue('productName', result.displayName);
+          setValue('setName', result.data?.setName || '');
+          setValue('category', result.data?.category || '');
+          setValue('availability', result.data?.availability || '');
+        } else if (searchType === 'cards') {
+          setValue('cardName', result.displayName);
+          setValue('setName', result.data?.setName || '');
+          setValue('cardNumber', result.data?.cardNumber || '');
+        }
+        onSelectionChange(result.data);
+        clearErrors?.(['productName', 'cardName', 'setName']);
+      } else {
+        onSelect(result);
       }
-      onSelectionChange(result.data);
-      clearErrors?.(['productName', 'cardName', 'setName']);
-    } else {
-      onSelect(result);
-    }
-    
-    // Update UI state
-    setIsVisible(false);
-    setSearchQuery(result.displayName);
-    setSelectedIndex(-1);
-  }, [searchVariant, setValue, onSelectionChange, searchType, onSelect, clearErrors]);
+
+      // Update UI state
+      setIsVisible(false);
+      setSearchQuery(result.displayName);
+      setSelectedIndex(-1);
+    },
+    [
+      searchVariant,
+      setValue,
+      onSelectionChange,
+      searchType,
+      onSelect,
+      clearErrors,
+    ]
+  );
 
   // Input change handler with ACTUAL search API triggering - FIXED!
-  const handleInputChange = useCallback((value: string) => {
-    setSearchQuery(value);
-    
-    // FIXED: Skip internal search when using external search (hierarchical search)
-    if (!useExternalSearch) {
-      // CRITICAL FIX: Actually trigger the search API calls based on searchType
-      if (value.length >= minLength) {
-        setIsVisible(true);
-        
-        // Trigger the appropriate search based on searchType
-        switch (searchType) {
-          case 'sets':
-            search.searchSets(value);
-            break;
-          case 'cards':
-            search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
-            break;
-          case 'products':
-            search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
-            break;
-          default:
-            console.warn(`[POKEMON SEARCH] Unknown searchType: ${searchType}`);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+
+      // FIXED: Skip internal search when using external search (hierarchical search)
+      if (!useExternalSearch) {
+        // CRITICAL FIX: Actually trigger the search API calls based on searchType
+        if (value.length >= minLength) {
+          setIsVisible(true);
+
+          // Trigger the appropriate search based on searchType
+          switch (searchType) {
+            case 'sets':
+              search.searchSets(value);
+              break;
+            case 'cards':
+              search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
+              break;
+            case 'products':
+              search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
+              break;
+            default:
+              console.warn(
+                `[POKEMON SEARCH] Unknown searchType: ${searchType}`
+              );
+          }
+        } else {
+          setIsVisible(false);
+          search.clearResults();
         }
       } else {
-        setIsVisible(false);
-        search.clearResults();
+        // When using external search, just show/hide dropdown based on minLength
+        if (value.length >= minLength) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
       }
-    } else {
-      // When using external search, just show/hide dropdown based on minLength
-      if (value.length >= minLength) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+
+      if (searchVariant === 'section' && setValue && fieldName) {
+        setValue(fieldName, value);
       }
-    }
-    
-    if (searchVariant === 'section' && setValue && fieldName) {
-      setValue(fieldName, value);
-    }
-    
-    if (onInputChange) {
-      onInputChange(value);
-    }
-    
-    // Clear related fields when input changes
-    if (searchVariant === 'section' && setValue && value === '') {
-      if (searchType === 'products') {
-        setValue('category', '');
-        setValue('availability', '');
-      } else if (searchType === 'cards') {
-        setValue('cardNumber', '');
+
+      if (onInputChange) {
+        onInputChange(value);
       }
-      onSelectionChange?.(null);
-    }
-  }, [searchType, setFilter, minLength, search, setValue, fieldName, onInputChange, searchVariant, onSelectionChange]);
+
+      // Clear related fields when input changes
+      if (searchVariant === 'section' && setValue && value === '') {
+        if (searchType === 'products') {
+          setValue('category', '');
+          setValue('availability', '');
+        } else if (searchType === 'cards') {
+          setValue('cardNumber', '');
+        }
+        onSelectionChange?.(null);
+      }
+    },
+    [
+      searchType,
+      setFilter,
+      minLength,
+      search,
+      setValue,
+      fieldName,
+      onInputChange,
+      searchVariant,
+      onSelectionChange,
+    ]
+  );
 
   // Enhanced keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!isVisible || results.length === 0) return;
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!isVisible || results.length === 0) return;
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex(prev => (prev + 1) % results.length);
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (selectedIndex >= 0 && results[selectedIndex]) {
-          handleResultSelect(results[selectedIndex]);
-        }
-        break;
-      case 'Escape':
-        setIsVisible(false);
-        onClose?.();
-        break;
-    }
-  }, [isVisible, results, selectedIndex, handleResultSelect, setSelectedIndex, onClose]);
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev + 1) % results.length);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex(
+            (prev) => (prev - 1 + results.length) % results.length
+          );
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (selectedIndex >= 0 && results[selectedIndex]) {
+            handleResultSelect(results[selectedIndex]);
+          }
+          break;
+        case 'Escape':
+          setIsVisible(false);
+          onClose?.();
+          break;
+      }
+    },
+    [
+      isVisible,
+      results,
+      selectedIndex,
+      handleResultSelect,
+      setSelectedIndex,
+      onClose,
+    ]
+  );
 
   // Theme-aware styling
   const elementTheme = getElementTheme(themeColor);
-  
+
   // Enhanced container classes based on variant
   const containerClasses = useMemo(() => {
     const base = 'relative w-full';
-    
+
     switch (containerVariant) {
       case 'modal':
         return `${base} z-50`;
@@ -445,7 +492,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
     if (disabled) {
       base.push('opacity-50 cursor-not-allowed');
     }
-    
+
     if (fieldError) {
       base.push('border-red-500/50 focus:ring-red-500/50');
     }
@@ -462,7 +509,9 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
       'shadow-2xl shadow-black/50',
       'max-h-80 overflow-y-auto',
       'transition-all duration-300',
-      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+      isVisible
+        ? 'opacity-100 translate-y-0'
+        : 'opacity-0 -translate-y-2 pointer-events-none'
     );
   }, [isVisible]);
 
@@ -475,10 +524,12 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
         {sectionTitle && SectionIcon && (
           <div className="flex items-center gap-3 pb-2 border-b border-zinc-700/30">
             <SectionIcon className="w-5 h-5 text-cyan-400" />
-            <h3 className="text-lg font-semibold text-zinc-100">{sectionTitle}</h3>
+            <h3 className="text-lg font-semibold text-zinc-100">
+              {sectionTitle}
+            </h3>
           </div>
         )}
-        
+
         {/* Enhanced input with form integration */}
         <div className="space-y-2">
           {label && (
@@ -486,7 +537,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
               {label} {required && <span className="text-red-400">*</span>}
             </label>
           )}
-          
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-400" />
             <input
@@ -500,23 +551,25 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
               disabled={disabled || (hierarchical && !parentValue)}
               autoFocus={autoFocus}
               className={`pl-10 ${inputClasses}`}
-              {...(register && fieldName ? register(fieldName, { required }) : {})}
+              {...(register && fieldName
+                ? register(fieldName, { required })
+                : {})}
             />
-            
+
             {(isLoading || loadingOptions) && (
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
             )}
           </div>
-          
+
           {fieldError && (
             <p className="text-sm text-red-400">{fieldError.message}</p>
           )}
-          
+
           {helpText && !fieldError && (
             <p className="text-sm text-zinc-500">{helpText}</p>
           )}
         </div>
-        
+
         {/* Hierarchical search message */}
         {hierarchical && !parentValue && (
           <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
@@ -548,7 +601,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
           autoFocus={autoFocus}
           className={`pl-10 ${inputClasses}`}
         />
-        
+
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
         )}
@@ -567,10 +620,9 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
       return (
         <div ref={dropdownRef} className={dropdownClasses}>
           <div className="px-4 py-3 text-center text-zinc-400">
-            {searchQuery.length < minLength 
+            {searchQuery.length < minLength
               ? `Type at least ${minLength} characters to search ${searchType}...`
-              : `No ${searchType} found for "${searchQuery}"`
-            }
+              : `No ${searchType} found for "${searchQuery}"`}
           </div>
         </div>
       );
@@ -599,7 +651,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
               searchQuery={highlightSearchTerm ? searchQuery : ''}
             />
           ))}
-          
+
           {/* Lazy loading */}
           {lazyLoad && hasMore && (
             <div className="px-4 py-3 text-center">
@@ -611,7 +663,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
               </button>
             </div>
           )}
-          
+
           {/* Results count */}
           {suggestionsCount > 0 && (
             <div className="px-4 py-2 border-t border-zinc-700/30 text-xs text-zinc-500">
@@ -628,7 +680,7 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
       {/* Render based on search variant */}
       {renderSectionVariant()}
       {renderBasicVariant()}
-      
+
       {/* Enhanced dropdown for all variants */}
       {renderDropdown()}
     </div>

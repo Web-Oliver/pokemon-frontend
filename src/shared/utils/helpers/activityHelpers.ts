@@ -92,7 +92,9 @@ export interface ActivityCategoryStats {
   system: number;
 }
 
-export const categorizeActivity = (type: string): keyof ActivityCategoryStats => {
+export const categorizeActivity = (
+  type: string
+): keyof ActivityCategoryStats => {
   if (type.includes('CARD') || type.includes('PRICE')) {
     return 'collection';
   } else if (type.includes('AUCTION')) {
@@ -184,10 +186,6 @@ export const processActivitiesForAnalytics = (activities: any[]) => {
     valueActivities,
     totalValue,
     totalActivities,
-    mostActiveDay: Object.entries(dailyTrends).sort(
-      ([, a], [, b]) => b - a
-    )[0],
+    mostActiveDay: Object.entries(dailyTrends).sort(([, a], [, b]) => b - a)[0],
   };
 };
-
-

@@ -14,7 +14,10 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { PokemonCard, PokemonBadge } from '../../atoms/design-system';
-import { displayPrice, getRelativeTime } from '../../../utils/helpers/formatting';
+import {
+  displayPrice,
+  getRelativeTime,
+} from '../../../utils/helpers/formatting';
 
 interface ActivityMetadata {
   color?: string;

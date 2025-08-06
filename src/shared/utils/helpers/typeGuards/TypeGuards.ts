@@ -100,7 +100,7 @@ export function isFile(value: unknown): value is File {
  * Type guard to check if value is an array of Files
  */
 export function isFileArray(value: unknown): value is File[] {
-  return Array.isArray(value) && value.every(item => item instanceof File);
+  return Array.isArray(value) && value.every((item) => item instanceof File);
 }
 
 /**
@@ -141,14 +141,18 @@ export function isValidDateString(value: unknown): value is string {
 /**
  * Type guard to check if response has success property
  */
-export function hasSuccessProperty(value: unknown): value is { success: boolean } {
+export function hasSuccessProperty(
+  value: unknown
+): value is { success: boolean } {
   return isObject(value) && typeof value.success === 'boolean';
 }
 
 /**
  * Type guard to check if response has data property
  */
-export function hasDataProperty<T = unknown>(value: unknown): value is { data: T } {
+export function hasDataProperty<T = unknown>(
+  value: unknown
+): value is { data: T } {
   return isObject(value) && 'data' in value;
 }
 
@@ -162,8 +166,13 @@ export function hasErrorProperty(value: unknown): value is { error: unknown } {
 /**
  * Type guard to check if value is a valid API response structure
  */
-export function isApiResponse(value: unknown): value is { success: boolean; data?: unknown; error?: unknown } {
-  return hasSuccessProperty(value) && (hasDataProperty(value) || hasErrorProperty(value));
+export function isApiResponse(
+  value: unknown
+): value is { success: boolean; data?: unknown; error?: unknown } {
+  return (
+    hasSuccessProperty(value) &&
+    (hasDataProperty(value) || hasErrorProperty(value))
+  );
 }
 
 // ============================================================================
@@ -189,15 +198,24 @@ export function isCardType(value: unknown): value is 'psa' | 'raw' {
 /**
  * Type guard to check if value is a valid item category
  */
-export function isItemCategory(value: unknown): value is 'psa' | 'raw' | 'sealed' {
+export function isItemCategory(
+  value: unknown
+): value is 'psa' | 'raw' | 'sealed' {
   return value === 'psa' || value === 'raw' || value === 'sealed';
 }
 
 /**
  * Type guard to check if value is a valid auction status
  */
-export function isAuctionStatus(value: unknown): value is 'draft' | 'active' | 'sold' | 'expired' {
-  return value === 'draft' || value === 'active' || value === 'sold' || value === 'expired';
+export function isAuctionStatus(
+  value: unknown
+): value is 'draft' | 'active' | 'sold' | 'expired' {
+  return (
+    value === 'draft' ||
+    value === 'active' ||
+    value === 'sold' ||
+    value === 'expired'
+  );
 }
 
 // ============================================================================
@@ -207,7 +225,9 @@ export function isAuctionStatus(value: unknown): value is 'draft' | 'active' | '
 /**
  * Type guard to check if value is a price history entry
  */
-export function isPriceHistoryEntry(value: unknown): value is { price: number; dateUpdated: string } {
+export function isPriceHistoryEntry(
+  value: unknown
+): value is { price: number; dateUpdated: string } {
   return (
     isObject(value) &&
     isPositiveNumber(value.price) &&
@@ -320,7 +340,9 @@ export function hasErrorMessage(value: unknown): value is { message: string } {
 /**
  * Type guard to check if error has a code property
  */
-export function hasErrorCode(value: unknown): value is { code: string | number } {
+export function hasErrorCode(
+  value: unknown
+): value is { code: string | number } {
   return isObject(value) && (isString(value.code) || isNumber(value.code));
 }
 
@@ -365,16 +387,18 @@ export function createArrayGuard<T>(
 /**
  * Create a type guard for objects with specific properties
  */
-export function createObjectGuard<T extends Record<string, unknown>>(
-  propertyGuards: { [K in keyof T]: (value: unknown) => value is T[K] }
-): (value: unknown) => value is T {
+export function createObjectGuard<
+  T extends Record<string, unknown>,
+>(propertyGuards: { [K in keyof T]: (value: unknown) => value is T[K] }): (
+  value: unknown
+) => value is T {
   return (value): value is T => {
     if (!isObject(value)) return false;
-    
+
     for (const [key, guard] of Object.entries(propertyGuards)) {
       if (!guard(value[key])) return false;
     }
-    
+
     return true;
   };
 }

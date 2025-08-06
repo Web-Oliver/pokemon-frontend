@@ -107,7 +107,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
 }) => {
   // Get configuration for the specific card type
   const config = cardTypeConfig[cardType];
-  
+
   // Initialize form hooks with card type specific presets
   const formInitialization = useFormInitialization({
     preset: config.initializationPreset,
@@ -218,7 +218,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
               <option value="Damaged">Damaged</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-white/90 mb-2">
               {config.priceLabel}
@@ -227,7 +227,9 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
               type="number"
               step="0.01"
               value={baseForm.values.myPrice || ''}
-              onChange={(e) => baseForm.setValue('myPrice', parseFloat(e.target.value) || 0)}
+              onChange={(e) =>
+                baseForm.setValue('myPrice', parseFloat(e.target.value) || 0)
+              }
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               placeholder="0.00"
             />
@@ -238,7 +240,9 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
       {/* Sale Details Section */}
       <SaleDetailsSection
         saleDetails={baseForm.values.saleDetails}
-        onSaleDetailsChange={(details) => baseForm.setValue('saleDetails', details)}
+        onSaleDetailsChange={(details) =>
+          baseForm.setValue('saleDetails', details)
+        }
         sold={baseForm.values.sold}
         onSoldChange={(sold) => baseForm.setValue('sold', sold)}
       />

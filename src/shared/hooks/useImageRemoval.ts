@@ -16,13 +16,16 @@ export const useImageRemoval = (
   const [imageToRemove, setImageToRemove] = useState<ImagePreview | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
 
-  const handleRemoveImage = useCallback((imageId: string) => {
-    const imagePreview = previews.find(p => p.id === imageId);
-    if (imagePreview) {
-      setImageToRemove(imagePreview);
-      setShowRemoveConfirm(true);
-    }
-  }, [previews]);
+  const handleRemoveImage = useCallback(
+    (imageId: string) => {
+      const imagePreview = previews.find((p) => p.id === imageId);
+      if (imagePreview) {
+        setImageToRemove(imagePreview);
+        setShowRemoveConfirm(true);
+      }
+    },
+    [previews]
+  );
 
   const confirmRemoveImage = useCallback(async () => {
     if (!imageToRemove) return;
@@ -36,7 +39,7 @@ export const useImageRemoval = (
       }
 
       // Remove from previews
-      const updatedPreviews = previews.filter(p => p.id !== imageToRemove.id);
+      const updatedPreviews = previews.filter((p) => p.id !== imageToRemove.id);
       onPreviewsUpdate(updatedPreviews);
 
       setShowRemoveConfirm(false);

@@ -11,7 +11,10 @@
 import React from 'react';
 import { GlassmorphismContainer } from '../effects/GlassmorphismContainer';
 import { ContentLoading } from '../common/LoadingStates';
-import { getActivityColor, getActivityIcon } from '../../utils/helpers/activityHelpers';
+import {
+  getActivityColor,
+  getActivityIcon,
+} from '../../utils/helpers/activityHelpers';
 import { displayPrice, getRelativeTime } from '../../utils/helpers/formatting';
 import { LineChart } from 'lucide-react';
 
@@ -46,7 +49,9 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   };
 
   const content = (
-    <div className={`relative z-10 ${containerless ? '' : 'group'} ${className}`}>
+    <div
+      className={`relative z-10 ${containerless ? '' : 'group'} ${className}`}
+    >
       {/* Holographic border - only when not containerless */}
       {!containerless && (
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
@@ -75,8 +80,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
             {activities
               .filter(
                 (activity, index, self) =>
-                  index ===
-                  self.findIndex((a) => a._id === activity._id)
+                  index === self.findIndex((a) => a._id === activity._id)
               )
               .slice(0, maxItems)
               .map((activity, index) => {
@@ -151,10 +155,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                           {activity.metadata.priceChangePercentage > 0
                             ? '+'
                             : ''}
-                          {activity.metadata.priceChangePercentage.toFixed(
-                            1
-                          )}
-                          %
+                          {activity.metadata.priceChangePercentage.toFixed(1)}%
                         </p>
                       )}
                     </div>
@@ -171,8 +172,8 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               No Data Available
             </h4>
             <p className="text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed">
-              Start using the collection management features to see
-              analytics here.
+              Start using the collection management features to see analytics
+              here.
             </p>
           </div>
         )}
@@ -195,7 +196,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
       customGradient={{
         from: 'cyan-500/10',
         via: 'indigo-500/5',
-        to: 'purple-500/10'
+        to: 'purple-500/10',
       }}
     >
       {content}

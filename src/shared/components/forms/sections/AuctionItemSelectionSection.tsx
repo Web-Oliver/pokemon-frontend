@@ -12,7 +12,19 @@
  */
 
 import React, { useMemo, useState, useCallback } from 'react';
-import { CheckCircle, Eye, Package, Search, X, Hash, TrendingUp, Grid3X3, Users, Circle, ChevronRight } from 'lucide-react';
+import {
+  CheckCircle,
+  Eye,
+  Package,
+  Search,
+  X,
+  Hash,
+  TrendingUp,
+  Grid3X3,
+  Users,
+  Circle,
+  ChevronRight,
+} from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PokemonSearch } from '../../design-system/PokemonSearch';
 import { PokemonButton } from '../../design-system/PokemonButton';
@@ -94,7 +106,7 @@ const AuctionItemSelectionSection: React.FC<
 
     // First: Filter by selected set (hierarchical)
     if (selectedSetName) {
-      filtered = filtered.filter((item) => 
+      filtered = filtered.filter((item) =>
         item.setName?.toLowerCase().includes(selectedSetName.toLowerCase())
       );
     }
@@ -116,17 +128,23 @@ const AuctionItemSelectionSection: React.FC<
   }, [items, selectedSetName, filterType, cardProductSearchTerm]);
 
   // SOLID: Single responsibility for set selection
-  const handleSetSelection = useCallback((result: any) => {
-    onSetSelection(result.displayName || result.setName);
-  }, [onSetSelection]);
+  const handleSetSelection = useCallback(
+    (result: any) => {
+      onSetSelection(result.displayName || result.setName);
+    },
+    [onSetSelection]
+  );
 
   // SOLID: Single responsibility for card/product selection with autofill
-  const handleCardProductSelection = useCallback((result: any) => {
-    // Autofill set information when card/product is selected
-    if (result.setName && !selectedSetName) {
-      onSetSelection(result.setName);
-    }
-  }, [selectedSetName, onSetSelection]);
+  const handleCardProductSelection = useCallback(
+    (result: any) => {
+      // Autofill set information when card/product is selected
+      if (result.setName && !selectedSetName) {
+        onSetSelection(result.setName);
+      }
+    },
+    [selectedSetName, onSetSelection]
+  );
 
   if (loading) {
     return (
@@ -257,7 +275,7 @@ const AuctionItemSelectionSection: React.FC<
                 label="1A. Select Pokemon Set (for Cards)"
                 helperText="Choose a set to filter cards"
               />
-              
+
               <PokemonSelect
                 value={filterType}
                 onChange={(e) => onFilterChange(e.target.value as any)}
@@ -289,19 +307,25 @@ const AuctionItemSelectionSection: React.FC<
             {/* Row 3: Cards/Products Search Box - Secondary Filter */}
             <div className="grid grid-cols-1 gap-4">
               <PokemonSearch
-                searchType={filterType === 'SealedProduct' ? "products" : "cards"}
-                placeholder={selectedSetName ? 
-                  `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'} in ${selectedSetName}...` : 
-                  `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'}...`}
+                searchType={
+                  filterType === 'SealedProduct' ? 'products' : 'cards'
+                }
+                placeholder={
+                  selectedSetName
+                    ? `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'} in ${selectedSetName}...`
+                    : `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'}...`
+                }
                 onSelectionChange={handleCardProductSelection}
                 parentValue={selectedSetName}
                 hierarchical={true}
                 themeColor="blue"
                 className="w-full"
                 label={`2. Search ${filterType === 'SealedProduct' ? 'Products' : 'Cards'}`}
-                helperText={selectedSetName ? 
-                  `Searching ${filterType === 'SealedProduct' ? 'products' : 'cards'} within ${selectedSetName}` : 
-                  `Search all ${filterType === 'SealedProduct' ? 'products' : 'cards'} or select a set/setProduct first`}
+                helperText={
+                  selectedSetName
+                    ? `Searching ${filterType === 'SealedProduct' ? 'products' : 'cards'} within ${selectedSetName}`
+                    : `Search all ${filterType === 'SealedProduct' ? 'products' : 'cards'} or select a set/setProduct first`
+                }
               />
             </div>
           </div>
@@ -345,7 +369,9 @@ const AuctionItemSelectionSection: React.FC<
                 No items found
               </h4>
               <p className="text-zinc-300 font-medium">
-                {selectedSetName || cardProductSearchTerm || filterType !== 'all'
+                {selectedSetName ||
+                cardProductSearchTerm ||
+                filterType !== 'all'
                   ? 'Try adjusting your set selection, search terms, or filter.'
                   : 'Add items to your collection first.'}
               </p>

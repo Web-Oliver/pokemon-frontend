@@ -4,7 +4,7 @@
  *
  * SOLID Principles Applied:
  * - SRP: Single responsibility - only handles generic CRUD operations
- * - OCP: Open for extension through configuration, closed for modification  
+ * - OCP: Open for extension through configuration, closed for modification
  * - DIP: Depends on abstractions (CrudApiOperations interface)
  * - DRY: Single source of truth for CRUD patterns
  *
@@ -53,7 +53,7 @@ export interface GenericCrudOperationsReturn<T> {
 /**
  * Generic hook for CRUD operations following SOLID principles
  * This is the ONLY place where generic CRUD logic should be implemented
- * 
+ *
  * @param apiOperations - API service methods for CRUD operations
  * @param messages - User-facing messages for success notifications
  * @returns Consistent CRUD operation interface with loading/error states

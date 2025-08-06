@@ -41,15 +41,12 @@ const Context7Background: React.FC<Context7BackgroundProps> = ({
   };
 
   const selectedColor = colorConfigs[color];
-  
+
   // Generate the SVG data URL for the pattern
   const backgroundImageUrl = `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${selectedColor}' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`;
 
   return (
-    <div
-      className={`absolute inset-0 ${className}`}
-      style={{ opacity }}
-    >
+    <div className={`absolute inset-0 ${className}`} style={{ opacity }}>
       <div
         className={`w-full h-full ${animated ? 'animate-pulse' : ''}`}
         style={{

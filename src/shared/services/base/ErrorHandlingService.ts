@@ -1,10 +1,10 @@
 /**
  * Error Handling Service
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Centralized error handling and validation service
  * Eliminates duplicated error logic across services
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for error handling and validation
  * - DRY: Eliminates duplicate validation and error patterns
@@ -77,8 +77,12 @@ export class ErrorHandlingService {
     serviceName: string = 'API SERVICE'
   ): T[] {
     if (!Array.isArray(result)) {
-      log(`[${serviceName}] ${operation} returned non-array result`, { result });
-      throw new Error(`Invalid response format: expected array for ${operation}`);
+      log(`[${serviceName}] ${operation} returned non-array result`, {
+        result,
+      });
+      throw new Error(
+        `Invalid response format: expected array for ${operation}`
+      );
     }
     return result;
   }

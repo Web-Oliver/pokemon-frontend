@@ -1,6 +1,6 @@
 /**
  * Item Image Gallery Component
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles image display and download functionality
  * - DRY: Reusable image gallery pattern
@@ -71,7 +71,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
           className="h-full"
         />
       </div>
-      
+
       {/* Download Button */}
       {item.images && item.images.length > 0 && onDownloadImages && (
         <div className="mt-4 flex justify-center">

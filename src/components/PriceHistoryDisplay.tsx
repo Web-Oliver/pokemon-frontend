@@ -12,7 +12,13 @@
  */
 
 import React, { useState } from 'react';
-import { Calendar, Plus, Banknote, TrendingUp, TrendingDown } from 'lucide-react';
+import {
+  Calendar,
+  Plus,
+  Banknote,
+  TrendingUp,
+  TrendingDown,
+} from 'lucide-react';
 import { PokemonButton } from './design-system/PokemonButton';
 import { PokemonInput } from './design-system/PokemonInput';
 import { log } from '../../../shared/utils/performance/logger';

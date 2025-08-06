@@ -61,7 +61,7 @@ export function validateCardFormData(data: unknown): ValidationResult<{
   condition?: string;
 }> {
   const errors: string[] = [];
-  
+
   if (!isObject(data)) {
     return { success: false, errors: ['Data must be an object'] };
   }
@@ -70,17 +70,20 @@ export function validateCardFormData(data: unknown): ValidationResult<{
   if (!isNonEmptyString(data.setName)) {
     errors.push('Set name is required and must be a non-empty string');
   }
-  
+
   if (!isNonEmptyString(data.cardName)) {
     errors.push('Card name is required and must be a non-empty string');
   }
-  
+
   if (!isPositiveNumber(data.myPrice)) {
     errors.push('Price is required and must be a positive number');
   }
 
   // Optional fields validation
-  if (data.grade !== undefined && (!isNumber(data.grade) || data.grade < 1 || data.grade > 10)) {
+  if (
+    data.grade !== undefined &&
+    (!isNumber(data.grade) || data.grade < 1 || data.grade > 10)
+  ) {
     errors.push('Grade must be a number between 1 and 10');
   }
 
@@ -115,7 +118,7 @@ export function validateAuctionFormData(data: unknown): ValidationResult<{
   items: unknown[];
 }> {
   const errors: string[] = [];
-  
+
   if (!isObject(data)) {
     return { success: false, errors: ['Data must be an object'] };
   }
@@ -124,19 +127,19 @@ export function validateAuctionFormData(data: unknown): ValidationResult<{
   if (!isNonEmptyString(data.topText)) {
     errors.push('Top text is required');
   }
-  
+
   if (!isNonEmptyString(data.bottomText)) {
     errors.push('Bottom text is required');
   }
-  
+
   if (!isNonEmptyString(data.auctionDate)) {
     errors.push('Auction date is required');
   }
-  
+
   if (!isAuctionStatus(data.status)) {
     errors.push('Status must be one of: draft, active, sold, expired');
   }
-  
+
   if (!isArray(data.items)) {
     errors.push('Items must be an array');
   }
@@ -169,7 +172,7 @@ export function validateApiResponse<T>(
   dataValidator?: (data: unknown) => ValidationResult<T>
 ): ValidationResult<{ success: boolean; data?: T; error?: string }> {
   const errors: string[] = [];
-  
+
   if (!isObject(data)) {
     return { success: false, errors: ['Response must be an object'] };
   }
@@ -215,7 +218,7 @@ export function validateCollectionItem(data: unknown): ValidationResult<{
   sold: boolean;
 }> {
   const errors: string[] = [];
-  
+
   if (!isObject(data)) {
     return { success: false, errors: ['Item must be an object'] };
   }
@@ -224,15 +227,15 @@ export function validateCollectionItem(data: unknown): ValidationResult<{
   if (!isValidId(data._id)) {
     errors.push('Item must have a valid _id');
   }
-  
+
   if (!isItemCategory(data.itemType)) {
     errors.push('Item must have a valid itemType (psa, raw, or sealed)');
   }
-  
+
   if (!isPositiveNumber(data.myPrice)) {
     errors.push('Item must have a positive price');
   }
-  
+
   if (!isBoolean(data.sold)) {
     errors.push('Item must have a boolean sold property');
   }
@@ -266,7 +269,7 @@ export function validateSearchParams(data: unknown): ValidationResult<{
   offset?: number;
 }> {
   const errors: string[] = [];
-  
+
   if (!isObject(data)) {
     return { success: false, errors: ['Search params must be an object'] };
   }
@@ -275,16 +278,19 @@ export function validateSearchParams(data: unknown): ValidationResult<{
   if (data.query !== undefined && !isString(data.query)) {
     errors.push('Query must be a string');
   }
-  
+
   if (data.category !== undefined && !isString(data.category)) {
     errors.push('Category must be a string');
   }
-  
+
   if (data.limit !== undefined && (!isNumber(data.limit) || data.limit < 1)) {
     errors.push('Limit must be a positive number');
   }
-  
-  if (data.offset !== undefined && (!isNumber(data.offset) || data.offset < 0)) {
+
+  if (
+    data.offset !== undefined &&
+    (!isNumber(data.offset) || data.offset < 0)
+  ) {
     errors.push('Offset must be a non-negative number');
   }
 
@@ -337,7 +343,7 @@ export function safeArray<T>(
   fallback: T[] = []
 ): T[] {
   if (!isArray(value)) return fallback;
-  
+
   const validItems = value.filter(itemValidator);
   return validItems.length === value.length ? validItems : fallback;
 }
@@ -354,7 +360,7 @@ export function safeProperty<T>(
   if (!isObject(obj) || !(key in obj)) {
     return fallback;
   }
-  
+
   return safeCast(obj[key], validator) ?? fallback;
 }
 
@@ -369,7 +375,7 @@ export function sanitizeUserInput(input: unknown): string {
   if (!isString(input)) {
     return '';
   }
-  
+
   // Remove potentially dangerous characters and limit length
   return input
     .replace(/[<>'"&]/g, '') // Remove basic HTML/script injection characters
@@ -387,7 +393,7 @@ export function validateFileUpload(file: unknown): ValidationResult<{
   type: string;
 }> {
   const errors: string[] = [];
-  
+
   if (!(file instanceof File)) {
     return { success: false, errors: ['Must be a File object'] };
   }
@@ -395,15 +401,16 @@ export function validateFileUpload(file: unknown): ValidationResult<{
   if (!file.name || file.name.length === 0) {
     errors.push('File must have a name');
   }
-  
+
   if (file.size <= 0) {
     errors.push('File must have a positive size');
   }
-  
-  if (file.size > 10 * 1024 * 1024) { // 10MB limit
+
+  if (file.size > 10 * 1024 * 1024) {
+    // 10MB limit
     errors.push('File size must be less than 10MB');
   }
-  
+
   if (!file.type || !file.type.startsWith('image/')) {
     errors.push('File must be an image');
   }

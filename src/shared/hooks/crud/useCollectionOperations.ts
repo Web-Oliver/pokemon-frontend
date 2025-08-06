@@ -10,9 +10,9 @@
  */
 
 import { useGenericCrudOperations } from './useGenericCrudOperations';
-import { 
-  CollectionEntityConfig, 
-  UseCollectionOperationsReturn 
+import {
+  CollectionEntityConfig,
+  UseCollectionOperationsReturn,
 } from './collectionEntityConfigs';
 
 // ============================================================================
@@ -22,7 +22,7 @@ import {
 /**
  * Consolidated collection operations hook following SOLID principles
  * This replaces the original usePsaCardOperations, useRawCardOperations, useSealedProductOperations
- * 
+ *
  * @param entityConfig Configuration for the specific collection entity
  * @returns Collection operations interface with proper error handling
  */
@@ -37,7 +37,10 @@ export const useCollectionOperations = <T>(
     delete: deleteItem,
     markSold,
     clearError,
-  } = useGenericCrudOperations<T>(entityConfig.apiMethods, entityConfig.messages);
+  } = useGenericCrudOperations<T>(
+    entityConfig.apiMethods,
+    entityConfig.messages
+  );
 
   return {
     loading,

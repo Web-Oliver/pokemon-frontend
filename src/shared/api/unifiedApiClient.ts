@@ -164,6 +164,383 @@ export class UnifiedApiClient {
   }
 
   /**
+   * GET request with optimization support
+   */
+  async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
+    const { optimization, ...axiosConfig } = config;
+
+    const defaultOptimization: OptimizationConfig = {
+      enableCache: false, // ❌ DISABLED - Using pure TanStack Query caching strategy (Context7 best practice)
+      cacheTTL: 0, // No internal caching - TanStack Query handles all caching
+      enableDeduplication: false, // ❌ DISABLED - TanStack Query handles deduplication natively
+      ...optimization,
+    };
+
+    return this.makeRequest(() => this.client.get<T>(url, axiosConfig), {
+      ...config,
+      operation: config.operation || `fetch ${url}`,
+      optimization: defaultOptimization,
+    });
+  }
+
+  /**
+   * POST request with optimization support
+   */
+  async post<T>(
+    url: string,
+    data?: any,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    const { optimization, ...axiosConfig } = config;
+
+    const defaultOptimization: OptimizationConfig = {
+      enableCache: false,
+      enableDeduplication: true,
+      ...optimization,
+    };
+
+    // Transform request data to convert ObjectId objects to strings
+    // Skip transformation for FormData objects (used in file uploads)
+    const transformedData =
+      data && !(data instanceof FormData) ? transformRequestData(data) : data;
+
+    return this.makeRequest(
+      () => this.client.post<T>(url, transformedData, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `create ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
+  }
+
+  /**
+   * PUT request with optimization support
+   */
+  async put<T>(
+    url: string,
+    data?: any,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    const { optimization, ...axiosConfig } = config;
+
+    const defaultOptimization: OptimizationConfig = {
+      enableCache: false,
+      enableDeduplication: true,
+      ...optimization,
+    };
+
+    // Transform request data to convert ObjectId objects to strings
+    // Skip transformation for FormData objects (used in file uploads)
+    const transformedData =
+      data && !(data instanceof FormData) ? transformRequestData(data) : data;
+
+    return this.makeRequest(
+      () => this.client.put<T>(url, transformedData, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `update ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
+  }
+
+  // ========== BASIC HTTP METHODS ==========
+
+  /**
+   * DELETE request with optimization support
+   * DELETE operations often return empty responses, so we handle them specially
+   */
+  async delete<T = void>(
+    url: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    const { optimization, ...axiosConfig } = config;
+
+    const defaultOptimization: OptimizationConfig = {
+      enableCache: false,
+      enableDeduplication: true,
+      ...optimization,
+    };
+
+    // Special handling for DELETE operations
+    return this.makeDeleteRequest(
+      () => this.client.delete<T>(url, axiosConfig),
+      {
+        ...config,
+        operation: config.operation || `delete ${url}`,
+        optimization: defaultOptimization,
+      }
+    );
+  }
+
+  /**
+   * GET request with ID validation (prevents [object Object] URLs)
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async getById<T>(
+    basePath: string,
+    id: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      return this.get<T>(url, {
+        ...config,
+        operation:
+          config.operation ||
+          `fetch ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      // Log ID validation errors for debugging
+      log(`ID validation failed for ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * PUT request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param data - Data to update
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async putById<T>(
+    basePath: string,
+    id: any,
+    data: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      // Transform request data to convert ObjectId objects to strings
+      // Skip transformation for FormData objects (used in file uploads)
+      const transformedData =
+        data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      return this.put<T>(url, transformedData, {
+        ...config,
+        operation:
+          config.operation ||
+          `update ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for PUT ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * POST request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param data - Data to send with the request
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async postById<T>(
+    basePath: string,
+    id: any,
+    data: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      // Transform request data to convert ObjectId objects to strings
+      // Skip transformation for FormData objects (used in file uploads)
+      const transformedData =
+        data && !(data instanceof FormData) ? transformRequestData(data) : data;
+      return this.post<T>(url, transformedData, {
+        ...config,
+        operation:
+          config.operation ||
+          `post ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for POST ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  // ========== ID-VALIDATED CONVENIENCE METHODS ==========
+
+  /**
+   * DELETE request with ID validation
+   * @param basePath - Base API path (e.g., '/cards')
+   * @param id - Resource ID to validate and append
+   * @param subPath - Optional sub-path after ID
+   * @param config - Request configuration
+   */
+  async deleteById<T = void>(
+    basePath: string,
+    id: any,
+    subPath?: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const url = buildUrlWithId(basePath, id, subPath);
+      return this.delete<T>(url, {
+        ...config,
+        operation:
+          config.operation ||
+          `delete ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
+      });
+    } catch (error) {
+      log(`ID validation failed for DELETE ${basePath}:`, {
+        providedId: id,
+        typeOfId: typeof id,
+        stringValue: String(id),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Wrapper for fetching data with standardized logging
+   */
+  async apiGet<T>(
+    url: string,
+    operation: string,
+    config?: Partial<EnhancedRequestConfig>
+  ): Promise<T> {
+    return this.get<T>(url, {
+      operation: `fetch ${operation}`,
+      ...config,
+    });
+  }
+
+  /**
+   * Wrapper for creating resources with standardized messaging
+   */
+  async apiCreate<T>(
+    url: string,
+    data: any,
+    resource: string,
+    config?: Partial<EnhancedRequestConfig>
+  ): Promise<T> {
+    return this.post<T>(url, data, {
+      operation: `create ${resource}`,
+      successMessage: `${resource} created successfully`,
+      ...config,
+    });
+  }
+
+  /**
+   * Wrapper for updating resources with standardized messaging
+   */
+  async apiUpdate<T>(
+    url: string,
+    data: any,
+    resource: string,
+    config?: Partial<EnhancedRequestConfig>
+  ): Promise<T> {
+    return this.put<T>(url, data, {
+      operation: `update ${resource}`,
+      successMessage: `${resource} updated successfully`,
+      ...config,
+    });
+  }
+
+  // ========== BATCH OPERATIONS REMOVED ==========
+  // Batch operations were not used by any frontend components and have been removed
+  // to reduce code complexity and maintain only actually needed functionality
+
+  // ========== SPECIALIZED WRAPPER METHODS (DRY) ==========
+
+  /**
+   * Wrapper for deleting resources with standardized messaging
+   */
+  async apiDelete<T = void>(
+    url: string,
+    resource: string,
+    config?: Partial<EnhancedRequestConfig>
+  ): Promise<T> {
+    return this.delete<T>(url, {
+      operation: `delete ${resource}`,
+      successMessage: `${resource} deleted successfully`,
+      ...config,
+    });
+  }
+
+  /**
+   * Wrapper for export operations with standardized messaging
+   */
+  async apiExport<T>(
+    url: string,
+    exportType: string,
+    config?: Partial<EnhancedRequestConfig>
+  ): Promise<T> {
+    return this.get<T>(url, {
+      operation: `export ${exportType}`,
+      successMessage: `${exportType} exported successfully`,
+      ...config,
+    });
+  }
+
+  /**
+   * Prefetch data for predictive loading
+   */
+  async prefetch<T>(
+    url: string,
+    config: EnhancedRequestConfig = {}
+  ): Promise<void> {
+    try {
+      await this.get<T>(url, {
+        ...config,
+        optimization: {
+          enableCache: true,
+          cacheTTL: 10 * 60 * 1000, // 10 minutes for prefetched data
+          enableDeduplication: true,
+          ...config.optimization,
+        },
+        logRequest: false,
+        logResponse: false,
+      });
+    } catch (error) {
+      // Prefetch errors should be silent
+      console.warn('[UnifiedApiClient] Prefetch failed:', error);
+    }
+  }
+
+  /**
+   * Set optimization strategy (Strategy Pattern - OCP compliance)
+   */
+  setOptimizationStrategy(strategy: OptimizationStrategy): void {
+    this.optimizationStrategy = strategy;
+  }
+
+  /**
+   * Get the underlying axios instance for direct access if needed
+   */
+  getAxiosInstance(): AxiosInstance {
+    return this.client;
+  }
+
+  // ========== UTILITY METHODS ==========
+
+  /**
    * Create and configure axios instance with interceptors
    */
   private createAxiosInstance(baseURL: string): AxiosInstance {
@@ -307,383 +684,6 @@ export class UnifiedApiClient {
       handleApiError(error, errorMessage);
       throw error;
     }
-  }
-
-  // ========== BASIC HTTP METHODS ==========
-
-  /**
-   * GET request with optimization support
-   */
-  async get<T>(url: string, config: EnhancedRequestConfig = {}): Promise<T> {
-    const { optimization, ...axiosConfig } = config;
-
-    const defaultOptimization: OptimizationConfig = {
-      enableCache: false, // ❌ DISABLED - Using pure TanStack Query caching strategy (Context7 best practice)
-      cacheTTL: 0, // No internal caching - TanStack Query handles all caching
-      enableDeduplication: false, // ❌ DISABLED - TanStack Query handles deduplication natively
-      ...optimization,
-    };
-
-    return this.makeRequest(() => this.client.get<T>(url, axiosConfig), {
-      ...config,
-      operation: config.operation || `fetch ${url}`,
-      optimization: defaultOptimization,
-    });
-  }
-
-  /**
-   * POST request with optimization support
-   */
-  async post<T>(
-    url: string,
-    data?: any,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    const { optimization, ...axiosConfig } = config;
-
-    const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
-      ...optimization,
-    };
-
-    // Transform request data to convert ObjectId objects to strings
-    // Skip transformation for FormData objects (used in file uploads)
-    const transformedData =
-      data && !(data instanceof FormData) ? transformRequestData(data) : data;
-
-    return this.makeRequest(
-      () => this.client.post<T>(url, transformedData, axiosConfig),
-      {
-        ...config,
-        operation: config.operation || `create ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
-  }
-
-  /**
-   * PUT request with optimization support
-   */
-  async put<T>(
-    url: string,
-    data?: any,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    const { optimization, ...axiosConfig } = config;
-
-    const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
-      ...optimization,
-    };
-
-    // Transform request data to convert ObjectId objects to strings
-    // Skip transformation for FormData objects (used in file uploads)
-    const transformedData =
-      data && !(data instanceof FormData) ? transformRequestData(data) : data;
-
-    return this.makeRequest(
-      () => this.client.put<T>(url, transformedData, axiosConfig),
-      {
-        ...config,
-        operation: config.operation || `update ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
-  }
-
-  /**
-   * DELETE request with optimization support
-   * DELETE operations often return empty responses, so we handle them specially
-   */
-  async delete<T = void>(
-    url: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    const { optimization, ...axiosConfig } = config;
-
-    const defaultOptimization: OptimizationConfig = {
-      enableCache: false,
-      enableDeduplication: true,
-      ...optimization,
-    };
-
-    // Special handling for DELETE operations
-    return this.makeDeleteRequest(
-      () => this.client.delete<T>(url, axiosConfig),
-      {
-        ...config,
-        operation: config.operation || `delete ${url}`,
-        optimization: defaultOptimization,
-      }
-    );
-  }
-
-  // ========== ID-VALIDATED CONVENIENCE METHODS ==========
-
-  /**
-   * GET request with ID validation (prevents [object Object] URLs)
-   * @param basePath - Base API path (e.g., '/cards')
-   * @param id - Resource ID to validate and append
-   * @param subPath - Optional sub-path after ID
-   * @param config - Request configuration
-   */
-  async getById<T>(
-    basePath: string,
-    id: any,
-    subPath?: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    try {
-      const url = buildUrlWithId(basePath, id, subPath);
-      return this.get<T>(url, {
-        ...config,
-        operation:
-          config.operation ||
-          `fetch ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
-      });
-    } catch (error) {
-      // Log ID validation errors for debugging
-      log(`ID validation failed for ${basePath}:`, {
-        providedId: id,
-        typeOfId: typeof id,
-        stringValue: String(id),
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * PUT request with ID validation
-   * @param basePath - Base API path (e.g., '/cards')
-   * @param id - Resource ID to validate and append
-   * @param data - Data to update
-   * @param subPath - Optional sub-path after ID
-   * @param config - Request configuration
-   */
-  async putById<T>(
-    basePath: string,
-    id: any,
-    data: any,
-    subPath?: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    try {
-      const url = buildUrlWithId(basePath, id, subPath);
-      // Transform request data to convert ObjectId objects to strings
-      // Skip transformation for FormData objects (used in file uploads)
-      const transformedData =
-        data && !(data instanceof FormData) ? transformRequestData(data) : data;
-      return this.put<T>(url, transformedData, {
-        ...config,
-        operation:
-          config.operation ||
-          `update ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
-      });
-    } catch (error) {
-      log(`ID validation failed for PUT ${basePath}:`, {
-        providedId: id,
-        typeOfId: typeof id,
-        stringValue: String(id),
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * POST request with ID validation
-   * @param basePath - Base API path (e.g., '/cards')
-   * @param id - Resource ID to validate and append
-   * @param data - Data to send with the request
-   * @param subPath - Optional sub-path after ID
-   * @param config - Request configuration
-   */
-  async postById<T>(
-    basePath: string,
-    id: any,
-    data: any,
-    subPath?: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    try {
-      const url = buildUrlWithId(basePath, id, subPath);
-      // Transform request data to convert ObjectId objects to strings
-      // Skip transformation for FormData objects (used in file uploads)
-      const transformedData =
-        data && !(data instanceof FormData) ? transformRequestData(data) : data;
-      return this.post<T>(url, transformedData, {
-        ...config,
-        operation:
-          config.operation ||
-          `post ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
-      });
-    } catch (error) {
-      log(`ID validation failed for POST ${basePath}:`, {
-        providedId: id,
-        typeOfId: typeof id,
-        stringValue: String(id),
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * DELETE request with ID validation
-   * @param basePath - Base API path (e.g., '/cards')
-   * @param id - Resource ID to validate and append
-   * @param subPath - Optional sub-path after ID
-   * @param config - Request configuration
-   */
-  async deleteById<T = void>(
-    basePath: string,
-    id: any,
-    subPath?: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<T> {
-    try {
-      const url = buildUrlWithId(basePath, id, subPath);
-      return this.delete<T>(url, {
-        ...config,
-        operation:
-          config.operation ||
-          `delete ${basePath}/${String(id)}${subPath ? `/${subPath}` : ''}`,
-      });
-    } catch (error) {
-      log(`ID validation failed for DELETE ${basePath}:`, {
-        providedId: id,
-        typeOfId: typeof id,
-        stringValue: String(id),
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-      throw error;
-    }
-  }
-
-  // ========== BATCH OPERATIONS REMOVED ==========
-  // Batch operations were not used by any frontend components and have been removed
-  // to reduce code complexity and maintain only actually needed functionality
-
-  // ========== SPECIALIZED WRAPPER METHODS (DRY) ==========
-
-  /**
-   * Wrapper for fetching data with standardized logging
-   */
-  async apiGet<T>(
-    url: string,
-    operation: string,
-    config?: Partial<EnhancedRequestConfig>
-  ): Promise<T> {
-    return this.get<T>(url, {
-      operation: `fetch ${operation}`,
-      ...config,
-    });
-  }
-
-  /**
-   * Wrapper for creating resources with standardized messaging
-   */
-  async apiCreate<T>(
-    url: string,
-    data: any,
-    resource: string,
-    config?: Partial<EnhancedRequestConfig>
-  ): Promise<T> {
-    return this.post<T>(url, data, {
-      operation: `create ${resource}`,
-      successMessage: `${resource} created successfully`,
-      ...config,
-    });
-  }
-
-  /**
-   * Wrapper for updating resources with standardized messaging
-   */
-  async apiUpdate<T>(
-    url: string,
-    data: any,
-    resource: string,
-    config?: Partial<EnhancedRequestConfig>
-  ): Promise<T> {
-    return this.put<T>(url, data, {
-      operation: `update ${resource}`,
-      successMessage: `${resource} updated successfully`,
-      ...config,
-    });
-  }
-
-  /**
-   * Wrapper for deleting resources with standardized messaging
-   */
-  async apiDelete<T = void>(
-    url: string,
-    resource: string,
-    config?: Partial<EnhancedRequestConfig>
-  ): Promise<T> {
-    return this.delete<T>(url, {
-      operation: `delete ${resource}`,
-      successMessage: `${resource} deleted successfully`,
-      ...config,
-    });
-  }
-
-  /**
-   * Wrapper for export operations with standardized messaging
-   */
-  async apiExport<T>(
-    url: string,
-    exportType: string,
-    config?: Partial<EnhancedRequestConfig>
-  ): Promise<T> {
-    return this.get<T>(url, {
-      operation: `export ${exportType}`,
-      successMessage: `${exportType} exported successfully`,
-      ...config,
-    });
-  }
-
-  // ========== UTILITY METHODS ==========
-
-  /**
-   * Prefetch data for predictive loading
-   */
-  async prefetch<T>(
-    url: string,
-    config: EnhancedRequestConfig = {}
-  ): Promise<void> {
-    try {
-      await this.get<T>(url, {
-        ...config,
-        optimization: {
-          enableCache: true,
-          cacheTTL: 10 * 60 * 1000, // 10 minutes for prefetched data
-          enableDeduplication: true,
-          ...config.optimization,
-        },
-        logRequest: false,
-        logResponse: false,
-      });
-    } catch (error) {
-      // Prefetch errors should be silent
-      console.warn('[UnifiedApiClient] Prefetch failed:', error);
-    }
-  }
-
-  /**
-   * Set optimization strategy (Strategy Pattern - OCP compliance)
-   */
-  setOptimizationStrategy(strategy: OptimizationStrategy): void {
-    this.optimizationStrategy = strategy;
-  }
-
-  /**
-   * Get the underlying axios instance for direct access if needed
-   */
-  getAxiosInstance(): AxiosInstance {
-    return this.client;
   }
 }
 

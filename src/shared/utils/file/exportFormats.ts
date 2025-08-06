@@ -1,7 +1,7 @@
 /**
  * Export Format Utilities (JSON, PDF)
  * Split from fileOperations.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Non-CSV export formats
  * - DRY: Centralized export logic

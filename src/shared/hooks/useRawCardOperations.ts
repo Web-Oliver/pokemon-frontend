@@ -11,7 +11,10 @@ import { useMemo } from 'react';
 import { IRawCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations, createRawCardConfig } from './useGenericCrudOperations';
+import {
+  useGenericCrudOperations,
+  createRawCardConfig,
+} from './useGenericCrudOperations';
 
 export interface UseRawCardOperationsReturn {
   loading: boolean;
@@ -40,16 +43,13 @@ export const useRawCardOperations = (): UseRawCardOperationsReturn => {
   );
 
   // Use consolidated operations hook with correct parameters
-  const operations = useGenericCrudOperations(
-    entityConfig.apiMethods,
-    {
-      entityName: entityConfig.entityName,
-      addSuccess: entityConfig.messages.addSuccess,
-      updateSuccess: entityConfig.messages.updateSuccess,
-      deleteSuccess: entityConfig.messages.deleteSuccess,
-      soldSuccess: entityConfig.messages.soldSuccess,
-    }
-  );
+  const operations = useGenericCrudOperations(entityConfig.apiMethods, {
+    entityName: entityConfig.entityName,
+    addSuccess: entityConfig.messages.addSuccess,
+    updateSuccess: entityConfig.messages.updateSuccess,
+    deleteSuccess: entityConfig.messages.deleteSuccess,
+    soldSuccess: entityConfig.messages.soldSuccess,
+  });
 
   return {
     loading: operations.loading,

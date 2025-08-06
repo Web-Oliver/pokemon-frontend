@@ -1,8 +1,8 @@
 /**
  * CLAUDE.md COMPLIANCE: High Contrast Theme Component
- * 
+ *
  * SRP: Single responsibility for high contrast theme management
- * OCP: Open for extension via props interface  
+ * OCP: Open for extension via props interface
  * DIP: Depends on theme context abstractions
  */
 
@@ -30,7 +30,7 @@ export interface HighContrastThemeProps {
 /**
  * High Contrast Theme Component
  * Specialized component for high contrast mode management
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only high contrast theme functionality
  * - DRY: Reusable across the application

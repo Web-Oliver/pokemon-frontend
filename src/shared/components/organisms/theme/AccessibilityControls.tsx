@@ -1,8 +1,8 @@
 /**
  * CLAUDE.md COMPLIANCE: Accessibility Controls Component
- * 
+ *
  * SRP: Single responsibility for accessibility user controls
- * OCP: Open for extension via props interface  
+ * OCP: Open for extension via props interface
  * DIP: Depends on theme context abstractions
  */
 
@@ -26,7 +26,7 @@ export interface AccessibilityControlsProps {
 /**
  * Accessibility Controls Component
  * Provides user controls for accessibility theme features
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only accessibility control UI
  * - DRY: Reusable control panel across the application

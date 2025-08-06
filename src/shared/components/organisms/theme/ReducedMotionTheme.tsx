@@ -1,8 +1,8 @@
 /**
  * CLAUDE.md COMPLIANCE: Reduced Motion Theme Component
- * 
+ *
  * SRP: Single responsibility for reduced motion theme management
- * OCP: Open for extension via props interface  
+ * OCP: Open for extension via props interface
  * DIP: Depends on theme context abstractions
  */
 
@@ -30,7 +30,7 @@ export interface ReducedMotionThemeProps {
 /**
  * Reduced Motion Theme Component
  * Specialized component for motion sensitivity management
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only reduced motion functionality
  * - DRY: Reusable motion preferences across the application

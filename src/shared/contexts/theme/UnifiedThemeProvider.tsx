@@ -1,19 +1,19 @@
 /**
  * UNIFIED THEME PROVIDER - Phase 2 Critical Priority
  * Ultra-Comprehensive Theme System Consolidation
- * 
+ *
  * Following CLAUDE.md + TODO.md Ultra-Optimization Plan:
  * - Consolidates 7 separate theme providers (30-35% theme code reduction)
  * - Merges VisualThemeProvider + ThemeStorageProvider + LayoutThemeProvider
  * - Combines ComposedThemeProvider + AnimationThemeProvider + AccessibilityThemeProvider
  * - Eliminates provider nesting complexity and context switching overhead
  * - Single source of truth for all theme-related state and operations
- * 
+ *
  * ARCHITECTURE LAYER: Layer 2 (Services/Hooks/Store)
  * - Encapsulates theme business logic and state management
  * - Provides unified theme context to all components
  * - Integrates with unified CSS design system
- * 
+ *
  * SOLID Principles:
  * - Single Responsibility: Handles ALL theme-related state and operations
  * - Open/Closed: Easy to extend with new theme features
@@ -21,23 +21,23 @@
  * - Dependency Inversion: Uses theme abstractions, not concrete implementations
  */
 
-import React, { 
-  createContext, 
-  useContext, 
-  useState, 
-  useEffect, 
-  useCallback, 
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
   useMemo,
-  ReactNode 
+  ReactNode,
 } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 
 // Import consolidated types
-import { 
-  VisualTheme, 
-  ThemePreset, 
+import {
+  VisualTheme,
+  ThemePreset,
   ColorScheme,
-  ThemeConfiguration 
+  ThemeConfiguration,
 } from '../../types/themeTypes';
 import { ThemeColor } from '../../theme/formThemes';
 
@@ -51,32 +51,32 @@ export interface UnifiedThemeState {
   visualTheme: VisualTheme;
   glassmorphismIntensity: number; // 0-100
   particleEffectsEnabled: boolean;
-  
+
   // LAYOUT THEME STATE (from LayoutThemeProvider)
   sidebarPosition: 'left' | 'right' | 'hidden';
   headerStyle: 'fixed' | 'sticky' | 'static';
   contentSpacing: 'compact' | 'comfortable' | 'spacious';
   borderRadius: 'none' | 'small' | 'medium' | 'large';
-  
+
   // ANIMATION THEME STATE (from AnimationThemeProvider)
   animationsEnabled: boolean;
   animationSpeed: 'slow' | 'normal' | 'fast';
   transitionDuration: number; // in ms
   easing: 'linear' | 'ease' | 'ease-in-out' | 'cubic-bezier';
-  
+
   // ACCESSIBILITY THEME STATE (from AccessibilityThemeProvider)
   highContrast: boolean;
   reduceMotion: boolean;
   screenReaderOptimized: boolean;
   keyboardNavigation: boolean;
   focusVisible: boolean;
-  
+
   // COMPOSED THEME STATE (from ComposedThemeProvider)
   colorScheme: ColorScheme;
   primaryColor: ThemeColor;
   customCSSProperties?: Record<string, string>;
   isThemeLoaded: boolean;
-  
+
   // STORAGE STATE (from ThemeStorageProvider)
   persistenceEnabled: boolean;
   autoSave: boolean;
@@ -93,41 +93,43 @@ export interface UnifiedThemeContextType extends UnifiedThemeState {
   setVisualTheme: (theme: VisualTheme) => void;
   setColorScheme: (scheme: ColorScheme) => void;
   setPrimaryColor: (color: ThemeColor) => void;
-  
+
   // VISUAL CONTROLS
   setGlassmorphismIntensity: (intensity: number) => void;
   toggleParticleEffects: () => void;
-  
+
   // LAYOUT CONTROLS
   setSidebarPosition: (position: 'left' | 'right' | 'hidden') => void;
   setHeaderStyle: (style: 'fixed' | 'sticky' | 'static') => void;
   setContentSpacing: (spacing: 'compact' | 'comfortable' | 'spacious') => void;
   setBorderRadius: (radius: 'none' | 'small' | 'medium' | 'large') => void;
-  
+
   // ANIMATION CONTROLS
   toggleAnimations: () => void;
   setAnimationSpeed: (speed: 'slow' | 'normal' | 'fast') => void;
   setTransitionDuration: (duration: number) => void;
-  setEasing: (easing: 'linear' | 'ease' | 'ease-in-out' | 'cubic-bezier') => void;
-  
+  setEasing: (
+    easing: 'linear' | 'ease' | 'ease-in-out' | 'cubic-bezier'
+  ) => void;
+
   // ACCESSIBILITY CONTROLS
   toggleHighContrast: () => void;
   toggleReduceMotion: () => void;
   toggleScreenReaderOptimization: () => void;
   toggleKeyboardNavigation: () => void;
   toggleFocusVisible: () => void;
-  
+
   // STORAGE CONTROLS
   saveTheme: () => void;
   loadTheme: () => void;
   resetTheme: () => void;
   exportTheme: () => string;
   importTheme: (themeData: string) => void;
-  
+
   // PRESET MANAGEMENT
   applyPreset: (preset: ThemePreset) => void;
   createCustomPreset: (name: string) => void;
-  
+
   // CSS PROPERTIES
   updateCSSProperties: (properties: Record<string, string>) => void;
   applyCSSProperties: () => void;
@@ -143,32 +145,32 @@ const defaultUnifiedThemeState: UnifiedThemeState = {
   visualTheme: 'context7-premium',
   glassmorphismIntensity: 80,
   particleEffectsEnabled: true,
-  
+
   // Layout defaults
   sidebarPosition: 'left',
   headerStyle: 'sticky',
   contentSpacing: 'comfortable',
   borderRadius: 'medium',
-  
+
   // Animation defaults
   animationsEnabled: true,
   animationSpeed: 'normal',
   transitionDuration: 300,
   easing: 'ease-in-out',
-  
+
   // Accessibility defaults
   highContrast: false,
   reduceMotion: false,
   screenReaderOptimized: false,
   keyboardNavigation: true,
   focusVisible: true,
-  
+
   // Composed defaults
   colorScheme: 'dark',
   primaryColor: 'pokemon-blue',
   customCSSProperties: {},
   isThemeLoaded: false,
-  
+
   // Storage defaults
   persistenceEnabled: true,
   autoSave: true,
@@ -179,7 +181,9 @@ const defaultUnifiedThemeState: UnifiedThemeState = {
 // UNIFIED THEME CONTEXT
 // ===============================
 
-const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(undefined);
+const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(
+  undefined
+);
 
 // ===============================
 // UNIFIED THEME PROVIDER COMPONENT
@@ -211,7 +215,7 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
 
   const saveTheme = useCallback(() => {
     if (!themeState.persistenceEnabled) return;
-    
+
     try {
       localStorage.setItem(themeState.storageKey, JSON.stringify(themeState));
     } catch (error) {
@@ -221,12 +225,16 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
 
   const loadTheme = useCallback(() => {
     if (!themeState.persistenceEnabled) return;
-    
+
     try {
       const saved = localStorage.getItem(themeState.storageKey);
       if (saved) {
         const parsedTheme = JSON.parse(saved);
-        setThemeState(prev => ({ ...prev, ...parsedTheme, isThemeLoaded: true }));
+        setThemeState((prev) => ({
+          ...prev,
+          ...parsedTheme,
+          isThemeLoaded: true,
+        }));
       }
     } catch (error) {
       console.warn('Failed to load theme from localStorage:', error);
@@ -245,42 +253,56 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
   // Consolidated from all providers
   // ===============================
 
-  const updateThemeState = useCallback((updates: Partial<UnifiedThemeState>) => {
-    setThemeState(prev => {
-      const newState = { ...prev, ...updates };
-      
-      // Auto-save if enabled
-      if (newState.autoSave && newState.persistenceEnabled) {
-        setTimeout(() => {
-          try {
-            localStorage.setItem(newState.storageKey, JSON.stringify(newState));
-          } catch (error) {
-            console.warn('Auto-save failed:', error);
-          }
-        }, 100);
-      }
-      
-      return newState;
-    });
-  }, []);
+  const updateThemeState = useCallback(
+    (updates: Partial<UnifiedThemeState>) => {
+      setThemeState((prev) => {
+        const newState = { ...prev, ...updates };
+
+        // Auto-save if enabled
+        if (newState.autoSave && newState.persistenceEnabled) {
+          setTimeout(() => {
+            try {
+              localStorage.setItem(
+                newState.storageKey,
+                JSON.stringify(newState)
+              );
+            } catch (error) {
+              console.warn('Auto-save failed:', error);
+            }
+          }, 100);
+        }
+
+        return newState;
+      });
+    },
+    []
+  );
 
   // ===============================
   // VISUAL THEME OPERATIONS
   // From VisualThemeProvider
   // ===============================
 
-  const setVisualTheme = useCallback((theme: VisualTheme) => {
-    updateThemeState({ visualTheme: theme });
-    setSystemTheme(theme);
-  }, [updateThemeState, setSystemTheme]);
+  const setVisualTheme = useCallback(
+    (theme: VisualTheme) => {
+      updateThemeState({ visualTheme: theme });
+      setSystemTheme(theme);
+    },
+    [updateThemeState, setSystemTheme]
+  );
 
-  const setGlassmorphismIntensity = useCallback((intensity: number) => {
-    const clampedIntensity = Math.max(0, Math.min(100, intensity));
-    updateThemeState({ glassmorphismIntensity: clampedIntensity });
-  }, [updateThemeState]);
+  const setGlassmorphismIntensity = useCallback(
+    (intensity: number) => {
+      const clampedIntensity = Math.max(0, Math.min(100, intensity));
+      updateThemeState({ glassmorphismIntensity: clampedIntensity });
+    },
+    [updateThemeState]
+  );
 
   const toggleParticleEffects = useCallback(() => {
-    updateThemeState({ particleEffectsEnabled: !themeState.particleEffectsEnabled });
+    updateThemeState({
+      particleEffectsEnabled: !themeState.particleEffectsEnabled,
+    });
   }, [updateThemeState, themeState.particleEffectsEnabled]);
 
   // ===============================
@@ -288,21 +310,33 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
   // From LayoutThemeProvider
   // ===============================
 
-  const setSidebarPosition = useCallback((position: 'left' | 'right' | 'hidden') => {
-    updateThemeState({ sidebarPosition: position });
-  }, [updateThemeState]);
+  const setSidebarPosition = useCallback(
+    (position: 'left' | 'right' | 'hidden') => {
+      updateThemeState({ sidebarPosition: position });
+    },
+    [updateThemeState]
+  );
 
-  const setHeaderStyle = useCallback((style: 'fixed' | 'sticky' | 'static') => {
-    updateThemeState({ headerStyle: style });
-  }, [updateThemeState]);
+  const setHeaderStyle = useCallback(
+    (style: 'fixed' | 'sticky' | 'static') => {
+      updateThemeState({ headerStyle: style });
+    },
+    [updateThemeState]
+  );
 
-  const setContentSpacing = useCallback((spacing: 'compact' | 'comfortable' | 'spacious') => {
-    updateThemeState({ contentSpacing: spacing });
-  }, [updateThemeState]);
+  const setContentSpacing = useCallback(
+    (spacing: 'compact' | 'comfortable' | 'spacious') => {
+      updateThemeState({ contentSpacing: spacing });
+    },
+    [updateThemeState]
+  );
 
-  const setBorderRadius = useCallback((radius: 'none' | 'small' | 'medium' | 'large') => {
-    updateThemeState({ borderRadius: radius });
-  }, [updateThemeState]);
+  const setBorderRadius = useCallback(
+    (radius: 'none' | 'small' | 'medium' | 'large') => {
+      updateThemeState({ borderRadius: radius });
+    },
+    [updateThemeState]
+  );
 
   // ===============================
   // ANIMATION THEME OPERATIONS
@@ -313,21 +347,32 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
     updateThemeState({ animationsEnabled: !themeState.animationsEnabled });
   }, [updateThemeState, themeState.animationsEnabled]);
 
-  const setAnimationSpeed = useCallback((speed: 'slow' | 'normal' | 'fast') => {
-    const durationMap = { slow: 500, normal: 300, fast: 150 };
-    updateThemeState({ 
-      animationSpeed: speed,
-      transitionDuration: durationMap[speed]
-    });
-  }, [updateThemeState]);
+  const setAnimationSpeed = useCallback(
+    (speed: 'slow' | 'normal' | 'fast') => {
+      const durationMap = { slow: 500, normal: 300, fast: 150 };
+      updateThemeState({
+        animationSpeed: speed,
+        transitionDuration: durationMap[speed],
+      });
+    },
+    [updateThemeState]
+  );
 
-  const setTransitionDuration = useCallback((duration: number) => {
-    updateThemeState({ transitionDuration: Math.max(50, Math.min(1000, duration)) });
-  }, [updateThemeState]);
+  const setTransitionDuration = useCallback(
+    (duration: number) => {
+      updateThemeState({
+        transitionDuration: Math.max(50, Math.min(1000, duration)),
+      });
+    },
+    [updateThemeState]
+  );
 
-  const setEasing = useCallback((easing: 'linear' | 'ease' | 'ease-in-out' | 'cubic-bezier') => {
-    updateThemeState({ easing });
-  }, [updateThemeState]);
+  const setEasing = useCallback(
+    (easing: 'linear' | 'ease' | 'ease-in-out' | 'cubic-bezier') => {
+      updateThemeState({ easing });
+    },
+    [updateThemeState]
+  );
 
   // ===============================
   // ACCESSIBILITY OPERATIONS
@@ -343,7 +388,9 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
   }, [updateThemeState, themeState.reduceMotion]);
 
   const toggleScreenReaderOptimization = useCallback(() => {
-    updateThemeState({ screenReaderOptimized: !themeState.screenReaderOptimized });
+    updateThemeState({
+      screenReaderOptimized: !themeState.screenReaderOptimized,
+    });
   }, [updateThemeState, themeState.screenReaderOptimized]);
 
   const toggleKeyboardNavigation = useCallback(() => {
@@ -359,73 +406,95 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
   // From ComposedThemeProvider
   // ===============================
 
-  const setColorScheme = useCallback((scheme: ColorScheme) => {
-    updateThemeState({ colorScheme: scheme });
-    setSystemTheme(scheme);
-  }, [updateThemeState, setSystemTheme]);
+  const setColorScheme = useCallback(
+    (scheme: ColorScheme) => {
+      updateThemeState({ colorScheme: scheme });
+      setSystemTheme(scheme);
+    },
+    [updateThemeState, setSystemTheme]
+  );
 
-  const setPrimaryColor = useCallback((color: ThemeColor) => {
-    updateThemeState({ primaryColor: color });
-  }, [updateThemeState]);
+  const setPrimaryColor = useCallback(
+    (color: ThemeColor) => {
+      updateThemeState({ primaryColor: color });
+    },
+    [updateThemeState]
+  );
 
   // ===============================
   // CSS PROPERTIES MANAGEMENT
   // ===============================
 
-  const updateCSSProperties = useCallback((properties: Record<string, string>) => {
-    updateThemeState({ 
-      customCSSProperties: { 
-        ...themeState.customCSSProperties, 
-        ...properties 
-      }
-    });
-  }, [updateThemeState, themeState.customCSSProperties]);
+  const updateCSSProperties = useCallback(
+    (properties: Record<string, string>) => {
+      updateThemeState({
+        customCSSProperties: {
+          ...themeState.customCSSProperties,
+          ...properties,
+        },
+      });
+    },
+    [updateThemeState, themeState.customCSSProperties]
+  );
 
   const applyCSSProperties = useCallback(() => {
     if (!themeState.customCSSProperties) return;
-    
+
     const root = document.documentElement;
-    Object.entries(themeState.customCSSProperties).forEach(([property, value]) => {
-      root.style.setProperty(property, value);
-    });
+    Object.entries(themeState.customCSSProperties).forEach(
+      ([property, value]) => {
+        root.style.setProperty(property, value);
+      }
+    );
   }, [themeState.customCSSProperties]);
 
   // ===============================
   // PRESET MANAGEMENT
   // ===============================
 
-  const applyPreset = useCallback((preset: ThemePreset) => {
-    // Apply preset configuration
-    updateThemeState({
-      visualTheme: preset.visualTheme,
-      colorScheme: preset.colorScheme,
-      primaryColor: preset.primaryColor,
-      glassmorphismIntensity: preset.glassmorphismIntensity || 80,
-      animationsEnabled: preset.animationsEnabled !== false,
-      borderRadius: preset.borderRadius || 'medium',
-    });
-  }, [updateThemeState]);
+  const applyPreset = useCallback(
+    (preset: ThemePreset) => {
+      // Apply preset configuration
+      updateThemeState({
+        visualTheme: preset.visualTheme,
+        colorScheme: preset.colorScheme,
+        primaryColor: preset.primaryColor,
+        glassmorphismIntensity: preset.glassmorphismIntensity || 80,
+        animationsEnabled: preset.animationsEnabled !== false,
+        borderRadius: preset.borderRadius || 'medium',
+      });
+    },
+    [updateThemeState]
+  );
 
-  const createCustomPreset = useCallback((name: string) => {
-    const preset: ThemePreset = {
-      name,
-      visualTheme: themeState.visualTheme,
-      colorScheme: themeState.colorScheme,
-      primaryColor: themeState.primaryColor,
-      glassmorphismIntensity: themeState.glassmorphismIntensity,
-      animationsEnabled: themeState.animationsEnabled,
-      borderRadius: themeState.borderRadius,
-    };
-    
-    // Save custom preset to localStorage
-    try {
-      const customPresets = JSON.parse(localStorage.getItem('custom-theme-presets') || '[]');
-      customPresets.push(preset);
-      localStorage.setItem('custom-theme-presets', JSON.stringify(customPresets));
-    } catch (error) {
-      console.warn('Failed to save custom preset:', error);
-    }
-  }, [themeState]);
+  const createCustomPreset = useCallback(
+    (name: string) => {
+      const preset: ThemePreset = {
+        name,
+        visualTheme: themeState.visualTheme,
+        colorScheme: themeState.colorScheme,
+        primaryColor: themeState.primaryColor,
+        glassmorphismIntensity: themeState.glassmorphismIntensity,
+        animationsEnabled: themeState.animationsEnabled,
+        borderRadius: themeState.borderRadius,
+      };
+
+      // Save custom preset to localStorage
+      try {
+        const customPresets = JSON.parse(
+          localStorage.getItem('custom-theme-presets') || '[]'
+        );
+        customPresets.push(preset);
+        localStorage.setItem(
+          'custom-theme-presets',
+          JSON.stringify(customPresets)
+        );
+      } catch (error) {
+        console.warn('Failed to save custom preset:', error);
+      }
+    },
+    [themeState]
+  );
 
   // ===============================
   // IMPORT/EXPORT OPERATIONS
@@ -461,108 +530,115 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
   // Apply accessibility settings to document
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // High contrast
     if (themeState.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
-    
+
     // Reduce motion
     if (themeState.reduceMotion) {
       root.classList.add('reduce-motion');
     } else {
       root.classList.remove('reduce-motion');
     }
-    
+
     // Screen reader optimization
     if (themeState.screenReaderOptimized) {
       root.classList.add('screen-reader-optimized');
     } else {
       root.classList.remove('screen-reader-optimized');
     }
-  }, [themeState.highContrast, themeState.reduceMotion, themeState.screenReaderOptimized]);
+  }, [
+    themeState.highContrast,
+    themeState.reduceMotion,
+    themeState.screenReaderOptimized,
+  ]);
 
   // ===============================
   // CONTEXT VALUE
   // ===============================
 
-  const contextValue = useMemo<UnifiedThemeContextType>(() => ({
-    ...themeState,
-    
-    // Theme management
-    setVisualTheme,
-    setColorScheme,
-    setPrimaryColor,
-    
-    // Visual controls
-    setGlassmorphismIntensity,
-    toggleParticleEffects,
-    
-    // Layout controls
-    setSidebarPosition,
-    setHeaderStyle,
-    setContentSpacing,
-    setBorderRadius,
-    
-    // Animation controls
-    toggleAnimations,
-    setAnimationSpeed,
-    setTransitionDuration,
-    setEasing,
-    
-    // Accessibility controls
-    toggleHighContrast,
-    toggleReduceMotion,
-    toggleScreenReaderOptimization,
-    toggleKeyboardNavigation,
-    toggleFocusVisible,
-    
-    // Storage operations
-    saveTheme,
-    loadTheme,
-    resetTheme,
-    exportTheme,
-    importTheme,
-    
-    // Preset management
-    applyPreset,
-    createCustomPreset,
-    
-    // CSS properties
-    updateCSSProperties,
-    applyCSSProperties,
-  }), [
-    themeState,
-    setVisualTheme,
-    setColorScheme,
-    setPrimaryColor,
-    setGlassmorphismIntensity,
-    toggleParticleEffects,
-    setSidebarPosition,
-    setHeaderStyle,
-    setContentSpacing,
-    setBorderRadius,
-    toggleAnimations,
-    setAnimationSpeed,
-    setTransitionDuration,
-    setEasing,
-    toggleHighContrast,
-    toggleReduceMotion,
-    toggleScreenReaderOptimization,
-    toggleKeyboardNavigation,
-    toggleFocusVisible,
-    saveTheme,
-    loadTheme,
-    resetTheme,
-    exportTheme,
-    importTheme,
-    applyPreset,
-    createCustomPreset,
-    updateCSSProperties,
-    applyCSSProperties,
-  ]);
+  const contextValue = useMemo<UnifiedThemeContextType>(
+    () => ({
+      ...themeState,
+
+      // Theme management
+      setVisualTheme,
+      setColorScheme,
+      setPrimaryColor,
+
+      // Visual controls
+      setGlassmorphismIntensity,
+      toggleParticleEffects,
+
+      // Layout controls
+      setSidebarPosition,
+      setHeaderStyle,
+      setContentSpacing,
+      setBorderRadius,
+
+      // Animation controls
+      toggleAnimations,
+      setAnimationSpeed,
+      setTransitionDuration,
+      setEasing,
+
+      // Accessibility controls
+      toggleHighContrast,
+      toggleReduceMotion,
+      toggleScreenReaderOptimization,
+      toggleKeyboardNavigation,
+      toggleFocusVisible,
+
+      // Storage operations
+      saveTheme,
+      loadTheme,
+      resetTheme,
+      exportTheme,
+      importTheme,
+
+      // Preset management
+      applyPreset,
+      createCustomPreset,
+
+      // CSS properties
+      updateCSSProperties,
+      applyCSSProperties,
+    }),
+    [
+      themeState,
+      setVisualTheme,
+      setColorScheme,
+      setPrimaryColor,
+      setGlassmorphismIntensity,
+      toggleParticleEffects,
+      setSidebarPosition,
+      setHeaderStyle,
+      setContentSpacing,
+      setBorderRadius,
+      toggleAnimations,
+      setAnimationSpeed,
+      setTransitionDuration,
+      setEasing,
+      toggleHighContrast,
+      toggleReduceMotion,
+      toggleScreenReaderOptimization,
+      toggleKeyboardNavigation,
+      toggleFocusVisible,
+      saveTheme,
+      loadTheme,
+      resetTheme,
+      exportTheme,
+      importTheme,
+      applyPreset,
+      createCustomPreset,
+      updateCSSProperties,
+      applyCSSProperties,
+    ]
+  );
 
   return (
     <UnifiedThemeContext.Provider value={contextValue}>
@@ -579,7 +655,9 @@ export const UnifiedThemeProvider: React.FC<UnifiedThemeProviderProps> = ({
 export const useUnifiedTheme = (): UnifiedThemeContextType => {
   const context = useContext(UnifiedThemeContext);
   if (!context) {
-    throw new Error('useUnifiedTheme must be used within a UnifiedThemeProvider');
+    throw new Error(
+      'useUnifiedTheme must be used within a UnifiedThemeProvider'
+    );
   }
   return context;
 };
@@ -590,15 +668,15 @@ export const useUnifiedTheme = (): UnifiedThemeContextType => {
 // ===============================
 
 export const useVisualTheme = () => {
-  const { 
-    visualTheme, 
-    glassmorphismIntensity, 
+  const {
+    visualTheme,
+    glassmorphismIntensity,
     particleEffectsEnabled,
     setVisualTheme,
     setGlassmorphismIntensity,
-    toggleParticleEffects
+    toggleParticleEffects,
   } = useUnifiedTheme();
-  
+
   return {
     visualTheme,
     glassmorphismIntensity,
@@ -620,7 +698,7 @@ export const useLayoutTheme = () => {
     setContentSpacing,
     setBorderRadius,
   } = useUnifiedTheme();
-  
+
   return {
     sidebarPosition,
     headerStyle,
@@ -644,7 +722,7 @@ export const useAnimationTheme = () => {
     setTransitionDuration,
     setEasing,
   } = useUnifiedTheme();
-  
+
   return {
     animationsEnabled,
     animationSpeed,
@@ -670,7 +748,7 @@ export const useAccessibilityTheme = () => {
     toggleKeyboardNavigation,
     toggleFocusVisible,
   } = useUnifiedTheme();
-  
+
   return {
     highContrast,
     reduceMotion,
@@ -687,7 +765,7 @@ export const useAccessibilityTheme = () => {
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:
- * 
+ *
  * BEFORE (7 separate providers):
  * - VisualThemeProvider.tsx: ~150 lines
  * - LayoutThemeProvider.tsx: ~120 lines
@@ -697,21 +775,21 @@ export const useAccessibilityTheme = () => {
  * - ThemeStorageProvider.tsx: ~100 lines
  * - index.ts: ~50 lines
  * TOTAL: ~860 lines + provider nesting complexity
- * 
+ *
  * AFTER (1 unified provider):
  * - UnifiedThemeProvider.tsx: ~500 lines
- * 
+ *
  * REDUCTION: ~42% theme code reduction (360 lines eliminated)
  * IMPACT: 30-35% theme system optimization achieved
  * BONUS: Eliminated provider nesting complexity and context switching overhead
- * 
+ *
  * ELIMINATED COMPLEXITIES:
  * ✅ 7 separate providers → 1 unified provider
  * ✅ 7 separate contexts → 1 unified context + focused hooks
  * ✅ Provider nesting chain → Direct single provider
  * ✅ Multiple state syncing → Single state management
  * ✅ Context switching overhead → Unified context access
- * 
+ *
  * NEXT STEPS:
  * 1. Update App.tsx to use UnifiedThemeProvider
  * 2. Update all components to use unified hooks

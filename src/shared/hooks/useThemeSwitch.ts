@@ -151,7 +151,9 @@ export function useColorSchemeSwitch() {
 
   const cycleColorScheme = useCallback(() => {
     const schemes: ColorScheme[] = ['light', 'dark', 'system'];
-    const currentIndex = schemes.indexOf(resolvedTheme as ColorScheme || 'system');
+    const currentIndex = schemes.indexOf(
+      (resolvedTheme as ColorScheme) || 'system'
+    );
     const nextIndex = (currentIndex + 1) % schemes.length;
     switchColorScheme(schemes[nextIndex]);
   }, [resolvedTheme, switchColorScheme]);
@@ -162,8 +164,8 @@ export function useColorSchemeSwitch() {
   }, [resolvedTheme, switchColorScheme]);
 
   return {
-    currentScheme: resolvedTheme as ColorScheme || 'system',
-    resolvedTheme: resolvedTheme as 'light' | 'dark' || 'dark',
+    currentScheme: (resolvedTheme as ColorScheme) || 'system',
+    resolvedTheme: (resolvedTheme as 'light' | 'dark') || 'dark',
     switchColorScheme,
     cycleColorScheme,
     toggleDarkMode,
@@ -180,14 +182,13 @@ export function usePrimaryColorSwitch() {
   // Keeping interface for backward compatibility
   const [currentColor, setCurrentColor] = useState<ThemeColor>('dark');
 
-  const switchPrimaryColor = useCallback(
-    (newColor: ThemeColor) => {
-      setCurrentColor(newColor);
-      // TODO: Implement primary color switching in centralized theme system
-      console.warn('Primary color switching not yet implemented in centralized theme system');
-    },
-    []
-  );
+  const switchPrimaryColor = useCallback((newColor: ThemeColor) => {
+    setCurrentColor(newColor);
+    // TODO: Implement primary color switching in centralized theme system
+    console.warn(
+      'Primary color switching not yet implemented in centralized theme system'
+    );
+  }, []);
 
   const cyclePrimaryColor = useCallback(() => {
     const colors: ThemeColor[] = [
@@ -257,14 +258,18 @@ export function useAdvancedThemeSettings() {
       'enhanced',
       'disabled',
     ];
-    const currentIndex = intensities.indexOf(themeConfig.animationIntensity as AnimationIntensity);
+    const currentIndex = intensities.indexOf(
+      themeConfig.animationIntensity as AnimationIntensity
+    );
     const nextIndex = (currentIndex + 1) % intensities.length;
     switchAnimationIntensity(intensities[nextIndex]);
   }, [themeConfig.animationIntensity, switchAnimationIntensity]);
 
   const adjustGlassmorphismIntensity = useCallback(
     (intensity: number) => {
-      visualTheme.setGlassmorphismIntensity(Math.max(0, Math.min(100, intensity)));
+      visualTheme.setGlassmorphismIntensity(
+        Math.max(0, Math.min(100, intensity))
+      );
     },
     [visualTheme]
   );
@@ -293,7 +298,8 @@ export function useAdvancedThemeSettings() {
     availableDensities: ['compact', 'comfortable', 'spacious'] as const,
 
     // Animation controls
-    currentAnimationIntensity: themeConfig.animationIntensity as AnimationIntensity,
+    currentAnimationIntensity:
+      themeConfig.animationIntensity as AnimationIntensity,
     switchAnimationIntensity,
     cycleAnimationIntensity,
     availableIntensities: ['subtle', 'normal', 'enhanced', 'disabled'] as const,

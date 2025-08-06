@@ -1,6 +1,6 @@
 /**
  * Collection Item Header Component
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles header display and action buttons
  * - DRY: Reusable header pattern across different item views
@@ -53,29 +53,33 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
       {/* Action Buttons */}
       <FormActionButtons
         primaryAction={{
-          label: "Edit Item",
+          label: 'Edit Item',
           onClick: onEdit,
           icon: Edit,
-          variant: "primary"
+          variant: 'primary',
         }}
         secondaryActions={[
-          ...(!item.sold ? [{
-            label: "Mark Sold", 
-            onClick: onMarkSold,
-            icon: Check,
-            variant: "success" as const
-          }] : []),
+          ...(!item.sold
+            ? [
+                {
+                  label: 'Mark Sold',
+                  onClick: onMarkSold,
+                  icon: Check,
+                  variant: 'success' as const,
+                },
+              ]
+            : []),
           {
-            label: "Delete",
-            onClick: onDelete, 
+            label: 'Delete',
+            onClick: onDelete,
             icon: Trash2,
-            variant: "danger" as const
-          }
+            variant: 'danger' as const,
+          },
         ]}
         tertiaryAction={{
-          label: "Back to Collection",
+          label: 'Back to Collection',
           onClick: onBackToCollection,
-          icon: ArrowLeft
+          icon: ArrowLeft,
         }}
       />
 
@@ -104,9 +108,7 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
 
               <div className="flex flex-wrap items-center gap-4 mt-6">
                 <div className="px-4 py-2 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)] text-[var(--theme-text-primary)]">
-                  <span className="text-sm font-medium">
-                    Set: {setName}
-                  </span>
+                  <span className="text-sm font-medium">Set: {setName}</span>
                 </div>
                 <div className="px-4 py-2 rounded-xl bg-[var(--theme-status-success)]/20 backdrop-blur-xl border border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]">
                   <span className="text-sm font-bold">
@@ -115,8 +117,8 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
                 </div>
                 <div
                   className={`px-4 py-2 rounded-xl backdrop-blur-xl border ${
-                    item.sold 
-                      ? 'bg-[var(--theme-status-error)]/20 border-[var(--theme-status-error)]/30 text-[var(--theme-status-error)]' 
+                    item.sold
+                      ? 'bg-[var(--theme-status-error)]/20 border-[var(--theme-status-error)]/30 text-[var(--theme-status-error)]'
                       : 'bg-[var(--theme-status-success)]/20 border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]'
                   }`}
                 >

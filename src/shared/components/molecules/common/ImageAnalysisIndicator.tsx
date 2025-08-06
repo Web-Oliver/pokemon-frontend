@@ -22,7 +22,9 @@ export const ImageAnalysisIndicator: React.FC<ImageAnalysisIndicatorProps> = ({
     <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
       <div className="flex items-center space-x-2">
         <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-        <span className="text-sm text-blue-800">Analyzing image aspect ratios...</span>
+        <span className="text-sm text-blue-800">
+          Analyzing image aspect ratios...
+        </span>
       </div>
     </div>
   );

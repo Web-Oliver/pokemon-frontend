@@ -297,7 +297,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     }[themeConfig.density];
 
     // Apply theme properties using consolidated utility (eliminates duplication)
-    ThemePropertyManager.applyLegacyThemeProperties(root, formTheme, themeConfig, densityMultiplier);
+    ThemePropertyManager.applyLegacyThemeProperties(
+      root,
+      formTheme,
+      themeConfig,
+      densityMultiplier
+    );
     // Additional XL spacing (not included in legacy method to maintain compatibility)
     root.style.setProperty(
       '--density-spacing-xl',
@@ -559,7 +564,7 @@ export const withTheme = <P extends object>(
 // Decomposed theme providers are available in ./theme/ directory
 // Use them directly to avoid circular dependencies:
 // - VisualThemeProvider from './theme/VisualThemeProvider'
-// - LayoutThemeProvider from './theme/LayoutThemeProvider'  
+// - LayoutThemeProvider from './theme/LayoutThemeProvider'
 // - AnimationThemeProvider from './theme/AnimationThemeProvider'
 // - AccessibilityThemeProvider from './theme/AccessibilityThemeProvider'
 // - ThemeStorageProvider from './theme/ThemeStorageProvider'

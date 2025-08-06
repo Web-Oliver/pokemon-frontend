@@ -11,7 +11,10 @@ import { useMemo } from 'react';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations, createSealedProductConfig } from './useGenericCrudOperations';
+import {
+  useGenericCrudOperations,
+  createSealedProductConfig,
+} from './useGenericCrudOperations';
 
 export interface UseSealedProductOperationsReturn {
   loading: boolean;
@@ -37,7 +40,6 @@ export interface UseSealedProductOperationsReturn {
  * Follows SRP - only handles Sealed product configuration and interface mapping
  */
 
-
 /**
  * Sealed Product operations hook - uses consolidated collection operations
  * Maintains backward compatibility while eliminating code duplication
@@ -52,16 +54,13 @@ export const useSealedProductOperations = () => {
   );
 
   // Use consolidated operations hook with correct parameters
-  const operations = useGenericCrudOperations(
-    entityConfig.apiMethods,
-    {
-      entityName: entityConfig.entityName,
-      addSuccess: entityConfig.messages.addSuccess,
-      updateSuccess: entityConfig.messages.updateSuccess,
-      deleteSuccess: entityConfig.messages.deleteSuccess,
-      soldSuccess: entityConfig.messages.soldSuccess,
-    }
-  );
+  const operations = useGenericCrudOperations(entityConfig.apiMethods, {
+    entityName: entityConfig.entityName,
+    addSuccess: entityConfig.messages.addSuccess,
+    updateSuccess: entityConfig.messages.updateSuccess,
+    deleteSuccess: entityConfig.messages.deleteSuccess,
+    soldSuccess: entityConfig.messages.soldSuccess,
+  });
 
   // Return interface-compatible methods for backward compatibility
   return {
@@ -73,4 +72,4 @@ export const useSealedProductOperations = () => {
     markSealedProductSold: operations.markSold,
     clearError: operations.clearError,
   };
-};;
+};

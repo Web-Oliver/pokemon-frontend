@@ -1,6 +1,6 @@
 /**
  * Collection Item Operations Hook
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles CRUD operations and navigation
  * - DRY: Eliminates duplicated operation logic across components

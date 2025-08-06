@@ -18,13 +18,20 @@ export const useDragAndDrop = (
     e.stopPropagation();
   }, []);
 
-  const handleDragIn = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!disabled && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      setDragActive(true);
-    }
-  }, [disabled]);
+  const handleDragIn = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (
+        !disabled &&
+        e.dataTransfer.items &&
+        e.dataTransfer.items.length > 0
+      ) {
+        setDragActive(true);
+      }
+    },
+    [disabled]
+  );
 
   const handleDragOut = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -32,17 +39,20 @@ export const useDragAndDrop = (
     setDragActive(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-    if (disabled) return;
+      if (disabled) return;
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      onDrop(e.dataTransfer.files);
-    }
-  }, [onDrop, disabled]);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        onDrop(e.dataTransfer.files);
+      }
+    },
+    [onDrop, disabled]
+  );
 
   return {
     dragActive,

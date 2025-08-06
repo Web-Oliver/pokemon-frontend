@@ -11,11 +11,11 @@
 
 import { getCollectionApiService } from '../../services/ServiceRegistry';
 import { useCollectionOperations } from './useCollectionOperations';
-import { 
+import {
   createPsaCardConfig,
-  createRawCardConfig, 
+  createRawCardConfig,
   createSealedProductConfig,
-  useEntityConfig
+  useEntityConfig,
 } from './collectionEntityConfigs';
 
 // ============================================================================
@@ -65,12 +65,15 @@ export const useRawCardOperations = () => {
 };
 
 /**
- * Sealed Product operations hook - uses consolidated useCollectionOperations  
+ * Sealed Product operations hook - uses consolidated useCollectionOperations
  * Maintains backward compatibility with existing interface
  */
 export const useSealedProductOperations = () => {
   const collectionApi = getCollectionApiService();
-  const entityConfig = useEntityConfig(createSealedProductConfig, collectionApi);
+  const entityConfig = useEntityConfig(
+    createSealedProductConfig,
+    collectionApi
+  );
   const operations = useCollectionOperations(entityConfig);
 
   // Return interface-compatible methods for backward compatibility

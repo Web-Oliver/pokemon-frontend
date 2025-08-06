@@ -44,8 +44,6 @@ interface ImageUploaderProps {
   adaptiveLayout?: boolean;
 }
 
-
-
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImagesChange,
   existingImageUrls = [],
@@ -70,93 +68,117 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     // Simple analysis logic here if needed
     setIsAnalyzing(false);
   }, [enableAspectRatioDetection]);
-  
-  const analyzeNewImages = useCallback(async (images: any[]) => {
-    if (!enableAspectRatioDetection || !images.length) {
-      return [];
-    }
-    
-    setIsAnalyzing(true);
-    // Simple analysis logic here if needed
-    const results = []; // Return empty results for now
-    setIsAnalyzing(false);
-    return results;
-  }, [enableAspectRatioDetection]);
 
-  const handleFileDrop = useCallback(async (files: FileList) => {
-    console.log('[ImageUploader] handleFileDrop called with files:', Array.from(files).map(f => ({ name: f.name, size: f.size })));
-    console.log('[ImageUploader] Current previews before processing:', previews.length);
-    
-    const { newFiles, newPreviews, errorMessage } = await processImageFiles(
-      files,
+  const analyzeNewImages = useCallback(
+    async (images: any[]) => {
+      if (!enableAspectRatioDetection || !images.length) {
+        return [];
+      }
+
+      setIsAnalyzing(true);
+      // Simple analysis logic here if needed
+      const results = []; // Return empty results for now
+      setIsAnalyzing(false);
+      return results;
+    },
+    [enableAspectRatioDetection]
+  );
+
+  const handleFileDrop = useCallback(
+    async (files: FileList) => {
+      console.log(
+        '[ImageUploader] handleFileDrop called with files:',
+        Array.from(files).map((f) => ({ name: f.name, size: f.size }))
+      );
+      console.log(
+        '[ImageUploader] Current previews before processing:',
+        previews.length
+      );
+
+      const { newFiles, newPreviews, errorMessage } = await processImageFiles(
+        files,
+        previews,
+        maxFiles,
+        maxFileSize,
+        acceptedTypes
+      );
+
+      console.log('[ImageUploader] processImageFiles returned:', {
+        newFiles: newFiles.map((f) => ({ name: f.name, size: f.size })),
+        newPreviewsCount: newPreviews.length,
+        errorMessage,
+      });
+
+      if (errorMessage) {
+        setError(errorMessage);
+        setTimeout(() => setError(null), 5000);
+      } else {
+        setError(null);
+      }
+
+      // Update previews first
+      const updatedPreviews = [...previews, ...newPreviews];
+      setPreviews(updatedPreviews);
+
+      // Analyze aspect ratios if enabled
+      if (newPreviews.length > 0) {
+        const aspectResults = await analyzeNewImages(newPreviews);
+        if (aspectResults.length > 0) {
+          setPreviews((prev) =>
+            prev.map((preview) => {
+              const result = aspectResults.find((r) => r.id === preview.id);
+              return result
+                ? { ...preview, aspectInfo: result.aspectInfo }
+                : preview;
+            })
+          );
+        }
+      }
+
+      // Update parent component - USE UPDATED PREVIEWS, NOT OLD STATE!
+      // Only get files from updatedPreviews (newFiles are already included in updatedPreviews)
+      const allFiles = updatedPreviews
+        .filter((p) => !p.isExisting && p.file)
+        .map((p) => p.file!);
+      const remainingExistingUrls = updatedPreviews
+        .filter((p) => p.isExisting)
+        .map((p) => p.url.replace('http://localhost:3000', ''));
+
+      console.log('[ImageUploader] Calling onImagesChange with:', {
+        allFiles: allFiles.map((f) => ({ name: f.name, size: f.size })),
+        remainingExistingUrls,
+      });
+
+      onImagesChange(allFiles, remainingExistingUrls);
+    },
+    [
       previews,
       maxFiles,
       maxFileSize,
-      acceptedTypes
-    );
-    
-    console.log('[ImageUploader] processImageFiles returned:', { 
-      newFiles: newFiles.map(f => ({ name: f.name, size: f.size })), 
-      newPreviewsCount: newPreviews.length,
-      errorMessage 
-    });
-
-    if (errorMessage) {
-      setError(errorMessage);
-      setTimeout(() => setError(null), 5000);
-    } else {
-      setError(null);
-    }
-
-    // Update previews first
-    const updatedPreviews = [...previews, ...newPreviews];
-    setPreviews(updatedPreviews);
-
-    // Analyze aspect ratios if enabled
-    if (newPreviews.length > 0) {
-      const aspectResults = await analyzeNewImages(newPreviews);
-      if (aspectResults.length > 0) {
-        setPreviews(prev => prev.map(preview => {
-          const result = aspectResults.find(r => r.id === preview.id);
-          return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
-        }));
-      }
-    }
-
-    // Update parent component - USE UPDATED PREVIEWS, NOT OLD STATE!
-    // Only get files from updatedPreviews (newFiles are already included in updatedPreviews)
-    const allFiles = updatedPreviews
-      .filter(p => !p.isExisting && p.file)
-      .map(p => p.file!);
-    const remainingExistingUrls = updatedPreviews
-      .filter(p => p.isExisting)
-      .map(p => p.url.replace('http://localhost:3000', ''));
-    
-    console.log('[ImageUploader] Calling onImagesChange with:', {
-      allFiles: allFiles.map(f => ({ name: f.name, size: f.size })),
-      remainingExistingUrls
-    });
-    
-    onImagesChange(allFiles, remainingExistingUrls);
-  }, [previews, maxFiles, maxFileSize, acceptedTypes, analyzeNewImages, onImagesChange]);
-
-  const { dragActive, handleDrag, handleDragIn, handleDragOut, handleDrop } = useDragAndDrop(
-    handleFileDrop,
-    disabled
+      acceptedTypes,
+      analyzeNewImages,
+      onImagesChange,
+    ]
   );
 
-  const handlePreviewsUpdate = useCallback((updatedPreviews: ImagePreview[]) => {
-    setPreviews(updatedPreviews);
-    
-    // Update parent component
-    const remainingFiles = updatedPreviews
-      .filter(p => !p.isExisting && p.file)
-      .map(p => p.file!);
-    const remainingExistingUrls = updatedPreviews
-      .filter(p => p.isExisting)
-      .map(p => p.url.replace('http://localhost:3000', ''));
-    onImagesChange(remainingFiles, remainingExistingUrls);
-  }, [onImagesChange]);
+  const { dragActive, handleDrag, handleDragIn, handleDragOut, handleDrop } =
+    useDragAndDrop(handleFileDrop, disabled);
+
+  const handlePreviewsUpdate = useCallback(
+    (updatedPreviews: ImagePreview[]) => {
+      setPreviews(updatedPreviews);
+
+      // Update parent component
+      const remainingFiles = updatedPreviews
+        .filter((p) => !p.isExisting && p.file)
+        .map((p) => p.file!);
+      const remainingExistingUrls = updatedPreviews
+        .filter((p) => p.isExisting)
+        .map((p) => p.url.replace('http://localhost:3000', ''));
+      onImagesChange(remainingFiles, remainingExistingUrls);
+    },
+    [onImagesChange]
+  );
 
   const {
     showRemoveConfirm,
@@ -168,12 +190,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   } = useImageRemoval(previews, handlePreviewsUpdate);
 
   // Handle file input change
-  const handleFileChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      await handleFileDrop(e.target.files);
-    }
-    e.target.value = '';
-  }, [handleFileDrop]);
+  const handleFileChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        await handleFileDrop(e.target.files);
+      }
+      e.target.value = '';
+    },
+    [handleFileDrop]
+  );
 
   // Open file dialog
   const openFileDialog = useCallback(() => {
@@ -184,15 +209,20 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Reset previews when existingImageUrls changes, but preserve new uploads
   useEffect(() => {
-    console.log('[ImageUploader] existingImageUrls changed:', existingImageUrls);
+    console.log(
+      '[ImageUploader] existingImageUrls changed:',
+      existingImageUrls
+    );
     // Remove duplicates from existingImageUrls
     const uniqueUrls = Array.from(new Set(existingImageUrls));
     console.log('[ImageUploader] Unique URLs after deduplication:', uniqueUrls);
-    
+
     // Preserve any non-existing previews (newly uploaded files) and add existing ones
-    setPreviews(current => {
-      const newUploads = current.filter(p => !p.isExisting);
-      const existingPreviews = uniqueUrls.map((url, index) => createExistingImagePreview(url, index));
+    setPreviews((current) => {
+      const newUploads = current.filter((p) => !p.isExisting);
+      const existingPreviews = uniqueUrls.map((url, index) =>
+        createExistingImagePreview(url, index)
+      );
       const combined = [...existingPreviews, ...newUploads];
       console.log('[ImageUploader] Setting previews to:', combined);
       return combined;
@@ -206,10 +236,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const analyzeExisting = async () => {
       const aspectResults = await analyzeExistingImages(existingImageUrls);
       if (aspectResults.length > 0) {
-        setPreviews(prev => prev.map((preview, index) => {
-          const result = aspectResults.find(r => r.index === index);
-          return result ? { ...preview, aspectInfo: result.aspectInfo } : preview;
-        }));
+        setPreviews((prev) =>
+          prev.map((preview, index) => {
+            const result = aspectResults.find((r) => r.index === index);
+            return result
+              ? { ...preview, aspectInfo: result.aspectInfo }
+              : preview;
+          })
+        );
       }
     };
 
@@ -226,9 +260,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   return (
     <div className="w-full">
       {/* Analysis indicator component - Following SRP */}
-      <ImageAnalysisIndicator 
-        isAnalyzing={isAnalyzing} 
-        enableAspectRatioDetection={enableAspectRatioDetection} 
+      <ImageAnalysisIndicator
+        isAnalyzing={isAnalyzing}
+        enableAspectRatioDetection={enableAspectRatioDetection}
       />
 
       {/* Rest of component continues with drag/drop zone and preview grid... */}
@@ -239,7 +273,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           {
             'border-blue-400 bg-blue-50/50': dragActive && !disabled,
             'border-gray-300 hover:border-gray-400': !dragActive && !disabled,
-            'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60': disabled,
+            'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60':
+              disabled,
           }
         )}
         onDragEnter={handleDragIn}
@@ -264,8 +299,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               Release to add your beautiful images
             </p>
           </div>
-
-
         ) : (
           <div className="py-4">
             <Upload className="w-10 h-10 text-gray-400 mx-auto mb-4" />
@@ -284,8 +317,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               </button>
             </p>
             <p className="text-xs text-gray-400">
-              Supports {acceptedTypes.join(', ')} • Max {maxFileSize}MB per file • Up to{' '}
-              {maxFiles} files
+              Supports {acceptedTypes.join(', ')} • Max {maxFileSize}MB per file
+              • Up to {maxFiles} files
             </p>
           </div>
         )}
@@ -305,35 +338,40 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             className={cn('grid gap-4', {
               'grid-cols-1': adaptiveLayout && previews.length === 1,
               'grid-cols-2': adaptiveLayout && previews.length === 2,
-              'grid-cols-2 sm:grid-cols-3': adaptiveLayout && previews.length >= 3,
+              'grid-cols-2 sm:grid-cols-3':
+                adaptiveLayout && previews.length >= 3,
               'grid-cols-2 sm:grid-cols-3 md:grid-cols-4': !adaptiveLayout,
             })}
           >
             {previews.map((preview) => {
-              console.log('[ImageUploader] Rendering preview:', preview.id, preview.url);
+              console.log(
+                '[ImageUploader] Rendering preview:',
+                preview.id,
+                preview.url
+              );
               return (
-              <div key={preview.id} className="relative group">
-                <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                  <img
-                    src={preview.url}
-                    alt="Preview"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(preview.id)}
-                  disabled={isRemoving}
-                  className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 disabled:opacity-50"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                {preview.aspectInfo && (
-                  <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
-                    {preview.aspectInfo.category}
+                <div key={preview.id} className="relative group">
+                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      src={preview.url}
+                      alt="Preview"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
-                )}
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(preview.id)}
+                    disabled={isRemoving}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 disabled:opacity-50"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  {preview.aspectInfo && (
+                    <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+                      {preview.aspectInfo.category}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

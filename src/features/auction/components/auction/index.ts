@@ -1,6 +1,6 @@
 /**
  * Auction Components
- * 
+ *
  * Exports all auction-related components
  */
 

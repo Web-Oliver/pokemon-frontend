@@ -1,7 +1,7 @@
 /**
  * Composed Theme Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 4
- * 
+ *
  * Composes all focused theme providers following DIP
  * Maintains existing theme functionality while enabling focused usage
  * Acts as the orchestrator for all theme-related state management
@@ -9,19 +9,20 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import { 
-  ThemeConfiguration,
-  ColorScheme,
-} from '../../types/themeTypes';
+import { ThemeConfiguration, ColorScheme } from '../../types/themeTypes';
 import { ThemePropertyManager } from '../../utils/theme/ThemePropertyManager';
-import { 
-  defaultConfig as originalDefaultConfig,
-} from '../ThemeContext';
+import { defaultConfig as originalDefaultConfig } from '../ThemeContext';
 import { ThemeColor } from '../../theme/formThemes';
 import { VisualThemeProvider, VisualThemeState } from './VisualThemeProvider';
 import { LayoutThemeProvider, LayoutThemeState } from './LayoutThemeProvider';
-import { AnimationThemeProvider, AnimationThemeState } from './AnimationThemeProvider';
-import { AccessibilityThemeProvider, AccessibilityThemeState } from './AccessibilityThemeProvider';
+import {
+  AnimationThemeProvider,
+  AnimationThemeState,
+} from './AnimationThemeProvider';
+import {
+  AccessibilityThemeProvider,
+  AccessibilityThemeState,
+} from './AccessibilityThemeProvider';
 import { ThemeStorageProvider } from './ThemeStorageProvider';
 import { formThemes } from '../../theme/formThemes';
 
@@ -155,7 +156,10 @@ export const ComposedThemeProvider: React.FC<ComposedThemeProviderProps> = ({
     }
 
     // Auto dark/light mode detection for system theme
-    if (loadedConfig.colorScheme === 'system' && typeof window !== 'undefined') {
+    if (
+      loadedConfig.colorScheme === 'system' &&
+      typeof window !== 'undefined'
+    ) {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
       const handleSystemThemeChange = () => {
@@ -170,7 +174,8 @@ export const ComposedThemeProvider: React.FC<ComposedThemeProviderProps> = ({
 
       if (mediaQuery.addEventListener) {
         mediaQuery.addEventListener('change', handleSystemThemeChange);
-        return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        return () =>
+          mediaQuery.removeEventListener('change', handleSystemThemeChange);
       } else {
         mediaQuery.addListener(handleSystemThemeChange);
         return () => mediaQuery.removeListener(handleSystemThemeChange);
@@ -202,7 +207,12 @@ export const ComposedThemeProvider: React.FC<ComposedThemeProviderProps> = ({
 
     // Animation tokens
     // Apply all theme properties using consolidated utility
-    ThemePropertyManager.applyAllThemeProperties(root, formTheme, themeConfig, densityMultiplier);
+    ThemePropertyManager.applyAllThemeProperties(
+      root,
+      formTheme,
+      themeConfig,
+      densityMultiplier
+    );
 
     // Visual theme classes
     root.className = root.className.replace(/theme-\w+/g, '');
@@ -217,40 +227,54 @@ export const ComposedThemeProvider: React.FC<ComposedThemeProviderProps> = ({
 
     // Custom properties
     if (themeConfig.customCSSProperties) {
-      Object.entries(themeConfig.customCSSProperties).forEach(([key, value]) => {
-        root.style.setProperty(key, value);
-      });
+      Object.entries(themeConfig.customCSSProperties).forEach(
+        ([key, value]) => {
+          root.style.setProperty(key, value);
+        }
+      );
     }
   }, []);
 
   // State change handlers for focused providers
-  const handleVisualStateChange = useCallback((newVisualState: Partial<VisualThemeState>) => {
-    setConfig(prev => ({
-      ...prev,
-      visual: { ...prev.visual, ...newVisualState }
-    }));
-  }, []);
+  const handleVisualStateChange = useCallback(
+    (newVisualState: Partial<VisualThemeState>) => {
+      setConfig((prev) => ({
+        ...prev,
+        visual: { ...prev.visual, ...newVisualState },
+      }));
+    },
+    []
+  );
 
-  const handleLayoutStateChange = useCallback((newLayoutState: Partial<LayoutThemeState>) => {
-    setConfig(prev => ({
-      ...prev,
-      layout: { ...prev.layout, ...newLayoutState }
-    }));
-  }, []);
+  const handleLayoutStateChange = useCallback(
+    (newLayoutState: Partial<LayoutThemeState>) => {
+      setConfig((prev) => ({
+        ...prev,
+        layout: { ...prev.layout, ...newLayoutState },
+      }));
+    },
+    []
+  );
 
-  const handleAnimationStateChange = useCallback((newAnimationState: Partial<AnimationThemeState>) => {
-    setConfig(prev => ({
-      ...prev,
-      animation: { ...prev.animation, ...newAnimationState }
-    }));
-  }, []);
+  const handleAnimationStateChange = useCallback(
+    (newAnimationState: Partial<AnimationThemeState>) => {
+      setConfig((prev) => ({
+        ...prev,
+        animation: { ...prev.animation, ...newAnimationState },
+      }));
+    },
+    []
+  );
 
-  const handleAccessibilityStateChange = useCallback((newAccessibilityState: Partial<AccessibilityThemeState>) => {
-    setConfig(prev => ({
-      ...prev,
-      accessibility: { ...prev.accessibility, ...newAccessibilityState }
-    }));
-  }, []);
+  const handleAccessibilityStateChange = useCallback(
+    (newAccessibilityState: Partial<AccessibilityThemeState>) => {
+      setConfig((prev) => ({
+        ...prev,
+        accessibility: { ...prev.accessibility, ...newAccessibilityState },
+      }));
+    },
+    []
+  );
 
   return (
     <ThemeStorageProvider>

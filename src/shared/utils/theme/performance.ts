@@ -1,7 +1,7 @@
 /**
  * Theme Performance Utilities
  * Split from themeDebug.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Performance monitoring only
  * - DRY: Centralized performance logic
@@ -44,11 +44,14 @@ export function trackThemeSwitch(startTime: number, endTime: number): void {
   // Store performance data in sessionStorage for debugging
   if (typeof window !== 'undefined') {
     try {
-      sessionStorage.setItem('theme-performance', JSON.stringify({
-        duration,
-        timestamp: Date.now(),
-        totalSwitches: performanceData.totalSwitches,
-      }));
+      sessionStorage.setItem(
+        'theme-performance',
+        JSON.stringify({
+          duration,
+          timestamp: Date.now(),
+          totalSwitches: performanceData.totalSwitches,
+        })
+      );
     } catch (error) {
       // Silently handle storage errors
       if (process.env.NODE_ENV === 'development') {
@@ -64,23 +67,28 @@ export function trackThemeSwitch(startTime: number, endTime: number): void {
 export function getThemePerformanceMetrics(): ThemePerformanceMetrics {
   const currentTime = Date.now();
   const loadTime = currentTime - performanceData.loadStartTime;
-  
-  const averageSwitchTime = performanceData.themeSwitches.length > 0
-    ? performanceData.themeSwitches.reduce((sum, time) => sum + time, 0) / performanceData.themeSwitches.length
-    : 0;
 
-  const lastSwitchDuration = performanceData.themeSwitches.length > 0
-    ? performanceData.themeSwitches[performanceData.themeSwitches.length - 1]
-    : 0;
+  const averageSwitchTime =
+    performanceData.themeSwitches.length > 0
+      ? performanceData.themeSwitches.reduce((sum, time) => sum + time, 0) /
+        performanceData.themeSwitches.length
+      : 0;
+
+  const lastSwitchDuration =
+    performanceData.themeSwitches.length > 0
+      ? performanceData.themeSwitches[performanceData.themeSwitches.length - 1]
+      : 0;
 
   // Estimate metrics (would need real implementation in production)
-  const cssPropertiesCount = typeof window !== 'undefined' 
-    ? document.documentElement.style.length 
-    : 0;
+  const cssPropertiesCount =
+    typeof window !== 'undefined' ? document.documentElement.style.length : 0;
 
-  const themeClassesCount = typeof window !== 'undefined'
-    ? Array.from(document.documentElement.classList).filter(cls => cls.includes('theme')).length
-    : 0;
+  const themeClassesCount =
+    typeof window !== 'undefined'
+      ? Array.from(document.documentElement.classList).filter((cls) =>
+          cls.includes('theme')
+        ).length
+      : 0;
 
   return {
     cssPropertiesCount,
@@ -103,21 +111,21 @@ export async function benchmarkThemeSwitch(
   onThemeChange: (theme: VisualTheme) => void
 ): Promise<number> {
   const startTime = performance.now();
-  
+
   onThemeChange(newTheme);
-  
+
   // Wait for next frame to ensure DOM updates
   await new Promise((resolve) => requestAnimationFrame(resolve));
-  
+
   const endTime = performance.now();
   const duration = endTime - startTime;
-  
+
   if (process.env.NODE_ENV === 'development') {
     console.log(`⚡ Theme switch to ${newTheme} took ${duration.toFixed(2)}ms`);
   }
-  
+
   trackThemeSwitch(startTime, endTime);
-  
+
   return duration;
 }
 
@@ -135,7 +143,9 @@ export function checkThemePerformance(): {
 
   if (metrics.averageSwitchTime > 100) {
     issues.push('Theme switching is slow (>100ms average)');
-    suggestions.push('Consider reducing CSS complexity or using CSS custom properties');
+    suggestions.push(
+      'Consider reducing CSS complexity or using CSS custom properties'
+    );
   }
 
   if (metrics.cssPropertiesCount > 100) {

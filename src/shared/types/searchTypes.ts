@@ -1,6 +1,6 @@
 /**
  * Search Types - Shared search-related type definitions
- * 
+ *
  * This file contains search-related types to prevent circular dependencies
  * between search hooks, API clients, and utility helpers.
  */

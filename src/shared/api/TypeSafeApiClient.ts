@@ -117,7 +117,11 @@ export class TypeSafeApiClient {
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<T>> {
     try {
-      const response = await unifiedApiClient.apiDelete<T>(url, operation, config);
+      const response = await unifiedApiClient.apiDelete<T>(
+        url,
+        operation,
+        config
+      );
       return this.ensureSuccessResponse<T>(response, operation);
     } catch (error) {
       throw this.transformError(error, operation);
@@ -137,7 +141,11 @@ export class TypeSafeApiClient {
     config?: EnhancedRequestConfig
   ): Promise<CollectionResponse<T>> {
     try {
-      const response = await unifiedApiClient.apiGet<T[]>(url, operation, config);
+      const response = await unifiedApiClient.apiGet<T[]>(
+        url,
+        operation,
+        config
+      );
       return this.ensureCollectionResponse<T>(response, operation);
     } catch (error) {
       throw this.transformError(error, operation);
@@ -224,7 +232,12 @@ export class TypeSafeApiClient {
   ): Promise<ResourceResponse<TResponse>> {
     this.validateId(id, operation);
     const url = `${basePath}/${id}`;
-    const response = await this.put<TResponse, TRequest>(url, data, operation, config);
+    const response = await this.put<TResponse, TRequest>(
+      url,
+      data,
+      operation,
+      config
+    );
     return this.ensureResourceResponse<TResponse>(response, operation);
   }
 
@@ -267,7 +280,12 @@ export class TypeSafeApiClient {
   ): Promise<ResourceResponse<TResponse>> {
     this.validateId(id, operation);
     const url = `${basePath}/${id}/${subPath}`;
-    const response = await this.post<TResponse, TRequest>(url, data, operation, config);
+    const response = await this.post<TResponse, TRequest>(
+      url,
+      data,
+      operation,
+      config
+    );
     return this.ensureResourceResponse<TResponse>(response, operation);
   }
 
@@ -281,11 +299,11 @@ export class TypeSafeApiClient {
     operation: string
   ): ApiSuccessResponse<T> {
     const transformed = transformApiResponse<T>(response, operation);
-    
+
     if (isSuccessResponse(transformed)) {
       return transformed;
     }
-    
+
     throw new Error(`Expected success response for operation: ${operation}`);
   }
 
@@ -297,9 +315,11 @@ export class TypeSafeApiClient {
     operation: string
   ): CollectionResponse<T> {
     const data = response?.data ?? response;
-    
+
     if (!Array.isArray(data)) {
-      throw new Error(`Expected array response for collection operation: ${operation}`);
+      throw new Error(
+        `Expected array response for collection operation: ${operation}`
+      );
     }
 
     return {
@@ -321,9 +341,11 @@ export class TypeSafeApiClient {
     operation: string
   ): PaginatedResponse<T> {
     const responseData = response?.data ?? response;
-    
+
     if (!responseData?.data || !Array.isArray(responseData.data)) {
-      throw new Error(`Expected paginated response format for operation: ${operation}`);
+      throw new Error(
+        `Expected paginated response format for operation: ${operation}`
+      );
     }
 
     const { data, pagination } = responseData;
@@ -391,15 +413,68 @@ export const typeSafeApiClient = new TypeSafeApiClient();
  * Eliminates all 'any' types from BaseApiService
  */
 export interface ITypeSafeHttpClient {
-  get<T>(url: string, operation: string, config?: EnhancedRequestConfig): Promise<ApiSuccessResponse<T>>;
-  post<TResponse, TRequest = any>(url: string, data: TRequest, operation: string, config?: EnhancedRequestConfig): Promise<ApiSuccessResponse<TResponse>>;
-  put<TResponse, TRequest = any>(url: string, data: TRequest, operation: string, config?: EnhancedRequestConfig): Promise<ApiSuccessResponse<TResponse>>;
-  delete<T = void>(url: string, operation: string, config?: EnhancedRequestConfig): Promise<ApiSuccessResponse<T>>;
-  getCollection<T>(url: string, operation: string, config?: EnhancedRequestConfig): Promise<CollectionResponse<T>>;
-  getPaginated<T>(url: string, operation: string, config?: EnhancedRequestConfig): Promise<PaginatedResponse<T>>;
-  getResource<T>(url: string, operation: string, config?: EnhancedRequestConfig): Promise<ResourceResponse<T>>;
-  getById<T>(basePath: string, id: string | number, operation: string, config?: EnhancedRequestConfig): Promise<ResourceResponse<T>>;
-  putById<TResponse, TRequest = any>(basePath: string, id: string | number, data: TRequest, operation: string, config?: EnhancedRequestConfig): Promise<ResourceResponse<TResponse>>;
-  deleteById(basePath: string, id: string | number, operation: string, config?: EnhancedRequestConfig): Promise<ApiSuccessResponse<void>>;
-  postById<TResponse, TRequest = any>(basePath: string, id: string | number, data: TRequest, subPath: string, operation: string, config?: EnhancedRequestConfig): Promise<ResourceResponse<TResponse>>;
+  get<T>(
+    url: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ApiSuccessResponse<T>>;
+  post<TResponse, TRequest = any>(
+    url: string,
+    data: TRequest,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ApiSuccessResponse<TResponse>>;
+  put<TResponse, TRequest = any>(
+    url: string,
+    data: TRequest,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ApiSuccessResponse<TResponse>>;
+  delete<T = void>(
+    url: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ApiSuccessResponse<T>>;
+  getCollection<T>(
+    url: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<CollectionResponse<T>>;
+  getPaginated<T>(
+    url: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<PaginatedResponse<T>>;
+  getResource<T>(
+    url: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ResourceResponse<T>>;
+  getById<T>(
+    basePath: string,
+    id: string | number,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ResourceResponse<T>>;
+  putById<TResponse, TRequest = any>(
+    basePath: string,
+    id: string | number,
+    data: TRequest,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ResourceResponse<TResponse>>;
+  deleteById(
+    basePath: string,
+    id: string | number,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ApiSuccessResponse<void>>;
+  postById<TResponse, TRequest = any>(
+    basePath: string,
+    id: string | number,
+    data: TRequest,
+    subPath: string,
+    operation: string,
+    config?: EnhancedRequestConfig
+  ): Promise<ResourceResponse<TResponse>>;
 }

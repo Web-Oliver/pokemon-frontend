@@ -27,52 +27,6 @@ import { log } from '../utils/performance/logger';
  * Standard with comprehensive error handling and validation for new API format
  */
 export class CollectionApiService implements ICollectionApiService {
-  /**
-   * Validate ID parameter to prevent service errors
-   */
-  private validateId(id: string, operation: string): void {
-    if (!id || typeof id !== 'string' || id.trim() === '') {
-      const error = new Error(`Invalid ID provided for ${operation}: ${id}`);
-      log(`[COLLECTION SERVICE] ID validation failed for ${operation}`, {
-        id,
-        operation,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Validate data object for create/update operations
-   */
-  private validateData(data: any, operation: string): void {
-    if (!data || typeof data !== 'object') {
-      const error = new Error(`Invalid data provided for ${operation}`);
-      log(`[COLLECTION SERVICE] Data validation failed for ${operation}`, {
-        data,
-        operation,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Standard error handling wrapper for service methods
-   */
-  private async executeWithErrorHandling<T>(
-    operation: string,
-    apiCall: () => Promise<T>
-  ): Promise<T> {
-    try {
-      log(`[COLLECTION SERVICE] Executing ${operation}`);
-      const result = await apiCall();
-      log(`[COLLECTION SERVICE] Successfully completed ${operation}`);
-      return result;
-    } catch (error) {
-      log(`[COLLECTION SERVICE] Error in ${operation}`, { error });
-      handleApiError(error, `Collection service ${operation} failed`);
-      throw error; // Re-throw after logging
-    }
-  }
   // PSA Card operations
   async getPsaGradedCards(filters?: {
     sold?: boolean;
@@ -423,6 +377,53 @@ export class CollectionApiService implements ICollectionApiService {
 
       return result;
     });
+  }
+
+  /**
+   * Validate ID parameter to prevent service errors
+   */
+  private validateId(id: string, operation: string): void {
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      const error = new Error(`Invalid ID provided for ${operation}: ${id}`);
+      log(`[COLLECTION SERVICE] ID validation failed for ${operation}`, {
+        id,
+        operation,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Validate data object for create/update operations
+   */
+  private validateData(data: any, operation: string): void {
+    if (!data || typeof data !== 'object') {
+      const error = new Error(`Invalid data provided for ${operation}`);
+      log(`[COLLECTION SERVICE] Data validation failed for ${operation}`, {
+        data,
+        operation,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Standard error handling wrapper for service methods
+   */
+  private async executeWithErrorHandling<T>(
+    operation: string,
+    apiCall: () => Promise<T>
+  ): Promise<T> {
+    try {
+      log(`[COLLECTION SERVICE] Executing ${operation}`);
+      const result = await apiCall();
+      log(`[COLLECTION SERVICE] Successfully completed ${operation}`);
+      return result;
+    } catch (error) {
+      log(`[COLLECTION SERVICE] Error in ${operation}`, { error });
+      handleApiError(error, `Collection service ${operation} failed`);
+      throw error; // Re-throw after logging
+    }
   }
 }
 

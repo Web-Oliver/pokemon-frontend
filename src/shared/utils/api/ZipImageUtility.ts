@@ -23,7 +23,7 @@ export class ZipImageUtility {
   /**
    * Create ZIP file containing multiple images
    * Consolidates the duplicated ZIP creation logic from exportApi.ts
-   * 
+   *
    * @param config - Configuration object with image URLs and names
    * @returns Promise<Blob> - Generated ZIP file blob
    */
@@ -36,7 +36,9 @@ export class ZipImageUtility {
     }
 
     if (imageUrls.length !== itemNames.length) {
-      throw new Error('Image URLs and item names arrays must have the same length');
+      throw new Error(
+        'Image URLs and item names arrays must have the same length'
+      );
     }
 
     // Import JSZip dynamically
@@ -75,7 +77,7 @@ export class ZipImageUtility {
     return this.createImageZip({
       imageUrls,
       itemNames,
-      errorMessage: 'No images found in auction items'
+      errorMessage: 'No images found in auction items',
     });
   }
 
@@ -91,7 +93,7 @@ export class ZipImageUtility {
     return this.createImageZip({
       imageUrls,
       itemNames,
-      errorMessage: `No images found in ${itemType}s`
+      errorMessage: `No images found in ${itemType}s`,
     });
   }
 
@@ -100,11 +102,12 @@ export class ZipImageUtility {
    * Utility method for creating consistent filenames
    */
   static generateSafeFilename(itemData: any, index: number): string {
-    const name = itemData?.name || 
-                 itemData?.cardName || 
-                 itemData?.cardId?.cardName || 
-                 `item-${index}`;
-    
+    const name =
+      itemData?.name ||
+      itemData?.cardName ||
+      itemData?.cardId?.cardName ||
+      `item-${index}`;
+
     // Replace invalid filename characters
     return name.replace(/[<>:"/\\|?*]/g, '_').substring(0, 100);
   }
@@ -115,13 +118,14 @@ export class ZipImageUtility {
    */
   static extractImageUrl(itemData: any): string | null {
     if (!itemData) return null;
-    
+
     // Try various possible image URL locations
-    const imageUrl = itemData.images?.[0] || 
-                     itemData.itemData?.images?.[0] ||
-                     itemData.image ||
-                     itemData.imageUrl;
-    
+    const imageUrl =
+      itemData.images?.[0] ||
+      itemData.itemData?.images?.[0] ||
+      itemData.image ||
+      itemData.imageUrl;
+
     return imageUrl || null;
   }
 }

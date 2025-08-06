@@ -62,12 +62,12 @@ graph TD
 ### Error Scenarios
 
 1. **Scenario 1:** [Description]
-   - **Handling:** [How to handle]
-   - **User Impact:** [What user sees]
+    - **Handling:** [How to handle]
+    - **User Impact:** [What user sees]
 
 2. **Scenario 2:** [Description]
-   - **Handling:** [How to handle]
-   - **User Impact:** [What user sees]
+    - **Handling:** [How to handle]
+    - **User Impact:** [What user sees]
 
 ## Testing Strategy
 

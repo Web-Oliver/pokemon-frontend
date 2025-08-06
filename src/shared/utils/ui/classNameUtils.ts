@@ -19,7 +19,7 @@
  *
  * USE CASES:
  * - Component state classes (hover, focus, disabled, loading)
- * - Responsive breakpoint classes  
+ * - Responsive breakpoint classes
  * - Size, variant, and animation utilities
  * - Conditional className application
  * - Accessibility and interaction patterns
@@ -36,11 +36,7 @@ import {
   ComponentVariant,
   ComponentState,
 } from '../types/themeTypes';
-import {
-  VisualTheme,
-  Density,
-  AnimationIntensity,
-} from '../types/themeTypes';
+import { VisualTheme, Density, AnimationIntensity } from '../types/themeTypes';
 import { cn } from './themeUtils';
 
 // ================================

@@ -1,7 +1,7 @@
 /**
  * Centralized Theme Configuration
  * Layer 1: Core/Foundation (CLAUDE.md Architecture)
- * 
+ *
  * Single source of truth for theme configuration across all components
  * Following SOLID principles:
  * - SRP: Single responsibility for theme configuration aggregation
@@ -9,20 +9,25 @@
  * - DIP: Provides abstraction layer for theme access
  */
 
-import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../contexts/theme';
+import {
+  useVisualTheme,
+  useLayoutTheme,
+  useAnimationTheme,
+  useAccessibilityTheme,
+} from '../contexts/theme';
 
 export interface CentralizedThemeConfig {
   // Visual settings
   visualTheme: string;
   particleEffectsEnabled: boolean;
   glassmorphismIntensity: number;
-  
+
   // Layout settings
   density: string;
-  
+
   // Animation settings
   animationIntensity: string;
-  
+
   // Accessibility settings
   highContrast: boolean;
   reducedMotion: boolean;
@@ -34,7 +39,8 @@ export interface CentralizedThemeConfig {
  * Use this instead of importing individual theme hooks
  */
 export const useCentralizedTheme = (): CentralizedThemeConfig => {
-  const { visualTheme, particleEffectsEnabled, glassmorphismIntensity } = useVisualTheme();
+  const { visualTheme, particleEffectsEnabled, glassmorphismIntensity } =
+    useVisualTheme();
   const { density } = useLayoutTheme();
   const { animationIntensity } = useAnimationTheme();
   const { highContrast, reducedMotion } = useAccessibilityTheme();
@@ -66,7 +72,10 @@ export const themeUtils = {
   },
 
   // Get adjusted opacity based on glassmorphism intensity
-  getAdjustedOpacity: (config: CentralizedThemeConfig, baseOpacity: number): number => {
+  getAdjustedOpacity: (
+    config: CentralizedThemeConfig,
+    baseOpacity: number
+  ): number => {
     return baseOpacity * (config.glassmorphismIntensity / 100);
   },
 

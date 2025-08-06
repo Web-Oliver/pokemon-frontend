@@ -14,7 +14,12 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch,
+} from 'react-hook-form';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PokemonInput } from '../../design-system/PokemonInput';
 import FormActionButtons from '../../common/FormActionButtons';
@@ -79,7 +84,6 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-
       {/* Basic Auction Information */}
       <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>

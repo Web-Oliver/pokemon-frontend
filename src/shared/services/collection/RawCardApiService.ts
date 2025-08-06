@@ -1,10 +1,10 @@
 /**
  * Raw Card API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Focused service for raw card operations following SRP
  * Extends BaseApiService for common functionality
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for raw card operations only
  * - DIP: Depends on HTTP client abstraction
@@ -17,13 +17,19 @@ import { IRawCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
-import { IRawCardApiService, RawCardsParams } from '../../interfaces/api/ICollectionApiService';
+import {
+  IRawCardApiService,
+  RawCardsParams,
+} from '../../interfaces/api/ICollectionApiService';
 
 /**
  * Raw Card API Service
  * Handles all raw card operations with proper validation and error handling
  */
-export class RawCardApiService extends BaseApiService implements IRawCardApiService {
+export class RawCardApiService
+  extends BaseApiService
+  implements IRawCardApiService
+{
   constructor(httpClient: IHttpClient) {
     super(httpClient, 'RAW CARD SERVICE');
   }
@@ -60,8 +66,16 @@ export class RawCardApiService extends BaseApiService implements IRawCardApiServ
   /**
    * Update raw card
    */
-  async updateRawCard(id: string, cardData: Partial<IRawCard>): Promise<IRawCard> {
-    return this.updateResource<IRawCard>('/raw-cards', id, cardData, 'updateRawCard');
+  async updateRawCard(
+    id: string,
+    cardData: Partial<IRawCard>
+  ): Promise<IRawCard> {
+    return this.updateResource<IRawCard>(
+      '/raw-cards',
+      id,
+      cardData,
+      'updateRawCard'
+    );
   }
 
   /**
@@ -74,10 +88,13 @@ export class RawCardApiService extends BaseApiService implements IRawCardApiServ
   /**
    * Mark raw card as sold
    */
-  async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
+  async markRawCardSold(
+    id: string,
+    saleDetails: ISaleDetails
+  ): Promise<IRawCard> {
     this.validateId(id, 'markRawCardSold');
     this.validateData(saleDetails, 'markRawCardSold');
-    
+
     return this.executeWithErrorHandling('markRawCardSold', async () => {
       const result = await this.httpClient.postById<IRawCard>(
         '/raw-cards',

@@ -1,6 +1,6 @@
 /**
  * CLAUDE.md COMPLIANCE: Theme Export Manager Component
- * 
+ *
  * SRP: Single responsibility for theme export operations
  * OCP: Open for extension via props interface
  * DIP: Depends on theme utilities abstraction
@@ -10,10 +10,10 @@ import { useState, useCallback } from 'react';
 import { Download, Package, FileText } from 'lucide-react';
 import { cn } from '../../../utils/unifiedUtilities';
 import type { ThemeExportData } from './utils/themeExportUtils';
-import { 
-  generateThemeExportData, 
+import {
+  generateThemeExportData,
   downloadThemeAsFile,
-  getThemeConfigSummary 
+  getThemeConfigSummary,
 } from './utils/themeExportUtils';
 
 interface ThemeExportManagerProps {
@@ -33,7 +33,7 @@ interface ThemeExportManagerProps {
 /**
  * ThemeExportManager Component
  * Handles theme export operations and preset management
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only export-related operations
  * - DRY: Reusable export logic
@@ -77,18 +77,24 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
       accessibilityTheme,
       exportDescription || undefined
     );
-  }, [visualTheme, layoutTheme, animationTheme, accessibilityTheme, exportDescription]);
+  }, [
+    visualTheme,
+    layoutTheme,
+    animationTheme,
+    accessibilityTheme,
+    exportDescription,
+  ]);
 
   const handleExportCurrent = useCallback(async () => {
     setIsExporting(true);
-    
+
     try {
       const themeData = getCurrentThemeData();
       const timestamp = new Date().toISOString().split('T')[0];
       const filename = `theme-export-${timestamp}.json`;
-      
+
       downloadThemeAsFile(themeData, filename);
-      
+
       // Clear description after successful export
       setExportDescription('');
     } catch (error) {
@@ -100,31 +106,31 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
 
   const handleExportAllPresets = useCallback(async () => {
     setIsExporting(true);
-    
+
     try {
       if (customPresets.length === 0) {
         alert('No custom presets to export');
         return;
       }
-      
+
       const exportData = {
         version: '1.0.0',
         timestamp: new Date().toISOString(),
         presets: customPresets,
         count: customPresets.length,
       };
-      
+
       const dataStr = JSON.stringify(exportData, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `theme-presets-collection-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Preset collection export failed:', error);
@@ -135,7 +141,7 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
 
   const handleExportPresetCollection = useCallback(async () => {
     setIsExporting(true);
-    
+
     try {
       const currentTheme = getCurrentThemeData();
       const allPresets = [
@@ -147,25 +153,25 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
         },
         ...customPresets,
       ];
-      
+
       const exportData = {
         version: '1.0.0',
         timestamp: new Date().toISOString(),
         presets: allPresets,
         count: allPresets.length,
       };
-      
+
       const dataStr = JSON.stringify(exportData, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `complete-theme-collection-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Complete collection export failed:', error);
@@ -175,7 +181,10 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
   }, [getCurrentThemeData, customPresets]);
 
   const currentThemeData = getCurrentThemeData();
-  const themeSummary = getThemeConfigSummary(currentThemeData.config, currentThemeData.visualTheme);
+  const themeSummary = getThemeConfigSummary(
+    currentThemeData.config,
+    currentThemeData.visualTheme
+  );
 
   return (
     <div className="space-y-4">
@@ -189,7 +198,7 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
           <Download className="w-4 h-4 mr-2" />
           {isExporting ? 'Exporting...' : 'Export Current'}
         </button>
-        
+
         {customPresets.length > 0 && (
           <>
             <button
@@ -200,7 +209,7 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
               <Package className="w-4 h-4 mr-2" />
               Export Presets ({customPresets.length})
             </button>
-            
+
             <button
               onClick={handleExportPresetCollection}
               disabled={isExporting}
@@ -211,7 +220,7 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
             </button>
           </>
         )}
-        
+
         <button
           onClick={onToggleExportOptions}
           className={secondaryButtonClasses}
@@ -253,9 +262,18 @@ export const ThemeExportManager: React.FC<ThemeExportManagerProps> = ({
               <div className="text-sm text-zinc-300">
                 <p className="font-medium mb-2">Available Export Options:</p>
                 <ul className="text-xs text-zinc-400 space-y-1">
-                  <li>• <strong>Export Current:</strong> Save only the active theme</li>
-                  <li>• <strong>Export Presets:</strong> Save all {customPresets.length} custom presets</li>
-                  <li>• <strong>Export All:</strong> Save current theme + all presets</li>
+                  <li>
+                    • <strong>Export Current:</strong> Save only the active
+                    theme
+                  </li>
+                  <li>
+                    • <strong>Export Presets:</strong> Save all{' '}
+                    {customPresets.length} custom presets
+                  </li>
+                  <li>
+                    • <strong>Export All:</strong> Save current theme + all
+                    presets
+                  </li>
                 </ul>
               </div>
             </div>

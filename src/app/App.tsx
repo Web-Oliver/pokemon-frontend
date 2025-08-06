@@ -24,20 +24,30 @@ import MainLayout from '../shared/components/layout/layouts/MainLayout';
 // Following React.dev patterns for optimal bundle performance
 // Critical path components (loaded immediately with Suspense boundaries)
 const Dashboard = lazy(() => import('../features/dashboard/pages/Dashboard'));
-const Collection = lazy(() => import('../features/collection/pages/Collection'));
+const Collection = lazy(
+  () => import('../features/collection/pages/Collection')
+);
 
 // Secondary features (lazy loaded with prefetch hints)
 const CollectionItemDetail = lazy(
   () =>
-    import(/* webpackChunkName: "item-detail" */ '../features/collection/pages/CollectionItemDetail')
+    import(
+      /* webpackChunkName: "item-detail" */ '../features/collection/pages/CollectionItemDetail'
+    )
 );
 const AddEditItem = lazy(
-  () => import(/* webpackChunkName: "forms" */ '../features/collection/pages/AddEditItem')
+  () =>
+    import(
+      /* webpackChunkName: "forms" */ '../features/collection/pages/AddEditItem'
+    )
 );
 
 // Search features (bundled together for caching)
 const SetSearch = lazy(
-  () => import(/* webpackChunkName: "search-features" */ '../features/search/pages/SetSearch')
+  () =>
+    import(
+      /* webpackChunkName: "search-features" */ '../features/search/pages/SetSearch'
+    )
 );
 const SealedProductSearch = lazy(
   () =>
@@ -48,29 +58,48 @@ const SealedProductSearch = lazy(
 
 // Auction features (bundled together for better caching)
 const Auctions = lazy(
-  () => import(/* webpackChunkName: "auction-features" */ '../features/auction/pages/Auctions')
+  () =>
+    import(
+      /* webpackChunkName: "auction-features" */ '../features/auction/pages/Auctions'
+    )
 );
 const AuctionDetail = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../features/auction/pages/AuctionDetail')
+    import(
+      /* webpackChunkName: "auction-features" */ '../features/auction/pages/AuctionDetail'
+    )
 );
 const CreateAuction = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../features/auction/pages/CreateAuction')
+    import(
+      /* webpackChunkName: "auction-features" */ '../features/auction/pages/CreateAuction'
+    )
 );
 const AuctionEdit = lazy(
-  () => import(/* webpackChunkName: "auction-features" */ '../features/auction/pages/AuctionEdit')
+  () =>
+    import(
+      /* webpackChunkName: "auction-features" */ '../features/auction/pages/AuctionEdit'
+    )
 );
 
 // Analytics and heavy features (separate chunks)
 const SalesAnalytics = lazy(
-  () => import(/* webpackChunkName: "analytics" */ '../features/analytics/pages/SalesAnalytics')
+  () =>
+    import(
+      /* webpackChunkName: "analytics" */ '../features/analytics/pages/SalesAnalytics'
+    )
 );
 const Activity = lazy(
-  () => import(/* webpackChunkName: "activity" */ '../features/analytics/pages/Activity')
+  () =>
+    import(
+      /* webpackChunkName: "activity" */ '../features/analytics/pages/Activity'
+    )
 );
 const DbaExport = lazy(
-  () => import(/* webpackChunkName: "export" */ '../features/dashboard/pages/DbaExport')
+  () =>
+    import(
+      /* webpackChunkName: "export" */ '../features/dashboard/pages/DbaExport'
+    )
 );
 
 // Context7 Pattern: Main App component with useTransition for smooth navigation

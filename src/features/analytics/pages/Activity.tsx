@@ -43,7 +43,10 @@ import ActivityFilterHub from '../../../shared/components/molecules/common/Activ
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
 import { ACTIVITY_TYPES, useActivity } from '../../../shared/hooks/useActivity';
-import { displayPrice, getRelativeTime } from '../../../shared/utils/helpers/formatting';
+import {
+  displayPrice,
+  getRelativeTime,
+} from '../../../shared/utils/helpers/formatting';
 
 // Import our unified design system
 import {

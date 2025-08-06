@@ -1,6 +1,6 @@
 /**
  * Item Price History Component
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles price history and price update functionality
  * - DRY: Reusable price management pattern
@@ -51,7 +51,7 @@ export const ItemPriceHistory: React.FC<ItemPriceHistoryProps> = ({
           currentPrice={item.myPrice}
           onPriceUpdate={undefined} // Not used in this context
         />
-        
+
         {/* Price Update Section */}
         {!item.sold && (
           <div className="pt-6 border-t border-[var(--theme-border)]">

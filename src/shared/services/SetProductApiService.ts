@@ -34,71 +34,6 @@ import { log } from '../utils/performance/logger';
  */
 export class SetProductApiService implements ISetProductApiService {
   /**
-   * Validate ID parameter to prevent service errors
-   */
-  private validateId(id: string, operation: string): void {
-    if (!id || typeof id !== 'string' || id.trim() === '') {
-      const error = new Error(`Invalid ID provided for ${operation}: ${id}`);
-      log(`[SETPRODUCT SERVICE] ID validation failed for ${operation}`, {
-        id,
-        operation,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Validate uniqueSetProductId parameter
-   */
-  private validateUniqueId(uniqueId: number, operation: string): void {
-    if (!uniqueId || typeof uniqueId !== 'number' || uniqueId <= 0) {
-      const error = new Error(
-        `Invalid unique ID provided for ${operation}: ${uniqueId}`
-      );
-      log(`[SETPRODUCT SERVICE] Unique ID validation failed for ${operation}`, {
-        uniqueId,
-        operation,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Validate data object for create/update operations
-   */
-  private validateData(data: any, operation: string): void {
-    if (!data || typeof data !== 'object') {
-      const error = new Error(`Invalid data provided for ${operation}`);
-      log(`[SETPRODUCT SERVICE] Data validation failed for ${operation}`, {
-        data,
-        operation,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Standard error handling wrapper for service methods
-   */
-  private async executeWithErrorHandling<T>(
-    operation: string,
-    apiCall: () => Promise<T>
-  ): Promise<T> {
-    try {
-      log(`[SETPRODUCT SERVICE] Executing ${operation}`);
-      const result = await apiCall();
-      log(`[SETPRODUCT SERVICE] Successfully completed ${operation}`);
-      return result;
-    } catch (error) {
-      log(`[SETPRODUCT SERVICE] Error in ${operation}`, { error });
-      handleApiError(error, `SetProduct service ${operation} failed`);
-      throw error; // Re-throw after logging
-    }
-  }
-
-  // ===== READ OPERATIONS =====
-
-  /**
    * Get all SetProducts with optional filtering
    */
   async getSetProducts(filters?: SetProductFilters): Promise<ISetProduct[]> {
@@ -176,8 +111,6 @@ export class SetProductApiService implements ISetProductApiService {
     );
   }
 
-  // ===== SEARCH OPERATIONS =====
-
   /**
    * Search SetProducts using the search API
    * For hierarchical autocomplete functionality
@@ -201,6 +134,8 @@ export class SetProductApiService implements ISetProductApiService {
       return response.data || [];
     });
   }
+
+  // ===== READ OPERATIONS =====
 
   /**
    * Get SetProduct suggestions for autocomplete
@@ -236,12 +171,6 @@ export class SetProductApiService implements ISetProductApiService {
     });
   }
 
-  // ===== NO WRITE OPERATIONS =====
-  // SetProducts are read-only reference data from CardMarket
-  // No create, update, or delete operations are available
-
-  // ===== RELATIONSHIP OPERATIONS =====
-
   /**
    * Get all Products that belong to a specific SetProduct
    * For hierarchical data display and management
@@ -273,6 +202,8 @@ export class SetProductApiService implements ISetProductApiService {
       }
     );
   }
+
+  // ===== SEARCH OPERATIONS =====
 
   /**
    * Get statistical information about a SetProduct
@@ -312,6 +243,75 @@ export class SetProductApiService implements ISetProductApiService {
 
       return stats;
     });
+  }
+
+  /**
+   * Validate ID parameter to prevent service errors
+   */
+  private validateId(id: string, operation: string): void {
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      const error = new Error(`Invalid ID provided for ${operation}: ${id}`);
+      log(`[SETPRODUCT SERVICE] ID validation failed for ${operation}`, {
+        id,
+        operation,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Validate uniqueSetProductId parameter
+   */
+  private validateUniqueId(uniqueId: number, operation: string): void {
+    if (!uniqueId || typeof uniqueId !== 'number' || uniqueId <= 0) {
+      const error = new Error(
+        `Invalid unique ID provided for ${operation}: ${uniqueId}`
+      );
+      log(`[SETPRODUCT SERVICE] Unique ID validation failed for ${operation}`, {
+        uniqueId,
+        operation,
+      });
+      throw error;
+    }
+  }
+
+  // ===== NO WRITE OPERATIONS =====
+  // SetProducts are read-only reference data from CardMarket
+  // No create, update, or delete operations are available
+
+  // ===== RELATIONSHIP OPERATIONS =====
+
+  /**
+   * Validate data object for create/update operations
+   */
+  private validateData(data: any, operation: string): void {
+    if (!data || typeof data !== 'object') {
+      const error = new Error(`Invalid data provided for ${operation}`);
+      log(`[SETPRODUCT SERVICE] Data validation failed for ${operation}`, {
+        data,
+        operation,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Standard error handling wrapper for service methods
+   */
+  private async executeWithErrorHandling<T>(
+    operation: string,
+    apiCall: () => Promise<T>
+  ): Promise<T> {
+    try {
+      log(`[SETPRODUCT SERVICE] Executing ${operation}`);
+      const result = await apiCall();
+      log(`[SETPRODUCT SERVICE] Successfully completed ${operation}`);
+      return result;
+    } catch (error) {
+      log(`[SETPRODUCT SERVICE] Error in ${operation}`, { error });
+      handleApiError(error, `SetProduct service ${operation} failed`);
+      throw error; // Re-throw after logging
+    }
   }
 }
 

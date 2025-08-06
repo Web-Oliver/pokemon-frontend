@@ -1,13 +1,13 @@
 /**
  * CONSOLIDATED: Unified Hierarchical Search Component
  * Following CLAUDE.md SOLID principles with complete DRY compliance
- * 
+ *
  * ✅ CONSOLIDATION SUCCESS:
  * - Eliminated 90%+ duplication between HierarchicalCardSearch and HierarchicalProductSearch
  * - Single configurable component handles both card and product searches
  * - Configuration-driven approach following proven Entity Configuration Pattern
  * - Full backward compatibility maintained
- * 
+ *
  * SOLID Principles Applied:
  * - SRP: Single responsibility for hierarchical search UI
  * - OCP: Open for extension via searchConfig, closed for modification
@@ -16,7 +16,13 @@
  */
 
 import React from 'react';
-import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormClearErrors } from 'react-hook-form';
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch,
+  UseFormClearErrors,
+} from 'react-hook-form';
 import { useHierarchicalSearch } from '../../hooks/useHierarchicalSearch';
 import { PokemonSearch } from '../../design-system/PokemonSearch';
 
@@ -73,7 +79,8 @@ export const CARD_SEARCH_CONFIG: HierarchicalSearchConfig = {
     searchType: 'cards',
     required: true,
   },
-  editingMessage: 'Card information cannot be changed when editing. The card details are locked after adding to preserve data integrity.',
+  editingMessage:
+    'Card information cannot be changed when editing. The card details are locked after adding to preserve data integrity.',
   debounceDelay: 300,
 };
 
@@ -95,7 +102,8 @@ export const PRODUCT_SEARCH_CONFIG: HierarchicalSearchConfig = {
     required: true,
     useExternalSearch: true,
   },
-  editingMessage: 'Product information cannot be changed when editing. The product details are locked after adding to preserve data integrity.',
+  editingMessage:
+    'Product information cannot be changed when editing. The product details are locked after adding to preserve data integrity.',
   debounceDelay: 300,
 };
 
@@ -114,15 +122,14 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
   isEditing = false,
   searchConfig,
 }) => {
-  const { mode, primaryField, secondaryField, editingMessage, debounceDelay } = searchConfig;
+  const { mode, primaryField, secondaryField, editingMessage, debounceDelay } =
+    searchConfig;
 
   // CRITICAL: Only show hierarchical search on ADD pages, not EDIT pages
   if (isEditing) {
     return (
       <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-        <p className="text-sm text-amber-400">
-          {editingMessage}
-        </p>
+        <p className="text-sm text-amber-400">{editingMessage}</p>
       </div>
     );
   }
@@ -154,17 +161,31 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
       {/* Primary Field - Dynamic based on configuration */}
       <div className="relative">
         <label className="block text-sm font-medium text-zinc-300 mb-2">
-          {primaryField.label} {primaryField.required && <span className="text-red-400">*</span>}
+          {primaryField.label}{' '}
+          {primaryField.required && <span className="text-red-400">*</span>}
         </label>
         <PokemonSearch
           searchType={primaryField.searchType}
           placeholder={primaryField.placeholder}
           value={watch(primaryField.name) || ''}
           useExternalSearch={primaryField.useExternalSearch}
-          externalResults={primaryField.useExternalSearch && activeField === primaryField.name ? suggestions : undefined}
-          externalLoading={primaryField.useExternalSearch && activeField === primaryField.name && isLoading}
+          externalResults={
+            primaryField.useExternalSearch && activeField === primaryField.name
+              ? suggestions
+              : undefined
+          }
+          externalLoading={
+            primaryField.useExternalSearch &&
+            activeField === primaryField.name &&
+            isLoading
+          }
           onSelect={(result) => {
-            handlePrimarySelection(result, setValue, clearErrors, onSelectionChange);
+            handlePrimarySelection(
+              result,
+              setValue,
+              clearErrors,
+              onSelectionChange
+            );
             setActiveField(null);
           }}
           onInputChange={(value) => {
@@ -177,32 +198,51 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
           minLength={2}
         />
         {errors[primaryField.name] && (
-          <p className="mt-1 text-sm text-red-400">{errors[primaryField.name].message}</p>
+          <p className="mt-1 text-sm text-red-400">
+            {errors[primaryField.name].message}
+          </p>
         )}
-        
+
         {/* Hidden input for form validation */}
         <input
           type="hidden"
-          {...register(primaryField.name, { 
-            required: primaryField.required ? `${primaryField.label} is required` : false 
+          {...register(primaryField.name, {
+            required: primaryField.required
+              ? `${primaryField.label} is required`
+              : false,
           })}
         />
       </div>
-      
+
       {/* Secondary Field - Dynamic based on configuration */}
       <div className="relative">
         <label className="block text-sm font-medium text-zinc-300 mb-2">
-          {secondaryField.label} {secondaryField.required && <span className="text-red-400">*</span>}
+          {secondaryField.label}{' '}
+          {secondaryField.required && <span className="text-red-400">*</span>}
         </label>
         <PokemonSearch
           searchType={secondaryField.searchType}
           placeholder={secondaryField.placeholder}
           value={watch(secondaryField.name) || ''}
           useExternalSearch={secondaryField.useExternalSearch}
-          externalResults={secondaryField.useExternalSearch && activeField === secondaryField.name ? suggestions : undefined}
-          externalLoading={secondaryField.useExternalSearch && activeField === secondaryField.name && isLoading}
+          externalResults={
+            secondaryField.useExternalSearch &&
+            activeField === secondaryField.name
+              ? suggestions
+              : undefined
+          }
+          externalLoading={
+            secondaryField.useExternalSearch &&
+            activeField === secondaryField.name &&
+            isLoading
+          }
           onSelect={(result) => {
-            handleSecondarySelection(result, setValue, clearErrors, onSelectionChange);
+            handleSecondarySelection(
+              result,
+              setValue,
+              clearErrors,
+              onSelectionChange
+            );
             setActiveField(null);
           }}
           onInputChange={(value) => {
@@ -217,14 +257,18 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
           minLength={2}
         />
         {errors[secondaryField.name] && (
-          <p className="mt-1 text-sm text-red-400">{errors[secondaryField.name].message}</p>
+          <p className="mt-1 text-sm text-red-400">
+            {errors[secondaryField.name].message}
+          </p>
         )}
-        
+
         {/* Hidden input for form validation */}
         <input
           type="hidden"
-          {...register(secondaryField.name, { 
-            required: secondaryField.required ? `${secondaryField.label} is required` : false 
+          {...register(secondaryField.name, {
+            required: secondaryField.required
+              ? `${secondaryField.label} is required`
+              : false,
           })}
         />
       </div>
@@ -247,12 +291,11 @@ interface HierarchicalCardSearchProps {
   isEditing?: boolean;
 }
 
-const HierarchicalCardSearch: React.FC<HierarchicalCardSearchProps> = (props) => {
+const HierarchicalCardSearch: React.FC<HierarchicalCardSearchProps> = (
+  props
+) => {
   return (
-    <UnifiedHierarchicalSearch
-      {...props}
-      searchConfig={CARD_SEARCH_CONFIG}
-    />
+    <UnifiedHierarchicalSearch {...props} searchConfig={CARD_SEARCH_CONFIG} />
   );
 };
 

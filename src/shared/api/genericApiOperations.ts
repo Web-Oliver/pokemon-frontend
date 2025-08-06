@@ -34,7 +34,12 @@ export interface ResourceConfig {
 /**
  * Transformation strategy options
  */
-export type TransformationStrategy = 'standard' | 'search' | 'direct' | 'raw' | 'auto';
+export type TransformationStrategy =
+  | 'standard'
+  | 'search'
+  | 'direct'
+  | 'raw'
+  | 'auto';
 
 /**
  * Options for API operations
@@ -55,7 +60,11 @@ export async function getCollection<T>(
   params?: GenericParams,
   options?: OperationOptions
 ): Promise<T[]> {
-  const { transform, transformStrategy = 'auto', ...requestOptions } = options || {};
+  const {
+    transform,
+    transformStrategy = 'auto',
+    ...requestOptions
+  } = options || {};
 
   const data = await unifiedApiClient.apiGet<T[]>(
     config.endpoint,
@@ -84,7 +93,11 @@ export async function getResource<T>(
   id: string,
   options?: OperationOptions
 ): Promise<T> {
-  const { transform, transformStrategy = 'auto', ...requestOptions } = options || {};
+  const {
+    transform,
+    transformStrategy = 'auto',
+    ...requestOptions
+  } = options || {};
 
   const data = await unifiedApiClient.apiGet<T>(
     `${config.endpoint}/${id}`,

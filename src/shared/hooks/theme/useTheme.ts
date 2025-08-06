@@ -1,7 +1,7 @@
 /**
  * Composite Theme Hook
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 3
- * 
+ *
  * Composite hook that aggregates all focused theme hooks
  * Maintains backward compatibility with existing useTheme interface
  * Enables gradual migration path for components
@@ -9,7 +9,12 @@
 
 import { useCallback } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import { ThemeContextType, ThemeConfiguration, ColorScheme, ThemeColor } from '../../contexts/ThemeContext';
+import {
+  ThemeContextType,
+  ThemeConfiguration,
+  ColorScheme,
+  ThemeColor,
+} from '../../contexts/ThemeContext';
 import { useVisualTheme } from './useVisualTheme';
 import { useLayoutTheme } from './useLayoutTheme';
 import { useAnimationTheme } from './useAnimationTheme';
@@ -29,7 +34,7 @@ export const useTheme = (): ThemeContextType => {
   const animationTheme = useAnimationTheme();
   const accessibilityTheme = useAccessibilityTheme();
   const themeStorage = useThemeStorage();
-  
+
   // Get next-themes context for color scheme management
   const { setTheme: setNextTheme, resolvedTheme } = useNextTheme();
 
@@ -39,26 +44,29 @@ export const useTheme = (): ThemeContextType => {
     visualTheme: visualTheme.visualTheme,
     glassmorphismIntensity: visualTheme.glassmorphismIntensity,
     particleEffectsEnabled: visualTheme.particleEffectsEnabled,
-    
+
     // Layout settings
     density: layoutTheme.density,
-    
+
     // Animation settings
     animationIntensity: animationTheme.animationIntensity,
-    
+
     // Accessibility settings
     highContrast: accessibilityTheme.highContrast,
     reducedMotion: accessibilityTheme.reducedMotion,
-    
+
     // Default values for properties not yet decomposed
     colorScheme: 'system' as ColorScheme,
     primaryColor: 'dark' as ThemeColor,
   };
 
   // Color scheme management (simplified for backward compatibility)
-  const setColorScheme = useCallback((scheme: ColorScheme) => {
-    setNextTheme(scheme);
-  }, [setNextTheme]);
+  const setColorScheme = useCallback(
+    (scheme: ColorScheme) => {
+      setNextTheme(scheme);
+    },
+    [setNextTheme]
+  );
 
   // Primary color management (simplified for backward compatibility)
   const setPrimaryColor = useCallback((color: ThemeColor) => {
@@ -92,12 +100,18 @@ export const useTheme = (): ThemeContextType => {
 
     const properties: Record<string, string> = {
       // Form theme properties
-      '--theme-primary-gradient': formTheme.button.primary.replace('bg-gradient-to-r ', ''),
-      '--theme-primary-hover': formTheme.button.primaryHover.replace('hover:', ''),
+      '--theme-primary-gradient': formTheme.button.primary.replace(
+        'bg-gradient-to-r ',
+        ''
+      ),
+      '--theme-primary-hover': formTheme.button.primaryHover.replace(
+        'hover:',
+        ''
+      ),
       '--theme-header-background': formTheme.header.background,
       '--theme-border-color': formTheme.element.border,
       '--theme-focus-ring': formTheme.element.focus,
-      
+
       // Density properties
       '--density-multiplier': densityMultiplier.toString(),
       '--density-spacing-xs': spacingTokens.xs,
@@ -105,7 +119,7 @@ export const useTheme = (): ThemeContextType => {
       '--density-spacing-md': spacingTokens.md,
       '--density-spacing-lg': spacingTokens.lg,
       '--density-spacing-xl': spacingTokens.xl,
-      
+
       // Animation properties
       '--animation-duration-fast': animationDurations.fast,
       '--animation-duration-normal': animationDurations.normal,
@@ -115,7 +129,7 @@ export const useTheme = (): ThemeContextType => {
       '--animation-delay-long': animationDelays.long,
       '--animation-duration-orbit': complexDurations.orbit,
       '--animation-duration-particle': complexDurations.particle,
-      
+
       // Visual properties
       '--glass-alpha': (visualTheme.glassmorphismIntensity / 100).toString(),
       '--glass-blur': `${visualTheme.glassmorphismIntensity / 5}px`,
@@ -136,7 +150,9 @@ export const useTheme = (): ThemeContextType => {
     if (typeof window === 'undefined') {
       return 'dark';
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   }, []);
 
   const resetToDefaults = useCallback(() => {
@@ -146,19 +162,25 @@ export const useTheme = (): ThemeContextType => {
     if (visualTheme.particleEffectsEnabled !== true) {
       visualTheme.toggleParticleEffects();
     }
-    
+
     layoutTheme.setDensity('comfortable');
     animationTheme.setAnimationIntensity('normal');
-    
+
     if (accessibilityTheme.highContrast) {
       accessibilityTheme.toggleHighContrast();
     }
     if (accessibilityTheme.reducedMotion) {
       accessibilityTheme.toggleReducedMotion();
     }
-    
+
     setNextTheme('system');
-  }, [visualTheme, layoutTheme, animationTheme, accessibilityTheme, setNextTheme]);
+  }, [
+    visualTheme,
+    layoutTheme,
+    animationTheme,
+    accessibilityTheme,
+    setNextTheme,
+  ]);
 
   // Build complete ThemeContextType interface for backward compatibility
   const contextValue: ThemeContextType = {
@@ -180,7 +202,10 @@ export const useTheme = (): ThemeContextType => {
     // Advanced Configuration (delegated to visual provider)
     setGlassmorphismIntensity: visualTheme.setGlassmorphismIntensity,
     toggleParticleEffects: visualTheme.toggleParticleEffects,
-    setCustomProperties: () => console.warn('setCustomProperties not yet implemented in decomposed context'),
+    setCustomProperties: () =>
+      console.warn(
+        'setCustomProperties not yet implemented in decomposed context'
+      ),
 
     // Preset Management (delegated to visual and storage providers)
     applyPreset: visualTheme.applyPreset,

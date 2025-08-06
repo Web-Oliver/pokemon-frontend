@@ -1,13 +1,17 @@
 /**
  * Theme Debugging Utilities
  * Split from themeDebug.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Debug utilities only
  * - DRY: Centralized debug logic
  */
 
-import { VisualTheme, ThemeConfiguration, ComponentStyleConfig } from '../../types/themeTypes';
+import {
+  VisualTheme,
+  ThemeConfiguration,
+  ComponentStyleConfig,
+} from '../../types/themeTypes';
 import { validateThemeConfiguration } from './validation';
 import { getThemePerformanceMetrics } from './performance';
 
@@ -16,13 +20,13 @@ import { getThemePerformanceMetrics } from './performance';
  */
 export function extractThemeProperties(): Record<string, string> {
   const properties: Record<string, string> = {};
-  
+
   if (typeof window === 'undefined') {
     return properties;
   }
 
   const computedStyles = getComputedStyle(document.documentElement);
-  
+
   // Extract CSS custom properties that contain 'theme'
   for (let i = 0; i < computedStyles.length; i++) {
     const property = computedStyles[i];
@@ -30,7 +34,7 @@ export function extractThemeProperties(): Record<string, string> {
       properties[property] = computedStyles.getPropertyValue(property).trim();
     }
   }
-  
+
   return properties;
 }
 
@@ -98,8 +102,8 @@ export function generateThemeComparison(
   themes: VisualTheme[]
 ): Record<string, any> {
   const comparison: Record<string, any> = {};
-  
-  themes.forEach(theme => {
+
+  themes.forEach((theme) => {
     comparison[theme] = {
       name: theme,
       // Add comparison metrics here
@@ -107,6 +111,6 @@ export function generateThemeComparison(
       timestamp: new Date().toISOString(),
     };
   });
-  
+
   return comparison;
 }

@@ -29,7 +29,10 @@ import ImageUploader from '../ImageUploader';
 import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
 import ValidationField from './fields/ValidationField';
 import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
-import { FormValidationService, VALIDATION_CONFIGS } from '../../services/forms/FormValidationService';
+import {
+  FormValidationService,
+  VALIDATION_CONFIGS,
+} from '../../services/forms/FormValidationService';
 import {
   convertObjectIdToString,
   transformRequestData,
@@ -419,7 +422,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               watch={watch}
               clearErrors={clearErrors}
               onSelectionChange={(selectedData) => {
-                console.log('[SEALED PRODUCT] Product selection:', selectedData);
+                console.log(
+                  '[SEALED PRODUCT] Product selection:',
+                  selectedData
+                );
                 // Store selected product data for form submission (CRITICAL - maintains existing behavior)
                 setSelectedProductData(selectedData);
               }}
@@ -462,7 +468,8 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
             />
             {watchedCardMarketPrice && (
               <div className="mt-2 text-sm text-emerald-600 font-semibold">
-                CardMarket Price: {parseFloat(watchedCardMarketPrice || '0')} kr.
+                CardMarket Price: {parseFloat(watchedCardMarketPrice || '0')}{' '}
+                kr.
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 /**
  * Accessibility Theme Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 1.4
- * 
+ *
  * Focused context for accessibility settings management following ISP
  * Handles: high contrast, reduced motion, and a11y-related theme aspects
  */
@@ -21,13 +21,13 @@ export interface AccessibilityThemeContextType {
   // Current State
   highContrast: boolean;
   reducedMotion: boolean;
-  
+
   // Accessibility Management
   toggleHighContrast: () => void;
   toggleReducedMotion: () => void;
   setHighContrast: (enabled: boolean) => void;
   setReducedMotion: (enabled: boolean) => void;
-  
+
   // Utility Functions
   getAccessibilityClasses: () => string;
   shouldReduceMotion: () => boolean;
@@ -38,7 +38,8 @@ export interface AccessibilityThemeContextType {
 // CONTEXT SETUP
 // ================================
 
-const AccessibilityThemeContext = createContext<AccessibilityThemeContextType | null>(null);
+const AccessibilityThemeContext =
+  createContext<AccessibilityThemeContextType | null>(null);
 
 export interface AccessibilityThemeProviderProps {
   children: React.ReactNode;
@@ -51,11 +52,9 @@ export interface AccessibilityThemeProviderProps {
  * Manages accessibility state following Single Responsibility Principle
  * Only handles accessibility-related theme aspects (contrast, motion, etc.)
  */
-export const AccessibilityThemeProvider: React.FC<AccessibilityThemeProviderProps> = ({
-  children,
-  state,
-  onStateChange,
-}) => {
+export const AccessibilityThemeProvider: React.FC<
+  AccessibilityThemeProviderProps
+> = ({ children, state, onStateChange }) => {
   // Accessibility manipulation functions
   const toggleHighContrast = useCallback(() => {
     onStateChange({ highContrast: !state.highContrast });
@@ -65,25 +64,31 @@ export const AccessibilityThemeProvider: React.FC<AccessibilityThemeProviderProp
     onStateChange({ reducedMotion: !state.reducedMotion });
   }, [onStateChange, state.reducedMotion]);
 
-  const setHighContrast = useCallback((enabled: boolean) => {
-    onStateChange({ highContrast: enabled });
-  }, [onStateChange]);
+  const setHighContrast = useCallback(
+    (enabled: boolean) => {
+      onStateChange({ highContrast: enabled });
+    },
+    [onStateChange]
+  );
 
-  const setReducedMotion = useCallback((enabled: boolean) => {
-    onStateChange({ reducedMotion: enabled });
-  }, [onStateChange]);
+  const setReducedMotion = useCallback(
+    (enabled: boolean) => {
+      onStateChange({ reducedMotion: enabled });
+    },
+    [onStateChange]
+  );
 
   // Utility functions
   const getAccessibilityClasses = useCallback((): string => {
     const classes: string[] = [];
-    
+
     if (state.highContrast) {
       classes.push('high-contrast');
     }
     if (state.reducedMotion) {
       classes.push('reduced-motion');
     }
-    
+
     return classes.join(' ');
   }, [state]);
 
@@ -99,13 +104,13 @@ export const AccessibilityThemeProvider: React.FC<AccessibilityThemeProviderProp
     // Current State
     highContrast: state.highContrast,
     reducedMotion: state.reducedMotion,
-    
+
     // Accessibility Management
     toggleHighContrast,
     toggleReducedMotion,
     setHighContrast,
     setReducedMotion,
-    
+
     // Utility Functions
     getAccessibilityClasses,
     shouldReduceMotion,
@@ -126,7 +131,9 @@ export const AccessibilityThemeProvider: React.FC<AccessibilityThemeProviderProp
 export const useAccessibilityTheme = (): AccessibilityThemeContextType => {
   const context = useContext(AccessibilityThemeContext);
   if (!context) {
-    throw new Error('useAccessibilityTheme must be used within an AccessibilityThemeProvider');
+    throw new Error(
+      'useAccessibilityTheme must be used within an AccessibilityThemeProvider'
+    );
   }
   return context;
 };

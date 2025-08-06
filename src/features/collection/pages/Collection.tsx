@@ -11,20 +11,37 @@
  */
 
 import { Download, FileText, Plus } from 'lucide-react';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 // Lazy load modal/form components for better performance
-const MarkSoldForm = React.lazy(() => import('../../../shared/components/forms/MarkSoldForm').then(m => ({ default: m.MarkSoldForm })));
-const CollectionExportModal = React.lazy(() => import('../../../components/lists/CollectionExportModal'));
+const MarkSoldForm = React.lazy(() =>
+  import('../../../shared/components/forms/MarkSoldForm').then((m) => ({
+    default: m.MarkSoldForm,
+  }))
+);
+const CollectionExportModal = React.lazy(
+  () => import('../../../components/lists/CollectionExportModal')
+);
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { CollectionItem } from '../../../components/lists/CollectionItemCard';
 import CollectionStats from '../../../components/lists/CollectionStats';
-import CollectionTabs, { TabType } from '../../../components/lists/CollectionTabs';
+import CollectionTabs, {
+  TabType,
+} from '../../../components/lists/CollectionTabs';
 import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 
 // Import unified design system
-import { PokemonButton, PokemonModal } from '../../../shared/components/atoms/design-system';
+import {
+  PokemonButton,
+  PokemonModal,
+} from '../../../shared/components/atoms/design-system';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');

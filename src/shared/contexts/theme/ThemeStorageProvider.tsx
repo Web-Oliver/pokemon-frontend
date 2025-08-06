@@ -1,7 +1,7 @@
 /**
  * Theme Storage Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 1.5
- * 
+ *
  * Focused context for theme persistence management following ISP
  * Handles: localStorage operations, custom presets, and theme persistence
  */
@@ -25,12 +25,12 @@ export interface ThemeStorageContextType {
   loadCustomPreset: (name: string) => Promise<ThemeConfiguration | null>;
   deleteCustomPreset: (name: string) => Promise<void>;
   getCustomPresets: () => Promise<CustomPreset[]>;
-  
+
   // Configuration Persistence
   saveConfiguration: (config: ThemeConfiguration) => Promise<void>;
   loadConfiguration: () => Promise<ThemeConfiguration | null>;
   clearConfiguration: () => Promise<void>;
-  
+
   // Utility Functions
   exportConfiguration: (config: ThemeConfiguration) => string;
   importConfiguration: (jsonString: string) => ThemeConfiguration | null;
@@ -88,65 +88,74 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
   children,
 }) => {
   // Custom preset management
-  const saveCustomPreset = useCallback(async (name: string, config: ThemeConfiguration): Promise<void> => {
-    await safeLocalStorageOperation(
-      () => {
-        const customPresets = safeJsonParse(
-          localStorage.getItem(STORAGE_KEYS.customPresets),
-          {}
-        );
-        
-        customPresets[name] = {
-          name,
-          config,
-          created: new Date().toISOString(),
-        };
-        
-        localStorage.setItem(
-          STORAGE_KEYS.customPresets,
-          JSON.stringify(customPresets)
-        );
-      },
-      undefined,
-      'Failed to save custom preset:'
-    );
-  }, []);
+  const saveCustomPreset = useCallback(
+    async (name: string, config: ThemeConfiguration): Promise<void> => {
+      await safeLocalStorageOperation(
+        () => {
+          const customPresets = safeJsonParse(
+            localStorage.getItem(STORAGE_KEYS.customPresets),
+            {}
+          );
 
-  const loadCustomPreset = useCallback(async (name: string): Promise<ThemeConfiguration | null> => {
-    return safeLocalStorageOperation(
-      () => {
-        const customPresets = safeJsonParse(
-          localStorage.getItem(STORAGE_KEYS.customPresets),
-          {}
-        );
-        
-        const preset = customPresets[name];
-        return preset ? preset.config : null;
-      },
-      null,
-      'Failed to load custom preset:'
-    );
-  }, []);
+          customPresets[name] = {
+            name,
+            config,
+            created: new Date().toISOString(),
+          };
 
-  const deleteCustomPreset = useCallback(async (name: string): Promise<void> => {
-    await safeLocalStorageOperation(
-      () => {
-        const customPresets = safeJsonParse(
-          localStorage.getItem(STORAGE_KEYS.customPresets),
-          {}
-        );
-        
-        delete customPresets[name];
-        
-        localStorage.setItem(
-          STORAGE_KEYS.customPresets,
-          JSON.stringify(customPresets)
-        );
-      },
-      undefined,
-      'Failed to delete custom preset:'
-    );
-  }, []);
+          localStorage.setItem(
+            STORAGE_KEYS.customPresets,
+            JSON.stringify(customPresets)
+          );
+        },
+        undefined,
+        'Failed to save custom preset:'
+      );
+    },
+    []
+  );
+
+  const loadCustomPreset = useCallback(
+    async (name: string): Promise<ThemeConfiguration | null> => {
+      return safeLocalStorageOperation(
+        () => {
+          const customPresets = safeJsonParse(
+            localStorage.getItem(STORAGE_KEYS.customPresets),
+            {}
+          );
+
+          const preset = customPresets[name];
+          return preset ? preset.config : null;
+        },
+        null,
+        'Failed to load custom preset:'
+      );
+    },
+    []
+  );
+
+  const deleteCustomPreset = useCallback(
+    async (name: string): Promise<void> => {
+      await safeLocalStorageOperation(
+        () => {
+          const customPresets = safeJsonParse(
+            localStorage.getItem(STORAGE_KEYS.customPresets),
+            {}
+          );
+
+          delete customPresets[name];
+
+          localStorage.setItem(
+            STORAGE_KEYS.customPresets,
+            JSON.stringify(customPresets)
+          );
+        },
+        undefined,
+        'Failed to delete custom preset:'
+      );
+    },
+    []
+  );
 
   const getCustomPresets = useCallback(async (): Promise<CustomPreset[]> => {
     return safeLocalStorageOperation(
@@ -155,7 +164,7 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
           localStorage.getItem(STORAGE_KEYS.customPresets),
           {}
         );
-        
+
         return Object.values(customPresets).map((preset: any) => ({
           ...preset,
           created: new Date(preset.created),
@@ -167,26 +176,30 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
   }, []);
 
   // Configuration persistence
-  const saveConfiguration = useCallback(async (config: ThemeConfiguration): Promise<void> => {
-    await safeLocalStorageOperation(
-      () => {
-        localStorage.setItem(STORAGE_KEYS.config, JSON.stringify(config));
-      },
-      undefined,
-      'Failed to save theme configuration:'
-    );
-  }, []);
+  const saveConfiguration = useCallback(
+    async (config: ThemeConfiguration): Promise<void> => {
+      await safeLocalStorageOperation(
+        () => {
+          localStorage.setItem(STORAGE_KEYS.config, JSON.stringify(config));
+        },
+        undefined,
+        'Failed to save theme configuration:'
+      );
+    },
+    []
+  );
 
-  const loadConfiguration = useCallback(async (): Promise<ThemeConfiguration | null> => {
-    return safeLocalStorageOperation(
-      () => {
-        const stored = localStorage.getItem(STORAGE_KEYS.config);
-        return stored ? JSON.parse(stored) : null;
-      },
-      null,
-      'Failed to load theme configuration:'
-    );
-  }, []);
+  const loadConfiguration =
+    useCallback(async (): Promise<ThemeConfiguration | null> => {
+      return safeLocalStorageOperation(
+        () => {
+          const stored = localStorage.getItem(STORAGE_KEYS.config);
+          return stored ? JSON.parse(stored) : null;
+        },
+        null,
+        'Failed to load theme configuration:'
+      );
+    }, []);
 
   const clearConfiguration = useCallback(async (): Promise<void> => {
     await safeLocalStorageOperation(
@@ -199,30 +212,39 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
   }, []);
 
   // Utility functions
-  const exportConfiguration = useCallback((config: ThemeConfiguration): string => {
-    try {
-      return JSON.stringify(config, null, 2);
-    } catch (error) {
-      console.warn('Failed to export configuration:', error);
-      return '{}';
-    }
-  }, []);
-
-  const importConfiguration = useCallback((jsonString: string): ThemeConfiguration | null => {
-    try {
-      const config = JSON.parse(jsonString);
-      // Basic validation - ensure it has required properties
-      if (config && typeof config === 'object' && config.visualTheme) {
-        return config as ThemeConfiguration;
+  const exportConfiguration = useCallback(
+    (config: ThemeConfiguration): string => {
+      try {
+        return JSON.stringify(config, null, 2);
+      } catch (error) {
+        console.warn('Failed to export configuration:', error);
+        return '{}';
       }
-      return null;
-    } catch (error) {
-      console.warn('Failed to import configuration:', error);
-      return null;
-    }
-  }, []);
+    },
+    []
+  );
 
-  const getStorageInfo = useCallback(async (): Promise<{ used: number; available: number }> => {
+  const importConfiguration = useCallback(
+    (jsonString: string): ThemeConfiguration | null => {
+      try {
+        const config = JSON.parse(jsonString);
+        // Basic validation - ensure it has required properties
+        if (config && typeof config === 'object' && config.visualTheme) {
+          return config as ThemeConfiguration;
+        }
+        return null;
+      } catch (error) {
+        console.warn('Failed to import configuration:', error);
+        return null;
+      }
+    },
+    []
+  );
+
+  const getStorageInfo = useCallback(async (): Promise<{
+    used: number;
+    available: number;
+  }> => {
     return safeLocalStorageOperation(
       () => {
         let used = 0;
@@ -231,7 +253,7 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
             used += localStorage[key].length + key.length;
           }
         }
-        
+
         // Estimate available storage (most browsers limit localStorage to ~5-10MB)
         const estimated = 5 * 1024 * 1024; // 5MB estimate
         return {
@@ -250,12 +272,12 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
     loadCustomPreset,
     deleteCustomPreset,
     getCustomPresets,
-    
+
     // Configuration Persistence
     saveConfiguration,
     loadConfiguration,
     clearConfiguration,
-    
+
     // Utility Functions
     exportConfiguration,
     importConfiguration,
@@ -276,7 +298,9 @@ export const ThemeStorageProvider: React.FC<ThemeStorageProviderProps> = ({
 export const useThemeStorage = (): ThemeStorageContextType => {
   const context = useContext(ThemeStorageContext);
   if (!context) {
-    throw new Error('useThemeStorage must be used within a ThemeStorageProvider');
+    throw new Error(
+      'useThemeStorage must be used within a ThemeStorageProvider'
+    );
   }
   return context;
 };

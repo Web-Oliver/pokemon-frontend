@@ -2,17 +2,20 @@
 
 ## Overview
 
-This guide outlines the migration from inconsistent API response transformation patterns to the unified transformation system.
+This guide outlines the migration from inconsistent API response transformation patterns to the unified transformation
+system.
 
 ## 🚨 Issues Identified
 
 ### Before Migration
+
 1. **searchApi.ts**: Custom `mapCardIds()` function with basic ID mapping
-2. **unifiedApiClient.ts**: Using `transformApiResponse()` for comprehensive transformations  
+2. **unifiedApiClient.ts**: Using `transformApiResponse()` for comprehensive transformations
 3. **genericApiOperations.ts**: Optional custom transformations with no standardization
 4. **Various API files**: Inconsistent response handling and ID mapping
 
 ### Problems
+
 - ❌ **Duplicate Logic**: 3 different transformation approaches
 - ❌ **Inconsistent Results**: Different ID mapping strategies
 - ❌ **Maintenance Burden**: Changes require updates in multiple files
@@ -21,6 +24,7 @@ This guide outlines the migration from inconsistent API response transformation 
 ## ✅ Solution: Unified Response Transformer
 
 ### New Architecture
+
 ```typescript
 // Single source of truth for all transformations
 import { ApiTransformers } from '../utils/unifiedResponseTransformer';
@@ -38,7 +42,9 @@ const result = ApiTransformers.raw<T>(responseData);      // No transformation
 ## 🔄 Migration Steps
 
 ### Step 1: Replace Manual ID Mapping
+
 **Before:**
+
 ```typescript
 const mapCardIds = (card: unknown): unknown => {
   // Custom ID mapping logic...
@@ -47,26 +53,32 @@ const result = mapCardIds(responseData);
 ```
 
 **After:**
+
 ```typescript
 import { ApiTransformers } from '../utils/unifiedResponseTransformer';
 const result = ApiTransformers.direct<T>(responseData);
 ```
 
 ### Step 2: Replace ResponseTransformers
+
 **Before:**
+
 ```typescript
 import { ResponseTransformers } from '../utils/responseTransformer';
 const result = ResponseTransformers.standard<T>(data);
 ```
 
 **After:**
+
 ```typescript
 import { ApiTransformers } from '../utils/unifiedResponseTransformer';
 const result = ApiTransformers.standard<T>(data);
 ```
 
 ### Step 3: Update Generic Operations
+
 **Before:**
+
 ```typescript
 const data = await getCollection(config, params, {
   transform: (data) => customTransform(data)
@@ -74,6 +86,7 @@ const data = await getCollection(config, params, {
 ```
 
 **After:**
+
 ```typescript
 const data = await getCollection(config, params, {
   transformStrategy: 'search' // Uses unified system
@@ -84,13 +97,13 @@ const data = await getCollection(config, params, {
 
 ### Available Strategies
 
-| Strategy | Use Case | Example |
-|----------|----------|---------|
-| `standard` | Backend API format `{success, status, data, meta}` | Collection APIs |
-| `search` | Search APIs `{success, query, count, data}` | Search endpoints |
-| `direct` | Direct data with ID mapping | Legacy endpoints |
-| `raw` | No transformation needed | Static data |
-| `auto` | Auto-detect format (recommended) | Mixed APIs |
+| Strategy   | Use Case                                           | Example          |
+|------------|----------------------------------------------------|------------------|
+| `standard` | Backend API format `{success, status, data, meta}` | Collection APIs  |
+| `search`   | Search APIs `{success, query, count, data}`        | Search endpoints |
+| `direct`   | Direct data with ID mapping                        | Legacy endpoints |
+| `raw`      | No transformation needed                           | Static data      |
+| `auto`     | Auto-detect format (recommended)                   | Mixed APIs       |
 
 ### Strategy Selection Guide
 
@@ -114,21 +127,25 @@ ApiTransformers.auto<T>(response)     // Auto-detects and applies appropriate st
 ## 🎯 Benefits
 
 ### Consistency
+
 - ✅ Single source of truth for all transformations
 - ✅ Consistent ID mapping across all APIs
 - ✅ Standardized error handling
 
-### Maintainability  
+### Maintainability
+
 - ✅ Changes in one place affect all APIs
 - ✅ Easy to add new transformation strategies
 - ✅ Clear separation of concerns
 
 ### Performance
+
 - ✅ Optimized transformation algorithms
 - ✅ Reduced code duplication
 - ✅ Better caching opportunities
 
 ### Developer Experience
+
 - ✅ Clear API with meaningful names
 - ✅ TypeScript support with proper generics
 - ✅ Auto-detection reduces decision burden
@@ -136,6 +153,7 @@ ApiTransformers.auto<T>(response)     // Auto-detects and applies appropriate st
 ## 🔧 Implementation Status
 
 ### ✅ Completed
+
 - [x] Created `UnifiedResponseTransformer` class
 - [x] Implemented transformation strategies
 - [x] Updated `searchApi.ts` to use unified system
@@ -143,11 +161,13 @@ ApiTransformers.auto<T>(response)     // Auto-detects and applies appropriate st
 - [x] Added migration helpers for backward compatibility
 
 ### 🚧 In Progress
+
 - [ ] Update remaining API files to use unified system
 - [ ] Add comprehensive tests for all transformation strategies
 - [ ] Create performance benchmarks
 
 ### 📋 Next Steps
+
 - [ ] Migrate `activityApi.ts`, `salesApi.ts`, etc.
 - [ ] Remove deprecated transformation functions
 - [ ] Update documentation with new patterns
@@ -156,6 +176,7 @@ ApiTransformers.auto<T>(response)     // Auto-detects and applies appropriate st
 ## 🧪 Testing
 
 ### Test Each Strategy
+
 ```typescript
 // Test standard transformation
 const standardResult = ApiTransformers.standard({
@@ -186,7 +207,8 @@ const autoResult = ApiTransformers.auto(unknownFormatResponse);
 ---
 
 **Migration completed following CLAUDE.md principles:**
+
 - ✅ **SRP**: Single responsibility for response transformation
-- ✅ **DRY**: Eliminates duplicate transformation logic  
+- ✅ **DRY**: Eliminates duplicate transformation logic
 - ✅ **OCP**: Open for extension via new strategies
 - ✅ **DIP**: Depends on abstract transformation interface

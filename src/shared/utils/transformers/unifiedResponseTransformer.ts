@@ -26,9 +26,10 @@ import {
  * Allows different transformation approaches while maintaining consistency
  */
 export interface TransformationStrategy<T> {
-  transform(responseData: any): T;
   name: string;
   description: string;
+
+  transform(responseData: any): T;
 }
 
 /**

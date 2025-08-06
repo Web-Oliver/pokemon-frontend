@@ -147,11 +147,14 @@ export interface HealthCheckResponse extends BaseApiResponse {
   success: true;
   data: {
     status: 'healthy' | 'degraded' | 'unhealthy';
-    services: Record<string, {
-      status: 'up' | 'down' | 'degraded';
-      responseTime?: number;
-      error?: string;
-    }>;
+    services: Record<
+      string,
+      {
+        status: 'up' | 'down' | 'degraded';
+        responseTime?: number;
+        error?: string;
+      }
+    >;
     uptime: number;
   };
 }
@@ -166,7 +169,13 @@ export interface HealthCheckResponse extends BaseApiResponse {
  */
 export interface ActivityResponse {
   _id: string;
-  type: 'card_added' | 'card_updated' | 'card_sold' | 'product_added' | 'product_updated' | 'product_sold';
+  type:
+    | 'card_added'
+    | 'card_updated'
+    | 'card_sold'
+    | 'product_added'
+    | 'product_updated'
+    | 'product_sold';
   itemType: 'psa' | 'raw' | 'sealed';
   itemId: string;
   description: string;
@@ -174,7 +183,8 @@ export interface ActivityResponse {
   metadata?: Record<string, any>;
 }
 
-export interface ActivityListResponse extends PaginatedResponse<ActivityResponse> {}
+export interface ActivityListResponse
+  extends PaginatedResponse<ActivityResponse> {}
 
 /**
  * Card API Response Types
@@ -237,7 +247,8 @@ export interface AuctionResponse {
   soldValue?: number;
 }
 
-export interface AuctionListResponse extends CollectionResponse<AuctionResponse> {}
+export interface AuctionListResponse
+  extends CollectionResponse<AuctionResponse> {}
 
 // ============================================================================
 // TYPE GUARDS FOR RUNTIME TYPE SAFETY
@@ -337,8 +348,12 @@ export function createErrorResponse(
     success: false,
     timestamp: new Date().toISOString(),
     error: {
-      code: error?.code || error?.response?.status?.toString() || 'UNKNOWN_ERROR',
-      message: error?.message || error?.response?.data?.message || 'An unexpected error occurred',
+      code:
+        error?.code || error?.response?.status?.toString() || 'UNKNOWN_ERROR',
+      message:
+        error?.message ||
+        error?.response?.data?.message ||
+        'An unexpected error occurred',
       details: {
         operation,
         status: error?.response?.status,

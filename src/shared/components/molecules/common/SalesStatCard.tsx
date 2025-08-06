@@ -52,9 +52,13 @@ const SalesStatCard: React.FC<SalesStatCardProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle ${className}`}>
+    <div
+      className={`card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 h-48 group float-gentle ${className}`}
+    >
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 bg-gradient-to-r ${colorScheme.iconBg} rounded-xl flex items-center justify-center border ${colorScheme.iconBorder} backdrop-blur-sm ${Icon ? 'glow-on-hover' : ''}`}>
+        <div
+          className={`w-12 h-12 bg-gradient-to-r ${colorScheme.iconBg} rounded-xl flex items-center justify-center border ${colorScheme.iconBorder} backdrop-blur-sm ${Icon ? 'glow-on-hover' : ''}`}
+        >
           {Icon ? (
             <Icon className="w-6 h-6 text-cyan-300" />
           ) : (
@@ -71,10 +75,14 @@ const SalesStatCard: React.FC<SalesStatCardProps> = ({
         </div>
       </div>
       <div className="h-2 bg-gradient-to-r from-zinc-700/30 to-zinc-600/20 rounded-full overflow-hidden backdrop-blur-sm">
-        <div className={`h-full bg-gradient-to-r ${colorScheme.progressGradient} rounded-full w-full shimmer`}></div>
+        <div
+          className={`h-full bg-gradient-to-r ${colorScheme.progressGradient} rounded-full w-full shimmer`}
+        ></div>
       </div>
       <div className="mt-4 text-center">
-        <span className={`inline-flex items-center px-3 py-1 ${colorScheme.badgeColors} rounded-full text-sm font-medium border backdrop-blur-sm`}>
+        <span
+          className={`inline-flex items-center px-3 py-1 ${colorScheme.badgeColors} rounded-full text-sm font-medium border backdrop-blur-sm`}
+        >
           {badgeText}
         </span>
       </div>

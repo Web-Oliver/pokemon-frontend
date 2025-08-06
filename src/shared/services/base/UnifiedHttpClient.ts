@@ -1,17 +1,20 @@
 /**
  * Unified HTTP Client Implementation
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Concrete implementation of HTTP client interface
  * Wraps existing unifiedApiClient to provide abstraction layer
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for HTTP operations
  * - DIP: Implements abstraction interface
  * - LSP: Substitutable HTTP client implementation
  */
 
-import { unifiedApiClient, EnhancedRequestConfig } from '../../api/unifiedApiClient';
+import {
+  unifiedApiClient,
+  EnhancedRequestConfig,
+} from '../../api/unifiedApiClient';
 import { IHttpClient } from './HttpClientInterface';
 
 /**
@@ -29,21 +32,32 @@ export class UnifiedHttpClient implements IHttpClient {
   /**
    * POST request
    */
-  async post<T>(url: string, data?: any, config?: EnhancedRequestConfig): Promise<T> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: EnhancedRequestConfig
+  ): Promise<T> {
     return unifiedApiClient.post<T>(url, data, config);
   }
 
   /**
    * PUT request
    */
-  async put<T>(url: string, data?: any, config?: EnhancedRequestConfig): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config?: EnhancedRequestConfig
+  ): Promise<T> {
     return unifiedApiClient.put<T>(url, data, config);
   }
 
   /**
    * DELETE request
    */
-  async delete<T = void>(url: string, config?: EnhancedRequestConfig): Promise<T> {
+  async delete<T = void>(
+    url: string,
+    config?: EnhancedRequestConfig
+  ): Promise<T> {
     return unifiedApiClient.delete<T>(url, config);
   }
 

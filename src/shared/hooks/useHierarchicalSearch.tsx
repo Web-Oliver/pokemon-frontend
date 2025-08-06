@@ -103,7 +103,11 @@ export const useHierarchicalSearch = ({
         : debouncedSecondary;
 
     // FIXED: Proper minLength validation to prevent glitchy search behavior
-    if (!currentValue || typeof currentValue !== 'string' || currentValue.trim().length < 2) {
+    if (
+      !currentValue ||
+      typeof currentValue !== 'string' ||
+      currentValue.trim().length < 2
+    ) {
       setSuggestions([]);
       return;
     }
@@ -121,7 +125,7 @@ export const useHierarchicalSearch = ({
       case config.secondaryField: {
         // Hierarchical logic: filter by primary selection
         let searchQuery = currentValue;
-        
+
         // FIXED: Better validation for secondary field searches
         if (currentValue.trim().length < 2) {
           setSuggestions([]);
@@ -229,13 +233,13 @@ export const useHierarchicalSearch = ({
         // Set the card name
         setValue(config.secondaryField, result.displayName);
         clearErrors(config.secondaryField);
-        
+
         // CRITICAL FIX: Autofill Set Name from card data
         if (result.data?.setName) {
           setValue('setName', result.data.setName);
           clearErrors('setName');
         }
-        
+
         // Autofill other card fields if available
         if (result.data?.cardNumber) {
           setValue('cardNumber', result.data.cardNumber);
@@ -245,7 +249,7 @@ export const useHierarchicalSearch = ({
           setValue('variety', result.data.variety);
           clearErrors('variety');
         }
-        
+
         const cardData = {
           _id: result.id,
           cardName: result.displayName,

@@ -19,7 +19,8 @@ export const AUCTION_STATUSES = {
   EXPIRED: 'expired',
 } as const;
 
-export type AuctionStatus = typeof AUCTION_STATUSES[keyof typeof AUCTION_STATUSES];
+export type AuctionStatus =
+  (typeof AUCTION_STATUSES)[keyof typeof AUCTION_STATUSES];
 
 /**
  * Get status color classes for auction status styling
@@ -78,7 +79,9 @@ export const isActiveStatus = (status: string): boolean => {
  * @returns true if the status indicates a completed auction
  */
 export const isCompletedStatus = (status: string): boolean => {
-  return status === AUCTION_STATUSES.SOLD || status === AUCTION_STATUSES.EXPIRED;
+  return (
+    status === AUCTION_STATUSES.SOLD || status === AUCTION_STATUSES.EXPIRED
+  );
 };
 
 /**

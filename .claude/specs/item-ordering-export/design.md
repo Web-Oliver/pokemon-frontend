@@ -2,7 +2,10 @@
 
 ## Overview
 
-This feature introduces a comprehensive item ordering system for the collection export functionality, allowing users to manually reorder items within each category (PSA Cards, Raw Cards, Sealed Products) and automatically sort by highest to lowest myPrice. The ordering will be applied during Facebook text export generation, providing users with full control over how their items appear in auction listings.
+This feature introduces a comprehensive item ordering system for the collection export functionality, allowing users to
+manually reorder items within each category (PSA Cards, Raw Cards, Sealed Products) and automatically sort by highest to
+lowest myPrice. The ordering will be applied during Facebook text export generation, providing users with full control
+over how their items appear in auction listings.
 
 ## Code Reuse Analysis
 
@@ -12,7 +15,8 @@ This feature introduces a comprehensive item ordering system for the collection 
 - **useCollectionExport.ts**: Hook for export operations - will add ordering logic
 - **exportUtils.ts**: Export utilities - will add ordering helper functions
 - **ExportApiService.ts**: API service - will integrate ordered export requests
-- **CreateAuction.tsx**: Contains drag-and-drop patterns for item reordering (lines 8-29 show GripVertical, ArrowUpDown icons)
+- **CreateAuction.tsx**: Contains drag-and-drop patterns for item reordering (lines 8-29 show GripVertical, ArrowUpDown
+  icons)
 
 ### Existing Patterns
 
@@ -301,4 +305,6 @@ _Leverage: Existing localStorage patterns_
 - Custom sort criteria beyond price
 - Export preview with ordering applied
 
-This design leverages existing codebase patterns while introducing powerful new ordering capabilities that enhance the user experience for collection exports. The implementation follows CLAUDE.md principles with clear separation of concerns and maximum code reuse.
+This design leverages existing codebase patterns while introducing powerful new ordering capabilities that enhance the
+user experience for collection exports. The implementation follows CLAUDE.md principles with clear separation of
+concerns and maximum code reuse.

@@ -5,7 +5,15 @@
  */
 
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { Award, Star, TrendingUp, Target, DollarSign, Calendar, Banknote } from 'lucide-react';
+import {
+  Award,
+  Star,
+  TrendingUp,
+  Target,
+  DollarSign,
+  Calendar,
+  Banknote,
+} from 'lucide-react';
 import { PokemonInput } from '../../design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';

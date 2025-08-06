@@ -1,7 +1,7 @@
 /**
  * Theme Validation Utilities
  * Split from themeDebug.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Theme validation only
  * - DRY: Centralized validation logic
@@ -38,7 +38,10 @@ export function validateThemeConfiguration(
   }
 
   // Validate density settings
-  if (config.density && !['compact', 'comfortable', 'spacious'].includes(config.density)) {
+  if (
+    config.density &&
+    !['compact', 'comfortable', 'spacious'].includes(config.density)
+  ) {
     results.push({
       type: 'error',
       category: 'Configuration',
@@ -49,7 +52,10 @@ export function validateThemeConfiguration(
   }
 
   // Validate animation intensity
-  if (config.animationIntensity && !['none', 'subtle', 'normal', 'intense'].includes(config.animationIntensity)) {
+  if (
+    config.animationIntensity &&
+    !['none', 'subtle', 'normal', 'intense'].includes(config.animationIntensity)
+  ) {
     results.push({
       type: 'error',
       category: 'Configuration',
@@ -65,7 +71,8 @@ export function validateThemeConfiguration(
       type: 'warning',
       category: 'Accessibility',
       message: 'High contrast mode may not be as effective with light theme',
-      suggestion: 'Consider using dark theme with high contrast for better accessibility',
+      suggestion:
+        'Consider using dark theme with high contrast for better accessibility',
       severity: 'low',
     });
   }
@@ -124,7 +131,9 @@ export function debugThemeConflicts(): {
         description: `Found multiple theme classes: ${themeClasses.join(', ')}`,
         severity: 'high',
       });
-      suggestions.push('Remove conflicting theme classes from document element');
+      suggestions.push(
+        'Remove conflicting theme classes from document element'
+      );
     }
   }
 

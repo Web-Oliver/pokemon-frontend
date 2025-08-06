@@ -48,21 +48,6 @@ class StorageManager {
   }
 
   /**
-   * Check if storage is available
-   */
-  private checkStorageAvailability(): boolean {
-    try {
-      const test = '__storage_test__';
-      this.storage.setItem(test, test);
-      this.storage.removeItem(test);
-      return true;
-    } catch (error) {
-      console.warn('Storage not available:', error);
-      return false;
-    }
-  }
-
-  /**
    * Store data with error handling
    */
   setItem<T>(key: string, value: T): boolean {
@@ -159,6 +144,21 @@ class StorageManager {
       available: this.isAvailable,
     };
   }
+
+  /**
+   * Check if storage is available
+   */
+  private checkStorageAvailability(): boolean {
+    try {
+      const test = '__storage_test__';
+      this.storage.setItem(test, test);
+      this.storage.removeItem(test);
+      return true;
+    } catch (error) {
+      console.warn('Storage not available:', error);
+      return false;
+    }
+  }
 }
 
 // Create storage managers
@@ -182,13 +182,6 @@ export class OrderingStatePersistence {
       OrderingStatePersistence.instance = new OrderingStatePersistence();
     }
     return OrderingStatePersistence.instance;
-  }
-
-  /**
-   * Initialize a new ordering session
-   */
-  private initSession(): void {
-    this.currentSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   /**
@@ -243,17 +236,6 @@ export class OrderingStatePersistence {
    */
   getSessionData(): ExportSessionData | null {
     return sessionStorage.getItem<ExportSessionData>(STORAGE_KEYS.SESSION_DATA);
-  }
-
-  /**
-   * Update session activity timestamp
-   */
-  private updateSessionActivity(): void {
-    const sessionData = this.getSessionData();
-    if (sessionData) {
-      sessionData.lastActivity = Date.now();
-      sessionStorage.setItem(STORAGE_KEYS.SESSION_DATA, sessionData);
-    }
   }
 
   /**
@@ -389,6 +371,24 @@ export class OrderingStatePersistence {
       hasSessionData: !!sessionData,
       sessionAge: sessionData ? Date.now() - sessionData.startTime : 0,
     };
+  }
+
+  /**
+   * Initialize a new ordering session
+   */
+  private initSession(): void {
+    this.currentSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Update session activity timestamp
+   */
+  private updateSessionActivity(): void {
+    const sessionData = this.getSessionData();
+    if (sessionData) {
+      sessionData.lastActivity = Date.now();
+      sessionStorage.setItem(STORAGE_KEYS.SESSION_DATA, sessionData);
+    }
   }
 }
 

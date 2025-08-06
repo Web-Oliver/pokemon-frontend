@@ -2,7 +2,8 @@
 
 ## 🎯 Core Purpose
 
-Comprehensive Pokemon card collection management platform that enables collectors to efficiently manage, track, and monetize their Pokemon card collections through intelligent data management and automated marketing tools.
+Comprehensive Pokemon card collection management platform that enables collectors to efficiently manage, track, and
+monetize their Pokemon card collections through intelligent data management and automated marketing tools.
 
 ## 👥 Target Users
 
@@ -12,7 +13,8 @@ Comprehensive Pokemon card collection management platform that enables collector
 
 ## 🎨 Product Vision
 
-A beautiful, award-winning interface that transforms the complex task of Pokemon collection management into an intuitive, profitable, and enjoyable experience through modern web technologies and intelligent automation.
+A beautiful, award-winning interface that transforms the complex task of Pokemon collection management into an
+intuitive, profitable, and enjoyable experience through modern web technologies and intelligent automation.
 
 ## 🏆 Key Success Metrics
 
@@ -67,4 +69,5 @@ A beautiful, award-winning interface that transforms the complex task of Pokemon
 
 ## 🔄 Product Lifecycle
 
-This is an active development project focused on continuous improvement of collection management workflows, enhanced analytics capabilities, and deeper integration with external marketing automation tools.
+This is an active development project focused on continuous improvement of collection management workflows, enhanced
+analytics capabilities, and deeper integration with external marketing automation tools.

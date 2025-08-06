@@ -1,7 +1,7 @@
 /**
  * Layout Theme Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 1.2
- * 
+ *
  * Focused context for layout and spacing management following ISP
  * Handles: density settings, spacing tokens, and layout configurations
  */
@@ -28,10 +28,10 @@ export interface DensitySpacing {
 export interface LayoutThemeContextType {
   // Current State
   density: Density;
-  
+
   // Layout Management
   setDensity: (density: Density) => void;
-  
+
   // Utility Functions
   getDensityMultiplier: () => number;
   getSpacingTokens: () => DensitySpacing;
@@ -79,9 +79,12 @@ export const LayoutThemeProvider: React.FC<LayoutThemeProviderProps> = ({
   onStateChange,
 }) => {
   // Layout manipulation functions
-  const setDensity = useCallback((density: Density) => {
-    onStateChange({ density });
-  }, [onStateChange]);
+  const setDensity = useCallback(
+    (density: Density) => {
+      onStateChange({ density });
+    },
+    [onStateChange]
+  );
 
   // Utility functions
   const getDensityMultiplier = useCallback((): number => {
@@ -100,10 +103,10 @@ export const LayoutThemeProvider: React.FC<LayoutThemeProviderProps> = ({
   const contextValue: LayoutThemeContextType = {
     // Current State
     density: state.density,
-    
+
     // Layout Management
     setDensity,
-    
+
     // Utility Functions
     getDensityMultiplier,
     getSpacingTokens,

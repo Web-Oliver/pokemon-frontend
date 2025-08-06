@@ -70,7 +70,9 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
   const categories = Object.values(ProductCategory);
 
   return (
-    <div className={`bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden ${className}`}>
+    <div
+      className={`bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden ${className}`}
+    >
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-status-success)]/5 to-teal-500/5"></div>
       <div className="relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

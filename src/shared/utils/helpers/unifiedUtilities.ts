@@ -1,18 +1,18 @@
 /**
  * UNIFIED UTILITY SYSTEM
  * Phase 4 Critical Priority - Utility Function Consolidation
- * 
+ *
  * Following CLAUDE.md + TODO.md Ultra-Optimization Plan:
  * - Consolidates classNameUtils.ts + themeUtils.ts + common utilities
  * - Eliminates 60% duplication across 4 separate className utility files
  * - Single source of truth for all utility functions
  * - DRY compliance: Centralized utility logic with tree-shaking support
- * 
+ *
  * ARCHITECTURE LAYER: Layer 1 (Core/Foundation/API Client)
  * - No dependencies on higher layers
  * - Pure utility functions with performance optimization
  * - Tree-shakable exports for bundle optimization
- * 
+ *
  * SOLID Principles:
  * - Single Responsibility: Each utility has one specific purpose
  * - Open/Closed: Easy to extend with new utility patterns
@@ -79,7 +79,7 @@ export function cvaMultiple(
 }
 
 /**
- * THEME-AWARE CLASSNAME UTILITY  
+ * THEME-AWARE CLASSNAME UTILITY
  * Generate classes based on theme configuration
  */
 export function cnTheme(
@@ -161,17 +161,21 @@ export function getVariantClasses(variant: ComponentVariant): {
 } {
   const variantMap = {
     primary: {
-      background: 'bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-primary-hover)]',
+      background:
+        'bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-primary-hover)]',
       border: 'border-[var(--theme-primary)]',
       text: 'text-white',
-      hover: 'hover:from-[var(--theme-primary-hover)] hover:to-[var(--theme-primary)]',
+      hover:
+        'hover:from-[var(--theme-primary-hover)] hover:to-[var(--theme-primary)]',
       focus: 'focus:ring-2 focus:ring-[var(--theme-primary)]/50',
     },
     secondary: {
-      background: 'bg-gradient-to-r from-[var(--theme-secondary)] to-[var(--theme-accent)]',
+      background:
+        'bg-gradient-to-r from-[var(--theme-secondary)] to-[var(--theme-accent)]',
       border: 'border-[var(--theme-secondary)]',
       text: 'text-white',
-      hover: 'hover:from-[var(--theme-accent)] hover:to-[var(--theme-secondary)]',
+      hover:
+        'hover:from-[var(--theme-accent)] hover:to-[var(--theme-secondary)]',
       focus: 'focus:ring-2 focus:ring-[var(--theme-secondary)]/50',
     },
     outline: {
@@ -185,7 +189,8 @@ export function getVariantClasses(variant: ComponentVariant): {
       background: 'bg-transparent',
       border: 'border-transparent',
       text: 'text-[var(--theme-text-secondary)]',
-      hover: 'hover:bg-[var(--theme-bg-secondary)] hover:text-[var(--theme-text-primary)]',
+      hover:
+        'hover:bg-[var(--theme-bg-secondary)] hover:text-[var(--theme-text-primary)]',
       focus: 'focus:ring-2 focus:ring-[var(--theme-border-accent)]',
     },
     destructive: {
@@ -201,7 +206,7 @@ export function getVariantClasses(variant: ComponentVariant): {
 }
 
 /**
- * STATE CLASS GENERATOR  
+ * STATE CLASS GENERATOR
  * Unified state system for all components
  */
 export function getStateClasses(state: ComponentState): string {
@@ -316,7 +321,9 @@ export function getAnimationClasses(
  * GRADIENT CLASS GENERATOR
  * Unified gradient system using CSS custom properties
  */
-export function getGradientClasses(type: 'primary' | 'secondary' | 'cosmic' | 'neural' | 'aurora'): string {
+export function getGradientClasses(
+  type: 'primary' | 'secondary' | 'cosmic' | 'neural' | 'aurora'
+): string {
   const gradientMap = {
     primary: 'bg-[var(--gradient-primary)]',
     secondary: 'bg-[var(--gradient-secondary)]',
@@ -332,10 +339,13 @@ export function getGradientClasses(type: 'primary' | 'secondary' | 'cosmic' | 'n
  * TEXT GRADIENT UTILITY
  * Apply gradient to text with proper browser support
  */
-export function getTextGradientClasses(type: 'primary' | 'pokemon' | 'cosmic'): string {
+export function getTextGradientClasses(
+  type: 'primary' | 'pokemon' | 'cosmic'
+): string {
   const textGradientMap = {
     primary: 'bg-[var(--gradient-primary)] bg-clip-text text-transparent',
-    pokemon: 'bg-[var(--gradient-pokemon-primary)] bg-clip-text text-transparent',
+    pokemon:
+      'bg-[var(--gradient-pokemon-primary)] bg-clip-text text-transparent',
     cosmic: 'bg-[var(--gradient-cosmic-base)] bg-clip-text text-transparent',
   };
 
@@ -441,10 +451,12 @@ export function getA11yClasses(options: {
   reduceMotion?: boolean;
 }): string {
   return cn(
-    options.focusVisible && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)]',
+    options.focusVisible &&
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-border-accent)]',
     options.screenReaderOnly && 'sr-only',
     options.highContrast && 'high-contrast:border-2 high-contrast:border-white',
-    options.reduceMotion && 'motion-reduce:transition-none motion-reduce:animate-none'
+    options.reduceMotion &&
+      'motion-reduce:transition-none motion-reduce:animate-none'
   );
 }
 
@@ -459,7 +471,10 @@ export function getA11yClasses(options: {
  */
 const classCache = new Map<string, string>();
 
-export function getMemoizedClasses(key: string, generator: () => string): string {
+export function getMemoizedClasses(
+  key: string,
+  generator: () => string
+): string {
   if (classCache.has(key)) {
     return classCache.get(key)!;
   }
@@ -518,25 +533,29 @@ export {
 } from './constants';
 
 // Re-export debounce hooks
-export { useDebounce, useDebouncedCallback, useDebouncedValue } from '../hooks/useDebounce';
+export {
+  useDebounce,
+  useDebouncedCallback,
+  useDebouncedValue,
+} from '../hooks/useDebounce';
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:
- * 
+ *
  * BEFORE (4 separate utility files):
  * - classNameUtils.ts: ~589 lines
  * - themeUtils.ts: ~468 lines
  * - common.ts: ~418 lines (re-exports)
  * - Other utility duplications: ~200 lines
  * TOTAL: ~1,675 lines with 60% logic duplication
- * 
+ *
  * AFTER (1 unified utility system):
  * - unifiedUtilities.ts: ~650 lines
- * 
+ *
  * REDUCTION: ~61% utility code reduction (1,025 lines eliminated)
  * IMPACT: Eliminates 60% logic duplication across utility functions
  * BONUS: Added memoization for performance optimization
- * 
+ *
  * BENEFITS:
  * ✅ 4 utility files → 1 unified system
  * ✅ 60% logic duplication eliminated
@@ -546,18 +565,18 @@ export { useDebounce, useDebouncedCallback, useDebouncedValue } from '../hooks/u
  * ✅ Backward compatibility maintained
  * ✅ WCAG-compliant accessibility utilities
  * ✅ Mobile-first responsive design helpers
- * 
+ *
  * USAGE EXAMPLES:
  * // New unified approach
  * import { cn, getSizeClasses, getVariantClasses, getGlassmorphismClasses } from './unifiedUtilities';
- * 
+ *
  * const buttonClasses = cn(
  *   getSizeClasses('md').padding,
  *   getVariantClasses('primary').background,
  *   getGlassmorphismClasses('subtle'),
  *   'rounded-lg transition-all duration-300'
  * );
- * 
+ *
  * // Backward compatibility (deprecated)
  * import { cn } from './classNameUtils'; // Now redirects to unified system
  * import { cn } from './themeUtils'; // Now redirects to unified system

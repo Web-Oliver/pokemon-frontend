@@ -3,7 +3,7 @@
  * Layer 4: Views/Pages (Application Screens)
  * Following CLAUDE.md principles: Beautiful design, SRP, and integration with new hierarchical product structure
  * UPDATED: Now uses SetProduct → Product hierarchy instead of CardMarketReferenceProduct
- * 
+ *
  * Following CLAUDE.md principles:
  * - REFACTORED: Extracted reusable components to eliminate DRY violations
  * - ProductSearchFilters: Reusable search and filter inputs
@@ -13,13 +13,19 @@
 
 import { Euro, Package, Search } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import { searchProducts, getPaginatedProducts } from '../../../shared/api/productsApi';
+import {
+  searchProducts,
+  getPaginatedProducts,
+} from '../../../shared/api/productsApi';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import ProductSearchFilters from '../../../shared/components/molecules/common/ProductSearchFilters';
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
 import PaginationControls from '../../../shared/components/molecules/common/PaginationControls';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { IProduct, ProductCategory } from '../../../shared/domain/models/product';
+import {
+  IProduct,
+  ProductCategory,
+} from '../../../shared/domain/models/product';
 import { ISetProduct } from '../../../shared/domain/models/setProduct';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';

@@ -18,8 +18,12 @@ import React, { Suspense, useEffect, useState } from 'react';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
 // Lazy load form components for better bundle splitting
-const AddEditCardForm = React.lazy(() => import('../../../shared/components/forms/AddEditCardForm'));
-const AddEditSealedProductForm = React.lazy(() => import('../../../shared/components/forms/AddEditSealedProductForm'));
+const AddEditCardForm = React.lazy(
+  () => import('../../../shared/components/forms/AddEditCardForm')
+);
+const AddEditSealedProductForm = React.lazy(
+  () => import('../../../shared/components/forms/AddEditSealedProductForm')
+);
 import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
@@ -182,7 +186,9 @@ const AddEditItem: React.FC = () => {
     switch (selectedItemType) {
       case 'psa-graded':
         return (
-          <Suspense fallback={<LoadingSpinner text="Loading PSA Card Form..." />}>
+          <Suspense
+            fallback={<LoadingSpinner text="Loading PSA Card Form..." />}
+          >
             <AddEditCardForm
               cardType="psa-graded"
               onCancel={handleFormCancel}
@@ -194,7 +200,9 @@ const AddEditItem: React.FC = () => {
         );
       case 'raw-card':
         return (
-          <Suspense fallback={<LoadingSpinner text="Loading Raw Card Form..." />}>
+          <Suspense
+            fallback={<LoadingSpinner text="Loading Raw Card Form..." />}
+          >
             <AddEditCardForm
               cardType="raw-card"
               onCancel={handleFormCancel}
@@ -206,7 +214,9 @@ const AddEditItem: React.FC = () => {
         );
       case 'sealed-product':
         return (
-          <Suspense fallback={<LoadingSpinner text="Loading Sealed Product Form..." />}>
+          <Suspense
+            fallback={<LoadingSpinner text="Loading Sealed Product Form..." />}
+          >
             <AddEditSealedProductForm
               onCancel={handleFormCancel}
               onSuccess={handleFormSuccess}
@@ -245,7 +255,11 @@ const AddEditItem: React.FC = () => {
           <GlassmorphismHeader
             icon={isEditing ? Package : Star}
             title={isEditing ? 'Edit Collection Item' : 'Add New Item'}
-            description={isEditing ? 'Update your precious collection item with care' : 'Expand your collection with a new treasure'}
+            description={
+              isEditing
+                ? 'Update your precious collection item with care'
+                : 'Expand your collection with a new treasure'
+            }
             className="mb-12"
           >
             <button

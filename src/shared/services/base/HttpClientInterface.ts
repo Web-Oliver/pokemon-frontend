@@ -1,10 +1,10 @@
 /**
  * HTTP Client Interface
  * Layer 1: Core/Foundation/API Client
- * 
+ *
  * Abstract interface for HTTP operations following DIP principle
  * Enables dependency injection and testability
- * 
+ *
  * SOLID Principles:
  * - SRP: Single responsibility for HTTP abstraction
  * - DIP: Services depend on this abstraction, not concrete implementations

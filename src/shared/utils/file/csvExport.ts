@@ -1,7 +1,7 @@
 /**
  * CSV Export Utilities
  * Split from fileOperations.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: CSV export functionality only
  * - DRY: Centralized CSV logic with RFC 4180 compliance

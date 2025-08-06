@@ -31,7 +31,9 @@ export interface CollectionEntityConfig<T> {
  * @param collectionApi - API service instance
  * @returns Configuration object for PSA card operations
  */
-export const createPsaCardConfig = (collectionApi: any): CollectionEntityConfig<any> => ({
+export const createPsaCardConfig = (
+  collectionApi: any
+): CollectionEntityConfig<any> => ({
   entityName: 'PSA Graded Card',
   apiMethods: {
     create: collectionApi.createPsaCard.bind(collectionApi),
@@ -50,10 +52,12 @@ export const createPsaCardConfig = (collectionApi: any): CollectionEntityConfig<
 
 /**
  * Creates Raw Card entity configuration
- * @param collectionApi - API service instance  
+ * @param collectionApi - API service instance
  * @returns Configuration object for raw card operations
  */
-export const createRawCardConfig = (collectionApi: any): CollectionEntityConfig<any> => ({
+export const createRawCardConfig = (
+  collectionApi: any
+): CollectionEntityConfig<any> => ({
   entityName: 'Raw Card',
   apiMethods: {
     create: collectionApi.createRawCard.bind(collectionApi),
@@ -75,7 +79,9 @@ export const createRawCardConfig = (collectionApi: any): CollectionEntityConfig<
  * @param collectionApi - API service instance
  * @returns Configuration object for sealed product operations
  */
-export const createSealedProductConfig = (collectionApi: any): CollectionEntityConfig<any> => ({
+export const createSealedProductConfig = (
+  collectionApi: any
+): CollectionEntityConfig<any> => ({
   entityName: 'Sealed Product',
   apiMethods: {
     create: collectionApi.createSealedProduct.bind(collectionApi),
@@ -120,5 +126,8 @@ export const useEntityConfig = <T>(
   configFactory: (api: any) => CollectionEntityConfig<T>,
   collectionApi: any
 ): CollectionEntityConfig<T> => {
-  return useMemo(() => configFactory(collectionApi), [configFactory, collectionApi]);
+  return useMemo(
+    () => configFactory(collectionApi),
+    [configFactory, collectionApi]
+  );
 };

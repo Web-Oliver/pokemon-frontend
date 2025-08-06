@@ -70,7 +70,14 @@ export interface PsaGradedCard extends BaseCollectionItem {
 export interface RawCard extends BaseCollectionItem {
   readonly itemType: 'raw';
   cardId: string;
-  condition: 'mint' | 'near_mint' | 'excellent' | 'very_good' | 'good' | 'fair' | 'poor';
+  condition:
+    | 'mint'
+    | 'near_mint'
+    | 'excellent'
+    | 'very_good'
+    | 'good'
+    | 'fair'
+    | 'poor';
   conditionNotes?: string;
 }
 
@@ -81,7 +88,14 @@ export interface RawCard extends BaseCollectionItem {
 export interface SealedProduct extends BaseCollectionItem {
   readonly itemType: 'sealed';
   productId: string;
-  category: 'booster_box' | 'elite_trainer_box' | 'booster_pack' | 'starter_deck' | 'theme_deck' | 'collection_box' | 'other';
+  category:
+    | 'booster_box'
+    | 'elite_trainer_box'
+    | 'booster_pack'
+    | 'starter_deck'
+    | 'theme_deck'
+    | 'collection_box'
+    | 'other';
   setName: string;
   productName: string;
   sealed: boolean;
@@ -192,7 +206,9 @@ export function isCard(item: CollectionItem): item is PsaGradedCard | RawCard {
 /**
  * Type guard to check if item is sold
  */
-export function isSoldItem(item: CollectionItem): item is CollectionItem & { sold: true; saleDetails: SaleDetails } {
+export function isSoldItem(
+  item: CollectionItem
+): item is CollectionItem & { sold: true; saleDetails: SaleDetails } {
   return item.sold === true && item.saleDetails !== undefined;
 }
 
@@ -208,7 +224,10 @@ export type ItemType = CollectionItem['itemType'];
 /**
  * Extract specific item type by discriminant
  */
-export type ItemByType<T extends ItemType> = Extract<CollectionItem, { itemType: T }>;
+export type ItemByType<T extends ItemType> = Extract<
+  CollectionItem,
+  { itemType: T }
+>;
 
 /**
  * Collection item with required sale details
@@ -289,7 +308,14 @@ export interface PsaCardFormData {
 export interface RawCardFormData {
   setName: string;
   cardName: string;
-  condition: 'mint' | 'near_mint' | 'excellent' | 'very_good' | 'good' | 'fair' | 'poor';
+  condition:
+    | 'mint'
+    | 'near_mint'
+    | 'excellent'
+    | 'very_good'
+    | 'good'
+    | 'fair'
+    | 'poor';
   myPrice: number;
   conditionNotes?: string;
   images?: File[];
@@ -301,7 +327,14 @@ export interface RawCardFormData {
 export interface SealedProductFormData {
   setName: string;
   productName: string;
-  category: 'booster_box' | 'elite_trainer_box' | 'booster_pack' | 'starter_deck' | 'theme_deck' | 'collection_box' | 'other';
+  category:
+    | 'booster_box'
+    | 'elite_trainer_box'
+    | 'booster_pack'
+    | 'starter_deck'
+    | 'theme_deck'
+    | 'collection_box'
+    | 'other';
   myPrice: number;
   sealed: boolean;
   language: 'english' | 'japanese' | 'other';
@@ -311,7 +344,7 @@ export interface SealedProductFormData {
 /**
  * Discriminated union of form data types
  */
-export type CollectionItemFormData = 
+export type CollectionItemFormData =
   | (PsaCardFormData & { itemType: 'psa' })
   | (RawCardFormData & { itemType: 'raw' })
   | (SealedProductFormData & { itemType: 'sealed' });

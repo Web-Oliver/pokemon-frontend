@@ -378,7 +378,7 @@ const AccessibilityTheme: React.FC<
       })}
     >
       <AccessibilitySkipLinks focusManagement={focusManagement} />
-      <AccessibilityIndicators 
+      <AccessibilityIndicators
         showIndicators={showIndicators}
         indicatorPosition={indicatorPosition}
         indicatorClassName={indicatorClassName}
@@ -402,4 +402,3 @@ export {
   FocusManagementTheme,
   AccessibilityControls,
 };
-

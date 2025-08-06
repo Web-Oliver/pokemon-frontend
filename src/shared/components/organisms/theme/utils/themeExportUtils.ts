@@ -1,17 +1,17 @@
 /**
  * CLAUDE.md COMPLIANCE: Theme Export Utilities
- * 
+ *
  * SRP: Single responsibility for theme export/import operations
  * DRY: Centralized theme export logic
  * SOLID: Pure functions with no side effects
  */
 
-import type { 
-  ThemeConfig, 
-  VisualTheme, 
-  LayoutTheme, 
-  AnimationTheme, 
-  AccessibilityTheme 
+import type {
+  ThemeConfig,
+  VisualTheme,
+  LayoutTheme,
+  AnimationTheme,
+  AccessibilityTheme,
 } from '../../../types/theme';
 
 export interface ThemeExportData {
@@ -70,14 +70,14 @@ export const downloadThemeAsFile = (
   const dataStr = JSON.stringify(themeData, null, 2);
   const dataBlob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(dataBlob);
-  
+
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   URL.revokeObjectURL(url);
 };
 
@@ -100,7 +100,7 @@ export const validateThemeData = (data: any): data is ThemeExportData => {
     'accessibilityTheme',
   ];
 
-  return requiredFields.every(field => field in data);
+  return requiredFields.every((field) => field in data);
 };
 
 /**
@@ -112,27 +112,27 @@ export const getThemeConfigSummary = (
   visualTheme: VisualTheme
 ): string => {
   const features = [];
-  
+
   if (config.accentPrimary && config.accentPrimary !== '#06b6d4') {
     features.push(`Primary: ${config.accentPrimary}`);
   }
-  
+
   if (config.accentSecondary && config.accentSecondary !== '#a855f7') {
     features.push(`Secondary: ${config.accentSecondary}`);
   }
-  
+
   if (visualTheme.name && visualTheme.name !== 'default') {
     features.push(`Theme: ${visualTheme.name}`);
   }
-  
+
   if (config.highContrast) {
     features.push('High Contrast');
   }
-  
+
   if (config.reducedMotion) {
     features.push('Reduced Motion');
   }
-  
+
   return features.length > 0 ? features.join(', ') : 'Default configuration';
 };
 
@@ -159,12 +159,12 @@ export const createThemeBackup = (
 export const parseThemeFile = async (file: File): Promise<ThemeExportData> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
         const data = JSON.parse(content);
-        
+
         if (validateThemeData(data)) {
           resolve(data);
         } else {
@@ -174,11 +174,11 @@ export const parseThemeFile = async (file: File): Promise<ThemeExportData> => {
         reject(new Error('Failed to parse theme file'));
       }
     };
-    
+
     reader.onerror = () => {
       reject(new Error('Failed to read theme file'));
     };
-    
+
     reader.readAsText(file);
   });
 };

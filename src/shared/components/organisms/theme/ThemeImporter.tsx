@@ -1,6 +1,6 @@
 /**
  * CLAUDE.md COMPLIANCE: Theme Importer Component
- * 
+ *
  * SRP: Single responsibility for theme import operations
  * OCP: Open for extension via props interface
  * DIP: Depends on theme utilities abstraction
@@ -26,7 +26,7 @@ interface ThemeImporterProps {
 /**
  * ThemeImporter Component
  * Handles theme file import and validation
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only import-related operations
  * - DRY: Reusable import logic
@@ -48,67 +48,79 @@ export const ThemeImporter: React.FC<ThemeImporterProps> = ({
     fileInputRef.current?.click();
   }, []);
 
-  const handleImportTheme = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleImportTheme = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    setIsImporting(true);
-    setImportMessage('');
+      setIsImporting(true);
+      setImportMessage('');
 
-    try {
-      const themeData = await parseThemeFile(file);
-      
-      // Validate theme data structure
-      if (!validateThemeData(themeData)) {
-        throw new Error('Invalid theme file format');
+      try {
+        const themeData = await parseThemeFile(file);
+
+        // Validate theme data structure
+        if (!validateThemeData(themeData)) {
+          throw new Error('Invalid theme file format');
+        }
+
+        // Apply custom preset name if provided
+        if (customPresetName.trim()) {
+          themeData.name = customPresetName.trim();
+        }
+
+        // Import the theme
+        onThemeImported(themeData);
+
+        setImportMessage('Theme imported successfully!');
+        setCustomPresetName('');
+
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error occurred';
+        setImportMessage(`Import failed: ${errorMessage}`);
+        console.error('Theme import error:', error);
+      } finally {
+        setIsImporting(false);
       }
+    },
+    [customPresetName, onThemeImported]
+  );
 
-      // Apply custom preset name if provided
-      if (customPresetName.trim()) {
-        themeData.name = customPresetName.trim();
+  const _handleImportAsPreset = useCallback(
+    async (themeData: ThemeExportData) => {
+      try {
+        // Store as custom preset in localStorage
+        const existingPresets = JSON.parse(
+          localStorage.getItem('customThemePresets') || '[]'
+        );
+
+        const preset = {
+          id: `preset_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          name:
+            themeData.name || `Imported Theme ${existingPresets.length + 1}`,
+          data: themeData,
+          createdAt: new Date().toISOString(),
+        };
+
+        existingPresets.push(preset);
+        localStorage.setItem(
+          'customThemePresets',
+          JSON.stringify(existingPresets)
+        );
+
+        setImportMessage(`Theme saved as preset: "${preset.name}"`);
+      } catch (error) {
+        setImportMessage('Failed to save theme as preset');
+        console.error('Preset save error:', error);
       }
-
-      // Import the theme
-      onThemeImported(themeData);
-      
-      setImportMessage('Theme imported successfully!');
-      setCustomPresetName('');
-      
-      // Clear the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setImportMessage(`Import failed: ${errorMessage}`);
-      console.error('Theme import error:', error);
-    } finally {
-      setIsImporting(false);
-    }
-  }, [customPresetName, onThemeImported]);
-
-  const _handleImportAsPreset = useCallback(async (themeData: ThemeExportData) => {
-    try {
-      // Store as custom preset in localStorage
-      const existingPresets = JSON.parse(localStorage.getItem('customThemePresets') || '[]');
-      
-      const preset = {
-        id: `preset_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        name: themeData.name || `Imported Theme ${existingPresets.length + 1}`,
-        data: themeData,
-        createdAt: new Date().toISOString(),
-      };
-      
-      existingPresets.push(preset);
-      localStorage.setItem('customThemePresets', JSON.stringify(existingPresets));
-      
-      setImportMessage(`Theme saved as preset: "${preset.name}"`);
-    } catch (error) {
-      setImportMessage('Failed to save theme as preset');
-      console.error('Preset save error:', error);
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
     <div className="space-y-4">
@@ -122,7 +134,7 @@ export const ThemeImporter: React.FC<ThemeImporterProps> = ({
           <Upload className="w-4 h-4 mr-2" />
           {isImporting ? 'Importing...' : 'Import Theme'}
         </button>
-        
+
         <button
           onClick={onToggleImportOptions}
           className={secondaryButtonClasses}
@@ -172,7 +184,9 @@ export const ThemeImporter: React.FC<ThemeImporterProps> = ({
                 <ul className="text-xs text-zinc-400 space-y-1">
                   <li>• Only .json theme files are supported</li>
                   <li>• Themes must be exported from this application</li>
-                  <li>• Invalid files will be rejected with an error message</li>
+                  <li>
+                    • Invalid files will be rejected with an error message
+                  </li>
                   <li>• Imported themes will overwrite current settings</li>
                 </ul>
               </div>
@@ -183,20 +197,21 @@ export const ThemeImporter: React.FC<ThemeImporterProps> = ({
 
       {/* Import Status Message */}
       {importMessage && (
-        <div className={cn(
-          'rounded-lg p-3 border flex items-start gap-2',
-          importMessage.includes('failed') || importMessage.includes('error')
-            ? 'bg-red-900/20 border-red-600/30 text-red-300'
-            : 'bg-green-900/20 border-green-600/30 text-green-300'
-        )}>
-          {importMessage.includes('failed') || importMessage.includes('error') ? (
+        <div
+          className={cn(
+            'rounded-lg p-3 border flex items-start gap-2',
+            importMessage.includes('failed') || importMessage.includes('error')
+              ? 'bg-red-900/20 border-red-600/30 text-red-300'
+              : 'bg-green-900/20 border-green-600/30 text-green-300'
+          )}
+        >
+          {importMessage.includes('failed') ||
+          importMessage.includes('error') ? (
             <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           ) : (
             <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
           )}
-          <div className="text-sm">
-            {importMessage}
-          </div>
+          <div className="text-sm">{importMessage}</div>
         </div>
       )}
     </div>

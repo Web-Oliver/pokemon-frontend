@@ -1,6 +1,6 @@
 /**
  * ItemDetailSection Component
- * 
+ *
  * Extracted from CollectionItemDetail.tsx to eliminate DRY violations
  * Provides generic detail section with consistent styling
  * Following CLAUDE.md principles: DRY elimination, reusable UI patterns
@@ -38,7 +38,7 @@ export const ItemDetailSection: React.FC<ItemDetailSectionProps> = ({
     <div className={`relative overflow-hidden ${className}`}>
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/5 via-transparent to-[var(--theme-accent-secondary)]/5" />
-      
+
       {/* Main container */}
       <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-8 ring-1 ring-[var(--theme-border)]/50">
         {/* Header */}
@@ -61,14 +61,14 @@ export const ItemDetailSection: React.FC<ItemDetailSectionProps> = ({
         {/* Details grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {details.map((detail, index) => (
-            <div 
+            <div
               key={index}
               className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]"
             >
               <span className="text-[var(--theme-text-secondary)] font-medium">
                 {detail.label}:
               </span>
-              <span 
+              <span
                 className={`font-semibold ${
                   detail.valueColor || 'text-[var(--theme-text-primary)]'
                 }`}
@@ -111,12 +111,22 @@ export const PsaCardDetailSection: React.FC<PsaCardDetailProps> = ({
   children,
 }) => {
   const details: DetailItem[] = [
-    { label: 'Grade', value: grade, valueColor: 'text-[var(--theme-accent-primary)]' },
-    ...(certificationNumber ? [{ label: 'Cert Number', value: certificationNumber }] : []),
+    {
+      label: 'Grade',
+      value: grade,
+      valueColor: 'text-[var(--theme-accent-primary)]',
+    },
+    ...(certificationNumber
+      ? [{ label: 'Cert Number', value: certificationNumber }]
+      : []),
     { label: 'Grading Company', value: gradingCompany },
     ...(dateGraded ? [{ label: 'Date Graded', value: dateGraded }] : []),
-    ...(population ? [{ label: 'Population', value: population.toLocaleString() }] : []),
-    ...(higherGrades ? [{ label: 'Higher Grades', value: higherGrades.toLocaleString() }] : []),
+    ...(population
+      ? [{ label: 'Population', value: population.toLocaleString() }]
+      : []),
+    ...(higherGrades
+      ? [{ label: 'Higher Grades', value: higherGrades.toLocaleString() }]
+      : []),
   ];
 
   return (
@@ -156,7 +166,11 @@ export const RawCardDetailSection: React.FC<RawCardDetailProps> = ({
   children,
 }) => {
   const details: DetailItem[] = [
-    { label: 'Condition', value: condition, valueColor: 'text-[var(--theme-accent-secondary)]' },
+    {
+      label: 'Condition',
+      value: condition,
+      valueColor: 'text-[var(--theme-accent-secondary)]',
+    },
     ...(subcondition ? [{ label: 'Subcondition', value: subcondition }] : []),
     ...(centering ? [{ label: 'Centering', value: centering }] : []),
     ...(corners ? [{ label: 'Corners', value: corners }] : []),
@@ -166,7 +180,7 @@ export const RawCardDetailSection: React.FC<RawCardDetailProps> = ({
 
   return (
     <ItemDetailSection
-      title="Raw Card Details" 
+      title="Raw Card Details"
       subtitle="Ungraded card condition assessment"
       icon={() => (
         <div className="w-8 h-8 bg-[var(--theme-accent-secondary)] rounded-lg flex items-center justify-center text-white font-bold text-sm">
@@ -201,7 +215,11 @@ export const SealedProductDetailSection: React.FC<SealedProductDetailProps> = ({
   children,
 }) => {
   const details: DetailItem[] = [
-    { label: 'Category', value: category, valueColor: 'text-[var(--theme-status-info)]' },
+    {
+      label: 'Category',
+      value: category,
+      valueColor: 'text-[var(--theme-status-info)]',
+    },
     ...(availability ? [{ label: 'Availability', value: availability }] : []),
     { label: 'Manufacturer', value: manufacturer },
     ...(releaseDate ? [{ label: 'Release Date', value: releaseDate }] : []),

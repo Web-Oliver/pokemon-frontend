@@ -55,7 +55,9 @@ const CategorySalesCard: React.FC<CategorySalesCardProps> = ({
   };
 
   return (
-    <div className={`card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 scale-on-hover ${className}`}>
+    <div
+      className={`card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-xl p-6 scale-on-hover ${className}`}
+    >
       <div className="text-center">
         <div
           className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${category.color.replace('bg-', 'bg-gradient-to-r from-').replace('-600', '-500/20 to-cyan-500/20')} mb-4 text-xl border border-opacity-30 backdrop-blur-sm glow-on-hover`}

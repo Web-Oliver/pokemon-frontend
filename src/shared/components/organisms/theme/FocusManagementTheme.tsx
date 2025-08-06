@@ -1,8 +1,8 @@
 /**
  * CLAUDE.md COMPLIANCE: Focus Management Theme Component
- * 
+ *
  * SRP: Single responsibility for focus management functionality
- * OCP: Open for extension via props interface  
+ * OCP: Open for extension via props interface
  * DIP: Depends on theme context abstractions
  */
 
@@ -31,7 +31,7 @@ export interface FocusManagementThemeProps {
 /**
  * Focus Management Theme Component
  * Provides theme-aware focus management and enhanced focus indicators
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only focus management functionality
  * - DRY: Reusable focus management across the application

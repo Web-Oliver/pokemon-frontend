@@ -1,6 +1,6 @@
 /**
  * Item Sale Details Component
- * 
+ *
  * Extracted from CollectionItemDetail god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only handles sale information display
  * - DRY: Reusable sale details pattern
@@ -62,7 +62,7 @@ export const ItemSaleDetails: React.FC<ItemSaleDetailsProps> = ({
                 {item.saleDetails.actualSoldPrice} kr
               </span>
             </div>
-            
+
             <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
               <span className="text-[var(--theme-text-secondary)] font-medium">
                 Payment
@@ -71,7 +71,7 @@ export const ItemSaleDetails: React.FC<ItemSaleDetailsProps> = ({
                 {item.saleDetails.paymentMethod}
               </span>
             </div>
-            
+
             <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
               <span className="text-[var(--theme-text-secondary)] font-medium">
                 Delivery
@@ -93,7 +93,7 @@ export const ItemSaleDetails: React.FC<ItemSaleDetailsProps> = ({
                   : 'N/A'}
               </span>
             </div>
-            
+
             <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
               <span className="text-[var(--theme-text-secondary)] font-medium">
                 Buyer
@@ -102,7 +102,7 @@ export const ItemSaleDetails: React.FC<ItemSaleDetailsProps> = ({
                 {item.saleDetails.buyerFullName || 'N/A'}
               </span>
             </div>
-            
+
             <div className="flex justify-between items-center p-3 rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)]">
               <span className="text-[var(--theme-text-secondary)] font-medium">
                 Tracking

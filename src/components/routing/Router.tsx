@@ -24,7 +24,9 @@ const Collection = lazy(() => import('../../pages/Collection'));
 // Secondary features (lazy loaded with prefetch hints)
 const CollectionItemDetail = lazy(
   () =>
-    import(/* webpackChunkName: "item-detail" */ '../../pages/CollectionItemDetail')
+    import(
+      /* webpackChunkName: "item-detail" */ '../../pages/CollectionItemDetail'
+    )
 );
 const AddEditItem = lazy(
   () => import(/* webpackChunkName: "forms" */ '../../pages/AddEditItem')
@@ -32,7 +34,8 @@ const AddEditItem = lazy(
 
 // Search features (bundled together for caching)
 const SetSearch = lazy(
-  () => import(/* webpackChunkName: "search-features" */ '../../pages/SetSearch')
+  () =>
+    import(/* webpackChunkName: "search-features" */ '../../pages/SetSearch')
 );
 const SealedProductSearch = lazy(
   () =>
@@ -43,18 +46,24 @@ const SealedProductSearch = lazy(
 
 // Auction features (bundled together for better caching)
 const Auctions = lazy(
-  () => import(/* webpackChunkName: "auction-features" */ '../../pages/Auctions')
+  () =>
+    import(/* webpackChunkName: "auction-features" */ '../../pages/Auctions')
 );
 const AuctionDetail = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../../pages/AuctionDetail')
+    import(
+      /* webpackChunkName: "auction-features" */ '../../pages/AuctionDetail'
+    )
 );
 const CreateAuction = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../../pages/CreateAuction')
+    import(
+      /* webpackChunkName: "auction-features" */ '../../pages/CreateAuction'
+    )
 );
 const AuctionEdit = lazy(
-  () => import(/* webpackChunkName: "auction-features" */ '../../pages/AuctionEdit')
+  () =>
+    import(/* webpackChunkName: "auction-features" */ '../../pages/AuctionEdit')
 );
 
 // Analytics and heavy features (separate chunks)
@@ -79,7 +88,11 @@ const ROUTE_CONFIG: RouteConfig[] = [
   { path: '/add-item', component: AddEditItem, exact: true },
   { path: '/sets', component: SetSearch, exact: true },
   { path: '/set-search', component: SetSearch, exact: true },
-  { path: '/sealed-products-search', component: SealedProductSearch, exact: true },
+  {
+    path: '/sealed-products-search',
+    component: SealedProductSearch,
+    exact: true,
+  },
   { path: '/auctions', component: Auctions, exact: true },
   { path: '/sales-analytics', component: SalesAnalytics, exact: true },
   { path: '/analytics', component: SalesAnalytics, exact: true },

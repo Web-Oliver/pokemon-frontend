@@ -1,9 +1,9 @@
 /**
  * Shared Auction Form Data Management Hook
- * 
+ *
  * Extracts common auction form state and logic from CreateAuction and AuctionEdit
  * to eliminate 95% code duplication (661 lines).
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Manages auction form data, validation, and collection items
  * - DRY: Eliminates duplication between CreateAuction/AuctionEdit form logic
@@ -50,7 +50,7 @@ export interface SearchFilterState {
   filterType: 'all' | 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
 }
 
-// Item selection state interface  
+// Item selection state interface
 export interface ItemSelectionState {
   selectedItemIds: Set<string>;
   selectedItemOrderByType: {
@@ -157,7 +157,11 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
     const rawCardsArray = rawCards || [];
     const sealedProductsArray = sealedProducts || [];
 
-    if (!psaCardsArray.length && !rawCardsArray.length && !sealedProductsArray.length) {
+    if (
+      !psaCardsArray.length &&
+      !rawCardsArray.length &&
+      !sealedProductsArray.length
+    ) {
       return items;
     }
 
@@ -168,7 +172,8 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         const cardData = (card as any).cardId || card;
         const setData = cardData?.setId || cardData?.set;
 
-        let cardName = cardData?.cardName || cardData?.baseName || 'Unknown Card';
+        let cardName =
+          cardData?.cardName || cardData?.baseName || 'Unknown Card';
         let setName = setData?.setName || cardData?.setName || 'Unknown Set';
         const variety = cardData?.variety || '';
         const pokemonNumber = cardData?.pokemonNumber || '';
@@ -208,14 +213,15 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         });
       });
 
-    // Process Raw Cards  
+    // Process Raw Cards
     rawCardsArray
       .filter((card) => !card.sold)
       .forEach((card) => {
         const cardData = (card as any).cardId || card;
         const setData = cardData?.setId || cardData?.set;
 
-        const cardName = cardData?.cardName || cardData?.baseName || 'Unknown Card';
+        const cardName =
+          cardData?.cardName || cardData?.baseName || 'Unknown Card';
         const setName = setData?.setName || cardData?.setName || 'Unknown Set';
         const displayName = `${cardName} - ${card.condition}`;
 
@@ -240,7 +246,7 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
     sealedProductsArray
       .filter((product) => !product.sold)
       .forEach((product) => {
-        const productName = 
+        const productName =
           (product as any).productId?.productName ||
           product.name ||
           (product as any).productName ||
@@ -252,9 +258,10 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
           (product as any).setProductName ||
           'Unknown Set';
 
-        const displayName = setName !== 'Unknown Set' 
-          ? `${productName} - ${setName}` 
-          : productName;
+        const displayName =
+          setName !== 'Unknown Set'
+            ? `${productName} - ${setName}`
+            : productName;
 
         const processedImages = (product.images || [])
           .map(memoizedProcessImageUrl)
@@ -284,21 +291,29 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
       SealedProduct: [] as UnifiedCollectionItem[],
     };
 
-    Object.entries(itemSelection.selectedItemOrderByType).forEach(([itemType, orderArray]) => {
-      const typedItemType = itemType as keyof typeof groups;
-      const uniqueSelectedIds = [...new Set(orderArray)].filter((id) =>
-        itemSelection.selectedItemIds.has(id)
-      );
+    Object.entries(itemSelection.selectedItemOrderByType).forEach(
+      ([itemType, orderArray]) => {
+        const typedItemType = itemType as keyof typeof groups;
+        const uniqueSelectedIds = [...new Set(orderArray)].filter((id) =>
+          itemSelection.selectedItemIds.has(id)
+        );
 
-      const items = uniqueSelectedIds
-        .map((itemId) => allCollectionItems.find((item) => item.id === itemId))
-        .filter(Boolean) as UnifiedCollectionItem[];
+        const items = uniqueSelectedIds
+          .map((itemId) =>
+            allCollectionItems.find((item) => item.id === itemId)
+          )
+          .filter(Boolean) as UnifiedCollectionItem[];
 
-      groups[typedItemType] = items;
-    });
+        groups[typedItemType] = items;
+      }
+    );
 
     return groups;
-  }, [itemSelection.selectedItemOrderByType, allCollectionItems, itemSelection.selectedItemIds]);
+  }, [
+    itemSelection.selectedItemOrderByType,
+    allCollectionItems,
+    itemSelection.selectedItemIds,
+  ]);
 
   // Calculate total value of selected items
   const selectedItemsValue = useMemo(() => {
@@ -307,7 +322,10 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
       ...selectedItemsByType.RawCard,
       ...selectedItemsByType.SealedProduct,
     ];
-    return allSelectedItems.reduce((total, item) => total + (item?.displayPrice || 0), 0);
+    return allSelectedItems.reduce(
+      (total, item) => total + (item?.displayPrice || 0),
+      0
+    );
   }, [selectedItemsByType]);
 
   // Handle item selection with separate ordering per category
@@ -328,7 +346,9 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
 
         const newOrder = { ...prev.selectedItemOrderByType };
         if (isCurrentlySelected) {
-          newOrder[item.itemType] = newOrder[item.itemType].filter(id => id !== itemId);
+          newOrder[item.itemType] = newOrder[item.itemType].filter(
+            (id) => id !== itemId
+          );
         } else {
           if (!newOrder[item.itemType].includes(itemId)) {
             newOrder[item.itemType] = [...newOrder[item.itemType], itemId];
@@ -347,12 +367,20 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
   // Select all filtered items
   const selectAllItems = useCallback(() => {
     const filteredItems = allCollectionItems.filter((item) => {
-      const matchesType = searchFilter.filterType === 'all' || item.itemType === searchFilter.filterType;
-      const matchesSet = !searchFilter.selectedSetName || 
-        item.setName?.toLowerCase().includes(searchFilter.selectedSetName.toLowerCase());
-      const matchesCardProduct = !searchFilter.cardProductSearchTerm.trim() ||
-        item.displayName.toLowerCase().includes(searchFilter.cardProductSearchTerm.toLowerCase());
-        
+      const matchesType =
+        searchFilter.filterType === 'all' ||
+        item.itemType === searchFilter.filterType;
+      const matchesSet =
+        !searchFilter.selectedSetName ||
+        item.setName
+          ?.toLowerCase()
+          .includes(searchFilter.selectedSetName.toLowerCase());
+      const matchesCardProduct =
+        !searchFilter.cardProductSearchTerm.trim() ||
+        item.displayName
+          .toLowerCase()
+          .includes(searchFilter.cardProductSearchTerm.toLowerCase());
+
       return matchesType && matchesSet && matchesCardProduct;
     });
 
@@ -413,13 +441,16 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
   }, [selectedItemsByType]);
 
   // Update form values (for edit mode)
-  const updateFormValues = useCallback((values: Partial<AuctionFormData>) => {
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== undefined) {
-        baseForm.form.setValue(key as keyof AuctionFormData, value);
-      }
-    });
-  }, [baseForm.form]);
+  const updateFormValues = useCallback(
+    (values: Partial<AuctionFormData>) => {
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== undefined) {
+          baseForm.form.setValue(key as keyof AuctionFormData, value);
+        }
+      });
+    },
+    [baseForm.form]
+  );
 
   return {
     // Form management

@@ -37,7 +37,10 @@ import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { getDataCounts } from '../../../shared/api/statusApi';
 import { displayPrice } from '../../../shared/utils/helpers/formatting';
-import { getActivityIcon, getActivityColor } from '../../../shared/utils/helpers/activityHelpers';
+import {
+  getActivityIcon,
+  getActivityColor,
+} from '../../../shared/utils/helpers/activityHelpers';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import {
   GlassmorphismContainer,
@@ -50,7 +53,7 @@ import {
   DashboardValueCard,
   DashboardSalesCard,
   DashboardGradedCard,
-  DashboardDataCard
+  DashboardDataCard,
 } from '../components/dashboard';
 
 const Dashboard: React.FC = () => {
@@ -84,8 +87,6 @@ const Dashboard: React.FC = () => {
   const handleActivityNavigation = () => {
     handleNavigation('/activitys');
   };
-
-
 
   return (
     <PageLayout
@@ -179,7 +180,7 @@ const Dashboard: React.FC = () => {
               />
 
               <DashboardDataCard
-                value={dataCountsLoading ? 0 : (dataCounts?.setProducts || 0)}
+                value={dataCountsLoading ? 0 : dataCounts?.setProducts || 0}
                 loading={dataCountsLoading}
                 label="Quantum Sets"
                 icon={Database}
@@ -258,13 +259,12 @@ const Dashboard: React.FC = () => {
             <GlassmorphismContainer
               variant="intense"
               colorScheme="secondary"
-              size="full"  
+              size="full"
               rounded="3xl"
               pattern="waves"
               glow="medium"
               className="relative overflow-hidden"
             >
-
               {/* Header */}
               <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
                 <div className="flex items-center justify-between">
@@ -292,7 +292,9 @@ const Dashboard: React.FC = () => {
                       text="Loading recent activities..."
                     />
                   </div>
-                ) : recentActivities && Array.isArray(recentActivities) && recentActivities.length > 0 ? (
+                ) : recentActivities &&
+                  Array.isArray(recentActivities) &&
+                  recentActivities.length > 0 ? (
                   <div className="space-y-6">
                     {recentActivities
                       .filter(
@@ -305,9 +307,16 @@ const Dashboard: React.FC = () => {
                       )
                       .slice(0, 5)
                       .map((activity) => {
-                        const IconComponent = getActivityIcon(activity.type || 'system');
-                        const activityColor = getActivityColor(activity.type || 'system');
-                        const activityKey = activity._id || activity.id || `activity-${Date.now()}-${Math.random()}`;
+                        const IconComponent = getActivityIcon(
+                          activity.type || 'system'
+                        );
+                        const activityColor = getActivityColor(
+                          activity.type || 'system'
+                        );
+                        const activityKey =
+                          activity._id ||
+                          activity.id ||
+                          `activity-${Date.now()}-${Math.random()}`;
 
                         return (
                           <div
@@ -315,7 +324,9 @@ const Dashboard: React.FC = () => {
                             className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-[var(--theme-surface-secondary)]/50 hover:to-[var(--theme-surface-secondary)]/30 rounded-2xl p-4 transition-all duration-300"
                           >
                             <div className="flex-shrink-0">
-                              <div className={`w-12 h-12 bg-gradient-to-br from-${activityColor}-500 to-${activityColor}-600 rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                              <div
+                                className={`w-12 h-12 bg-gradient-to-br from-${activityColor}-500 to-${activityColor}-600 rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                              >
                                 <IconComponent className="w-6 h-6 text-white" />
                               </div>
                             </div>
@@ -332,7 +343,9 @@ const Dashboard: React.FC = () => {
                                 {activity.description}
                               </p>
                             </div>
-                            <div className={`w-2 h-2 bg-${activityColor}-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                            <div
+                              className={`w-2 h-2 bg-${activityColor}-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                            ></div>
                           </div>
                         );
                       })}
@@ -346,7 +359,8 @@ const Dashboard: React.FC = () => {
                       No recent activity
                     </h3>
                     <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed">
-                      Start adding items to your collection to see activity here.
+                      Start adding items to your collection to see activity
+                      here.
                     </p>
                   </div>
                 )}

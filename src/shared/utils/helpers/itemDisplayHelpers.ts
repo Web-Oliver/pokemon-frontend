@@ -1,6 +1,6 @@
 /**
  * Item Display Utilities
- * 
+ *
  * Centralizes item data extraction and formatting logic across AuctionDetail and CollectionItemDetail
  * Following CLAUDE.md principles: DRY, Single Responsibility, and consistent data handling
  */
@@ -70,7 +70,9 @@ export const formatItemCategory = (category: string): string => {
 };
 
 // Helper function to get full image URL
-export const getImageUrl = (imagePath: string | undefined): string | undefined => {
+export const getImageUrl = (
+  imagePath: string | undefined
+): string | undefined => {
   if (!imagePath) {
     return undefined;
   }
@@ -101,24 +103,33 @@ export const getItemDisplayData = (item: any): ItemDisplayData => {
   // Handle auction items (with itemData and itemCategory)
   if (item.itemData && item.itemCategory) {
     const { itemData, itemCategory } = item;
-    
+
     switch (itemCategory) {
       case 'PsaGradedCard':
       case 'RawCard':
         return {
-          itemName: itemData.cardId?.cardName || itemData.cardName || 'Unknown Item',
+          itemName:
+            itemData.cardId?.cardName || itemData.cardName || 'Unknown Item',
           itemImage: getImageUrl(itemData.images?.[0]),
           setName: itemData.cardId?.setId?.setName || itemData.setName,
           cardNumber: itemData.cardId?.cardNumber || itemData.cardNumber,
           grade: itemCategory === 'PsaGradedCard' ? itemData.grade : undefined,
-          condition: itemCategory === 'RawCard' ? itemData.condition : undefined,
+          condition:
+            itemCategory === 'RawCard' ? itemData.condition : undefined,
           price: itemData.myPrice,
         };
       case 'SealedProduct':
         return {
-          itemName: itemData.name || itemData.productId?.productName || itemData.productName || 'Unknown Item',
+          itemName:
+            itemData.name ||
+            itemData.productId?.productName ||
+            itemData.productName ||
+            'Unknown Item',
           itemImage: getImageUrl(itemData.images?.[0]),
-          setName: itemData.setName || itemData.productId?.setProductName || itemData.setProductName,
+          setName:
+            itemData.setName ||
+            itemData.productId?.setProductName ||
+            itemData.setProductName,
           cardNumber: undefined,
           grade: undefined,
           condition: undefined,
@@ -172,7 +183,11 @@ export const getItemTitle = (item: any): string => {
 
   // For sealed products
   if ('productId' in item && item.productId) {
-    return item.productId?.productName || item.productId?.category?.replace(/-/g, ' ') || 'Unknown Product';
+    return (
+      item.productId?.productName ||
+      item.productId?.category?.replace(/-/g, ' ') ||
+      'Unknown Product'
+    );
   }
 
   return 'Unknown Item';
@@ -222,7 +237,7 @@ export const formatDate = (date: string | Date | undefined): string => {
   if (!date) {
     return 'N/A';
   }
-  
+
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString('en-US', {

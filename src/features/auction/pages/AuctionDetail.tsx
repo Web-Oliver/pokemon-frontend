@@ -5,19 +5,22 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Package, 
-  Calendar, 
-  DollarSign, 
-  Share, 
-  Copy, 
-  FileText, 
-  Download, 
-  Plus, 
-  Edit
+import {
+  Package,
+  Calendar,
+  DollarSign,
+  Share,
+  Copy,
+  FileText,
+  Download,
+  Plus,
+  Edit,
 } from 'lucide-react';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
-import { PokemonModal, PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
+import {
+  PokemonModal,
+  PokemonConfirmModal,
+} from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
@@ -28,9 +31,15 @@ import { useAuction } from '../../../shared/hooks/useAuction';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { useModal, useConfirmModal } from '../../../shared/hooks/useModal';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
-import { showSuccessToast, showWarningToast } from '../../../shared/components/organisms/ui/toastNotifications';
+import {
+  showSuccessToast,
+  showWarningToast,
+} from '../../../shared/components/organisms/ui/toastNotifications';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
-import { formatCurrency, formatDate } from '../../../shared/utils/helpers/itemDisplayHelpers';
+import {
+  formatCurrency,
+  formatDate,
+} from '../../../shared/utils/helpers/itemDisplayHelpers';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -62,7 +71,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
-  const [generatedFacebookPost, setGeneratedFacebookPost] = useState<string>('');
+  const [generatedFacebookPost, setGeneratedFacebookPost] =
+    useState<string>('');
   const [selectedItem, setSelectedItem] = useState<{
     id: string;
     type: 'psa' | 'raw' | 'sealed';
@@ -74,7 +84,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     name: string;
     category: string;
   } | null>(null);
-  
+
   // Modal management using new hooks
   const addItemModal = useModal();
   const facebookPostModal = useModal();
@@ -146,16 +156,20 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     setItemToRemove({
       id: item.itemId || item._id,
       name: displayData.itemName,
-      category: item.itemCategory
+      category: item.itemCategory,
     });
     removeItemConfirmModal.openModal();
   };
 
   const confirmRemoveItem = async () => {
     if (!itemToRemove) return;
-    
+
     await removeItemConfirmModal.confirmAction(async () => {
-      await removeItemFromAuction(currentAuctionId, itemToRemove.id, itemToRemove.category);
+      await removeItemFromAuction(
+        currentAuctionId,
+        itemToRemove.id,
+        itemToRemove.category
+      );
       showSuccessToast('Item removed from auction successfully');
       setItemToRemove(null);
     });
@@ -170,7 +184,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
     const itemId = item.itemId || item.itemData?._id;
     const displayData = getItemDisplayData(item);
-    
+
     // Determine item type based on category
     let itemType: 'psa' | 'raw' | 'sealed';
     switch (item.itemCategory) {
@@ -354,7 +368,9 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   The auction you&apos;re looking for doesn&apos;t exist or has
                   been deleted.
                 </p>
-                <PokemonButton onClick={navigateToAuctions}>Back to Auctions</PokemonButton>
+                <PokemonButton onClick={navigateToAuctions}>
+                  Back to Auctions
+                </PokemonButton>
               </div>
             </div>
           </div>

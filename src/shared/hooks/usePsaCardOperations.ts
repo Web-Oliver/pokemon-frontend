@@ -11,7 +11,12 @@ import { useMemo } from 'react';
 import { IPsaGradedCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useGenericCrudOperations, createPsaCardConfig, CrudApiOperations, CrudMessages } from './useGenericCrudOperations';
+import {
+  useGenericCrudOperations,
+  createPsaCardConfig,
+  CrudApiOperations,
+  CrudMessages,
+} from './useGenericCrudOperations';
 
 export interface UsePsaCardOperationsReturn {
   loading: boolean;
@@ -35,7 +40,6 @@ export interface UsePsaCardOperationsReturn {
  * Follows SRP - only handles PSA card configuration and interface mapping
  */
 
-
 /**
  * PSA Card operations hook - uses consolidated collection operations
  * Maintains backward compatibility while eliminating code duplication
@@ -50,16 +54,13 @@ export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
   );
 
   // Use consolidated operations hook with proper parameters
-  const operations = useGenericCrudOperations(
-    entityConfig.apiMethods,
-    {
-      entityName: entityConfig.entityName,
-      addSuccess: entityConfig.messages.addSuccess,
-      updateSuccess: entityConfig.messages.updateSuccess,
-      deleteSuccess: entityConfig.messages.deleteSuccess,
-      soldSuccess: entityConfig.messages.soldSuccess,
-    }
-  );
+  const operations = useGenericCrudOperations(entityConfig.apiMethods, {
+    entityName: entityConfig.entityName,
+    addSuccess: entityConfig.messages.addSuccess,
+    updateSuccess: entityConfig.messages.updateSuccess,
+    deleteSuccess: entityConfig.messages.deleteSuccess,
+    soldSuccess: entityConfig.messages.soldSuccess,
+  });
 
   // Return interface-compatible methods for backward compatibility
   return {

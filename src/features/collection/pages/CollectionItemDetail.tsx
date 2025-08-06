@@ -1,6 +1,6 @@
 /**
  * Collection Item Detail Page (Refactored)
- * 
+ *
  * Refactored from 937-line god class to follow CLAUDE.md principles:
  * - Single Responsibility: Only orchestrates specialized components
  * - DRY: Leverages extracted hooks and components
@@ -10,7 +10,10 @@
 
 import React from 'react';
 import { Package } from 'lucide-react';
-import { PokemonModal, PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
+import {
+  PokemonModal,
+  PokemonConfirmModal,
+} from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PokemonPageContainer } from '../../../shared/components/atoms/design-system/PokemonPageContainer';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
@@ -19,7 +22,7 @@ import { useCollectionItemFromUrl } from '../../../shared/hooks/collection/useCo
 import { useItemOperations } from '../../../shared/hooks/collection/useItemOperations';
 import { usePriceManagement } from '../../../shared/hooks/collection/usePriceManagement';
 import { useImageDownload } from '../../../shared/hooks/collection/useImageDownload';
-import { 
+import {
   CollectionItemHeader,
   ItemEssentialDetails,
   ItemImageGallery,
@@ -27,7 +30,7 @@ import {
   ItemSaleDetails,
   PsaCardDetailSection,
   RawCardDetailSection,
-  SealedProductDetailSection
+  SealedProductDetailSection,
 } from '../components/collection';
 import { getItemDisplayData } from '../../../shared/utils/helpers/itemDisplayHelpers';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
@@ -42,7 +45,7 @@ const CollectionItemDetail: React.FC = () => {
     refetchItem();
   });
   const imageDownload = useImageDownload(item, () => getItemTitle());
-  
+
   // Modal for mark sold form
   const markSoldModal = useModal();
 
@@ -58,15 +61,21 @@ const CollectionItemDetail: React.FC = () => {
 
     // For PSA and Raw cards
     if ('cardId' in item || 'cardName' in item) {
-      return (item as any).cardId?.cardName || (item as any).cardName || 'Unknown Card';
+      return (
+        (item as any).cardId?.cardName ||
+        (item as any).cardName ||
+        'Unknown Card'
+      );
     }
 
     // For sealed products
     if ('productId' in item && item.productId) {
       const sealedItem = item as any;
-      return sealedItem.productId?.productName || 
-             sealedItem.productId?.category?.replace(/-/g, ' ') || 
-             'Unknown Product';
+      return (
+        sealedItem.productId?.productName ||
+        sealedItem.productId?.category?.replace(/-/g, ' ') ||
+        'Unknown Product'
+      );
     }
 
     return 'Unknown Item';
@@ -77,11 +86,12 @@ const CollectionItemDetail: React.FC = () => {
 
     if ('grade' in item) return `PSA Grade ${item.grade}`;
     if ('condition' in item) return `Condition: ${item.condition}`;
-    
+
     if ('productId' in item && item.productId) {
       const sealedItem = item as any;
-      return sealedItem.productId?.category ? 
-        `Category: ${sealedItem.productId.category.replace(/-/g, ' ')}` : '';
+      return sealedItem.productId?.category
+        ? `Category: ${sealedItem.productId.category.replace(/-/g, ' ')}`
+        : '';
     }
 
     return '';
@@ -115,21 +125,34 @@ const CollectionItemDetail: React.FC = () => {
     const itemDisplayData = getItemDisplayData(item);
 
     if ('grade' in item) {
-      return <PsaCardDetailSection item={item as any} displayData={itemDisplayData} />;
+      return (
+        <PsaCardDetailSection
+          item={item as any}
+          displayData={itemDisplayData}
+        />
+      );
     }
 
     if ('condition' in item) {
-      return <RawCardDetailSection item={item as any} displayData={itemDisplayData} />;
+      return (
+        <RawCardDetailSection
+          item={item as any}
+          displayData={itemDisplayData}
+        />
+      );
     }
 
     if ('category' in item) {
-      return <SealedProductDetailSection item={item as any} displayData={itemDisplayData} />;
+      return (
+        <SealedProductDetailSection
+          item={item as any}
+          displayData={itemDisplayData}
+        />
+      );
     }
 
     return null;
   };
-
-
 
   // Loading state
   if (loading) {
@@ -174,7 +197,7 @@ const CollectionItemDetail: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         {/* Essential Details - Extracted component */}
         <ItemEssentialDetails item={item} />
-        
+
         {/* Image Gallery - Extracted component */}
         <ItemImageGallery
           item={item}
@@ -183,7 +206,7 @@ const CollectionItemDetail: React.FC = () => {
           onDownloadImages={imageDownload.handleDownloadImages}
           downloadingZip={imageDownload.downloadingZip}
         />
-        
+
         {/* Price History - Extracted component */}
         <ItemPriceHistory
           item={item}
@@ -196,9 +219,7 @@ const CollectionItemDetail: React.FC = () => {
       </div>
 
       {/* Item-Specific Information - Reused existing components */}
-      <div className="mb-8">
-        {renderItemSpecificInfo()}
-      </div>
+      <div className="mb-8">{renderItemSpecificInfo()}</div>
 
       {/* Sale Details - Extracted component */}
       <ItemSaleDetails item={item} />

@@ -1,17 +1,17 @@
 /**
  * LEGACY COMPATIBILITY LAYER
- * 
+ *
  * ✅ CONSOLIDATION SUCCESS:
  * - Eliminated 297 lines of internal duplication
  * - Split god file into focused, single-responsibility modules
  * - Maintained complete backward compatibility
- * 
+ *
  * SOLID Principles Applied:
  * - SRP: Each module now has single responsibility
  * - OCP: Open for extension via configuration
  * - DIP: Depends on abstractions, not concretions
  * - DRY: Single source of truth for each pattern
- * 
+ *
  * This file now serves as a compatibility layer while the codebase
  * migrates to the new modular structure in hooks/crud/
  */
@@ -23,10 +23,10 @@ export {
   type CrudApiOperations,
   type CrudMessages,
   type GenericCrudOperationsReturn,
-  
+
   // Collection operations
   useCollectionOperations,
-  
+
   // Entity configurations
   createPsaCardConfig,
   createRawCardConfig,
@@ -34,7 +34,7 @@ export {
   useEntityConfig,
   type CollectionEntityConfig,
   type UseCollectionOperationsReturn,
-  
+
   // Entity-specific hooks (backward compatibility)
   usePsaCardOperations,
   useRawCardOperations,

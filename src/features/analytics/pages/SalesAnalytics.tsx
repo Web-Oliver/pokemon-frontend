@@ -104,11 +104,12 @@ const SalesAnalytics: React.FC = () => {
                         value={sales.length}
                         emoji="🃏"
                         colorScheme={{
-                          iconBg: "from-emerald-500/20 to-cyan-500/20",
-                          iconBorder: "border-emerald-400/30",
-                          titleColor: "text-emerald-400",
-                          progressGradient: "from-emerald-400 to-cyan-400",
-                          badgeColors: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30"
+                          iconBg: 'from-emerald-500/20 to-cyan-500/20',
+                          iconBorder: 'border-emerald-400/30',
+                          titleColor: 'text-emerald-400',
+                          progressGradient: 'from-emerald-400 to-cyan-400',
+                          badgeColors:
+                            'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
                         }}
                         badgeText="Cards Conquered"
                       />
@@ -125,11 +126,12 @@ const SalesAnalytics: React.FC = () => {
                         ).replace(' kr.', '')}
                         icon={DollarSign}
                         colorScheme={{
-                          iconBg: "from-blue-500/20 to-purple-500/20",
-                          iconBorder: "border-blue-400/30",
-                          titleColor: "text-blue-400",
-                          progressGradient: "from-blue-400 to-purple-400",
-                          badgeColors: "bg-blue-500/20 text-blue-300 border-blue-400/30"
+                          iconBg: 'from-blue-500/20 to-purple-500/20',
+                          iconBorder: 'border-blue-400/30',
+                          titleColor: 'text-blue-400',
+                          progressGradient: 'from-blue-400 to-purple-400',
+                          badgeColors:
+                            'bg-blue-500/20 text-blue-300 border-blue-400/30',
                         }}
                         badgeText="Revenue Generated"
                       />
@@ -221,7 +223,7 @@ const SalesAnalytics: React.FC = () => {
             </div>
           </div>
 
-          {/* Recent Sales - Context7 Premium */}  
+          {/* Recent Sales - Context7 Premium */}
           <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
             <div className="p-8 border-b border-[var(--theme-border)]">
               <GlassmorphismHeader

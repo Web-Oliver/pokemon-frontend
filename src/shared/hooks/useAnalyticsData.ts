@@ -34,7 +34,9 @@ export interface UseAnalyticsDataProps {
  * Hook for processing analytics data
  * Memoizes expensive calculations for performance
  */
-export const useAnalyticsData = ({ activities }: UseAnalyticsDataProps): AnalyticsData | null => {
+export const useAnalyticsData = ({
+  activities,
+}: UseAnalyticsDataProps): AnalyticsData | null => {
   const analyticsData = useMemo(() => {
     return processActivitiesForAnalytics(activities);
   }, [activities]);

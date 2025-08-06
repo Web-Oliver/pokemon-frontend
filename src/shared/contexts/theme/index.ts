@@ -5,13 +5,13 @@
  */
 
 // UNIFIED THEME EXPORTS - New single-provider system
-export { 
+export {
   UnifiedThemeProvider,
   useUnifiedTheme,
   useVisualTheme,
-  useLayoutTheme, 
+  useLayoutTheme,
   useAnimationTheme,
-  useAccessibilityTheme
+  useAccessibilityTheme,
 } from './UnifiedThemeProvider';
 
 // LEGACY EXPORT - For backward compatibility during migration

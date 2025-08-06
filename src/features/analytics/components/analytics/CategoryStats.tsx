@@ -37,7 +37,7 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
       customGradient: {
         from: 'purple-500/20',
         via: 'violet-500/15',
-        to: 'pink-500/20'
+        to: 'pink-500/20',
       },
       iconColors: 'from-purple-500 to-violet-600',
       shadowColor: 'rgba(147,51,234,0.3)',
@@ -75,10 +75,10 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
           className="group"
         >
           <div className="flex items-center">
-            <div 
+            <div
               className={`w-12 h-12 bg-gradient-to-br ${category.iconColors} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-              style={{ 
-                boxShadow: `0 0 15px ${category.shadowColor}` 
+              style={{
+                boxShadow: `0 0 15px ${category.shadowColor}`,
               }}
             >
               <category.icon className="w-6 h-6 text-white" />

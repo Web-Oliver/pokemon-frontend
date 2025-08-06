@@ -175,7 +175,10 @@ export const formatBytes = (bytes: number, decimals: number = 2): string => {
 /**
  * Format percentage with consistent decimal places
  */
-export const formatPercentage = (value: number, decimals: number = 1): string => {
+export const formatPercentage = (
+  value: number,
+  decimals: number = 1
+): string => {
   return `${value.toFixed(decimals)}%`;
 };
 

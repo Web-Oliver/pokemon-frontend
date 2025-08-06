@@ -195,10 +195,7 @@ function useAccessibilityTheme(
     if (initialPreferences.prefersHighContrast && !themeConfig.highContrast) {
       accessibilityProvider.toggleHighContrast();
     }
-    if (
-      initialPreferences.prefersReducedMotion &&
-      !themeConfig.reducedMotion
-    ) {
+    if (initialPreferences.prefersReducedMotion && !themeConfig.reducedMotion) {
       accessibilityProvider.toggleReducedMotion();
     }
 

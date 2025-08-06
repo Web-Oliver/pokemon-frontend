@@ -1,6 +1,6 @@
 /**
  * CLAUDE.md COMPLIANCE: Theme Backup Manager Component
- * 
+ *
  * SRP: Single responsibility for theme backup operations
  * OCP: Open for extension via props interface
  * DIP: Depends on theme utilities abstraction
@@ -10,10 +10,10 @@ import { useState, useCallback } from 'react';
 import { Trash2, Download, Upload } from 'lucide-react';
 import { cn } from '../../../utils/unifiedUtilities';
 import type { ThemeBackup, ThemeExportData } from './utils/themeExportUtils';
-import { 
-  createThemeBackup, 
-  downloadThemeAsFile, 
-  getThemeConfigSummary 
+import {
+  createThemeBackup,
+  downloadThemeAsFile,
+  getThemeConfigSummary,
 } from './utils/themeExportUtils';
 
 interface ThemeBackupManagerProps {
@@ -33,7 +33,7 @@ interface ThemeBackupManagerProps {
 /**
  * ThemeBackupManager Component
  * Handles theme backup creation, restoration, and management
- * 
+ *
  * CLAUDE.md COMPLIANCE:
  * - SRP: Handles only backup-related operations
  * - DRY: Reusable backup management logic
@@ -54,36 +54,49 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
     try {
       const backupName = `Backup ${new Date().toLocaleString()}`;
       const backup = createThemeBackup(currentThemeData, backupName);
-      
-      setThemeBackups(prev => [backup, ...prev]);
-      
+
+      setThemeBackups((prev) => [backup, ...prev]);
+
       // Optionally persist to localStorage
       const existingBackups = JSON.parse(
         localStorage.getItem('themeBackups') || '[]'
       );
       existingBackups.unshift(backup);
       localStorage.setItem('themeBackups', JSON.stringify(existingBackups));
-      
     } catch (error) {
       console.error('Failed to create theme backup:', error);
     }
   }, [currentThemeData]);
 
-  const handleRestoreBackup = useCallback((backup: ThemeBackup) => {
-    if (window.confirm(`Restore backup "${backup.name}"? This will overwrite your current theme.`)) {
-      onRestoreBackup(backup);
-    }
-  }, [onRestoreBackup]);
+  const handleRestoreBackup = useCallback(
+    (backup: ThemeBackup) => {
+      if (
+        window.confirm(
+          `Restore backup "${backup.name}"? This will overwrite your current theme.`
+        )
+      ) {
+        onRestoreBackup(backup);
+      }
+    },
+    [onRestoreBackup]
+  );
 
-  const handleDeleteBackup = useCallback((backupId: string) => {
-    if (window.confirm('Delete this backup? This action cannot be undone.')) {
-      setThemeBackups(prev => prev.filter(backup => backup.id !== backupId));
-      
-      // Update localStorage
-      const updatedBackups = themeBackups.filter(backup => backup.id !== backupId);
-      localStorage.setItem('themeBackups', JSON.stringify(updatedBackups));
-    }
-  }, [themeBackups]);
+  const handleDeleteBackup = useCallback(
+    (backupId: string) => {
+      if (window.confirm('Delete this backup? This action cannot be undone.')) {
+        setThemeBackups((prev) =>
+          prev.filter((backup) => backup.id !== backupId)
+        );
+
+        // Update localStorage
+        const updatedBackups = themeBackups.filter(
+          (backup) => backup.id !== backupId
+        );
+        localStorage.setItem('themeBackups', JSON.stringify(updatedBackups));
+      }
+    },
+    [themeBackups]
+  );
 
   const handleDownloadBackup = useCallback((backup: ThemeBackup) => {
     const filename = `theme-backup-${backup.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.json`;
@@ -93,7 +106,9 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
   // Load backups from localStorage on mount
   useState(() => {
     try {
-      const savedBackups = JSON.parse(localStorage.getItem('themeBackups') || '[]');
+      const savedBackups = JSON.parse(
+        localStorage.getItem('themeBackups') || '[]'
+      );
       setThemeBackups(savedBackups);
     } catch (error) {
       console.warn('Failed to load theme backups from storage:', error);
@@ -104,18 +119,14 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
     <div className="space-y-4">
       {/* Backup Controls */}
       <div className="flex gap-2">
-        <button
-          onClick={handleCreateBackup}
-          className={primaryButtonClasses}
-        >
+        <button onClick={handleCreateBackup} className={primaryButtonClasses}>
           Create Backup
         </button>
-        
-        <button
-          onClick={onToggleBackups}
-          className={secondaryButtonClasses}
-        >
-          {showBackups ? 'Hide Backups' : `Show Backups (${themeBackups.length})`}
+
+        <button onClick={onToggleBackups} className={secondaryButtonClasses}>
+          {showBackups
+            ? 'Hide Backups'
+            : `Show Backups (${themeBackups.length})`}
         </button>
       </div>
 
@@ -125,7 +136,9 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
           {themeBackups.length === 0 ? (
             <div className="text-center py-8 text-zinc-400">
               <p>No theme backups created yet</p>
-              <p className="text-sm mt-1">Create backups to save your current theme settings</p>
+              <p className="text-sm mt-1">
+                Create backups to save your current theme settings
+              </p>
             </div>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -145,10 +158,13 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
                       {new Date(backup.timestamp).toLocaleString()}
                     </div>
                     <div className="text-xs text-zinc-500 mt-1">
-                      {getThemeConfigSummary(backup.data.config, backup.data.visualTheme)}
+                      {getThemeConfigSummary(
+                        backup.data.config,
+                        backup.data.visualTheme
+                      )}
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-1 ml-3">
                     <button
                       onClick={() => handleDownloadBackup(backup)}
@@ -160,7 +176,7 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
                     >
                       <Download className="w-4 h-4" />
                     </button>
-                    
+
                     <button
                       onClick={() => handleRestoreBackup(backup)}
                       className={cn(
@@ -171,7 +187,7 @@ export const ThemeBackupManager: React.FC<ThemeBackupManagerProps> = ({
                     >
                       <Upload className="w-4 h-4" />
                     </button>
-                    
+
                     <button
                       onClick={() => handleDeleteBackup(backup.id)}
                       className={cn(

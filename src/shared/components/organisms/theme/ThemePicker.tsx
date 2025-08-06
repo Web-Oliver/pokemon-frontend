@@ -16,10 +16,7 @@
  */
 
 import React from 'react';
-import {
-  themePresets,
-  VisualTheme,
-} from '../../contexts/ThemeContext';
+import { themePresets, VisualTheme } from '../../contexts/ThemeContext';
 import { useVisualTheme, useLayoutTheme } from '../../contexts/theme';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
@@ -40,7 +37,8 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   showTitle = true,
   onThemeChange,
 }) => {
-  const { visualTheme, setVisualTheme, applyPreset, presets } = useVisualTheme();
+  const { visualTheme, setVisualTheme, applyPreset, presets } =
+    useVisualTheme();
   const { density } = useLayoutTheme();
 
   const handleThemeSelect = (themeId: VisualTheme) => {
@@ -201,15 +199,12 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
           <div>
             <span className="text-sm text-zinc-400">Current Theme:</span>
             <h3 className="text-lg font-semibold text-white">
-              {presets.find((p) => p.id === visualTheme)?.name ||
-                'Unknown'}
+              {presets.find((p) => p.id === visualTheme)?.name || 'Unknown'}
             </h3>
           </div>
           <div className="text-right">
             <span className="text-sm text-zinc-400">Density:</span>
-            <p className="text-cyan-300 font-medium capitalize">
-              {density}
-            </p>
+            <p className="text-cyan-300 font-medium capitalize">{density}</p>
           </div>
         </div>
       </PokemonCard>

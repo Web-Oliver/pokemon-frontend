@@ -1,7 +1,7 @@
 /**
  * Visual Theme Provider
  * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 1.1
- * 
+ *
  * Focused context for visual theme management following ISP
  * Handles: visual themes, presets, and visual appearance settings
  */
@@ -27,15 +27,15 @@ export interface VisualThemeContextType {
   visualTheme: VisualTheme;
   glassmorphismIntensity: number;
   particleEffectsEnabled: boolean;
-  
+
   // Available Presets
   presets: ThemePreset[];
-  
+
   // Theme Management
   setVisualTheme: (theme: VisualTheme) => void;
   setGlassmorphismIntensity: (intensity: number) => void;
   toggleParticleEffects: () => void;
-  
+
   // Preset Management
   applyPreset: (presetId: VisualTheme) => void;
   getPreset: (presetId: VisualTheme) => ThemePreset | undefined;
@@ -64,38 +64,47 @@ export const VisualThemeProvider: React.FC<VisualThemeProviderProps> = ({
   onStateChange,
 }) => {
   // Theme manipulation functions
-  const setVisualTheme = useCallback((theme: VisualTheme) => {
-    onStateChange({ visualTheme: theme });
-  }, [onStateChange]);
+  const setVisualTheme = useCallback(
+    (theme: VisualTheme) => {
+      onStateChange({ visualTheme: theme });
+    },
+    [onStateChange]
+  );
 
-  const setGlassmorphismIntensity = useCallback((intensity: number) => {
-    const clampedIntensity = Math.max(0, Math.min(100, intensity));
-    onStateChange({ glassmorphismIntensity: clampedIntensity });
-  }, [onStateChange]);
+  const setGlassmorphismIntensity = useCallback(
+    (intensity: number) => {
+      const clampedIntensity = Math.max(0, Math.min(100, intensity));
+      onStateChange({ glassmorphismIntensity: clampedIntensity });
+    },
+    [onStateChange]
+  );
 
   const toggleParticleEffects = useCallback(() => {
     onStateChange({ particleEffectsEnabled: !state.particleEffectsEnabled });
   }, [onStateChange, state.particleEffectsEnabled]);
 
   // Preset management
-  const applyPreset = useCallback((presetId: VisualTheme) => {
-    const preset = themePresets.find((p) => p.id === presetId);
-    if (preset && preset.config) {
-      const updates: Partial<VisualThemeState> = {};
-      
-      if (preset.config.visualTheme !== undefined) {
-        updates.visualTheme = preset.config.visualTheme;
+  const applyPreset = useCallback(
+    (presetId: VisualTheme) => {
+      const preset = themePresets.find((p) => p.id === presetId);
+      if (preset && preset.config) {
+        const updates: Partial<VisualThemeState> = {};
+
+        if (preset.config.visualTheme !== undefined) {
+          updates.visualTheme = preset.config.visualTheme;
+        }
+        if (preset.config.glassmorphismIntensity !== undefined) {
+          updates.glassmorphismIntensity = preset.config.glassmorphismIntensity;
+        }
+        if (preset.config.particleEffectsEnabled !== undefined) {
+          updates.particleEffectsEnabled = preset.config.particleEffectsEnabled;
+        }
+
+        onStateChange(updates);
       }
-      if (preset.config.glassmorphismIntensity !== undefined) {
-        updates.glassmorphismIntensity = preset.config.glassmorphismIntensity;
-      }
-      if (preset.config.particleEffectsEnabled !== undefined) {
-        updates.particleEffectsEnabled = preset.config.particleEffectsEnabled;
-      }
-      
-      onStateChange(updates);
-    }
-  }, [onStateChange]);
+    },
+    [onStateChange]
+  );
 
   const getPreset = useCallback((presetId: VisualTheme) => {
     return themePresets.find((p) => p.id === presetId);
@@ -106,15 +115,15 @@ export const VisualThemeProvider: React.FC<VisualThemeProviderProps> = ({
     visualTheme: state.visualTheme,
     glassmorphismIntensity: state.glassmorphismIntensity,
     particleEffectsEnabled: state.particleEffectsEnabled,
-    
+
     // Available Presets
     presets: themePresets,
-    
+
     // Theme Management
     setVisualTheme,
     setGlassmorphismIntensity,
     toggleParticleEffects,
-    
+
     // Preset Management
     applyPreset,
     getPreset,

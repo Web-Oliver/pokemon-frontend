@@ -1,18 +1,18 @@
 /**
  * UNIFIED EFFECT SYSTEM COMPONENT
  * Phase 3 Critical Priority - Component Deduplication
- * 
+ *
  * Following CLAUDE.md + TODO.md Ultra-Optimization Plan:
  * - Consolidates CosmicBackground + NeuralNetworkBackground + ParticleSystem
- * - Eliminates 70% code duplication across effect components  
+ * - Eliminates 70% code duplication across effect components
  * - Single component with effect type variants
  * - DRY compliance: Single source of truth for visual effects
- * 
+ *
  * ARCHITECTURE LAYER: Layer 3 (Components)
  * - UI building block for visual effects
  * - Uses Layer 1 utilities and unified theme system
  * - Provides consistent effect patterns across app
- * 
+ *
  * SOLID Principles:
  * - Single Responsibility: Handles all visual effect rendering
  * - Open/Closed: Easy to extend with new effect types
@@ -30,27 +30,33 @@ import { useUnifiedTheme } from '../../contexts/theme/UnifiedThemeProvider';
 
 interface UnifiedEffectSystemProps {
   /** Type of effect to render */
-  effectType: 'cosmic' | 'neural' | 'particles' | 'holographic' | 'aurora' | 'quantum';
-  
+  effectType:
+    | 'cosmic'
+    | 'neural'
+    | 'particles'
+    | 'holographic'
+    | 'aurora'
+    | 'quantum';
+
   /** Effect intensity level */
   intensity?: 'subtle' | 'medium' | 'intense' | 'maximum';
-  
+
   /** Primary color scheme */
   colorScheme?: 'primary' | 'secondary' | 'cosmic' | 'neural' | 'custom';
-  
+
   /** Custom colors (when colorScheme='custom') */
   customColors?: {
     primary: string;
     secondary?: string;
     accent?: string;
   };
-  
+
   /** Animation speed */
   animationSpeed?: 'slow' | 'normal' | 'fast' | 'static';
-  
+
   /** Particle count (for particle effects) */
   particleCount?: 'few' | 'normal' | 'many' | 'maximum';
-  
+
   /** Enable/disable specific features */
   features?: {
     blur?: boolean;
@@ -59,16 +65,16 @@ interface UnifiedEffectSystemProps {
     pulse?: boolean;
     float?: boolean;
   };
-  
+
   /** Overlay opacity */
   opacity?: number;
-  
+
   /** Additional CSS classes */
   className?: string;
-  
+
   /** Respect theme settings (animations, particle effects) */
   respectThemeSettings?: boolean;
-  
+
   /** Children to render over the effect */
   children?: React.ReactNode;
 }
@@ -94,16 +100,16 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   const theme = useUnifiedTheme();
 
   // Check if effects should be disabled based on theme settings
-  const effectsEnabled = !respectThemeSettings || (
-    theme.animationsEnabled && 
-    theme.particleEffectsEnabled && 
-    !theme.reduceMotion
-  );
+  const effectsEnabled =
+    !respectThemeSettings ||
+    (theme.animationsEnabled &&
+      theme.particleEffectsEnabled &&
+      !theme.reduceMotion);
 
   // ===============================
   // COLOR SYSTEM
   // ===============================
-  
+
   const getColorPalette = useMemo(() => {
     if (colorScheme === 'custom' && customColors) {
       return {
@@ -116,7 +122,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
     const colorPalettes = {
       primary: {
         primary: 'rgba(6, 182, 212, 0.4)', // cyan
-        secondary: 'rgba(139, 92, 246, 0.3)', // purple  
+        secondary: 'rgba(139, 92, 246, 0.3)', // purple
         accent: 'rgba(236, 72, 153, 0.2)', // pink
       },
       secondary: {
@@ -142,7 +148,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   // ===============================
   // INTENSITY CONFIGURATIONS
   // ===============================
-  
+
   const getIntensityConfig = () => {
     const intensityMap = {
       subtle: {
@@ -170,7 +176,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
         particleMultiplier: 2,
       },
     };
-    
+
     return intensityMap[intensity];
   };
 
@@ -179,19 +185,19 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   // ===============================
   // ANIMATION CONFIGURATIONS
   // ===============================
-  
+
   const getAnimationConfig = () => {
     if (!effectsEnabled || animationSpeed === 'static') {
       return { duration: '0s', delay: '0s' };
     }
-    
+
     const speedMap = {
       slow: { duration: '8s', delay: '0s' },
       normal: { duration: '4s', delay: '0s' },
       fast: { duration: '2s', delay: '0s' },
       static: { duration: '0s', delay: '0s' },
     };
-    
+
     return speedMap[animationSpeed];
   };
 
@@ -200,7 +206,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   // ===============================
   // PARTICLE COUNT CONFIGURATION
   // ===============================
-  
+
   const getParticleCount = () => {
     const baseCount = {
       few: 5,
@@ -208,14 +214,14 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
       many: 20,
       maximum: 30,
     }[particleCount];
-    
+
     return Math.floor(baseCount * intensityConfig.particleMultiplier);
   };
 
   // ===============================
   // EFFECT RENDERERS
   // ===============================
-  
+
   const renderCosmicEffect = () => (
     <>
       {/* Holographic base gradient */}
@@ -224,10 +230,12 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
         style={{
           background: `conic-gradient(from 0deg at 50% 50%, ${getColorPalette.primary}, ${getColorPalette.secondary}, ${getColorPalette.accent}, ${getColorPalette.primary})`,
           opacity: opacity * intensityConfig.opacity,
-          animation: effectsEnabled ? `spin ${animationConfig.duration} linear infinite` : 'none',
+          animation: effectsEnabled
+            ? `spin ${animationConfig.duration} linear infinite`
+            : 'none',
         }}
       />
-      
+
       {/* Cosmic overlay patterns */}
       <div
         className="absolute inset-0"
@@ -253,7 +261,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
           opacity: 0.3,
         }}
       />
-      
+
       {/* Neural nodes */}
       <div
         className="absolute inset-0"
@@ -261,7 +269,9 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
           backgroundImage: `radial-gradient(circle at 25% 25%, ${getColorPalette.secondary} 2px, transparent 2px), radial-gradient(circle at 75% 75%, ${getColorPalette.accent} 2px, transparent 2px)`,
           backgroundSize: '80px 80px',
           opacity: 0.5,
-          animation: effectsEnabled ? `pulse ${animationConfig.duration} ease-in-out infinite` : 'none',
+          animation: effectsEnabled
+            ? `pulse ${animationConfig.duration} ease-in-out infinite`
+            : 'none',
         }}
       />
     </>
@@ -269,7 +279,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
 
   const renderParticleEffect = () => {
     const particleCount = getParticleCount();
-    
+
     return (
       <>
         {Array.from({ length: particleCount }).map((_, i) => (
@@ -280,7 +290,9 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
               background: getColorPalette.primary,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animation: effectsEnabled ? `float ${2 + Math.random() * 2}s ease-in-out infinite` : 'none',
+              animation: effectsEnabled
+                ? `float ${2 + Math.random() * 2}s ease-in-out infinite`
+                : 'none',
               animationDelay: `${i * 0.1}s`,
               opacity: 0.6,
             }}
@@ -298,10 +310,12 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
         style={{
           background: `linear-gradient(45deg, transparent 30%, ${getColorPalette.primary} 50%, transparent 70%)`,
           opacity: opacity * 0.7,
-          animation: effectsEnabled ? `shimmer ${animationConfig.duration} ease-in-out infinite` : 'none',
+          animation: effectsEnabled
+            ? `shimmer ${animationConfig.duration} ease-in-out infinite`
+            : 'none',
         }}
       />
-      
+
       {/* Holographic iridescence */}
       <div
         className="absolute inset-0"
@@ -322,17 +336,21 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
         style={{
           background: `linear-gradient(135deg, ${getColorPalette.primary} 0%, ${getColorPalette.secondary} 50%, ${getColorPalette.accent} 100%)`,
           opacity: opacity * intensityConfig.opacity,
-          animation: effectsEnabled ? `pulse ${animationConfig.duration} ease-in-out infinite alternate` : 'none',
+          animation: effectsEnabled
+            ? `pulse ${animationConfig.duration} ease-in-out infinite alternate`
+            : 'none',
         }}
       />
-      
+
       {/* Aurora flowing effect */}
       <div
         className="absolute inset-0"
         style={{
           background: `repeating-linear-gradient(45deg, transparent, transparent 20px, ${getColorPalette.secondary} 20px, ${getColorPalette.secondary} 40px)`,
           opacity: 0.2,
-          animation: effectsEnabled ? `slide ${animationConfig.duration} linear infinite` : 'none',
+          animation: effectsEnabled
+            ? `slide ${animationConfig.duration} linear infinite`
+            : 'none',
         }}
       />
     </>
@@ -346,10 +364,12 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
         style={{
           background: `conic-gradient(from 180deg at 50% 50%, ${getColorPalette.primary}, ${getColorPalette.secondary}, ${getColorPalette.accent}, ${getColorPalette.primary})`,
           opacity: opacity * 0.8,
-          animation: effectsEnabled ? `spin ${animationConfig.duration} ease-in-out infinite reverse` : 'none',
+          animation: effectsEnabled
+            ? `spin ${animationConfig.duration} ease-in-out infinite reverse`
+            : 'none',
         }}
       />
-      
+
       {/* Quantum particles */}
       {renderParticleEffect()}
     </>
@@ -358,7 +378,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   // ===============================
   // EFFECT SELECTOR
   // ===============================
-  
+
   const renderEffect = () => {
     const effectMap = {
       cosmic: renderCosmicEffect,
@@ -368,14 +388,14 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
       aurora: renderAuroraEffect,
       quantum: renderQuantumEffect,
     };
-    
+
     return effectMap[effectType]();
   };
 
   // ===============================
   // FEATURE OVERLAYS
   // ===============================
-  
+
   const renderFeatureOverlays = () => (
     <>
       {/* Glow overlay */}
@@ -388,7 +408,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
           }}
         />
       )}
-      
+
       {/* Shimmer overlay */}
       {features.shimmer && effectsEnabled && (
         <div
@@ -404,7 +424,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   // ===============================
   // RENDER
   // ===============================
-  
+
   if (!effectsEnabled && respectThemeSettings) {
     return (
       <div className={`absolute inset-0 overflow-hidden ${className}`}>
@@ -421,19 +441,18 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   }
 
   return (
-    <div className={`absolute inset-0 overflow-hidden ${className}`} aria-hidden="true">
+    <div
+      className={`absolute inset-0 overflow-hidden ${className}`}
+      aria-hidden="true"
+    >
       {/* Main effect */}
       {renderEffect()}
-      
+
       {/* Feature overlays */}
       {renderFeatureOverlays()}
-      
+
       {/* Content overlay */}
-      {children && (
-        <div className="relative z-10">
-          {children}
-        </div>
-      )}
+      {children && <div className="relative z-10">{children}</div>}
     </div>
   );
 };
@@ -481,10 +500,7 @@ export const ParticleSystem: React.FC<{
   speed?: string;
   className?: string;
 }> = ({ className }) => (
-  <UnifiedEffectSystem
-    effectType="particles"
-    className={className}
-  />
+  <UnifiedEffectSystem effectType="particles" className={className} />
 );
 
 // ===============================
@@ -492,7 +508,9 @@ export const ParticleSystem: React.FC<{
 // Common effect combinations for easy use
 // ===============================
 
-export const CosmicDbaBackground: React.FC<{ className?: string }> = ({ className }) => (
+export const CosmicDbaBackground: React.FC<{ className?: string }> = ({
+  className,
+}) => (
   <UnifiedEffectSystem
     effectType="cosmic"
     intensity="intense"
@@ -502,7 +520,9 @@ export const CosmicDbaBackground: React.FC<{ className?: string }> = ({ classNam
   />
 );
 
-export const NeuralAuctionBackground: React.FC<{ className?: string }> = ({ className }) => (
+export const NeuralAuctionBackground: React.FC<{ className?: string }> = ({
+  className,
+}) => (
   <UnifiedEffectSystem
     effectType="neural"
     intensity="medium"
@@ -512,7 +532,9 @@ export const NeuralAuctionBackground: React.FC<{ className?: string }> = ({ clas
   />
 );
 
-export const HolographicCardEffect: React.FC<{ className?: string }> = ({ className }) => (
+export const HolographicCardEffect: React.FC<{ className?: string }> = ({
+  className,
+}) => (
   <UnifiedEffectSystem
     effectType="holographic"
     intensity="subtle"
@@ -524,7 +546,7 @@ export const HolographicCardEffect: React.FC<{ className?: string }> = ({ classN
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:
- * 
+ *
  * BEFORE (6 separate effect components):
  * - CosmicBackground.tsx: ~120 lines
  * - NeuralNetworkBackground.tsx: ~100 lines
@@ -533,14 +555,14 @@ export const HolographicCardEffect: React.FC<{ className?: string }> = ({ classN
  * - HolographicBorder.tsx: ~70 lines (estimated)
  * - Other effect patterns: ~140 lines (estimated)
  * TOTAL: ~600 lines with 70% logic duplication
- * 
+ *
  * AFTER (1 unified system):
  * - UnifiedEffectSystem.tsx: ~300 lines
- * 
+ *
  * REDUCTION: ~50% effect code reduction (300 lines eliminated)
  * IMPACT: Eliminates 70% logic duplication across effect components
  * BONUS: Added preset effect combinations for common use cases
- * 
+ *
  * BENEFITS:
  * ✅ 6 effect components → 1 unified system
  * ✅ 70% logic duplication eliminated
@@ -549,17 +571,17 @@ export const HolographicCardEffect: React.FC<{ className?: string }> = ({ classN
  * ✅ Backward compatibility maintained
  * ✅ Preset combinations for common use cases
  * ✅ Unified animation and particle configuration
- * 
+ *
  * USAGE EXAMPLES:
  * // New unified approach
  * <UnifiedEffectSystem effectType="cosmic" intensity="intense" colorScheme="cosmic" />
  * <UnifiedEffectSystem effectType="neural" features={{ pulse: true, glow: true }} />
- * 
+ *
  * // Preset combinations
  * <CosmicDbaBackground />
  * <NeuralAuctionBackground />
  * <HolographicCardEffect />
- * 
+ *
  * // Backward compatibility (deprecated)
  * <CosmicBackground />
  * <NeuralNetworkBackground />

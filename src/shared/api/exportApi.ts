@@ -416,7 +416,11 @@ const createImageZip = async (
   });
 
   // Use consolidated ZIP utility to eliminate duplication
-  return await ZipImageUtility.createCollectionImageZip(imageUrls, itemNames, itemType);
+  return await ZipImageUtility.createCollectionImageZip(
+    imageUrls,
+    itemNames,
+    itemType
+  );
 };
 
 /**

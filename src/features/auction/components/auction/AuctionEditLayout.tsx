@@ -1,10 +1,10 @@
 /**
  * AuctionEditLayout Component
- * 
+ *
  * Extracts the massive JSX layout from AuctionEdit.tsx to eliminate UI bloat
  * and improve component maintainability. Contains all the premium styling and
  * form layout without business logic.
- * 
+ *
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Handles only auction edit UI layout and styling
  * - DRY: Eliminates massive JSX duplication from page components

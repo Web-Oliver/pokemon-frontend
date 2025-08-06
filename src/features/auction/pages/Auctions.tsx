@@ -13,13 +13,27 @@
  * - Preserved Context7 2025 futuristic header design as specified
  */
 
-import { ArrowLeft, Calendar, DollarSign, Filter, Package, Plus, X, Zap, Award, Clock } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  DollarSign,
+  Filter,
+  Package,
+  Plus,
+  X,
+  Zap,
+  Award,
+  Clock,
+} from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
 import { useAuction } from '../../../shared/hooks/useAuction';
-import { getStatusColor, getStatusPriority } from '../../../shared/utils/auctionStatusUtils';
+import {
+  getStatusColor,
+  getStatusPriority,
+} from '../../../shared/utils/auctionStatusUtils';
 import { formatDateWithTime } from '../../../shared/utils/helpers/formatting';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 

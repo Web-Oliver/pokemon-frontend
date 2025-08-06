@@ -11,21 +11,26 @@
  * - Dependency Inversion: Abstract form contracts for type safety
  */
 
-import { FieldErrors, UseFormSetValue, UseFormClearErrors, UseFormWatch } from 'react-hook-form';
+import {
+  FieldErrors,
+  UseFormSetValue,
+  UseFormClearErrors,
+  UseFormWatch,
+} from 'react-hook-form';
 
 /**
  * Generic Form Field Value Types
  * Union type covering all possible form field values
  */
-export type FormFieldValue = 
-  | string 
-  | number 
-  | boolean 
-  | null 
-  | undefined 
-  | string[] 
-  | number[] 
-  | File 
+export type FormFieldValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | string[]
+  | number[]
+  | File
   | File[];
 
 /**
@@ -40,7 +45,9 @@ export interface FormDataRecord {
  * Type-safe Form Handlers
  * Eliminates 'any' usage in form handling functions
  */
-export interface TypeSafeFormHandlers<T extends FormDataRecord = FormDataRecord> {
+export interface TypeSafeFormHandlers<
+  T extends FormDataRecord = FormDataRecord,
+> {
   setValue: UseFormSetValue<T>;
   clearErrors: UseFormClearErrors<T>;
   watch: UseFormWatch<T>;
@@ -57,13 +64,17 @@ export type SelectionChangeHandler<T = unknown> = (selectedData: T) => void;
  * Form Submission Handler
  * Type-safe callback for form submission
  */
-export type FormSubmissionHandler<T extends FormDataRecord = FormDataRecord> = (data: T) => Promise<void> | void;
+export type FormSubmissionHandler<T extends FormDataRecord = FormDataRecord> = (
+  data: T
+) => Promise<void> | void;
 
 /**
  * Form Validation Handler
  * Type-safe callback for form validation
  */
-export type FormValidationHandler<T extends FormDataRecord = FormDataRecord> = (data: T) => boolean | string | Promise<boolean | string>;
+export type FormValidationHandler<T extends FormDataRecord = FormDataRecord> = (
+  data: T
+) => boolean | string | Promise<boolean | string>;
 
 /**
  * Card Form Data Interface
@@ -174,16 +185,18 @@ export interface FilterFormData extends FormDataRecord {
  */
 export function isFormFieldValue(value: unknown): value is FormFieldValue {
   if (value === null || value === undefined) return true;
-  
+
   const type = typeof value;
   if (type === 'string' || type === 'number' || type === 'boolean') return true;
-  
+
   if (Array.isArray(value)) {
-    return value.every(item => typeof item === 'string' || typeof item === 'number');
+    return value.every(
+      (item) => typeof item === 'string' || typeof item === 'number'
+    );
   }
-  
+
   if (value instanceof File) return true;
-  
+
   return false;
 }
 
@@ -192,7 +205,7 @@ export function isFormFieldValue(value: unknown): value is FormFieldValue {
  */
 export function isFormDataRecord(value: unknown): value is FormDataRecord {
   if (!value || typeof value !== 'object') return false;
-  
+
   const record = value as Record<string, unknown>;
   return Object.values(record).every(isFormFieldValue);
 }
@@ -211,7 +224,9 @@ export function isCardFormData(data: FormDataRecord): data is CardFormData {
 /**
  * Type guard to check if data is product form data
  */
-export function isProductFormData(data: FormDataRecord): data is ProductFormData {
+export function isProductFormData(
+  data: FormDataRecord
+): data is ProductFormData {
   return (
     typeof data.setName === 'string' &&
     typeof data.productName === 'string' &&
@@ -223,7 +238,9 @@ export function isProductFormData(data: FormDataRecord): data is ProductFormData
 /**
  * Type guard to check if data is auction form data
  */
-export function isAuctionFormData(data: FormDataRecord): data is AuctionFormData {
+export function isAuctionFormData(
+  data: FormDataRecord
+): data is AuctionFormData {
   return (
     typeof data.topText === 'string' &&
     typeof data.bottomText === 'string' &&

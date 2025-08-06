@@ -30,7 +30,11 @@ interface ItemCustomizationCardProps {
   item: SelectedItem;
   generateTitle: (item: any) => string;
   generateDescription: (item: any) => string;
-  updateItemCustomization: (itemId: string, field: string, value: string) => void;
+  updateItemCustomization: (
+    itemId: string,
+    field: string,
+    value: string
+  ) => void;
 }
 
 // processImageUrl now imported from utils/common.ts
@@ -39,19 +43,23 @@ interface ItemCustomizationCardProps {
  * Get item display information
  * Centralizes item metadata extraction logic
  */
-const getItemDisplayInfo = (item: SelectedItem, generateTitle: (item: any) => string) => ({
+const getItemDisplayInfo = (
+  item: SelectedItem,
+  generateTitle: (item: any) => string
+) => ({
   title: item.productId?.productName || item.name || generateTitle(item),
   subtitle: `${item.productId?.setProductId || item.setName || 'Unknown Set'} • ${item.type.toUpperCase()}`,
   hasImage: !!(item.images && item.images[0]),
-  imageUrl: item.images && item.images[0] ? processImageUrl(item.images[0]) : null,
-  altText: item.name || 'Item'
+  imageUrl:
+    item.images && item.images[0] ? processImageUrl(item.images[0]) : null,
+  altText: item.name || 'Item',
 });
 
 const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
   item,
   generateTitle,
   generateDescription,
-  updateItemCustomization
+  updateItemCustomization,
 }) => {
   const displayInfo = getItemDisplayInfo(item, generateTitle);
 
@@ -59,7 +67,6 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
     <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-600/30">
       {/* Responsive Layout - Mobile-first with responsive grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-4">
-        
         {/* Item Info & Image Column */}
         <div className="flex flex-col">
           {/* Item Information */}
@@ -67,9 +74,7 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
             <span className="text-sm lg:text-sm font-medium text-white">
               {displayInfo.title}
             </span>
-            <p className="text-xs text-zinc-400 mt-1">
-              {displayInfo.subtitle}
-            </p>
+            <p className="text-xs text-zinc-400 mt-1">{displayInfo.subtitle}</p>
           </div>
 
           {/* Item Image */}
@@ -115,7 +120,11 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
             <textarea
               value={item.customDescription || generateDescription(item)}
               onChange={(e) => {
-                updateItemCustomization(item.id, 'customDescription', e.target.value);
+                updateItemCustomization(
+                  item.id,
+                  'customDescription',
+                  e.target.value
+                );
               }}
               placeholder="Enter custom description..."
               className="w-full h-32 lg:h-[135px] px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none"

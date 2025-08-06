@@ -18,13 +18,13 @@ import { RouteParams, RouteMatch } from '../types/RouterTypes';
  * Single Responsibility: Path segmentation
  */
 export function parseRoute(path: string): string[] {
-  return path.split('/').filter(segment => segment.length > 0);
+  return path.split('/').filter((segment) => segment.length > 0);
 }
 
 /**
  * Check if route pattern matches current path
  * Single Responsibility: Route pattern matching with parameter extraction
- * 
+ *
  * @param pattern Route pattern (e.g., '/collection/:type/:id')
  * @param path Current path (e.g., '/collection/psa/123')
  * @param exact Whether match must be exact
@@ -77,11 +77,11 @@ export function matchRoute(
  */
 export function generatePath(pattern: string, params: RouteParams): string {
   let path = pattern;
-  
+
   Object.entries(params).forEach(([key, value]) => {
     path = path.replace(`:${key}`, value);
   });
-  
+
   return path;
 }
 
@@ -89,7 +89,10 @@ export function generatePath(pattern: string, params: RouteParams): string {
  * Extract parameters from path using pattern
  * Single Responsibility: Parameter extraction
  */
-export function extractParams(pattern: string, path: string): RouteParams | null {
+export function extractParams(
+  pattern: string,
+  path: string
+): RouteParams | null {
   const match = matchRoute(pattern, path, true);
   return match ? match.params : null;
 }

@@ -1,7 +1,7 @@
 /**
  * Pokemon Modal Component - The Ultimate Dialog Engine
  * Enhanced with advanced theme integration from common/Modal
- * 
+ *
  * Consolidates ALL modal patterns across the entire codebase:
  * - PokemonModal (heavily used design system)
  * - common/Modal (advanced theme integration)
@@ -19,9 +19,18 @@
 import React, { useEffect, forwardRef } from 'react';
 import { X, Check, AlertTriangle, Info } from 'lucide-react';
 import { StandardModalProps, ComponentSize } from '../../types/themeTypes';
-import { cn, getGlassmorphismClasses, getAnimationClasses, getA11yClasses } from '../../../utils/unifiedUtilities';
+import {
+  cn,
+  getGlassmorphismClasses,
+  getAnimationClasses,
+  getA11yClasses,
+} from '../../../utils/unifiedUtilities';
 import { cardClasses } from '../../../utils/ui/classNameUtils';
-import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../contexts/theme';
+import {
+  useVisualTheme,
+  useLayoutTheme,
+  useAnimationTheme,
+} from '../../contexts/theme';
 import { PokemonButton } from './PokemonButton';
 
 export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
@@ -31,20 +40,20 @@ export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  
+
   // Size and layout
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   maxWidth?: ComponentSize | 'fullscreen';
   variant?: 'default' | 'glass' | 'solid' | 'center';
   centered?: boolean;
-  
+
   // Behavior
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean; // Legacy support
   closeOnBackdrop?: boolean; // Theme system support
   closeOnEscape?: boolean;
   loading?: boolean;
-  
+
   // Enhanced features
   footer?: React.ReactNode;
   theme?: string;
@@ -53,7 +62,7 @@ export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
   animationIntensity?: 'none' | 'reduced' | 'normal' | 'enhanced';
   testId?: string;
   className?: string;
-  
+
   // Confirmation modal features (from ConfirmModal)
   confirmVariant?: 'confirm' | 'warning' | 'danger' | 'info';
   confirmTitle?: string;
@@ -62,7 +71,7 @@ export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
   cancelButtonText?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-  
+
   // Item selector features (from ItemSelectorModal)
   searchable?: boolean;
   multiSelect?: boolean;
@@ -84,20 +93,20 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       onClose,
       title,
       children,
-      
+
       // Size and layout
       size = 'md',
       maxWidth,
       variant = 'glass',
       centered = true,
-      
+
       // Behavior
       showCloseButton = true,
       closeOnOverlayClick, // Legacy support
       closeOnBackdrop, // Theme system support
       closeOnEscape = true,
       loading = false,
-      
+
       // Enhanced features
       footer,
       theme,
@@ -106,7 +115,7 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       animationIntensity,
       testId,
       className = '',
-      
+
       // Confirmation modal features
       confirmVariant,
       confirmTitle,
@@ -115,14 +124,14 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       cancelButtonText = 'Cancel',
       onConfirm,
       onCancel,
-      
+
       // Item selector features
       searchable,
       multiSelect,
       items,
       onItemSelect,
       renderItem,
-      
+
       ...props
     },
     ref
@@ -134,14 +143,18 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
 
     // Resolve open state (legacy vs theme system)
     const modalOpen = open !== undefined ? open : isOpen || false;
-    
+
     // Resolve close on backdrop (legacy vs theme system)
-    const shouldCloseOnBackdrop = closeOnBackdrop !== undefined ? closeOnBackdrop : closeOnOverlayClick !== false;
+    const shouldCloseOnBackdrop =
+      closeOnBackdrop !== undefined
+        ? closeOnBackdrop
+        : closeOnOverlayClick !== false;
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme?.visualTheme;
-    const effectiveDensity = density || layoutTheme?.density;  
-    const effectiveAnimationIntensity = animationIntensity || animationTheme?.intensity;
+    const effectiveDensity = density || layoutTheme?.density;
+    const effectiveAnimationIntensity =
+      animationIntensity || animationTheme?.intensity;
 
     // Handle escape key
     useEffect(() => {
@@ -213,10 +226,14 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
     // Animation classes based on intensity
     const getAnimationClasses = () => {
       switch (effectiveAnimationIntensity) {
-        case 'none': return 'transition-none';
-        case 'reduced': return 'transition-opacity duration-200 ease-out';
-        case 'enhanced': return 'transition-all duration-500 ease-out animate-in slide-in-from-bottom-4 fade-in-0';
-        default: return 'transition-all duration-300 ease-out animate-in slide-in-from-bottom-2 fade-in-0';
+        case 'none':
+          return 'transition-none';
+        case 'reduced':
+          return 'transition-opacity duration-200 ease-out';
+        case 'enhanced':
+          return 'transition-all duration-500 ease-out animate-in slide-in-from-bottom-4 fade-in-0';
+        default:
+          return 'transition-all duration-300 ease-out animate-in slide-in-from-bottom-2 fade-in-0';
       }
     };
 
@@ -243,11 +260,18 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       return (
         <div className="text-center">
           {Icon && (
-            <div className={cn('mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center', colorMap[confirmVariant])}>
+            <div
+              className={cn(
+                'mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center',
+                colorMap[confirmVariant]
+              )}
+            >
               <Icon className="w-8 h-8" />
             </div>
           )}
-          <h3 className="text-lg font-semibold mb-2">{confirmTitle || title}</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {confirmTitle || title}
+          </h3>
           {confirmMessage && (
             <p className="text-sm opacity-80 mb-6">{confirmMessage}</p>
           )}
@@ -390,7 +414,9 @@ PokemonModal.displayName = 'PokemonModal';
 
 // Convenience components for common patterns
 export const PokemonConfirmModal: React.FC<
-  Omit<PokemonModalProps, 'confirmVariant'> & { variant?: 'confirm' | 'warning' | 'danger' | 'info' }
+  Omit<PokemonModalProps, 'confirmVariant'> & {
+    variant?: 'confirm' | 'warning' | 'danger' | 'info';
+  }
 > = ({ variant = 'confirm', ...props }) => (
   <PokemonModal {...props} confirmVariant={variant} />
 );

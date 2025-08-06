@@ -1,7 +1,7 @@
 /**
  * Image Processing Utilities
  * Split from fileOperations.ts for better maintainability
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Image aspect ratio and responsive utilities
  * - DRY: Centralized image processing logic

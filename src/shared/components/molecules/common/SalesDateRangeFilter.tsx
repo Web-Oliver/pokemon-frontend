@@ -59,7 +59,9 @@ const SalesDateRangeFilter: React.FC<SalesDateRangeFilterProps> = ({
   };
 
   return (
-    <div className={`card-premium p-4 min-w-[380px] bg-[var(--theme-surface)] border-[var(--theme-border)] backdrop-blur-xl ${className}`}>
+    <div
+      className={`card-premium p-4 min-w-[380px] bg-[var(--theme-surface)] border-[var(--theme-border)] backdrop-blur-xl ${className}`}
+    >
       <div className="flex items-center space-x-4">
         {/* Calendar Icon with Context7 glow */}
         <div className="w-10 h-10 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl flex items-center justify-center glow-on-hover border border-cyan-400/30">

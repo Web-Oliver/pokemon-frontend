@@ -14,7 +14,7 @@ import { cn } from '../../../utils/common';
 
 export interface PokemonCardProps {
   children?: React.ReactNode;
-  
+
   // Base card system (original)
   variant?: 'glass' | 'solid' | 'outline' | 'gradient' | 'cosmic';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -70,10 +70,10 @@ export interface PokemonCardProps {
   draggable?: boolean;
   dragHandleProps?: any;
   isDragging?: boolean;
-  
+
   // Compact variant (from DbaCompactCard.tsx)
   compact?: boolean;
-  
+
   // Cosmic theming (from cosmic variants)
   cosmic?: boolean;
 }
@@ -91,7 +91,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   loading = false,
   className = '',
   onClick,
-  
+
   // Metric card props
   cardType = 'base',
   title,
@@ -99,7 +99,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   icon: Icon,
   colorScheme = 'primary',
   customGradient,
-  
+
   // DBA card props
   item,
   itemType,
@@ -108,7 +108,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   displayName,
   subtitle,
   onToggle,
-  
+
   // Collection card props
   images,
   price,
@@ -122,19 +122,19 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   showActions = false,
   onView,
   onMarkSold,
-  
+
   // Sortable card props
   draggable = false,
   dragHandleProps,
   isDragging = false,
-  
+
   // Compact and cosmic variants
   compact = false,
   cosmic = false,
 }) => {
   // Determine final variant based on props
   const finalVariant = cosmic ? 'cosmic' : variant;
-  
+
   // Base glassmorphism foundation - used everywhere
   const baseClasses = [
     'relative overflow-hidden',
@@ -145,7 +145,9 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
     'group',
     isDragging && 'opacity-50 rotate-2 scale-105',
     compact && 'min-h-0', // Override default min-height for compact variant
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // Enhanced variant styles - consolidates all background patterns
   const variantClasses = {
@@ -153,7 +155,9 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
       'bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12]',
       'hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)]',
     ].join(' '),
-    solid: ['bg-zinc-900/90 backdrop-blur-sm', 'hover:bg-zinc-800/95'].join(' '),
+    solid: ['bg-zinc-900/90 backdrop-blur-sm', 'hover:bg-zinc-800/95'].join(
+      ' '
+    ),
     outline: [
       'bg-transparent border-zinc-700/50',
       'hover:bg-white/[0.05] hover:border-cyan-400/30',
@@ -173,7 +177,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   // Enhanced size system - includes compact variants
   const sizeClasses = {
     xs: compact ? 'p-2 rounded-lg' : 'p-3 rounded-xl',
-    sm: compact ? 'p-3 rounded-xl' : 'p-4 rounded-xl', 
+    sm: compact ? 'p-3 rounded-xl' : 'p-4 rounded-xl',
     md: compact ? 'p-4 rounded-xl' : 'p-6 rounded-[1.5rem]',
     lg: compact ? 'p-5 rounded-[1.5rem]' : 'p-8 rounded-[2rem]',
     xl: compact ? 'p-6 rounded-[2rem]' : 'p-12 rounded-[2.5rem]',
@@ -181,29 +185,33 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
 
   // Status colors with DBA selection state
   const statusClasses = {
-    active: 'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
-    draft: 'border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10',
+    active:
+      'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
+    draft:
+      'border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10',
     sold: 'border-purple-400/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10',
-    completed: 'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
+    completed:
+      'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
     success: 'border-emerald-400/30',
     warning: 'border-amber-400/30',
     danger: 'border-red-400/30',
   };
 
   // DBA selection state
-  const selectionClasses = isSelected 
+  const selectionClasses = isSelected
     ? 'border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.3)]'
     : '';
 
   // Interactive states - enhanced for different card types
-  const interactiveClasses = (interactive || onClick || onView || onToggle)
-    ? [
-        'cursor-pointer',
-        'hover:scale-[1.02] hover:-translate-y-1',
-        'active:scale-[0.98] active:translate-y-0',
-        'focus-within:ring-2 focus-within:ring-cyan-500/50',
-      ].join(' ')
-    : '';
+  const interactiveClasses =
+    interactive || onClick || onView || onToggle
+      ? [
+          'cursor-pointer',
+          'hover:scale-[1.02] hover:-translate-y-1',
+          'active:scale-[0.98] active:translate-y-0',
+          'focus-within:ring-2 focus-within:ring-cyan-500/50',
+        ].join(' ')
+      : '';
 
   // Loading state
   const loadingClasses = loading ? 'animate-pulse pointer-events-none' : '';
@@ -213,7 +221,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
     if (customGradient) {
       return `bg-gradient-to-br from-${customGradient.from} ${customGradient.via ? `via-${customGradient.via}` : ''} to-${customGradient.to}`;
     }
-    
+
     const schemes = {
       primary: 'from-cyan-500/20 to-blue-500/20 border-cyan-400/30',
       success: 'from-emerald-500/20 to-teal-500/20 border-emerald-400/30',
@@ -221,7 +229,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
       danger: 'from-red-500/20 to-rose-500/20 border-red-400/30',
       custom: '',
     };
-    
+
     return `bg-gradient-to-br ${schemes[colorScheme]}`;
   };
 
@@ -252,7 +260,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   // Render metric card content
   const renderMetricContent = () => {
     if (cardType !== 'metric') return null;
-    
+
     return (
       <div className="flex items-center justify-between">
         <div className="flex-1">
@@ -271,7 +279,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   // Render DBA card content
   const renderDbaContent = () => {
     if (cardType !== 'dba') return null;
-    
+
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -297,31 +305,33 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   // Render collection card content
   const renderCollectionContent = () => {
     if (cardType !== 'collection') return null;
-    
+
     return (
       <div className="space-y-3">
         {images && images.length > 0 && (
           <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
-            <img 
-              src={images[0]} 
+            <img
+              src={images[0]}
               alt={title || displayName || 'Collection item'}
               className="w-full h-full object-cover"
             />
           </div>
         )}
-        
+
         <div className="space-y-1">
-          <h3 className="font-medium text-white truncate">{title || displayName}</h3>
+          <h3 className="font-medium text-white truncate">
+            {title || displayName}
+          </h3>
           {subtitle && (
             <p className="text-sm text-zinc-400 truncate">{subtitle}</p>
           )}
         </div>
-        
+
         <div className="flex items-center justify-between">
           {showPrice && price && (
             <span className="text-emerald-400 font-medium">${price}</span>
           )}
-          
+
           {showBadge && (
             <div className="flex gap-2">
               {grade && (
@@ -347,7 +357,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
             </div>
           )}
         </div>
-        
+
         {showActions && !sold && (
           <div className="flex gap-2 pt-2">
             <button
@@ -377,8 +387,8 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   };
 
   return (
-    <div 
-      className={finalClassName} 
+    <div
+      className={finalClassName}
       onClick={handleClick}
       {...(draggable ? dragHandleProps : {})}
     >
@@ -416,12 +426,22 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
           <div className="w-8 h-8 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
         </div>
       )}
-      
+
       {/* Drag handle indicator for sortable cards */}
       {draggable && !isDragging && (
         <div className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 transition-opacity">
-          <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+          <svg
+            className="w-4 h-4 text-zinc-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 9l4-4 4 4m0 6l-4 4-4-4"
+            />
           </svg>
         </div>
       )}

@@ -1,6 +1,6 @@
 /**
  * DashboardStatCard Component
- * 
+ *
  * Extracted from Dashboard.tsx to eliminate DRY violations
  * Provides reusable statistical card with glassmorphism effects
  * Following CLAUDE.md principles: DRY elimination, component reusability
@@ -8,13 +8,22 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { GlassmorphismContainer, IconGlassmorphism } from '../effects/GlassmorphismContainer';
+import {
+  GlassmorphismContainer,
+  IconGlassmorphism,
+} from '../effects/GlassmorphismContainer';
 
 export interface DashboardStatCardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
-  colorScheme?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  colorScheme?:
+    | 'default'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'error';
   pattern?: 'neural' | 'quantum' | 'holographic' | 'matrix';
   customGradient?: string;
   loading?: boolean;
@@ -34,9 +43,9 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
   onClick,
 }) => {
   const isClickable = !!onClick;
-  
+
   return (
-    <div 
+    <div
       className={`group relative overflow-hidden ${isClickable ? 'cursor-pointer' : ''}`}
       onClick={onClick}
     >
@@ -65,12 +74,12 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
               colorScheme={colorScheme}
               className="relative"
             >
-              <Icon 
-                size={32} 
-                className="relative z-10 drop-shadow-lg" 
-                style={{ 
-                  filter: 'drop-shadow(0 0 20px var(--theme-accent-primary))' 
-                }} 
+              <Icon
+                size={32}
+                className="relative z-10 drop-shadow-lg"
+                style={{
+                  filter: 'drop-shadow(0 0 20px var(--theme-accent-primary))',
+                }}
               />
             </IconGlassmorphism>
           </div>
@@ -88,9 +97,7 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
 
         {/* Custom animations/effects */}
         {children && (
-          <div className="absolute inset-0 pointer-events-none">
-            {children}
-          </div>
+          <div className="absolute inset-0 pointer-events-none">{children}</div>
         )}
       </GlassmorphismContainer>
     </div>
@@ -98,7 +105,9 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
 };
 
 // Specific stat card variants for common use cases
-export const DashboardItemsCard: React.FC<Omit<DashboardStatCardProps, 'children'>> = (props) => (
+export const DashboardItemsCard: React.FC<
+  Omit<DashboardStatCardProps, 'children'>
+> = (props) => (
   <DashboardStatCard {...props}>
     {/* Orbiting quantum particles */}
     <div className="absolute top-1/2 left-1/2 w-32 h-32 -translate-x-1/2 -translate-y-1/2">
@@ -112,7 +121,9 @@ export const DashboardItemsCard: React.FC<Omit<DashboardStatCardProps, 'children
   </DashboardStatCard>
 );
 
-export const DashboardSalesCard: React.FC<Omit<DashboardStatCardProps, 'children'>> = (props) => (
+export const DashboardSalesCard: React.FC<
+  Omit<DashboardStatCardProps, 'children'>
+> = (props) => (
   <DashboardStatCard {...props}>
     {/* Success flow animation */}
     <div className="absolute inset-0 opacity-30">
@@ -122,7 +133,9 @@ export const DashboardSalesCard: React.FC<Omit<DashboardStatCardProps, 'children
   </DashboardStatCard>
 );
 
-export const DashboardValueCard: React.FC<Omit<DashboardStatCardProps, 'children'>> = (props) => (
+export const DashboardValueCard: React.FC<
+  Omit<DashboardStatCardProps, 'children'>
+> = (props) => (
   <DashboardStatCard {...props}>
     {/* Temporal ripple effect */}
     <div className="absolute top-1/2 left-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2">
@@ -133,7 +146,9 @@ export const DashboardValueCard: React.FC<Omit<DashboardStatCardProps, 'children
   </DashboardStatCard>
 );
 
-export const DashboardGradedCard: React.FC<Omit<DashboardStatCardProps, 'children'>> = (props) => (
+export const DashboardGradedCard: React.FC<
+  Omit<DashboardStatCardProps, 'children'>
+> = (props) => (
   <DashboardStatCard {...props}>
     {/* Achievement sparkles */}
     <div className="absolute inset-0">
@@ -144,7 +159,9 @@ export const DashboardGradedCard: React.FC<Omit<DashboardStatCardProps, 'childre
   </DashboardStatCard>
 );
 
-export const DashboardDataCard: React.FC<Omit<DashboardStatCardProps, 'children'>> = (props) => (
+export const DashboardDataCard: React.FC<
+  Omit<DashboardStatCardProps, 'children'>
+> = (props) => (
   <DashboardStatCard {...props}>
     {/* Database sync animation */}
     <div className="absolute bottom-2 right-2 opacity-40">

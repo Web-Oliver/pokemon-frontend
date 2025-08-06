@@ -114,7 +114,7 @@ export const useMarkSold = ({
 /**
  * Collection Item Detail Hook
  * Following CLAUDE.md Layer 2 (Services/Hooks) principles
- * 
+ *
  * Encapsulates business logic for collection item detail operations:
  * - Item fetching and state management
  * - Price update operations
@@ -149,7 +149,7 @@ export const useCollectionItemDetail = () => {
 
     try {
       setDownloadingZip(true);
-      
+
       switch (type) {
         case 'psa':
           await collectionOps.downloadPsaCardImagesZip([id]);
@@ -161,7 +161,7 @@ export const useCollectionItemDetail = () => {
           await collectionOps.downloadSealedProductImagesZip([id]);
           break;
       }
-      
+
       showSuccessToast('Images downloaded successfully!');
     } catch (err: any) {
       setError('Failed to download images');
@@ -188,19 +188,27 @@ export const useCollectionItemDetail = () => {
       // Update item based on type
       switch (type) {
         case 'psa':
-          await collectionOps.updatePsaCard(id, { priceHistory: updatedPriceHistory });
+          await collectionOps.updatePsaCard(id, {
+            priceHistory: updatedPriceHistory,
+          });
           break;
         case 'raw':
-          await collectionOps.updateRawCard(id, { priceHistory: updatedPriceHistory });
+          await collectionOps.updateRawCard(id, {
+            priceHistory: updatedPriceHistory,
+          });
           break;
         case 'sealed':
-          await collectionOps.updateSealedProduct(id, { priceHistory: updatedPriceHistory });
+          await collectionOps.updateSealedProduct(id, {
+            priceHistory: updatedPriceHistory,
+          });
           break;
       }
 
       // Refresh item data
       await fetchItem();
-      showSuccessToast('Price updated successfully! My Price synced to latest entry.');
+      showSuccessToast(
+        'Price updated successfully! My Price synced to latest entry.'
+      );
     } catch (err: any) {
       setError('Failed to update price');
       handleApiError(err, 'Failed to update price');
@@ -240,7 +248,7 @@ export const useCollectionItemDetail = () => {
 
     try {
       setDeleting(true);
-      
+
       switch (type) {
         case 'psa':
           await collectionOps.deletePsaCard(id);
@@ -328,14 +336,31 @@ export const useCollectionItemDetail = () => {
 
   return {
     // State
-    item, loading, error, downloadingZip, deleting, isMarkSoldModalOpen, showDeleteConfirm, newPrice,
-    
+    item,
+    loading,
+    error,
+    downloadingZip,
+    deleting,
+    isMarkSoldModalOpen,
+    showDeleteConfirm,
+    newPrice,
+
     // Actions
-    handleDownloadImages, handlePriceUpdate, handlePriceInputChange, handleCustomPriceUpdate,
-    handleDelete, handleConfirmDelete, handleCancelDelete, handleEdit, handleMarkSold,
-    handleMarkSoldSuccess, handleModalClose, handleBackToCollection,
-    
+    handleDownloadImages,
+    handlePriceUpdate,
+    handlePriceInputChange,
+    handleCustomPriceUpdate,
+    handleDelete,
+    handleConfirmDelete,
+    handleCancelDelete,
+    handleEdit,
+    handleMarkSold,
+    handleMarkSoldSuccess,
+    handleModalClose,
+    handleBackToCollection,
+
     // Setters
-    setNewPrice, setIsMarkSoldModalOpen,
+    setNewPrice,
+    setIsMarkSoldModalOpen,
   };
 };

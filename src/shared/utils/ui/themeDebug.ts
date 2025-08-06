@@ -1,11 +1,11 @@
 /**
  * Theme Debug Utilities - CONSOLIDATED INDEX
- * 
+ *
  * This file has been split into focused modules for better maintainability:
  * - validation.ts: Theme validation and conflict detection
- * - performance.ts: Performance monitoring and benchmarking  
+ * - performance.ts: Performance monitoring and benchmarking
  * - debugging.ts: Debug utilities and logging
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Each module has focused purpose
  * - DRY: Eliminates code duplication
@@ -59,16 +59,16 @@ export const themeDebugger = {
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:
- * 
+ *
  * BEFORE (1 large file):
  * - themeDebug.ts: 876 lines
- * 
+ *
  * AFTER (4 focused files):
  * - themeDebug.ts: 45 lines (index)
  * - theme/validation.ts: ~120 lines
- * - theme/performance.ts: ~140 lines  
+ * - theme/performance.ts: ~140 lines
  * - theme/debugging.ts: ~80 lines
- * 
+ *
  * BENEFITS:
  * ✅ Better maintainability (focused responsibilities)
  * ✅ Improved code organization

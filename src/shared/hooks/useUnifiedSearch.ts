@@ -1,18 +1,18 @@
 /**
  * UNIFIED SEARCH HOOK SYSTEM
  * Phase 5 Critical Priority - Hook Consolidation
- * 
+ *
  * Following CLAUDE.md + TODO.md Ultra-Optimization Plan:
  * - Consolidates useSearch + useOptimizedSearch + useAutocomplete patterns
  * - Eliminates 40% duplication across search hook implementations
  * - Single hook with search strategy variants
  * - DRY compliance: Single source of truth for search logic
- * 
+ *
  * ARCHITECTURE LAYER: Layer 2 (Services/Hooks/Store)
  * - Encapsulates search business logic and state management
  * - Uses Layer 1 debounce utilities and API clients
  * - Integrates with TanStack Query for optimal caching
- * 
+ *
  * SOLID Principles:
  * - Single Responsibility: Handles all search-related state and operations
  * - Open/Closed: Easy to extend with new search strategies
@@ -40,22 +40,22 @@ import { log } from '../utils/performance/logger';
 interface UnifiedSearchConfig {
   /** Search strategy to use */
   strategy?: 'basic' | 'optimized' | 'hierarchical' | 'autocomplete';
-  
+
   /** Minimum query length before search */
   minLength?: number;
-  
+
   /** Debounce delay in milliseconds */
   debounceMs?: number;
-  
+
   /** Enable React transitions for smooth UX */
   enableTransitions?: boolean;
-  
+
   /** Cache time for TanStack Query */
   staleTime?: number;
-  
+
   /** Garbage collection time for TanStack Query */
   gcTime?: number;
-  
+
   /** Hierarchical search options */
   hierarchical?: {
     /** Parent-child relationship mode */
@@ -65,7 +65,7 @@ interface UnifiedSearchConfig {
     /** Autofill callback when child selected */
     onAutofill?: (data: any) => void;
   };
-  
+
   /** Search scope filters */
   scope?: {
     /** Search types to include */
@@ -75,7 +75,7 @@ interface UnifiedSearchConfig {
     /** Additional filters */
     filters?: Record<string, any>;
   };
-  
+
   /** Performance optimizations */
   performance?: {
     /** Enable request deduplication */
@@ -98,23 +98,23 @@ interface UnifiedSearchReturn {
   results: SearchResult[];
   loading: boolean;
   error: string | null;
-  
+
   // Search actions
   setQuery: (query: string) => void;
   clearQuery: () => void;
   refetch: () => void;
-  
+
   // Result management
   selectResult: (result: SearchResult) => void;
   clearResults: () => void;
-  
+
   // Hierarchical search (when enabled)
   hierarchicalState?: {
     parentSelected: SearchResult | null;
     childResults: SearchResult[];
     setParent: (result: SearchResult | null) => void;
   };
-  
+
   // Performance metrics (development only)
   metrics?: {
     queryTime: number;
@@ -128,7 +128,9 @@ interface UnifiedSearchReturn {
 // Replaces useSearch, useOptimizedSearch, useAutocomplete
 // ===============================
 
-export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearchReturn => {
+export const useUnifiedSearch = (
+  config: UnifiedSearchConfig = {}
+): UnifiedSearchReturn => {
   // Default configuration
   const {
     strategy = 'basic',
@@ -144,13 +146,17 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
 
   // Core search state
   const [query, setQuery] = useState('');
-  const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
+  const [selectedResult, setSelectedResult] = useState<SearchResult | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
-  
+
   // Hierarchical search state
-  const [parentSelected, setParentSelected] = useState<SearchResult | null>(null);
+  const [parentSelected, setParentSelected] = useState<SearchResult | null>(
+    null
+  );
   const [childResults, setChildResults] = useState<SearchResult[]>([]);
-  
+
   // Performance state
   const [isPending, startTransition] = useTransition();
   const queryStartTime = useRef<number>(0);
@@ -158,11 +164,15 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
 
   // Debounced query for API calls
   const debouncedQuery = useDebouncedValue(query, debounceMs);
-  
+
   // Query key generation
   const queryKey = useMemo(() => {
     if (hierarchical && parentSelected) {
-      return queryKeys.search.hierarchical(debouncedQuery, parentSelected.id, hierarchical.mode);
+      return queryKeys.search.hierarchical(
+        debouncedQuery,
+        parentSelected.id,
+        hierarchical.mode
+      );
     }
     return queryKeys.search.unified(debouncedQuery, scope.types, strategy);
   }, [debouncedQuery, parentSelected, hierarchical, scope.types, strategy]);
@@ -171,50 +181,56 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
   // SEARCH STRATEGY IMPLEMENTATIONS
   // ===============================
 
-  const executeSearch = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
-    if (searchQuery.length < minLength) {
-      return [];
-    }
-
-    queryStartTime.current = performance.now();
-    setError(null);
-
-    try {
-      let results: SearchResult[] = [];
-
-      switch (strategy) {
-        case 'basic':
-          results = await executeBasicSearch(searchQuery);
-          break;
-        
-        case 'optimized':
-          results = await executeOptimizedSearch(searchQuery);
-          break;
-        
-        case 'hierarchical':
-          results = await executeHierarchicalSearch(searchQuery);
-          break;
-        
-        case 'autocomplete':
-          results = await executeAutocompleteSearch(searchQuery);
-          break;
-        
-        default:
-          results = await executeBasicSearch(searchQuery);
+  const executeSearch = useCallback(
+    async (searchQuery: string): Promise<SearchResult[]> => {
+      if (searchQuery.length < minLength) {
+        return [];
       }
 
-      return results.slice(0, scope.limit || 50);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Search failed';
-      setError(errorMessage);
-      log('Search error:', errorMessage);
-      return [];
-    }
-  }, [strategy, minLength, scope.limit, hierarchical, parentSelected]);
+      queryStartTime.current = performance.now();
+      setError(null);
 
-  const executeBasicSearch = async (searchQuery: string): Promise<SearchResult[]> => {
+      try {
+        let results: SearchResult[] = [];
+
+        switch (strategy) {
+          case 'basic':
+            results = await executeBasicSearch(searchQuery);
+            break;
+
+          case 'optimized':
+            results = await executeOptimizedSearch(searchQuery);
+            break;
+
+          case 'hierarchical':
+            results = await executeHierarchicalSearch(searchQuery);
+            break;
+
+          case 'autocomplete':
+            results = await executeAutocompleteSearch(searchQuery);
+            break;
+
+          default:
+            results = await executeBasicSearch(searchQuery);
+        }
+
+        return results.slice(0, scope.limit || 50);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Search failed';
+        setError(errorMessage);
+        log('Search error:', errorMessage);
+        return [];
+      }
+    },
+    [strategy, minLength, scope.limit, hierarchical, parentSelected]
+  );
+
+  const executeBasicSearch = async (
+    searchQuery: string
+  ): Promise<SearchResult[]> => {
     const promises = [];
-    
+
     if (scope.types.includes('cards')) {
       promises.push(searchCards(searchQuery));
     }
@@ -232,10 +248,12 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
     return results.flat();
   };
 
-  const executeOptimizedSearch = async (searchQuery: string): Promise<SearchResult[]> => {
+  const executeOptimizedSearch = async (
+    searchQuery: string
+  ): Promise<SearchResult[]> => {
     // Enhanced search with performance optimizations
     const cacheKey = `search:${searchQuery}:${scope.types.join(',')}`;
-    
+
     // Check cache first if enabled
     if (performance.dedupe) {
       const cached = queryClient.getQueryData(queryKey);
@@ -243,11 +261,13 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
         return cached as SearchResult[];
       }
     }
-    
+
     return executeBasicSearch(searchQuery);
   };
 
-  const executeHierarchicalSearch = async (searchQuery: string): Promise<SearchResult[]> => {
+  const executeHierarchicalSearch = async (
+    searchQuery: string
+  ): Promise<SearchResult[]> => {
     if (!hierarchical) {
       return executeBasicSearch(searchQuery);
     }
@@ -272,17 +292,21 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
         case 'set-card':
           return searchCards(searchQuery, { setId: parentSelected.id });
         case 'setproduct-product':
-          return searchProducts(searchQuery, { setProductId: parentSelected.id });
+          return searchProducts(searchQuery, {
+            setProductId: parentSelected.id,
+          });
         default:
           return executeBasicSearch(searchQuery);
       }
     }
   };
 
-  const executeAutocompleteSearch = async (searchQuery: string): Promise<SearchResult[]> => {
+  const executeAutocompleteSearch = async (
+    searchQuery: string
+  ): Promise<SearchResult[]> => {
     // Autocomplete-optimized search with fuzzy matching
     const results = await executeBasicSearch(searchQuery);
-    
+
     // Sort by relevance for autocomplete
     return results.sort((a, b) => {
       const aScore = calculateRelevanceScore(a, searchQuery);
@@ -291,19 +315,22 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
     });
   };
 
-  const calculateRelevanceScore = (result: SearchResult, query: string): number => {
+  const calculateRelevanceScore = (
+    result: SearchResult,
+    query: string
+  ): number => {
     const name = result.name.toLowerCase();
     const queryLower = query.toLowerCase();
-    
+
     // Exact match gets highest score
     if (name === queryLower) return 100;
-    
+
     // Starts with query gets high score
     if (name.startsWith(queryLower)) return 80;
-    
+
     // Contains query gets medium score
     if (name.includes(queryLower)) return 60;
-    
+
     // Fuzzy match gets low score
     return 20;
   };
@@ -330,47 +357,53 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
   // SEARCH ACTIONS
   // ===============================
 
-  const handleSetQuery = useCallback((newQuery: string) => {
-    if (enableTransitions) {
-      startTransition(() => {
+  const handleSetQuery = useCallback(
+    (newQuery: string) => {
+      if (enableTransitions) {
+        startTransition(() => {
+          setQuery(newQuery);
+        });
+      } else {
         setQuery(newQuery);
-      });
-    } else {
-      setQuery(newQuery);
-    }
-  }, [enableTransitions]);
+      }
+    },
+    [enableTransitions]
+  );
 
   const clearQuery = useCallback(() => {
     setQuery('');
     setSelectedResult(null);
     setError(null);
-    
+
     if (hierarchical) {
       setParentSelected(null);
       setChildResults([]);
     }
   }, [hierarchical]);
 
-  const selectResult = useCallback((result: SearchResult) => {
-    setSelectedResult(result);
-    
-    if (hierarchical && !parentSelected) {
-      // Selecting parent in hierarchical mode
-      setParentSelected(result);
-      setQuery(''); // Clear query for child search
-      
-      if (hierarchical.onAutofill) {
-        hierarchical.onAutofill(result);
+  const selectResult = useCallback(
+    (result: SearchResult) => {
+      setSelectedResult(result);
+
+      if (hierarchical && !parentSelected) {
+        // Selecting parent in hierarchical mode
+        setParentSelected(result);
+        setQuery(''); // Clear query for child search
+
+        if (hierarchical.onAutofill) {
+          hierarchical.onAutofill(result);
+        }
+      } else if (hierarchical && parentSelected) {
+        // Selecting child in hierarchical mode
+        setChildResults((prev) => [...prev, result]);
+
+        if (hierarchical.onAutofill) {
+          hierarchical.onAutofill({ parent: parentSelected, child: result });
+        }
       }
-    } else if (hierarchical && parentSelected) {
-      // Selecting child in hierarchical mode
-      setChildResults(prev => [...prev, result]);
-      
-      if (hierarchical.onAutofill) {
-        hierarchical.onAutofill({ parent: parentSelected, child: result });
-      }
-    }
-  }, [hierarchical, parentSelected]);
+    },
+    [hierarchical, parentSelected]
+  );
 
   const clearResults = useCallback(() => {
     queryClient.removeQueries({ queryKey });
@@ -393,8 +426,12 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
       return undefined;
     }
 
-    const queryTime = queryStartTime.current ? performance.now() - queryStartTime.current : 0;
-    const cacheHit = queryClient.getQueryState(queryKey)?.dataUpdatedAt === queryClient.getQueryState(queryKey)?.dataFetchedAt;
+    const queryTime = queryStartTime.current
+      ? performance.now() - queryStartTime.current
+      : 0;
+    const cacheHit =
+      queryClient.getQueryState(queryKey)?.dataUpdatedAt ===
+      queryClient.getQueryState(queryKey)?.dataFetchedAt;
 
     return {
       queryTime,
@@ -414,16 +451,16 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
     results,
     loading: isLoading || (enableTransitions && isPending),
     error,
-    
+
     // Search actions
     setQuery: handleSetQuery,
     clearQuery,
     refetch,
-    
+
     // Result management
     selectResult,
     clearResults,
-    
+
     // Hierarchical search (conditional)
     ...(hierarchical && {
       hierarchicalState: {
@@ -432,7 +469,7 @@ export const useUnifiedSearch = (config: UnifiedSearchConfig = {}): UnifiedSearc
         setParent,
       },
     }),
-    
+
     // Performance metrics (development only)
     ...(process.env.NODE_ENV === 'development' && { metrics }),
   };
@@ -448,10 +485,12 @@ export const useCardSearch = (setId?: string) => {
   return useUnifiedSearch({
     strategy: 'hierarchical',
     scope: { types: ['cards'], filters: { setId } },
-    hierarchical: setId ? undefined : {
-      mode: 'set-card',
-      allowSimultaneous: false,
-    },
+    hierarchical: setId
+      ? undefined
+      : {
+          mode: 'set-card',
+          allowSimultaneous: false,
+        },
   });
 };
 
@@ -460,10 +499,12 @@ export const useProductSearch = (setProductId?: string) => {
   return useUnifiedSearch({
     strategy: 'hierarchical',
     scope: { types: ['products'], filters: { setProductId } },
-    hierarchical: setProductId ? undefined : {
-      mode: 'setproduct-product',
-      allowSimultaneous: false,
-    },
+    hierarchical: setProductId
+      ? undefined
+      : {
+          mode: 'setproduct-product',
+          allowSimultaneous: false,
+        },
   });
 };
 
@@ -497,7 +538,9 @@ export const useSearch = (config?: Partial<UnifiedSearchConfig>) => {
 };
 
 /** @deprecated Use useUnifiedSearch with strategy="optimized" */
-export const useOptimizedSearchLegacy = (config?: Partial<UnifiedSearchConfig>) => {
+export const useOptimizedSearchLegacy = (
+  config?: Partial<UnifiedSearchConfig>
+) => {
   return useUnifiedSearch({ strategy: 'optimized', ...config });
 };
 
@@ -508,21 +551,21 @@ export const useAutocomplete = (config?: Partial<UnifiedSearchConfig>) => {
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:
- * 
+ *
  * BEFORE (4 separate search hooks):
  * - useSearch.ts: ~200 lines
  * - useOptimizedSearch.ts: ~180 lines
- * - useAutocomplete.ts: ~150 lines  
+ * - useAutocomplete.ts: ~150 lines
  * - useHierarchicalSearch.tsx: ~170 lines
  * TOTAL: ~700 lines with 40% logic duplication
- * 
+ *
  * AFTER (1 unified search system):
  * - useUnifiedSearch.ts: ~450 lines
- * 
+ *
  * REDUCTION: ~36% search hook code reduction (250 lines eliminated)
  * IMPACT: Eliminates 40% logic duplication across search implementations
  * BONUS: Added specialized hook factories for common patterns
- * 
+ *
  * BENEFITS:
  * ✅ 4 search hooks → 1 unified system + specialized factories
  * ✅ 40% logic duplication eliminated
@@ -532,19 +575,19 @@ export const useAutocomplete = (config?: Partial<UnifiedSearchConfig>) => {
  * ✅ Backward compatibility maintained
  * ✅ Specialized factories for common use cases
  * ✅ Development metrics for performance monitoring
- * 
+ *
  * USAGE EXAMPLES:
  * // New unified approach
  * const search = useUnifiedSearch({
  *   strategy: 'hierarchical',
  *   hierarchical: { mode: 'set-card', allowSimultaneous: false }
  * });
- * 
+ *
  * // Specialized factories
  * const cardSearch = useCardSearch();
  * const productSearch = useProductSearch();
  * const autocomplete = useAutocompleteSearch();
- * 
+ *
  * // Backward compatibility (deprecated)
  * const search = useSearch();
  * const optimized = useOptimizedSearchLegacy();

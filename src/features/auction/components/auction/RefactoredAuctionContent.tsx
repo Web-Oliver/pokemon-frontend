@@ -3,7 +3,7 @@
  * Layer 3: Components (CLAUDE.md Architecture)
  *
  * MAJOR DRY AND SOLID COMPLIANCE REFACTORING
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Each section has one clear purpose
  * - Open/Closed: Extensible through SectionContainer variants
@@ -31,17 +31,19 @@ interface RefactoredAuctionContentProps {
   auction: any;
   loading: boolean;
   error?: string;
-  
+
   // Event handlers
   handleGenerateFacebookPost: () => void;
   handleDownloadTextFile: () => void;
-  
+
   // State
   soldValue: number;
   totalValue: number;
 }
 
-export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> = ({
+export const RefactoredAuctionContent: React.FC<
+  RefactoredAuctionContentProps
+> = ({
   auction,
   loading,
   error,
@@ -51,14 +53,15 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
   totalValue,
 }) => {
   // Calculate progress percentage
-  const progressPercentage = totalValue > 0 ? (soldValue / totalValue) * 100 : 0;
-  
+  const progressPercentage =
+    totalValue > 0 ? (soldValue / totalValue) * 100 : 0;
+
   // Render error state using UnifiedHeader
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-cyan-900/30 relative overflow-hidden">
         <Context7Background opacity={0.3} color="purple" />
-        
+
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto">
             <UnifiedHeader
@@ -93,29 +96,28 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-cyan-900/30 relative overflow-hidden">
       <Context7Background opacity={0.3} color="purple" />
-      
+
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-          
           {/* Premium Header using UnifiedHeader */}
           <UnifiedHeader
-            title={auction?.topText || "Auction Details"}
-            subtitle={auction?.bottomText || "Premium auction management"}
+            title={auction?.topText || 'Auction Details'}
+            subtitle={auction?.bottomText || 'Premium auction management'}
             variant="glassmorphism"
             size="xl"
             stats={[
               {
                 icon: DollarSign,
-                label: "Total Value",
+                label: 'Total Value',
                 value: `${totalValue} kr`,
-                variant: 'default'
+                variant: 'default',
               },
               {
                 icon: DollarSign,
-                label: "Sold Value", 
+                label: 'Sold Value',
                 value: `${soldValue} kr`,
-                variant: 'success'
-              }
+                variant: 'success',
+              },
             ]}
             showBackButton
             onBack={() => window.history.back()}
@@ -131,8 +133,13 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
               badges={[
                 {
                   label: `${progressPercentage.toFixed(1)}%`,
-                  variant: progressPercentage > 80 ? 'success' : progressPercentage > 50 ? 'warning' : 'default'
-                }
+                  variant:
+                    progressPercentage > 80
+                      ? 'success'
+                      : progressPercentage > 50
+                        ? 'warning'
+                        : 'default',
+                },
               ]}
             >
               <div className="space-y-4">
@@ -175,9 +182,7 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
                 <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                   {soldValue} kr
                 </div>
-                <div className="text-sm text-zinc-500">
-                  Revenue generated
-                </div>
+                <div className="text-sm text-zinc-500">Revenue generated</div>
               </div>
             </SectionContainer>
           </div>
@@ -191,7 +196,6 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
             showDivider
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
               {/* Facebook Post Generation */}
               <div className="space-y-4">
                 <h4 className="text-sm font-bold text-blue-600 dark:text-blue-400 tracking-wide uppercase">
@@ -230,7 +234,9 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
                   More Options
                 </h4>
                 <PokemonButton
-                  onClick={() => {/* Add more export functionality */}}
+                  onClick={() => {
+                    /* Add more export functionality */
+                  }}
                   disabled={loading}
                   variant="secondary"
                   className="w-full"
@@ -239,7 +245,6 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
                   Download All
                 </PokemonButton>
               </div>
-              
             </div>
           </SectionContainer>
 
@@ -256,27 +261,31 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
                   Auction Date
                 </dt>
                 <dd className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
-                  {auction?.auctionDate ? new Date(auction.auctionDate).toLocaleDateString() : 'Not set'}
+                  {auction?.auctionDate
+                    ? new Date(auction.auctionDate).toLocaleDateString()
+                    : 'Not set'}
                 </dd>
               </div>
-              
+
               <div>
                 <dt className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Status
                 </dt>
                 <dd className="mt-1">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                    auction?.status === 'active' 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : auction?.status === 'sold'
-                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'  
-                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      auction?.status === 'active'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : auction?.status === 'sold'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                    }`}
+                  >
                     {auction?.status || 'Draft'}
                   </span>
                 </dd>
               </div>
-              
+
               <div>
                 <dt className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Items Count
@@ -285,18 +294,19 @@ export const RefactoredAuctionContent: React.FC<RefactoredAuctionContentProps> =
                   {auction?.items?.length || 0} items
                 </dd>
               </div>
-              
+
               <div>
                 <dt className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Facebook Post
                 </dt>
                 <dd className="mt-1 text-lg font-semibold text-zinc-900 dark:text-white">
-                  {auction?.generatedFacebookPost ? 'Generated' : 'Not generated'}
+                  {auction?.generatedFacebookPost
+                    ? 'Generated'
+                    : 'Not generated'}
                 </dd>
               </div>
             </dl>
           </SectionContainer>
-
         </div>
       </div>
     </div>

@@ -440,13 +440,17 @@ const CreateAuction: React.FC = () => {
   const selectAllItems = useCallback(() => {
     const filteredItems = allCollectionItems.filter((item) => {
       const matchesType = filterType === 'all' || item.itemType === filterType;
-      
+
       // Hierarchical filtering: first by set, then by card/product
-      const matchesSet = !selectedSetName || 
+      const matchesSet =
+        !selectedSetName ||
         item.setName?.toLowerCase().includes(selectedSetName.toLowerCase());
-      const matchesCardProduct = !cardProductSearchTerm.trim() ||
-        item.displayName.toLowerCase().includes(cardProductSearchTerm.toLowerCase());
-        
+      const matchesCardProduct =
+        !cardProductSearchTerm.trim() ||
+        item.displayName
+          .toLowerCase()
+          .includes(cardProductSearchTerm.toLowerCase());
+
       return matchesType && matchesSet && matchesCardProduct;
     });
 
@@ -538,7 +542,9 @@ const CreateAuction: React.FC = () => {
         window.history.pushState({}, '', `/auctions/${auctionId}`);
         window.dispatchEvent(new PopStateEvent('popstate'));
       } else {
-        toast.success('✅ Auction created successfully! Redirecting to auctions list.');
+        toast.success(
+          '✅ Auction created successfully! Redirecting to auctions list.'
+        );
         navigateToAuctions();
       }
     } catch (err) {

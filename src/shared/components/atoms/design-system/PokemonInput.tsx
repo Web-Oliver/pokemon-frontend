@@ -11,12 +11,20 @@
 import React, { forwardRef } from 'react';
 import { cn } from '../../../utils/common';
 import { Loader2 } from 'lucide-react';
-import { useVisualTheme, useLayoutTheme, useAnimationTheme } from '../../../../contexts/theme';
+import {
+  useVisualTheme,
+  useLayoutTheme,
+  useAnimationTheme,
+} from '../../../../contexts/theme';
 import { inputClasses } from '../../../utils/ui/classNameUtils';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
-import type { VisualTheme, Density, AnimationIntensity } from '../../../../types/themeTypes';
+import type {
+  VisualTheme,
+  Density,
+  AnimationIntensity,
+} from '../../../../types/themeTypes';
 
 export interface PokemonInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -30,7 +38,7 @@ export interface PokemonInputProps
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
   loading?: boolean;
-  
+
   // Theme system compatibility props
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
@@ -62,7 +70,7 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
       leftIcon,
       rightIcon,
       startIcon, // Theme system compatibility
-      endIcon,   // Theme system compatibility
+      endIcon, // Theme system compatibility
       fullWidth = false,
       loading = false,
       required = false,
@@ -85,19 +93,22 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
     // Theme context integration
     const { visualTheme } = useVisualTheme();
     const { density: contextDensity } = useLayoutTheme();
-    const { animationIntensity: contextAnimationIntensity } = useAnimationTheme();
+    const { animationIntensity: contextAnimationIntensity } =
+      useAnimationTheme();
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;
     const effectiveDensity = density || contextDensity;
-    const effectiveAnimationIntensity = animationIntensity || contextAnimationIntensity;
+    const effectiveAnimationIntensity =
+      animationIntensity || contextAnimationIntensity;
 
     // Icon compatibility - support both legacy and theme system patterns
     const resolvedStartIcon = startIcon || leftIcon;
     const resolvedEndIcon = endIcon || rightIcon;
     const resolvedHelper = helperText || helper;
 
-    const inputId = id || `pokemon-input-${Math.random().toString(36).substr(2, 9)}`;
+    const inputId =
+      id || `pokemon-input-${Math.random().toString(36).substr(2, 9)}`;
 
     // Base foundation - used by ALL inputs
     const baseClasses = [
@@ -140,29 +151,46 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
         'focus:border-b-emerald-400 hover:border-b-zinc-500',
       ].join(' '),
       // Theme system variants
-      theme: effectiveTheme ? inputClasses({
-        size,
-        hasError: !!error,
-        disabled,
-        theme: effectiveTheme,
-        fullWidth,
-      }) : '',
+      theme: effectiveTheme
+        ? inputClasses({
+            size,
+            hasError: !!error,
+            disabled,
+            theme: effectiveTheme,
+            fullWidth,
+          })
+        : '',
     };
 
     // Size system with density support
     const sizeClasses = {
-      sm: effectiveDensity === 'compact' ? 'px-2 py-1 text-sm' : 'px-3 py-2 text-sm',
-      md: effectiveDensity === 'compact' ? 'px-3 py-2 text-base' : 
-          effectiveDensity === 'spacious' ? 'px-6 py-4 text-base' : 'px-4 py-3 text-base',
-      lg: effectiveDensity === 'compact' ? 'px-4 py-3 text-lg' : 
-          effectiveDensity === 'spacious' ? 'px-8 py-5 text-lg' : 'px-6 py-4 text-lg',
+      sm:
+        effectiveDensity === 'compact'
+          ? 'px-2 py-1 text-sm'
+          : 'px-3 py-2 text-sm',
+      md:
+        effectiveDensity === 'compact'
+          ? 'px-3 py-2 text-base'
+          : effectiveDensity === 'spacious'
+            ? 'px-6 py-4 text-base'
+            : 'px-4 py-3 text-base',
+      lg:
+        effectiveDensity === 'compact'
+          ? 'px-4 py-3 text-lg'
+          : effectiveDensity === 'spacious'
+            ? 'px-8 py-5 text-lg'
+            : 'px-6 py-4 text-lg',
     };
 
     // Animation classes based on intensity
-    const animationClasses = effectiveAnimationIntensity === 'disabled' ? '' :
-      effectiveAnimationIntensity === 'subtle' ? 'hover:shadow-theme-hover focus:shadow-theme-hover' :
-      effectiveAnimationIntensity === 'enhanced' ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101 group-focus-within:scale-110 group-focus-within:drop-shadow-sm' :
-      'hover:shadow-theme-hover focus:shadow-theme-hover';
+    const animationClasses =
+      effectiveAnimationIntensity === 'disabled'
+        ? ''
+        : effectiveAnimationIntensity === 'subtle'
+          ? 'hover:shadow-theme-hover focus:shadow-theme-hover'
+          : effectiveAnimationIntensity === 'enhanced'
+            ? 'hover:shadow-theme-hover hover:scale-101 focus:shadow-theme-hover focus:scale-101 group-focus-within:scale-110 group-focus-within:drop-shadow-sm'
+            : 'hover:shadow-theme-hover focus:shadow-theme-hover';
 
     // Error state styling
     const errorClasses = error
@@ -173,15 +201,22 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
       : '';
 
     // Icon padding adjustments
-    const hasStartIcon = !!(resolvedStartIcon);
-    const hasEndIcon = !!(resolvedEndIcon);
-    const iconPadding = hasStartIcon && hasEndIcon ? 'pl-12 pr-12' :
-      hasStartIcon ? 'pl-12' :
-      hasEndIcon ? 'pr-12' : '';
+    const hasStartIcon = !!resolvedStartIcon;
+    const hasEndIcon = !!resolvedEndIcon;
+    const iconPadding =
+      hasStartIcon && hasEndIcon
+        ? 'pl-12 pr-12'
+        : hasStartIcon
+          ? 'pl-12'
+          : hasEndIcon
+            ? 'pr-12'
+            : '';
 
     // Choose variant classes based on theme usage
-    const chosenVariantClasses = effectiveTheme && variant === 'default' ? 
-      variantClasses.theme : variantClasses[variant];
+    const chosenVariantClasses =
+      effectiveTheme && variant === 'default'
+        ? variantClasses.theme
+        : variantClasses[variant];
 
     const finalClassName = cn(
       baseClasses,
@@ -212,7 +247,13 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
             {label}
           </Label>
         )}
-        <div className={cn('relative', inputWithIconClasses, fullWidth && 'w-full')}>
+        <div
+          className={cn(
+            'relative',
+            inputWithIconClasses,
+            fullWidth && 'w-full'
+          )}
+        >
           {/* Start Icon */}
           {resolvedStartIcon && (
             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
@@ -258,8 +299,12 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
         {/* Helper/Error Text */}
         {(resolvedHelper || error) && (
           <div className="mt-2 space-y-1">
-            {error && <span className="text-red-400 text-sm font-medium">{error}</span>}
-            {resolvedHelper && !error && <HelperText>{resolvedHelper}</HelperText>}
+            {error && (
+              <span className="text-red-400 text-sm font-medium">{error}</span>
+            )}
+            {resolvedHelper && !error && (
+              <HelperText>{resolvedHelper}</HelperText>
+            )}
           </div>
         )}
       </FormWrapper>

@@ -1,14 +1,14 @@
 module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:sonarjs/recommended'
+    'plugin:sonarjs/recommended',
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'sonarjs'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
-    project: './tsconfig.json'
+    project: './tsconfig.json',
   },
   rules: {
     // SOLID Principle Violations
@@ -18,22 +18,22 @@ module.exports = {
     'sonarjs/prefer-single-boolean-return': 'error',
     'sonarjs/no-identical-functions': 'error',
     'sonarjs/no-small-switch': 'off', // Can be useful for state machines
-    
+
     // Open/Closed Principle (OCP)
     'sonarjs/no-redundant-jump': 'error',
     'sonarjs/prefer-immediate-return': 'error',
-    
+
     // Liskov Substitution Principle (LSP)
     'sonarjs/no-inverted-boolean-check': 'error',
-    
+
     // Interface Segregation Principle (ISP)
     'sonarjs/no-unused-collection': 'error',
     'sonarjs/no-identical-expressions': 'error',
-    
+
     // Dependency Inversion Principle (DIP)
     'sonarjs/no-nested-template-literals': 'error',
     'sonarjs/no-duplicated-branches': 'error',
-    
+
     // General Code Quality
     'sonarjs/max-switch-cases': ['error', 30],
     'sonarjs/no-all-duplicated-branches': 'error',
@@ -45,13 +45,13 @@ module.exports = {
     'sonarjs/no-one-iteration-loop': 'error',
     'sonarjs/no-redundant-boolean': 'error',
     'sonarjs/no-use-of-empty-return-value': 'error',
-    'sonarjs/non-existent-operator': 'error'
+    'sonarjs/non-existent-operator': 'error',
   },
   ignorePatterns: [
     'node_modules/',
     'dist/',
     'build/',
     '*.config.js',
-    '*.config.ts'
-  ]
+    '*.config.ts',
+  ],
 };

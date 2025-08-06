@@ -34,36 +34,70 @@ import { uploadApiService } from './UploadApiService';
 export class ServiceRegistry {
   private static instance: ServiceRegistry;
 
-  // Composite service for backward compatibility
-  private _collectionApiService: ICollectionApiService;
-  
-  // Focused services for direct access
-  private _psaCardApiService: IPsaCardApiService;
-  private _rawCardApiService: IRawCardApiService;
-  private _sealedProductApiService: ISealedProductApiService;
-  
-  // Other services
-  private _exportApiService: IExportApiService;
-  private _uploadApiService: IUploadApiService;
-  private _searchApiService: ISearchApiService;
-
   private constructor() {
     // Create focused services with dependency injection
     this._psaCardApiService = new PsaCardApiService(unifiedHttpClient);
     this._rawCardApiService = new RawCardApiService(unifiedHttpClient);
     this._sealedProductApiService = new SealedProductApiService(unifiedHttpClient);
-    
+
     // Create composite service for backward compatibility
     this._collectionApiService = new CompositeCollectionApiService(
       this._psaCardApiService,
       this._rawCardApiService,
       this._sealedProductApiService
     );
-    
+
     // Initialize other services
     this._exportApiService = exportApiService;
     this._uploadApiService = uploadApiService;
     this._searchApiService = searchApiService;
+  }
+  
+  // Composite service for backward compatibility
+  private _collectionApiService: ICollectionApiService;
+
+  // Getters for service instances
+  get collectionApiService(): ICollectionApiService {
+    return this._collectionApiService;
+  }
+
+  // Focused services for direct access
+  private _psaCardApiService: IPsaCardApiService;
+  
+  // Focused service getters for direct access
+  get psaCardApiService(): IPsaCardApiService {
+    return this._psaCardApiService;
+  }
+
+  private _rawCardApiService: IRawCardApiService;
+
+  get rawCardApiService(): IRawCardApiService {
+    return this._rawCardApiService;
+  }
+
+  private _sealedProductApiService: ISealedProductApiService;
+
+  get sealedProductApiService(): ISealedProductApiService {
+    return this._sealedProductApiService;
+  }
+
+  // Other services
+  private _exportApiService: IExportApiService;
+
+  get exportApiService(): IExportApiService {
+    return this._exportApiService;
+  }
+
+  private _uploadApiService: IUploadApiService;
+
+  get uploadApiService(): IUploadApiService {
+    return this._uploadApiService;
+  }
+
+  private _searchApiService: ISearchApiService;
+
+  get searchApiService(): ISearchApiService {
+    return this._searchApiService;
   }
 
   public static getInstance(): ServiceRegistry {
@@ -71,36 +105,6 @@ export class ServiceRegistry {
       ServiceRegistry.instance = new ServiceRegistry();
     }
     return ServiceRegistry.instance;
-  }
-
-  // Getters for service instances
-  get collectionApiService(): ICollectionApiService {
-    return this._collectionApiService;
-  }
-
-  // Focused service getters for direct access
-  get psaCardApiService(): IPsaCardApiService {
-    return this._psaCardApiService;
-  }
-
-  get rawCardApiService(): IRawCardApiService {
-    return this._rawCardApiService;
-  }
-
-  get sealedProductApiService(): ISealedProductApiService {
-    return this._sealedProductApiService;
-  }
-
-  get exportApiService(): IExportApiService {
-    return this._exportApiService;
-  }
-
-  get uploadApiService(): IUploadApiService {
-    return this._uploadApiService;
-  }
-
-  get searchApiService(): ISearchApiService {
-    return this._searchApiService;
   }
 
   // Setters for dependency injection (useful for testing)
