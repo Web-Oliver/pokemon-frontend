@@ -117,6 +117,13 @@ export class UnifiedHttpClient implements IHttpClient {
   getAxiosInstance() {
     return unifiedApiClient.getAxiosInstance();
   }
+
+  /**
+   * Get current HTTP client configuration for debugging and monitoring
+   */
+  getConfig() {
+    return unifiedApiClient.getConfig();
+  }
 }
 
 // Export singleton instance

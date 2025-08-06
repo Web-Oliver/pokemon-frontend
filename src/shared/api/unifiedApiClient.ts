@@ -13,7 +13,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_BASE_URL } from '../utils/helpers/constants';
+import { API_BASE_URL, HTTP_CONFIG } from '../utils/helpers/constants';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { log } from '../utils/performance/logger';
 import { optimizedApiRequest } from '../utils/transformers/apiOptimization';
@@ -86,9 +86,16 @@ export const buildUrlWithId = (
 // ========== INTERFACES (ISP Compliance) ==========
 
 /**
+ * Extended axios config with retry tracking
+ */
+interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
+  __retryCount?: number;
+}
+
+/**
  * Base configuration for all API requests
  */
-export interface ApiRequestConfig extends AxiosRequestConfig {
+export interface ApiRequestConfig extends ExtendedAxiosRequestConfig {
   operation?: string;
   successMessage?: string;
   errorMessage?: string;
@@ -538,32 +545,155 @@ export class UnifiedApiClient {
     return this.client;
   }
 
+  /**
+   * Get current HTTP client configuration for debugging and monitoring
+   */
+  getConfig(): {
+    baseURL: string;
+    timeout: number;
+    headers: Record<string, string>;
+    retryConfig: {
+      maxAttempts: number;
+      retryDelay: number;
+    };
+  } {
+    return {
+      baseURL: this.client.defaults.baseURL || API_BASE_URL,
+      timeout: this.client.defaults.timeout || HTTP_CONFIG.TIMEOUT,
+      headers: this.client.defaults.headers as Record<string, string>,
+      retryConfig: {
+        maxAttempts: HTTP_CONFIG.RETRY_ATTEMPTS,
+        retryDelay: HTTP_CONFIG.RETRY_DELAY,
+      },
+    };
+  }
+
   // ========== UTILITY METHODS ==========
 
   /**
-   * Create and configure axios instance with interceptors
+   * Create and configure axios instance with comprehensive interceptors
+   * Implements all common HTTP concerns: base URL, headers, error parsing, timeouts
    */
   private createAxiosInstance(baseURL: string): AxiosInstance {
     const instance = axios.create({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        Pragma: 'no-cache',
+        ...HTTP_CONFIG.REQUEST_HEADERS,
       },
-      timeout: 10000,
+      timeout: HTTP_CONFIG.TIMEOUT,
+      // Ensure credentials are included for authentication
+      withCredentials: false, // Set to true if using cookies/sessions
     });
 
-    // Response interceptor for global error handling
-    instance.interceptors.response.use(
-      (response: AxiosResponse) => response,
+    // Request interceptor for common request transformations
+    instance.interceptors.request.use(
+      (config) => {
+        // Add timestamp for cache busting if needed
+        if (config.method?.toLowerCase() === 'get') {
+          config.params = {
+            ...config.params,
+            _t: Date.now(), // Cache busting for GET requests
+          };
+        }
+
+        // Log request for debugging (in development)
+        if (process.env.NODE_ENV === 'development') {
+          log(`[HTTP ${config.method?.toUpperCase()}] ${config.url}`, config.params || config.data);
+        }
+
+        return config;
+      },
       (error) => {
+        log('[HTTP Request Error]', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Response interceptor for global error handling and transformation
+    instance.interceptors.response.use(
+      (response: AxiosResponse) => {
+        // Log successful response (in development)
+        if (process.env.NODE_ENV === 'development') {
+          log(`[HTTP ${response.status}] ${response.config.url} - Success`);
+        }
+        return response;
+      },
+      async (error) => {
+        const config = error.config;
+
+        // Enhanced error logging with request context
+        if (config) {
+          log(`[HTTP Error] ${config.method?.toUpperCase()} ${config.url}:`, {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message,
+            attempt: config.__retryCount || 0,
+          });
+        }
+
+        // Handle network errors
+        if (!error.response) {
+          log('[Network Error] No response received', error.message);
+        }
+
+        // Retry logic for transient errors
+        if (this.shouldRetry(error) && config) {
+          config.__retryCount = config.__retryCount || 0;
+          
+          if (config.__retryCount < HTTP_CONFIG.RETRY_ATTEMPTS) {
+            config.__retryCount++;
+            log(`[HTTP Retry] Attempt ${config.__retryCount}/${HTTP_CONFIG.RETRY_ATTEMPTS} for ${config.url}`);
+            
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, HTTP_CONFIG.RETRY_DELAY * config.__retryCount));
+            
+            // Retry the request
+            return instance(config);
+          }
+        }
+
+        // Global error handling
         handleApiError(error);
         return Promise.reject(error);
       }
     );
 
     return instance;
+  }
+
+  /**
+   * Determines if a request should be retried based on error type and status
+   * @param error - The axios error object
+   * @returns true if the request should be retried
+   */
+  private shouldRetry(error: any): boolean {
+    // Don't retry if it's not a network error or server error
+    if (!error.response && !error.code) {
+      return false;
+    }
+
+    // Don't retry for client errors (4xx)
+    if (error.response?.status >= 400 && error.response?.status < 500) {
+      return false;
+    }
+
+    // Retry for network errors
+    if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND' || error.code === 'ECONNRESET') {
+      return true;
+    }
+
+    // Retry for server errors (5xx)
+    if (error.response?.status >= 500) {
+      return true;
+    }
+
+    // Retry for timeout errors
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      return true;
+    }
+
+    return false;
   }
 
   /**

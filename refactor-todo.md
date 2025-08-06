@@ -25,7 +25,7 @@
 ### Core HTTP Client
 - [x] Review and enhance `shared/services/base/UnifiedHttpClient.ts` as the single HTTP client
 - [x] Ensure all fetch/axios calls go through UnifiedHttpClient only
-- [ ] Implement common concerns: base URL, headers, error parsing, response transformation
+- [x] Implement common concerns: base URL, headers, error parsing, response transformation
 
 ### Unified API Service
 - [ ] Create/enhance `shared/services/UnifiedApiService.ts` as single API facade

@@ -1,7 +1,44 @@
 // API Configuration
 // Backend location: SAFESPACE/pokemon-collection-backend
 // Backend runs on PORT 3000 (confirmed from server.js: const PORT = process.env.PORT || 3000)
-export const API_BASE_URL = 'http://localhost:3000/api';
+
+/**
+ * Environment-aware API base URL configuration
+ * Supports development, staging, and production environments
+ */
+const getApiBaseUrl = (): string => {
+  // Check if running in browser environment
+  if (typeof window !== 'undefined') {
+    // Production: Use same host as frontend
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return `${window.location.protocol}//${window.location.hostname}:3000/api`;
+    }
+  }
+
+  // Environment variable override (for Docker, staging, etc.)
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+
+  // Default development configuration
+  return 'http://localhost:3000/api';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+// HTTP Configuration
+export const HTTP_CONFIG = {
+  TIMEOUT: 10000, // 10 seconds
+  RETRY_ATTEMPTS: 3,
+  RETRY_DELAY: 1000, // 1 second
+  REQUEST_HEADERS: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+} as const;
 
 // Enum definitions matching actual backend schema values
 export enum PaymentMethod {

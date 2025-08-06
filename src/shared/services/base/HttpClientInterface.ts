@@ -86,4 +86,17 @@ export interface IHttpClient {
    * (e.g., blob responses, custom response types)
    */
   getAxiosInstance(): AxiosInstance;
+
+  /**
+   * Get current HTTP client configuration for debugging and monitoring
+   */
+  getConfig(): {
+    baseURL: string;
+    timeout: number;
+    headers: Record<string, string>;
+    retryConfig: {
+      maxAttempts: number;
+      retryDelay: number;
+    };
+  };
 }
