@@ -6,13 +6,23 @@
  * - SRP: Only handles DBA export page orchestration
  * - OCP: Open for extension via component composition
  * - DIP: Depends on hook abstractions and component interfaces
+ * - CONSOLIDATED: Now uses UnifiedHeader instead of DbaHeaderGalaxyCosmic
  */
 
 import React, { lazy, Suspense } from 'react';
+import { Archive, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { useDbaExport } from '../../../shared/hooks/useDbaExport';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
+
+// CONSOLIDATED: UnifiedHeader lazy import (replaces DbaHeaderGalaxyCosmic)
+const UnifiedHeader = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "header-unified" */ '../../../shared/components/molecules/common/UnifiedHeader'
+    )
+);
 
 // Dynamic imports for heavy DBA components (code splitting optimization)
 const DbaCosmicBackground = lazy(
@@ -21,12 +31,7 @@ const DbaCosmicBackground = lazy(
       /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaCosmicBackground'
     )
 );
-const DbaHeaderGalaxyCosmic = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaHeaderGalaxyCosmic'
-    )
-);
+
 const DbaHeaderActions = lazy(
   () =>
     import(
@@ -87,6 +92,32 @@ const DbaExport: React.FC = () => {
     downloadZip,
   } = useDbaExport();
 
+  // CONSOLIDATED: Stats calculation matching original DbaHeaderGalaxyCosmic
+  const urgentCount =
+    dbaSelections?.filter((s) => s.daysRemaining <= 10).length || 0;
+
+  // CONSOLIDATED: Header stats configuration for UnifiedHeader
+  const headerStats = [
+    {
+      icon: Clock,
+      label: 'Queue',
+      value: dbaSelections?.length || 0,
+      variant: 'default' as const,
+    },
+    {
+      icon: AlertTriangle,
+      label: 'Urgent',
+      value: urgentCount,
+      variant: 'danger' as const,
+    },
+    {
+      icon: CheckSquare,
+      label: 'Selected',
+      value: selectedItems.length,
+      variant: 'success' as const,
+    },
+  ];
+
   // Render item card with DBA item card component
   const renderItemCard = (item: any, type: 'psa' | 'raw' | 'sealed') => {
     const itemId = item.id || item._id;
@@ -132,63 +163,70 @@ const DbaExport: React.FC = () => {
         <DbaCosmicBackground />
       </Suspense>
 
-      {/* Use the new cosmic header component that wraps content */}
+      {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
       <Suspense fallback={<LoadingSpinner size="lg" />}>
-        <DbaHeaderGalaxyCosmic
-          dbaSelections={dbaSelections}
-          selectedItems={selectedItems}
-        >
-          <div className="relative z-10 p-8">
-            <div className="max-w-7xl mx-auto space-y-12">
-              {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
-              <DbaExportConfiguration
-                selectedItems={selectedItems}
-                customDescription={customDescription}
-                setCustomDescription={setCustomDescription}
-                updateItemCustomization={updateItemCustomization}
-                generateTitle={generateDefaultTitle}
-                generateDescription={generateDefaultDescription}
-                exportCollectionData={handleExportToDba}
-                downloadZip={downloadZip}
-                isExporting={isExporting}
-                exportResult={exportResult}
-              />
-
-              <DbaExportSuccess exportResult={exportResult} />
-
-              {/* Item Selection - Split into 2 sections */}
-              <div className="space-y-8">
-                {/* Section 1: Items with DBA Timers (Previously Selected) */}
-                <DbaItemsWithTimers
-                  psaCards={psaCards}
-                  rawCards={rawCards}
-                  sealedProducts={sealedProducts}
-                  getDbaInfo={getDbaInfo}
-                  renderItemCard={renderItemCard}
-                />
-
-                {/* Section 2: Items without DBA Timers (Available for Selection) */}
-                <DbaItemsWithoutTimers
-                  psaCards={psaCards}
-                  rawCards={rawCards}
-                  sealedProducts={sealedProducts}
-                  getDbaInfo={getDbaInfo}
-                  renderItemCard={renderItemCard}
-                />
-              </div>
-
-              {/* 🌌 COSMIC EMPTY STATE */}
-              <DbaEmptyStateCosmic
-                psaCardsLength={psaCards.length}
-                rawCardsLength={rawCards.length}
-                sealedProductsLength={sealedProducts.length}
-              />
-            </div>
-          </div>
-        </DbaHeaderGalaxyCosmic>
+        <UnifiedHeader
+          title="DBA Export"
+          subtitle="Export your collection items to DBA.dk"
+          icon={Archive}
+          variant="cosmic"
+          size="lg"
+          stats={headerStats}
+          className="mb-6"
+        />
       </Suspense>
+
+      {/* Content wrapper with original cosmic background styling */}
+      <div className="relative z-10 p-8">
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
+          <DbaExportConfiguration
+            selectedItems={selectedItems}
+            customDescription={customDescription}
+            setCustomDescription={setCustomDescription}
+            updateItemCustomization={updateItemCustomization}
+            generateTitle={generateDefaultTitle}
+            generateDescription={generateDefaultDescription}
+            exportCollectionData={handleExportToDba}
+            downloadZip={downloadZip}
+            isExporting={isExporting}
+            exportResult={exportResult}
+          />
+
+          <DbaExportSuccess exportResult={exportResult} />
+
+          {/* Item Selection - Split into 2 sections */}
+          <div className="space-y-8">
+            {/* Section 1: Items with DBA Timers (Previously Selected) */}
+            <DbaItemsWithTimers
+              psaCards={psaCards}
+              rawCards={rawCards}
+              sealedProducts={sealedProducts}
+              getDbaInfo={getDbaInfo}
+              renderItemCard={renderItemCard}
+            />
+
+            {/* Section 2: Items without DBA Timers (Available for Selection) */}
+            <DbaItemsWithoutTimers
+              psaCards={psaCards}
+              rawCards={rawCards}
+              sealedProducts={sealedProducts}
+              getDbaInfo={getDbaInfo}
+              renderItemCard={renderItemCard}
+            />
+          </div>
+
+          {/* 🌌 COSMIC EMPTY STATE */}
+          <DbaEmptyStateCosmic
+            psaCardsLength={psaCards.length}
+            rawCardsLength={rawCards.length}
+            sealedProductsLength={sealedProducts.length}
+          />
+        </div>
+      </div>
     </PageLayout>
   );
 };
 
 export default DbaExport;
+EOF < /dev/null
