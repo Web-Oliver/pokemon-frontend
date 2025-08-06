@@ -26,7 +26,6 @@ import { ISaleDetails } from '../domain/models/common';
 // Import type definitions from deprecated API files for interface compatibility
 import type * as auctionsApi from '../api/auctionsApi';
 import type * as collectionApi from '../api/collectionApi';
-import type * as setsApi from '../api/setsApi';
 import type * as cardsApi from '../api/cardsApi';
 import type * as productsApi from '../api/productsApi';
 import type * as searchApi from '../api/searchApi';
@@ -35,6 +34,16 @@ import type * as uploadApi from '../api/uploadApi';
 import type * as statusApi from '../api/statusApi';
 
 // ========== TYPE DEFINITIONS ==========
+
+/**
+ * Sets query parameters interface (from deprecated setsApi)
+ */
+export interface PaginatedSetsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  year?: number;
+}
 
 /**
  * Products query parameters interface
@@ -116,7 +125,7 @@ export interface ICollectionService {
  * Sets domain service interface
  */
 export interface ISetsService {
-  getPaginatedSets(params?: setsApi.PaginatedSetsParams): Promise<{ sets: ISet[]; totalPages: number; currentPage: number; }>;
+  getPaginatedSets(params?: PaginatedSetsParams): Promise<{ sets: ISet[]; totalPages: number; currentPage: number; }>;
   getSetById(id: string): Promise<ISet>;
   searchSets(params: searchApi.SetSearchParams): Promise<searchApi.SearchResponse<ISet>>;
   getSetSuggestions(query: string, limit?: number): Promise<ISet[]>;
@@ -309,7 +318,7 @@ export class UnifiedApiService {
   // ========== SETS DOMAIN ==========
   
   public readonly sets: ISetsService = {
-    async getPaginatedSets(params?: setsApi.PaginatedSetsParams) {
+    async getPaginatedSets(params?: PaginatedSetsParams) {
       const response = await unifiedHttpClient.get('/sets', { params });
       return response.data || response;
     },
