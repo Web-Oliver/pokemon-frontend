@@ -13,7 +13,6 @@
 
 import { Euro, Package, Search } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import ProductSearchFilters from '../../../shared/components/molecules/common/ProductSearchFilters';
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
@@ -24,13 +23,20 @@ import {
   ProductCategory,
 } from '../../../shared/domain/models/product';
 import { ISetProduct } from '../../../shared/domain/models/setProduct';
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
+import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
 import { log } from '../../../shared/utils/performance/logger';
 
 const ProductSearch: React.FC = () => {
-  const [products, setProducts] = useState<IProduct[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    items: products,
+    pagination,
+    loading,
+    error,
+    searchProducts,
+    setPage,
+    clearError,
+  } = usePaginatedSearch();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [setProductFilter, setSetProductFilter] = useState<ISetProduct | null>(
@@ -38,109 +44,24 @@ const ProductSearch: React.FC = () => {
   ); // NEW: SetProduct filter
   const [setNameFilter, setSetNameFilter] = useState(''); // Set name filter for searching
   const [availableOnly, setAvailableOnly] = useState(false);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-    total: 0,
-  });
 
   const itemsPerPage = 20;
 
-  // Fetch products with pagination using new SetProduct → Product hierarchy
-  const fetchProducts = useCallback(
-    async (page: number = 1) => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        log('Fetching products with params:', {
-          page,
-          limit: itemsPerPage,
-          categoryFilter,
-          setProductFilter: setProductFilter?.setProductName,
-          availableOnly,
-          searchTerm,
-        });
-
-        let fetchedProducts: IProduct[] = [];
-        let paginationData = {
-          currentPage: page,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPrevPage: false,
-          total: 0,
-        };
-
-        if (searchTerm.trim()) {
-          // Use consolidated search API when there's a search term
-          const searchParams = {
-            query: searchTerm.trim(),
-            page,
-            limit: itemsPerPage,
-            ...(categoryFilter && { category: categoryFilter }),
-            ...(setProductFilter && { setProductId: setProductFilter.id }),
-            ...(availableOnly && { availableOnly: true }),
-          };
-
-          const searchResponse = await unifiedApiService.products.searchProducts(searchParams);
-          fetchedProducts = searchResponse.data || [];
-
-          // Calculate pagination for search results
-          const totalResults = searchResponse.count || 0;
-          const totalPages = Math.ceil(totalResults / itemsPerPage);
-          paginationData = {
-            currentPage: page,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
-            total: totalResults,
-          };
-        } else {
-          // Use paginated products API for browsing
-          const response = await unifiedApiService.products.getPaginatedProducts({
-            page,
-            limit: itemsPerPage,
-            ...(categoryFilter && { category: categoryFilter }),
-            ...(setProductFilter && { setProductId: setProductFilter.id }),
-            ...(availableOnly && { available: availableOnly }),
-          });
-
-          fetchedProducts = response.products || [];
-          paginationData = {
-            currentPage: response.currentPage,
-            totalPages: response.totalPages,
-            hasNextPage: response.hasNextPage,
-            hasPrevPage: response.hasPrevPage,
-            total: response.total,
-          };
-        }
-
-        setProducts(fetchedProducts);
-        setPagination(paginationData);
-
-        log(
-          'Products fetched successfully:',
-          fetchedProducts.length,
-          'products',
-          'page',
-          paginationData.currentPage
-        );
-      } catch (error) {
-        const errorMessage = 'Failed to fetch products';
-        setError(errorMessage);
-        handleApiError(error, errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchTerm, categoryFilter, setProductFilter, availableOnly]
-  );
+  // Shared search function using the hook - no more duplicate HTTP logic
+  const performProductSearch = useCallback(async (page: number = 1) => {
+    await searchProducts({
+      searchTerm: searchTerm.trim() || undefined,
+      categoryFilter: categoryFilter || undefined,
+      setProductId: setProductFilter?.id,
+      availableOnly,
+      page,
+      limit: itemsPerPage,
+    });
+  }, [searchProducts, searchTerm, categoryFilter, setProductFilter, availableOnly]);
 
   // Handle search submit
   const handleSearch = () => {
-    fetchProducts(1); // Reset to page 1 when searching
+    performProductSearch(1); // Reset to page 1 when searching
   };
 
   // Handle clear filters
@@ -152,14 +73,14 @@ const ProductSearch: React.FC = () => {
     setAvailableOnly(false);
     // Fetch all products when clearing filters
     setTimeout(() => {
-      fetchProducts(1); // Reset to page 1 when clearing
+      performProductSearch(1); // Reset to page 1 when clearing
     }, 100);
   };
 
-  // Handle page change
+  // Handle page change using shared hook
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      fetchProducts(newPage);
+      setPage(newPage);
       // Scroll to top when changing pages
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -177,10 +98,10 @@ const ProductSearch: React.FC = () => {
     return Math.round(eurPrice * 7.46);
   };
 
-  // Initial load
+  // Initial load using shared hook
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    performProductSearch();
+  }, [performProductSearch]);
 
   const headerActions = (
     <div className="bg-gradient-to-r from-[var(--theme-status-success)]/10 via-[var(--theme-accent-secondary)]/10 to-[var(--theme-accent-secondary)]/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-[var(--theme-border)]">

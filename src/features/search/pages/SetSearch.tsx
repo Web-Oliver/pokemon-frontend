@@ -12,128 +12,44 @@ import {
   Search,
 } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { PokemonInput } from '../../../shared/components/atoms/design-system/PokemonInput';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { useFetchCollectionItems } from '../../../shared/hooks/useFetchCollectionItems';
-import { usePageLayout } from '../../../shared/hooks/usePageLayout';
+import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
 import { log } from '../../../shared/utils/performance/logger';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 
-interface SearchParams {
-  page?: number;
-  limit?: number;
-  year?: number;
-  search?: string;
-}
+// Search parameters interface now handled by usePaginatedSearch
 
 const SetSearch: React.FC = () => {
-  const { loading, error, handleAsyncAction } = usePageLayout();
-  const { items: sets, setItems: setSets } = useFetchCollectionItems({
-    initialData: [],
-  });
+  const { 
+    items: sets, 
+    pagination, 
+    loading, 
+    error, 
+    searchSets, 
+    setPage, 
+    clearError 
+  } = usePaginatedSearch();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [yearFilter, setYearFilter] = useState<string>('');
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-    total: 0,
-  });
 
   const itemsPerPage = 12;
 
-  // SRP: Separate concerns - initial load vs. search operations
-  const fetchSets = useCallback(
-    async (params: SearchParams = {}) => {
-      await handleAsyncAction(async () => {
-        const page = params.page || 1;
-        const limit = params.limit || itemsPerPage;
+  // SRP: Search operation using shared hook - no more duplicate HTTP logic
+  const performSearch = useCallback(async (params: any) => {
+    await searchSets({
+      search: params.search,
+      year: params.year?.toString(),
+      page: params.page || 1,
+      limit: params.limit || itemsPerPage,
+    });
+  }, [searchSets]);
 
-        log('Fetching sets with params:', {
-          page,
-          limit,
-          search: params.search,
-          year: params.year,
-        });
-
-        let fetchedSets: any[] = [];
-        let paginationData = {
-          currentPage: page,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPrevPage: false,
-          total: 0,
-        };
-
-        if (params.search?.trim()) {
-          // Use consolidated search API when there's a search term
-          const searchParams = {
-            query: params.search.trim(),
-            page,
-            limit,
-            ...(params.year && { year: params.year }),
-          };
-
-          const optimizedResponse = await unifiedApiService.sets.searchSets(searchParams);
-          fetchedSets = optimizedResponse.data;
-
-          // Calculate pagination for optimized search
-          const totalResults = optimizedResponse.count;
-          const totalPages = Math.ceil(totalResults / limit);
-          paginationData = {
-            currentPage: page,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
-            total: totalResults,
-          };
-        } else {
-          // Use paginated API when no search term
-          const requestParams = {
-            page,
-            limit,
-            ...(params.year && { year: params.year }),
-          };
-
-          const response =
-            await unifiedApiService.sets.getPaginatedSets(requestParams);
-          fetchedSets = response.sets;
-          paginationData = {
-            currentPage: response.currentPage,
-            totalPages: response.totalPages,
-            hasNextPage: response.hasNextPage,
-            hasPrevPage: response.hasPrevPage,
-            total: response.total,
-          };
-        }
-
-        setSets(fetchedSets);
-        setPagination(paginationData);
-
-        log('Sets fetched successfully:', fetchedSets.length, 'sets');
-        return fetchedSets;
-      });
-    },
-    [handleAsyncAction, setSets]
-  );
-
-  // SRP: Initial load - runs once on mount
-  const performInitialLoad = useCallback(async () => {
-    await fetchSets();
-  }, []);
-
-  // SRP: Search operation - stable reference for search actions
-  const performSearch = useCallback(async (params: SearchParams) => {
-    await fetchSets(params);
-  }, []);
-
-  // Initial load - separate concern from fetchSets
+  // Initial load using shared hook
   useEffect(() => {
-    performInitialLoad();
-  }, [performInitialLoad]);
+    performSearch({ page: 1, limit: itemsPerPage });
+  }, [performSearch]);
 
   // Handle search input change
   const handleSearchChange = (value: string) => {
@@ -147,7 +63,7 @@ const SetSearch: React.FC = () => {
 
   // Handle search submit
   const handleSearch = () => {
-    const params: SearchParams = {
+    const params: any = {
       page: 1,
       limit: itemsPerPage,
       ...(searchTerm && { search: searchTerm }),
@@ -171,15 +87,9 @@ const SetSearch: React.FC = () => {
     performSearch({ page: 1, limit: itemsPerPage });
   };
 
-  // Handle pagination
+  // Handle pagination using shared hook
   const handlePageChange = (page: number) => {
-    const params: SearchParams = {
-      page,
-      limit: itemsPerPage,
-      ...(searchTerm && { search: searchTerm }),
-      ...(yearFilter && { year: parseInt(yearFilter) }),
-    };
-    performSearch(params);
+    setPage(page);
   };
 
   // Handle key press for search
