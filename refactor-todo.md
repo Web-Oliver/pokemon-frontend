@@ -77,7 +77,7 @@
 - [x] Support variants: spinner, skeleton, shimmer
 - [x] Support sizes: sm, md, lg
 - [x] Replace direct LoadingSpinner imports with GenericLoadingState
-- [ ] Consolidate LoadingStates.tsx usage
+- [x] Consolidate LoadingStates.tsx usage
 
 ### Form Error Display
 - [x] Create `shared/components/molecules/common/FormElements/FormErrorMessage.tsx`
@@ -86,7 +86,7 @@
 - [x] Replace custom error display patterns
 
 ### Layout Consistency
-- [ ] Enforce `shared/components/layout/layouts/PageLayout.tsx` usage in all pages
+- [x] Enforce `shared/components/layout/layouts/PageLayout.tsx` usage in all pages
 - [ ] Update all `features/*/pages` to use consistent layout
 - [ ] Remove custom layout implementations
 
