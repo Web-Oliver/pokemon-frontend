@@ -12,6 +12,7 @@ import {
   PokemonForm,
   PokemonFormSection,
 } from '../atoms/design-system/PokemonForm';
+import { FormErrorMessage } from '../molecules/common/FormElements';
 import { useMarkSold } from '../../hooks/useMarkSold';
 
 interface MarkSoldFormProps {

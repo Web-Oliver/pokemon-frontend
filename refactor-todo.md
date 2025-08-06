@@ -65,12 +65,12 @@
 - [x] Support props for title, actions, background effects
 
 ### Empty State Consolidation
-- [ ] Create unified `shared/components/molecules/common/EmptyState.tsx`
-- [ ] Consolidate: EmptyState.tsx → Unified version
-- [ ] Consolidate: DbaEmptyState.tsx → Unified version
-- [ ] Consolidate: DbaEmptyStateCosmic.tsx → Unified version
-- [ ] Consolidate: UnifiedDbaEmptyState.tsx → Unified version
-- [ ] Support different messages, icons, and actions
+- [x] Create unified `shared/components/molecules/common/EmptyState.tsx`
+- [x] Consolidate: EmptyState.tsx → Unified version
+- [x] Consolidate: DbaEmptyState.tsx → Unified version
+- [x] Consolidate: DbaEmptyStateCosmic.tsx → Unified version
+- [x] Consolidate: UnifiedDbaEmptyState.tsx → Unified version
+- [x] Support different messages, icons, and actions
 
 ### Loading State Standardization
 - [x] Create `shared/components/molecules/common/GenericLoadingState.tsx`
