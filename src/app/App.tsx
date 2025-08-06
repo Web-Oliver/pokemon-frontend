@@ -12,7 +12,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { log } from '../shared/utils/performance/logger';
 import { Toaster } from 'react-hot-toast';
-import LoadingSpinner from '../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../shared/components/molecules/common/GenericLoadingState';
 import { queryClient } from './lib/queryClient';
 import { UnifiedThemeProvider as ThemeProvider } from '../shared/contexts/theme/UnifiedThemeProvider';
 // Cache debugging removed - overengineered development utility not needed
@@ -215,7 +215,7 @@ function App() {
                   isPending ? 'opacity-50' : 'opacity-100'
                 }`}
               >
-                <LoadingSpinner size="lg" />
+                <GenericLoadingState variant="spinner" size="lg" />
               </div>
             }
           >

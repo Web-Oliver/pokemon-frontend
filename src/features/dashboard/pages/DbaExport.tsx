@@ -13,7 +13,7 @@ import React, { lazy, Suspense } from 'react';
 import { Archive, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { useDbaExport } from '../../../shared/hooks/useDbaExport';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
 
 // CONSOLIDATED: UnifiedHeader lazy import (replaces DbaHeaderGalaxyCosmic)
@@ -62,12 +62,8 @@ const DbaItemsWithoutTimers = lazy(
       /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithoutTimers'
     )
 );
-const DbaEmptyStateCosmic = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaEmptyStateCosmic'
-    )
-);
+// Using unified EmptyState component
+import EmptyState from '../../../shared/components/molecules/common/EmptyState';
 
 const DbaExport: React.FC = () => {
   const {
@@ -164,7 +160,7 @@ const DbaExport: React.FC = () => {
       </Suspense>
 
       {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
-      <Suspense fallback={<LoadingSpinner size="lg" />}>
+      <Suspense fallback={<GenericLoadingState variant="spinner" size="lg" />}>
         <UnifiedHeader
           title="DBA Export"
           subtitle="Export your collection items to DBA.dk"
@@ -217,7 +213,10 @@ const DbaExport: React.FC = () => {
           </div>
 
           {/* 🌌 COSMIC EMPTY STATE */}
-          <DbaEmptyStateCosmic
+          <EmptyState
+            variant="cosmic"
+            size="xl"
+            title="No Items Found"
             psaCardsLength={psaCards.length}
             rawCardsLength={rawCards.length}
             sealedProductsLength={sealedProducts.length}

@@ -73,10 +73,10 @@
 - [ ] Support different messages, icons, and actions
 
 ### Loading State Standardization
-- [ ] Create `shared/components/molecules/common/GenericLoadingState.tsx`
-- [ ] Support variants: spinner, skeleton, shimmer
-- [ ] Support sizes: sm, md, lg
-- [ ] Replace direct LoadingSpinner imports with GenericLoadingState
+- [x] Create `shared/components/molecules/common/GenericLoadingState.tsx`
+- [x] Support variants: spinner, skeleton, shimmer
+- [x] Support sizes: sm, md, lg
+- [x] Replace direct LoadingSpinner imports with GenericLoadingState
 - [ ] Consolidate LoadingStates.tsx usage
 
 ### Form Error Display

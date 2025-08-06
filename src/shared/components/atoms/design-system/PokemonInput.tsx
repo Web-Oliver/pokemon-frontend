@@ -20,6 +20,7 @@ import { inputClasses } from '../../../utils/ui/classNameUtils';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
+import { FormErrorMessage } from '../../molecules/common/FormElements/FormErrorMessage';
 import type {
   VisualTheme,
   Density,
@@ -299,9 +300,7 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
         {/* Helper/Error Text */}
         {(resolvedHelper || error) && (
           <div className="mt-2 space-y-1">
-            {error && (
-              <span className="text-red-400 text-sm font-medium">{error}</span>
-            )}
+            <FormErrorMessage error={error} />
             {resolvedHelper && !error && (
               <HelperText>{resolvedHelper}</HelperText>
             )}

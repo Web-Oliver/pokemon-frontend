@@ -22,6 +22,7 @@ import React, {
 import { Upload, X } from 'lucide-react';
 import { PokemonConfirmModal } from '../shared/components/atoms/design-system/PokemonModal';
 import { ImageAnalysisIndicator } from '../shared/components/molecules/common/ImageAnalysisIndicator';
+import { FormErrorMessage } from '../shared/components/molecules/common/FormElements';
 import { useDragAndDrop } from '../shared/hooks/useDragAndDrop';
 import { useImageRemoval } from '../shared/hooks/useImageRemoval';
 import {
@@ -325,11 +326,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       </div>
 
       {/* Error display */}
-      {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
+      <FormErrorMessage error={error} variant="toast" dismissible onDismiss={() => setError(null)} />
 
       {/* Image previews grid */}
       {previews.length > 0 && (

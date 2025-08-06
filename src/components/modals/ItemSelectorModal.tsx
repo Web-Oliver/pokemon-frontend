@@ -13,6 +13,7 @@ import { PokemonButton } from '../../shared/components/atoms/design-system/Pokem
 import { PokemonInput } from '../../shared/components/atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../shared/components/atoms/design-system/PokemonSelect';
 import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
+import { FormErrorMessage } from '../../shared/components/molecules/common/FormElements';
 
 // Generic item interface that all selectable items must extend
 export interface SelectableItem {
@@ -352,9 +353,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
             <LoadingSpinner text="Loading items..." />
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
+          <FormErrorMessage error={error} variant="toast" />
         ) : filteredItems.length === 0 ? (
           <div className="py-12 text-center">
             <Package className="w-12 h-12 text-gray-400 dark:text-zinc-600 dark:text-zinc-500 mx-auto mb-4" />

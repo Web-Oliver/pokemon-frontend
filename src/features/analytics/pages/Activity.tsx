@@ -36,7 +36,7 @@ import {
   Zap,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import ActivityStatCard from '../../../shared/components/molecules/common/ActivityStatCard';
 import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
 import ActivityFilterHub from '../../../shared/components/molecules/common/ActivityFilterHub';
@@ -353,7 +353,7 @@ const Activity: React.FC = () => {
           <PokemonCard variant="glass" size="lg" className="relative">
             {loading && activities.length === 0 ? (
               <div className="flex justify-center py-16">
-                <LoadingSpinner size="lg" text="Loading activities..." />
+                <GenericLoadingState variant="spinner" size="lg" text="Loading activities..." />
               </div>
             ) : (
               <div className="space-y-6">

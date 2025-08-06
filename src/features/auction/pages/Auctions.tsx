@@ -26,7 +26,7 @@ import {
   Clock,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { useAuction } from '../../../shared/hooks/useAuction';
@@ -393,7 +393,7 @@ const Auctions: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse"></div>
 
                 <div className="relative z-10">
-                  <LoadingSpinner text="Loading auctions..." />
+                  <GenericLoadingState variant="spinner" text="Loading auctions..." />
                 </div>
               </div>
             </div>

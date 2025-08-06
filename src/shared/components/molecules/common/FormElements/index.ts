@@ -11,6 +11,7 @@
 export { default as FormWrapper } from './FormWrapper';
 export { default as Label } from './Label';
 export { default as ErrorMessage } from './ErrorMessage';
+export { default as FormErrorMessage } from './FormErrorMessage';
 export { default as HelperText } from './HelperText';
 export { default as Shimmer } from './Shimmer';
 export { default as Glow } from './Glow';
