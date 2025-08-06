@@ -12,6 +12,7 @@
  */
 
 import { EnhancedRequestConfig } from '../../api/unifiedApiClient';
+import { AxiosInstance } from 'axios';
 
 /**
  * Abstract HTTP client interface
@@ -79,4 +80,10 @@ export interface IHttpClient {
     subPath?: string,
     config?: EnhancedRequestConfig
   ): Promise<T>;
+
+  /**
+   * Get underlying axios instance for specialized operations
+   * (e.g., blob responses, custom response types)
+   */
+  getAxiosInstance(): AxiosInstance;
 }

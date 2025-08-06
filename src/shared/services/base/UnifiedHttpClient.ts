@@ -110,6 +110,13 @@ export class UnifiedHttpClient implements IHttpClient {
   ): Promise<T> {
     return unifiedApiClient.deleteById<T>(basePath, id, subPath, config);
   }
+
+  /**
+   * Get underlying axios instance for specialized operations
+   */
+  getAxiosInstance() {
+    return unifiedApiClient.getAxiosInstance();
+  }
 }
 
 // Export singleton instance

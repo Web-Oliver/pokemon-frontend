@@ -7,6 +7,7 @@
  */
 
 import { ICardMarketReferenceProduct } from '../../domain/models/sealedProduct';
+import { unifiedHttpClient } from '../base/UnifiedHttpClient';
 
 export interface CardMarketSearchParams {
   page?: number;
@@ -39,8 +40,6 @@ export interface CategoryDetails {
   maxPrice: number;
 }
 
-const BASE_URL = 'http://localhost:3000/api/cardmarket';
-
 /**
  * Search CardMarket reference products with pagination
  */
@@ -65,13 +64,12 @@ export const searchProducts = async (
     queryParams.append('availableOnly', 'true');
   }
 
-  const response = await fetch(`${BASE_URL}/search?${queryParams.toString()}`);
-
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
-
-  return response.json();
+  return unifiedHttpClient.get<CardMarketSearchResponse>(
+    `/api/cardmarket/search?${queryParams.toString()}`,
+    {
+      operation: 'fetch CardMarket products',
+    }
+  );
 };
 
 /**
@@ -80,14 +78,14 @@ export const searchProducts = async (
 export const getCategories = async (): Promise<
   Array<{ name: string; count: number }>
 > => {
-  const response = await fetch(`${BASE_URL}/categories`);
+  const response = await unifiedHttpClient.get<{data: Array<{ name: string; count: number }>}>(
+    '/api/cardmarket/categories',
+    {
+      operation: 'fetch CardMarket categories',
+    }
+  );
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
-
-  const { data } = await response.json();
-  return data;
+  return response.data;
 };
 
 /**
@@ -96,14 +94,12 @@ export const getCategories = async (): Promise<
 export const getCategoryDetails = async (
   category: string
 ): Promise<CategoryDetails> => {
-  const response = await fetch(
-    `${BASE_URL}/categories/${encodeURIComponent(category)}`
+  const response = await unifiedHttpClient.get<{data: CategoryDetails}>(
+    `/api/cardmarket/categories/${encodeURIComponent(category)}`,
+    {
+      operation: `fetch CardMarket category details for ${category}`,
+    }
   );
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
-
-  const { data } = await response.json();
-  return data;
+  return response.data;
 };

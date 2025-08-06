@@ -9,6 +9,8 @@
  * - DIP: Depends on abstractions via interfaces
  */
 
+import { unifiedHttpClient } from '../../services/base/UnifiedHttpClient';
+
 export interface ZipImageConfig {
   imageUrls: string[];
   itemNames: string[];
@@ -45,15 +47,15 @@ export class ZipImageUtility {
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
 
-    // Fetch all images and add them to the zip
+    // Fetch all images and add them to the zip using UnifiedHttpClient
     const imagePromises = imageUrls.map(async (url, index) => {
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.status}`);
-        }
-        const blob = await response.blob();
-        zip.file(itemNames[index], blob);
+        // For external image URLs, use the underlying axios instance to get blob response
+        const axiosInstance = unifiedHttpClient.getAxiosInstance();
+        const response = await axiosInstance.get(url, {
+          responseType: 'blob',
+        });
+        zip.file(itemNames[index], response.data);
       } catch (error) {
         console.warn(`Failed to fetch image ${url}:`, error);
       }
