@@ -14,7 +14,7 @@ import {
   PokemonModal,
   PokemonConfirmModal,
 } from '../../../shared/components/atoms/design-system/PokemonModal';
-import { PokemonPageContainer } from '../../../shared/components/atoms/design-system/PokemonPageContainer';
+import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
 import { useModal } from '../../../shared/hooks/useModal';
@@ -162,7 +162,11 @@ const CollectionItemDetail: React.FC = () => {
   // Error state
   if (error && !item) {
     return (
-      <PokemonPageContainer>
+      <PageLayout
+        title="Item Not Found"
+        subtitle="The requested collection item could not be found"
+        error={error}
+      >
         <div className="text-center py-16">
           <Package className="w-16 h-16 text-[var(--theme-status-error)] mx-auto mb-4" />
           <h3 className="text-xl font-bold text-[var(--theme-status-error)] mb-2">
@@ -170,7 +174,7 @@ const CollectionItemDetail: React.FC = () => {
           </h3>
           <p className="text-[var(--theme-text-muted)]">{error}</p>
         </div>
-      </PokemonPageContainer>
+      </PageLayout>
     );
   }
 
@@ -180,7 +184,12 @@ const CollectionItemDetail: React.FC = () => {
   }
 
   return (
-    <PokemonPageContainer>
+    <PageLayout
+      title={getItemTitle()}
+      subtitle={getItemSubtitle()}
+      loading={loading}
+      error={error}
+    >
       {/* Header Component - Extracted from god class */}
       <CollectionItemHeader
         item={item}
@@ -255,7 +264,7 @@ const CollectionItemDetail: React.FC = () => {
         variant="danger"
         loading={operations.deleteConfirmModal.isConfirming}
       />
-    </PokemonPageContainer>
+    </PageLayout>
   );
 };
 

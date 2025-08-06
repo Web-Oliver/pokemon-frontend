@@ -96,7 +96,7 @@
 - [ ] Remove duplicate background effect implementations
 
 ### Generic Card/List Components
-- [ ] Create `shared/components/molecules/common/BaseCard.tsx`
+- [x] Create `shared/components/molecules/common/BaseCard.tsx`
 - [ ] Create `shared/components/molecules/common/BaseListItem.tsx`
 - [ ] Refactor: AuctionItemCard.tsx → use BaseCard
 - [ ] Refactor: CollectionItemCard.tsx → use BaseCard
