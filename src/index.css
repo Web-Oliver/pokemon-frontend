@@ -27,10 +27,22 @@ body {
     min-height: 100vh;
 }
 
-/* Ensure proper mobile viewport handling */
+/* Ensure proper responsive font scaling */
 @media (max-width: 640px) {
     html {
         font-size: 14px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 1025px) {
+    html {
+        font-size: 16px;
     }
 }
 
@@ -90,11 +102,11 @@ body {
     }
 
     .content-wrapper {
-        @apply relative z-10 p-8;
+        @apply relative z-10 p-4 sm:p-6 lg:p-8;
     }
 
     .main-container {
-        @apply max-w-7xl mx-auto space-y-12;
+        @apply max-w-6xl mx-auto space-y-8 lg:space-y-12;
     }
 
     /* Activity/Timeline specific patterns */
