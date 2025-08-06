@@ -142,7 +142,7 @@ export const useFormInitialization = (
     // Mark as initialized
     initializedRef.current = itemId;
 
-    if (debug && process.env.NODE_ENV === 'development') {
+    if (debug && import.meta.env.MODE === 'development') {
       console.log(
         `[${formType.toUpperCase()} FORM] Initializing form once for item:`,
         itemId
@@ -185,7 +185,7 @@ export const useFormInitialization = (
       setValue(fieldName, value);
     });
 
-    if (debug && process.env.NODE_ENV === 'development') {
+    if (debug && import.meta.env.MODE === 'development') {
       console.log(
         `[${formType.toUpperCase()} FORM] Form initialized successfully for:`,
         itemId

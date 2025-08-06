@@ -194,14 +194,14 @@ export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
  * Check if running in development environment
  */
 export const isDevelopment = (): boolean => {
-  return process.env.NODE_ENV === 'development';
+  return import.meta.env.MODE === 'development';
 };
 
 /**
  * Check if running in production environment
  */
 export const isProduction = (): boolean => {
-  return process.env.NODE_ENV === 'production';
+  return import.meta.env.MODE === 'production';
 };
 
 /**

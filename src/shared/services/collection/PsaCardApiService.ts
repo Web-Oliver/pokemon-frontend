@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import { unifiedApiService } from '../UnifiedApiService';
+// Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { IPsaGradedCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -35,18 +35,13 @@ export class PsaCardApiService
   }
 
   /**
-   * Get PSA graded cards with optional filters
+   * DEPRECATED - Use unifiedApiService.collection.getPsaGradedCards() directly
+   * This service creates circular dependencies and violates CLAUDE.md principles
    */
   async getPsaGradedCards(
     filters?: PsaGradedCardsParams
   ): Promise<IPsaGradedCard[]> {
-    return this.executeWithErrorHandling('getPsaGradedCards', async () => {
-      const result = await unifiedApiService.collection.getPsaGradedCards(filters);
-      return this.validateArrayResponse<IPsaGradedCard>(
-        result,
-        'getPsaGradedCards'
-      );
-    });
+    throw new Error('DEPRECATED: Use unifiedApiService.collection.getPsaGradedCards() directly to avoid circular dependencies');
   }
 
   /**

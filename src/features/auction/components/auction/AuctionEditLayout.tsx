@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { AlertCircle, ArrowLeft, Calendar, Save, X, Edit3 } from 'lucide-react';
+import Context7Background from '../../../../shared/components/organisms/effects/Context7Background';
 import { UseFormReturn } from 'react-hook-form';
 import { PokemonButton } from '../design-system/PokemonButton';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -71,7 +72,7 @@ const AuctionEditLayout: React.FC<AuctionEditLayoutProps> = ({
         actions={headerActions}
         variant="default"
       >
-        <PremiumBackground />
+        <Context7Background opacity={0.3} color="default" />
         <div className="relative z-10 p-8">
           <div className="max-w-7xl mx-auto">
             <PremiumLoadingCard />
@@ -110,7 +111,7 @@ const AuctionEditLayout: React.FC<AuctionEditLayoutProps> = ({
       actions={headerActions}
       variant="default"
     >
-      <PremiumBackground />
+      <Context7Background opacity={0.3} color="default" />
 
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
@@ -139,17 +140,7 @@ const AuctionEditLayout: React.FC<AuctionEditLayoutProps> = ({
   );
 };
 
-// Premium Background Pattern Component
-const PremiumBackground: React.FC = () => (
-  <div className="absolute inset-0 opacity-30">
-    <div
-      className="w-full h-full"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-      }}
-    ></div>
-  </div>
-);
+// Removed duplicate - using Context7Background component instead
 
 // Premium Loading Card Component
 const PremiumLoadingCard: React.FC = () => (

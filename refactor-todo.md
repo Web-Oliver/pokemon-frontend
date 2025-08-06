@@ -87,22 +87,22 @@
 
 ### Layout Consistency
 - [x] Enforce `shared/components/layout/layouts/PageLayout.tsx` usage in all pages
-- [ ] Update all `features/*/pages` to use consistent layout
+- [x] Update all `features/*/pages` to use consistent layout
 - [ ] Remove custom layout implementations
 
 ### Effect Components
 - [x] Ensure `shared/components/organisms/effects/CosmicBackground.tsx` is used consistently
 - [x] Refactor `features/dashboard/components/dba/DbaCosmicBackground.tsx` to re-export
-- [ ] Remove duplicate background effect implementations
+- [x] Remove duplicate background effect implementations
 
 ### Generic Card/List Components
 - [x] Create `shared/components/molecules/common/BaseCard.tsx`
-- [ ] Create `shared/components/molecules/common/BaseListItem.tsx`
-- [ ] Refactor: AuctionItemCard.tsx → use BaseCard
-- [ ] Refactor: CollectionItemCard.tsx → use BaseCard
-- [ ] Refactor: ProductCard.tsx → use BaseCard
-- [ ] Refactor: ActivityListItem.tsx → use BaseListItem
-- [ ] Refactor: RecentSaleListItem.tsx → use BaseListItem
+- [x] Create `shared/components/molecules/common/BaseListItem.tsx`
+- [x] Refactor: AuctionItemCard.tsx → use BaseCard
+- [x] Refactor: CollectionItemCard.tsx → use BaseCard
+- [x] Refactor: ProductCard.tsx → use BaseCard
+- [x] Refactor: ActivityListItem.tsx → use BaseListItem
+- [x] Refactor: RecentSaleListItem.tsx → use BaseListItem
 
 ### Dynamic Form Fields
 - [ ] Enhance `shared/components/forms/fields/InformationFieldRenderer.tsx`
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 23/91 (25%)**
+- [x] **Completed: 30/91 (33%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 68/91 (75%)**
+- [ ] **Remaining: 61/91 (67%)**
 
 ---
 

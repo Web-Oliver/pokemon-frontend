@@ -15,6 +15,7 @@ import { Toaster } from 'react-hot-toast';
 import { PageLoading } from '../shared/components/molecules/common/LoadingStates';
 import { queryClient } from './lib/queryClient';
 import { UnifiedThemeProvider as ThemeProvider } from '../shared/contexts/theme/UnifiedThemeProvider';
+import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
 
 // Layout
@@ -222,13 +223,15 @@ function App() {
             {renderPage()}
           </Suspense>
         </MainLayout>
-        {process.env.NODE_ENV === 'development' && (
+        {import.meta.env.MODE === 'development' && (
           <>
             <ReactQueryDevtools
               initialIsOpen={false}
               buttonPosition="bottom-left"
               position="bottom"
             />
+            {/* Development monitoring tools */}
+            <DevMonitor />
             {/* ThemeDebugger temporarily disabled during refactoring */}
           </>
         )}

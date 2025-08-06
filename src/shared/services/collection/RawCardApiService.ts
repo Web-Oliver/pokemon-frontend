@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import { unifiedApiService } from '../UnifiedApiService';
+// Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { IRawCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -35,13 +35,11 @@ export class RawCardApiService
   }
 
   /**
-   * Get raw cards with optional filters
+   * DEPRECATED - Use unifiedApiService.collection.getRawCards() directly
+   * This service creates circular dependencies and violates CLAUDE.md principles
    */
   async getRawCards(filters?: RawCardsParams): Promise<IRawCard[]> {
-    return this.executeWithErrorHandling('getRawCards', async () => {
-      const result = await unifiedApiService.collection.getRawCards(filters);
-      return this.validateArrayResponse<IRawCard>(result, 'getRawCards');
-    });
+    throw new Error('DEPRECATED: Use unifiedApiService.collection.getRawCards() directly to avoid circular dependencies');
   }
 
   /**

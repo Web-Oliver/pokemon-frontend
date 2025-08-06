@@ -23,6 +23,12 @@ export type {
   GradeDisplayTheme,
 } from './UnifiedGradeDisplay';
 
+// Foundation Components
+export { default as BaseCard } from './BaseCard';
+export type { BaseCardProps } from './BaseCard';
+export { default as BaseListItem } from './BaseListItem';
+export type { BaseListItemProps } from './BaseListItem';
+
 // LEGACY: Backward compatibility wrappers (use UnifiedHeader instead)
 export { default as GlassmorphismHeader } from './GlassmorphismHeader';
 export { default as FormHeader } from './FormHeader';

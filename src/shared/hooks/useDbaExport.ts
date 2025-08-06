@@ -10,8 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import * as dbaSelectionApi from '../api/dbaSelectionApi';
-import * as exportApi from '../api/exportApi';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import { useCollectionOperations } from './useCollectionOperations';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
@@ -79,10 +78,20 @@ export const useDbaExport = () => {
   const [error, _setError] = useState<string | null>(null);
 
   // React Query for DBA selections with proper caching
-  const { data: dbaSelections = [], isLoading: loadingDbaSelections } =
+  const { data: dbaSelections = [], isLoading: loadingDbaSelections, error: dbaError } =
     useQuery({
       queryKey: queryKeys.dbaSelections({ active: true }),
-      queryFn: () => dbaSelectionApi.getDbaSelections({ active: true }),
+      queryFn: async () => {
+        console.log('[DBA DEBUG] Starting getDbaSelections API call...');
+        try {
+          const result = await unifiedApiService.dbaSelection.getDbaSelections({ active: true });
+          console.log('[DBA DEBUG] API call successful:', result);
+          return result;
+        } catch (error) {
+          console.error('[DBA DEBUG] API call failed:', error);
+          throw error;
+        }
+      },
       staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
       gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
       retry: 2,
@@ -91,12 +100,15 @@ export const useDbaExport = () => {
 
   // Debug logging for collection data
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.log('[DBA EXPORT] Collection data loaded:', {
         psaCards: psaCards.length,
         rawCards: rawCards.length,
         sealedProducts: sealedProducts.length,
         dbaSelections: dbaSelections.length,
+        dbaError: dbaError,
+        loadingDbaSelections,
+        loading,
         samplePsaCard: psaCards[0],
         sampleRawCard: rawCards[0],
         sampleSealedProduct: sealedProducts[0],
@@ -294,7 +306,7 @@ export const useDbaExport = () => {
     const itemId = item.id || (item as any)._id;
     const isSelected = selectedItems.some((selected) => selected.id === itemId);
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.log('[DBA EXPORT] Item toggle:', {
         item,
         type,
@@ -334,7 +346,7 @@ export const useDbaExport = () => {
         }),
       } as any;
 
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log('[DBA EXPORT] Selected item:', selectedItem);
       }
       setSelectedItems([...selectedItems, selectedItem]);
@@ -346,7 +358,7 @@ export const useDbaExport = () => {
     field: 'customTitle' | 'customDescription',
     value: string
   ) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.log('[DBA EXPORT] updateItemCustomization called:', {
         itemId,
         field,
@@ -371,7 +383,7 @@ export const useDbaExport = () => {
     setIsExporting(true);
 
     try {
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log(
           '[DBA EXPORT] Starting export for',
           selectedItems.length,
@@ -381,7 +393,7 @@ export const useDbaExport = () => {
 
       // Add items to DBA selection tracking
       try {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           console.log('[DBA EXPORT] Adding items to DBA selection tracking...');
         }
         const itemsToAdd = selectedItems.map((item) => ({
@@ -389,8 +401,8 @@ export const useDbaExport = () => {
           itemType: item.type,
         }));
 
-        await dbaSelectionApi.addToDbaSelection(itemsToAdd);
-        if (process.env.NODE_ENV === 'development') {
+        await unifiedApiService.dbaSelection.addToDbaSelection(itemsToAdd);
+        if (import.meta.env.MODE === 'development') {
           console.log('[DBA EXPORT] Items added to DBA selection tracking');
         }
       } catch (dbaAddError) {
@@ -406,7 +418,7 @@ export const useDbaExport = () => {
         customDescription,
       };
 
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log(
           '[DBA EXPORT] Export data being sent to backend:',
           exportData
@@ -414,9 +426,9 @@ export const useDbaExport = () => {
         console.log('[DBA EXPORT] First selected item:', selectedItems[0]);
       }
 
-      const response = await exportApi.exportToDba(exportData);
+      const response = await unifiedApiService.export.exportToDba(exportData);
 
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log('[DBA EXPORT] Export successful:', response);
       }
       setExportResult(response);
@@ -425,7 +437,7 @@ export const useDbaExport = () => {
       // Don't let cache refresh errors block the success message
       setTimeout(async () => {
         try {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.MODE === 'development') {
             console.log(
               '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
             );
@@ -433,7 +445,7 @@ export const useDbaExport = () => {
           await queryClient.invalidateQueries({
             queryKey: queryKeys.dbaSelections({ active: true }),
           });
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.MODE === 'development') {
             console.log(
               '[DBA EXPORT] DBA selections cache invalidated successfully'
             );
@@ -447,7 +459,7 @@ export const useDbaExport = () => {
       }, 1000); // Delay cache refresh to prevent race conditions
 
       const itemCount = response?.itemCount || 0;
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log('[DBA EXPORT] Final export stats:', {
           expectedCount: selectedItems.length,
           actualValue: response?.itemCount,
@@ -467,7 +479,7 @@ export const useDbaExport = () => {
   const downloadZip = async () => {
     try {
       setIsExporting(true);
-      await exportApi.downloadDbaZip();
+      await unifiedApiService.export.downloadDbaZip();
     } catch (err) {
       handleApiError(err, 'Failed to download DBA export');
     } finally {

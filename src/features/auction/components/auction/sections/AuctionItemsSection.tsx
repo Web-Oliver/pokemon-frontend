@@ -12,6 +12,7 @@
 import React, { ReactNode } from 'react';
 import { Plus, Package } from 'lucide-react';
 import { PokemonButton } from '../../../../../shared/components/atoms/design-system/PokemonButton';
+import { GlassmorphismContainer } from '../../../../../shared/components/organisms/effects/GlassmorphismContainer';
 
 interface AuctionItem {
   id: string;
@@ -36,13 +37,17 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
   children,
 }) => {
   return (
-    <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-      {/* Gradient background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/3 via-teal-500/3 to-[var(--theme-accent-primary)]/3"></div>
-
-      <div className="relative z-10">
+    <GlassmorphismContainer
+      variant="medium"
+      colorScheme="success"
+      size="sm"
+      rounded="3xl"
+      glow="medium"
+      pattern="dots"
+      className="min-h-[300px] w-full"
+    >
         {/* Section Header */}
-        <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[var(--theme-border)] flex items-center justify-between">
           <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
             {title} ({items.length})
           </h2>
@@ -57,7 +62,7 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
 
         {/* Empty State or Items Content */}
         {items.length === 0 ? (
-          <div className="p-16 text-center">
+          <div className="p-12 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-text-secondary)] to-gray-200 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
               <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
             </div>
@@ -79,8 +84,7 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
           // Custom content area for items
           children
         )}
-      </div>
-    </div>
+    </GlassmorphismContainer>
   );
 };
 

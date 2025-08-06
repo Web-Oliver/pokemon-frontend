@@ -15,7 +15,7 @@ import { lazy, ComponentType } from 'react';
 export const lazyLoadDevComponent = <T extends ComponentType<any>>(
   importFn: () => Promise<{ default: T }>
 ): T => {
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.MODE === 'production') {
     // Return empty component for production
     return (() => null) as T;
   }

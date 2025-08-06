@@ -458,50 +458,9 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
 };
 
 // ===============================
-// BACKWARD COMPATIBILITY EXPORTS
-// Maintain existing component interfaces
+// BACKWARD COMPATIBILITY EXPORTS REMOVED
+// Use individual component files or UnifiedEffectSystem directly
 // ===============================
-
-/** @deprecated Use UnifiedEffectSystem with effectType="cosmic" */
-export const CosmicBackground: React.FC<{
-  gradientKey?: string;
-  particleConfig?: any;
-  className?: string;
-  respectThemeSettings?: boolean;
-}> = ({ className, respectThemeSettings }) => (
-  <UnifiedEffectSystem
-    effectType="cosmic"
-    className={className}
-    respectThemeSettings={respectThemeSettings}
-  />
-);
-
-/** @deprecated Use UnifiedEffectSystem with effectType="neural" */
-export const NeuralNetworkBackground: React.FC<{
-  primaryColor?: string;
-  secondaryColor?: string;
-  gridColor?: string;
-  opacity?: number;
-  enableQuantumParticles?: boolean;
-  enableGrid?: boolean;
-  className?: string;
-}> = ({ opacity, className }) => (
-  <UnifiedEffectSystem
-    effectType="neural"
-    opacity={opacity}
-    className={className}
-  />
-);
-
-/** @deprecated Use UnifiedEffectSystem with effectType="particles" */
-export const ParticleSystem: React.FC<{
-  particleCount?: number;
-  color?: string;
-  speed?: string;
-  className?: string;
-}> = ({ className }) => (
-  <UnifiedEffectSystem effectType="particles" className={className} />
-);
 
 // ===============================
 // PRESET EFFECT COMPONENTS
@@ -547,14 +506,13 @@ export const HolographicCardEffect: React.FC<{ className?: string }> = ({
 /**
  * CONSOLIDATION IMPACT SUMMARY:
  *
- * BEFORE (6 separate effect components):
+ * BEFORE (4 active effect components):
  * - CosmicBackground.tsx: ~120 lines
  * - NeuralNetworkBackground.tsx: ~100 lines
  * - ParticleSystem.tsx: ~80 lines
- * - FloatingGeometry.tsx: ~90 lines (estimated)
- * - HolographicBorder.tsx: ~70 lines (estimated)
- * - Other effect patterns: ~140 lines (estimated)
- * TOTAL: ~600 lines with 70% logic duplication
+ * - AnalyticsBackground.tsx: ~80 lines
+ * - Duplicate inline components: ~30 lines
+ * TOTAL: ~410 lines with 50% logic duplication
  *
  * AFTER (1 unified system):
  * - UnifiedEffectSystem.tsx: ~300 lines

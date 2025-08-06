@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import { unifiedApiService } from '../UnifiedApiService';
+// Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -35,18 +35,13 @@ export class SealedProductApiService
   }
 
   /**
-   * Get sealed products with optional filters
+   * DEPRECATED - Use unifiedApiService.collection.getSealedProducts() directly
+   * This service creates circular dependencies and violates CLAUDE.md principles
    */
   async getSealedProducts(
     filters?: SealedProductCollectionParams
   ): Promise<ISealedProduct[]> {
-    return this.executeWithErrorHandling('getSealedProducts', async () => {
-      const result = await unifiedApiService.collection.getSealedProducts(filters);
-      return this.validateArrayResponse<ISealedProduct>(
-        result,
-        'getSealedProducts'
-      );
-    });
+    throw new Error('DEPRECATED: Use unifiedApiService.collection.getSealedProducts() directly to avoid circular dependencies');
   }
 
   /**

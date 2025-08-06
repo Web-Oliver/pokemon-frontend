@@ -47,6 +47,7 @@ import {
   IconGlassmorphism,
 } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import { ActivityTimeline } from '../../../shared/components/analytics/ActivityTimeline';
+import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
 import { ParticleSystem } from '../../../shared/components/organisms/effects';
 import {
   DashboardItemsCard,
@@ -85,7 +86,7 @@ const Dashboard: React.FC = () => {
 
   // Handle navigation to activity page
   const handleActivityNavigation = () => {
-    handleNavigation('/activitys');
+    handleNavigation('/activity');
   };
 
   return (
@@ -320,35 +321,33 @@ const Dashboard: React.FC = () => {
                           activity.id ||
                           `activity-${Date.now()}-${Math.random()}`;
 
+                        // Transform activity data to match ActivityListItem interface
+                        const activityData = {
+                          _id: activity._id || activity.id,
+                          type: activity.type || 'system',
+                          title: activity.title,
+                          description: activity.description,
+                          timestamp: activity.timestamp || new Date(),
+                          metadata: {
+                            ...(activity.metadata || {}),
+                            badges: activity.metadata?.badges || []
+                          }
+                        };
+
+                        const colors = {
+                          bg: `from-${activityColor}-500 to-${activityColor}-600`,
+                          badge: `bg-${activityColor}-500/20 text-${activityColor}-200`,
+                          dot: `bg-${activityColor}-400`
+                        };
+
                         return (
-                          <div
+                          <ActivityListItem
                             key={activityKey}
-                            className="flex items-start space-x-4 group hover:bg-gradient-to-r hover:from-[var(--theme-surface-secondary)]/50 hover:to-[var(--theme-surface-secondary)]/30 rounded-2xl p-4 transition-all duration-300"
-                          >
-                            <div className="flex-shrink-0">
-                              <div
-                                className={`w-12 h-12 bg-gradient-to-br from-${activityColor}-500 to-${activityColor}-600 rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                              >
-                                <IconComponent className="w-6 h-6 text-white" />
-                              </div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
-                                <p className="text-sm font-bold text-[var(--theme-text-primary)] group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
-                                  {activity.title}
-                                </p>
-                                <span className="text-xs text-[var(--theme-text-muted)] font-medium">
-                                  {activity.relativeTime || 'Recently'}
-                                </span>
-                              </div>
-                              <p className="text-sm text-[var(--theme-text-muted)] mt-1">
-                                {activity.description}
-                              </p>
-                            </div>
-                            <div
-                              className={`w-2 h-2 bg-${activityColor}-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                            ></div>
-                          </div>
+                            activity={activityData}
+                            IconComponent={IconComponent}
+                            colors={colors}
+                            uniqueKey={activityKey}
+                          />
                         );
                       })}
                   </div>
@@ -370,7 +369,7 @@ const Dashboard: React.FC = () => {
                 {/* Show More Button */}
                 <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
                   <button
-                    onClick={() => handleNavigation('/activitys')}
+                    onClick={() => handleNavigation('/activity')}
                     className="w-full group bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 border-2 border-[var(--theme-accent-primary)]/50 hover:border-[var(--theme-accent-primary)] rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--theme-accent-primary)]/20"
                   >
                     <div className="flex items-center justify-center space-x-3">

@@ -47,11 +47,12 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         className={`min-h-screen bg-gradient-to-br ${gradientClasses[variant]} relative overflow-hidden`}
       >
         {/* Context7 Premium Background Pattern */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
           <div
             className="w-full h-full"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              pointerEvents: 'none',
             }}
           ></div>
         </div>
@@ -67,11 +68,12 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
       className={`min-h-screen bg-gradient-to-br ${gradientClasses[variant]} relative overflow-hidden`}
     >
       {/* Context7 Premium Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div
           className="w-full h-full"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            pointerEvents: 'none',
           }}
         ></div>
       </div>

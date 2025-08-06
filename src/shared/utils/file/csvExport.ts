@@ -60,7 +60,7 @@ export const exportToCSV = <T extends Record<string, any>>(
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.error('CSV Export Error:', error);
     }
     throw new Error('Failed to export CSV file');

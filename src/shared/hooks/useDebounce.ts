@@ -80,4 +80,5 @@ export const useDebouncedValue = <T>(value: T, delay: number): T => {
   return debouncedValue;
 };
 
-export default useDebounce;
+// Default export: re-export the useDebounce hook for backward compatibility
+export { useDebounce as default } from '../utils/helpers/debounceUtils';

@@ -8,10 +8,13 @@
  * - Open/Closed: Extensible for different item types
  * - DRY: Reusable across all collection item types
  * - Layer 3: UI Building Block component
+ * 
+ * REFACTORED: Now uses BaseCard instead of ImageProductView for consistency
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { ImageProductView } from '../../shared/components/molecules/common/ImageProductView';
+import { Package, Star, CheckCircle, DollarSign, Eye } from 'lucide-react';
+import { BaseCard } from '../../shared/components/molecules/common/BaseCard';
 import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
@@ -88,41 +91,146 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
     }
   }, [onMarkAsSold, item, itemType]);
 
+  // Get item badge content
+  const getBadgeContent = () => {
+    if (activeTab === 'sold-items' && item.sold) {
+      return (
+        <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-semibold">
+          <CheckCircle className="w-3 h-3" />
+          Sold
+        </div>
+      );
+    }
+
+    switch (itemType) {
+      case 'psa':
+        return (
+          <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-semibold">
+            <Star className="w-3 h-3" />
+            Grade {(item as any).grade || 'N/A'}
+          </div>
+        );
+      case 'raw':
+        return (
+          <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">
+            <Package className="w-3 h-3" />
+            {(item as any).condition || 'N/A'}
+          </div>
+        );
+      case 'sealed':
+        return (
+          <div className="flex items-center gap-1 px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">
+            <Package className="w-3 h-3" />
+            {(item as any).category || 'N/A'}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <ImageProductView
-      images={item.images || []}
-      title={itemName}
-      subtitle={setName}
-      price={item.myPrice}
-      type={itemType}
-      grade={activeTab === 'psa-graded' ? (item as any).grade : undefined}
-      condition={
-        activeTab === 'raw-cards' ? (item as any).condition : undefined
-      }
-      category={
-        activeTab === 'sealed-products' ? (item as any).category : undefined
-      }
-      sold={activeTab === 'sold-items'}
-      saleDate={
-        activeTab === 'sold-items'
-          ? (item as any).saleDetails?.dateSold
-          : undefined
-      }
-      variant="card"
+    <BaseCard
+      variant="glass"
       size="md"
-      aspectRatio="card"
-      showBadge={true}
-      showPrice={true}
-      showActions={showMarkAsSoldButton && activeTab !== 'sold-items'}
-      enableInteractions={true}
-      onView={handleClick}
-      _onMarkSold={
-        showMarkAsSoldButton && activeTab !== 'sold-items'
-          ? handleMarkSold
-          : undefined
-      }
-      className="mx-auto w-full h-full"
-    />
+      interactive={true}
+      onClick={handleClick}
+      status={item.sold ? 'success' : 'default'}
+      className="group cursor-pointer"
+      elevated={true}
+    >
+      {/* Image Section */}
+      <div className="relative mb-4">
+        <div className="aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50">
+          {item.images && item.images.length > 0 ? (
+            <img
+              src={item.images[0]}
+              alt={itemName}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-12 h-12 text-zinc-500" />
+            </div>
+          )}
+          
+          {/* Sold overlay */}
+          {item.sold && (
+            <div className="absolute inset-0 bg-emerald-500/90 backdrop-blur-sm flex items-center justify-center">
+              <div className="text-center">
+                <CheckCircle className="w-8 h-8 text-white mx-auto mb-2" />
+                <span className="text-white font-bold text-sm">SOLD</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Badge */}
+        <div className="absolute top-3 left-3 z-10">
+          {getBadgeContent()}
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="space-y-3">
+        {/* Title and Subtitle */}
+        <div>
+          <h3 className="font-bold text-[var(--theme-text-primary)] text-lg leading-tight truncate group-hover:text-[var(--theme-accent-primary)] transition-colors">
+            {itemName}
+          </h3>
+          <p className="text-[var(--theme-text-secondary)] text-sm mt-1 truncate">
+            {setName}
+          </p>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--theme-border)]">
+          <span className="text-[var(--theme-text-secondary)] text-sm font-medium">
+            Price:
+          </span>
+          <span className="font-bold text-[var(--theme-accent-primary)] text-lg">
+            {item.myPrice ? `${item.myPrice} kr` : 'Not set'}
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        {showMarkAsSoldButton && activeTab !== 'sold-items' && !item.sold && (
+          <div className="pt-3 border-t border-[var(--theme-border)]">
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClick();
+                }}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/20 text-blue-400 rounded-xl font-semibold text-sm hover:bg-blue-500/30 transition-colors"
+              >
+                <Eye className="w-4 h-4" />
+                View
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMarkSold();
+                }}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-500/20 text-emerald-400 rounded-xl font-semibold text-sm hover:bg-emerald-500/30 transition-colors"
+              >
+                <DollarSign className="w-4 h-4" />
+                Sell
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sale date for sold items */}
+        {activeTab === 'sold-items' && (item as any).saleDetails?.dateSold && (
+          <div className="pt-2 border-t border-[var(--theme-border)]">
+            <div className="text-xs text-[var(--theme-text-muted)] text-center">
+              Sold on {new Date((item as any).saleDetails.dateSold).toLocaleDateString()}
+            </div>
+          </div>
+        )}
+      </div>
+    </BaseCard>
   );
 };
 

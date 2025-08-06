@@ -9,10 +9,13 @@
  * - DRY: Eliminates repeated product card JSX structures
  * - Reusability: Can be used across different product displays
  * - Design System Integration: Uses consistent styling patterns
+ * 
+ * REFACTORED: Now uses BaseCard for consistent card styling and behavior
  */
 
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
+import { BaseCard } from './BaseCard';
 import { IProduct } from '../../../domain/models/product';
 
 interface ProductCardProps {
@@ -30,12 +33,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
   className = '',
 }) => {
   return (
-    <div
-      key={product._id}
-      className={`bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group relative overflow-hidden ${className}`}
+    <BaseCard
+      variant="glass"
+      size="md"
+      interactive={true}
+      className={`group ${className}`}
+      elevated={true}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/5 via-teal-500/5 to-[var(--theme-accent-primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      <div className="relative z-10 space-y-4">
+      <div className="space-y-4">
         <div>
           <h3 className="font-bold text-[var(--theme-text-primary)] text-lg leading-tight line-clamp-2 group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
             {product.productName}
@@ -104,7 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </BaseCard>
   );
 };
 

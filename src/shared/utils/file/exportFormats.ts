@@ -38,7 +38,7 @@ export const exportToJSON = <T extends Record<string, any>>(
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.error('JSON Export Error:', error);
     }
     throw new Error('Failed to export JSON file');
@@ -83,13 +83,13 @@ export const exportToPDF = <T extends Record<string, any>>(
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.warn(
         'PDF export is not fully implemented. Exported as text file instead.'
       );
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.error('PDF Export Error:', error);
     }
     throw new Error('Failed to export PDF file');

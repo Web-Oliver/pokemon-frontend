@@ -73,7 +73,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
 
   const handleCardSelection = useCallback(
     (selectedData: SelectedCardData | null) => {
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] ===== CARD SELECTION =====`
         );
@@ -113,7 +113,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         });
         const cardId = transformedData.cardId || rawCardId;
 
-        if (debug && process.env.NODE_ENV === 'development') {
+        if (debug && import.meta.env.MODE === 'development') {
           console.log(
             `[${formType.toUpperCase()} CARD] Selected card ID:`,
             cardId
@@ -151,7 +151,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
           selectedData.setName;
       }
 
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] Card set name extraction:`,
           {
@@ -168,13 +168,13 @@ export const useCardSelection = (config: CardSelectionConfig) => {
       if (!preserveSetName && cardSetName) {
         setValue('setName', cardSetName, { shouldValidate: true });
         clearErrors('setName');
-        if (debug && process.env.NODE_ENV === 'development') {
+        if (debug && import.meta.env.MODE === 'development') {
           console.log(
             `[${formType.toUpperCase()} CARD] Setting Set Name from card:`,
             cardSetName
           );
         }
-      } else if (debug && process.env.NODE_ENV === 'development') {
+      } else if (debug && import.meta.env.MODE === 'development') {
         if (preserveSetName) {
           console.log(
             `[${formType.toUpperCase()} CARD] Preserving existing setName (hierarchical search)`
@@ -190,7 +190,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
       if (selectedData.cardName) {
         setValue('cardName', selectedData.cardName, { shouldValidate: true });
         clearErrors('cardName');
-      } else if (debug && process.env.NODE_ENV === 'development') {
+      } else if (debug && import.meta.env.MODE === 'development') {
         console.warn(
           `[${formType.toUpperCase()} CARD] No cardName found in selected card data`
         );
@@ -198,7 +198,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
 
       // Auto-fill card number
       const cardNumber = selectedData.cardNumber?.toString() || '';
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] Setting Card Number:`,
           cardNumber
@@ -209,7 +209,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
 
       // Auto-fill base name
       const baseName = selectedData.baseName || selectedData.cardName || '';
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] Setting Base Name:`,
           baseName
@@ -220,7 +220,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
 
       // Auto-fill variety
       const varietyValue = selectedData.variety || '';
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] Setting Variety:`,
           varietyValue
@@ -234,7 +234,7 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         onSelectionComplete(selectedData);
       }
 
-      if (debug && process.env.NODE_ENV === 'development') {
+      if (debug && import.meta.env.MODE === 'development') {
         console.log(
           `[${formType.toUpperCase()} CARD] Card selection complete - all fields populated from card reference:`,
           {
@@ -279,7 +279,7 @@ export const cardSelectionPresets = {
     clearErrors,
     onCardIdSelected,
     onSelectionComplete,
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.MODE === 'development',
   }),
 
   raw: (
@@ -293,7 +293,7 @@ export const cardSelectionPresets = {
     clearErrors,
     onCardIdSelected,
     onSelectionComplete,
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.MODE === 'development',
   }),
 };
 

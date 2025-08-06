@@ -40,6 +40,8 @@ import {
   formatCurrency,
   formatDate,
 } from '../../../shared/utils/helpers/itemDisplayHelpers';
+import { getStatusColor } from '../../../shared/utils/helpers/auctionStatusUtils';
+import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -93,13 +95,21 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const removeItemConfirmModal = useConfirmModal();
 
   useEffect(() => {
-    // Extract auction ID from URL
-    const pathParts = window.location.pathname.split('/');
-    const urlAuctionId = auctionId || pathParts[pathParts.length - 1];
+    // Extract auction ID from URL or use prop
+    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
+    
+    console.log('AuctionDetail useEffect:', {
+      auctionId,
+      urlAuctionId,
+      currentPath: window.location.pathname
+    });
 
-    if (urlAuctionId && urlAuctionId !== 'auctions') {
+    if (urlAuctionId) {
+      console.log('Setting currentAuctionId and fetching auction:', urlAuctionId);
       setCurrentAuctionId(urlAuctionId);
       fetchAuctionById(urlAuctionId);
+    } else {
+      console.warn('No auction ID found - neither from prop nor URL');
     }
 
     return () => {
@@ -109,11 +119,23 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Navigation
   const navigateToAuctions = () => {
+    console.log('navigateToAuctions clicked');
     navigationHelper.navigateTo('/auctions');
   };
 
   const navigateToEditAuction = () => {
-    navigationHelper.navigateToEdit.auction(currentAuctionId);
+    console.log('navigateToEditAuction clicked, currentAuctionId:', currentAuctionId);
+    console.log('Current URL path:', window.location.pathname);
+    
+    if (!currentAuctionId) {
+      console.error('No auction ID available for navigation');
+      return;
+    }
+    
+    // Use correct path format: /auctions/{id}/edit
+    const editPath = `/auctions/${currentAuctionId}/edit`;
+    console.log('Navigating to edit path:', editPath);
+    navigationHelper.navigateTo(editPath);
   };
 
   // Removed utility functions - now using itemDisplayHelpers
@@ -389,66 +411,71 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       variant="default"
     >
       {/* Context7 Premium Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div
           className="w-full h-full"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            pointerEvents: 'none',
           }}
         ></div>
       </div>
 
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto space-y-10">
-          {/* Context7 Premium Header */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-            <div className="relative z-10">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <span
-                      className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
-                    >
-                      {currentAuction.status.charAt(0).toUpperCase() +
-                        currentAuction.status.slice(1)}
+          {/* Glassmorphism Premium Header */}
+          <GlassmorphismContainer
+            variant="intense"
+            colorScheme="primary"
+            size="lg"
+            rounded="3xl"
+            glow="medium"
+            pattern="neural"
+            animated={true}
+            className="group"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-3 mb-6">
+                  <span
+                    className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide ${getStatusColor(currentAuction.status)}`}
+                  >
+                    {currentAuction.status.charAt(0).toUpperCase() +
+                      currentAuction.status.slice(1)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                  <div className="flex items-center text-[var(--theme-text-secondary)]">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                      <Calendar className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-medium">
+                      {formatDate(currentAuction.auctionDate)}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                    <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                        <Calendar className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="font-medium">
-                        {formatDate(currentAuction.auctionDate)}
-                      </span>
+                  <div className="flex items-center text-[var(--theme-text-secondary)]">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-xl flex items-center justify-center mr-3">
+                      <Package className="w-4 h-4 text-white" />
                     </div>
+                    <span className="font-medium">
+                      {totalItems} item{totalItems !== 1 ? 's' : ''}
+                    </span>
+                  </div>
 
-                    <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-xl flex items-center justify-center mr-3">
-                        <Package className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="font-medium">
-                        {totalItems} item{totalItems !== 1 ? 's' : ''}
-                      </span>
+                  <div className="flex items-center text-[var(--theme-text-secondary)]">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3">
+                      <DollarSign className="w-4 h-4 text-white" />
                     </div>
-
-                    <div className="flex items-center text-[var(--theme-text-secondary)]">
-                      <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3">
-                        <DollarSign className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="font-medium">
-                        Total Value: {formatCurrency(currentAuction.totalValue)}
-                      </span>
-                    </div>
+                    <span className="font-medium">
+                      Total Value: {formatCurrency(currentAuction.totalValue)}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            {/* Premium shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-          </div>
+          </GlassmorphismContainer>
 
           {/* Context7 Premium Error Message */}
           {error && (
@@ -476,34 +503,46 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             </div>
           )}
 
-          {/* Context7 Premium Progress and Stats */}
+          {/* Glassmorphism Premium Progress and Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-secondary)]/5 to-purple-500/5"></div>
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold text-[var(--theme-accent-secondary)] tracking-wide uppercase">
-                    Sales Progress
-                  </h3>
-                  <span className="text-sm font-bold text-[var(--theme-text-primary)]">
-                    {soldItems}/{totalItems}
-                  </span>
-                </div>
-                <div className="w-full bg-[var(--theme-surface-secondary)] rounded-full h-3 mb-2">
-                  <div
-                    className="bg-gradient-to-r from-[var(--theme-accent-secondary)] to-purple-600 h-3 rounded-full transition-all duration-500 shadow-lg"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="text-xs text-[var(--theme-text-muted)] font-medium">
-                  {progress.toFixed(1)}% of items sold
-                </p>
+            <GlassmorphismContainer
+              variant="medium"
+              colorScheme="secondary"
+              size="lg"
+              rounded="3xl"
+              glow="medium"
+              pattern="dots"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-[var(--theme-accent-secondary)] tracking-wide uppercase">
+                  Sales Progress
+                </h3>
+                <span className="text-sm font-bold text-[var(--theme-text-primary)]">
+                  {soldItems}/{totalItems}
+                </span>
               </div>
-            </div>
+              <div className="w-full bg-[var(--theme-surface-secondary)] rounded-full h-3 mb-2">
+                <div
+                  className="bg-gradient-to-r from-[var(--theme-accent-secondary)] to-purple-600 h-3 rounded-full transition-all duration-500 shadow-lg"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-[var(--theme-text-muted)] font-medium">
+                {progress.toFixed(1)}% of items sold
+              </p>
+            </GlassmorphismContainer>
 
-            <div className="group bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-[var(--theme-border)] hover:scale-105 transition-all duration-500 hover:shadow-[var(--theme-status-success)]/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/5 to-teal-500/5"></div>
-              <div className="flex items-center relative z-10">
+            <GlassmorphismContainer
+              variant="medium"
+              colorScheme="success"
+              size="lg"
+              rounded="3xl"
+              glow="medium"
+              pattern="waves"
+              interactive={true}
+              className="group"
+            >
+              <div className="flex items-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                   <DollarSign className="w-8 h-8 text-white" />
                 </div>
@@ -516,11 +555,19 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </GlassmorphismContainer>
 
-            <div className="group bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl p-8 relative overflow-hidden border border-[var(--theme-border)] hover:scale-105 transition-all duration-500 hover:shadow-[var(--theme-accent-primary)]/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/5 to-[var(--theme-accent-secondary)]/5"></div>
-              <div className="flex items-center relative z-10">
+            <GlassmorphismContainer
+              variant="medium"
+              colorScheme="primary"
+              size="lg"
+              rounded="3xl"
+              glow="medium"
+              pattern="waves"
+              interactive={true}
+              className="group"
+            >
+              <div className="flex items-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                   <DollarSign className="w-8 h-8 text-white" />
                 </div>
@@ -536,13 +583,19 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </GlassmorphismContainer>
           </div>
 
-          {/* Context7 Premium Export and Social Media Tools */}
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-zinc-700/20 p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-500/3 via-purple-500/3 to-indigo-500/3"></div>
-            <div className="relative z-10">
+          {/* Glassmorphism Export and Social Media Tools */}
+          <GlassmorphismContainer
+            variant="intense"
+            colorScheme="cosmic"
+            size="lg"
+            rounded="3xl"
+            glow="intense"
+            pattern="particles"
+            className="border-zinc-700/20"
+          >
               <h3 className="text-2xl font-bold text-zinc-100 mb-6 tracking-wide">
                 Export & Social Media Tools
               </h3>
@@ -643,8 +696,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+          </GlassmorphismContainer>
 
           {/* Context7 Premium Auction Items */}
           <AuctionItemsSection
@@ -665,55 +717,66 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             </div>
           </AuctionItemsSection>
 
-          {/* Context7 Premium Auction Metadata */}
-          <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-surface-secondary)]/30 via-gray-500/3 to-[var(--theme-surface-secondary)]/30"></div>
-            <div className="relative z-10">
-              <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 tracking-wide">
-                Auction Details
-              </h3>
-              <dl className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <div>
+          {/* Glassmorphism Auction Metadata */}
+          <GlassmorphismContainer
+            variant="intense"
+            colorScheme="cosmic"
+            size="lg"
+            rounded="3xl"
+            glow="medium"
+            pattern="grid"
+          >
+            <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-6 tracking-wide">
+              Auction Details
+            </h3>
+            <dl className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div>
+                <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
+                  Created
+                </dt>
+                <dd className="text-[var(--theme-text-primary)] font-medium">
+                  {formatDate(currentAuction.createdAt)}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
+                  Last Updated
+                </dt>
+                <dd className="text-[var(--theme-text-primary)] font-medium">
+                  {formatDate(currentAuction.updatedAt)}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
+                  Active Status
+                </dt>
+                <dd className="text-[var(--theme-text-primary)] font-medium">
+                  {currentAuction.isActive ? 'Yes' : 'No'}
+                </dd>
+              </div>
+              {currentAuction.generatedFacebookPost && (
+                <div className="md:col-span-2">
                   <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
-                    Created
+                    Generated Facebook Post
                   </dt>
-                  <dd className="text-[var(--theme-text-primary)] font-medium">
-                    {formatDate(currentAuction.createdAt)}
+                  <dd className="text-[var(--theme-text-primary)] mt-1">
+                    <GlassmorphismContainer
+                      variant="medium"
+                      colorScheme="secondary"
+                      size="sm"
+                      rounded="2xl"
+                      glow="subtle"
+                      className="border-[var(--theme-border)]"
+                    >
+                      <p className="whitespace-pre-wrap text-sm font-medium text-[var(--theme-text-primary)]">
+                        {currentAuction.generatedFacebookPost}
+                      </p>
+                    </GlassmorphismContainer>
                   </dd>
                 </div>
-                <div>
-                  <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
-                    Last Updated
-                  </dt>
-                  <dd className="text-[var(--theme-text-primary)] font-medium">
-                    {formatDate(currentAuction.updatedAt)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
-                    Active Status
-                  </dt>
-                  <dd className="text-[var(--theme-text-primary)] font-medium">
-                    {currentAuction.isActive ? 'Yes' : 'No'}
-                  </dd>
-                </div>
-                {currentAuction.generatedFacebookPost && (
-                  <div className="md:col-span-2">
-                    <dt className="font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase mb-2">
-                      Generated Facebook Post
-                    </dt>
-                    <dd className="text-[var(--theme-text-primary)] mt-1">
-                      <div className="bg-slate-50/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200 dark:border-zinc-700 dark:border-zinc-700">
-                        <p className="whitespace-pre-wrap text-sm font-medium">
-                          {currentAuction.generatedFacebookPost}
-                        </p>
-                      </div>
-                    </dd>
-                  </div>
-                )}
-              </dl>
-            </div>
-          </div>
+              )}
+            </dl>
+          </GlassmorphismContainer>
 
           {/* Add Item to Auction Modal */}
           <AddItemToAuctionModal

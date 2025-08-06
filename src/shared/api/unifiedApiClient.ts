@@ -597,7 +597,7 @@ export class UnifiedApiClient {
         }
 
         // Log request for debugging (in development)
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           log(`[HTTP ${config.method?.toUpperCase()}] ${config.url}`, config.params || config.data);
         }
 
@@ -613,7 +613,7 @@ export class UnifiedApiClient {
     instance.interceptors.response.use(
       (response: AxiosResponse) => {
         // Log successful response (in development)
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           log(`[HTTP ${response.status}] ${response.config.url} - Success`);
         }
         return response;

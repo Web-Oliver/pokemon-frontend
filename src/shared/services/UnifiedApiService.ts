@@ -2,16 +2,17 @@
  * Unified API Service
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  *
- * Single API facade that consolidates all domain-specific API operations
+ * COMPLETE API FACADE - All backend operations consolidated here
  * Following CLAUDE.md architecture and SOLID principles:
- * - SRP: Single responsibility for API orchestration and domain abstraction
+ * - SRP: Single responsibility for ALL API operations
  * - OCP: Open for extension via domain service composition
  * - LSP: Maintains interface compatibility across all domains
  * - ISP: Segregated interfaces for different domains
  * - DIP: Depends on HTTP client abstraction, not concrete implementations
  *
- * DRY: Eliminates direct imports of individual API files across the application
- * Reusability: Provides consistent API interface for all features
+ * DRY: Eliminates ALL direct imports of individual API files
+ * Reusability: Single source of truth for ALL backend communication
+ * Architecture: NO CIRCULAR DEPENDENCIES - this service imports nothing from other services
  */
 
 import { unifiedHttpClient } from './base/UnifiedHttpClient';
@@ -166,35 +167,31 @@ export interface IAuctionService {
  * Collection domain service interface
  */
 export interface ICollectionService {
-  // PSA Cards
-  psaCards: {
-    getAll(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
-    getById(id: string): Promise<IPsaGradedCard>;
-    create(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
-    update(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
-    delete(id: string): Promise<void>;
-    markSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>;
-  };
+  // Direct methods
+  getPsaGradedCards(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
+  getRawCards(params?: RawCardsParams): Promise<IRawCard[]>;
+  getSealedProducts(params?: SealedProductCollectionParams): Promise<ISealedProduct[]>;
+
+  // PSA Cards CRUD
+  getPsaCardById(id: string): Promise<IPsaGradedCard>;
+  createPsaCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
+  updatePsaCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
+  deletePsaCard(id: string): Promise<void>;
+  markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard>;
   
-  // Raw Cards
-  rawCards: {
-    getAll(params?: RawCardsParams): Promise<IRawCard[]>;
-    getById(id: string): Promise<IRawCard>;
-    create(data: Partial<IRawCard>): Promise<IRawCard>;
-    update(id: string, data: Partial<IRawCard>): Promise<IRawCard>;
-    delete(id: string): Promise<void>;
-    markSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard>;
-  };
+  // Raw Cards CRUD
+  getRawCardById(id: string): Promise<IRawCard>;
+  createRawCard(data: Partial<IRawCard>): Promise<IRawCard>;
+  updateRawCard(id: string, data: Partial<IRawCard>): Promise<IRawCard>;
+  deleteRawCard(id: string): Promise<void>;
+  markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard>;
   
-  // Sealed Products
-  sealedProducts: {
-    getAll(params?: SealedProductCollectionParams): Promise<ISealedProduct[]>;
-    getById(id: string): Promise<ISealedProduct>;
-    create(data: Partial<ISealedProduct>): Promise<ISealedProduct>;
-    update(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct>;
-    delete(id: string): Promise<void>;
-    markSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct>;
-  };
+  // Sealed Products CRUD
+  getSealedProductById(id: string): Promise<ISealedProduct>;
+  createSealedProduct(data: Partial<ISealedProduct>): Promise<ISealedProduct>;
+  updateSealedProduct(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct>;
+  deleteSealedProduct(id: string): Promise<void>;
+  markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct>;
 }
 
 /**
@@ -227,12 +224,24 @@ export interface IProductsService {
 }
 
 /**
+ * Search domain service interface
+ */
+export interface ISearchService {
+  searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>>;
+  searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>>;
+  searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>>;
+  searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>>;
+}
+
+/**
  * Export domain service interface
  */
 export interface IExportService {
   exportCollectionImages(itemType: 'psaGradedCards' | 'rawCards' | 'sealedProducts'): Promise<Blob>;
   exportAuctionImages(auctionId: string): Promise<Blob>;
   exportDbaItems(): Promise<Blob>;
+  exportToDba(exportRequest: any): Promise<any>;
+  downloadDbaZip(): Promise<void>;
 }
 
 /**
@@ -249,6 +258,15 @@ export interface IUploadService {
 export interface IStatusService {
   getApiStatus(): Promise<statusApi.ApiStatusResponse>;
   getDataCounts(): Promise<{ cards: number; sets: number; products: number; setProducts: number; }>;
+}
+
+/**
+ * DBA Selection domain service interface
+ */
+export interface IDbaSelectionService {
+  getDbaSelections(params?: { active?: boolean; expiring?: boolean; days?: number }): Promise<any[]>;
+  addToDbaSelection(items: Array<{ itemId: string; itemType: 'psa' | 'raw' | 'sealed'; notes?: string }>): Promise<any>;
+  removeFromDbaSelection(items: Array<{ itemId: string; itemType: 'psa' | 'raw' | 'sealed' }>): Promise<any>;
 }
 
 // ========== UNIFIED API SERVICE IMPLEMENTATION ==========
@@ -290,104 +308,101 @@ export class UnifiedApiService {
   // ========== COLLECTION DOMAIN ==========
   
   public readonly collection: ICollectionService = {
-    psaCards: {
-      async getAll(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
-        const response = await unifiedHttpClient.get<IPsaGradedCard[]>('/psa-graded-cards', { params });
-        return response.data || response;
-      },
-      
-      async getById(id: string): Promise<IPsaGradedCard> {
-        return await unifiedHttpClient.getById<IPsaGradedCard>('/psa-graded-cards', id);
-      },
-      
-      async create(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
-        const response = await unifiedHttpClient.post<IPsaGradedCard>('/psa-graded-cards', data);
-        return response.data || response;
-      },
-      
-      async update(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
-        const response = await unifiedHttpClient.put<IPsaGradedCard>(`/psa-graded-cards/${id}`, data);
-        return response.data || response;
-      },
-      
-      async delete(id: string): Promise<void> {
-        await unifiedHttpClient.delete(`/psa-graded-cards/${id}`);
-      },
-      
-      async markSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard> {
-        const response = await unifiedHttpClient.post<IPsaGradedCard>(`/psa-graded-cards/${id}/mark-sold`, { saleDetails });
-        return response.data || response;
-      }
+    // PSA Graded Cards
+    async getPsaGradedCards(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
+      const response = await unifiedHttpClient.get<IPsaGradedCard[]>('/psa-graded-cards', { params });
+      return response.data || response;
     },
-    
-    rawCards: {
-      async getAll(params?: RawCardsParams): Promise<IRawCard[]> {
-        const response = await unifiedHttpClient.get<IRawCard[]>('/raw-cards', { 
-          params: {
-            ...params,
-            _t: Date.now() // Cache busting
-          },
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        return response.data || response;
-      },
-      
-      async getById(id: string): Promise<IRawCard> {
-        return await unifiedHttpClient.getById<IRawCard>('/raw-cards', id);
-      },
-      
-      async create(data: Partial<IRawCard>): Promise<IRawCard> {
-        const response = await unifiedHttpClient.post<IRawCard>('/raw-cards', data);
-        return response.data || response;
-      },
-      
-      async update(id: string, data: Partial<IRawCard>): Promise<IRawCard> {
-        const response = await unifiedHttpClient.put<IRawCard>(`/raw-cards/${id}`, data);
-        return response.data || response;
-      },
-      
-      async delete(id: string): Promise<void> {
-        await unifiedHttpClient.delete(`/raw-cards/${id}`);
-      },
-      
-      async markSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
-        const response = await unifiedHttpClient.post<IRawCard>(`/raw-cards/${id}/mark-sold`, { saleDetails });
-        return response.data || response;
-      }
+
+    async getPsaCardById(id: string): Promise<IPsaGradedCard> {
+      return await unifiedHttpClient.getById<IPsaGradedCard>('/psa-graded-cards', id);
     },
-    
-    sealedProducts: {
-      async getAll(params?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
-        const response = await unifiedHttpClient.get<ISealedProduct[]>('/sealed-products', { params });
-        return response.data || response;
-      },
-      
-      async getById(id: string): Promise<ISealedProduct> {
-        return await unifiedHttpClient.getById<ISealedProduct>('/sealed-products', id);
-      },
-      
-      async create(data: Partial<ISealedProduct>): Promise<ISealedProduct> {
-        const response = await unifiedHttpClient.post<ISealedProduct>('/sealed-products', data);
-        return response.data || response;
-      },
-      
-      async update(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct> {
-        const response = await unifiedHttpClient.put<ISealedProduct>(`/sealed-products/${id}`, data);
-        return response.data || response;
-      },
-      
-      async delete(id: string): Promise<void> {
-        await unifiedHttpClient.delete(`/sealed-products/${id}`);
-      },
-      
-      async markSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> {
-        const response = await unifiedHttpClient.post<ISealedProduct>(`/sealed-products/${id}/mark-sold`, { saleDetails });
-        return response.data || response;
-      }
+
+    async createPsaCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+      const response = await unifiedHttpClient.post<IPsaGradedCard>('/psa-graded-cards', data);
+      return response.data || response;
+    },
+
+    async updatePsaCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+      const response = await unifiedHttpClient.put<IPsaGradedCard>(`/psa-graded-cards/${id}`, data);
+      return response.data || response;
+    },
+
+    async deletePsaCard(id: string): Promise<void> {
+      await unifiedHttpClient.delete(`/psa-graded-cards/${id}`);
+    },
+
+    async markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard> {
+      const response = await unifiedHttpClient.post<IPsaGradedCard>(`/psa-graded-cards/${id}/mark-sold`, { saleDetails });
+      return response.data || response;
+    },
+
+    // Raw Cards
+    async getRawCards(params?: RawCardsParams): Promise<IRawCard[]> {
+      const response = await unifiedHttpClient.get<IRawCard[]>('/raw-cards', { 
+        params: {
+          ...params,
+          _t: Date.now() // Cache busting
+        },
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      return response.data || response;
+    },
+
+    async getRawCardById(id: string): Promise<IRawCard> {
+      return await unifiedHttpClient.getById<IRawCard>('/raw-cards', id);
+    },
+
+    async createRawCard(data: Partial<IRawCard>): Promise<IRawCard> {
+      const response = await unifiedHttpClient.post<IRawCard>('/raw-cards', data);
+      return response.data || response;
+    },
+
+    async updateRawCard(id: string, data: Partial<IRawCard>): Promise<IRawCard> {
+      const response = await unifiedHttpClient.put<IRawCard>(`/raw-cards/${id}`, data);
+      return response.data || response;
+    },
+
+    async deleteRawCard(id: string): Promise<void> {
+      await unifiedHttpClient.delete(`/raw-cards/${id}`);
+    },
+
+    async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
+      const response = await unifiedHttpClient.post<IRawCard>(`/raw-cards/${id}/mark-sold`, { saleDetails });
+      return response.data || response;
+    },
+
+    // Sealed Products  
+    async getSealedProducts(params?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
+      const response = await unifiedHttpClient.get<ISealedProduct[]>('/sealed-products', { params });
+      return response.data || response;
+    },
+
+    async getSealedProductById(id: string): Promise<ISealedProduct> {
+      return await unifiedHttpClient.getById<ISealedProduct>('/sealed-products', id);
+    },
+
+    async createSealedProduct(data: Partial<ISealedProduct>): Promise<ISealedProduct> {
+      const response = await unifiedHttpClient.post<ISealedProduct>('/sealed-products', data);
+      return response.data || response;
+    },
+
+    async updateSealedProduct(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct> {
+      const response = await unifiedHttpClient.put<ISealedProduct>(`/sealed-products/${id}`, data);
+      return response.data || response;
+    },
+
+    async deleteSealedProduct(id: string): Promise<void> {
+      await unifiedHttpClient.delete(`/sealed-products/${id}`);
+    },
+
+    async markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> {
+      const response = await unifiedHttpClient.post<ISealedProduct>(`/sealed-products/${id}/mark-sold`, { saleDetails });
+      return response.data || response;
     }
   };
 
@@ -433,6 +448,30 @@ export class UnifiedApiService {
     
     async getCardById(id: string): Promise<ICard> {
       return await unifiedHttpClient.getById<ICard>('/cards', id);
+    }
+  };
+
+  // ========== SEARCH DOMAIN ==========
+  
+  public readonly search: ISearchService = {
+    async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
+      const response = await unifiedHttpClient.get<SearchResponse<ISet>>('/search/sets', { params });
+      return response.data || response;
+    },
+
+    async searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
+      const response = await unifiedHttpClient.get<SearchResponse<IProduct>>('/search/set-products', { params });
+      return response.data || response;
+    },
+
+    async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
+      const response = await unifiedHttpClient.get<SearchResponse<IProduct>>('/search/products', { params });
+      return response.data || response;
+    },
+
+    async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
+      const response = await unifiedHttpClient.get<SearchResponse<ICard>>('/search/cards', { params });
+      return response.data || response;
     }
   };
 
@@ -671,6 +710,27 @@ export class UnifiedApiService {
     
     async exportDbaItems(): Promise<Blob> {
       return await unifiedHttpClient.get('/export/dba/download', { responseType: 'blob' });
+    },
+
+    async exportToDba(exportRequest: any): Promise<any> {
+      const response = await unifiedHttpClient.post<any>('/export/dba', exportRequest);
+      return response.data || response;
+    },
+
+    async downloadDbaZip(): Promise<void> {
+      const response = await unifiedHttpClient.get('/export/dba/download', { responseType: 'blob' });
+      const timestamp = new Date().toISOString().split('T')[0];
+      const filename = `dba-export-${timestamp}.zip`;
+      
+      // Create download link
+      const url = window.URL.createObjectURL(response as Blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
     }
   };
 
@@ -744,6 +804,46 @@ export class UnifiedApiService {
     }
   };
 
+  // ========== DBA SELECTION DOMAIN ==========
+  
+  public readonly dbaSelection: IDbaSelectionService = {
+    async getDbaSelections(params?: { active?: boolean; expiring?: boolean; days?: number }): Promise<any[]> {
+      const queryParams: any = {};
+      if (params?.active !== undefined) queryParams.active = params.active.toString();
+      if (params?.expiring !== undefined) queryParams.expiring = params.expiring.toString();
+      if (params?.days !== undefined) queryParams.days = params.days.toString();
+
+      console.log('[UNIFIED API DEBUG] DBA Selection request:', { 
+        url: '/dba-selection', 
+        params: queryParams,
+        originalParams: params 
+      });
+
+      try {
+        const response = await unifiedHttpClient.get<any[]>('/dba-selection', { params: queryParams });
+        console.log('[UNIFIED API DEBUG] DBA Selection response:', {
+          raw: response,
+          data: response.data,
+          final: response.data || response
+        });
+        return response.data || response;
+      } catch (error) {
+        console.error('[UNIFIED API DEBUG] DBA Selection error:', error);
+        throw error;
+      }
+    },
+
+    async addToDbaSelection(items: Array<{ itemId: string; itemType: 'psa' | 'raw' | 'sealed'; notes?: string }>): Promise<any> {
+      const response = await unifiedHttpClient.post<any>('/dba-selection', { items });
+      return response.data || response;
+    },
+
+    async removeFromDbaSelection(items: Array<{ itemId: string; itemType: 'psa' | 'raw' | 'sealed' }>): Promise<any> {
+      const response = await unifiedHttpClient.delete<any>('/dba-selection', { data: { items } });
+      return response.data || response;
+    }
+  };
+
   // ========== UTILITY METHODS ==========
 
   /**
@@ -760,7 +860,7 @@ export class UnifiedApiService {
     return {
       name: 'UnifiedApiService',
       version: '1.0.0',
-      domains: ['auctions', 'collection', 'sets', 'cards', 'products', 'export', 'upload', 'status'],
+      domains: ['auctions', 'collection', 'sets', 'cards', 'products', 'search', 'export', 'upload', 'status', 'dbaSelection'],
       httpClient: this.getHttpClientConfig(),
     };
   }

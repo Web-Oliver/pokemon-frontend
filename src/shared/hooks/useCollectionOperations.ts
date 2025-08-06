@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
-import { getCollectionApiService } from '../services/ServiceRegistry';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';
 
@@ -109,8 +109,6 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const rawOperations = useRawCardOperations();
   const sealedOperations = useSealedProductOperations();
   const imageExport = useCollectionImageExport();
-  const collectionApi = getCollectionApiService();
-
   // React Query for PSA Cards
   const {
     data: psaCards = [],
@@ -118,7 +116,17 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     error: psaError,
   } = useQuery({
     queryKey: queryKeys.psaCards(),
-    queryFn: () => collectionApi.getPsaGradedCards({ sold: false }),
+    queryFn: async () => {
+      console.log('[COLLECTION DEBUG] Fetching PSA cards...');
+      try {
+        const result = await unifiedApiService.collection.getPsaGradedCards({ sold: false });
+        console.log('[COLLECTION DEBUG] PSA cards result:', result);
+        return result;
+      } catch (error) {
+        console.error('[COLLECTION DEBUG] PSA cards error:', error);
+        throw error;
+      }
+    },
     select: (data) => validateCollectionResponse(data, 'PSA cards'),
   });
 
@@ -129,7 +137,17 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     error: rawError,
   } = useQuery({
     queryKey: queryKeys.rawCards(),
-    queryFn: () => collectionApi.getRawCards({ sold: false }),
+    queryFn: async () => {
+      console.log('[COLLECTION DEBUG] Fetching Raw cards...');
+      try {
+        const result = await unifiedApiService.collection.getRawCards({ sold: false });
+        console.log('[COLLECTION DEBUG] Raw cards result:', result);
+        return result;
+      } catch (error) {
+        console.error('[COLLECTION DEBUG] Raw cards error:', error);
+        throw error;
+      }
+    },
     select: (data) => validateCollectionResponse(data, 'raw cards'),
   });
 
@@ -140,7 +158,17 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     error: sealedError,
   } = useQuery({
     queryKey: queryKeys.sealedProducts(),
-    queryFn: () => collectionApi.getSealedProducts({ sold: false }),
+    queryFn: async () => {
+      console.log('[COLLECTION DEBUG] Fetching Sealed products...');
+      try {
+        const result = await unifiedApiService.collection.getSealedProducts({ sold: false });
+        console.log('[COLLECTION DEBUG] Sealed products result:', result);
+        return result;
+      } catch (error) {
+        console.error('[COLLECTION DEBUG] Sealed products error:', error);
+        throw error;
+      }
+    },
     select: (data) => validateCollectionResponse(data, 'sealed products'),
   });
 
@@ -154,9 +182,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     queryFn: async () => {
       const [soldPsaCards, soldRawCards, soldSealedProducts] =
         await Promise.all([
-          collectionApi.getPsaGradedCards({ sold: true }),
-          collectionApi.getRawCards({ sold: true }),
-          collectionApi.getSealedProducts({ sold: true }),
+          unifiedApiService.collection.getPsaGradedCards({ sold: true }),
+          unifiedApiService.collection.getRawCards({ sold: true }),
+          unifiedApiService.collection.getSealedProducts({ sold: true }),
         ]);
 
       return [

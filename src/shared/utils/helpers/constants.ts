@@ -16,8 +16,8 @@ const getApiBaseUrl = (): string => {
   }
 
   // Environment variable override (for Docker, staging, etc.)
-  if (process.env.REACT_APP_API_BASE_URL) {
-    return process.env.REACT_APP_API_BASE_URL;
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
   }
 
   // Default development configuration

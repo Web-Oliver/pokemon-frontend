@@ -422,7 +422,7 @@ export const useUnifiedSearch = (
   // ===============================
 
   const metrics = useMemo(() => {
-    if (process.env.NODE_ENV !== 'development') {
+    if (import.meta.env.MODE !== 'development') {
       return undefined;
     }
 
@@ -471,7 +471,7 @@ export const useUnifiedSearch = (
     }),
 
     // Performance metrics (development only)
-    ...(process.env.NODE_ENV === 'development' && { metrics }),
+    ...(import.meta.env.MODE === 'development' && { metrics }),
   };
 };
 

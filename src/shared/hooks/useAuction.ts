@@ -228,7 +228,7 @@ export const useAuction = (
     async (id: string) => {
       try {
         setError(null);
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           console.log('[useAuction] Deleting auction with ID:', id);
         }
 
@@ -239,7 +239,7 @@ export const useAuction = (
 
         await deleteAuctionMutation.mutateAsync(id);
 
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           console.log('[useAuction] Auction deleted successfully');
         }
       } catch (err) {
@@ -276,7 +276,7 @@ export const useAuction = (
     async (id: string, itemId: string, itemCategory?: string) => {
       try {
         setError(null);
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           console.log('[useAuction] Removing item:', {
             id,
             itemId,
@@ -290,13 +290,13 @@ export const useAuction = (
           itemCategory,
         });
 
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
           console.log('[useAuction] Item removed successfully');
         }
       } catch (err: any) {
         // CRITICAL FIX: If we get 404, the item is already gone, so still refresh the cache
         if (err?.response?.status === 404) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.MODE === 'development') {
             console.log(
               '[useAuction] Item already removed (404), refreshing cache...'
             );

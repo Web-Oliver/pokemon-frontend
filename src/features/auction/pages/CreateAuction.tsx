@@ -16,7 +16,7 @@
  *
  * THEME INTEGRATION (Phase 2.2.6 Complete):
  * - Preserves Context7 2025 futuristic system as specialized variant
- * - Uses shared effect utilities (ParticleSystem, NeuralNetworkBackground, FloatingGeometry)
+ * - Uses shared effect utilities (ParticleSystem, NeuralNetworkBackground)
  * - Theme-compatible: Respects glassmorphism intensity and particle effect settings
  * - Specialized patterns documented for potential reuse across components
  */
