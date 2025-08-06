@@ -32,6 +32,7 @@ import * as productsApi from '../api/productsApi';
 import * as searchApi from '../api/searchApi';
 import * as exportApi from '../api/exportApi';
 import * as uploadApi from '../api/uploadApi';
+import * as statusApi from '../api/statusApi';
 
 // ========== DOMAIN SERVICE INTERFACES ==========
 
@@ -127,6 +128,14 @@ export interface IExportService {
 export interface IUploadService {
   uploadMultipleImages(images: File[]): Promise<string[]>;
   uploadSingleImage(image: File): Promise<string>;
+}
+
+/**
+ * Status domain service interface
+ */
+export interface IStatusService {
+  getApiStatus(): Promise<statusApi.ApiStatusResponse>;
+  getDataCounts(): Promise<{ cards: number; sets: number; products: number; setProducts: number; }>;
 }
 
 // ========== UNIFIED API SERVICE IMPLEMENTATION ==========
@@ -323,6 +332,18 @@ export class UnifiedApiService {
     }
   };
 
+  // ========== STATUS DOMAIN ==========
+  
+  public readonly status: IStatusService = {
+    async getApiStatus(): Promise<statusApi.ApiStatusResponse> {
+      return statusApi.getApiStatus();
+    },
+    
+    async getDataCounts(): Promise<{ cards: number; sets: number; products: number; setProducts: number; }> {
+      return statusApi.getDataCounts();
+    }
+  };
+
   // ========== UTILITY METHODS ==========
 
   /**
@@ -339,7 +360,7 @@ export class UnifiedApiService {
     return {
       name: 'UnifiedApiService',
       version: '1.0.0',
-      domains: ['auctions', 'collection', 'sets', 'cards', 'products', 'export', 'upload'],
+      domains: ['auctions', 'collection', 'sets', 'cards', 'products', 'export', 'upload', 'status'],
       httpClient: this.getHttpClientConfig(),
     };
   }

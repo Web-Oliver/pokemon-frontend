@@ -12,8 +12,7 @@ import {
   Search,
 } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import * as setsApi from '../../../shared/api/setsApi';
-import { searchSets } from '../../../shared/api/searchApi';
+import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { PokemonInput } from '../../../shared/components/atoms/design-system/PokemonInput';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { useFetchCollectionItems } from '../../../shared/hooks/useFetchCollectionItems';
@@ -78,7 +77,7 @@ const SetSearch: React.FC = () => {
             ...(params.year && { year: params.year }),
           };
 
-          const optimizedResponse = await searchSets(searchParams);
+          const optimizedResponse = await unifiedApiService.sets.searchSets(searchParams);
           fetchedSets = optimizedResponse.data;
 
           // Calculate pagination for optimized search
@@ -99,8 +98,8 @@ const SetSearch: React.FC = () => {
             ...(params.year && { year: params.year }),
           };
 
-          const response: setsApi.PaginatedSetsResponse =
-            await setsApi.getPaginatedSets(requestParams);
+          const response =
+            await unifiedApiService.sets.getPaginatedSets(requestParams);
           fetchedSets = response.sets;
           paginationData = {
             currentPage: response.currentPage,

@@ -35,7 +35,7 @@ import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout
 import GlassmorphismHeader from '../../../shared/components/molecules/common/GlassmorphismHeader';
 import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
-import { getDataCounts } from '../../../shared/api/statusApi';
+import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { displayPrice } from '../../../shared/utils/helpers/formatting';
 import {
   getActivityIcon,
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
   // NEW: Data counts from status endpoint (including SetProducts)
   const { data: dataCounts, isLoading: dataCountsLoading } = useQuery({
     queryKey: ['dataCounts'],
-    queryFn: getDataCounts,
+    queryFn: () => unifiedApiService.status.getDataCounts(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
