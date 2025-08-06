@@ -10,10 +10,10 @@
 import React from 'react';
 import { Download } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import { PokemonCard } from '../design-system/PokemonCard';
-import { ImageProductView } from '../common/ImageProductView';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { navigationHelper } from '../../utils/helpers/navigation';
+import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
+import { ImageProductView } from '../../../../shared/components/molecules/common/ImageProductView';
+import LoadingSpinner from '../../../../shared/components/molecules/common/LoadingSpinner';
+import { navigationHelper } from '../../../../shared/utils/helpers/navigation';
 
 export interface ItemImageGalleryProps {
   item: CollectionItem;

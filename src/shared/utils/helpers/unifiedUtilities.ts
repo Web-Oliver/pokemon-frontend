@@ -504,7 +504,7 @@ export {
   isMetadataObject,
   transformApiResponse,
   transformRequestData,
-} from './responseTransformer';
+} from '../transformers/responseTransformer';
 
 export {
   formatPrice,
@@ -537,7 +537,7 @@ export {
   useDebounce,
   useDebouncedCallback,
   useDebouncedValue,
-} from '../hooks/useDebounce';
+} from '../../hooks/useDebounce';
 
 /**
  * CONSOLIDATION IMPACT SUMMARY:

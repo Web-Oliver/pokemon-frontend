@@ -10,10 +10,10 @@
 import { useState, useCallback } from 'react';
 import { CollectionItem } from './useCollectionItem';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { handleApiError } from '../../utils/helpers/errorHandler';
+import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
-import { log } from '../../utils/performance/logger';
-import { navigationHelper } from '../../utils/helpers/navigation';
+import { log } from '../../../shared/utils/performance/logger';
+import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 
 export interface UsePriceManagementReturn {
   newPrice: string;

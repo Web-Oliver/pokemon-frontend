@@ -12,7 +12,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { SearchResult, useSearch } from './useSearch';
 import { useDebouncedValue } from './useDebounce';
-import { autoFillFromProductSelection } from '../../../shared/utils/searchHelpers';
+import { autoFillFromProductSelection } from '../utils/helpers/searchHelpers';
 
 export type SearchFieldType = 'setName' | 'productName' | 'cardName';
 export type SearchMode = 'card' | 'product';
@@ -124,7 +124,7 @@ export const useHierarchicalSearch = ({
 
       case config.secondaryField: {
         // Hierarchical logic: filter by primary selection
-        let searchQuery = currentValue;
+        const searchQuery = currentValue;
 
         // FIXED: Better validation for secondary field searches
         if (currentValue.trim().length < 2) {

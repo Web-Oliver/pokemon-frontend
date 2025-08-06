@@ -39,7 +39,7 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
-import { SearchResult, useSearch } from '../../hooks/useSearch';
+import { SearchResult, useSearch } from '../../../hooks/useSearch';
 import {
   useOptimizedSearch,
   useSearchResultSelector,
@@ -48,9 +48,9 @@ import {
   useVisualTheme,
   useLayoutTheme,
   useAnimationTheme,
-} from '../../contexts/theme';
-import { getElementTheme, ThemeColor } from '../../theme/formThemes';
-import { cn } from '../../../utils/unifiedUtilities';
+} from '../../../contexts/theme';
+import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
+import { cn } from '../../../utils/helpers/unifiedUtilities';
 
 // Enhanced search interfaces for consolidation
 interface SearchSuggestion {

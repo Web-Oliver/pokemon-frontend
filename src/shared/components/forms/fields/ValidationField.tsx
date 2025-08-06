@@ -11,12 +11,12 @@
  */
 
 import React from 'react';
-import { PokemonSelect } from '../../../atoms/design-system/PokemonSelect';
-import { PokemonInput } from '../../design-system/PokemonInput';
+import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import {
   commonValidationRules,
   ValidationRule,
-} from '../../hooks/useFormValidation';
+} from '../../../hooks/useFormValidation';
 
 export type ValidationFieldType =
   | 'price'

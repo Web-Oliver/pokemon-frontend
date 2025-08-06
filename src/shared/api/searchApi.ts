@@ -12,7 +12,7 @@
 import { ICard, ISet } from '../domain/models/card';
 import { IProduct } from '../domain/models/product';
 import { ISetProduct } from '../domain/models/setProduct';
-import { buildQueryParams } from '../utils/searchHelpers';
+import { buildQueryParams } from '../utils/helpers/searchHelpers';
 
 // ===== PURE TANSTACK QUERY TYPE DEFINITIONS =====
 
@@ -85,7 +85,7 @@ const pureFetch = async (url: string): Promise<any> => {
 };
 
 // Import unified transformation system
-import { ApiTransformers } from '../utils/unifiedResponseTransformer';
+import { ApiTransformers } from '../utils/transformers/unifiedResponseTransformer';
 
 // ===== CONTEXT7 PURE TANSTACK QUERY CARDS API =====
 

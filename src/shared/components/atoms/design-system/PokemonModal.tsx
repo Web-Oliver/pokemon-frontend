@@ -24,13 +24,13 @@ import {
   getGlassmorphismClasses,
   getAnimationClasses,
   getA11yClasses,
-} from '../../../utils/unifiedUtilities';
+} from '../../../utils/helpers/unifiedUtilities';
 import { cardClasses } from '../../../utils/ui/classNameUtils';
 import {
   useVisualTheme,
   useLayoutTheme,
   useAnimationTheme,
-} from '../../contexts/theme';
+} from '../../../contexts/theme';
 import { PokemonButton } from './PokemonButton';
 
 export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {

@@ -8,11 +8,11 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Package, Search } from 'lucide-react';
-import { PokemonModal } from '../design-system/PokemonModal';
-import { PokemonButton } from '../design-system/PokemonButton';
-import { PokemonInput } from '../design-system/PokemonInput';
-import { PokemonSelect } from '../design-system/PokemonSelect';
-import LoadingSpinner from '../common/LoadingSpinner';
+import { PokemonModal } from '../../shared/components/atoms/design-system/PokemonModal';
+import { PokemonButton } from '../../shared/components/atoms/design-system/PokemonButton';
+import { PokemonInput } from '../../shared/components/atoms/design-system/PokemonInput';
+import { PokemonSelect } from '../../shared/components/atoms/design-system/PokemonSelect';
+import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
 
 // Generic item interface that all selectable items must extend
 export interface SelectableItem {

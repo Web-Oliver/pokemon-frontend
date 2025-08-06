@@ -43,7 +43,7 @@ import {
   ThemeOverride,
   ComponentAnimationConfig,
 } from '../types/themeTypes';
-import { ThemeColor, getFormTheme } from '../theme/formThemes';
+import { ThemeColor, getFormTheme } from '../../../theme/formThemes';
 import { VisualTheme } from '../types/themeTypes';
 
 // ================================

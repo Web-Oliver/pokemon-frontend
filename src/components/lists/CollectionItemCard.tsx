@@ -11,8 +11,8 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { ImageProductView } from '../common/ImageProductView';
-import { formatCardNameForDisplay } from '../../utils/helpers/formatting';
+import { ImageProductView } from '../../shared/components/molecules/common/ImageProductView';
+import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 

@@ -11,7 +11,7 @@
 
 import React, { memo } from 'react';
 import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
-import LoadingSpinner from '../common/LoadingSpinner';
+import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
 import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';

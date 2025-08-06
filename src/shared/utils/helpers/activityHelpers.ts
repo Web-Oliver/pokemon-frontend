@@ -21,7 +21,7 @@ import {
   Trash2,
   TrendingUp,
 } from 'lucide-react';
-import { ACTIVITY_TYPES } from '../hooks/useActivity';
+import { ACTIVITY_TYPES } from '../../hooks/useActivity';
 
 /**
  * Get color scheme for activity type

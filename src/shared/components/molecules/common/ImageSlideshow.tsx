@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
-import { getElementTheme, ThemeColor } from '../../theme/formThemes';
+import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
 
 interface ImageSlideshowProps {
   images: string[];

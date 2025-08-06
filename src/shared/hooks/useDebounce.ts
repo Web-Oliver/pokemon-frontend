@@ -17,7 +17,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * @returns Debounced function
  */
 // Re-exported from consolidated debounceUtils to eliminate duplication
-export { useDebounce } from '../utils/debounceUtils';
+export { useDebounce } from '../utils/helpers/debounceUtils';
 
 /**
  * Hook for cancelling a debounced operation

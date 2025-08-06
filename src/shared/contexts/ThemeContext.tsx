@@ -22,8 +22,8 @@ import React, {
   useCallback,
 } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import { ThemeColor, formThemes } from '../theme/formThemes';
-import { ThemePropertyManager } from '../../../shared/utils/theme/ThemePropertyManager';
+import { ThemeColor, formThemes } from '../../theme/formThemes';
+import { ThemePropertyManager } from '../utils/theme/ThemePropertyManager';
 import {
   VisualTheme,
   ColorScheme,

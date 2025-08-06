@@ -17,7 +17,7 @@ import {
   generateCosmicBackground,
   COSMIC_GRADIENTS,
   ParticleConfig,
-} from '../../../utils/cosmicEffects';
+} from '../../../utils/ui/cosmicEffects';
 
 export interface CosmicBackgroundProps {
   /** Gradient pattern to use */

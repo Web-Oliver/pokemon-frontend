@@ -23,8 +23,8 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
-import { useHierarchicalSearch } from '../../hooks/useHierarchicalSearch';
-import { PokemonSearch } from '../../design-system/PokemonSearch';
+import { useHierarchicalSearch } from '../../../hooks/useHierarchicalSearch';
+import { PokemonSearch } from '../../atoms/design-system/PokemonSearch';
 
 // ============================================================================
 // UNIFIED SEARCH CONFIGURATION INTERFACES

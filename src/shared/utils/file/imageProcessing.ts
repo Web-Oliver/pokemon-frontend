@@ -14,7 +14,7 @@ export {
   getContext7ImageClasses,
   getContext7GlassOverlay,
   getContext7ShimmerEffect,
-} from '../../ui/context7Styles';
+} from '../ui/context7Styles';
 
 export interface ImageAspectInfo {
   ratio: number;

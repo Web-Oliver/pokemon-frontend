@@ -5,7 +5,7 @@
  * Dependency Inversion: Uses abstractions, not concretions
  */
 
-import { generateId } from './common';
+import { generateId } from '../helpers/common';
 
 export interface ImagePreview {
   id: string;

@@ -32,10 +32,10 @@ import {
   DragDropProvider,
   reorderArray,
   SortableList,
-} from '../../contexts/DragDropContext';
-import { PokemonCard } from '../design-system/PokemonCard';
-import { CollectionItem, ItemCategory } from '../../domain/models/ordering';
-import { applyItemOrder, getItemCategory } from '../../utils/orderingUtils';
+} from '../../shared/contexts/DragDropContext';
+import { PokemonCard } from '../../shared/components/atoms/design-system/PokemonCard';
+import { CollectionItem, ItemCategory } from '../../shared/domain/models/ordering';
+import { applyItemOrder, getItemCategory } from '../../shared/utils/helpers/orderingUtils';
 
 /**
  * List display mode configuration

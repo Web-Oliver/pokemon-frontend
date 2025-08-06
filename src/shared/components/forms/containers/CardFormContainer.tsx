@@ -21,8 +21,8 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
-import FormHeader from '../../common/FormHeader';
-import FormActionButtons from '../../common/FormActionButtons';
+import FormHeader from '../../molecules/common/FormHeader';
+import FormActionButtons from '../../molecules/common/FormActionButtons';
 import HierarchicalCardSearch from '../sections/HierarchicalCardSearch';
 import CardInformationDisplaySection from '../sections/CardInformationDisplaySection';
 import GradingPricingSection from '../sections/GradingPricingSection';

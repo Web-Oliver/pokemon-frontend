@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { Archive, CheckCircle, Package, Star } from 'lucide-react';
-import { PokemonCard } from '../design-system';
+import { PokemonCard } from '../../shared/components/atoms/design-system';
 
 export interface CollectionStatsProps {
   psaGradedCount: number;

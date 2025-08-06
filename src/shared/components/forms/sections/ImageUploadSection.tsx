@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { Camera, Image, Upload, Sparkles } from 'lucide-react';
-import ImageUploader from '../../ImageUploader';
+import ImageUploader from '../../../../components/ImageUploader';
 
 interface ImageUploadSectionProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

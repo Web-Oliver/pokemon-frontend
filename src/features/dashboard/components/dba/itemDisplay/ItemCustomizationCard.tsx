@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { processImageUrl } from '../../../utils/common';
+import { processImageUrl } from '../../../../../shared/utils/helpers/common';
 
 interface SelectedItem {
   id: string;

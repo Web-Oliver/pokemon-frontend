@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { Star, Sparkles } from 'lucide-react';
-import { PokemonCard } from '../design-system/PokemonCard';
+import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
 
 interface DbaEmptyStateCosmicProps {
   psaCardsLength: number;

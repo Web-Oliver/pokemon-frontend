@@ -12,7 +12,7 @@
  */
 
 import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
-import { ApiTransformers } from '../utils/unifiedResponseTransformer';
+import { ApiTransformers } from '../utils/transformers/unifiedResponseTransformer';
 
 // ========== INTERFACES ==========
 

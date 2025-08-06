@@ -42,7 +42,7 @@ export {
 } from './crud';
 
 // Re-export debounce utilities from their new location
-export { debounce, useDebounce } from '../utils/debounceUtils';
+export { debounce, useDebounce } from '../utils/helpers/debounceUtils';
 
 // Legacy default export for backward compatibility
 export { useGenericCrudOperations as default } from './crud';

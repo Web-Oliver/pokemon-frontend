@@ -9,13 +9,13 @@
  */
 
 import React, { forwardRef } from 'react';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/helpers/common';
 import { Loader2 } from 'lucide-react';
 import {
   useVisualTheme,
   useLayoutTheme,
   useAnimationTheme,
-} from '../../../../contexts/theme';
+} from '../../../contexts/theme';
 import { inputClasses } from '../../../utils/ui/classNameUtils';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';

@@ -20,13 +20,13 @@ import {
   useFormSubmission,
   FormSubmissionPatterns,
 } from './wrappers/FormSubmissionWrapper';
-import { PokemonInput } from '../../atoms/design-system/PokemonInput';
-import LoadingSpinner from '../common/LoadingSpinner';
-import FormHeader from '../common/FormHeader';
-import FormActionButtons from '../common/FormActionButtons';
+import { PokemonInput } from '../atoms/design-system/PokemonInput';
+import LoadingSpinner from '../molecules/common/LoadingSpinner';
+import FormHeader from '../molecules/common/FormHeader';
+import FormActionButtons from '../molecules/common/FormActionButtons';
 import { PokemonSearch } from '../design-system/PokemonSearch';
-import ImageUploader from '../ImageUploader';
-import { PriceHistoryDisplay } from '../PriceHistoryDisplay';
+import ImageUploader from '../../../components/ImageUploader';
+import { PriceHistoryDisplay } from '../../../components/PriceHistoryDisplay';
 import ValidationField from './fields/ValidationField';
 import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
 import {
@@ -36,7 +36,7 @@ import {
 import {
   convertObjectIdToString,
   transformRequestData,
-} from '../../../utils/transformers/responseTransformer';
+} from '../../../shared/utils/transformers/responseTransformer';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;

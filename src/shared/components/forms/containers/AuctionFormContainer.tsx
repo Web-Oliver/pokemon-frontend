@@ -21,8 +21,8 @@ import {
   UseFormWatch,
 } from 'react-hook-form';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { PokemonInput } from '../../design-system/PokemonInput';
-import FormActionButtons from '../../common/FormActionButtons';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
+import FormActionButtons from '../../molecules/common/FormActionButtons';
 
 interface AuctionFormContainerProps {
   /** Form Configuration */

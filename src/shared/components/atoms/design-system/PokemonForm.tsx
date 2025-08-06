@@ -9,7 +9,7 @@
  */
 
 import React, { forwardRef, useEffect } from 'react';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/helpers/common';
 import {
   useForm,
   UseFormReturn,
@@ -19,13 +19,13 @@ import {
 import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
 import { FormWrapper } from '../common/FormWrapper';
-import { Label } from '../common/FormElements/Label';
-import { ErrorMessage } from '../common/FormElements/ErrorMessage';
-import { HelperText } from '../common/FormElements/HelperText';
-import LoadingSpinner from '../common/LoadingSpinner';
-import { useVisualTheme } from '../../hooks/theme/useVisualTheme';
-import { useLayoutTheme } from '../../hooks/theme/useLayoutTheme';
-import { useAnimationTheme } from '../../hooks/theme/useAnimationTheme';
+import { Label } from '../../molecules/common/FormElements/Label';
+import { ErrorMessage } from '../../molecules/common/FormElements/ErrorMessage';
+import { HelperText } from '../../molecules/common/FormElements/HelperText';
+import LoadingSpinner from '../../molecules/common/LoadingSpinner';
+import { useVisualTheme } from '../../../hooks/theme/useVisualTheme';
+import { useLayoutTheme } from '../../../hooks/theme/useLayoutTheme';
+import { useAnimationTheme } from '../../../hooks/theme/useAnimationTheme';
 import type {
   VisualTheme,
   Density,

@@ -10,9 +10,9 @@
 import { useCallback } from 'react';
 import { CollectionItem, ItemType } from './useCollectionItem';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { handleApiError } from '../../utils/helpers/errorHandler';
+import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
-import { navigationHelper } from '../../utils/helpers/navigation';
+import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import { useConfirmModal } from '../useModal';
 
 export interface UseItemOperationsReturn {

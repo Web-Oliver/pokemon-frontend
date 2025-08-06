@@ -11,7 +11,7 @@ import { LucideIcon } from 'lucide-react';
 import {
   GlassmorphismContainer,
   IconGlassmorphism,
-} from '../effects/GlassmorphismContainer';
+} from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
 
 export interface DashboardStatCardProps {
   title: string;

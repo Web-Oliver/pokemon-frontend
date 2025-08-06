@@ -10,7 +10,7 @@
 
 import React, { forwardRef } from 'react';
 import { ChevronDown, X } from 'lucide-react';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/helpers/common';
 
 export interface SelectOption {
   value: string;

@@ -19,7 +19,7 @@ import {
   calculateTrendAnalysis,
   processGraphData,
 } from '../domain/services/SalesAnalyticsService';
-import { commonCSVColumns, exportToCSV } from '../utils/fileOperations';
+import { commonCSVColumns, exportToCSV } from '../utils/helpers/fileOperations';
 import { log } from '../utils/performance/logger';
 
 export interface DateRange {

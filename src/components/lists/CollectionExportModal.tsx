@@ -11,8 +11,8 @@
 
 import React, { useState } from 'react';
 import { ArrowUpDown, Download, FileText, Image, Package } from 'lucide-react';
-import { PokemonModal } from '../design-system/PokemonModal';
-import LoadingSpinner from '../common/LoadingSpinner';
+import { PokemonModal } from '../../shared/components/atoms/design-system/PokemonModal';
+import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
 import { CollectionItem } from './CollectionItemCard';
 import {
   ExportFormat,

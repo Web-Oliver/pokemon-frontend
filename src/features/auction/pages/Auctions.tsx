@@ -33,7 +33,7 @@ import { useAuction } from '../../../shared/hooks/useAuction';
 import {
   getStatusColor,
   getStatusPriority,
-} from '../../../shared/utils/auctionStatusUtils';
+} from '../../../shared/utils/helpers/auctionStatusUtils';
 import { formatDateWithTime } from '../../../shared/utils/helpers/formatting';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 

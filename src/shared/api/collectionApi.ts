@@ -10,7 +10,7 @@ import { unifiedApiClient } from './unifiedApiClient';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ISaleDetails } from '../domain/models/common';
-import { createApiLogger } from '../utils/apiLogger';
+import { createApiLogger } from '../utils/performance/apiLogger';
 
 // Create logger instance for this API
 const logger = createApiLogger('COLLECTION API');

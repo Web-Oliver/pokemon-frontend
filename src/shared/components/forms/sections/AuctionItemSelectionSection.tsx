@@ -26,9 +26,9 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { PokemonSearch } from '../../design-system/PokemonSearch';
-import { PokemonButton } from '../../design-system/PokemonButton';
-import { PokemonInput } from '../../design-system/PokemonInput';
+import { PokemonSearch } from '../../atoms/design-system/PokemonSearch';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 
 interface UnifiedCollectionItem {
   id: string;

@@ -20,7 +20,7 @@ import {
 } from '../api/searchApi';
 import { log } from '../utils/performance/logger';
 import { useDebouncedValue } from './useDebounce';
-import { getDisplayName } from '../utils/searchHelpers';
+import { getDisplayName } from '../utils/helpers/searchHelpers';
 // Removed isValidSearchQuery - implementing lower tolerance search
 import { queryKeys } from '../../app/lib/queryClient';
 

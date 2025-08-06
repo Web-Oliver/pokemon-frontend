@@ -14,8 +14,8 @@ import { ContentLoading } from '../common/LoadingStates';
 import {
   getActivityColor,
   getActivityIcon,
-} from '../../utils/helpers/activityHelpers';
-import { displayPrice, getRelativeTime } from '../../utils/helpers/formatting';
+} from '../../../shared/utils/helpers/activityHelpers';
+import { displayPrice, getRelativeTime } from '../../../shared/utils/helpers/formatting';
 import { LineChart } from 'lucide-react';
 
 export interface ActivityTimelineProps {

@@ -12,7 +12,7 @@ import {
   exportToCSV,
   exportToJSON,
   exportToPDF,
-} from '../utils/fileOperations';
+} from '../utils/helpers/fileOperations';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 
 export interface ExportConfig {

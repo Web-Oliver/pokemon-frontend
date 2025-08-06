@@ -9,12 +9,12 @@
 
 import React from 'react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import { PokemonCard } from '../design-system/PokemonCard';
+import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
 import {
   formatCurrency,
   formatDate,
-} from '../../utils/helpers/itemDisplayHelpers';
-import { navigationHelper } from '../../utils/helpers/navigation';
+} from '../../../../shared/utils/helpers/itemDisplayHelpers';
+import { navigationHelper } from '../../../../shared/utils/helpers/navigation';
 
 export interface ItemEssentialDetailsProps {
   item: CollectionItem;

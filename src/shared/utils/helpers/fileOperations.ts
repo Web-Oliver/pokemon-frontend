@@ -17,13 +17,13 @@ import {
   type CSVExportOptions,
   exportToCSV,
   commonCSVColumns,
-} from './file/csvExport';
+} from '../file/csvExport';
 
 import {
   type ExportFormat,
   exportToJSON,
   exportToPDF,
-} from './file/exportFormats';
+} from '../file/exportFormats';
 
 import {
   type ImageAspectInfo,
@@ -40,7 +40,7 @@ import {
   preloadImageWithAspectRatio,
   createResponsiveSrcSet,
   getOptimalSizesAttribute,
-} from './file/imageProcessing';
+} from '../file/imageProcessing';
 
 // Re-exports for backward compatibility
 export {

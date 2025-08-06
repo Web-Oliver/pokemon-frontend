@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { CosmicBackground } from '../effects';
+import { CosmicBackground } from '../../../../shared/components/organisms/effects';
 
 interface DbaCosmicBackgroundProps {
   /** Custom particle configuration */

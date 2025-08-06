@@ -13,7 +13,7 @@
 
 import { useCallback } from 'react';
 import { ISaleDetails } from '../../domain/models/common';
-import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
+import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../utils/performance/logger';
 import { useAsyncOperation } from '../useAsyncOperation';
 

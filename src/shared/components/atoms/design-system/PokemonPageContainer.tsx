@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/helpers/common';
 
 export interface PokemonPageContainerProps {
   children: React.ReactNode;

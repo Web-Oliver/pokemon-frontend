@@ -19,10 +19,10 @@ import {
   TrendingUp,
   TrendingDown,
 } from 'lucide-react';
-import { PokemonButton } from './design-system/PokemonButton';
-import { PokemonInput } from './design-system/PokemonInput';
-import { log } from '../../../shared/utils/performance/logger';
-import { showWarningToast } from '../../../shared/components/organisms/ui/toastNotifications';
+import { PokemonButton } from '../shared/components/atoms/design-system/PokemonButton';
+import { PokemonInput } from '../shared/components/atoms/design-system/PokemonInput';
+import { log } from '../shared/utils/performance/logger';
+import { showWarningToast } from '../shared/components/organisms/ui/toastNotifications';
 
 interface IPriceHistoryEntry {
   price: number;

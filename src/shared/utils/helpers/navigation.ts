@@ -8,7 +8,7 @@
  * [object Object] URLs and malformed navigation issues
  */
 
-import { log } from './logger';
+import { log } from '../performance/logger';
 
 /**
  * Validate and sanitize ID parameters to prevent navigation issues

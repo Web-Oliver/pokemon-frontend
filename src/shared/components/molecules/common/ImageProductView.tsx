@@ -26,7 +26,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
-import { getElementTheme, ThemeColor } from '../../theme/formThemes';
+import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
 
 export interface ImageProductViewProps {
   // Core image data

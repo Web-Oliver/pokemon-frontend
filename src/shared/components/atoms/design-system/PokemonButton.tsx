@@ -15,7 +15,7 @@
  */
 
 import React, { ButtonHTMLAttributes, forwardRef } from 'react';
-import { Glow, Shimmer } from '../common/FormElements';
+import { Glow, Shimmer } from '../../molecules/common/FormElements';
 import { StandardButtonProps } from '../../types/themeTypes';
 import {
   cn,
@@ -24,14 +24,14 @@ import {
   getStateClasses,
   getAnimationClasses,
   getA11yClasses,
-} from '../../../utils/unifiedUtilities';
-import { generateThemeClasses } from '../../../utils/themeUtils';
+} from '../../../utils/helpers/unifiedUtilities';
+import { generateThemeClasses } from '../../../utils/ui/themeUtils';
 import { focusRing } from '../../../utils/ui/classNameUtils';
 import {
   useVisualTheme,
   useLayoutTheme,
   useAnimationTheme,
-} from '../../contexts/theme';
+} from '../../../contexts/theme';
 
 export interface PokemonButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,

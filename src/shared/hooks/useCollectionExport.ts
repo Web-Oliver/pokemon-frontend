@@ -29,7 +29,7 @@ import {
   ExportSessionData,
   orderingPersistence,
   storageHelpers,
-} from '../utils/storageUtils';
+} from '../utils/helpers/storageUtils';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import {
   showSuccessToast,
@@ -41,7 +41,7 @@ import {
   formatOrderedExportSuccessMessage,
   prepareItemsForOrderedExport,
   validateExportRequest,
-} from '../utils/exportUtils';
+} from '../utils/helpers/exportUtils';
 import {
   applyItemOrder,
   generateOrderFromItems,
@@ -50,7 +50,7 @@ import {
   moveItemUp,
   resetToDefaultOrder,
   sortItemsByPrice,
-} from '../utils/orderingUtils';
+} from '../utils/helpers/orderingUtils';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 

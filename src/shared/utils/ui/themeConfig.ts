@@ -14,7 +14,7 @@ import {
   useLayoutTheme,
   useAnimationTheme,
   useAccessibilityTheme,
-} from '../contexts/theme';
+} from '../../contexts/theme';
 
 export interface CentralizedThemeConfig {
   // Visual settings

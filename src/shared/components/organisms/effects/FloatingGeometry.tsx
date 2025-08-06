@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { useCentralizedTheme, themeUtils } from '../../../utils/ui/themeConfig';
-import { useAnimationTheme } from '../../hooks/theme/useAnimationTheme';
+import { useAnimationTheme } from '../../../hooks/theme/useAnimationTheme';
 
 export interface GeometricElement {
   type: 'square' | 'circle' | 'triangle' | 'diamond';

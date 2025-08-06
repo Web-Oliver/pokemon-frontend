@@ -16,7 +16,7 @@ import { useCollectionOperations } from './useCollectionOperations';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 import { queryKeys } from '../../app/lib/queryClient';
-import { CACHE_TTL } from '../config/cacheConfig';
+import { CACHE_TTL } from '../../app/config/cacheConfig';
 
 export interface SelectedItem {
   id: string;

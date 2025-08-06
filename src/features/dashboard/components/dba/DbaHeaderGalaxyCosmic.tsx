@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { Archive, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
-import { PokemonPageContainer } from '../design-system/PokemonPageContainer';
+import { PokemonPageContainer } from '../../../../shared/components/atoms/design-system/PokemonPageContainer';
 
 interface DbaHeaderGalaxyCosmicProps {
   dbaSelections: any[];

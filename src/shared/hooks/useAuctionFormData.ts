@@ -17,8 +17,8 @@ import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { IAuctionItem } from '../domain/models/auction';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { processImageUrl } from '../utils/formatting';
-import { log } from '../utils/logger';
+import { processImageUrl } from '../utils/helpers/formatting';
+import { log } from '../utils/performance/logger';
 
 // Shared form data interface
 export interface AuctionFormData {
@@ -172,9 +172,9 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         const cardData = (card as any).cardId || card;
         const setData = cardData?.setId || cardData?.set;
 
-        let cardName =
+        const cardName =
           cardData?.cardName || cardData?.baseName || 'Unknown Card';
-        let setName = setData?.setName || cardData?.setName || 'Unknown Set';
+        const setName = setData?.setName || cardData?.setName || 'Unknown Set';
         const variety = cardData?.variety || '';
         const pokemonNumber = cardData?.pokemonNumber || '';
 

@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/helpers/common';
 
 export interface HolographicBorderProps {
   /** Child components to wrap with holographic border */

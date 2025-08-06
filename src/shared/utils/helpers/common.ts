@@ -15,13 +15,13 @@ export {
   isMetadataObject,
   transformApiResponse,
   transformRequestData,
-} from './responseTransformer';
+} from '../transformers/responseTransformer';
 
 // Re-export React hooks
-export { useDebounce, useDebouncedCallback } from '../hooks/useDebounce';
+export { useDebounce, useDebouncedCallback } from '../../hooks/useDebounce';
 
 // Re-export theme utilities
-export { cn } from './themeUtils';
+export { cn } from '../ui/themeUtils';
 
 export {
   formatPrice,

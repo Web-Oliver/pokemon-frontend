@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { Settings } from 'lucide-react';
-import { PokemonInput } from '../design-system/PokemonInput';
+import { PokemonInput } from '../../../../shared/components/atoms/design-system/PokemonInput';
 import DbaExportActionsCosmic from './DbaExportActionsCosmic';
 import ItemCustomizationCard from './itemDisplay/ItemCustomizationCard';
 

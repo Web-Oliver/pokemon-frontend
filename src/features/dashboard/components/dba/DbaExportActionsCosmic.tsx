@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { Zap, FileDown } from 'lucide-react';
-import { PokemonButton } from '../design-system/PokemonButton';
+import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
 
 interface DbaExportActionsCosmicProps {
   onExportToDba: () => void;

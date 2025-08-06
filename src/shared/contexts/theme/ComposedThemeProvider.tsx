@@ -10,9 +10,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 import { ThemeConfiguration, ColorScheme } from '../../types/themeTypes';
-import { ThemePropertyManager } from '../../utils/theme/ThemePropertyManager';
+import { ThemePropertyManager } from '../../../shared/utils/theme/ThemePropertyManager';
 import { defaultConfig as originalDefaultConfig } from '../ThemeContext';
-import { ThemeColor } from '../../theme/formThemes';
+import { ThemeColor } from '../../../theme/formThemes';
 import { VisualThemeProvider, VisualThemeState } from './VisualThemeProvider';
 import { LayoutThemeProvider, LayoutThemeState } from './LayoutThemeProvider';
 import {
@@ -24,7 +24,7 @@ import {
   AccessibilityThemeState,
 } from './AccessibilityThemeProvider';
 import { ThemeStorageProvider } from './ThemeStorageProvider';
-import { formThemes } from '../../theme/formThemes';
+import { formThemes } from '../../../theme/formThemes';
 
 // ================================
 // COMPOSED THEME STATE

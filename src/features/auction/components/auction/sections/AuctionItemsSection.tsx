@@ -11,7 +11,7 @@
 
 import React, { ReactNode } from 'react';
 import { Plus, Package } from 'lucide-react';
-import { PokemonButton } from '../../design-system/PokemonButton';
+import { PokemonButton } from '../../../../../shared/components/atoms/design-system/PokemonButton';
 
 interface AuctionItem {
   id: string;

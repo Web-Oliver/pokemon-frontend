@@ -20,17 +20,17 @@ import React, {
   useState,
 } from 'react';
 import { Upload, X } from 'lucide-react';
-import { PokemonConfirmModal } from './design-system/PokemonModal';
-import { ImageAnalysisIndicator } from './common/ImageAnalysisIndicator';
-import { useDragAndDrop } from '../../../shared/hooks/useDragAndDrop';
-import { useImageRemoval } from '../../../shared/hooks/useImageRemoval';
+import { PokemonConfirmModal } from '../shared/components/atoms/design-system/PokemonModal';
+import { ImageAnalysisIndicator } from '../shared/components/molecules/common/ImageAnalysisIndicator';
+import { useDragAndDrop } from '../shared/hooks/useDragAndDrop';
+import { useImageRemoval } from '../shared/hooks/useImageRemoval';
 import {
   createExistingImagePreview,
   processImageFiles,
   cleanupObjectURL,
   type ImagePreview,
-} from '../../../shared/utils/imageUtils';
-import { cn } from '../../../shared/utils/unifiedUtilities';
+} from '../shared/utils/ui/imageUtils';
+import { cn } from '../shared/utils/helpers/unifiedUtilities';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

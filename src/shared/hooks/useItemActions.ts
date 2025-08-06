@@ -9,7 +9,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceRegistry } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/helpers/errorHandler';
-import { navigationHelper } from '../utils/helpers/navigationHelper';
+import { navigationHelper } from '../utils/helpers/navigation';
 
 export interface UseItemActionsOptions {
   itemType: 'psa' | 'raw' | 'sealed';

@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
-import { PokemonInput } from '../../design-system/PokemonInput';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { IGrades } from '../../../domain/models/card';
 
 interface ReadOnlyCardFields {

@@ -10,8 +10,8 @@
  */
 
 import React from 'react';
-import { PokemonButton } from '../design-system/PokemonButton';
-import { buildThemeClasses, ThemeColor } from '../../theme/formThemes';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
+import { buildThemeClasses, ThemeColor } from '../../../../theme/formThemes';
 
 interface FormActionButtonsProps {
   /** Function to call when cancel button is clicked */

@@ -18,7 +18,7 @@ import {
   getExportConfigKey,
   prepareItemsForOrderedExport,
   validateExportRequest,
-} from '../utils/exportUtils';
+} from '../utils/helpers/exportUtils';
 import { CollectionItem } from '../domain/models/ordering';
 
 /**

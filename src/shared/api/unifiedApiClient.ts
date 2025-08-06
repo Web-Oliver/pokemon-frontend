@@ -13,10 +13,10 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_BASE_URL } from '../utils/constants';
+import { API_BASE_URL } from '../utils/helpers/constants';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { log } from '../utils/performance/logger';
-import { optimizedApiRequest } from '../utils/apiOptimization';
+import { optimizedApiRequest } from '../utils/transformers/apiOptimization';
 import {
   transformApiResponse,
   transformRequestData,

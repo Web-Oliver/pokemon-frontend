@@ -10,7 +10,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { useCentralizedTheme } from '../../../utils/ui/themeConfig';
+import { useCentralizedTheme } from '../../../../utils/ui/themeConfig';
 
 interface FormWrapperProps {
   children: ReactNode;

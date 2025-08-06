@@ -24,34 +24,10 @@ export const lazyLoadDevComponent = <T extends ComponentType<any>>(
 };
 
 /**
- * Lazy load theme debugging utilities
- * Massive bundle size reduction for production
- */
-export const ThemeDebuggerLazy = lazyLoadDevComponent(
-  () => import('../components/theme/ThemeDebugger')
-);
-
-/**
  * Lazy load heavy theme utilities
  * Code splitting for better performance
  */
 export const themeUtilsLazy = {
-  async loadThemeDebug() {
-    if (process.env.NODE_ENV === 'development') {
-      return import('../utils/themeDebug');
-    }
-    return {
-      // Return minimal stub for production
-      validateTheme: () => true,
-      debugTheme: () => {},
-      exportThemeDebug: () => ({}),
-    };
-  },
-
-  async loadThemeExport() {
-    return import('../utils/themeExport');
-  },
-
   async loadFileOperations() {
     return import('../utils/fileOperations');
   },
@@ -62,11 +38,8 @@ export const themeUtilsLazy = {
  * Separates heavy utilities into their own chunks
  */
 export const bundleConfig = {
-  // Development-only chunks
-  devOnly: ['themeDebug'],
-
   // Heavy utility chunks
-  utilityChunks: ['themeExport', 'fileOperations', 'responseTransformer'],
+  utilityChunks: ['fileOperations', 'responseTransformer'],
 
   // Core utilities (keep in main bundle)
   core: ['common', 'formatting', 'constants'],

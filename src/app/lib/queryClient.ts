@@ -70,14 +70,14 @@ const queryCache = new QueryCache({
 
 // Create mutation cache with error handling
 const mutationCache = new MutationCache({
-  onError: (error, variables, context, mutation) => {
+  onError: (error, variables, _context, mutation) => {
     log('[MUTATION CACHE] Mutation failed', {
       mutationKey: mutation.options.mutationKey,
       error: error.message,
       variables,
     });
   },
-  onSuccess: (data, variables, context, mutation) => {
+  onSuccess: (_data, variables, _context, mutation) => {
     log('[MUTATION CACHE] Mutation succeeded', {
       mutationKey: mutation.options.mutationKey,
       variables,

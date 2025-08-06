@@ -14,9 +14,9 @@ import {
   Calendar,
   Banknote,
 } from 'lucide-react';
-import { PokemonInput } from '../../design-system/PokemonInput';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { PriceHistoryDisplay } from '../../PriceHistoryDisplay';
+import { PriceHistoryDisplay } from '../../../../components/PriceHistoryDisplay';
 import ValidationField from '../fields/ValidationField';
 
 interface GradingPricingSectionProps {

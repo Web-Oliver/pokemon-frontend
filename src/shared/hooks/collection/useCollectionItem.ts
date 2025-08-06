@@ -11,9 +11,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { handleApiError } from '../../utils/helpers/errorHandler';
-import { log } from '../../utils/performance/logger';
-import { navigationHelper } from '../../utils/helpers/navigation';
+import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
+import { log } from '../../../shared/utils/performance/logger';
+import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 export type ItemType = 'psa' | 'raw' | 'sealed';

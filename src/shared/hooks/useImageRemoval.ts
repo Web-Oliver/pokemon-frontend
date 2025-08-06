@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { ImagePreview } from '../utils/imageUtils';
+import { ImagePreview } from '../utils/ui/imageUtils';
 
 export const useImageRemoval = (
   previews: ImagePreview[],
