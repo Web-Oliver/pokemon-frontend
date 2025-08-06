@@ -24,48 +24,43 @@ const AddEditCardForm = React.lazy(
 const AddEditSealedProductForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditSealedProductForm')
 );
-import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
-import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
-import { getCollectionApiService } from '../../../shared/services/ServiceRegistry';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
+import { CollectionItemService, CollectionItem, ItemType } from '../services/CollectionItemService';
 
-type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
+type ItemTypeOption = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
-interface ItemTypeOption {
-  id: ItemType;
+interface ItemTypeOptionConfig {
+  id: ItemTypeOption;
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
 
-type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
-
 const AddEditItem: React.FC = () => {
   const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
   const themeConfig = useCentralizedTheme();
-  const [selectedItemType, setSelectedItemType] = useState<ItemType>(null);
+  const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Parse URL to determine if in edit mode and get item details
+  // Parse URL to determine if in edit mode and get item details using thin service layer
   useEffect(() => {
     const handleEditMode = async () => {
       const currentPath = window.location.pathname;
 
-      if (currentPath.startsWith('/collection/edit/')) {
-        const pathParts = currentPath.split('/');
-        if (pathParts.length === 5) {
-          const [, , , type, id] = pathParts;
+      if (CollectionItemService.isEditMode(currentPath)) {
+        const urlParams = CollectionItemService.parseEditUrl(currentPath);
+        if (urlParams) {
           setIsEditing(true);
-          await fetchItemForEdit(type, id);
+          await fetchItemForEdit(urlParams.type, urlParams.id);
         }
       }
     };
@@ -73,42 +68,18 @@ const AddEditItem: React.FC = () => {
     handleEditMode();
   }, []);
 
-  // Fetch item data for editing
-  const fetchItemForEdit = async (type: string, id: string) => {
+  // Fetch item data for editing using thin service layer
+  const fetchItemForEdit = async (urlType: string, id: string) => {
     setFetchLoading(true);
     setFetchError(null);
 
     try {
-      log(`Fetching ${type} item with ID: ${id} for editing`);
-      const collectionApi = getCollectionApiService();
-      let fetchedItem: CollectionItem;
-      let itemType: ItemType;
-
-      switch (type) {
-        case 'psa':
-          fetchedItem = await collectionApi.getPsaGradedCardById(id);
-          itemType = 'psa-graded';
-          break;
-        case 'raw':
-          fetchedItem = await collectionApi.getRawCardById(id);
-          itemType = 'raw-card';
-          break;
-        case 'sealed':
-          fetchedItem = await collectionApi.getSealedProductById(id);
-          itemType = 'sealed-product';
-          break;
-        default: {
-          const errorMessage = `Unknown item type: ${type}`;
-          setFetchError(errorMessage);
-          return;
-        }
-      }
-
-      setItemData(fetchedItem);
+      const { item, itemType } = await CollectionItemService.fetchItemForEdit(urlType, id);
+      setItemData(item);
       setSelectedItemType(itemType);
       log('Item fetched successfully for editing');
-    } catch (err) {
-      handleApiError(err, 'Failed to fetch item for editing');
+    } catch (error) {
+      handleApiError(error, 'Failed to fetch item for editing');
       setFetchError('Failed to load item for editing');
     } finally {
       setFetchLoading(false);
@@ -121,7 +92,7 @@ const AddEditItem: React.FC = () => {
   };
 
   // Item type options for selection
-  const itemTypes: ItemTypeOption[] = [
+  const itemTypes: ItemTypeOptionConfig[] = [
     {
       id: 'psa-graded',
       name: 'PSA Graded Card',

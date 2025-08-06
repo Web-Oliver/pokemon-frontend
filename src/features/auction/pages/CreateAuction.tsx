@@ -32,8 +32,6 @@ import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useFetchCollectionItems } from '../../../shared/hooks/useFetchCollectionItems';
 import { useBaseForm } from '../../../shared/hooks/useBaseForm';
-import { getCollectionApiService } from '../../../shared/services/ServiceRegistry';
-import { processImageUrl } from '../../../shared/utils/helpers/formatting';
 import { log } from '../../../shared/utils/performance/logger';
 import AuctionFormContainer from '../../../shared/components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../../../shared/components/forms/sections/AuctionItemSelectionSection';
@@ -42,6 +40,7 @@ import {
   ParticleSystem,
   NeuralNetworkBackground,
 } from '../../../shared/components/organisms/effects';
+import { AuctionDataService, UnifiedCollectionItem } from '../services/AuctionDataService';
 
 // Form data interface
 interface AuctionFormData {
@@ -51,25 +50,7 @@ interface AuctionFormData {
   status: 'draft' | 'active' | 'sold' | 'expired';
 }
 
-// Memoized function to avoid recreation on every render
-const memoizedProcessImageUrl = (imagePath: string | undefined) => {
-  return processImageUrl(imagePath);
-};
-
-// Define unified collection item type for display
-interface UnifiedCollectionItem {
-  id: string;
-  itemType: 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
-  displayName: string;
-  displayPrice: number;
-  displayImage?: string;
-  images?: string[];
-  setName?: string;
-  grade?: string;
-  condition?: string;
-  category?: string;
-  originalItem: IPsaGradedCard | IRawCard | ISealedProduct;
-}
+// Form data interface
 
 const CreateAuction: React.FC = () => {
   const themeConfig = useCentralizedTheme();
@@ -80,32 +61,10 @@ const CreateAuction: React.FC = () => {
     clearError,
   } = useAuction();
 
-  // Use separate fetch hooks for better state management (following CLAUDE.md SRP)
-  const collectionApiService = getCollectionApiService();
-  const {
-    items: psaCards,
-    loading: psaLoading,
-    error: psaError,
-    fetchItems: fetchPsaCards,
-  } = useFetchCollectionItems<IPsaGradedCard>({ initialData: [] });
-
-  const {
-    items: rawCards,
-    loading: rawLoading,
-    error: rawError,
-    fetchItems: fetchRawCards,
-  } = useFetchCollectionItems<IRawCard>({ initialData: [] });
-
-  const {
-    items: sealedProducts,
-    loading: sealedLoading,
-    error: sealedError,
-    fetchItems: fetchSealedProducts,
-  } = useFetchCollectionItems<ISealedProduct>({ initialData: [] });
-
-  // Aggregate loading and error states
-  const collectionLoading = psaLoading || rawLoading || sealedLoading;
-  const collectionError = psaError || rawError || sealedError;
+  // Collection items state (using thin service layer)
+  const [allCollectionItems, setAllCollectionItems] = useState<UnifiedCollectionItem[]>([]);
+  const [collectionLoading, setCollectionLoading] = useState(false);
+  const [collectionError, setCollectionError] = useState<string | null>(null);
 
   // Initialize form with proper validation
   const baseForm = useBaseForm<AuctionFormData>({
@@ -153,195 +112,28 @@ const CreateAuction: React.FC = () => {
   // UI state
   const [showPreview, setShowPreview] = useState(false);
 
-  // Fetch collection data on component mount
+  // Fetch collection data on component mount using thin service layer
   useEffect(() => {
     const loadCollectionData = async () => {
+      setCollectionLoading(true);
+      setCollectionError(null);
+
       try {
-        await Promise.all([
-          fetchPsaCards(() => collectionApiService.getPsaGradedCards()),
-          fetchRawCards(() => collectionApiService.getRawCards()),
-          fetchSealedProducts(() => collectionApiService.getSealedProducts()),
-        ]);
+        const { psaCards, rawCards, sealedProducts } = await AuctionDataService.fetchAllCollectionItems();
+        const unifiedItems = AuctionDataService.transformToUnifiedItems(psaCards, rawCards, sealedProducts);
+        setAllCollectionItems(unifiedItems);
+        log('Successfully loaded and transformed collection items:', unifiedItems.length);
       } catch (error) {
         log('Error loading collection data:', error);
+        setCollectionError('Failed to load collection items');
+      } finally {
+        setCollectionLoading(false);
       }
     };
 
     loadCollectionData();
-  }, [fetchPsaCards, fetchRawCards, fetchSealedProducts, collectionApiService]);
+  }, []);
 
-  // Optimized combination of collection items with improved memoization
-  const allCollectionItems = useMemo((): UnifiedCollectionItem[] => {
-    const items: UnifiedCollectionItem[] = [];
-
-    // Early return if no data to avoid unnecessary processing
-    const psaCardsArray = psaCards || [];
-    const rawCardsArray = rawCards || [];
-    const sealedProductsArray = sealedProducts || [];
-
-    if (
-      !psaCardsArray.length &&
-      !rawCardsArray.length &&
-      !sealedProductsArray.length
-    ) {
-      return items;
-    }
-
-    // Add PSA Graded Cards
-    psaCardsArray
-      .filter((card) => !card.sold)
-      .forEach((card) => {
-        let cardName = 'Unknown Card';
-        let setName = 'Unknown Set';
-        let pokemonNumber = '';
-        let variety = '';
-
-        // Access nested cardId object for card details (populated by backend)
-        const cardData = (card as any).cardId || card;
-        const setData = cardData?.setId || cardData?.set;
-
-        if (cardData?.cardName) {
-          cardName = cardData.cardName;
-        } else if (cardData?.baseName) {
-          cardName = cardData.baseName;
-        } else if (cardData?.pokemonNumber) {
-          cardName = `Card #${cardData.pokemonNumber}`;
-        }
-
-        if (setData?.setName) {
-          setName = setData.setName;
-        } else if (cardData?.setName) {
-          setName = cardData.setName;
-        }
-
-        if (cardData?.variety) {
-          variety = cardData.variety;
-        }
-
-        if (cardData?.pokemonNumber) {
-          pokemonNumber = cardData.pokemonNumber;
-        }
-
-        // Clean and build display name
-        const cleanCardName = cardName
-          .replace(/^2025\s+/gi, '')
-          .replace(/Japanese Pokemon Japanese\s+/gi, 'Japanese ')
-          .replace(/Pokemon Japanese\s+/gi, 'Japanese ')
-          .replace(/Japanese\s+Japanese\s+/gi, 'Japanese ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-        let displayName = cleanCardName;
-        if (variety && !displayName.includes(variety)) {
-          displayName = `${displayName} (${variety})`;
-        }
-        if (pokemonNumber && cleanCardName === 'Unknown Card') {
-          displayName = `#${pokemonNumber}`;
-        }
-        displayName = `${displayName} - PSA ${card.grade}`;
-
-        const processedImages = (card.images || [])
-          .map(memoizedProcessImageUrl)
-          .filter(Boolean) as string[];
-
-        items.push({
-          id: card.id,
-          itemType: 'PsaGradedCard',
-          displayName,
-          displayPrice: card.myPrice || 0,
-          displayImage: processedImages[0],
-          images: processedImages,
-          setName,
-          grade: card.grade,
-          originalItem: card,
-        });
-      });
-
-    // Add Raw Cards
-    rawCardsArray
-      .filter((card) => !card.sold)
-      .forEach((card) => {
-        let cardName = 'Unknown Card';
-        let setName = 'Unknown Set';
-
-        const cardData = (card as any).cardId || card;
-        const setData = cardData?.setId || cardData?.set;
-
-        if (cardData?.cardName) {
-          cardName = cardData.cardName;
-        } else if (cardData?.baseName) {
-          cardName = cardData.baseName;
-        }
-
-        if (setData?.setName) {
-          setName = setData.setName;
-        } else if (cardData?.setName) {
-          setName = cardData.setName;
-        }
-
-        const displayName = `${cardName} - ${card.condition}`;
-
-        const processedImages = (card.images || [])
-          .map(memoizedProcessImageUrl)
-          .filter(Boolean) as string[];
-
-        items.push({
-          id: card.id,
-          itemType: 'RawCard',
-          displayName,
-          displayPrice: card.myPrice || 0,
-          displayImage: processedImages[0],
-          images: processedImages,
-          setName,
-          condition: card.condition,
-          originalItem: card,
-        });
-      });
-
-    // Add Sealed Products
-    sealedProductsArray
-      .filter((product) => !product.sold)
-      .forEach((product) => {
-        // Use hierarchical structure to get product name - match CollectionItemCard pattern
-        const productName =
-          // For sealed products - check Product->SetProduct reference
-          (product as any).productId?.productName ||
-          product.name ||
-          (product as any).productName ||
-          'Unknown Product';
-
-        // Use hierarchical structure to get set name - match CollectionItemCard pattern
-        const setName =
-          // For sealed products - check Product->SetProduct reference
-          (product as any).productId?.setProductName ||
-          product.setName ||
-          (product as any).setProductName ||
-          'Unknown Set';
-
-        const displayName =
-          setName !== 'Unknown Set'
-            ? `${productName} - ${setName}`
-            : productName;
-
-        const processedImages = (product.images || [])
-          .map(memoizedProcessImageUrl)
-          .filter(Boolean) as string[];
-
-        items.push({
-          id: product.id,
-          itemType: 'SealedProduct',
-          displayName,
-          displayPrice: product.myPrice || 0,
-          displayImage: processedImages[0],
-          images: processedImages,
-          setName,
-          category: product.category,
-          originalItem: product,
-        });
-      });
-
-    return items;
-  }, [psaCards, rawCards, sealedProducts]);
 
   // Get selected items grouped by type with their orders and sorting
   const selectedItemsByType = useMemo(() => {

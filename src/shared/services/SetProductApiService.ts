@@ -12,13 +12,7 @@
  * - ISP: Implements specific SetProduct interface
  */
 
-import * as setProductsApi from '../api/setProductsApi';
-import * as productsApi from '../api/productsApi';
-import {
-  getBestMatchSetProduct,
-  getSetProductSuggestions,
-  searchSetProducts,
-} from '../api/searchApi';
+import { unifiedApiService } from './UnifiedApiService';
 import { ISetProduct } from '../domain/models/setProduct';
 import { IProduct } from '../domain/models/product';
 import {
@@ -48,7 +42,7 @@ export class SetProductApiService implements ISetProductApiService {
           }
         : undefined;
 
-      const result = await setProductsApi.getSetProducts(params);
+      const result = await unifiedApiService.setProducts.getSetProducts(params);
 
       // Validate result format (should return array)
       if (!Array.isArray(result)) {
@@ -71,7 +65,7 @@ export class SetProductApiService implements ISetProductApiService {
     this.validateId(id, 'getSetProductById');
 
     return this.executeWithErrorHandling('getSetProductById', async () => {
-      const result = await setProductsApi.getSetProductById(id);
+      const result = await unifiedApiService.setProducts.getSetProductById(id);
 
       // Validate result is a valid SetProduct object
       if (!result || typeof result !== 'object' || !result.setProductName) {
@@ -99,7 +93,7 @@ export class SetProductApiService implements ISetProductApiService {
       'getSetProductByUniqueId',
       async () => {
         const params = { uniqueSetProductId };
-        const results = await setProductsApi.getSetProducts(params);
+        const results = await unifiedApiService.setProducts.getSetProducts(params);
 
         // Return first match or null if none found
         if (Array.isArray(results) && results.length > 0) {
@@ -182,7 +176,7 @@ export class SetProductApiService implements ISetProductApiService {
       'getProductsBySetProductId',
       async () => {
         const params = { setProductId };
-        const result = await productsApi.getProducts(params);
+        const result = await unifiedApiService.products.getProducts(params);
 
         // Validate result format
         if (!Array.isArray(result)) {

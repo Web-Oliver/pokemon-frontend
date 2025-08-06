@@ -25,14 +25,7 @@ import {
   ProductSelectionResult,
   SetSelectionResult,
 } from '../interfaces/api/ISearchApiService';
-import {
-  getBestMatchSetProduct,
-  getProductSuggestions,
-  getSetProductSuggestions,
-  getSetSuggestions,
-  searchProducts,
-  searchProductsInSet,
-} from '../api/searchApi';
+import { unifiedApiService } from './UnifiedApiService';
 
 /**
  * Enhanced Search API Service with hierarchical capabilities
@@ -92,7 +85,7 @@ export class SearchApiService implements ISearchApiService {
     }
 
     this.searchContext.activeField = 'setProduct';
-    return getSetProductSuggestions(query, limit);
+    return unifiedApiService.search.getSetProductSuggestions(query, limit);
   }
 
   /**
@@ -127,17 +120,17 @@ export class SearchApiService implements ISearchApiService {
         limit,
         page: 1,
       };
-      const response = await searchProducts(params);
+      const response = await unifiedApiService.search.searchProducts(params);
       return response.data;
     }
 
     // If Set is selected (alternative path), filter products by set name
     if (config.setSelected) {
-      return searchProductsInSet(query, config.setSelected.setName, limit);
+      return unifiedApiService.search.searchProductsInSet(query, config.setSelected.setName, limit);
     }
 
     // No filtering context - return all matching products
-    return getProductSuggestions(query, limit);
+    return unifiedApiService.search.getProductSuggestions(query, limit);
   }
 
   /**
@@ -161,7 +154,7 @@ export class SearchApiService implements ISearchApiService {
     }
 
     this.searchContext.activeField = 'set';
-    return getSetSuggestions(query, limit);
+    return unifiedApiService.search.getSetSuggestions(query, limit);
   }
 
   /**
@@ -205,7 +198,7 @@ export class SearchApiService implements ISearchApiService {
     // If product has setProductId, fetch SetProduct for autofill
     if (product.setProductId) {
       try {
-        const setProduct = await getBestMatchSetProduct(product.setProductId);
+        const setProduct = await unifiedApiService.search.getBestMatchSetProduct(product.setProductId);
         if (setProduct) {
           autofillData.setProductName = setProduct.setProductName;
         }

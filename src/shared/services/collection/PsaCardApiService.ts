@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import * as collectionApi from '../../api/collectionApi';
+import { unifiedApiService } from '../UnifiedApiService';
 import { IPsaGradedCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -41,7 +41,7 @@ export class PsaCardApiService
     filters?: PsaGradedCardsParams
   ): Promise<IPsaGradedCard[]> {
     return this.executeWithErrorHandling('getPsaGradedCards', async () => {
-      const result = await collectionApi.getPsaGradedCards(filters);
+      const result = await unifiedApiService.collection.getPsaGradedCards(filters);
       return this.validateArrayResponse<IPsaGradedCard>(
         result,
         'getPsaGradedCards'

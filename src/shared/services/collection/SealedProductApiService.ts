@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import * as collectionApi from '../../api/collectionApi';
+import { unifiedApiService } from '../UnifiedApiService';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -41,7 +41,7 @@ export class SealedProductApiService
     filters?: SealedProductCollectionParams
   ): Promise<ISealedProduct[]> {
     return this.executeWithErrorHandling('getSealedProducts', async () => {
-      const result = await collectionApi.getSealedProductCollection(filters);
+      const result = await unifiedApiService.collection.getSealedProducts(filters);
       return this.validateArrayResponse<ISealedProduct>(
         result,
         'getSealedProducts'

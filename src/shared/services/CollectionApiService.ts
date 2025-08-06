@@ -14,7 +14,7 @@
  * - OCP: Open for extension through new model structures
  */
 
-import * as collectionApi from '../api/collectionApi';
+import { unifiedApiService } from './UnifiedApiService';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISaleDetails } from '../domain/models/common';
 import { ISealedProduct } from '../domain/models/sealedProduct';
@@ -32,7 +32,7 @@ export class CollectionApiService implements ICollectionApiService {
     sold?: boolean;
   }): Promise<IPsaGradedCard[]> {
     return this.executeWithErrorHandling('getPsaGradedCards', async () => {
-      const result = await collectionApi.getPsaGradedCards(filters);
+      const result = await unifiedApiService.collection.getPsaGradedCards(filters);
 
       // Validate result format (new API format should return array)
       if (!Array.isArray(result)) {
@@ -51,7 +51,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'getPsaGradedCardById');
 
     return this.executeWithErrorHandling('getPsaGradedCardById', async () => {
-      const result = await collectionApi.getPsaGradedCardById(id);
+      const result = await unifiedApiService.collection.getPsaGradedCardById(id);
 
       // Validate result is a valid card object
       if (!result || typeof result !== 'object') {
@@ -72,7 +72,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(cardData, 'createPsaCard');
 
     return this.executeWithErrorHandling('createPsaCard', async () => {
-      const result = await collectionApi.createPsaGradedCard(cardData);
+      const result = await unifiedApiService.collection.createPsaGradedCard(cardData);
 
       // Validate created card has required properties (Card model reference with cardNumber field)
       if (!result || typeof result !== 'object' || !result.cardId) {
@@ -97,7 +97,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(cardData, 'updatePsaCard');
 
     return this.executeWithErrorHandling('updatePsaCard', async () => {
-      const result = await collectionApi.updatePsaGradedCard(id, cardData);
+      const result = await unifiedApiService.collection.updatePsaGradedCard(id, cardData);
 
       // Validate updated card
       if (!result || typeof result !== 'object') {
@@ -117,7 +117,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'deletePsaCard');
 
     return this.executeWithErrorHandling('deletePsaCard', async () => {
-      await collectionApi.deletePsaGradedCard(id);
+      await unifiedApiService.collection.deletePsaGradedCard(id);
       // No return value expected for delete operations
     });
   }
@@ -130,7 +130,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(saleDetails, 'markPsaCardSold');
 
     return this.executeWithErrorHandling('markPsaCardSold', async () => {
-      const result = await collectionApi.markPsaGradedCardSold(id, saleDetails);
+      const result = await unifiedApiService.collection.markPsaGradedCardSold(id, saleDetails);
 
       // Validate marked card has sold status
       if (!result || typeof result !== 'object' || !result.sold) {
@@ -149,7 +149,7 @@ export class CollectionApiService implements ICollectionApiService {
   // Raw Card operations
   async getRawCards(filters?: { sold?: boolean }): Promise<IRawCard[]> {
     return this.executeWithErrorHandling('getRawCards', async () => {
-      const result = await collectionApi.getRawCards(filters);
+      const result = await unifiedApiService.collection.getRawCards(filters);
 
       // Validate result format (new API format should return array)
       if (!Array.isArray(result)) {
@@ -167,7 +167,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'getRawCardById');
 
     return this.executeWithErrorHandling('getRawCardById', async () => {
-      const result = await collectionApi.getRawCardById(id);
+      const result = await unifiedApiService.collection.getRawCardById(id);
 
       // Validate result is a valid card object
       if (!result || typeof result !== 'object') {
@@ -186,7 +186,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(cardData, 'createRawCard');
 
     return this.executeWithErrorHandling('createRawCard', async () => {
-      const result = await collectionApi.createRawCard(cardData);
+      const result = await unifiedApiService.collection.createRawCard(cardData);
 
       // Validate created card has required properties (Card model reference with cardNumber field)
       if (!result || typeof result !== 'object' || !result.cardId) {
@@ -211,7 +211,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(cardData, 'updateRawCard');
 
     return this.executeWithErrorHandling('updateRawCard', async () => {
-      const result = await collectionApi.updateRawCard(id, cardData);
+      const result = await unifiedApiService.collection.updateRawCard(id, cardData);
 
       // Validate updated card
       if (!result || typeof result !== 'object') {
@@ -231,7 +231,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'deleteRawCard');
 
     return this.executeWithErrorHandling('deleteRawCard', async () => {
-      await collectionApi.deleteRawCard(id);
+      await unifiedApiService.collection.deleteRawCard(id);
       // No return value expected for delete operations
     });
   }
@@ -244,7 +244,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(saleDetails, 'markRawCardSold');
 
     return this.executeWithErrorHandling('markRawCardSold', async () => {
-      const result = await collectionApi.markRawCardSold(id, saleDetails);
+      const result = await unifiedApiService.collection.markRawCardSold(id, saleDetails);
 
       // Validate marked card has sold status
       if (!result || typeof result !== 'object' || !result.sold) {
@@ -265,7 +265,7 @@ export class CollectionApiService implements ICollectionApiService {
     sold?: boolean;
   }): Promise<ISealedProduct[]> {
     return this.executeWithErrorHandling('getSealedProducts', async () => {
-      const result = await collectionApi.getSealedProductCollection(filters);
+      const result = await unifiedApiService.collection.getSealedProducts(filters);
 
       // Validate result format (new API format should return array)
       if (!Array.isArray(result)) {
@@ -286,7 +286,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'getSealedProductById');
 
     return this.executeWithErrorHandling('getSealedProductById', async () => {
-      const result = await collectionApi.getSealedProductById(id);
+      const result = await unifiedApiService.collection.getSealedProductById(id);
 
       // Validate result is a valid product object
       if (!result || typeof result !== 'object') {
@@ -307,7 +307,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(productData, 'createSealedProduct');
 
     return this.executeWithErrorHandling('createSealedProduct', async () => {
-      const result = await collectionApi.createSealedProduct(productData);
+      const result = await unifiedApiService.collection.createSealedProduct(productData);
 
       // Validate created product has required properties (Product model reference)
       if (!result || typeof result !== 'object' || !result.productId) {
@@ -332,7 +332,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(productData, 'updateSealedProduct');
 
     return this.executeWithErrorHandling('updateSealedProduct', async () => {
-      const result = await collectionApi.updateSealedProduct(id, productData);
+      const result = await unifiedApiService.collection.updateSealedProduct(id, productData);
 
       // Validate updated product
       if (!result || typeof result !== 'object') {
@@ -351,7 +351,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateId(id, 'deleteSealedProduct');
 
     return this.executeWithErrorHandling('deleteSealedProduct', async () => {
-      await collectionApi.deleteSealedProduct(id);
+      await unifiedApiService.collection.deleteSealedProduct(id);
       // No return value expected for delete operations
     });
   }
@@ -364,7 +364,7 @@ export class CollectionApiService implements ICollectionApiService {
     this.validateData(saleDetails, 'markSealedProductSold');
 
     return this.executeWithErrorHandling('markSealedProductSold', async () => {
-      const result = await collectionApi.markSealedProductSold(id, saleDetails);
+      const result = await unifiedApiService.collection.markSealedProductSold(id, saleDetails);
 
       // Validate marked product has sold status
       if (!result || typeof result !== 'object' || !result.sold) {

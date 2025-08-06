@@ -12,7 +12,7 @@
  * - DRY: Reuses base service functionality
  */
 
-import * as collectionApi from '../../api/collectionApi';
+import { unifiedApiService } from '../UnifiedApiService';
 import { IRawCard } from '../../domain/models/card';
 import { ISaleDetails } from '../../domain/models/common';
 import { BaseApiService } from '../base/BaseApiService';
@@ -39,7 +39,7 @@ export class RawCardApiService
    */
   async getRawCards(filters?: RawCardsParams): Promise<IRawCard[]> {
     return this.executeWithErrorHandling('getRawCards', async () => {
-      const result = await collectionApi.getRawCards(filters);
+      const result = await unifiedApiService.collection.getRawCards(filters);
       return this.validateArrayResponse<IRawCard>(result, 'getRawCards');
     });
   }

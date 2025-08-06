@@ -12,12 +12,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  searchCards,
-  searchProducts,
-  searchSets,
-  searchSetProducts,
-} from '../api/searchApi';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { useDebouncedValue } from './useDebounce';
 import { getDisplayName } from '../utils/helpers/searchHelpers';
@@ -160,24 +155,24 @@ export const useSearch = (): UseSearchReturn => {
 
       switch (searchConfig.currentType) {
         case 'sets':
-          return searchSets({
+          return unifiedApiService.search.searchSets({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             limit: 15,
           });
         case 'setProducts':
-          return searchSetProducts({
+          return unifiedApiService.search.searchSetProducts({
             query: debouncedQuery.trim() || '*',
             limit: 15,
           });
         case 'products':
-          return searchProducts({
+          return unifiedApiService.search.searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             setName: searchConfig.currentFilters.setName,
             category: searchConfig.currentFilters.category,
             limit: 15,
           });
         case 'cards':
-          return searchCards({
+          return unifiedApiService.search.searchCards({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             setName: searchConfig.currentFilters.setName,
             limit: 15,
@@ -384,16 +379,16 @@ export const useSearch = (): UseSearchReturn => {
           queryFn: async () => {
             switch (type) {
               case 'sets':
-                return searchSets({ query: query.trim(), limit: 15 });
+                return unifiedApiService.search.searchSets({ query: query.trim(), limit: 15 });
               case 'products':
-                return searchProducts({
+                return unifiedApiService.search.searchProducts({
                   query: query.trim(),
                   setName: filters?.setName,
                   category: filters?.category,
                   limit: 15,
                 });
               case 'cards':
-                return searchCards({
+                return unifiedApiService.search.searchCards({
                   query: query.trim(),
                   setName: filters?.setName,
                   limit: 15,

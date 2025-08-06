@@ -48,7 +48,7 @@
 
 ### Feature Services Update
 - [x] Update `features/*/services` to use UnifiedApiService
-- [ ] Ensure feature services are thin layers for UI-specific data mapping
+- [x] Ensure feature services are thin layers for UI-specific data mapping
 - [ ] Remove duplicate HTTP logic from feature services
 
 ---
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [ ] **Completed: 16/91 (18%)**
+- [ ] **Completed: 17/91 (19%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 75/91 (82%)**
+- [ ] **Remaining: 74/91 (81%)**
 
 ---
 
