@@ -160,20 +160,24 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <header className="bg-zinc-800 border-b border-zinc-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Brand Logo - Stunning Modern Design */}
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20">
+            {/* Brand Logo - Stunning Modern Design - Clickable */}
+            <button 
+              onClick={() => handleNavigation('/dashboard')}
+              className="flex items-center space-x-3 hover:scale-105 transition-transform duration-200 group"
+              aria-label="Navigate to dashboard"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-xl shadow-cyan-500/25 dark:shadow-cyan-500/25 shadow-blue-500/20 group-hover:shadow-lg group-hover:shadow-cyan-500/30">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-800 dark:text-zinc-200 dark:text-zinc-100 dark:text-white">
+                <h1 className="text-lg font-bold text-gray-800 dark:text-zinc-200 dark:text-zinc-100 dark:text-white group-hover:text-cyan-400 transition-colors duration-200">
                   PokéCollection
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 dark:text-zinc-400">
+                <p className="text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400 dark:text-zinc-400 group-hover:text-cyan-300 transition-colors duration-200">
                   Professional Edition
                 </p>
               </div>
-            </div>
+            </button>
 
             {/* Desktop Navigation - Scrollable */}
             <nav className="hidden md:flex items-center space-x-1 overflow-visible flex-1">

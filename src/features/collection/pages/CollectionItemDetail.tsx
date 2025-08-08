@@ -203,7 +203,7 @@ const CollectionItemDetail: React.FC = () => {
       />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Essential Details - Extracted component */}
         <ItemEssentialDetails item={item} />
 
@@ -228,7 +228,7 @@ const CollectionItemDetail: React.FC = () => {
       </div>
 
       {/* Item-Specific Information - Reused existing components */}
-      <div className="mb-8">{renderItemSpecificInfo()}</div>
+      <div className="mb-6 sm:mb-8">{renderItemSpecificInfo()}</div>
 
       {/* Sale Details - Extracted component */}
       <ItemSaleDetails item={item} />

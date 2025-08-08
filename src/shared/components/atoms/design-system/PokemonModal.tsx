@@ -132,10 +132,17 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       onItemSelect,
       renderItem,
 
-      ...props
+      ...domProps
     },
     ref
   ) => {
+    // Extract only DOM-compatible props
+    const {
+      // Remove modal-specific props that shouldn't go to DOM
+      confirmText: _confirmText,
+      confirmtext: _confirmtext,
+      ...restDomProps
+    } = domProps;
     // Theme context integration
     const visualTheme = useVisualTheme();
     const layoutTheme = useLayoutTheme();
@@ -362,7 +369,7 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
           ref={ref}
           className={modalClasses}
           onClick={(e) => e.stopPropagation()}
-          {...props}
+          {...restDomProps}
         >
           {/* Header */}
           {(title || showCloseButton) && (

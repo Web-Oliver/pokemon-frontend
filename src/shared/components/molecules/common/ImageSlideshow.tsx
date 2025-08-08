@@ -3,7 +3,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
 import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
-import { getImageUrl, getThumbnailUrl } from '../../utils/ui/imageUtils';
+import { getImageUrl, getThumbnailUrl } from '../../../utils/ui/imageUtils';
 
 interface ImageSlideshowProps {
   images: string[];

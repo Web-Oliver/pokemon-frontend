@@ -165,12 +165,20 @@ export const useSearch = (): UseSearchReturn => {
             limit: 15,
           });
         case 'products':
-          return unifiedApiService.search.searchProducts({
+          console.log('[TANSTACK QUERY DEBUG] About to call searchProducts API with params:', {
+            query: debouncedQuery.trim() || '*',
+            setName: searchConfig.currentFilters.setName,
+            category: searchConfig.currentFilters.category,
+            limit: 15,
+          });
+          const productsResult = unifiedApiService.search.searchProducts({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries
             setName: searchConfig.currentFilters.setName,
             category: searchConfig.currentFilters.category,
             limit: 15,
           });
+          console.log('[TANSTACK QUERY DEBUG] searchProducts returned:', productsResult);
+          return productsResult;
         case 'cards':
           return unifiedApiService.search.searchCards({
             query: debouncedQuery.trim() || '*', // Use wildcard for empty queries

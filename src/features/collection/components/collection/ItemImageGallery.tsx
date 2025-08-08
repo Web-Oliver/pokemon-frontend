@@ -49,7 +49,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
       variant="outlined"
       className={`h-full ${className}`}
     >
-      <div className="h-[500px]">
+      <div className="h-[300px] sm:h-[400px] md:h-[500px]">
         <ImageProductView
           images={item.images || []}
           title={title}
@@ -74,11 +74,11 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
 
       {/* Download Button */}
       {item.images && item.images.length > 0 && onDownloadImages && (
-        <div className="mt-4 flex justify-center">
+        <div className="mt-3 sm:mt-4 flex justify-center">
           <button
             onClick={onDownloadImages}
             disabled={downloadingZip}
-            className="flex items-center space-x-2 px-4 py-2 bg-[var(--theme-accent-primary)] text-white rounded-lg hover:bg-[var(--theme-accent-primary)]/80 transition-colors disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-[var(--theme-accent-primary)] text-white rounded-lg hover:bg-[var(--theme-accent-primary)]/80 transition-colors disabled:opacity-50 text-sm sm:text-base"
           >
             {downloadingZip ? (
               <LoadingSpinner size="sm" />

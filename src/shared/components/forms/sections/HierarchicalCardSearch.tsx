@@ -71,6 +71,7 @@ export const CARD_SEARCH_CONFIG: HierarchicalSearchConfig = {
     placeholder: 'Search for a Pokemon set (min 2 characters)...',
     searchType: 'sets',
     required: true,
+    useExternalSearch: true,
   },
   secondaryField: {
     name: 'cardName',
@@ -78,6 +79,7 @@ export const CARD_SEARCH_CONFIG: HierarchicalSearchConfig = {
     placeholder: 'Search for a Pokemon card (min 2 characters)...',
     searchType: 'cards',
     required: true,
+    useExternalSearch: true,
   },
   editingMessage:
     'Card information cannot be changed when editing. The card details are locked after adding to preserve data integrity.',
@@ -156,6 +158,47 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
     clearSuggestions,
   } = hierarchicalSearch;
 
+  // FIXED: Proper suggestion handling logic following SOLID principles
+  const getPrimaryExternalResults = () => {
+    if (!primaryField.useExternalSearch) return undefined;
+    
+    // Debug logging
+    console.log('[HIERARCHICAL DEBUG] Primary field check:', {
+      activeField,
+      primaryFieldName: primaryField.name,
+      suggestionsLength: suggestions.length,
+      isMatch: activeField === primaryField.name
+    });
+    
+    // CRITICAL FIX: Show suggestions when we have results for primary field
+    if (activeField === primaryField.name && suggestions.length > 0) {
+      console.log('[HIERARCHICAL DEBUG] Returning primary suggestions:', suggestions);
+      return suggestions;
+    }
+    return undefined;
+  };
+
+  const getSecondaryExternalResults = () => {
+    if (!secondaryField.useExternalSearch) return undefined;
+    // CRITICAL FIX: Only show suggestions when actively searching in this field AND have results
+    if (activeField === secondaryField.name && suggestions.length > 0) {
+      return suggestions;
+    }
+    return undefined;
+  };
+
+  const getPrimaryExternalLoading = () => {
+    return primaryField.useExternalSearch && 
+           activeField === primaryField.name && 
+           isLoading;
+  };
+
+  const getSecondaryExternalLoading = () => {
+    return secondaryField.useExternalSearch && 
+           activeField === secondaryField.name && 
+           isLoading;
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       {/* Primary Field - Dynamic based on configuration */}
@@ -169,16 +212,8 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
           placeholder={primaryField.placeholder}
           value={watch(primaryField.name) || ''}
           useExternalSearch={primaryField.useExternalSearch}
-          externalResults={
-            primaryField.useExternalSearch && activeField === primaryField.name
-              ? suggestions
-              : undefined
-          }
-          externalLoading={
-            primaryField.useExternalSearch &&
-            activeField === primaryField.name &&
-            isLoading
-          }
+          externalResults={getPrimaryExternalResults()}
+          externalLoading={getPrimaryExternalLoading()}
           onSelect={(result) => {
             handlePrimarySelection(
               result,
@@ -225,18 +260,13 @@ const UnifiedHierarchicalSearch: React.FC<UnifiedHierarchicalSearchProps> = ({
           placeholder={secondaryField.placeholder}
           value={watch(secondaryField.name) || ''}
           useExternalSearch={secondaryField.useExternalSearch}
-          externalResults={
-            secondaryField.useExternalSearch &&
-            activeField === secondaryField.name
-              ? suggestions
-              : undefined
-          }
-          externalLoading={
-            secondaryField.useExternalSearch &&
-            activeField === secondaryField.name &&
-            isLoading
-          }
+          externalResults={getSecondaryExternalResults()}
+          externalLoading={getSecondaryExternalLoading()}
           onSelect={(result) => {
+            console.log('[HIERARCHICAL CARD SEARCH DEBUG] Secondary field selection triggered');
+            console.log('[HIERARCHICAL CARD SEARCH DEBUG] Selected result:', result);
+            console.log('[HIERARCHICAL CARD SEARCH DEBUG] setValue function:', typeof setValue);
+            console.log('[HIERARCHICAL CARD SEARCH DEBUG] clearErrors function:', typeof clearErrors);
             handleSecondarySelection(
               result,
               setValue,

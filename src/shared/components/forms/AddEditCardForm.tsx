@@ -29,7 +29,7 @@ import {
 import {
   useCardSelection,
   cardSelectionPresets,
-} from '../../hooks/form/useCardSelection';
+} from '../../hooks/form/useCardSelectionState';
 import {
   useFormSubmission,
   FormSubmissionPatterns,
@@ -108,12 +108,6 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
   // Get configuration for the specific card type
   const config = cardTypeConfig[cardType];
 
-  // Initialize form hooks with card type specific presets
-  const formInitialization = useFormInitialization({
-    preset: config.initializationPreset,
-    initialData,
-  });
-
   const cardSelection = useCardSelection({
     preset: config.selectionPreset,
   });
@@ -141,6 +135,15 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
     initialData,
     defaultValues: getDefaultValues(),
     isEditing,
+  });
+
+  // Initialize form hooks with card type specific presets (after baseForm is defined)
+  useFormInitialization({
+    formType: cardType,
+    isEditing: !!initialData,
+    initialData,
+    setValue: baseForm.form.setValue,
+    debug: false,
   });
 
   const collectionOps = useCollectionOperations();
@@ -173,12 +176,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
     onCancel,
   });
 
-  // Initialize form when component mounts or data changes
-  useEffect(() => {
-    if (initialData) {
-      formInitialization.initializeFromData(initialData);
-    }
-  }, [initialData, formInitialization]);
+  // Form initialization is now handled by useFormInitialization hook
 
   return (
     <SimpleFormContainer
@@ -190,18 +188,25 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
     >
       {/* Card Search Section */}
       <HierarchicalCardSearch
-        selectedCard={cardSelection.selectedCard}
-        onCardSelect={cardSelection.setSelectedCard}
-        searchQuery={cardSelection.searchQuery}
-        onSearchChange={cardSelection.setSearchQuery}
-        isLoading={cardSelection.isLoading}
-        disabled={isEditing} // Disable search when editing
+        register={baseForm.form.register}
+        errors={baseForm.form.formState.errors}
+        setValue={baseForm.form.setValue}
+        watch={baseForm.form.watch}
+        clearErrors={baseForm.form.clearErrors}
+        onSelectionChange={cardSelection.setSelectedCard}
+        isSubmitting={baseForm.isSubmitting}
+        isEditing={isEditing}
       />
 
       {/* Card Information Display */}
-      {cardSelection.selectedCard && (
+      {(baseForm.form.watch('setName') && baseForm.form.watch('cardName')) && (
         <CardInformationFields
-          card={cardSelection.selectedCard}
+          card={{
+            setName: baseForm.form.watch('setName'),
+            cardName: baseForm.form.watch('cardName'),
+            cardNumber: baseForm.form.watch('cardNumber'),
+            variety: baseForm.form.watch('variety')
+          }}
           readonly={true}
         />
       )}
@@ -209,12 +214,18 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
       {/* Grading & Pricing Section - PSA only */}
       {config.showGrading && (
         <GradingPricingSection
-          grade={baseForm.values?.grade || ''}
-          onGradeChange={(grade) => baseForm.setValue('grade', grade)}
-          price={baseForm.values?.myPrice || ''}
-          onPriceChange={(price) => baseForm.setValue('myPrice', price)}
-          priceLabel={config.priceLabel}
-          error={baseForm.errors?.grade?.message || baseForm.errors?.myPrice?.message}
+          register={baseForm.form.register}
+          errors={baseForm.form.formState.errors}
+          cardType="psa"
+          currentGradeOrCondition={baseForm.values?.grade}
+          currentPrice={baseForm.values?.myPrice}
+          isEditing={isEditing}
+          cardInfo={{
+            setName: baseForm.form.watch('setName'),
+            cardName: baseForm.form.watch('cardName'),
+            cardNumber: baseForm.form.watch('cardNumber'),
+            variety: baseForm.form.watch('variety'),
+          }}
         />
       )}
 
@@ -259,17 +270,16 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
 
       {/* Sale Details Section */}
       <SaleDetailsSection
-        saleDetails={baseForm.values?.saleDetails || {}}
-        onSaleDetailsChange={(details) =>
-          baseForm.setValue('saleDetails', details)
-        }
-        sold={baseForm.values?.sold || false}
-        onSoldChange={(sold) => baseForm.setValue('sold', sold)}
+        register={baseForm.form.register}
+        errors={baseForm.form.formState.errors}
+        watch={baseForm.form.watch}
+        isVisible={baseForm.values?.sold}
+        itemName="card"
       />
 
       {/* Image Upload Section */}
       <ImageUploadSection
-        images={baseForm.values?.images || []}
+        images={baseForm.values?.images ?? []}
         onImagesChange={(images) => baseForm.setValue('images', images)}
         maxImages={5}
       />
@@ -285,8 +295,13 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
         </button>
         <button
           type="submit"
-          onClick={() => formSubmission.handleSubmit(baseForm.values || {})}
-          disabled={baseForm.isSubmitting || !cardSelection.selectedCard}
+          onClick={baseForm.form.handleSubmit(async (formData) => {
+            await formSubmission.handleSubmission(formData, { 
+              isEditing: !!initialData, 
+              itemId: initialData?._id 
+            });
+          })}
+          disabled={baseForm.isSubmitting || !(baseForm.form.watch('setName') && baseForm.form.watch('cardName'))}
           className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl transition-all disabled:opacity-50"
         >
           {baseForm.isSubmitting ? 'Saving...' : config.submitButtonText}

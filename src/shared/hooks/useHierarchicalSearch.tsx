@@ -86,13 +86,27 @@ export const useHierarchicalSearch = ({
 
   // Sync search results to local state
   useEffect(() => {
+    console.log('[HIERARCHICAL HOOK] Search results updated:', {
+      results: search.results?.length || 0,
+      isLoading: search.isLoading,
+      activeField
+    });
     setSuggestions(search.results || []);
     setIsLoading(search.isLoading);
-  }, [search.results, search.isLoading]);
+  }, [search.results, search.isLoading, activeField]);
 
   // Centralized search effect with proper minLength validation
   useEffect(() => {
+    console.log('[HIERARCHICAL HOOK] Search effect triggered:', {
+      activeField,
+      primaryValue,
+      secondaryValue,
+      debouncedPrimary,
+      debouncedSecondary
+    });
+    
     if (!activeField) {
+      console.log('[HIERARCHICAL HOOK] No active field, clearing suggestions');
       setSuggestions([]);
       return;
     }
@@ -103,21 +117,37 @@ export const useHierarchicalSearch = ({
         : debouncedSecondary;
 
     // FIXED: Proper minLength validation to prevent glitchy search behavior
+    console.log('[HIERARCHICAL HOOK] Current value check:', {
+      currentValue,
+      valueType: typeof currentValue,
+      trimmedLength: currentValue?.trim()?.length || 0
+    });
+    
     if (
       !currentValue ||
       typeof currentValue !== 'string' ||
       currentValue.trim().length < 2
     ) {
+      console.log('[HIERARCHICAL HOOK] Value too short, clearing suggestions');
       setSuggestions([]);
       return;
     }
 
     // Execute search based on active field and mode
+    console.log('[HIERARCHICAL HOOK] About to execute search:', {
+      activeField,
+      primaryField: config.primaryField,
+      mode: config.mode,
+      searchValue: currentValue
+    });
+    
     switch (activeField) {
       case config.primaryField:
         if (config.mode === 'card') {
+          console.log('[HIERARCHICAL HOOK] Calling searchSets with:', currentValue);
           search.searchSets(currentValue);
         } else {
+          console.log('[HIERARCHICAL HOOK] Calling searchSetProducts with:', currentValue);
           search.searchSetProducts(currentValue);
         }
         break;
@@ -217,7 +247,13 @@ export const useHierarchicalSearch = ({
       clearErrors: (field: string) => void,
       onSelection: (data: any) => void
     ) => {
-      console.log('[HIERARCHICAL] Secondary selection:', result);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] ===== SECONDARY SELECTION START =====');
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Full result object:', result);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data setName:', result.data?.setName);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data setDisplayName:', result.data?.setDisplayName);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data Set.setName:', result.data?.Set?.setName);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Config mode:', config.mode);
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] Config secondaryField:', config.secondaryField);
 
       if (!result.id || !result.displayName) {
         setValue(config.secondaryField, '');
@@ -230,34 +266,47 @@ export const useHierarchicalSearch = ({
 
       // FIXED: For cards, autofill set information from card data
       if (config.mode === 'card') {
+        console.log('[HIERARCHICAL AUTOFILL DEBUG] Processing card mode selection...');
+        
         // Set the card name
         setValue(config.secondaryField, result.displayName);
         clearErrors(config.secondaryField);
+        console.log('[HIERARCHICAL AUTOFILL DEBUG] Set cardName to:', result.displayName);
 
-        // CRITICAL FIX: Autofill Set Name from card data
-        if (result.data?.setName) {
-          setValue('setName', result.data.setName);
+        // CRITICAL FIX: Autofill Set Name from card data with multiple fallbacks
+        const setNameValue = result.data?.setName || result.data?.setDisplayName || result.data?.Set?.setName;
+        console.log('[HIERARCHICAL AUTOFILL DEBUG] Extracted setName value:', setNameValue);
+        
+        if (setNameValue) {
+          console.log('[HIERARCHICAL AUTOFILL DEBUG] Calling setValue for setName with:', setNameValue);
+          setValue('setName', setNameValue);
           clearErrors('setName');
+          console.log('[HIERARCHICAL AUTOFILL DEBUG] Successfully set setName field');
+        } else {
+          console.warn('[HIERARCHICAL AUTOFILL DEBUG] NO SET NAME FOUND IN CARD DATA!');
         }
 
         // Autofill other card fields if available
         if (result.data?.cardNumber) {
           setValue('cardNumber', result.data.cardNumber);
           clearErrors('cardNumber');
+          console.log('[HIERARCHICAL AUTOFILL DEBUG] Set cardNumber to:', result.data.cardNumber);
         }
         if (result.data?.variety) {
           setValue('variety', result.data.variety);
           clearErrors('variety');
+          console.log('[HIERARCHICAL AUTOFILL DEBUG] Set variety to:', result.data.variety);
         }
 
         const cardData = {
           _id: result.id,
           cardName: result.displayName,
-          setName: result.data?.setName,
+          setName: setNameValue,
           cardNumber: result.data?.cardNumber,
           variety: result.data?.variety,
           ...result.data,
         };
+        console.log('[HIERARCHICAL AUTOFILL DEBUG] Final cardData object:', cardData);
         onSelection(cardData);
       } else {
         // For products, use autofill pattern
@@ -270,6 +319,8 @@ export const useHierarchicalSearch = ({
         setSuggestions([]);
         setActiveField(null);
       }, 10);
+      
+      console.log('[HIERARCHICAL AUTOFILL DEBUG] ===== SECONDARY SELECTION END =====');
     },
     [config]
   );

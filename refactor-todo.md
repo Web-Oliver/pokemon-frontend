@@ -88,7 +88,7 @@
 ### Layout Consistency
 - [x] Enforce `shared/components/layout/layouts/PageLayout.tsx` usage in all pages
 - [x] Update all `features/*/pages` to use consistent layout
-- [ ] Remove custom layout implementations
+- [x] Remove custom layout implementations
 
 ### Effect Components
 - [x] Ensure `shared/components/organisms/effects/CosmicBackground.tsx` is used consistently
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 30/91 (33%)**
+- [x] **Completed: 31/91 (34%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 61/91 (67%)**
+- [ ] **Remaining: 60/91 (66%)**
 
 ---
 
