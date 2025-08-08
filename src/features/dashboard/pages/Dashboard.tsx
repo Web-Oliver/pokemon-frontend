@@ -37,10 +37,7 @@ import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { displayPrice } from '../../../shared/utils/helpers/formatting';
-import {
-  getActivityIcon,
-  getActivityColor,
-} from '../../../shared/utils/helpers/activityHelpers';
+import { getActivityIcon } from '../../../shared/utils/helpers/activityHelpers';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import {
   GlassmorphismContainer,
@@ -313,9 +310,6 @@ const Dashboard: React.FC = () => {
                         const IconComponent = getActivityIcon(
                           activity.type || 'system'
                         );
-                        const activityColor = getActivityColor(
-                          activity.type || 'system'
-                        );
                         const activityKey =
                           activity._id ||
                           activity.id ||
@@ -334,11 +328,41 @@ const Dashboard: React.FC = () => {
                           }
                         };
 
-                        const colors = {
-                          bg: `from-${activityColor}-500 to-${activityColor}-600`,
-                          badge: `bg-${activityColor}-500/20 text-${activityColor}-200`,
-                          dot: `bg-${activityColor}-400`
+                        // Use same color system as Activity page for consistency
+                        const getColorClasses = (color: string) => {
+                          const colorMap = {
+                            emerald: {
+                              bg: 'from-emerald-500 to-teal-600',
+                              badge: 'bg-emerald-100 text-emerald-800',
+                              dot: 'bg-emerald-400',
+                            },
+                            amber: {
+                              bg: 'from-amber-500 to-orange-600',
+                              badge: 'bg-amber-100 text-amber-800',
+                              dot: 'bg-amber-400',
+                            },
+                            purple: {
+                              bg: 'from-purple-500 to-violet-600',
+                              badge: 'bg-purple-100 text-purple-800',
+                              dot: 'bg-purple-400',
+                            },
+                            indigo: {
+                              bg: 'from-indigo-500 to-blue-600',
+                              badge: 'bg-indigo-100 text-indigo-800',
+                              dot: 'bg-indigo-400',
+                            },
+                            red: {
+                              bg: 'from-red-500 to-rose-600',
+                              badge: 'bg-red-100 text-red-800',
+                              dot: 'bg-red-400',
+                            },
+                          };
+                          return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
                         };
+
+                        const colors = getColorClasses(
+                          activity.metadata?.color || 'indigo'
+                        );
 
                         return (
                           <ActivityListItem
