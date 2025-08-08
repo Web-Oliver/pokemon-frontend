@@ -37,7 +37,10 @@ import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { displayPrice } from '../../../shared/utils/helpers/formatting';
-import { getActivityIcon } from '../../../shared/utils/helpers/activityHelpers';
+import {
+  getActivityIcon,
+  getActivityColor,
+} from '../../../shared/utils/helpers/activityHelpers';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 import {
   GlassmorphismContainer,
@@ -356,13 +359,40 @@ const Dashboard: React.FC = () => {
                               badge: 'bg-red-100 text-red-800',
                               dot: 'bg-red-400',
                             },
+                            // Additional colors from activityHelpers
+                            blue: {
+                              bg: 'from-blue-500 to-blue-600',
+                              badge: 'bg-blue-100 text-blue-800',
+                              dot: 'bg-blue-400',
+                            },
+                            orange: {
+                              bg: 'from-orange-500 to-orange-600',
+                              badge: 'bg-orange-100 text-orange-800',
+                              dot: 'bg-orange-400',
+                            },
+                            yellow: {
+                              bg: 'from-yellow-500 to-yellow-600',
+                              badge: 'bg-yellow-100 text-yellow-800',
+                              dot: 'bg-yellow-400',
+                            },
+                            cyan: {
+                              bg: 'from-cyan-500 to-cyan-600',
+                              badge: 'bg-cyan-100 text-cyan-800',
+                              dot: 'bg-cyan-400',
+                            },
+                            slate: {
+                              bg: 'from-slate-500 to-slate-600',
+                              badge: 'bg-slate-100 text-slate-800',
+                              dot: 'bg-slate-400',
+                            },
                           };
                           return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
                         };
 
-                        const colors = getColorClasses(
-                          activity.metadata?.color || 'indigo'
+                        const activityColor = getActivityColor(
+                          activity.type || 'system'
                         );
+                        const colors = getColorClasses(activityColor);
 
                         return (
                           <ActivityListItem
