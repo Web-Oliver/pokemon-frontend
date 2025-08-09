@@ -21,10 +21,17 @@ import {
 } from '../domain/services/SalesAnalyticsService';
 import { commonCSVColumns, exportToCSV } from '../utils/helpers/fileOperations';
 import { log } from '../utils/performance/logger';
+import { useDataFetch } from './common/useDataFetch';
 
 export interface DateRange {
   startDate?: string;
   endDate?: string;
+}
+
+interface SalesAnalyticsData {
+  sales: ISale[];
+  summary: ISalesSummary | null;
+  graphData: ISalesGraphData[];
 }
 
 export interface UseSalesAnalyticsResult {
@@ -54,28 +61,32 @@ export interface UseSalesAnalyticsResult {
 
 /**
  * Custom hook for managing sales analytics data and operations
+ * REFACTORED: Using useDataFetch to eliminate repetitive useState patterns
  */
 export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
-  // Core Data State
-  const [sales, setSales] = useState<ISale[]>([]);
-  const [summary, setSummary] = useState<ISalesSummary | null>(null);
-  const [graphData, setGraphData] = useState<ISalesGraphData[]>([]);
-
-  // UI State
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Filter State
+  // Filter State (kept as is since it's not loading/error/data pattern)
   const [dateRange, setDateRange] = useState<DateRange>({});
+
+  // REFACTORED: Use useDataFetch to replace repetitive useState patterns
+  // Eliminates: const [loading, setLoading], const [error, setError], and data states
+  const salesDataFetch = useDataFetch<SalesAnalyticsData>(
+    undefined,
+    {
+      initialData: {
+        sales: [],
+        summary: null,
+        graphData: []
+      },
+      onError: (error) => log('Error in sales analytics:', error)
+    }
+  );
 
   /**
    * Fetch sales data from multiple endpoints
+   * REFACTORED: Using useDataFetch.execute() - eliminates manual loading/error state management
    */
   const fetchSalesData = useCallback(async (params?: DateRange) => {
-    setLoading(true);
-    setError(null);
-
-    try {
+    await salesDataFetch.execute(async (): Promise<SalesAnalyticsData> => {
       log('Fetching sales analytics data', params);
 
       // Fetch all sales analytics data in parallel
@@ -85,27 +96,22 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
         getSalesGraphData(params).catch(() => []),
       ]);
 
-      // Process and set the data
-      setSales(Array.isArray(salesData) ? salesData : []);
-      setSummary(summaryData);
-      setGraphData(
-        processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : [])
-      );
+      // Process the data
+      const processedData: SalesAnalyticsData = {
+        sales: Array.isArray(salesData) ? salesData : [],
+        summary: summaryData,
+        graphData: processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : [])
+      };
 
       log('Sales analytics data loaded successfully', {
-        salesCount: salesData.length,
-        summaryData,
-        graphDataCount: graphDataRaw.length,
+        salesCount: processedData.sales.length,
+        summaryData: processedData.summary,
+        graphDataCount: processedData.graphData.length,
       });
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to fetch sales data';
-      setError(errorMessage);
-      log('Error fetching sales analytics data:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+
+      return processedData;
+    });
+  }, [salesDataFetch]);
 
   /**
    * Refresh all data using current date range
@@ -117,11 +123,12 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   /**
    * Export sales data to CSV file
    * Following Context7 best practices for file download
+   * REFACTORED: Using salesDataFetch.data instead of separate sales state
    */
   const exportSalesCSV = useCallback(() => {
     try {
-      // Ensure sales is an array before mapping
-      const safeSales = Array.isArray(sales) ? sales : [];
+      // Get sales data from the consolidated data fetch hook
+      const safeSales = Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : [];
 
       // Prepare data with computed values for CSV export
       const exportData = safeSales.map((sale) => ({
@@ -157,7 +164,7 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       log('CSV export failed:', error);
       throw new Error('Failed to export sales data to CSV');
     }
-  }, [sales, dateRange]);
+  }, [salesDataFetch.data?.sales, dateRange]);
 
   /**
    * Update date range and fetch new data
@@ -175,24 +182,24 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
     fetchSalesData();
   }, [fetchSalesData]);
 
-  // Computed values based on current data
-  const kpis = calculateKPIs(Array.isArray(sales) ? sales : []);
+  // REFACTORED: Computed values using salesDataFetch.data instead of separate state variables
+  const kpis = calculateKPIs(Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : []);
   const categoryBreakdown = aggregateByCategory(
-    Array.isArray(sales) ? sales : []
+    Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : []
   );
   const trendAnalysis = calculateTrendAnalysis(
-    Array.isArray(graphData) ? graphData : []
+    Array.isArray(salesDataFetch.data?.graphData) ? salesDataFetch.data.graphData : []
   );
 
   return {
-    // Data State
-    sales,
-    summary,
-    graphData,
+    // REFACTORED: Data State from consolidated useDataFetch hook
+    sales: salesDataFetch.data?.sales || [],
+    summary: salesDataFetch.data?.summary || null,
+    graphData: salesDataFetch.data?.graphData || [],
 
-    // Loading & Error State
-    loading,
-    error,
+    // REFACTORED: Loading & Error State from useDataFetch hook
+    loading: salesDataFetch.loading,
+    error: salesDataFetch.error,
 
     // Computed Data
     kpis,

@@ -137,7 +137,7 @@
 
 ### Generic State Management
 - [x] Create `shared/hooks/common/useDataFetch.ts` or enhance `usePageLayout`
-- [ ] Replace repetitive useState patterns for loading, error, data
+- [x] Replace repetitive useState patterns for loading, error, data
 - [ ] Update: SealedProductSearch.tsx → use generic state hook
 - [ ] Standardize async operation handling
 
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 43/91 (47%)**
+- [x] **Completed: 44/91 (48%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 48/91 (53%)**
+- [ ] **Remaining: 47/91 (52%)**
 
 ---
 
