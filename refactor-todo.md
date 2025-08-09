@@ -163,9 +163,9 @@
 ## 🛠️ IV. Utility Functions
 
 ### Image Utilities
-- [ ] Move `getImageUrl` and `getThumbnailUrl` from ImageSlideshow.tsx
-- [ ] Create/enhance `shared/utils/ui/imageUtils.ts`
-- [ ] Consolidate all image-related utility functions
+- [x] Move `getImageUrl` and `getThumbnailUrl` from ImageSlideshow.tsx
+- [x] Create/enhance `shared/utils/ui/imageUtils.ts`
+- [x] Consolidate all image-related utility functions
 
 ### Validation Utilities
 - [ ] Create `shared/utils/validation/index.ts`
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 57/91 (63%)**
+- [x] **Completed: 60/91 (66%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 34/91 (37%)**
+- [ ] **Remaining: 31/91 (34%)**
 
 ---
 
