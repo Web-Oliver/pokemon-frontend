@@ -13,7 +13,13 @@ import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';
 
-import { usePsaCardOperations } from './usePsaCardOperations';
+import { 
+  useGenericCrudOperations, 
+  createPsaCardConfig,
+  createRawCardConfig,
+  createSealedProductConfig
+} from './crud/useGenericCrudOperations';
+import { getCollectionApiService } from '../services/ServiceRegistry';
 import { useRawCardOperations } from './useRawCardOperations';
 import { useSealedProductOperations } from './useSealedProductOperations';
 import { useCollectionImageExport } from './useCollectionImageExport';
@@ -105,7 +111,18 @@ const validateCollectionResponse = (data: any[], type: string): any[] => {
 
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const queryClient = useQueryClient();
-  const psaOperations = usePsaCardOperations();
+  const collectionApi = getCollectionApiService();
+  
+  // Create PSA Card configuration and operations using generic hook
+  const psaEntityConfig = createPsaCardConfig(collectionApi);
+  const psaOperations = useGenericCrudOperations(psaEntityConfig.apiMethods, {
+    entityName: psaEntityConfig.entityName,
+    addSuccess: psaEntityConfig.messages.addSuccess,
+    updateSuccess: psaEntityConfig.messages.updateSuccess,
+    deleteSuccess: psaEntityConfig.messages.deleteSuccess,
+    soldSuccess: psaEntityConfig.messages.soldSuccess,
+  });
+  
   const rawOperations = useRawCardOperations();
   const sealedOperations = useSealedProductOperations();
   const imageExport = useCollectionImageExport();
@@ -214,7 +231,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const addPsaCard = useCallback(
     async (cardData: Partial<IPsaGradedCard>) => {
       try {
-        const newCard = await psaOperations.addPsaCard(cardData);
+        const newCard = await psaOperations.add(cardData);
         queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
         return newCard;
       } catch (error) {
@@ -228,7 +245,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const updatePsaCard = useCallback(
     async (id: string, cardData: Partial<IPsaGradedCard>) => {
       try {
-        const updatedCard = await psaOperations.updatePsaCard(id, cardData);
+        const updatedCard = await psaOperations.update(id, cardData);
         queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
         return updatedCard;
       } catch (error) {
@@ -242,7 +259,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const deletePsaCard = useCallback(
     async (id: string) => {
       try {
-        await psaOperations.deletePsaCard(id);
+        await psaOperations.delete(id);
         queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
       } catch (error) {
         // Error already handled by psaOperations
@@ -255,7 +272,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const markPsaCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
-        const soldCard = await psaOperations.markPsaCardSold(id, saleDetails);
+        const soldCard = await psaOperations.markSold(id, saleDetails);
         queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
         queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
         return soldCard;
