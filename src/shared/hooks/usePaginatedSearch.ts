@@ -12,6 +12,12 @@ import { useState, useCallback } from 'react';
 import { SearchPaginationService, PaginationData } from '../services/SearchPaginationService';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { log } from '../utils/performance/logger';
+import { useDataFetch } from './common/useDataFetch';
+
+interface SearchResultData<T> {
+  items: T[];
+  pagination: PaginationData;
+}
 
 export interface UsePaginatedSearchResult<T> {
   items: T[];
@@ -25,66 +31,70 @@ export interface UsePaginatedSearchResult<T> {
 }
 
 export function usePaginatedSearch<T = any>(): UsePaginatedSearchResult<T> {
-  const [items, setItems] = useState<T[]>([]);
-  const [pagination, setPagination] = useState<PaginationData>({
-    currentPage: 1,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPrevPage: false,
-    total: 0,
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Non-loading/error/data state - kept as is  
   const [lastSearchParams, setLastSearchParams] = useState<any>(null);
   const [searchType, setSearchType] = useState<'sets' | 'products' | null>(null);
 
+  // REFACTORED: Use useDataFetch to replace repetitive useState patterns
+  // Eliminates: const [items, setItems], const [loading, setLoading], const [error, setError], const [pagination, setPagination]
+  const searchDataFetch = useDataFetch<SearchResultData<T>>(
+    undefined,
+    {
+      initialData: {
+        items: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+          total: 0,
+        }
+      },
+      onError: (error) => log('Error in paginated search:', error)
+    }
+  );
+
   const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+    searchDataFetch.clearError();
+  }, [searchDataFetch]);
 
   const searchSets = useCallback(async (params: any = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSearchType('sets');
-      setLastSearchParams(params);
+    setSearchType('sets');
+    setLastSearchParams(params);
+
+    await searchDataFetch.execute(async (): Promise<SearchResultData<T>> => {
+      log('usePaginatedSearch: Starting sets search', params);
 
       const result = await SearchPaginationService.searchSets(params);
-      setItems(result.data);
-      setPagination(result.pagination);
+      
+      const searchResult: SearchResultData<T> = {
+        items: result.data,
+        pagination: result.pagination
+      };
 
       log('usePaginatedSearch: Sets search completed successfully');
-    } catch (err) {
-      const errorMessage = 'Failed to fetch sets';
-      handleApiError(err, errorMessage);
-      setError(errorMessage);
-      log('usePaginatedSearch: Sets search failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return searchResult;
+    });
+  }, [searchDataFetch]);
 
   const searchProducts = useCallback(async (params: any = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSearchType('products');
-      setLastSearchParams(params);
+    setSearchType('products');
+    setLastSearchParams(params);
+
+    await searchDataFetch.execute(async (): Promise<SearchResultData<T>> => {
+      log('usePaginatedSearch: Starting products search', params);
 
       const result = await SearchPaginationService.searchProducts(params);
-      setItems(result.data);
-      setPagination(result.pagination);
+      
+      const searchResult: SearchResultData<T> = {
+        items: result.data,
+        pagination: result.pagination
+      };
 
       log('usePaginatedSearch: Products search completed successfully');
-    } catch (err) {
-      const errorMessage = 'Failed to fetch products';
-      handleApiError(err, errorMessage);
-      setError(errorMessage);
-      log('usePaginatedSearch: Products search failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return searchResult;
+    });
+  }, [searchDataFetch]);
 
   const setPage = useCallback((page: number) => {
     if (lastSearchParams && searchType) {
@@ -99,10 +109,18 @@ export function usePaginatedSearch<T = any>(): UsePaginatedSearchResult<T> {
   }, [lastSearchParams, searchType, searchSets, searchProducts]);
 
   return {
-    items,
-    pagination,
-    loading,
-    error,
+    // REFACTORED: Data from consolidated useDataFetch hook
+    items: searchDataFetch.data?.items || [],
+    pagination: searchDataFetch.data?.pagination || {
+      currentPage: 1,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+      total: 0,
+    },
+    // REFACTORED: Loading & Error State from useDataFetch hook
+    loading: searchDataFetch.loading,
+    error: searchDataFetch.error,
     searchSets,
     searchProducts,
     setPage,
