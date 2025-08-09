@@ -22,12 +22,7 @@
 
 import { useState, useCallback, useMemo, useRef, useTransition } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  searchCards,
-  searchProducts,
-  searchSets,
-  searchSetProducts,
-} from '../api/searchApi';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import { useDebouncedValue } from './useDebounce';
 import { SearchResult } from '../types/searchTypes';
 import { queryKeys } from '../../app/lib/queryClient';
@@ -232,16 +227,16 @@ export const useUnifiedSearch = (
     const promises = [];
 
     if (scope.types.includes('cards')) {
-      promises.push(searchCards(searchQuery));
+      promises.push(unifiedApiService.search.searchCards(searchQuery));
     }
     if (scope.types.includes('products')) {
-      promises.push(searchProducts(searchQuery));
+      promises.push(unifiedApiService.search.searchProducts(searchQuery));
     }
     if (scope.types.includes('sets')) {
-      promises.push(searchSets(searchQuery));
+      promises.push(unifiedApiService.search.searchSets(searchQuery));
     }
     if (scope.types.includes('setproducts')) {
-      promises.push(searchSetProducts(searchQuery));
+      promises.push(unifiedApiService.search.searchSetProducts(searchQuery));
     }
 
     const results = await Promise.all(promises);
@@ -277,9 +272,9 @@ export const useUnifiedSearch = (
       // Search for parent items (sets, categories, etc.)
       switch (hierarchical.mode) {
         case 'set-card':
-          return searchSets(searchQuery);
+          return unifiedApiService.search.searchSets(searchQuery);
         case 'setproduct-product':
-          return searchSetProducts(searchQuery);
+          return unifiedApiService.search.searchSetProducts(searchQuery);
         case 'category-item':
           // Custom category search implementation
           return executeBasicSearch(searchQuery);
@@ -290,9 +285,10 @@ export const useUnifiedSearch = (
       // Search for child items within selected parent
       switch (hierarchical.mode) {
         case 'set-card':
-          return searchCards(searchQuery, { setId: parentSelected.id });
+          return unifiedApiService.search.searchCards({ ...searchQuery, setId: parentSelected.id });
         case 'setproduct-product':
-          return searchProducts(searchQuery, {
+          return unifiedApiService.search.searchProducts({
+            ...searchQuery,
             setProductId: parentSelected.id,
           });
         default:

@@ -142,11 +142,11 @@
 - [x] Standardize async operation handling
 
 ### Form State Management
-- [ ] Create `shared/hooks/form/useGenericFormState.ts`
-- [ ] Support: data, loading, errors, isDirty, updateField, reset
-- [ ] Refactor: AuctionEdit.tsx → use useGenericFormState
-- [ ] Refactor: CreateAuction.tsx → use useGenericFormState
-- [ ] Replace repetitive form state patterns
+- [x] Create `shared/hooks/form/useGenericFormState.ts`
+- [x] Support: data, loading, errors, isDirty, updateField, reset
+- [x] Refactor: AuctionEdit.tsx → use useGenericFormState
+- [x] Refactor: CreateAuction.tsx → use useGenericFormState
+- [x] Replace repetitive form state patterns
 
 ### Collection Operations Cleanup
 - [ ] Resolve duplicate `useCollectionOperations.ts` files
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 46/91 (51%)**
+- [x] **Completed: 51/91 (56%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 45/91 (49%)**
+- [ ] **Remaining: 40/91 (44%)**
 
 ---
 

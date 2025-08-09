@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { SearchResult, useSearch } from './useSearch';
+import { SearchResult, useSearch } from './useUnifiedSearch';
 import { useDebouncedValue } from './useDebounce';
 import { autoFillFromProductSelection } from '../utils/helpers/searchHelpers';
 

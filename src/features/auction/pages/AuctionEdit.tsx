@@ -30,6 +30,7 @@ import CollectionItemCard, {
 } from '../../../components/lists/CollectionItemCard';
 import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionModal';
 import { useAuction } from '../../../shared/hooks/useAuction';
+import { useGenericFormState } from '../../../shared/hooks/form/useGenericFormState';
 import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
 
@@ -63,12 +64,23 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     category: string;
   } | null>(null);
 
-  // Form state for editing auction details
-  const [formData, setFormData] = useState({
-    topText: '',
-    bottomText: '',
-    auctionDate: '',
-    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
+  // Form state for editing auction details using consolidated hook
+  const formState = useGenericFormState({
+    initialData: {
+      topText: '',
+      bottomText: '',
+      auctionDate: '',
+      status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
+    },
+    validateField: (fieldName, value) => {
+      if (fieldName === 'topText' && !value?.trim()) {
+        return 'Auction title is required';
+      }
+      if (fieldName === 'auctionDate' && value && new Date(value) < new Date()) {
+        return 'Auction date cannot be in the past';
+      }
+      return null;
+    },
   });
 
   useEffect(() => {
@@ -88,16 +100,17 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   // Update form data when auction is loaded
   useEffect(() => {
     if (currentAuction) {
-      setFormData({
+      const auctionData = {
         topText: currentAuction.topText || '',
         bottomText: currentAuction.bottomText || '',
         auctionDate: currentAuction.auctionDate
           ? currentAuction.auctionDate.split('T')[0]
           : '',
-        status: currentAuction.status || 'draft',
-      });
+        status: currentAuction.status || 'draft' as 'draft' | 'active' | 'sold' | 'expired',
+      };
+      formState.resetToData(auctionData);
     }
-  }, [currentAuction]);
+  }, [currentAuction, formState]);
 
   // Navigation using navigationHelper
   const navigateToAuctionDetail = () => {
@@ -114,34 +127,41 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     navigateToAuctionDetail();
   };
 
-  // Handle form input changes
+  // Handle form input changes using consolidated form state
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    formState.updateField(name as keyof typeof formState.data, value);
   };
 
-  // Handle save auction changes
+  // Handle save auction changes using consolidated form state
   const handleSaveChanges = async () => {
     if (!currentAuctionId) {
       return;
     }
 
+    // Validate form before submission
+    if (!formState.validateForm()) {
+      return;
+    }
+
     try {
+      formState.setLoading(true);
       setIsEditing(true);
       await updateAuction(currentAuctionId, {
-        topText: formData.topText,
-        bottomText: formData.bottomText,
-        auctionDate: new Date(formData.auctionDate).toISOString(),
-        status: formData.status,
+        topText: formState.data.topText,
+        bottomText: formState.data.bottomText,
+        auctionDate: new Date(formState.data.auctionDate).toISOString(),
+        status: formState.data.status,
       });
       showSuccessToast('Auction updated successfully!');
     } catch (_error) {
       // Error handled by hook
     } finally {
+      formState.setLoading(false);
       setIsEditing(false);
     }
   };
@@ -383,7 +403,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                 type="text"
                 id="topText"
                 name="topText"
-                value={formData.topText}
+                value={formState.data.topText}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
                 placeholder="Enter auction title..."
@@ -403,7 +423,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
                   type="date"
                   id="auctionDate"
                   name="auctionDate"
-                  value={formData.auctionDate}
+                  value={formState.data.auctionDate}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 pr-10 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
@@ -422,7 +442,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
               <select
                 id="status"
                 name="status"
-                value={formData.status}
+                value={formState.data.status}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
               >
@@ -444,7 +464,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
               <textarea
                 id="bottomText"
                 name="bottomText"
-                value={formData.bottomText}
+                value={formState.data.bottomText}
                 onChange={handleInputChange}
                 rows={4}
                 className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"

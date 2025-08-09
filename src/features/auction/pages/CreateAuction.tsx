@@ -31,7 +31,7 @@ import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useFetchCollectionItems } from '../../../shared/hooks/useFetchCollectionItems';
-import { useBaseForm } from '../../../shared/hooks/useBaseForm';
+import { useAuctionFormAdapter } from '../../../shared/hooks/form/useGenericFormStateAdapter';
 import { log } from '../../../shared/utils/performance/logger';
 import AuctionFormContainer from '../../../shared/components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../../../shared/components/forms/sections/AuctionItemSelectionSection';
@@ -66,26 +66,12 @@ const CreateAuction: React.FC = () => {
   const [collectionLoading, setCollectionLoading] = useState(false);
   const [collectionError, setCollectionError] = useState<string | null>(null);
 
-  // Initialize form with proper validation
-  const baseForm = useBaseForm<AuctionFormData>({
-    defaultValues: {
-      topText: '',
-      bottomText: '',
-      auctionDate: '',
-      status: 'draft',
-    },
-    validationRules: {
-      topText: { required: 'Header text is required' },
-      bottomText: { required: 'Footer text is required' },
-      auctionDate: {
-        custom: (value: string) => {
-          if (value && new Date(value) < new Date()) {
-            return 'Auction date cannot be in the past';
-          }
-          return undefined;
-        },
-      },
-    },
+  // Initialize form using our consolidated form state with react-hook-form adapter
+  const formAdapter = useAuctionFormAdapter({
+    topText: '',
+    bottomText: '',
+    auctionDate: '',
+    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
   });
 
   // Item selection state with separate ordering for each category
@@ -429,16 +415,16 @@ const CreateAuction: React.FC = () => {
                 <div className="p-8 relative z-10">
                   <AuctionFormContainer
                     isEditing={false}
-                    isSubmitting={auctionLoading}
+                    isSubmitting={formAdapter.loading || auctionLoading}
                     title="Create New Auction"
                     description="Start a new auction for your Pokémon collection"
                     icon={Gavel}
                     primaryColorClass="blue"
-                    register={baseForm.form.register}
-                    errors={baseForm.form.formState.errors}
-                    setValue={baseForm.form.setValue}
-                    watch={baseForm.form.watch}
-                    handleSubmit={baseForm.form.handleSubmit}
+                    register={formAdapter.register}
+                    errors={formAdapter.formState.errors}
+                    setValue={formAdapter.setValue}
+                    watch={formAdapter.watch}
+                    handleSubmit={formAdapter.handleSubmit}
                     onSubmit={handleSubmit}
                     onCancel={navigateToAuctions}
                     itemSelectionSection={
