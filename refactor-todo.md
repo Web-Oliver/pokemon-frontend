@@ -121,7 +121,7 @@
 - [x] Remove: `usePsaCardOperations.ts` → replace with generic hook
 - [x] Remove: `useRawCardOperations.ts` → replace with generic hook
 - [x] Remove: `useSealedProductOperations.ts` → replace with generic hook
-- [ ] Configure generic hook for entity types and API services
+- [x] Configure generic hook for entity types and API services
 
 ### Search Hook Unification
 - [ ] Consolidate into single `shared/hooks/useUnifiedSearch.ts`
@@ -319,7 +319,7 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 41/91 (45%)**
+- [x] **Completed: 42/91 (46%)**
 - [ ] **In Progress: 0/91 (0%)**  
 - [ ] **Remaining: 51/91 (56%)**
 

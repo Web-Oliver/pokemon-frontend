@@ -367,10 +367,10 @@ export interface EntityConfig<T> {
 export const createPsaCardConfig = (collectionApi: any): EntityConfig<any> => {
   return {
     apiMethods: {
-      create: (data: any) => collectionApi.addPsaGradedCard(data),
-      update: (id: string, data: any) => collectionApi.updatePsaGradedCard(id, data),
-      delete: (id: string) => collectionApi.deletePsaGradedCard(id),
-      markSold: (id: string, saleDetails: any) => collectionApi.markPsaGradedCardSold(id, saleDetails),
+      create: (data: any) => collectionApi.createPsaCard(data),
+      update: (id: string, data: any) => collectionApi.updatePsaCard(id, data),
+      delete: (id: string) => collectionApi.deletePsaCard(id),
+      markSold: (id: string, saleDetails: any) => collectionApi.markPsaCardSold(id, saleDetails),
     },
     entityName: 'PSA Graded Card',
     messages: {
@@ -389,7 +389,7 @@ export const createPsaCardConfig = (collectionApi: any): EntityConfig<any> => {
 export const createRawCardConfig = (collectionApi: any): EntityConfig<any> => {
   return {
     apiMethods: {
-      create: (data: any) => collectionApi.addRawCard(data),
+      create: (data: any) => collectionApi.createRawCard(data),
       update: (id: string, data: any) => collectionApi.updateRawCard(id, data),
       delete: (id: string) => collectionApi.deleteRawCard(id),
       markSold: (id: string, saleDetails: any) => collectionApi.markRawCardSold(id, saleDetails),
@@ -411,7 +411,7 @@ export const createRawCardConfig = (collectionApi: any): EntityConfig<any> => {
 export const createSealedProductConfig = (collectionApi: any): EntityConfig<any> => {
   return {
     apiMethods: {
-      create: (data: any) => collectionApi.addSealedProduct(data),
+      create: (data: any) => collectionApi.createSealedProduct(data),
       update: (id: string, data: any) => collectionApi.updateSealedProduct(id, data),
       delete: (id: string) => collectionApi.deleteSealedProduct(id),
       markSold: (id: string, saleDetails: any) => collectionApi.markSealedProductSold(id, saleDetails),
