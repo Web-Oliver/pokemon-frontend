@@ -12,7 +12,7 @@ import { Download } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
 import { ImageProductView } from '../../../../shared/components/molecules/common/ImageProductView';
-import LoadingSpinner from '../../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../../shared/components/molecules/common/GenericLoadingState';
 import { navigationHelper } from "../../../shared/utils/navigation";
 
 export interface ItemImageGalleryProps {
@@ -81,7 +81,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
             className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-[var(--theme-accent-primary)] text-white rounded-lg hover:bg-[var(--theme-accent-primary)]/80 transition-colors disabled:opacity-50 text-sm sm:text-base"
           >
             {downloadingZip ? (
-              <LoadingSpinner size="sm" />
+              <GenericLoadingState variant="spinner" size="sm" />
             ) : (
               <Download className="w-4 h-4" />
             )}

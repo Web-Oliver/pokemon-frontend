@@ -136,7 +136,6 @@ export { useAsyncOperation } from './useAsyncOperation';
 // Form utilities
 export { useBaseForm } from './useBaseForm';
 export { useFormSubmission } from './useFormSubmission';
-export { useFormValidation } from './useFormValidation';
 
 // =============================================================================
 // DEPRECATED HOOKS (Remove in next major version)

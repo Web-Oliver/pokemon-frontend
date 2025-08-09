@@ -9,7 +9,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import UnifiedHeader from '../../molecules/common/UnifiedHeader';
-import LoadingSpinner from '../../molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../molecules/common/GenericLoadingState';
 
 export interface SimpleFormContainerProps {
   /** Header icon */
@@ -49,7 +49,7 @@ export const SimpleFormContainer: React.FC<SimpleFormContainerProps> = ({
           size="md"
         />
         <div className="flex justify-center py-8">
-          <LoadingSpinner text="Loading form..." />
+          <GenericLoadingState variant="spinner" text="Loading form..." />
         </div>
       </div>
     );

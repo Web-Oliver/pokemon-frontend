@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import LoadingSpinner from '../../molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../molecules/common/GenericLoadingState';
 import UnifiedHeader from '../../molecules/common/UnifiedHeader';
 
 export interface PageLayoutProps {
@@ -57,7 +57,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
           ></div>
         </div>
         <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <LoadingSpinner text={`Loading ${title}...`} />
+          <GenericLoadingState variant="spinner" text={`Loading ${title}...`} />
         </div>
       </div>
     );

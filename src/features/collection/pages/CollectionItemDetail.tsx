@@ -15,7 +15,7 @@ import {
   PokemonConfirmModal,
 } from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
 import { useModal } from '../../../shared/hooks/useModal';
 import { useCollectionItemFromUrl } from '../../../shared/hooks/collection/useCollectionItem';
@@ -156,7 +156,7 @@ const CollectionItemDetail: React.FC = () => {
 
   // Loading state
   if (loading) {
-    return <LoadingSpinner size="lg" text="Loading item details..." />;
+    return <GenericLoadingState variant="spinner" size="lg" text="Loading item details..." />;
   }
 
   // Error state

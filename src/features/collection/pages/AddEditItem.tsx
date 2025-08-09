@@ -17,7 +17,7 @@
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 // Lazy load form components for better bundle splitting
 const AddEditCardForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditCardForm')
@@ -161,7 +161,7 @@ const AddEditItem: React.FC = () => {
       case 'psa-graded':
         return (
           <Suspense
-            fallback={<LoadingSpinner text="Loading PSA Card Form..." />}
+            fallback={<GenericLoadingState variant="spinner" text="Loading PSA Card Form..." />}
           >
             <AddEditCardForm
               cardType="psa-graded"
@@ -175,7 +175,7 @@ const AddEditItem: React.FC = () => {
       case 'raw-card':
         return (
           <Suspense
-            fallback={<LoadingSpinner text="Loading Raw Card Form..." />}
+            fallback={<GenericLoadingState variant="spinner" text="Loading Raw Card Form..." />}
           >
             <AddEditCardForm
               cardType="raw-card"
@@ -189,7 +189,7 @@ const AddEditItem: React.FC = () => {
       case 'sealed-product':
         return (
           <Suspense
-            fallback={<LoadingSpinner text="Loading Sealed Product Form..." />}
+            fallback={<GenericLoadingState variant="spinner" text="Loading Sealed Product Form..." />}
           >
             <AddEditSealedProductForm
               onCancel={handleFormCancel}

@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { useRecentActivities } from '../../../shared/hooks/useActivity';
@@ -280,7 +280,8 @@ const Dashboard: React.FC = () => {
               <div className="p-8 relative z-10">
                 {activitiesLoading ? (
                   <div className="flex justify-center py-8">
-                    <LoadingSpinner
+                    <GenericLoadingState
+                      variant="spinner"
                       size="md"
                       text="Loading recent activities..."
                     />

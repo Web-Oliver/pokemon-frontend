@@ -29,9 +29,7 @@ export type { BaseCardProps } from './BaseCard';
 export { default as BaseListItem } from './BaseListItem';
 export type { BaseListItemProps } from './BaseListItem';
 
-// LEGACY: Backward compatibility wrappers (use UnifiedHeader instead)
-export { default as GlassmorphismHeader } from './GlassmorphismHeader';
-export { default as FormHeader } from './FormHeader';
+// LEGACY: Headers consolidated into UnifiedHeader (FormHeader and GlassmorphismHeader removed)
 
 // Other common components
 export { default as EmptyState } from './EmptyState';

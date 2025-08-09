@@ -13,7 +13,7 @@
 
 import { Euro, Package, Search } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import ProductSearchFilters from '../../../shared/components/molecules/common/ProductSearchFilters';
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
 import PaginationControls from '../../../shared/components/molecules/common/PaginationControls';
@@ -169,7 +169,7 @@ const ProductSearch: React.FC = () => {
           {loading && (
             <div className="flex justify-center items-center py-20">
               <div className="text-center">
-                <LoadingSpinner size="lg" />
+                <GenericLoadingState variant="spinner" size="lg" />
                 <p className="mt-4 text-[var(--theme-text-secondary)] font-medium">
                   Loading products...
                 </p>

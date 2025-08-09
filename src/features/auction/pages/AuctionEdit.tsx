@@ -22,7 +22,7 @@ import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
-import LoadingSpinner from '../../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import { getStatusColor } from '../../../shared/utils/helpers/auctionStatusUtils';
 import CollectionItemCard, {

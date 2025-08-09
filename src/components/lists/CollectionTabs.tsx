@@ -11,7 +11,7 @@
 
 import React, { memo } from 'react';
 import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
-import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
 import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
 import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
@@ -154,7 +154,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
       if (loading) {
         return (
           <div className="flex justify-center items-center py-12">
-            <LoadingSpinner size="lg" />
+            <GenericLoadingState variant="spinner" size="lg" />
           </div>
         );
       }

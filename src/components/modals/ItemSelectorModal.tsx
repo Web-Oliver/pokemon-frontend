@@ -12,7 +12,7 @@ import { PokemonModal } from '../../shared/components/atoms/design-system/Pokemo
 import { PokemonButton } from '../../shared/components/atoms/design-system/PokemonButton';
 import { PokemonInput } from '../../shared/components/atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../shared/components/atoms/design-system/PokemonSelect';
-import LoadingSpinner from '../../shared/components/molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
 import { FormErrorMessage } from '../../shared/components/molecules/common/FormElements';
 
 // Generic item interface that all selectable items must extend
@@ -350,7 +350,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
         {/* Content */}
         {loading ? (
           <div className="py-12">
-            <LoadingSpinner text="Loading items..." />
+            <GenericLoadingState variant="spinner" text="Loading items..." />
           </div>
         ) : error ? (
           <FormErrorMessage error={error} variant="toast" />

@@ -73,7 +73,7 @@ export interface UseLoadingStateReturn {
  * };
  * 
  * // Simplified conditional rendering
- * if (loadingState.loading) return <LoadingSpinner />;
+ * if (loadingState.loading) return <GenericLoadingState />;
  * if (loadingState.hasError) return <ErrorMessage error={loadingState.error} />;
  * ```
  */

@@ -22,7 +22,7 @@ import {
 } from './wrappers/FormSubmissionWrapper';
 import { useLoadingState } from '../../hooks/common/useLoadingState';
 import { PokemonInput } from '../atoms/design-system/PokemonInput';
-import LoadingSpinner from '../molecules/common/LoadingSpinner';
+import GenericLoadingState from '../molecules/common/GenericLoadingState';
 import UnifiedHeader from '../molecules/common/UnifiedHeader';
 import FormActionButtons from '../molecules/common/FormActionButtons';
 import { PokemonSearch } from '../design-system/PokemonSearch';
@@ -321,7 +321,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   if (loading && !isSubmitting) {
     return (
       <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
+        <GenericLoadingState variant="spinner" size="lg" />
       </div>
     );
   }

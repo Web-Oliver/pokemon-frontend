@@ -22,7 +22,7 @@ import { FormWrapper } from '../common/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
 import { ErrorMessage } from '../../molecules/common/FormElements/ErrorMessage';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
-import LoadingSpinner from '../../molecules/common/LoadingSpinner';
+import GenericLoadingState from '../../molecules/common/GenericLoadingState';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import type {
   VisualTheme,
@@ -563,7 +563,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
             'flex items-center justify-center p-12'
           )}
         >
-          <LoadingSpinner size="lg" />
+          <GenericLoadingState variant="spinner" size="lg" />
         </div>
       );
     }
