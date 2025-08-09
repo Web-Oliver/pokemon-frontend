@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useVisualTheme } from '../../../contexts/theme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
 
 export type LoadingVariant = 'spinner' | 'skeleton' | 'shimmer';
@@ -40,7 +40,9 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
   width = 'w-full',
   height = 'h-4',
 }) => {
-  const { visualTheme: _visualTheme } = useVisualTheme();
+  // Theme context integration via centralized useTheme hook
+  const { config } = useTheme();
+  const { visualTheme: _visualTheme } = config;
   const elementTheme = getElementTheme(themeColor);
 
   const sizeClasses = {

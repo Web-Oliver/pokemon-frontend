@@ -23,9 +23,7 @@ import { Label } from '../../molecules/common/FormElements/Label';
 import { ErrorMessage } from '../../molecules/common/FormElements/ErrorMessage';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
 import LoadingSpinner from '../../molecules/common/LoadingSpinner';
-import { useVisualTheme } from '../../../hooks/theme/useVisualTheme';
-import { useLayoutTheme } from '../../../hooks/theme/useLayoutTheme';
-import { useAnimationTheme } from '../../../hooks/theme/useAnimationTheme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 import type {
   VisualTheme,
   Density,
@@ -198,10 +196,9 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
     ref
   ) => {
     // Theme context integration
-    const { visualTheme } = useVisualTheme();
-    const { density: contextDensity } = useLayoutTheme();
-    const { animationIntensity: contextAnimationIntensity } =
-      useAnimationTheme();
+    // Theme context integration via centralized useTheme hook
+    const { config } = useTheme();
+    const { visualTheme, density: contextDensity, animationIntensity: contextAnimationIntensity } = config;
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;

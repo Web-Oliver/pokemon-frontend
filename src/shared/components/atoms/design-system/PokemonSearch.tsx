@@ -40,11 +40,7 @@ import {
   UseFormClearErrors,
 } from 'react-hook-form';
 import { SearchResult, useSearch, useOptimizedSearch, useSearchResultSelector } from '../../../hooks/useUnifiedSearch';
-import {
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-} from '../../../contexts/theme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
 import { cn } from '../../../utils/ui/classNameUtils';
 
@@ -419,10 +415,9 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
   // Container variant props
   containerVariant = 'inline',
 }) => {
-  // Theme integration
-  const visualTheme = useVisualTheme();
-  const layoutTheme = useLayoutTheme();
-  const animationTheme = useAnimationTheme();
+  // Theme context integration via centralized useTheme hook
+  const { config } = useTheme();
+  const { visualTheme, density: layoutDensity, animationIntensity } = config;
 
   // Direct search hook integration - FIXED to actually trigger searches
   const search = useSearch();

@@ -7,8 +7,8 @@
  */
 
 import { useEffect, ReactNode } from 'react';
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme';
-import { useAccessibilityTheme } from '../../hooks/useAccessibilityTheme';
+import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../hooks/theme/useTheme';
 import { cn } from '../../../utils/ui/classNameUtils';
 
 export interface FocusManagementThemeProps {

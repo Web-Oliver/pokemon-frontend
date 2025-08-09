@@ -209,10 +209,10 @@
 - [x] External components should only use UnifiedThemeProvider
 
 ### Theme Hook Consolidation  
-- [ ] Make `shared/hooks/theme/useTheme.ts` the only exposed theme hook
-- [ ] Internalize: useAccessibilityTheme, useAnimationTheme, useLayoutTheme
-- [ ] Abstract away specific context details in useTheme
-- [ ] Remove direct usage of individual theme hooks
+- [x] Make `shared/hooks/theme/useTheme.ts` the only exposed theme hook
+- [x] Internalize: useAccessibilityTheme, useAnimationTheme, useLayoutTheme
+- [x] Abstract away specific context details in useTheme
+- [x] Remove direct usage of individual theme hooks
 
 ### Theme Configuration & Utilities
 - [ ] Centralize theme constants in `shared/utils/theme/index.ts`

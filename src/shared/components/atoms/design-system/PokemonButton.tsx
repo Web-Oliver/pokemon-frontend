@@ -27,11 +27,7 @@ import {
 } from '../../../utils/helpers/unifiedUtilities';
 import { generateThemeClasses } from '../../../utils/ui/themeUtils';
 import { focusRing } from '../../../utils/ui/classNameUtils';
-import {
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-} from '../../../contexts/theme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 
 export interface PokemonButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
@@ -102,14 +98,8 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     },
     ref
   ) => {
-    // Theme context integration
-    const visualTheme = useVisualTheme();
-    const layoutTheme = useLayoutTheme();
-
-    // Theme variables kept for future theming enhancements
-    void visualTheme;
-    void layoutTheme;
-    const animationTheme = useAnimationTheme();
+    // Theme context integration via centralized useTheme hook
+    const { config } = useTheme();
 
     // Determine icons (legacy vs theme system)
     const resolvedStartIcon =
@@ -235,7 +225,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     // Animation intensity aware effects
     const getAnimationClasses = () => {
       const intensity =
-        animationIntensity || animationTheme?.intensity || 'normal';
+        animationIntensity || config?.animationIntensity || 'normal';
       switch (intensity) {
         case 'none':
           return '';

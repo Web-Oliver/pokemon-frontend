@@ -26,11 +26,7 @@ import {
   getA11yClasses,
 } from '../../../utils/helpers/unifiedUtilities';
 import { cardClasses } from '../../../utils/ui/classNameUtils';
-import {
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-} from '../../../contexts/theme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 import { PokemonButton } from './PokemonButton';
 
 export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
@@ -144,9 +140,8 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       ...restDomProps
     } = domProps;
     // Theme context integration
-    const visualTheme = useVisualTheme();
-    const layoutTheme = useLayoutTheme();
-    const animationTheme = useAnimationTheme();
+    // Theme context integration via centralized useTheme hook
+    const { config } = useTheme();
 
     // Resolve open state (legacy vs theme system)
     const modalOpen = open !== undefined ? open : isOpen || false;

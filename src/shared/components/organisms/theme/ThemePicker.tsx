@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { themePresets, VisualTheme } from '../../contexts/ThemeContext';
-import { useVisualTheme, useLayoutTheme } from '../../contexts/theme';
+import { useTheme } from '../../hooks/theme/useTheme';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
 import { cn } from '../../../utils/ui/classNameUtils';
@@ -37,9 +37,11 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   showTitle = true,
   onThemeChange,
 }) => {
-  const { visualTheme, setVisualTheme, applyPreset, presets } =
-    useVisualTheme();
-  const { density } = useLayoutTheme();
+  // Theme context integration via centralized useTheme hook
+  const { config, setVisualTheme, applyPreset } = useTheme();
+  const { visualTheme, density } = config;
+  // Use theme presets from context (imported above)
+  const presets = themePresets;
 
   const handleThemeSelect = (themeId: VisualTheme) => {
     // Apply the full preset configuration

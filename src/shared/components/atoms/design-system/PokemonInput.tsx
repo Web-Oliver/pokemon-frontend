@@ -11,11 +11,7 @@
 import React, { forwardRef } from 'react';
 import { cn } from '../../../utils/ui/classNameUtils';
 import { Loader2 } from 'lucide-react';
-import {
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-} from '../../../contexts/theme';
+import { useTheme } from '../../../hooks/theme/useTheme';
 import { inputClasses } from '../../../utils/ui/classNameUtils';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
@@ -92,10 +88,9 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
     ref
   ) => {
     // Theme context integration
-    const { visualTheme } = useVisualTheme();
-    const { density: contextDensity } = useLayoutTheme();
-    const { animationIntensity: contextAnimationIntensity } =
-      useAnimationTheme();
+    // Theme context integration via centralized useTheme hook
+    const { config } = useTheme();
+    const { visualTheme, density: contextDensity, animationIntensity: contextAnimationIntensity } = config;
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;

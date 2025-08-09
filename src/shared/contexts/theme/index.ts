@@ -8,10 +8,7 @@
 export {
   UnifiedThemeProvider,
   useUnifiedTheme,
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-  useAccessibilityTheme,
+  // Individual theme hooks are now internal - use useTheme from hooks/theme/useTheme.ts
 } from './UnifiedThemeProvider';
 
 // LEGACY PROVIDERS DEPRECATED - Use UnifiedThemeProvider for all theme functionality
