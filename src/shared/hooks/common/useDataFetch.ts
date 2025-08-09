@@ -11,22 +11,31 @@
  * Following CLAUDE.md SOLID principles and DRY pattern consolidation
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { log } from '../../utils/performance/logger';
-import { handleApiError } from '../../utils/helpers/errorHandler';
+import { 
+  handleApiError, 
+  ApplicationError, 
+  handleError,
+  safeExecute,
+  type ErrorContext 
+} from '../../utils/helpers/errorHandler';
 
 export interface UseDataFetchOptions<T> {
   initialData?: T;
   immediate?: boolean; // Whether to fetch immediately on mount
   validateData?: (data: T) => boolean;
   onSuccess?: (data: T) => void;
-  onError?: (error: string) => void;
+  onError?: (error: ApplicationError) => void;
+  errorContext?: ErrorContext; // Enhanced error context
+  dependencies?: React.DependencyList; // Dependencies that trigger refetch
+  refetchOnDependencyChange?: boolean;
 }
 
 export interface UseDataFetchReturn<T> {
   data: T;
   loading: boolean;
-  error: string | null;
+  error: ApplicationError | null; // Enhanced error type
   
   // Actions
   execute: (fetcher: () => Promise<T>) => Promise<T | undefined>;
@@ -54,18 +63,25 @@ export const useDataFetch = <T>(
     immediate = false,
     validateData,
     onSuccess,
-    onError
+    onError,
+    errorContext = {},
+    dependencies = [],
+    refetchOnDependencyChange = true,
   } = options;
 
   // Consolidated state - replaces multiple useState calls
   const [data, setData] = useState<T>(initialData as T);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApplicationError | null>(null);
 
   // Store the fetcher for refetch functionality
   const [currentFetcher, setCurrentFetcher] = useState<(() => Promise<T>) | null>(
     fetcher || null
   );
+  
+  // Race condition prevention
+  const mountedRef = useRef<boolean>(true);
+  const currentFetchRef = useRef<Promise<T> | null>(null);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -78,46 +94,64 @@ export const useDataFetch = <T>(
   }, [initialData]);
 
   const execute = useCallback(async (fetcherFn: () => Promise<T>): Promise<T | undefined> => {
+    if (loading) return; // Prevent concurrent fetches
+    
+    setLoading(true);
+    setError(null);
+
+    log('[USE DATA FETCH] Executing data fetch operation');
+    
+    const fetchPromise = safeExecute(
+      async () => {
+        const result = await fetcherFn();
+        
+        // Optional data validation
+        if (validateData && !validateData(result)) {
+          throw new Error('Data validation failed');
+        }
+        
+        return result;
+      },
+      { ...errorContext, action: 'execute' }
+    );
+    
+    currentFetchRef.current = fetchPromise;
+
     try {
-      setLoading(true);
-      setError(null);
-
-      log('[USE DATA FETCH] Executing data fetch operation');
-      const result = await fetcherFn();
-
-      // Optional data validation
-      if (validateData && !validateData(result)) {
-        throw new Error('Data validation failed');
-      }
-
-      setData(result);
-      setLoading(false);
-
-      // Success callback
-      if (onSuccess) {
-        onSuccess(result);
+      const result = await fetchPromise;
+      
+      // Only update state if component is still mounted and this is the current fetch
+      if (mountedRef.current && currentFetchRef.current === fetchPromise) {
+        if (result !== undefined) {
+          setData(result);
+          onSuccess?.(result);
+        }
+        setLoading(false);
       }
 
       log('[USE DATA FETCH] Data fetch completed successfully');
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      
-      log('[USE DATA FETCH] Data fetch failed', { error: errorMessage });
-      setError(errorMessage);
-      setLoading(false);
+      // Only update error state if component is still mounted
+      if (mountedRef.current && currentFetchRef.current === fetchPromise) {
+        const processedError = handleError(err, errorContext);
+        setError(processedError);
+        setLoading(false);
 
-      // Error callback
-      if (onError) {
-        onError(errorMessage);
-      } else {
-        // Use centralized error handler if no custom handler provided
-        handleApiError(err, 'Data fetch failed');
+        log('[USE DATA FETCH] Data fetch failed', { error: processedError.getDebugInfo() });
+
+        // Enhanced error callback
+        if (onError) {
+          onError(processedError);
+        } else {
+          // Use centralized error handler if no custom handler provided
+          handleApiError(err, 'Data fetch failed');
+        }
       }
 
       return undefined;
     }
-  }, [validateData, onSuccess, onError]);
+  }, [loading, validateData, onSuccess, onError, errorContext]);
 
   const refetch = useCallback(async (): Promise<T | undefined> => {
     if (!currentFetcher) {
@@ -139,7 +173,27 @@ export const useDataFetch = <T>(
     if (immediate && fetcher) {
       execute(fetcher);
     }
+    
+    return () => {
+      mountedRef.current = false;
+    };
   }, [immediate, fetcher, execute]);
+
+  // Handle dependency changes
+  useEffect(() => {
+    if (refetchOnDependencyChange && currentFetcher && dependencies.length > 0) {
+      execute(currentFetcher);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      currentFetchRef.current = null;
+    };
+  }, []);
 
   // Computed values for convenience
   const hasData = data !== null && data !== undefined;

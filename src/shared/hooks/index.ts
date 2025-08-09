@@ -30,11 +30,28 @@ export type {
   UseCollectionOperationsReturn,
 } from './crud';
 
+export type {
+  UseDataFetchOptions,
+  UseDataFetchReturn,
+  UsePaginatedDataFetchReturn,
+} from './common/useDataFetch';
+
+export type {
+  UseToggleReturn,
+} from './common/useToggle';
+
+export type {
+  UseSelectionReturn,
+  UseMultiSelectionReturn,
+} from './common/useSelection';
+
 // Search functionality (consolidated from multiple search hooks)
 export { useUnifiedSearch } from './useUnifiedSearch';
 
 // Generic state management (replaces repetitive useState patterns)
-export { useDataFetch } from './common/useDataFetch';
+export { useDataFetch, useArrayDataFetch, usePaginatedDataFetch } from './common/useDataFetch';
+export { useToggle, useMultipleToggle, useConditionalToggle } from './common/useToggle';
+export { useSelection, useMultiSelection } from './common/useSelection';
 
 // Form state management (consolidated form handling)
 export {

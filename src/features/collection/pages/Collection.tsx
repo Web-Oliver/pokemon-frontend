@@ -18,6 +18,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useToggle, useSelection } from '../../../shared/hooks';
 // Lazy load modal/form components for better performance
 const MarkSoldForm = React.lazy(() =>
   import('../../../shared/components/forms/MarkSoldForm').then((m) => ({
@@ -46,8 +47,10 @@ import {
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
-  const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  
+  // Replace repetitive modal useState patterns with useToggle
+  const markSoldModal = useToggle(false);
+  const exportModal = useToggle(false);
   const [selectedItem, setSelectedItem] = useState<{
     id: string;
     type: 'psa' | 'raw' | 'sealed';
@@ -117,7 +120,7 @@ const Collection: React.FC = () => {
           (item as any).name ||
           'Unknown Item',
       });
-      setIsMarkSoldModalOpen(true);
+      markSoldModal.setTrue();
     },
     []
   );
@@ -125,13 +128,13 @@ const Collection: React.FC = () => {
   // Handle successful mark as sold operation
   const handleMarkSoldSuccess = useCallback(() => {
     // Close modal and reset selected item
-    setIsMarkSoldModalOpen(false);
+    markSoldModal.setFalse();
     setSelectedItem(null);
   }, []);
 
   // Handle modal close
   const handleModalClose = useCallback(() => {
-    setIsMarkSoldModalOpen(false);
+    markSoldModal.setFalse();
     setSelectedItem(null);
   }, []);
 
@@ -143,7 +146,7 @@ const Collection: React.FC = () => {
 
   const handleExportSelectedItems = useCallback(async () => {
     await exportSelectedItems(selectedItemsForExport);
-    setIsExportModalOpen(false);
+    exportModal.setFalse();
   }, [exportSelectedItems, selectedItemsForExport]);
 
   const handleOpenExportModal = useCallback(() => {
@@ -151,7 +154,7 @@ const Collection: React.FC = () => {
     if (allItems.length === 0) {
       return; // useCollectionExport hook will handle the warning
     }
-    setIsExportModalOpen(true);
+    exportModal.setTrue();
   }, [getAllCollectionItems]);
 
   const handleSelectAllItems = useCallback(() => {
@@ -240,8 +243,8 @@ const Collection: React.FC = () => {
       {/* Export Selection Modal */}
       <Suspense fallback={<div>Loading export modal...</div>}>
         <CollectionExportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
+          isOpen={exportModal.value}
+          onClose={exportModal.setFalse}
           items={getAllCollectionItems()}
           selectedItemIds={selectedItemsForExport}
           isExporting={isExporting}
@@ -254,7 +257,7 @@ const Collection: React.FC = () => {
 
       {/* Mark as Sold Modal using PokemonModal */}
       <PokemonModal
-        isOpen={isMarkSoldModalOpen}
+        isOpen={markSoldModal.value}
         onClose={handleModalClose}
         title={`Mark "${selectedItem?.name}" as Sold`}
         size="lg"
