@@ -175,14 +175,14 @@
 - [x] Merge: createStrictValidator, createArrayGuard, createObjectGuard
 
 ### API Caching Utilities
-- [ ] Ensure `apiOptimization.ts` is sole source for API caching
-- [ ] Integrate with UnifiedApiService
-- [ ] Consolidate: setCacheData, getCacheStats, getCachedData
+- [x] Ensure `apiOptimization.ts` is sole source for API caching
+- [x] Integrate with UnifiedApiService
+- [x] Consolidate: setCacheData, getCacheStats, getCachedData
 
 ### Generic Resource Utilities
-- [ ] Integrate `genericApiOperations.ts` functions into useGenericCrudOperations
-- [ ] Move resource functions to UnifiedApiService if appropriate
-- [ ] Consolidate: createIdMapper, createResourceConfig, createResourceOperations
+- [x] Integrate `genericApiOperations.ts` functions into useGenericCrudOperations
+- [x] Move resource functions to UnifiedApiService if appropriate
+- [x] Consolidate: createIdMapper, createResourceConfig, createResourceOperations
 
 ### Navigation Utilities
 - [ ] Consolidate navigation functions into `shared/utils/navigation/index.ts`
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 65/91 (71%)**
+- [x] **Completed: 71/91 (78%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 26/91 (29%)**
+- [ ] **Remaining: 20/91 (22%)**
 
 ---
 
