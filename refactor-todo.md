@@ -231,7 +231,7 @@
 ### Type Organization Review
 - [x] Audit all `features/*/types` for duplications
 - [x] Move shared types to `shared/domain/models` or `shared/types`
-- [ ] Ensure feature types are truly feature-specific
+- [x] Ensure feature types are truly feature-specific
 
 ### Type Consolidation
 - [ ] Review: types/api/ApiResponse.ts → consolidate if duplicate
