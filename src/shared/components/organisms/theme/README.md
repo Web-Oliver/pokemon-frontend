@@ -1,37 +1,64 @@
-# Theme Export/Import System
+# Consolidated Theme UI Components
 
-This directory contains components and utilities for exporting and importing theme configurations.
+This directory contains all theme-related UI components for the Pokemon Collection frontend. All theme management UI has been consolidated here to follow CLAUDE.md principles of Single Responsibility and DRY.
 
-## Files Created
+## Components Included
 
-### `ThemeExporter.tsx`
+### Main Theme Components
 
-- Complete theme export/import UI component
-- Handles single theme and theme collection operations
-- Provides backup and restore functionality
-- Manages custom presets
+#### `ThemePicker.tsx`
+- Complete visual theme selection interface
+- Interactive theme switching with live preview
+- Responsive grid layout with theme preview cards
+- Theme-aware styling and animations
 
-### `themeExport.ts` (in utils/)
+#### `ThemeToggle.tsx` (moved from ui directory)
+- Stunning modern theme toggle component
+- Light/dark/system mode switching
+- Beautiful animated transitions
+- Tooltip and system theme indicators
 
-- Core export/import utilities
-- JSON file handling for themes
-- Theme validation and conversion
-- Local storage management for presets and backups
+### Accessibility Theme Components
+
+#### `AccessibilityTheme.tsx`
+- High contrast theme support
+- Reduced motion theme settings
+- Focus management controls
+- Comprehensive accessibility controls
+
+#### `HighContrastTheme.tsx`
+- High contrast mode implementation
+- WCAG compliant color schemes
+
+#### `ReducedMotionTheme.tsx`
+- Reduced motion support
+- Animation intensity controls
+
+#### `FocusManagementTheme.tsx`
+- Focus ring management
+- Keyboard navigation support
+
+#### `AccessibilityControls.tsx`
+- Accessibility settings panel
+- Toggle controls for accessibility features
 
 ## Usage
 
 ```tsx
-import { ThemeExporter } from '../components/theme';
+import { 
+  ThemePicker, 
+  ThemeToggle, 
+  AccessibilityControls,
+  ThemeComponents 
+} from '@/shared/components/organisms/theme';
 
-// Basic usage
-<ThemeExporter />
+// Individual component usage
+<ThemePicker onThemeChange={(theme) => console.log(theme)} />
+<ThemeToggle />
+<AccessibilityControls />
 
-// With custom configuration
-<ThemeExporter
-  size="lg"
-  showAdvanced={true}
-  onThemeImported={(themeName) => console.log(`Imported: ${themeName}`)}
-/>
+// Or use the consolidated export
+const { ThemePicker, ThemeToggle } = ThemeComponents;
 ```
 
 ## Features
