@@ -117,7 +117,7 @@
 ## 🔧 III. Hooks Consolidation
 
 ### CRUD Operations
-- [ ] Enhance `shared/hooks/crud/useGenericCrudOperations.ts` for maximum flexibility
+- [x] Enhance `shared/hooks/crud/useGenericCrudOperations.ts` for maximum flexibility
 - [ ] Remove: `usePsaCardOperations.ts` → replace with generic hook
 - [ ] Remove: `useRawCardOperations.ts` → replace with generic hook
 - [ ] Remove: `useSealedProductOperations.ts` → replace with generic hook
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 37/91 (41%)**
+- [x] **Completed: 38/91 (42%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 54/91 (59%)**
+- [ ] **Remaining: 53/91 (58%)**
 
 ---
 

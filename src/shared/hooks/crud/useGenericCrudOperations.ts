@@ -342,4 +342,286 @@ export const createLoggedCollectionOperation = <T>(
   };
 };
 
+// ============================================================================
+// SPECIALIZED FACTORY FUNCTIONS FOR CARD OPERATIONS
+// ============================================================================
+
+/**
+ * Entity configuration interface for consistent factory patterns
+ */
+export interface EntityConfig<T> {
+  apiMethods: CrudApiOperations<T>;
+  entityName: string;
+  messages: {
+    addSuccess: string;
+    updateSuccess: string;
+    deleteSuccess: string;
+    soldSuccess: string;
+  };
+}
+
+/**
+ * Factory function for PSA Card operations configuration
+ * Provides maximum flexibility for PSA card CRUD operations
+ */
+export const createPsaCardConfig = (collectionApi: any): EntityConfig<any> => {
+  return {
+    apiMethods: {
+      create: (data: any) => collectionApi.addPsaGradedCard(data),
+      update: (id: string, data: any) => collectionApi.updatePsaGradedCard(id, data),
+      delete: (id: string) => collectionApi.deletePsaGradedCard(id),
+      markSold: (id: string, saleDetails: any) => collectionApi.markPsaGradedCardSold(id, saleDetails),
+    },
+    entityName: 'PSA Graded Card',
+    messages: {
+      addSuccess: '🏆 PSA Card added to collection!',
+      updateSuccess: '✨ PSA Card updated successfully!',
+      deleteSuccess: '🗑️ PSA Card removed from collection!',
+      soldSuccess: '💰 PSA Card marked as sold!',
+    },
+  };
+};
+
+/**
+ * Factory function for Raw Card operations configuration
+ * Provides maximum flexibility for Raw card CRUD operations
+ */
+export const createRawCardConfig = (collectionApi: any): EntityConfig<any> => {
+  return {
+    apiMethods: {
+      create: (data: any) => collectionApi.addRawCard(data),
+      update: (id: string, data: any) => collectionApi.updateRawCard(id, data),
+      delete: (id: string) => collectionApi.deleteRawCard(id),
+      markSold: (id: string, saleDetails: any) => collectionApi.markRawCardSold(id, saleDetails),
+    },
+    entityName: 'Raw Card',
+    messages: {
+      addSuccess: '📦 Raw Card added to collection!',
+      updateSuccess: '✨ Raw Card updated successfully!',
+      deleteSuccess: '🗑️ Raw Card removed from collection!',
+      soldSuccess: '💰 Raw Card marked as sold!',
+    },
+  };
+};
+
+/**
+ * Factory function for Sealed Product operations configuration
+ * Provides maximum flexibility for Sealed product CRUD operations
+ */
+export const createSealedProductConfig = (collectionApi: any): EntityConfig<any> => {
+  return {
+    apiMethods: {
+      create: (data: any) => collectionApi.addSealedProduct(data),
+      update: (id: string, data: any) => collectionApi.updateSealedProduct(id, data),
+      delete: (id: string) => collectionApi.deleteSealedProduct(id),
+      markSold: (id: string, saleDetails: any) => collectionApi.markSealedProductSold(id, saleDetails),
+    },
+    entityName: 'Sealed Product',
+    messages: {
+      addSuccess: '📦 Sealed Product added to collection!',
+      updateSuccess: '✨ Sealed Product updated successfully!',
+      deleteSuccess: '🗑️ Sealed Product removed from collection!',
+      soldSuccess: '💰 Sealed Product marked as sold!',
+    },
+  };
+};
+
+/**
+ * Generic factory function for creating any entity configuration
+ * Maximum flexibility - can be used for any entity type
+ */
+export const createEntityConfig = <T>(
+  entityName: string,
+  apiMethods: CrudApiOperations<T>,
+  customMessages?: Partial<EntityConfig<T>['messages']>
+): EntityConfig<T> => {
+  const defaultMessages = {
+    addSuccess: `✅ ${entityName} added successfully!`,
+    updateSuccess: `✨ ${entityName} updated successfully!`,
+    deleteSuccess: `🗑️ ${entityName} removed successfully!`,
+    soldSuccess: `💰 ${entityName} marked as sold!`,
+  };
+
+  return {
+    apiMethods,
+    entityName,
+    messages: { ...defaultMessages, ...customMessages },
+  };
+};
+
+// ============================================================================
+// CONFIGURATION BUILDER PATTERN FOR MAXIMUM FLEXIBILITY
+// ============================================================================
+
+/**
+ * Builder class for creating flexible CRUD configurations
+ * Provides maximum flexibility with method chaining
+ */
+export class CrudConfigBuilder<T> {
+  private config: Partial<EnhancedCrudConfig> = {};
+  private messages: Partial<CrudMessages> = {};
+  private entityName: string = 'Entity';
+
+  /**
+   * Set the entity name for messages and logging
+   */
+  withEntityName(name: string): CrudConfigBuilder<T> {
+    this.entityName = name;
+    return this;
+  }
+
+  /**
+   * Set custom API operations
+   */
+  withApiOperations(operations: CrudApiOperations<T>): CrudConfigBuilder<T> {
+    this.config.apiOperations = operations;
+    return this;
+  }
+
+  /**
+   * Set ResourceConfig for automatic operation generation
+   */
+  withResourceConfig(resourceConfig: ResourceConfig): CrudConfigBuilder<T> {
+    this.config.resourceConfig = resourceConfig;
+    return this;
+  }
+
+  /**
+   * Enable sold operations (default: true for collection items)
+   */
+  withSoldOperations(enabled: boolean = true): CrudConfigBuilder<T> {
+    this.config.includeSoldOperations = enabled;
+    return this;
+  }
+
+  /**
+   * Enable export operations (default: true for collection items)
+   */
+  withExportOperations(enabled: boolean = true): CrudConfigBuilder<T> {
+    this.config.includeExportOperations = enabled;
+    return this;
+  }
+
+  /**
+   * Set custom success messages
+   */
+  withMessages(messages: Partial<CrudMessages>): CrudConfigBuilder<T> {
+    this.messages = { ...this.messages, ...messages };
+    return this;
+  }
+
+  /**
+   * Set custom success message for add operations
+   */
+  withAddMessage(message: string): CrudConfigBuilder<T> {
+    this.messages.addSuccess = message;
+    return this;
+  }
+
+  /**
+   * Set custom success message for update operations
+   */
+  withUpdateMessage(message: string): CrudConfigBuilder<T> {
+    this.messages.updateSuccess = message;
+    return this;
+  }
+
+  /**
+   * Set custom success message for delete operations
+   */
+  withDeleteMessage(message: string): CrudConfigBuilder<T> {
+    this.messages.deleteSuccess = message;
+    return this;
+  }
+
+  /**
+   * Set custom success message for sold operations
+   */
+  withSoldMessage(message: string): CrudConfigBuilder<T> {
+    this.messages.soldSuccess = message;
+    return this;
+  }
+
+  /**
+   * Build the final configuration
+   */
+  build(): { config: EnhancedCrudConfig; messages: CrudMessages } {
+    const defaultMessages: CrudMessages = {
+      entityName: this.entityName,
+      addSuccess: `✅ ${this.entityName} added successfully!`,
+      updateSuccess: `✨ ${this.entityName} updated successfully!`,
+      deleteSuccess: `🗑️ ${this.entityName} removed successfully!`,
+      soldSuccess: `💰 ${this.entityName} marked as sold!`,
+    };
+
+    return {
+      config: this.config as EnhancedCrudConfig,
+      messages: { ...defaultMessages, ...this.messages },
+    };
+  }
+
+  /**
+   * Build and return the useGenericCrudOperations hook
+   */
+  buildHook(): GenericCrudOperationsReturn<T> {
+    const { config, messages } = this.build();
+    
+    if (config.resourceConfig) {
+      return useEnhancedGenericCrudOperations<T>(config, messages);
+    } else if (config.apiOperations) {
+      return useGenericCrudOperations<T>(config.apiOperations, messages);
+    }
+    
+    throw new Error('CrudConfigBuilder: Either resourceConfig or apiOperations must be provided');
+  }
+}
+
+/**
+ * Factory function to create a new CrudConfigBuilder
+ * Provides maximum flexibility through builder pattern
+ */
+export const createCrudConfig = <T>(): CrudConfigBuilder<T> => {
+  return new CrudConfigBuilder<T>();
+};
+
+// ============================================================================
+// CONVENIENCE FUNCTIONS FOR COMMON PATTERNS
+// ============================================================================
+
+/**
+ * Quick factory for collection items (PSA cards, Raw cards, Sealed products)
+ * Provides sensible defaults for collection items
+ */
+export const createCollectionConfig = <T>(
+  entityName: string,
+  apiOperations: CrudApiOperations<T>,
+  customMessages?: Partial<CrudMessages>
+) => {
+  return createCrudConfig<T>()
+    .withEntityName(entityName)
+    .withApiOperations(apiOperations)
+    .withSoldOperations(true)  // Collection items support being sold
+    .withExportOperations(true)  // Collection items support export
+    .withMessages(customMessages || {})
+    .build();
+};
+
+/**
+ * Quick factory for non-collection entities (users, settings, etc.)
+ * Provides sensible defaults for non-collection items
+ */
+export const createStandardConfig = <T>(
+  entityName: string,
+  apiOperations: CrudApiOperations<T>,
+  customMessages?: Partial<CrudMessages>
+) => {
+  return createCrudConfig<T>()
+    .withEntityName(entityName)
+    .withApiOperations(apiOperations)
+    .withSoldOperations(false)  // Standard entities typically don't support being sold
+    .withExportOperations(false)  // Standard entities typically don't support export
+    .withMessages(customMessages || {})
+    .build();
+};
+
 export default useGenericCrudOperations;
