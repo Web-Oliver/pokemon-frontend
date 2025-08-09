@@ -38,7 +38,8 @@ import {
 // Import unified sections
 import SimpleFormContainer from './containers/SimpleFormContainer';
 import HierarchicalCardSearch from './sections/HierarchicalCardSearch';
-import CardInformationFields from './fields/CardInformationFields';
+import { FormField } from './fields/FormField';
+import UnifiedGradeDisplay from '../molecules/common/UnifiedGradeDisplay';
 import GradingPricingSection from './sections/GradingPricingSection';
 import SaleDetailsSection from './sections/SaleDetailsSection';
 import ImageUploadSection from './sections/ImageUploadSection';
@@ -200,15 +201,37 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
 
       {/* Card Information Display */}
       {(baseForm.form.watch('setName') && baseForm.form.watch('cardName')) && (
-        <CardInformationFields
-          card={{
-            setName: baseForm.form.watch('setName'),
-            cardName: baseForm.form.watch('cardName'),
-            cardNumber: baseForm.form.watch('cardNumber'),
-            variety: baseForm.form.watch('variety')
-          }}
-          readonly={true}
-        />
+        <div className="space-y-4">
+          <FormField
+            name="cardNumber"
+            label="Card Number"
+            type="text"
+            register={baseForm.form.register}
+            error={baseForm.form.formState.errors.cardNumber}
+            disabled={true}
+            readOnly={true}
+            autoFilled={true}
+            placeholder="Auto-filled from card selection"
+          />
+          <FormField
+            name="variety"
+            label="Variety"
+            type="text"
+            register={baseForm.form.register}
+            error={baseForm.form.formState.errors.variety}
+            disabled={true}
+            readOnly={true}
+            autoFilled={true}
+            placeholder="Auto-filled from card selection"
+          />
+          {/* Display grades if available */}
+          {baseForm.form.watch('grades') && (
+            <UnifiedGradeDisplay 
+              grades={baseForm.form.watch('grades')}
+              showTotal={true}
+            />
+          )}
+        </div>
       )}
 
       {/* Grading & Pricing Section - PSA only */}

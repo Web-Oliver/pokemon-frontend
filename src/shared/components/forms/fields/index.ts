@@ -6,6 +6,5 @@
  * Following CLAUDE.md organization principles
  */
 
-export { default as CardInformationFields } from './CardInformationFields';
 export { FormField } from './FormField';
 export { default as InformationFieldRenderer } from './InformationFieldRenderer';

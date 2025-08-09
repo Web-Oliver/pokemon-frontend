@@ -15,8 +15,8 @@ import React from 'react';
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import CardInformationFields from './CardInformationFields';
 import { FormField } from './FormField';
+import UnifiedGradeDisplay from '../../molecules/common/UnifiedGradeDisplay';
 import { ProductCategory } from '../../../domain/models/product';
 
 // Enhanced field types - supports both legacy and new central rendering
@@ -201,28 +201,170 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
   switch (fieldType) {
     case 'card':
       return (
-        <CardInformationFields
-          register={register}
-          errors={errors}
-          watch={watch!}
-          readOnlyFields={{
-            cardNumber: readOnlyFields.cardNumber,
-            variety: readOnlyFields.variety,
-            grades: readOnlyFields.grades,
-            gradeTotal: readOnlyFields.gradeTotal,
-            grade_1: readOnlyFields.grade_1,
-            grade_2: readOnlyFields.grade_2,
-            grade_3: readOnlyFields.grade_3,
-            grade_4: readOnlyFields.grade_4,
-            grade_5: readOnlyFields.grade_5,
-            grade_6: readOnlyFields.grade_6,
-            grade_7: readOnlyFields.grade_7,
-            grade_8: readOnlyFields.grade_8,
-            grade_9: readOnlyFields.grade_9,
-            grade_10: readOnlyFields.grade_10,
-          }}
-          isDisabled={isDisabled}
-        />
+        <div className="space-y-4">
+          {/* Card Number */}
+          {readOnlyFields.cardNumber && (
+            <FormField
+              name="cardNumber"
+              label="Card Number"
+              type="text"
+              register={register}
+              error={errors.cardNumber}
+              disabled={true}
+              readOnly={true}
+              autoFilled={true}
+              placeholder="Auto-filled from card selection"
+            />
+          )}
+
+          {/* Variety */}
+          {readOnlyFields.variety && (
+            <FormField
+              name="variety"
+              label="Variety"
+              type="text"
+              register={register}
+              error={errors.variety}
+              disabled={true}
+              readOnly={true}
+              autoFilled={true}
+              placeholder="Auto-filled from card selection"
+            />
+          )}
+
+          {/* Grade Total - Summary display */}
+          {readOnlyFields.gradeTotal && watch && (
+            <FormField
+              name="gradeTotal"
+              label="Total PSA Graded"
+              type="text"
+              register={register}
+              disabled={true}
+              readOnly={true}
+              autoFilled={true}
+            />
+          )}
+
+          {/* Complete Grades Breakdown */}
+          {readOnlyFields.grades && watch && watch('grades') && (
+            <UnifiedGradeDisplay 
+              grades={watch('grades')}
+              showTotal={true}
+            />
+          )}
+
+          {/* Individual Grade Fields */}
+          {readOnlyFields.grade_1 && (
+            <FormField
+              name="grade_1"
+              label="PSA 1"
+              type="number"
+              register={register}
+              error={errors.grade_1}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_2 && (
+            <FormField
+              name="grade_2"
+              label="PSA 2"
+              type="number"
+              register={register}
+              error={errors.grade_2}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_3 && (
+            <FormField
+              name="grade_3"
+              label="PSA 3"
+              type="number"
+              register={register}
+              error={errors.grade_3}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_4 && (
+            <FormField
+              name="grade_4"
+              label="PSA 4"
+              type="number"
+              register={register}
+              error={errors.grade_4}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_5 && (
+            <FormField
+              name="grade_5"
+              label="PSA 5"
+              type="number"
+              register={register}
+              error={errors.grade_5}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_6 && (
+            <FormField
+              name="grade_6"
+              label="PSA 6"
+              type="number"
+              register={register}
+              error={errors.grade_6}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_7 && (
+            <FormField
+              name="grade_7"
+              label="PSA 7"
+              type="number"
+              register={register}
+              error={errors.grade_7}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_8 && (
+            <FormField
+              name="grade_8"
+              label="PSA 8"
+              type="number"
+              register={register}
+              error={errors.grade_8}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_9 && (
+            <FormField
+              name="grade_9"
+              label="PSA 9"
+              type="number"
+              register={register}
+              error={errors.grade_9}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+          {readOnlyFields.grade_10 && (
+            <FormField
+              name="grade_10"
+              label="PSA 10"
+              type="number"
+              register={register}
+              error={errors.grade_10}
+              min="0"
+              disabled={isDisabled}
+            />
+          )}
+        </div>
       );
 
     case 'product':
