@@ -266,10 +266,10 @@
 - [x] Standardize: selectedItems, showPreview, isModalOpen patterns
 
 ### Validation Patterns
-- [ ] Enhance central validation utility for complex validation
-- [ ] Create `useFormValidation.ts` hook
-- [ ] Replace simple trim() validations with centralized logic
-- [ ] Standardize input validation across forms
+- [x] Enhance central validation utility for complex validation
+- [x] Create `useFormValidation.ts` hook
+- [x] Replace simple trim() validations with centralized logic
+- [x] Standardize input validation across forms
 
 ### Loading State Patterns
 - [ ] Standardize loading state management with single hook

@@ -22,6 +22,7 @@ import {
 } from './genericApiOperations';
 import unifiedApiClient from './unifiedApiClient';
 import { ISetProduct } from '../domain/models/setProduct';
+import { sanitizers, isNonEmptyString } from '../utils/validation';
 
 // ========== INTERFACES (ISP Compliance) ==========
 
@@ -111,13 +112,13 @@ export const searchSetProducts = async (
     limit,
   });
 
-  if (!query.trim()) {
+  if (!isNonEmptyString(query)) {
     console.log('[SETPRODUCTS API DEBUG] Empty query, returning empty array');
     return [];
   }
 
   const queryParams = new URLSearchParams({
-    search: query.trim(),
+    search: sanitizers.normalizeText(query),
     limit: limit.toString(),
   });
 
@@ -144,7 +145,7 @@ export const getSetProductSuggestions = async (
   query: string,
   limit: number = 10
 ): Promise<ISetProduct[]> => {
-  if (!query.trim()) {
+  if (!isNonEmptyString(query)) {
     return [];
   }
 

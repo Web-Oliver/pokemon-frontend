@@ -45,6 +45,11 @@ export type {
   UseMultiSelectionReturn,
 } from './common/useSelection';
 
+export type {
+  UseFormValidationOptions,
+  UseFormValidationReturn,
+} from './form/useFormValidation';
+
 // Search functionality (consolidated from multiple search hooks)
 export { useUnifiedSearch } from './useUnifiedSearch';
 
@@ -60,6 +65,7 @@ export {
 } from './form/useGenericFormState';
 
 export { useCardSelection, useCardSelectionState } from './form/useCardSelection';
+export { useFormValidation } from './form/useFormValidation';
 
 // Theme system (consolidated theme management)
 export { useTheme } from './theme/useTheme';
