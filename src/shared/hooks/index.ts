@@ -57,6 +57,13 @@ export { useUnifiedSearch } from './useUnifiedSearch';
 export { useDataFetch, useArrayDataFetch, usePaginatedDataFetch } from './common/useDataFetch';
 export { useToggle, useMultipleToggle, useConditionalToggle } from './common/useToggle';
 export { useSelection, useMultiSelection } from './common/useSelection';
+export { 
+  useLoadingState, 
+  useDataLoadingState, 
+  useFormLoadingState,
+  type UseLoadingStateOptions,
+  type UseLoadingStateReturn,
+} from './common/useLoadingState';
 
 // Form state management (consolidated form handling)
 export {
