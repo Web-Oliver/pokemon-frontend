@@ -119,7 +119,7 @@
 ### CRUD Operations
 - [x] Enhance `shared/hooks/crud/useGenericCrudOperations.ts` for maximum flexibility
 - [x] Remove: `usePsaCardOperations.ts` → replace with generic hook
-- [ ] Remove: `useRawCardOperations.ts` → replace with generic hook
+- [x] Remove: `useRawCardOperations.ts` → replace with generic hook
 - [ ] Remove: `useSealedProductOperations.ts` → replace with generic hook
 - [ ] Configure generic hook for entity types and API services
 
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 39/91 (43%)**
+- [x] **Completed: 40/91 (44%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 52/91 (57%)**
+- [ ] **Remaining: 51/91 (56%)**
 
 ---
 

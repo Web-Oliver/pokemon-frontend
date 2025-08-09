@@ -20,7 +20,6 @@ import {
   createSealedProductConfig
 } from './crud/useGenericCrudOperations';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useRawCardOperations } from './useRawCardOperations';
 import { useSealedProductOperations } from './useSealedProductOperations';
 import { useCollectionImageExport } from './useCollectionImageExport';
 
@@ -123,7 +122,16 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     soldSuccess: psaEntityConfig.messages.soldSuccess,
   });
   
-  const rawOperations = useRawCardOperations();
+  // Create Raw Card configuration and operations using generic hook
+  const rawEntityConfig = createRawCardConfig(collectionApi);
+  const rawOperations = useGenericCrudOperations(rawEntityConfig.apiMethods, {
+    entityName: rawEntityConfig.entityName,
+    addSuccess: rawEntityConfig.messages.addSuccess,
+    updateSuccess: rawEntityConfig.messages.updateSuccess,
+    deleteSuccess: rawEntityConfig.messages.deleteSuccess,
+    soldSuccess: rawEntityConfig.messages.soldSuccess,
+  });
+  
   const sealedOperations = useSealedProductOperations();
   const imageExport = useCollectionImageExport();
   // React Query for PSA Cards
@@ -288,7 +296,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const addRawCard = useCallback(
     async (cardData: Partial<IRawCard>) => {
       try {
-        const newCard = await rawOperations.addRawCard(cardData);
+        const newCard = await rawOperations.add(cardData);
         queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
         return newCard;
       } catch (error) {
@@ -302,7 +310,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const updateRawCard = useCallback(
     async (id: string, cardData: Partial<IRawCard>) => {
       try {
-        const updatedCard = await rawOperations.updateRawCard(id, cardData);
+        const updatedCard = await rawOperations.update(id, cardData);
         queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
         return updatedCard;
       } catch (error) {
@@ -316,7 +324,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const deleteRawCard = useCallback(
     async (id: string) => {
       try {
-        await rawOperations.deleteRawCard(id);
+        await rawOperations.delete(id);
         queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
       } catch (error) {
         // Error already handled by rawOperations
@@ -329,7 +337,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const markRawCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
-        const soldCard = await rawOperations.markRawCardSold(id, saleDetails);
+        const soldCard = await rawOperations.markSold(id, saleDetails);
         queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
         queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
         return soldCard;
