@@ -124,11 +124,11 @@
 - [x] Configure generic hook for entity types and API services
 
 ### Search Hook Unification
-- [ ] Consolidate into single `shared/hooks/useUnifiedSearch.ts`
-- [ ] Merge: useSearch.ts → useUnifiedSearch
-- [ ] Merge: useOptimizedSearch.ts → useUnifiedSearch
-- [ ] Merge: useHierarchicalSearch.tsx → useUnifiedSearch
-- [ ] Support: debouncing, pagination, filtering, hierarchical search
+- [x] Consolidate into single `shared/hooks/useUnifiedSearch.ts`
+- [x] Merge: useSearch.ts → useUnifiedSearch
+- [x] Merge: useOptimizedSearch.ts → useUnifiedSearch
+- [x] Merge: useHierarchicalSearch.tsx → useUnifiedSearch
+- [x] Support: debouncing, pagination, filtering, hierarchical search
 
 ### Modal Management
 - [ ] Consolidate `useModal.ts` and `useModalManager.ts` into single hook

@@ -39,11 +39,7 @@ import {
   UseFormWatch,
   UseFormClearErrors,
 } from 'react-hook-form';
-import { SearchResult, useSearch } from '../../../hooks/useSearch';
-import {
-  useOptimizedSearch,
-  useSearchResultSelector,
-} from '../../hooks/useOptimizedSearch';
+import { SearchResult, useSearch, useOptimizedSearch, useSearchResultSelector } from '../../../hooks/useUnifiedSearch';
 import {
   useVisualTheme,
   useLayoutTheme,

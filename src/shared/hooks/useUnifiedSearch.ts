@@ -528,6 +528,66 @@ export const useOptimizedSearch = () => {
 };
 
 // ===============================
+// UTILITY EXPORTS FROM LEGACY HOOKS
+// ===============================
+
+/** @deprecated Use with useUnifiedSearch results */
+export const useSearchResultSelector = <T>(
+  results: SearchResult[],
+  selector: (result: SearchResult) => T,
+  dependencies: React.DependencyList = []
+) => {
+  return useMemo(
+    () => (Array.isArray(results) ? results.map(selector) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [results, selector, ...dependencies]
+  );
+};
+
+/** Performance tracking for search operations */
+export const useSearchPerformance = () => {
+  const metricsRef = useRef({
+    searches: 0,
+    averageTime: 0,
+    cacheHits: 0,
+  });
+
+  const trackSearch = useCallback(
+    (duration: number, wasCached: boolean = false) => {
+      metricsRef.current.searches++;
+      if (wasCached) {
+        metricsRef.current.cacheHits++;
+      } else {
+        const total =
+          metricsRef.current.averageTime * (metricsRef.current.searches - 1) +
+          duration;
+        metricsRef.current.averageTime = total / metricsRef.current.searches;
+      }
+    },
+    []
+  );
+
+  const getMetrics = useCallback(
+    () => ({
+      ...metricsRef.current,
+      cacheHitRate:
+        metricsRef.current.searches > 0
+          ? (metricsRef.current.cacheHits / metricsRef.current.searches) * 100
+          : 0,
+    }),
+    []
+  );
+
+  return useMemo(
+    () => ({
+      trackSearch,
+      getMetrics,
+    }),
+    [trackSearch, getMetrics]
+  );
+};
+
+// ===============================
 // BACKWARD COMPATIBILITY EXPORTS
 // Maintain existing hook interfaces
 // ===============================
