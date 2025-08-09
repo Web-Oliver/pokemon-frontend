@@ -240,9 +240,9 @@
 - [x] Review: components/routing/types/RouterTypes.ts → consolidate if duplicate
 
 ### Type Guards Consolidation
-- [ ] Move TypeGuards.ts to `shared/utils/validation/index.ts`
-- [ ] Integrate with runtime validation utilities
-- [ ] Remove duplicate type guard implementations
+- [x] Move TypeGuards.ts to `shared/utils/validation/index.ts`
+- [x] Integrate with runtime validation utilities
+- [x] Remove duplicate type guard implementations
 
 ### Domain Models Reinforcement
 - [ ] Ensure `shared/domain/models` contains core business entities only
