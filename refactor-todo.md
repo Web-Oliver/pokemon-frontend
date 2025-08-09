@@ -185,9 +185,9 @@
 - [x] Consolidate: createIdMapper, createResourceConfig, createResourceOperations
 
 ### Navigation Utilities
-- [ ] Consolidate navigation functions into `shared/utils/navigation/index.ts`
-- [ ] Centralize: getAuctionIdFromUrl, getCollectionItemParams
-- [ ] Remove scattered navigation helper implementations
+- [x] Consolidate navigation functions into `shared/utils/navigation/index.ts`
+- [x] Centralize: getAuctionIdFromUrl, getCollectionItemParams
+- [x] Remove scattered navigation helper implementations
 
 ### Storage Utilities
 - [ ] Create/enhance `shared/utils/storage/index.ts`
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 71/91 (78%)**
+- [x] **Completed: 74/91 (81%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 20/91 (22%)**
+- [ ] **Remaining: 17/91 (19%)**
 
 ---
 

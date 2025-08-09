@@ -28,7 +28,7 @@ const AddEditSealedProductForm = React.lazy(
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import { CollectionItemService, CollectionItem, ItemType } from '../services/CollectionItemService';
 import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';

@@ -33,7 +33,7 @@ import {
   SealedProductDetailSection,
 } from '../components/collection';
 import { getItemDisplayData } from '../../../shared/utils/helpers/itemDisplayHelpers';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 const CollectionItemDetail: React.FC = () => {
   // Extracted hooks for clean separation of concerns

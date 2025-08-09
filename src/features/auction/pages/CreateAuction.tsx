@@ -41,6 +41,7 @@ import {
   NeuralNetworkBackground,
 } from '../../../shared/components/organisms/effects';
 import { AuctionDataService, UnifiedCollectionItem } from '../services/AuctionDataService';
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Form data interface
 interface AuctionFormData {
@@ -163,11 +164,6 @@ const CreateAuction: React.FC = () => {
     }, 0);
   }, [selectedItemsByType]);
 
-  // Navigation helper
-  const navigateToAuctions = () => {
-    window.history.pushState({}, '', '/auctions');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
 
   // Handle item selection with separate ordering per category
   const toggleItemSelection = useCallback(
@@ -317,24 +313,18 @@ const CreateAuction: React.FC = () => {
       const auctionId = createdAuction.id || createdAuction._id;
       if (auctionId) {
         toast.success('✅ Auction created successfully!');
-        window.history.pushState({}, '', `/auctions/${auctionId}`);
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        navigationHelper.navigateToAuctionDetail(auctionId);
       } else {
         toast.success(
           '✅ Auction created successfully! Redirecting to auctions list.'
         );
-        navigateToAuctions();
+        navigationHelper.navigateToAuctions();
       }
     } catch (err) {
       log('Error creating auction:', err);
     }
   };
 
-  // Handle navigation
-  const handleNavigation = (path: string) => {
-    window.history.pushState({}, '', path);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
 
   // Theme-aware background while preserving Context7 2025 futuristic aesthetic
   const backgroundStyles = {
@@ -380,7 +370,7 @@ const CreateAuction: React.FC = () => {
               variant="glassmorphism"
               size="lg"
               showBackButton={true}
-              onBack={() => handleNavigation('/auctions')}
+              onBack={() => navigationHelper.navigateToAuctions()}
               className="mb-8"
             />
 
@@ -426,7 +416,7 @@ const CreateAuction: React.FC = () => {
                     watch={formAdapter.watch}
                     handleSubmit={formAdapter.handleSubmit}
                     onSubmit={handleSubmit}
-                    onCancel={navigateToAuctions}
+                    onCancel={() => navigationHelper.navigateToAuctions()}
                     itemSelectionSection={
                       <AuctionItemSelectionSection
                         items={allCollectionItems}

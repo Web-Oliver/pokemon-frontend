@@ -16,7 +16,7 @@ import { PokemonInput } from '../../../shared/components/atoms/design-system/Pok
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 // Search parameters interface now handled by usePaginatedSearch
 

@@ -13,7 +13,7 @@ import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 export type ItemType = 'psa' | 'raw' | 'sealed';

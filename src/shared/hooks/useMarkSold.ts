@@ -11,7 +11,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { ISaleDetails } from '../domain/models/common';
 import { useCollectionOperations } from './useCollectionOperations';
-import { navigationHelper } from '../utils/helpers/navigation';
+import { navigationHelper } from "../utils/navigation";
 import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';

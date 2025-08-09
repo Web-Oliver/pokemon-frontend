@@ -48,6 +48,7 @@ import {
   getRelativeTime,
 } from '../../../shared/utils/helpers/formatting';
 import { getActivityColor } from '../../../shared/utils/helpers/activityHelpers';
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Import our unified design system
 import {
@@ -81,11 +82,6 @@ const Activity: React.FC = () => {
     setFilters({ type: undefined, dateRange: undefined });
   }, [setFilters]);
 
-  // Handle navigation
-  const handleNavigation = (path: string) => {
-    window.history.pushState({}, '', path);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
 
   // Context7 Icon Mapping for Activity Types
   const getActivityIcon = (type: string) => {
@@ -240,7 +236,7 @@ const Activity: React.FC = () => {
                 <PokemonButton
                   variant="ghost"
                   size="md"
-                  onClick={() => handleNavigation('/dashboard')}
+                  onClick={() => navigationHelper.navigateTo('/dashboard')}
                   className="mr-6 p-4 text-cyan-300 hover:text-cyan-200"
                 >
                   <ArrowLeft className="w-6 h-6" />

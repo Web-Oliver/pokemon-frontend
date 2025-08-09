@@ -41,7 +41,7 @@ import {
   getActivityIcon,
   getActivityColor,
 } from '../../../shared/utils/helpers/activityHelpers';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 import {
   GlassmorphismContainer,
   IconGlassmorphism,
@@ -78,16 +78,6 @@ const Dashboard: React.FC = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Handle navigation to different sections
-  const handleNavigation = (path: string) => {
-    window.history.pushState({}, '', path);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
-
-  // Handle navigation to activity page
-  const handleActivityNavigation = () => {
-    handleNavigation('/activity');
-  };
 
   return (
     <PageLayout
@@ -208,7 +198,7 @@ const Dashboard: React.FC = () => {
               <div className="p-8 relative z-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   <button
-                    onClick={() => handleNavigation('/add-item')}
+                    onClick={() => navigationHelper.navigateTo('/add-item')}
                     className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-primary)]/50 rounded-3xl hover:border-[var(--theme-accent-primary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-primary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/10 to-[var(--theme-accent-secondary)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -224,7 +214,7 @@ const Dashboard: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handleNavigation('/sales-analytics')}
+                    onClick={() => navigationHelper.navigateTo('/sales-analytics')}
                     className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-status-success)]/50 rounded-3xl hover:border-[var(--theme-status-success)] hover:shadow-2xl hover:shadow-[var(--theme-status-success)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -240,7 +230,7 @@ const Dashboard: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handleNavigation('/collection')}
+                    onClick={() => navigationHelper.navigateTo('/collection')}
                     className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-secondary)]/50 rounded-3xl hover:border-[var(--theme-accent-secondary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-secondary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-secondary)]/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -423,7 +413,7 @@ const Dashboard: React.FC = () => {
                 {/* Show More Button */}
                 <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
                   <button
-                    onClick={() => handleNavigation('/activity')}
+                    onClick={() => navigationHelper.navigateTo('/activity')}
                     className="w-full group bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 border-2 border-[var(--theme-accent-primary)]/50 hover:border-[var(--theme-accent-primary)] rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--theme-accent-primary)]/20"
                   >
                     <div className="flex items-center justify-center space-x-3">

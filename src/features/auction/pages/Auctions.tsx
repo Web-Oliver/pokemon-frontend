@@ -35,7 +35,7 @@ import {
   getStatusPriority,
 } from '../../../shared/utils/helpers/auctionStatusUtils';
 import { formatDateWithTime } from '../../../shared/utils/helpers/formatting';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 // Import unified design system
 import {

@@ -13,7 +13,7 @@ import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
 import { ImageProductView } from '../../../../shared/components/molecules/common/ImageProductView';
 import LoadingSpinner from '../../../../shared/components/molecules/common/LoadingSpinner';
-import { navigationHelper } from '../../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 export interface ItemImageGalleryProps {
   item: CollectionItem;

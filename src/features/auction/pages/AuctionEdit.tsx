@@ -32,7 +32,7 @@ import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionMo
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useGenericFormState } from '../../../shared/hooks/form/useGenericFormState';
 import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 interface AuctionEditProps {
   auctionId?: string;

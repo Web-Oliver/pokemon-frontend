@@ -35,7 +35,7 @@ import CollectionTabs, {
 } from '../../../components/lists/CollectionTabs';
 import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 
 // Import unified design system
 import {

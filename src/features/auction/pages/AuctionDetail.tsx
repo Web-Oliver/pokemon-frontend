@@ -35,7 +35,7 @@ import {
   showSuccessToast,
   showWarningToast,
 } from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { navigationHelper } from "../../../shared/utils/navigation";
 import {
   formatCurrency,
   formatDate,
