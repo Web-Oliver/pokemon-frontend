@@ -29,7 +29,7 @@ import {
   ExportSessionData,
   orderingPersistence,
   storageHelpers,
-} from '../utils/helpers/storageUtils';
+} from '../utils/storage';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import {
   showSuccessToast,

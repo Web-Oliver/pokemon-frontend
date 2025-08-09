@@ -8,7 +8,7 @@
  * - Layer 1: Core/Foundation - provides storage capabilities
  */
 
-import { ItemOrderingState, SortMethod } from '../domain/models/ordering';
+import { ItemOrderingState, SortMethod } from '../../domain/models/ordering';
 
 // Storage keys for different data types
 export const STORAGE_KEYS = {
@@ -394,6 +394,112 @@ export class OrderingStatePersistence {
 
 // Export singleton instance
 export const orderingPersistence = OrderingStatePersistence.getInstance();
+
+/**
+ * Simple storage wrappers for direct sessionStorage/localStorage replacement
+ * These provide consistent error handling and logging for simple string-based storage
+ */
+export const storageWrappers = {
+  /**
+   * Session storage wrappers - for temporary data
+   */
+  session: {
+    /**
+     * Get item from session storage (simple string value)
+     */
+    getItem: (key: string): string | null => {
+      try {
+        return window.sessionStorage.getItem(key);
+      } catch (error) {
+        console.warn('Failed to read from session storage:', key, error);
+        return null;
+      }
+    },
+
+    /**
+     * Set item in session storage (simple string value)
+     */
+    setItem: (key: string, value: string): boolean => {
+      try {
+        window.sessionStorage.setItem(key, value);
+        return true;
+      } catch (error) {
+        console.error('Failed to write to session storage:', key, error);
+        return false;
+      }
+    },
+
+    /**
+     * Remove item from session storage
+     */
+    removeItem: (key: string): boolean => {
+      try {
+        window.sessionStorage.removeItem(key);
+        return true;
+      } catch (error) {
+        console.error('Failed to remove from session storage:', key, error);
+        return false;
+      }
+    },
+
+    /**
+     * Check if item exists in session storage
+     */
+    hasItem: (key: string): boolean => {
+      return storageWrappers.session.getItem(key) !== null;
+    },
+  },
+
+  /**
+   * Local storage wrappers - for persistent data
+   */
+  local: {
+    /**
+     * Get item from local storage (simple string value)
+     */
+    getItem: (key: string): string | null => {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (error) {
+        console.warn('Failed to read from local storage:', key, error);
+        return null;
+      }
+    },
+
+    /**
+     * Set item in local storage (simple string value)
+     */
+    setItem: (key: string, value: string): boolean => {
+      try {
+        window.localStorage.setItem(key, value);
+        return true;
+      } catch (error) {
+        console.error('Failed to write to local storage:', key, error);
+        return false;
+      }
+    },
+
+    /**
+     * Remove item from local storage
+     */
+    removeItem: (key: string): boolean => {
+      try {
+        window.localStorage.removeItem(key);
+        return true;
+      } catch (error) {
+        console.error('Failed to remove from local storage:', key, error);
+        return false;
+      }
+    },
+
+    /**
+     * Check if item exists in local storage
+     */
+    hasItem: (key: string): boolean => {
+      return storageWrappers.local.getItem(key) !== null;
+    },
+  },
+};
 
 /**
  * Helper functions for common operations

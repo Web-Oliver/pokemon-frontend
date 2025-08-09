@@ -36,6 +36,7 @@ import CollectionTabs, {
 import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { navigationHelper } from "../../../shared/utils/navigation";
+import { storageWrappers } from '../../../shared/utils/storage';
 
 // Import unified design system
 import {
@@ -75,9 +76,9 @@ const Collection: React.FC = () => {
 
   // Additional check for refresh flag when component mounts
   useEffect(() => {
-    const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
+    const needsRefresh = storageWrappers.session.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {
-      sessionStorage.removeItem('collectionNeedsRefresh');
+      storageWrappers.session.removeItem('collectionNeedsRefresh');
       console.log('[Collection] Refresh requested, fetching fresh data...');
       refreshCollection();
     }

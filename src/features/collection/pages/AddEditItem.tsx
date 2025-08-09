@@ -28,6 +28,7 @@ const AddEditSealedProductForm = React.lazy(
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
+import { storageWrappers } from '../../../shared/utils/storage';
 import { navigationHelper } from "../../../shared/utils/navigation";
 import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import { CollectionItemService, CollectionItem, ItemType } from '../services/CollectionItemService';
@@ -121,7 +122,7 @@ const AddEditItem: React.FC = () => {
   // Handle successful form submission
   const handleFormSuccess = () => {
     // Set a flag in sessionStorage to indicate collection needs refresh
-    sessionStorage.setItem('collectionNeedsRefresh', 'true');
+    storageWrappers.session.setItem('collectionNeedsRefresh', 'true');
 
     // Also dispatch event for any already-mounted collection pages
     window.dispatchEvent(new CustomEvent('collectionUpdated'));

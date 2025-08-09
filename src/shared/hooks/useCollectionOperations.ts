@@ -12,6 +12,7 @@ import { ISaleDetails } from '../domain/models/common';
 import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';
+import { storageWrappers } from '../utils/storage';
 
 import { 
   useGenericCrudOperations, 
@@ -416,9 +417,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
 
   // Handle refresh requests from session storage
   useEffect(() => {
-    const needsRefresh = sessionStorage.getItem('collectionNeedsRefresh');
+    const needsRefresh = storageWrappers.session.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {
-      sessionStorage.removeItem('collectionNeedsRefresh');
+      storageWrappers.session.removeItem('collectionNeedsRefresh');
       log(
         'Collection refresh requested via sessionStorage, invalidating queries...'
       );
