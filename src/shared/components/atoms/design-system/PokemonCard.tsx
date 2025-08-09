@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/helpers/common';
+import { cn } from '../../../utils/ui/classNameUtils';
 
 export interface PokemonCardProps {
   children?: React.ReactNode;

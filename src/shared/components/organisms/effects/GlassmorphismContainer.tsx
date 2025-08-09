@@ -23,7 +23,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/helpers/common';
+import { cn } from '../../../utils/ui/classNameUtils';
 
 // SOLID Principle: Interface Segregation - Focused interface for glassmorphism only
 export interface GlassmorphismContainerProps {

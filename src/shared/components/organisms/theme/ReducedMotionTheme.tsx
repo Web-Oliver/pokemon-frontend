@@ -9,7 +9,7 @@
 import { useEffect, ReactNode } from 'react';
 import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme';
 import { useAccessibilityTheme } from '../../hooks/useAccessibilityTheme';
-import { cn } from '../../../utils/unifiedUtilities';
+import { cn } from '../../../utils/ui/classNameUtils';
 
 export interface ReducedMotionThemeProps {
   /** Children to render */

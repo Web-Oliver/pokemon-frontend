@@ -31,7 +31,7 @@ import {
   cleanupObjectURL,
   type ImagePreview,
 } from '../shared/utils/ui/imageUtils';
-import { cn } from '../shared/utils/helpers/unifiedUtilities';
+import { cn } from '../shared/utils/ui/classNameUtils';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

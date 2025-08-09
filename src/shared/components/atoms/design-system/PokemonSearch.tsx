@@ -46,7 +46,7 @@ import {
   useAnimationTheme,
 } from '../../../contexts/theme';
 import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
-import { cn } from '../../../utils/helpers/unifiedUtilities';
+import { cn } from '../../../utils/ui/classNameUtils';
 
 // Enhanced search interfaces for consolidation
 interface SearchSuggestion {

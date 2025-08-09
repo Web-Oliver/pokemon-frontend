@@ -9,7 +9,7 @@
  */
 
 import React, { forwardRef, useEffect } from 'react';
-import { cn } from '../../../utils/helpers/common';
+import { cn } from '../../../utils/ui/classNameUtils';
 import {
   useForm,
   UseFormReturn,

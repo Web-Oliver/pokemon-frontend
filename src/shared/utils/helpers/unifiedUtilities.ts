@@ -20,8 +20,7 @@
  * - Dependency Inversion: Uses abstractions, not concrete implementations
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { cn } from '../ui/classNameUtils';
 import {
   ComponentSize,
   ComponentVariant,
@@ -41,14 +40,8 @@ import { ThemeColor, getFormTheme } from '../theme/formThemes';
 // Consolidates cn() implementations from multiple files
 // ===============================
 
-/**
- * UNIFIED CLASSNAME UTILITY
- * Replaces all duplicate cn() implementations
- * Optimized for performance with memoization
- */
-export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
-}
+// cn utility imported from single source of truth in classNameUtils.ts
+export { cn };
 
 /**
  * CONDITIONAL CLASSNAME UTILITY

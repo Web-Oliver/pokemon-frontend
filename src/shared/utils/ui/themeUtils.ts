@@ -32,8 +32,6 @@
  * - classNameUtils.ts for className generation utilities
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import {
   ComponentSize,
   ComponentVariant,
@@ -45,18 +43,13 @@ import {
 } from '../types/themeTypes';
 import { ThemeColor, getFormTheme } from '../../../theme/formThemes';
 import { VisualTheme } from '../types/themeTypes';
+import { cn } from './classNameUtils';
 
 // ================================
 // UTILITY FUNCTIONS
 // ================================
 
-/**
- * Enhanced className utility with theme-aware merging
- * Combines clsx and tailwind-merge for optimal class handling
- */
-export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
-}
+// cn utility imported from classNameUtils.ts - single source of truth
 
 /**
  * Generate theme-aware class names based on component configuration

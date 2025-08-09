@@ -9,7 +9,7 @@
  */
 
 import React, { forwardRef } from 'react';
-import { cn } from '../../../utils/helpers/common';
+import { cn } from '../../../utils/ui/classNameUtils';
 import { Loader2 } from 'lucide-react';
 import {
   useVisualTheme,

@@ -20,7 +20,7 @@ import { themePresets, VisualTheme } from '../../contexts/ThemeContext';
 import { useVisualTheme, useLayoutTheme } from '../../contexts/theme';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
-import { cn } from '../../../utils/common';
+import { cn } from '../../../utils/ui/classNameUtils';
 
 export interface ThemePickerProps {
   className?: string;

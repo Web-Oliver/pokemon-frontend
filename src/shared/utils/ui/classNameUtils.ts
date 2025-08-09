@@ -30,14 +30,27 @@
  * - CSS custom properties for dynamic styling
  */
 
-import { type ClassValue } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import {
   ComponentSize,
   ComponentVariant,
   ComponentState,
 } from '../types/themeTypes';
 import { VisualTheme, Density, AnimationIntensity } from '../types/themeTypes';
-import { cn } from './themeUtils';
+
+// ===============================
+// CORE CLASSNAME UTILITY - SINGLE SOURCE OF TRUTH
+// ===============================
+
+/**
+ * Enhanced className utility with theme-aware merging
+ * SINGLE SOURCE OF TRUTH for all className utilities
+ * Combines clsx and tailwind-merge for optimal class handling
+ */
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
 
 // ================================
 // ENHANCED CLASSNAME UTILITIES
@@ -594,5 +607,4 @@ export default {
   cardClasses,
 };
 
-// Re-export cn from themeUtils for convenience
-export { cn };
+// cn is now defined in this file as the single source of truth
