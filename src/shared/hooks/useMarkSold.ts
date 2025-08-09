@@ -9,7 +9,7 @@
  */
 
 import { useCallback, useState, useEffect } from 'react';
-import { ISaleDetails } from "../../types/common"';
+import { ISaleDetails } from "../../types/common";
 import { useCollectionOperations } from './useCollectionOperations';
 import { useLoadingState } from './common/useLoadingState';
 import { navigationHelper } from "../utils/navigation";

@@ -9,12 +9,7 @@
  * - DIP: Provides abstraction layer for theme access
  */
 
-import {
-  useVisualTheme,
-  useLayoutTheme,
-  useAnimationTheme,
-  useAccessibilityTheme,
-} from '../../contexts/theme';
+import { useTheme } from '../../hooks/theme/useTheme';
 
 export interface CentralizedThemeConfig {
   // Visual settings
@@ -39,20 +34,16 @@ export interface CentralizedThemeConfig {
  * Use this instead of importing individual theme hooks
  */
 export const useCentralizedTheme = (): CentralizedThemeConfig => {
-  const { visualTheme, particleEffectsEnabled, glassmorphismIntensity } =
-    useVisualTheme();
-  const { density } = useLayoutTheme();
-  const { animationIntensity } = useAnimationTheme();
-  const { highContrast, reducedMotion } = useAccessibilityTheme();
+  const theme = useTheme();
 
   return {
-    visualTheme,
-    particleEffectsEnabled,
-    glassmorphismIntensity,
-    density,
-    animationIntensity,
-    highContrast,
-    reducedMotion,
+    visualTheme: theme.visual.currentTheme,
+    particleEffectsEnabled: theme.visual.particleEffectsEnabled,
+    glassmorphismIntensity: theme.visual.glassmorphismIntensity,
+    density: theme.layout.density,
+    animationIntensity: theme.animation.intensity,
+    highContrast: theme.accessibility.highContrast,
+    reducedMotion: theme.accessibility.reducedMotion,
   };
 };
 

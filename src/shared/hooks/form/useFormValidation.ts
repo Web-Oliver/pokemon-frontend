@@ -167,7 +167,7 @@ export const useFormValidation = <T extends Record<string, string>>(
 
     // Apply default sanitizers based on field patterns
     const fieldRule = rules[fieldName];
-    if (fieldRule?.pattern === /^\d+$/) {
+    if (fieldRule?.pattern?.toString() === '/^\\d+$/') {
       return sanitizers.numericOnly(value);
     }
     

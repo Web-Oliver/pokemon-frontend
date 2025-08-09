@@ -14,7 +14,7 @@
 
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { ISaleDetails } from "../../types/common"';
+import { ISaleDetails } from "../../types/common";
 import {
   ICollectionApiService,
   IPsaCardApiService,

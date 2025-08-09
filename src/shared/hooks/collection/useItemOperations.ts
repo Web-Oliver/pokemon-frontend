@@ -12,7 +12,7 @@ import { CollectionItem, ItemType } from './useCollectionItem';
 import { getCollectionApiService } from '../../services/ServiceRegistry';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from "../../utils/navigation";
 import { useConfirmModal } from '../useModal';
 
 export interface UseItemOperationsReturn {

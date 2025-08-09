@@ -13,7 +13,7 @@ import { getCollectionApiService } from '../../services/ServiceRegistry';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from "../../utils/navigation";
 
 export interface UsePriceManagementReturn {
   newPrice: string;

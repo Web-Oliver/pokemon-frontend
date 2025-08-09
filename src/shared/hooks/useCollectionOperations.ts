@@ -8,7 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { ISaleDetails } from "../../types/common"';
+import { ISaleDetails } from "../../types/common";
 import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';

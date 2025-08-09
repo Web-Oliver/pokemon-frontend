@@ -21,7 +21,7 @@ import { Award, Package } from 'lucide-react';
 import { IRawCard, IPsaGradedCard } from '../../../domain/models/card';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
-import { commonValidationRules } from '../../hooks/form/useFormValidation';
+import { commonValidationRules } from '../../utils/validation';
 import {
   useFormInitialization,
   formInitializationPresets,

@@ -15,7 +15,7 @@ import { Archive, Camera, Package, TrendingUp } from 'lucide-react';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
-import { commonValidationRules } from '../../hooks/useFormValidation';
+import { commonValidationRules } from '../../utils/validation';
 import {
   useFormSubmission,
   FormSubmissionPatterns,

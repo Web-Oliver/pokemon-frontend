@@ -1,4 +1,4 @@
-import { error as logError, info as logInfo, warn as logWarn } from '../performance/logger';
+import { error as logError, log } from '../performance/logger';
 import { APIResponse } from './responseTransformer';
 import {
   showErrorToast,
@@ -506,10 +506,10 @@ export const handleError = (
       logError('HIGH SEVERITY ERROR:', debugInfo);
       break;
     case ErrorSeverity.MEDIUM:
-      logWarn('MEDIUM SEVERITY ERROR:', debugInfo);
+      log('MEDIUM SEVERITY ERROR:', debugInfo);
       break;
     case ErrorSeverity.LOW:
-      logInfo('LOW SEVERITY ERROR:', debugInfo);
+      log('LOW SEVERITY ERROR:', debugInfo);
       break;
   }
 
@@ -563,7 +563,7 @@ export const safeExecute = async <T>(
     const processedError = handleError(error, context);
     
     if (processedError.shouldAutoRecover() && fallbackValue !== undefined) {
-      logInfo('Auto-recovering from error with fallback value:', {
+      log('Auto-recovering from error with fallback value:', {
         error: processedError.getDebugInfo(),
         fallbackValue,
       });

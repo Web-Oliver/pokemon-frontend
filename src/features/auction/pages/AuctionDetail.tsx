@@ -13,8 +13,7 @@ import {
   Copy,
   FileText,
   Download,
-  Plus,
-  Edit,
+  X,
 } from 'lucide-react';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import {
