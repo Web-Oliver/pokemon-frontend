@@ -68,10 +68,13 @@ export {
 // Form state management (consolidated form handling)
 export {
   useGenericFormState,
-  useGenericFormStateAdapter,
 } from './form/useGenericFormState';
 
-export { useCardSelection, useCardSelectionState } from './form/useCardSelection';
+export {
+  useGenericFormStateAdapter,
+} from './form/useGenericFormStateAdapter';
+
+export { useCardSelection } from './form/useCardSelection';
 export { useFormValidation } from './form/useFormValidation';
 
 // Theme system (consolidated theme management)

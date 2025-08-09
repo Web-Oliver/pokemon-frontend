@@ -1,0 +1,282 @@
+CODE DUPLICATION ANALYSIS - Sat Aug  9 16:15:44 CEST 2025
+=== REFACTORING OPPORTUNITIES ===
+
+SIMILAR FUNCTION PATTERNS:
+ApiResponse.ts: export function createErrorResponse(
+apiOptimization.ts: export function setCacheData<T>(
+apiOptimization.ts:export function getCacheStats():  {
+apiOptimization.ts:export function getCachedData<T>(cacheKey: string):  T | null {
+constants.ts:const getApiBaseUrl = ():  string => {
+formatting.ts: export function createCardNameInfo(
+genericApiOperations.ts: export async function createResource<T>(
+genericApiOperations.ts: export async function deleteResource(
+genericApiOperations.ts: export async function getCollection<T>(
+genericApiOperations.ts: export async function getResource<T>(
+genericApiOperations.ts: export async function updateResource<T>(
+genericApiOperations.ts: export function createIdMapper() {
+genericApiOperations.ts: export function createResourceConfig(
+genericApiOperations.ts: export function createResourceOperations<
+imageUtils.ts:const getServerBaseUrl = ():  string => {
+index.ts: export function createArrayGuard<T>(
+index.ts: export function createObjectGuard<
+index.ts: export function createStrictValidator<T>(
+index.ts:export function getAnimationDurations(animationIntensity:  string) {
+index.ts:export function getDensityMultiplier(density: string):  number {
+
+API CALL PATTERNS (potential consolidation):
+features/auction/services/AuctionDataService.ts:26:      unifiedApiService.collection.getPsaGradedCards(),
+features/auction/services/AuctionDataService.ts:27:      unifiedApiService.collection.getRawCards(),
+features/auction/services/AuctionDataService.ts:28:      unifiedApiService.collection.getSealedProducts(),
+features/auction/pages/Auctions.tsx:104:      new Date(b.auctionDate).getTime() - new Date(a.auctionDate).getTime()
+features/auction/pages/AuctionDetail.tsx:98:    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
+features/auction/pages/CreateAuction.tsx:181:          newSet.delete(itemId);
+features/auction/pages/AuctionEdit.tsx:88:    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
+features/dashboard/pages/Dashboard.tsx:77:    queryFn: () => unifiedApiService.status.getDataCounts(),
+features/collection/services/CollectionItemService.ts:33:        fetchedItem = await unifiedApiService.collection.getPsaGradedCardById(id);
+features/collection/services/CollectionItemService.ts:36:        fetchedItem = await unifiedApiService.collection.getRawCardById(id);
+features/collection/services/CollectionItemService.ts:39:        fetchedItem = await unifiedApiService.collection.getSealedProductById(id);
+features/collection/pages/CollectionItemDetail.tsx:247:              const { type } = navigationHelper.getCollectionItemParams();
+features/collection/pages/CollectionItemDetail.tsx:258:        isOpen={operations.deleteConfirmModal.isOpen}
+features/collection/pages/CollectionItemDetail.tsx:259:        onClose={operations.deleteConfirmModal.closeModal}
+features/collection/pages/CollectionItemDetail.tsx:265:        loading={operations.deleteConfirmModal.isConfirming}
+
+FORM HANDLING PATTERNS:
+features/auction/pages/AuctionDetail.tsx:800:                onSubmit={handleMarkSoldSubmit}
+features/auction/pages/CreateAuction.tsx:268:  const handleSubmit = async (formData: AuctionFormData) => {
+features/auction/pages/CreateAuction.tsx:293:        topText: formData.topText.trim(),
+features/auction/pages/CreateAuction.tsx:294:        bottomText: formData.bottomText.trim(),
+features/auction/pages/CreateAuction.tsx:295:        status: formData.status,
+features/auction/pages/CreateAuction.tsx:298:        ...(formData.auctionDate && { auctionDate: formData.auctionDate }),
+features/auction/pages/CreateAuction.tsx:417:                    handleSubmit={formAdapter.handleSubmit}
+features/auction/pages/CreateAuction.tsx:418:                    onSubmit={handleSubmit}
+shared/utils/validation/index.ts:218:  formData: Record<string, string>,
+shared/utils/validation/index.ts:224:    const value = formData[fieldName] || '';
+
+COMPONENT PATTERNS (similar structures):
+./features/search/pages/SetSearch.tsx: Props=0, Hooks=4
+./features/search/pages/SealedProductSearch.tsx: Props=0, Hooks=7
+./features/auction/pages/Auctions.tsx: Props=0, Hooks=4
+./features/auction/pages/AuctionDetail.tsx: Props=1, Hooks=6
+./features/auction/pages/CreateAuction.tsx: Props=0, Hooks=11
+./features/auction/pages/AuctionEdit.tsx: Props=1, Hooks=9
+./features/auction/components/auction/AuctionItemCard.tsx: Props=1, Hooks=0
+./features/auction/components/auction/sections/AuctionItemsSection.tsx: Props=1, Hooks=0
+./features/auction/components/auction/RefactoredAuctionContent.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaItemCustomizer.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaExportActionsCosmic.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaExportActions.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaHeaderActions.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaExportConfiguration.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaCosmicBackground.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaItemsWithoutTimers.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/itemDisplay/ItemCustomizationCard.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaItemsWithTimers.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaExportSuccess.tsx: Props=1, Hooks=0
+./features/dashboard/components/dba/DbaCustomDescriptionInput.tsx: Props=1, Hooks=0
+./features/dashboard/components/dashboard/DashboardStatCard.tsx: Props=1, Hooks=0
+./features/collection/pages/Collection.tsx: Props=0, Hooks=6
+./features/collection/pages/AddEditItem.tsx: Props=0, Hooks=7
+./features/collection/components/collection/ItemImageGallery.tsx: Props=1, Hooks=0
+./features/collection/components/collection/CollectionItemHeader.tsx: Props=1, Hooks=0
+./features/collection/components/collection/ItemSaleDetails.tsx: Props=1, Hooks=0
+./features/collection/components/collection/ItemDetailSection.tsx: Props=4, Hooks=0
+./features/collection/components/collection/ItemPriceHistory.tsx: Props=1, Hooks=0
+./features/collection/components/collection/ItemEssentialDetails.tsx: Props=1, Hooks=0
+./features/analytics/pages/Activity.tsx: Props=0, Hooks=3
+./features/analytics/pages/Analytics.tsx: Props=0, Hooks=3
+./features/analytics/components/analytics/ActivityTimeline.tsx: Props=1, Hooks=0
+./features/analytics/components/analytics/CategoryStats.tsx: Props=1, Hooks=0
+./features/analytics/components/analytics/AnalyticsBackground.tsx: Props=1, Hooks=0
+./features/analytics/components/analytics/AnalyticsHeader.tsx: Props=1, Hooks=0
+./features/analytics/components/analytics/MetricsGrid.tsx: Props=1, Hooks=0
+./shared/contexts/ThemeContext.tsx: Props=0, Hooks=6
+./shared/contexts/DragDropContext.tsx: Props=2, Hooks=0
+./shared/contexts/theme/VisualThemeProvider.tsx: Props=1, Hooks=0
+./shared/contexts/theme/AccessibilityThemeProvider.tsx: Props=1, Hooks=0
+./shared/contexts/theme/UnifiedThemeProvider.tsx: Props=1, Hooks=6
+./shared/contexts/theme/LayoutThemeProvider.tsx: Props=1, Hooks=0
+./shared/contexts/theme/ComposedThemeProvider.tsx: Props=1, Hooks=4
+./shared/contexts/theme/AnimationThemeProvider.tsx: Props=1, Hooks=0
+./shared/contexts/theme/ThemeStorageProvider.tsx: Props=1, Hooks=0
+./shared/hooks/useHierarchicalSearch.tsx: Props=1, Hooks=6
+./shared/components/organisms/effects/GlassmorphismContainer.tsx: Props=2, Hooks=0
+./shared/components/organisms/effects/Context7Background.tsx: Props=1, Hooks=0
+./shared/components/organisms/effects/CosmicBackground.tsx: Props=1, Hooks=0
+./shared/components/organisms/effects/ParticleSystem.tsx: Props=1, Hooks=0
+./shared/components/organisms/effects/UnifiedEffectSystem.tsx: Props=1, Hooks=0
+./shared/components/organisms/effects/NeuralNetworkBackground.tsx: Props=1, Hooks=0
+./shared/components/organisms/ui/ErrorBoundary.tsx: Props=1, Hooks=0
+./shared/components/organisms/theme/ThemePicker.tsx: Props=1, Hooks=0
+./shared/components/organisms/theme/FocusManagementTheme.tsx: Props=1, Hooks=2
+./shared/components/organisms/theme/ReducedMotionTheme.tsx: Props=1, Hooks=2
+./shared/components/organisms/theme/AccessibilityControls.tsx: Props=1, Hooks=0
+./shared/components/organisms/theme/AccessibilityTheme.tsx: Props=4, Hooks=2
+./shared/components/organisms/theme/ThemeToggle.tsx: Props=0, Hooks=3
+./shared/components/organisms/theme/HighContrastTheme.tsx: Props=1, Hooks=2
+./shared/components/development/DevMonitor.tsx: Props=1, Hooks=8
+./shared/components/forms/MarkSoldForm.tsx: Props=1, Hooks=0
+./shared/components/forms/fields/InformationFieldRenderer.tsx: Props=1, Hooks=0
+./shared/components/forms/fields/FormSection.tsx: Props=1, Hooks=1
+./shared/components/forms/fields/FormField.tsx: Props=1, Hooks=0
+./shared/components/forms/AddEditCardForm.tsx: Props=1, Hooks=1
+./shared/components/forms/AddEditSealedProductForm.tsx: Props=1, Hooks=7
+./shared/components/forms/sections/HierarchicalProductSearch.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/ImageUploadSection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/AuctionItemSelectionSection.tsx: Props=1, Hooks=1
+./shared/components/forms/sections/CardInformationDisplaySection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/HierarchicalCardSearch.tsx: Props=2, Hooks=0
+./shared/components/forms/sections/GradingPricingSection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/SaleDetailsSection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/SimpleSaleDetailsSection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/SimpleGradingPricingSection.tsx: Props=1, Hooks=0
+./shared/components/forms/sections/SimpleHierarchicalCardSearch.tsx: Props=1, Hooks=0
+./shared/components/forms/containers/SimpleFormContainer.tsx: Props=1, Hooks=0
+./shared/components/forms/containers/CardFormContainer.tsx: Props=1, Hooks=0
+./shared/components/forms/containers/AuctionFormContainer.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ImageSlideshow.tsx: Props=1, Hooks=6
+./shared/components/molecules/common/PaginationControls.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/UnifiedHeader.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/SalesDateRangeFilter.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/UnifiedGradeDisplay.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/GenericLoadingState.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/EmptyState.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ActivityListItem.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ImageProductView.tsx: Props=2, Hooks=2
+./shared/components/molecules/common/SectionContainer.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ImageAnalysisIndicator.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/OptimizedImageView.tsx: Props=1, Hooks=5
+./shared/components/molecules/common/ActivityStatCard.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/DateRangeFilter.tsx: Props=1, Hooks=2
+./shared/components/molecules/common/ActivityFilterHub.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/SalesStatCard.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/CategorySalesCard.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ProductCard.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/RecentSaleListItem.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormActionButtons.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/BaseCard.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/LoadingStates.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/BaseListItem.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/ProductSearchFilters.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/Glow.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/FormErrorMessage.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/Shimmer.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/HelperText.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/ErrorMessage.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/FormWrapper.tsx: Props=1, Hooks=0
+./shared/components/molecules/common/FormElements/UnifiedFormElement.tsx: Props=2, Hooks=0
+./shared/components/molecules/common/FormElements/Label.tsx: Props=1, Hooks=0
+./shared/components/layout/layouts/MainLayout.tsx: Props=1, Hooks=3
+./shared/components/layout/layouts/PageLayout.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonIcon.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonInput.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonBadge.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonSearch.tsx: Props=1, Hooks=6
+./shared/components/atoms/design-system/PokemonPageContainer.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonCard.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonForm.tsx: Props=1, Hooks=2
+./shared/components/atoms/design-system/PokemonButton.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonSelect.tsx: Props=1, Hooks=0
+./shared/components/atoms/design-system/PokemonModal.tsx: Props=1, Hooks=3
+./app/App.tsx: Props=0, Hooks=3
+./components/debug/PerformanceMonitor.tsx: Props=1, Hooks=4
+./components/debug/ReactProfiler.tsx: Props=1, Hooks=8
+./components/modals/AddItemToAuctionModal.tsx: Props=1, Hooks=0
+./components/modals/ItemSelectorModal.tsx: Props=2, Hooks=6
+./components/PriceHistoryDisplay.tsx: Props=1, Hooks=2
+./components/lists/ItemOrderingSection.tsx: Props=1, Hooks=3
+./components/lists/CollectionExportModal.tsx: Props=1, Hooks=3
+./components/lists/CollectionItemCard.tsx: Props=1, Hooks=0
+./components/lists/CollectionStats.tsx: Props=2, Hooks=0
+./components/lists/CollectionTabs.tsx: Props=1, Hooks=0
+./components/lists/UnifiedCategoryList.tsx: Props=1, Hooks=2
+./components/routing/Router.tsx: Props=1, Hooks=0
+./components/error/ErrorBoundary.tsx: Props=1, Hooks=0
+./components/ImageUploader.tsx: Props=1, Hooks=8
+
+MOST COMMON IMPORTS (consolidation candidates):
+import React from 'react';
+import { cn } from '../../../utils/ui/classNameUtils';
+import { log } from '../utils/performance/logger';
+import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { LucideIcon } from 'lucide-react';
+import { useCallback } from 'react';
+import { ISaleDetails } from "../../types/common";
+import { useCallback, useState } from 'react';
+import { handleApiError } from '../utils/helpers/errorHandler';
+import { ISealedProduct } from '../domain/models/sealedProduct';
+
+ERROR HANDLING PATTERNS:
+features/collection/services/CollectionItemService.ts:42:        throw new Error(`Unknown item type: ${urlType}`);
+shared/utils/validation/index.ts:588:    throw new Error(errorMessage);
+shared/utils/validation/index.ts:1045:      throw new ValidationError(
+shared/utils/transformers/unifiedResponseTransformer.ts:148:      throw new Error(`Unknown transformation strategy: ${strategyName}`);
+shared/utils/transformers/unifiedResponseTransformer.ts:155:      throw new Error(`Transformation failed: ${error.message}`);
+shared/utils/api/ZipImageUtility.ts:37:      throw new Error(errorMessage);
+shared/utils/api/ZipImageUtility.ts:41:      throw new Error(
+shared/utils/file/csvExport.ts:66:    throw new Error('Failed to export CSV file');
+
+STATE MANAGEMENT PATTERNS:
+features/search/pages/SealedProductSearch.tsx:42:  const [setProductFilter, setSetProductFilter] = useState<ISetProduct | null>(
+features/search/pages/SealedProductSearch.tsx:46:  const [availableOnly, setAvailableOnly] = useState(false);
+features/auction/pages/CreateAuction.tsx:66:  const [allCollectionItems, setAllCollectionItems] = useState<UnifiedCollectionItem[]>([]);
+features/auction/pages/CreateAuction.tsx:67:  const [collectionLoading, setCollectionLoading] = useState(false);
+features/auction/pages/CreateAuction.tsx:68:  const [collectionError, setCollectionError] = useState<string | null>(null);
+features/auction/pages/CreateAuction.tsx:100:  const [showPreview, setShowPreview] = useState(false);
+features/auction/pages/AuctionEdit.tsx:56:  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+features/auction/pages/AuctionEdit.tsx:57:  const [isEditing, setIsEditing] = useState(false);
+features/auction/pages/AuctionEdit.tsx:59:    useState(false);
+features/auction/pages/AuctionEdit.tsx:60:  const [removingItem, setRemovingItem] = useState(false);
+
+VALIDATION PATTERNS:
+features/search/pages/SetSearch.tsx:114:          {sets?.length || 0}
+features/search/pages/SetSearch.tsx:199:          {sets && sets.length > 0 ? (
+features/search/pages/SealedProductSearch.tsx:53:      searchTerm: searchTerm.trim() || undefined,
+features/search/pages/SealedProductSearch.tsx:200:          {!loading && !error && products.length === 0 && (
+features/search/pages/SealedProductSearch.tsx:220:          {!loading && !error && products.length > 0 && (
+features/search/pages/SealedProductSearch.tsx:234:                    Showing {products.length} of {pagination.total} products
+features/auction/services/AuctionDataService.ts:204:      .trim();
+features/auction/pages/Auctions.tsx:109:  const activeAuctions = auctions.filter((a) => a.status === 'active').length;
+
+LOADING STATE PATTERNS:
+features/search/pages/SetSearch.tsx:27:    loading, 
+features/search/pages/SetSearch.tsx:127:      loading={loading}
+features/search/pages/SealedProductSearch.tsx:33:    loading,
+features/search/pages/SealedProductSearch.tsx:116:      loading={loading}
+features/search/pages/SealedProductSearch.tsx:159:        loading={loading}
+features/search/pages/SealedProductSearch.tsx:169:          {loading && (
+features/search/pages/SealedProductSearch.tsx:200:          {!loading && !error && products.length === 0 && (
+features/search/pages/SealedProductSearch.tsx:220:          {!loading && !error && products.length > 0 && (
+
+CONTEXT STATS:
+Total TS/TSX files: 320
+Components (.tsx): 147
+Hooks (use*): 55
+APIs (*api*): 33
+
+CODE SNIPPETS FOR REVIEW:
+--- useState patterns ---
+  // Collection items state (using thin service layer)
+  const [allCollectionItems, setAllCollectionItems] = useState<UnifiedCollectionItem[]>([]);
+  const [collectionLoading, setCollectionLoading] = useState(false);
+  // State management (non-cached state)
+  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [customDescription, setCustomDescription] = useState('');
+
+--- API call patterns ---
+    const [psaCards, rawCards, sealedProducts] = await Promise.all([
+      unifiedApiService.collection.getPsaGradedCards(),
+      unifiedApiService.collection.getRawCards(),
+      unifiedApiService.collection.getSealedProducts(),
+    ]);
+
+    return (
+      new Date(b.auctionDate).getTime() - new Date(a.auctionDate).getTime()
+
+=== REFACTORING RECOMMENDATIONS ===
+1. Extract common API patterns into generic hooks
+2. Create shared form validation utilities
+3. Consolidate loading state management
+4. Create generic error handling service
+5. Extract common component patterns into base components
+
+ANALYSIS COMPLETE

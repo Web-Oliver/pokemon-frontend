@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { exportApiService } from '../services/ExportApiService';
+import { unifiedApiService } from '../services/UnifiedApiService';
 import {
   ExportFormat,
   ExportItemType,
@@ -247,8 +247,8 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
           request.itemIds
         );
 
-        const result = await exportApiService.export(request);
-        exportApiService.downloadBlob(result.blob, result.filename);
+        const result = await unifiedApiService.export.export(request);
+        unifiedApiService.export.downloadBlob(result.blob, result.filename);
 
         // Use consolidated success message formatting
         const successMessage = formatExportSuccessMessage(
@@ -318,8 +318,8 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
           itemIds: orderedItems.map((item) => item.id),
         };
 
-        const result = await exportApiService.export(finalRequest);
-        exportApiService.downloadBlob(result.blob, result.filename);
+        const result = await unifiedApiService.export.export(finalRequest);
+        unifiedApiService.export.downloadBlob(result.blob, result.filename);
 
         // Use enhanced success message for ordered exports
         const successMessage = formatOrderedExportSuccessMessage(

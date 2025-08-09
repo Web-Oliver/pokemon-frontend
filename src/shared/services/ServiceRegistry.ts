@@ -21,10 +21,8 @@ import { RawCardApiService } from './collection/RawCardApiService';
 import { SealedProductApiService } from './collection/SealedProductApiService';
 import { CompositeCollectionApiService } from './CompositeCollectionApiService';
 
-// Import other services
-import { exportApiService } from './ExportApiService';
-import { searchApiService } from './SearchApiService';
-import { uploadApiService } from './UploadApiService';
+// Import unified services
+import { unifiedApiService } from './UnifiedApiService';
 
 /**
  * Service Registry for dependency injection
@@ -47,10 +45,10 @@ export class ServiceRegistry {
       this._sealedProductApiService
     );
 
-    // Initialize other services
-    this._exportApiService = exportApiService;
-    this._uploadApiService = uploadApiService;
-    this._searchApiService = searchApiService;
+    // Initialize other services with unified API
+    this._exportApiService = unifiedApiService.export;
+    this._uploadApiService = unifiedApiService.upload;
+    this._searchApiService = unifiedApiService.search;
   }
   
   // Composite service for backward compatibility

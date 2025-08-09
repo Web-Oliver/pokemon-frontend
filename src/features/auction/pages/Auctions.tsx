@@ -125,18 +125,7 @@ const Auctions: React.FC = () => {
     };
   }, [fetchAuctions]);
 
-  // Debug current auctions state
-  useEffect(() => {
-    console.log('[Auctions] Current auctions count:', auctions.length);
-    console.log(
-      '[Auctions] Current auctions:',
-      auctions.map((a) => ({
-        id: a.id || a._id,
-        topText: a.topText,
-        status: a.status,
-      }))
-    );
-  }, [auctions]);
+  // Production: Debug statements removed for security
 
   useEffect(() => {
     if (error) {
@@ -168,7 +157,7 @@ const Auctions: React.FC = () => {
               {
                 label: 'Refresh',
                 onClick: () => {
-                  console.log('[Auctions] Manual refresh triggered');
+                  // Production: Debug statement removed for security
                   fetchAuctions();
                 },
                 icon: Zap,

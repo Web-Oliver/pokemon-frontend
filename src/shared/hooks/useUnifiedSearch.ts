@@ -160,7 +160,7 @@ export const useUnifiedSearch = (
   // Debounced query for API calls
   const debouncedQuery = useDebouncedValue(query, debounceMs);
 
-  // Query key generation
+  // Query key generation - FIXED: Use stable JSON string for scope.types
   const queryKey = useMemo(() => {
     if (hierarchical && parentSelected) {
       return queryKeys.search.hierarchical(
@@ -169,28 +169,159 @@ export const useUnifiedSearch = (
         hierarchical.mode
       );
     }
-    return queryKeys.search.unified(debouncedQuery, scope.types, strategy);
-  }, [debouncedQuery, parentSelected, hierarchical, scope.types, strategy]);
+    // CRITICAL FIX: Ensure stable scope.types by using JSON string
+    const stableTypes = JSON.stringify(scope.types);
+    return queryKeys.search.unified(debouncedQuery, stableTypes, strategy);
+  }, [debouncedQuery, parentSelected, hierarchical?.mode, scope.types, strategy]);
 
   // ===============================
   // SEARCH STRATEGY IMPLEMENTATIONS
   // ===============================
 
+  const executeBasicSearch = useCallback(async (
+    searchQuery: string
+  ): Promise<SearchResult[]> => {
+    console.log('[SEARCH DEBUG] executeBasicSearch called with:', searchQuery);
+    console.log('[SEARCH DEBUG] scope.types:', scope.types);
+    console.log('[SEARCH DEBUG] unifiedApiService.search exists:', !!unifiedApiService.search);
+    console.log('[SEARCH DEBUG] searchSets method exists:', typeof unifiedApiService.search.searchSets);
+    
+    const promises = [];
+
+    if (scope.types.includes('cards')) {
+      console.log('[SEARCH DEBUG] Adding cards search');
+      promises.push(unifiedApiService.search.searchCards({ query: searchQuery }));
+    }
+    if (scope.types.includes('products')) {
+      console.log('[SEARCH DEBUG] Adding products search');
+      promises.push(unifiedApiService.search.searchProducts({ query: searchQuery }));
+    }
+    if (scope.types.includes('sets')) {
+      console.log('[SEARCH DEBUG] Adding sets search');
+      promises.push(unifiedApiService.search.searchSets({ query: searchQuery }));
+    }
+    if (scope.types.includes('setproducts')) {
+      console.log('[SEARCH DEBUG] Adding setproducts search');
+      promises.push(unifiedApiService.search.searchSetProducts({ query: searchQuery }));
+    }
+
+    console.log('[SEARCH DEBUG] Making', promises.length, 'API calls');
+    
+    if (promises.length === 0) {
+      console.warn('[SEARCH DEBUG] No promises created! Scope.types might be empty or invalid');
+      return [];
+    }
+    
+    try {
+      const apiResponses = await Promise.all(promises);
+      console.log('[SEARCH DEBUG] Raw API responses:', apiResponses);
+    
+      // CRITICAL FIX: Transform SearchResponse<T> to SearchResult[]
+      const allResults: SearchResult[] = [];
+    
+    apiResponses.forEach((response, index) => {
+      console.log(`[SEARCH DEBUG] Processing response ${index}:`, response);
+      console.log(`[SEARCH DEBUG] Response type for ${scope.types[index]}:`, typeof response);
+      console.log(`[SEARCH DEBUG] Response keys:`, response ? Object.keys(response) : 'no response');
+      
+      // Get the actual data array from the SearchResponse format
+      let dataArray: any[] = [];
+      
+      if (response && response.data && Array.isArray(response.data)) {
+        // Direct array in response.data
+        dataArray = response.data;
+        console.log(`[SEARCH DEBUG] Found direct array in response.data`);
+      } else if (response && response.data) {
+        // Check for specific data types in response.data
+        if (scope.types[index] === 'sets' && response.data.sets) {
+          dataArray = response.data.sets;
+          console.log(`[SEARCH DEBUG] Found sets in response.data.sets:`, dataArray.length);
+        } else if (scope.types[index] === 'cards' && response.data.cards) {
+          dataArray = response.data.cards;
+          console.log(`[SEARCH DEBUG] Found cards in response.data.cards:`, dataArray.length);
+        } else if (scope.types[index] === 'products' && response.data.products) {
+          dataArray = response.data.products;
+          console.log(`[SEARCH DEBUG] Found products in response.data.products:`, dataArray.length);
+        } else if (scope.types[index] === 'setproducts' && response.data.setProducts) {
+          dataArray = response.data.setProducts;
+          console.log(`[SEARCH DEBUG] Found setProducts in response.data.setProducts:`, dataArray.length);
+        }
+      }
+      
+      if (dataArray.length > 0) {
+        const transformedResults = dataArray.map((item: any) => {
+          // Determine type based on which search this came from
+          let type: 'set' | 'product' | 'card' | 'setProduct' = 'card';
+          if (scope.types[index] === 'sets') type = 'set';
+          else if (scope.types[index] === 'products') type = 'product';
+          else if (scope.types[index] === 'setproducts') type = 'setProduct';
+          else if (scope.types[index] === 'cards') type = 'card';
+          
+          return {
+            id: item._id || item.id,
+            displayName: item.setName || item.productName || item.cardName || item.name || 'Unknown',
+            data: item,
+            type
+          } as SearchResult;
+        });
+        
+        console.log(`[SEARCH DEBUG] Transformed ${transformedResults.length} results from response ${index}:`, transformedResults.slice(0, 3));
+        allResults.push(...transformedResults);
+      } else {
+        console.warn(`[SEARCH DEBUG] No data array found for response ${index}. Response structure:`, {
+          hasResponse: !!response,
+          hasData: response?.data,
+          dataKeys: response?.data ? Object.keys(response.data) : 'no data',
+          searchType: scope.types[index]
+        });
+      }
+    });
+    
+      console.log('[SEARCH DEBUG] Final transformed results:', allResults);
+      return allResults;
+    } catch (error) {
+      console.error('[SEARCH DEBUG] Error in executeBasicSearch:', error);
+      throw error;
+    }
+  }, [scope.types]);
+
   const executeSearch = useCallback(
     async (searchQuery: string): Promise<SearchResult[]> => {
+      console.log('[EXECUTE SEARCH DEBUG] Called with:', searchQuery, 'minLength:', minLength);
+      console.log('[EXECUTE SEARCH DEBUG] Query length check:', searchQuery.length, '>=', minLength, '?', searchQuery.length >= minLength);
+      
       if (searchQuery.length < minLength) {
+        console.log('[EXECUTE SEARCH DEBUG] Query too short, returning empty');
         return [];
       }
 
+      console.log('[EXECUTE SEARCH DEBUG] Query length check passed, continuing...');
       queryStartTime.current = performance.now();
       setError(null);
+      
+      console.log('[EXECUTE SEARCH DEBUG] About to enter try block...');
+      console.log('[EXECUTE SEARCH DEBUG] executeBasicSearch exists:', typeof executeBasicSearch);
+      console.log('[EXECUTE SEARCH DEBUG] strategy value:', strategy);
 
       try {
+        console.log('[EXECUTE SEARCH DEBUG] Starting search with strategy:', strategy);
+        console.log('[EXECUTE SEARCH DEBUG] executeBasicSearch function exists:', typeof executeBasicSearch);
+        console.log('[EXECUTE SEARCH DEBUG] scope.types:', scope.types);
+        console.log('[EXECUTE SEARCH DEBUG] scope object full:', JSON.stringify(scope));
         let results: SearchResult[] = [];
+        console.log('[EXECUTE SEARCH DEBUG] Results array initialized');
 
         switch (strategy) {
           case 'basic':
-            results = await executeBasicSearch(searchQuery);
+            console.log('[EXECUTE SEARCH DEBUG] Using basic strategy');
+            try {
+              console.log('[EXECUTE SEARCH DEBUG] About to call executeBasicSearch with query:', searchQuery);
+              results = await executeBasicSearch(searchQuery);
+              console.log('[EXECUTE SEARCH DEBUG] executeBasicSearch returned:', results.length, 'results');
+            } catch (basicError) {
+              console.error('[EXECUTE SEARCH DEBUG] executeBasicSearch failed:', basicError);
+              throw basicError;
+            }
             break;
 
           case 'optimized':
@@ -206,42 +337,26 @@ export const useUnifiedSearch = (
             break;
 
           default:
+            console.log('[EXECUTE SEARCH DEBUG] Using default (basic) strategy');
             results = await executeBasicSearch(searchQuery);
         }
 
-        return results.slice(0, scope.limit || 50);
+        console.log('[EXECUTE SEARCH DEBUG] Strategy returned results:', results.length);
+        const finalResults = results.slice(0, scope.limit || 50);
+        console.log('[EXECUTE SEARCH DEBUG] Final results after limit:', finalResults.length);
+        return finalResults;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Search failed';
+        console.error('[EXECUTE SEARCH DEBUG] Search error:', err);
         setError(errorMessage);
         log('Search error:', errorMessage);
         return [];
       }
     },
-    [strategy, minLength, scope.limit, hierarchical, parentSelected]
+    [strategy, minLength, scope.limit, executeBasicSearch]
   );
 
-  const executeBasicSearch = async (
-    searchQuery: string
-  ): Promise<SearchResult[]> => {
-    const promises = [];
-
-    if (scope.types.includes('cards')) {
-      promises.push(unifiedApiService.search.searchCards(searchQuery));
-    }
-    if (scope.types.includes('products')) {
-      promises.push(unifiedApiService.search.searchProducts(searchQuery));
-    }
-    if (scope.types.includes('sets')) {
-      promises.push(unifiedApiService.search.searchSets(searchQuery));
-    }
-    if (scope.types.includes('setproducts')) {
-      promises.push(unifiedApiService.search.searchSetProducts(searchQuery));
-    }
-
-    const results = await Promise.all(promises);
-    return results.flat();
-  };
 
   const executeOptimizedSearch = async (
     searchQuery: string
@@ -272,9 +387,9 @@ export const useUnifiedSearch = (
       // Search for parent items (sets, categories, etc.)
       switch (hierarchical.mode) {
         case 'set-card':
-          return unifiedApiService.search.searchSets(searchQuery);
+          return unifiedApiService.search.searchSets({ query: searchQuery });
         case 'setproduct-product':
-          return unifiedApiService.search.searchSetProducts(searchQuery);
+          return unifiedApiService.search.searchSetProducts({ query: searchQuery });
         case 'category-item':
           // Custom category search implementation
           return executeBasicSearch(searchQuery);
@@ -335,18 +450,34 @@ export const useUnifiedSearch = (
   // TANSTACK QUERY INTEGRATION
   // ===============================
 
+  // CRITICAL FIX: Memoize the query function to prevent TanStack Query restarts
+  const queryFn = useCallback(() => {
+    console.log('[TANSTACK QUERY DEBUG] executeSearch called with:', debouncedQuery);
+    return executeSearch(debouncedQuery);
+  }, [debouncedQuery, executeSearch]);
+
   const {
     data: results = [],
     isLoading,
     refetch,
   } = useQuery({
     queryKey,
-    queryFn: () => executeSearch(debouncedQuery),
+    queryFn,
     enabled: debouncedQuery.length >= minLength,
     staleTime,
     gcTime,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+  });
+  
+  console.log('[UNIFIED SEARCH DEBUG] TanStack Query state:', {
+    query,
+    debouncedQuery,
+    minLength,
+    enabled: debouncedQuery.length >= minLength,
+    isLoading,
+    resultsLength: results.length,
+    queryKey
   });
 
   // ===============================
@@ -375,7 +506,7 @@ export const useUnifiedSearch = (
       setParentSelected(null);
       setChildResults([]);
     }
-  }, [hierarchical]);
+  }, [hierarchical?.mode]);
 
   const selectResult = useCallback(
     (result: SearchResult) => {
@@ -398,7 +529,7 @@ export const useUnifiedSearch = (
         }
       }
     },
-    [hierarchical, parentSelected]
+    [hierarchical?.mode, hierarchical?.onAutofill, parentSelected]
   );
 
   const clearResults = useCallback(() => {

@@ -499,25 +499,12 @@ export const PokemonSearch: React.FC<PokemonSearchProps> = ({
         if (value.length >= minLength) {
           setIsVisible(true);
 
-          // Trigger the appropriate search based on searchType
-          switch (searchType) {
-            case 'sets':
-              search.searchSets(value);
-              break;
-            case 'cards':
-              search.searchCards(value, setFilter); // Use setFilter for hierarchical filtering
-              break;
-            case 'products':
-              search.searchProducts(value, setFilter); // Use setFilter for hierarchical filtering
-              break;
-            default:
-              console.warn(
-                `[POKEMON SEARCH] Unknown searchType: ${searchType}`
-              );
-          }
+          // FIXED: Use unified search interface with setQuery method
+          console.log(`[POKEMON SEARCH] Triggering search for type: ${searchType}, query: ${value}`);
+          search.setQuery(value);
         } else {
           setIsVisible(false);
-          search.clearResults();
+          search.clearQuery();
         }
       } else {
         // When using external search, just show/hide dropdown based on minLength

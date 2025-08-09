@@ -97,18 +97,14 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     // Extract auction ID from URL or use prop
     const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
     
-    console.log('AuctionDetail useEffect:', {
-      auctionId,
-      urlAuctionId,
-      currentPath: window.location.pathname
-    });
+    // Production: Debug statement removed for security
 
     if (urlAuctionId) {
-      console.log('Setting currentAuctionId and fetching auction:', urlAuctionId);
+      
       setCurrentAuctionId(urlAuctionId);
       fetchAuctionById(urlAuctionId);
     } else {
-      console.warn('No auction ID found - neither from prop nor URL');
+      // Production: Debug statement removed for security
     }
 
     return () => {
@@ -118,22 +114,22 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Navigation
   const navigateToAuctions = () => {
-    console.log('navigateToAuctions clicked');
+    
     navigationHelper.navigateTo('/auctions');
   };
 
   const navigateToEditAuction = () => {
-    console.log('navigateToEditAuction clicked, currentAuctionId:', currentAuctionId);
-    console.log('Current URL path:', window.location.pathname);
+    
+    
     
     if (!currentAuctionId) {
-      console.error('No auction ID available for navigation');
+      // Production: Debug statement removed for security
       return;
     }
     
     // Use correct path format: /auctions/{id}/edit
     const editPath = `/auctions/${currentAuctionId}/edit`;
-    console.log('Navigating to edit path:', editPath);
+    
     navigationHelper.navigateTo(editPath);
   };
 

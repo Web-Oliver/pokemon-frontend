@@ -151,15 +151,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   } = useQuery({
     queryKey: queryKeys.psaCards(),
     queryFn: async () => {
-      console.log('[COLLECTION DEBUG] Fetching PSA cards...');
-      try {
-        const result = await unifiedApiService.collection.getPsaGradedCards({ sold: false });
-        console.log('[COLLECTION DEBUG] PSA cards result:', result);
-        return result;
-      } catch (error) {
-        console.error('[COLLECTION DEBUG] PSA cards error:', error);
-        throw error;
-      }
+      return await unifiedApiService.collection.getPsaGradedCards({ sold: false });
     },
     select: (data) => validateCollectionResponse(data, 'PSA cards'),
   });
@@ -172,15 +164,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   } = useQuery({
     queryKey: queryKeys.rawCards(),
     queryFn: async () => {
-      console.log('[COLLECTION DEBUG] Fetching Raw cards...');
-      try {
-        const result = await unifiedApiService.collection.getRawCards({ sold: false });
-        console.log('[COLLECTION DEBUG] Raw cards result:', result);
-        return result;
-      } catch (error) {
-        console.error('[COLLECTION DEBUG] Raw cards error:', error);
-        throw error;
-      }
+      return await unifiedApiService.collection.getRawCards({ sold: false });
     },
     select: (data) => validateCollectionResponse(data, 'raw cards'),
   });
@@ -193,15 +177,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   } = useQuery({
     queryKey: queryKeys.sealedProducts(),
     queryFn: async () => {
-      console.log('[COLLECTION DEBUG] Fetching Sealed products...');
-      try {
-        const result = await unifiedApiService.collection.getSealedProducts({ sold: false });
-        console.log('[COLLECTION DEBUG] Sealed products result:', result);
-        return result;
-      } catch (error) {
-        console.error('[COLLECTION DEBUG] Sealed products error:', error);
-        throw error;
-      }
+      return await unifiedApiService.collection.getSealedProducts({ sold: false });
     },
     select: (data) => validateCollectionResponse(data, 'sealed products'),
   });

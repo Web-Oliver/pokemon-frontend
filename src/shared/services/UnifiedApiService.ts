@@ -462,44 +462,40 @@ export class UnifiedApiService {
     async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
       console.log('[API DEBUG] Calling /search/sets with params:', params);
       try {
-        const response = await unifiedHttpClient.get<SearchResponse<ISet>>('/search/sets', { params });
+        const response = await unifiedHttpClient.get<any>('/search/sets', { params });
         console.log('[API DEBUG] /search/sets SUCCESS response:', {
-          status: response?.status,
-          statusText: response?.statusText,
           rawResponse: response,
-          isResponseObject: typeof response === 'object',
           responseKeys: response ? Object.keys(response) : 'no response',
-          actualKeys: response ? Object.keys(response) : [],
+          hasDirectSets: response?.sets !== undefined,
+          directSetsLength: response?.sets?.length || 0,
           hasData: response?.data !== undefined,
-          hasDirectData: Array.isArray(response?.data),
-          responseDataType: typeof response?.data,
-          responseDataKeys: response?.data ? Object.keys(response.data) : 'no data',
-          isResponseArray: Array.isArray(response),
-          responseLength: Array.isArray(response) ? response.length : 'not array',
-          hasSuccess: response?.success !== undefined,
-          hasCount: response?.count !== undefined,
-          actualResponseData: response?.data,
-          fullResponse: response
+          dataKeys: response?.data ? Object.keys(response.data) : 'no data keys',
+          hasNestedSets: response?.data?.sets !== undefined,
+          nestedSetsLength: response?.data?.sets?.length || 0
         });
         
-        // Handle different response formats
+        // FIXED: Handle the transformed API response format
+        // After transformApiResponse, the response is the extracted data object: {sets: [...], count: N}
         let searchResponse: SearchResponse<ISet>;
         
-        if (response?.data && typeof response.data === 'object') {
-          // Standard axios response format
-          searchResponse = response.data;
-        } else if (response && typeof response === 'object' && response.sets) {
-          // API returns sets array directly - transform to expected format
-          console.log('[API DEBUG] Transforming sets response format');
+        if (response?.sets && Array.isArray(response.sets)) {
+          // Response is the transformed data object directly
+          console.log('[API DEBUG] Using sets from transformed response.sets');
           searchResponse = {
             data: response.sets,
             count: response.count || response.total || response.sets.length,
             success: true,
             query: params.query
           };
-        } else if (response && typeof response === 'object' && response.data) {
-          // Response is already the data object
-          searchResponse = response;
+        } else if (response?.data?.sets && Array.isArray(response.data.sets)) {
+          // Fallback: raw response format if transformer didn't run
+          console.log('[API DEBUG] Using sets from response.data.sets (raw format)');
+          searchResponse = {
+            data: response.data.sets,
+            count: response.data.count || response.data.total || response.data.sets.length,
+            success: true,
+            query: params.query
+          };
         } else {
           // Fallback - empty response
           console.warn('[API DEBUG] Unexpected response format, returning empty result');
@@ -509,14 +505,7 @@ export class UnifiedApiService {
         console.log('[API DEBUG] Final searchResponse:', searchResponse);
         return searchResponse;
       } catch (error) {
-        console.error('[API DEBUG] /search/sets ERROR:', {
-          error,
-          errorMessage: error?.message,
-          errorStatus: error?.status,
-          errorResponse: error?.response,
-          errorData: error?.response?.data,
-          fullError: error
-        });
+        console.error('[API DEBUG] /search/sets ERROR:', error);
         // Return empty result instead of throwing
         return { data: [], count: 0, success: false, query: params.query };
       }
@@ -525,31 +514,37 @@ export class UnifiedApiService {
     async searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
       console.log('[API DEBUG] Calling /search/set-products with params:', params);
       try {
-        const response = await unifiedHttpClient.get<SearchResponse<IProduct>>('/search/set-products', { params });
+        const response = await unifiedHttpClient.get<any>('/search/set-products', { params });
         console.log('[API DEBUG] /search/set-products SUCCESS response:', {
           rawResponse: response,
           responseKeys: response ? Object.keys(response) : 'no response',
-          hasSetProducts: response?.setProducts !== undefined,
-          hasProducts: response?.products !== undefined,
-          hasData: response?.data !== undefined
+          hasData: response?.data !== undefined,
+          dataKeys: response?.data ? Object.keys(response.data) : 'no data keys',
+          hasProducts: response?.data?.products !== undefined,
+          productsLength: response?.data?.products?.length || 0
         });
         
-        // Handle different response formats 
+        // FIXED: Handle the transformed API response format
         let searchResponse: SearchResponse<IProduct>;
         
-        if (response?.data && typeof response.data === 'object') {
-          searchResponse = response.data;
-        } else if (response && typeof response === 'object' && (response.setProducts || response.products)) {
-          console.log('[API DEBUG] Transforming set-products response format');
-          const productsArray = response.setProducts || response.products;
+        if (response?.products && Array.isArray(response.products)) {
+          // Response is the transformed data object directly
+          console.log('[API DEBUG] Using products from transformed response.products');
           searchResponse = {
-            data: productsArray,
-            count: response.count || response.total || productsArray.length,
+            data: response.products,
+            count: response.count || response.total || response.products.length,
             success: true,
             query: params.query
           };
-        } else if (response && typeof response === 'object' && response.data) {
-          searchResponse = response;
+        } else if (response?.data?.products && Array.isArray(response.data.products)) {
+          // Fallback: raw response format if transformer didn't run
+          console.log('[API DEBUG] Using products from response.data.products (raw format)');
+          searchResponse = {
+            data: response.data.products,
+            count: response.data.count || response.data.total || response.data.products.length,
+            success: true,
+            query: params.query
+          };
         } else {
           console.warn('[API DEBUG] Unexpected set-products response format, returning empty result');
           searchResponse = { data: [], count: 0, success: false, query: params.query };
@@ -566,32 +561,37 @@ export class UnifiedApiService {
     async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
       console.log('[API DEBUG] Calling /search/products with params:', params);
       try {
-        const response = await unifiedHttpClient.get<SearchResponse<IProduct>>('/search/products', { params });
+        const response = await unifiedHttpClient.get<any>('/search/products', { params });
         console.log('[API DEBUG] /search/products SUCCESS response:', {
           rawResponse: response,
           responseKeys: response ? Object.keys(response) : 'no response',
-          hasProducts: response?.products !== undefined,
-          hasData: response?.data !== undefined
+          hasData: response?.data !== undefined,
+          dataKeys: response?.data ? Object.keys(response.data) : 'no data keys',
+          hasProducts: response?.data?.products !== undefined,
+          productsLength: response?.data?.products?.length || 0
         });
         
-        // Handle different response formats
+        // FIXED: Handle the transformed API response format
         let searchResponse: SearchResponse<IProduct>;
         
-        if (response?.data && typeof response.data === 'object') {
-          // Standard axios response format
-          searchResponse = response.data;
-        } else if (response && typeof response === 'object' && response.products) {
-          // API returns products array directly - transform to expected format
-          console.log('[API DEBUG] Transforming products response format');
+        if (response?.products && Array.isArray(response.products)) {
+          // Response is the transformed data object directly
+          console.log('[API DEBUG] Using products from transformed response.products');
           searchResponse = {
             data: response.products,
             count: response.count || response.total || response.products.length,
             success: true,
             query: params.query
           };
-        } else if (response && typeof response === 'object' && response.data) {
-          // Response is already the data object
-          searchResponse = response;
+        } else if (response?.data?.products && Array.isArray(response.data.products)) {
+          // Fallback: raw response format if transformer didn't run
+          console.log('[API DEBUG] Using products from response.data.products (raw format)');
+          searchResponse = {
+            data: response.data.products,
+            count: response.data.count || response.data.total || response.data.products.length,
+            success: true,
+            query: params.query
+          };
         } else {
           // Fallback - empty response
           console.warn('[API DEBUG] Unexpected products response format, returning empty result');
@@ -609,32 +609,37 @@ export class UnifiedApiService {
     async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
       console.log('[API DEBUG] Calling /search/cards with params:', params);
       try {
-        const response = await unifiedHttpClient.get<SearchResponse<ICard>>('/search/cards', { params });
+        const response = await unifiedHttpClient.get<any>('/search/cards', { params });
         console.log('[API DEBUG] /search/cards SUCCESS response:', {
           rawResponse: response,
           responseKeys: response ? Object.keys(response) : 'no response',
-          hasCards: response?.cards !== undefined,
-          hasData: response?.data !== undefined
+          hasData: response?.data !== undefined,
+          dataKeys: response?.data ? Object.keys(response.data) : 'no data keys',
+          hasCards: response?.data?.cards !== undefined,
+          cardsLength: response?.data?.cards?.length || 0
         });
         
-        // Handle different response formats
+        // FIXED: Handle the transformed API response format
         let searchResponse: SearchResponse<ICard>;
         
-        if (response?.data && typeof response.data === 'object') {
-          // Standard axios response format
-          searchResponse = response.data;
-        } else if (response && typeof response === 'object' && response.cards) {
-          // API returns cards array directly - transform to expected format
-          console.log('[API DEBUG] Transforming cards response format');
+        if (response?.cards && Array.isArray(response.cards)) {
+          // Response is the transformed data object directly
+          console.log('[API DEBUG] Using cards from transformed response.cards');
           searchResponse = {
             data: response.cards,
             count: response.count || response.total || response.cards.length,
             success: true,
             query: params.query
           };
-        } else if (response && typeof response === 'object' && response.data) {
-          // Response is already the data object
-          searchResponse = response;
+        } else if (response?.data?.cards && Array.isArray(response.data.cards)) {
+          // Fallback: raw response format if transformer didn't run
+          console.log('[API DEBUG] Using cards from response.data.cards (raw format)');
+          searchResponse = {
+            data: response.data.cards,
+            count: response.data.count || response.data.total || response.data.cards.length,
+            success: true,
+            query: params.query
+          };
         } else {
           // Fallback - empty response
           console.warn('[API DEBUG] Unexpected cards response format, returning empty result');

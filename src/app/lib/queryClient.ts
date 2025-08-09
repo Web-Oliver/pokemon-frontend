@@ -184,16 +184,24 @@ export const queryKeys = {
   conditionsReference: () => [...queryKeys.reference, 'conditions'] as const,
 
   // === SEARCH DATA ===
-  search: ['search'] as const,
-  searchCards: (query: string, filters?: any) =>
-    [...queryKeys.search, 'cards', { query, filters }] as const,
-  searchSets: (query: string, filters?: any) =>
-    [...queryKeys.search, 'sets', { query, filters }] as const,
-  searchProducts: (query: string, filters?: any) =>
-    [...queryKeys.search, 'products', { query, filters }] as const,
-  searchHistory: () => [...queryKeys.search, 'history'] as const,
-  searchSuggestions: (type: string, query: string) =>
-    [...queryKeys.search, 'suggestions', type, query] as const,
+  search: {
+    base: ['search'] as const,
+    cards: (query: string, filters?: any) =>
+      ['search', 'cards', { query, filters }] as const,
+    sets: (query: string, filters?: any) =>
+      ['search', 'sets', { query, filters }] as const,
+    products: (query: string, filters?: any) =>
+      ['search', 'products', { query, filters }] as const,
+    history: () => ['search', 'history'] as const,
+    suggestions: (type: string, query: string) =>
+      ['search', 'suggestions', type, query] as const,
+    
+    // Unified search functions
+    unified: (query: string, types?: string[], strategy?: string) =>
+      ['search', 'unified', { query, types, strategy }] as const,
+    hierarchical: (query: string, parentId?: string, mode?: string) =>
+      ['search', 'hierarchical', { query, parentId, mode }] as const,
+  },
 
   // === ANALYTICS DATA ===
   analytics: ['analytics'] as const,

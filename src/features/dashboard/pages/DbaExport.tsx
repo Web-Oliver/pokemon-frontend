@@ -62,7 +62,7 @@ const DbaItemsWithoutTimers = lazy(
 import EmptyState from '../../../shared/components/molecules/common/EmptyState';
 
 const DbaExport: React.FC = () => {
-  console.log('DbaExport: Component rendering');
+  // Production: Debug statement removed for security
   const {
     psaCards,
     rawCards,
@@ -85,13 +85,7 @@ const DbaExport: React.FC = () => {
     downloadZip,
   } = useDbaExport();
 
-  console.log('DbaExport: Hook data loaded:', { 
-    psaCardsCount: psaCards?.length, 
-    rawCardsCount: rawCards?.length, 
-    sealedProductsCount: sealedProducts?.length, 
-    loading, 
-    error: error?.message 
-  });
+  // Production: Debug statement removed for security
 
   // CONSOLIDATED: Stats calculation matching original DbaHeaderGalaxyCosmic
   const urgentCount =
@@ -154,12 +148,12 @@ const DbaExport: React.FC = () => {
 
   const allItems = [...psaCards, ...rawCards, ...sealedProducts];
   const exportCollectionData = (items: any[], mode: string) => {
-    console.log('Export all items:', items, mode);
+    // Production: Debug statement removed for security
     // Implement export all logic
   };
 
   try {
-    console.log('DbaExport: About to render JSX');
+    // Production: Debug statement removed for security
     
     return (
       <PageLayout loading={loading} error={error} variant="default">
@@ -234,7 +228,7 @@ const DbaExport: React.FC = () => {
     </PageLayout>
   );
   } catch (error) {
-    console.error('DbaExport: Render error:', error);
+    // Production: Debug statement removed for security
     return (
       <div className="p-8 bg-red-100 text-red-800">
         <h2>DbaExport Error</h2>

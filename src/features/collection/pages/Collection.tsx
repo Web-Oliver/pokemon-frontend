@@ -82,7 +82,7 @@ const Collection: React.FC = () => {
     const needsRefresh = storageWrappers.session.getItem('collectionNeedsRefresh');
     if (needsRefresh === 'true') {
       storageWrappers.session.removeItem('collectionNeedsRefresh');
-      console.log('[Collection] Refresh requested, fetching fresh data...');
+      // Production: Debug statement removed for security
       refreshCollection();
     }
   }, [refreshCollection]);

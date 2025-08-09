@@ -134,7 +134,7 @@ const AddEditItem: React.FC = () => {
       if (pathParts.length === 5) {
         const [, , , type, id] = pathParts;
         const itemViewPath = `/collection/${type}/${id}`;
-        console.log('[EDIT SUCCESS] Redirecting to item view:', itemViewPath);
+        // Production: Debug statement removed for security
         navigationHelper.navigateTo(itemViewPath);
       } else {
         // Fallback to collection if path parsing fails

@@ -107,7 +107,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   centered = false,
   showDivider = true,
 }) => {
-  console.log('UnifiedHeader: Rendering with props:', { title, subtitle, variant, size, stats, actions });
 
   // Size configurations - More compact sizing
   const sizeConfigs = {

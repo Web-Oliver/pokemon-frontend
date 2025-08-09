@@ -9,8 +9,8 @@
  * - Open/Closed: Extensible for different search hierarchies
  */
 
-import { useEffect, useState, useCallback } from 'react';
-import { SearchResult, useSearch } from './useUnifiedSearch';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { SearchResult, useUnifiedSearch } from './useUnifiedSearch';
 import { useDebouncedValue } from './useDebounce';
 import { autoFillFromProductSelection } from '../utils/helpers/searchHelpers';
 
@@ -71,9 +71,34 @@ export const useHierarchicalSearch = ({
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Search hook
-  const search = useSearch();
 
+  // CRITICAL FIX: Memoize the scope types to prevent infinite query key changes
+  const scopeTypes = useMemo(() => {
+    if (!activeField) {
+      return ['sets']; // Default to sets when no field is active
+    }
+    
+    if (activeField === config.primaryField) {
+      // Searching in primary field (Set Name) - search for sets
+      return config.mode === 'card' ? ['sets'] : ['setproducts'];
+    } else {
+      // Searching in secondary field (Card/Product Name) - search for cards/products
+      return config.mode === 'card' ? ['cards'] : ['products'];
+    }
+  }, [activeField, config.primaryField, config.mode]);
+
+  const searchConfig = useMemo(() => ({
+    strategy: 'basic' as const,
+    scope: {
+      types: scopeTypes,
+    },
+    minLength: 2,
+    debounceMs: 300,
+  }), [scopeTypes]);
+  
+  const search = useUnifiedSearch(searchConfig);
+  
+  
   // Debounced values
   const debouncedPrimary = useDebouncedValue(
     primaryValue,
@@ -84,29 +109,76 @@ export const useHierarchicalSearch = ({
     config.debounceDelay || 300
   );
 
-  // Sync search results to local state
+  // Ref to prevent infinite loops
+  const lastSearchRef = useRef({
+    results: null as SearchResult[] | null,
+    isLoading: false,
+  });
+
+  // Sync search results to local state with stable references
   useEffect(() => {
-    console.log('[HIERARCHICAL HOOK] Search results updated:', {
-      results: search.results?.length || 0,
-      isLoading: search.isLoading,
-      activeField
+    const newResults = search?.results || [];
+    const newLoading = search?.isLoading || false;
+
+
+    console.log('[HIERARCHICAL SYNC] Search results sync:', {
+      hasSearchObject: !!search,
+      newResultsLength: newResults.length,
+      newLoading,
+      searchQuery: search?.query,
+      searchDebouncedQuery: search?.debouncedQuery,
+      firstFewResults: newResults.slice(0, 3)
     });
-    setSuggestions(search.results || []);
-    setIsLoading(search.isLoading);
-  }, [search.results, search.isLoading, activeField]);
+
+    // Only update if there's an actual change
+    if (
+      JSON.stringify(lastSearchRef.current.results) !== JSON.stringify(newResults) ||
+      lastSearchRef.current.isLoading !== newLoading
+    ) {
+      console.log('[HIERARCHICAL SYNC] Results changed, updating suggestions');
+      
+      lastSearchRef.current = {
+        results: newResults,
+        isLoading: newLoading,
+      };
+      
+      setSuggestions(newResults);
+      setIsLoading(newLoading);
+    } else {
+      console.log('[HIERARCHICAL SYNC] No change detected, skipping update');
+    }
+  }, [search?.results, search?.isLoading]);
+
+  // Search execution with debounce prevention
+  const lastSearchParamsRef = useRef({
+    activeField: null as SearchFieldType | null,
+    debouncedPrimary: '',
+    debouncedSecondary: '',
+    primaryValue: '',
+  });
 
   // Centralized search effect with proper minLength validation
   useEffect(() => {
-    console.log('[HIERARCHICAL HOOK] Search effect triggered:', {
+    // Create current search params
+    const currentParams = {
       activeField,
-      primaryValue,
-      secondaryValue,
       debouncedPrimary,
-      debouncedSecondary
-    });
+      debouncedSecondary,
+      primaryValue,
+    };
+
+    // Check if search params actually changed
+    const paramsChanged = JSON.stringify(lastSearchParamsRef.current) !== JSON.stringify(currentParams);
+    
+    
+    if (!paramsChanged) {
+      return;
+    }
+
+    // Update last search params
+    lastSearchParamsRef.current = currentParams;
     
     if (!activeField) {
-      console.log('[HIERARCHICAL HOOK] No active field, clearing suggestions');
       setSuggestions([]);
       return;
     }
@@ -117,59 +189,22 @@ export const useHierarchicalSearch = ({
         : debouncedSecondary;
 
     // FIXED: Proper minLength validation to prevent glitchy search behavior
-    console.log('[HIERARCHICAL HOOK] Current value check:', {
-      currentValue,
-      valueType: typeof currentValue,
-      trimmedLength: currentValue?.trim()?.length || 0
-    });
     
     if (
       !currentValue ||
       typeof currentValue !== 'string' ||
       currentValue.trim().length < 2
     ) {
-      console.log('[HIERARCHICAL HOOK] Value too short, clearing suggestions');
       setSuggestions([]);
       return;
     }
 
     // Execute search based on active field and mode
-    console.log('[HIERARCHICAL HOOK] About to execute search:', {
-      activeField,
-      primaryField: config.primaryField,
-      mode: config.mode,
-      searchValue: currentValue
-    });
     
-    switch (activeField) {
-      case config.primaryField:
-        if (config.mode === 'card') {
-          console.log('[HIERARCHICAL HOOK] Calling searchSets with:', currentValue);
-          search.searchSets(currentValue);
-        } else {
-          console.log('[HIERARCHICAL HOOK] Calling searchSetProducts with:', currentValue);
-          search.searchSetProducts(currentValue);
-        }
-        break;
-
-      case config.secondaryField: {
-        // Hierarchical logic: filter by primary selection
-        const searchQuery = currentValue;
-
-        // FIXED: Better validation for secondary field searches
-        if (currentValue.trim().length < 2) {
-          setSuggestions([]);
-          return;
-        }
-
-        // Search within primary selection context
-        if (config.mode === 'card') {
-          search.searchCards(searchQuery, primaryValue?.trim() || undefined);
-        } else {
-          search.searchProducts(searchQuery, primaryValue?.trim() || undefined);
-        }
-        break;
-      }
+    // Execute search using the unified search interface
+    
+    if (search?.setQuery && typeof search.setQuery === 'function') {
+      search.setQuery(currentValue);
     }
   }, [
     activeField,
@@ -179,10 +214,6 @@ export const useHierarchicalSearch = ({
     config.mode,
     config.primaryField,
     config.secondaryField,
-    search.searchSets,
-    search.searchCards,
-    search.searchSetProducts,
-    search.searchProducts,
   ]);
 
   // Handle primary field selection (Set/SetProduct)
@@ -193,7 +224,6 @@ export const useHierarchicalSearch = ({
       clearErrors: (field: string) => void,
       onSelection?: (data: any) => void
     ) => {
-      console.log('[HIERARCHICAL] Primary selection:', result);
 
       if (!result.id || !result.displayName) {
         setValue(config.primaryField, '');
@@ -247,13 +277,6 @@ export const useHierarchicalSearch = ({
       clearErrors: (field: string) => void,
       onSelection: (data: any) => void
     ) => {
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] ===== SECONDARY SELECTION START =====');
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Full result object:', result);
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data setName:', result.data?.setName);
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data setDisplayName:', result.data?.setDisplayName);
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Result data Set.setName:', result.data?.Set?.setName);
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Config mode:', config.mode);
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] Config secondaryField:', config.secondaryField);
 
       if (!result.id || !result.displayName) {
         setValue(config.secondaryField, '');
@@ -266,36 +289,27 @@ export const useHierarchicalSearch = ({
 
       // FIXED: For cards, autofill set information from card data
       if (config.mode === 'card') {
-        console.log('[HIERARCHICAL AUTOFILL DEBUG] Processing card mode selection...');
         
         // Set the card name
         setValue(config.secondaryField, result.displayName);
         clearErrors(config.secondaryField);
-        console.log('[HIERARCHICAL AUTOFILL DEBUG] Set cardName to:', result.displayName);
 
         // CRITICAL FIX: Autofill Set Name from card data with multiple fallbacks
         const setNameValue = result.data?.setName || result.data?.setDisplayName || result.data?.Set?.setName;
-        console.log('[HIERARCHICAL AUTOFILL DEBUG] Extracted setName value:', setNameValue);
         
         if (setNameValue) {
-          console.log('[HIERARCHICAL AUTOFILL DEBUG] Calling setValue for setName with:', setNameValue);
           setValue('setName', setNameValue);
           clearErrors('setName');
-          console.log('[HIERARCHICAL AUTOFILL DEBUG] Successfully set setName field');
-        } else {
-          console.warn('[HIERARCHICAL AUTOFILL DEBUG] NO SET NAME FOUND IN CARD DATA!');
         }
 
         // Autofill other card fields if available
         if (result.data?.cardNumber) {
           setValue('cardNumber', result.data.cardNumber);
           clearErrors('cardNumber');
-          console.log('[HIERARCHICAL AUTOFILL DEBUG] Set cardNumber to:', result.data.cardNumber);
         }
         if (result.data?.variety) {
           setValue('variety', result.data.variety);
           clearErrors('variety');
-          console.log('[HIERARCHICAL AUTOFILL DEBUG] Set variety to:', result.data.variety);
         }
 
         const cardData = {
@@ -306,7 +320,6 @@ export const useHierarchicalSearch = ({
           variety: result.data?.variety,
           ...result.data,
         };
-        console.log('[HIERARCHICAL AUTOFILL DEBUG] Final cardData object:', cardData);
         onSelection(cardData);
       } else {
         // For products, use autofill pattern
@@ -320,7 +333,6 @@ export const useHierarchicalSearch = ({
         setActiveField(null);
       }, 10);
       
-      console.log('[HIERARCHICAL AUTOFILL DEBUG] ===== SECONDARY SELECTION END =====');
     },
     [config]
   );

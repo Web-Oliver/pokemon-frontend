@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { SearchResult, useSearch } from './useSearch';
-import { searchApiService } from '../services/SearchApiService';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
 // Enhanced interfaces for hierarchical autocomplete
 export interface AutocompleteField {
@@ -123,22 +123,22 @@ export const useAutocomplete = (
   useEffect(() => {
     if (state.value.trim() && state.isOpen && !disabled) {
       // Check if suggestions should be shown (no simultaneous suggestions per user spec)
-      if (!searchApiService.shouldShowSuggestions(searchType as any)) {
+      if (!unifiedApiService.search.shouldShowSuggestions(searchType as any)) {
         search.clearResults();
         return;
       }
 
       switch (searchType) {
         case 'sets':
-          searchApiService.updateSearchContext({ activeField: 'set' });
+          unifiedApiService.search.updateSearchContext({ activeField: 'set' });
           search.searchSets(state.value);
           break;
         case 'setProducts':
-          searchApiService.updateSearchContext({ activeField: 'setProduct' });
+          unifiedApiService.search.updateSearchContext({ activeField: 'setProduct' });
           search.searchSetProducts(state.value);
           break;
         case 'products':
-          searchApiService.updateSearchContext({ activeField: 'product' });
+          unifiedApiService.search.updateSearchContext({ activeField: 'product' });
           search.searchProducts(
             state.value,
             filters?.setName,
@@ -146,7 +146,7 @@ export const useAutocomplete = (
           );
           break;
         case 'cards':
-          searchApiService.updateSearchContext({ activeField: 'card' });
+          unifiedApiService.search.updateSearchContext({ activeField: 'card' });
           search.searchCards(state.value, filters?.setName);
           break;
       }
@@ -261,7 +261,7 @@ export const useAutocomplete = (
 
     // Clear hierarchical context if enabled
     if (hierarchicalConfig?.enableHierarchical) {
-      searchApiService.clearSearchContext();
+      unifiedApiService.search.clearSearchContext();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hierarchicalConfig?.enableHierarchical]);
@@ -276,7 +276,7 @@ export const useAutocomplete = (
       }));
 
       if (hierarchicalConfig?.enableHierarchical) {
-        searchApiService.handleSetProductSelection(setProduct.data);
+        unifiedApiService.search.handleSetProductSelection(setProduct.data);
       }
     },
     [hierarchicalConfig?.enableHierarchical]
@@ -291,7 +291,7 @@ export const useAutocomplete = (
       }));
 
       if (hierarchicalConfig?.enableHierarchical) {
-        searchApiService.handleSetSelection(set.data);
+        unifiedApiService.search.handleSetSelection(set.data);
       }
     },
     [hierarchicalConfig?.enableHierarchical]
@@ -306,7 +306,7 @@ export const useAutocomplete = (
 
       if (hierarchicalConfig?.enableHierarchical) {
         try {
-          const result = await searchApiService.handleProductSelection(
+          const result = await unifiedApiService.search.handleProductSelection(
             product.data
           );
           if (result.autofillData && hierarchicalConfig?.onAutofill) {
@@ -339,7 +339,7 @@ export const useAutocomplete = (
     }));
 
     if (hierarchicalConfig?.enableHierarchical) {
-      searchApiService.clearSearchContext();
+      unifiedApiService.search.clearSearchContext();
     }
   }, [hierarchicalConfig?.enableHierarchical]);
 
@@ -347,7 +347,7 @@ export const useAutocomplete = (
     if (!hierarchicalConfig?.enableHierarchical) {
       return true;
     }
-    return searchApiService.shouldShowSuggestions(state.fieldType as any);
+    return unifiedApiService.search.shouldShowSuggestions(state.fieldType as any);
   }, [hierarchicalConfig?.enableHierarchical, state.fieldType]);
 
   return {

@@ -153,10 +153,10 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
         : closeOnOverlayClick !== false;
 
     // Merge context theme with component props
-    const effectiveTheme = theme || visualTheme?.visualTheme;
-    const effectiveDensity = density || layoutTheme?.density;
+    const effectiveTheme = theme || config.visualTheme;
+    const effectiveDensity = density || config.density;
     const effectiveAnimationIntensity =
-      animationIntensity || animationTheme?.intensity;
+      animationIntensity || config.animationIntensity;
 
     // Handle escape key
     useEffect(() => {

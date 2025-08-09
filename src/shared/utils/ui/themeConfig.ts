@@ -37,15 +37,15 @@ export const useCentralizedTheme = (): CentralizedThemeConfig => {
   const theme = useTheme();
 
   return {
-    visualTheme: theme.visual.currentTheme,
-    particleEffectsEnabled: theme.visual.particleEffectsEnabled,
-    glassmorphismIntensity: theme.visual.glassmorphismIntensity,
-    density: theme.layout.density,
-    animationIntensity: theme.animation.intensity,
-    highContrast: theme.accessibility.highContrast,
-    reducedMotion: theme.accessibility.reducedMotion,
+    visualTheme: theme.config.visualTheme,
+    particleEffectsEnabled: theme.config.particleEffectsEnabled,
+    glassmorphismIntensity: theme.config.glassmorphismIntensity,
+    density: theme.config.density,
+    animationIntensity: theme.config.animationIntensity,
+    highContrast: theme.config.highContrast,
+    reducedMotion: theme.config.reducedMotion,
   };
-};
+};;
 
 /**
  * Theme Configuration Utilities

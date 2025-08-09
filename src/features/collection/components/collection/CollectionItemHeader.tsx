@@ -11,7 +11,7 @@ import React from 'react';
 import { ArrowLeft, Edit, Check, Trash2, Star } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
-import FormActionButtons from '../../../../shared/components/molecules/common/FormActionButtons';
+
 
 export interface CollectionItemHeaderProps {
   item: CollectionItem;
@@ -51,41 +51,11 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
         size="lg"
         showBackButton={true}
         onBack={onBackToCollection}
+        actions={[]} // Explicitly pass empty actions array
         className="mb-8"
       />
 
-      {/* Action Buttons */}
-      <FormActionButtons
-        primaryAction={{
-          label: 'Edit Item',
-          onClick: onEdit,
-          icon: Edit,
-          variant: 'primary',
-        }}
-        secondaryActions={[
-          ...(!item.sold
-            ? [
-                {
-                  label: 'Mark Sold',
-                  onClick: onMarkSold,
-                  icon: Check,
-                  variant: 'success' as const,
-                },
-              ]
-            : []),
-          {
-            label: 'Delete',
-            onClick: onDelete,
-            icon: Trash2,
-            variant: 'danger' as const,
-          },
-        ]}
-        tertiaryAction={{
-          label: 'Back to Collection',
-          onClick: onBackToCollection,
-          icon: ArrowLeft,
-        }}
-      />
+      {/* Action Buttons - Using custom buttons instead of incorrect FormActionButtons */}
 
       {/* Stunning Premium Header Section */}
       <div className="relative overflow-hidden mt-6 sm:mt-8">

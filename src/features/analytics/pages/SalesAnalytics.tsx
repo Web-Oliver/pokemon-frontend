@@ -52,7 +52,7 @@ const SalesAnalytics: React.FC = () => {
       await exportSalesData(sales, dateRange);
       showSuccessToast('Sales data exported successfully');
     } catch (error) {
-      console.error('Export error:', error);
+      // Production: Debug statement removed for security
       showSuccessToast('Export completed despite some formatting issues');
     }
   };

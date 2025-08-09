@@ -255,13 +255,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Reset previews when existingImageUrls changes, but preserve new uploads
   useEffect(() => {
-    console.log(
-      '[ImageUploader] existingImageUrls changed:',
-      existingImageUrls
-    );
     // Remove duplicates from existingImageUrls
     const uniqueUrls = Array.from(new Set(existingImageUrls));
-    console.log('[ImageUploader] Unique URLs after deduplication:', uniqueUrls);
 
     // Preserve any non-existing previews (newly uploaded files) and add existing ones
     setPreviews((current) => {
@@ -270,7 +265,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         createExistingImagePreview(url, index)
       );
       const combined = [...existingPreviews, ...newUploads];
-      console.log('[ImageUploader] Setting previews to:', combined);
       return combined;
     });
   }, [existingImageUrls]);
