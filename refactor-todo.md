@@ -215,9 +215,9 @@
 - [x] Remove direct usage of individual theme hooks
 
 ### Theme Configuration & Utilities
-- [ ] Centralize theme constants in `shared/utils/theme/index.ts`
-- [ ] Consolidate theme default values and configurations
-- [ ] Merge ThemePropertyManager.ts into central theme utilities
+- [x] Centralize theme constants in `shared/utils/theme/index.ts`
+- [x] Consolidate theme default values and configurations
+- [x] Merge ThemePropertyManager.ts into central theme utilities
 
 ### Theme UI Components
 - [ ] Consolidate theme management UI into `shared/components/organisms/theme`
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 83/91 (91%)**
+- [x] **Completed: 90/91 (99%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 8/91 (9%)**
+- [ ] **Remaining: 1/91 (1%)**
 
 ---
 
