@@ -22,7 +22,7 @@ import { IAuction } from '../domain/models/auction';
 import { IPsaGradedCard, IRawCard, ISet, ICard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { IProduct, ISetProduct } from '../domain/models/product';
-import { ISaleDetails } from '../domain/models/common';
+import { ISaleDetails } from "../../types/common"';
 
 // Import type definitions from deprecated API files for interface compatibility
 import type * as auctionsApi from '../api/auctionsApi';

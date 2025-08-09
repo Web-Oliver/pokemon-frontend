@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { ISaleDetails } from '../../domain/models/common';
+import { ISaleDetails } from "../../types/common"';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../utils/performance/logger';
 import { useAsyncOperation } from '../useAsyncOperation';

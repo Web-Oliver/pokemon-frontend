@@ -24,7 +24,7 @@ import {
   ItemCategory,
   ItemOrderingState,
   SortMethod,
-} from '../domain/models/ordering';
+} from '../types/ordering';
 import {
   ExportSessionData,
   orderingPersistence,

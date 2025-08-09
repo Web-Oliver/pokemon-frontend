@@ -9,7 +9,7 @@
  */
 
 import { useCallback, useState, useEffect } from 'react';
-import { ISaleDetails } from '../domain/models/common';
+import { ISaleDetails } from "../../types/common"';
 import { useCollectionOperations } from './useCollectionOperations';
 import { navigationHelper } from "../utils/navigation";
 import { getCollectionApiService } from '../services/ServiceRegistry';

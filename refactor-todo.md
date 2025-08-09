@@ -245,9 +245,9 @@
 - [x] Remove duplicate type guard implementations
 
 ### Domain Models Reinforcement
-- [ ] Ensure `shared/domain/models` contains core business entities only
-- [ ] Move utility types to `shared/types`
-- [ ] Clear distinction between business entities and utility types
+- [x] Ensure `shared/domain/models` contains core business entities only
+- [x] Move utility types to `shared/types`
+- [x] Clear distinction between business entities and utility types
 
 ---
 

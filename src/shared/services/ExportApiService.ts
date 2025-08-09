@@ -19,7 +19,7 @@ import {
   prepareItemsForOrderedExport,
   validateExportRequest,
 } from '../utils/helpers/exportUtils';
-import { CollectionItem } from '../domain/models/ordering';
+import { CollectionItem } from '../types/ordering';
 
 /**
  * Unified Export API Service

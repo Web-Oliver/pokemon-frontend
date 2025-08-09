@@ -14,7 +14,7 @@
 
 // Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { ISealedProduct } from '../../domain/models/sealedProduct';
-import { ISaleDetails } from '../../domain/models/common';
+import { ISaleDetails } from "../../types/common"';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import {

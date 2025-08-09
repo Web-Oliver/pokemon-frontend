@@ -6,8 +6,8 @@
  * - Dependency Inversion: Abstract interfaces for ordering operations
  */
 
-import { IPsaGradedCard, IRawCard } from './card';
-import { ISealedProduct } from './sealedProduct';
+import { IPsaGradedCard, IRawCard } from '../domain/models/card';
+import { ISealedProduct } from '../domain/models/sealedProduct';
 
 /**
  * Union type for all collection items that can be ordered

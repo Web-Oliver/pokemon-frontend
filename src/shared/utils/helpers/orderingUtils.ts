@@ -14,7 +14,7 @@ import {
   ItemCategory,
   OrderedCollectionItem,
   OrderValidationResult,
-} from '../domain/models/ordering';
+} from '../types/ordering';
 
 /**
  * Determine the category of a collection item

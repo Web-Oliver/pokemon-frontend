@@ -16,7 +16,7 @@
 
 import { unifiedApiService } from './UnifiedApiService';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
-import { ISaleDetails } from '../domain/models/common';
+import { ISaleDetails } from "../../types/common"';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { ICollectionApiService } from '../interfaces/api/ICollectionApiService';
 import { handleApiError } from '../utils/helpers/errorHandler';

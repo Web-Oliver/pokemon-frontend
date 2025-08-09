@@ -3,7 +3,7 @@
  * Corresponds to Card, Set, PsaGradedCard, and RawCard Mongoose schemas
  */
 
-import { IPriceHistoryEntry, ISaleDetails } from './common';
+import { IPriceHistoryEntry, ISaleDetails } from '../../types/common';
 
 // Database document types (with _id from MongoDB)
 export interface IPsaGradedCardDocument extends IPsaGradedCard {

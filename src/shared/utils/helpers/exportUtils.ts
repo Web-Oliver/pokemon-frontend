@@ -17,7 +17,7 @@ import {
 import {
   CollectionItem,
   OrderValidationResult,
-} from '../domain/models/ordering';
+} from '../types/ordering';
 import {
   applyItemOrder,
   sortCategoriesByPrice,

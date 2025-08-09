@@ -4,7 +4,7 @@
  * Migration: CardMarketReferenceProduct replaced with Product model
  */
 
-import { IPriceHistoryEntry, ISaleDetails } from './common';
+import { IPriceHistoryEntry, ISaleDetails } from '../../types/common';
 
 // Database document types (with _id from MongoDB)
 export interface ISealedProductDocument extends ISealedProduct {
