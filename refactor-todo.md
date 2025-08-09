@@ -149,9 +149,9 @@
 - [x] Replace repetitive form state patterns
 
 ### Collection Operations Cleanup
-- [ ] Resolve duplicate `useCollectionOperations.ts` files
-- [ ] Keep single version in appropriate location
-- [ ] Update imports throughout codebase
+- [x] Resolve duplicate `useCollectionOperations.ts` files
+- [x] Keep single version in appropriate location
+- [x] Update imports throughout codebase
 
 ### Hooks Index File
 - [ ] Update `shared/hooks/index.ts` to re-export consolidated hooks
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 51/91 (56%)**
+- [x] **Completed: 54/91 (59%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 40/91 (44%)**
+- [ ] **Remaining: 37/91 (41%)**
 
 ---
 

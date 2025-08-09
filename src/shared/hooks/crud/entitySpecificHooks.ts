@@ -10,7 +10,7 @@
  */
 
 import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { useCollectionOperations } from './useCollectionOperations';
+import { useCollectionOperations } from '../useCollectionOperations';
 import {
   createPsaCardConfig,
   createRawCardConfig,
