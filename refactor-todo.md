@@ -131,12 +131,12 @@
 - [x] Support: debouncing, pagination, filtering, hierarchical search
 
 ### Modal Management
-- [ ] Consolidate `useModal.ts` and `useModalManager.ts` into single hook
-- [ ] Support multiple modal state management
-- [ ] Provide comprehensive modal control (open, close, state)
+- [x] Consolidate `useModal.ts` and `useModalManager.ts` into single hook
+- [x] Support multiple modal state management
+- [x] Provide comprehensive modal control (open, close, state)
 
 ### Generic State Management
-- [ ] Create `shared/hooks/common/useDataFetch.ts` or enhance `usePageLayout`
+- [x] Create `shared/hooks/common/useDataFetch.ts` or enhance `usePageLayout`
 - [ ] Replace repetitive useState patterns for loading, error, data
 - [ ] Update: SealedProductSearch.tsx → use generic state hook
 - [ ] Standardize async operation handling
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 42/91 (46%)**
+- [x] **Completed: 43/91 (47%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 51/91 (56%)**
+- [ ] **Remaining: 48/91 (53%)**
 
 ---
 
