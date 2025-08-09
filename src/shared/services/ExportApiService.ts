@@ -20,6 +20,7 @@ import {
   validateExportRequest,
 } from '../utils/helpers/exportUtils';
 import { CollectionItem } from '../types/ordering';
+import { createError, ErrorCategory } from '../utils/helpers/errorHandler';
 
 /**
  * Unified Export API Service
@@ -43,7 +44,11 @@ export class ExportApiService implements IExportApiService {
       prepareItemsForOrderedExport(items, request);
 
     if (!validation.exportValid) {
-      throw new Error(validation.exportError || 'Export validation failed');
+      throw createError.validation(
+        validation.exportError || 'Export validation failed',
+        { component: 'ExportApiService', action: 'exportOrdered' },
+        { validation, request }
+      );
     }
 
     // Create base export request with ordered item IDs
@@ -71,7 +76,11 @@ export class ExportApiService implements IExportApiService {
         result = await this.exportData(baseRequest, config);
         break;
       default:
-        throw new Error(`Unsupported export format: ${format}`);
+        throw createError.validation(
+          `Unsupported export format: ${format}`,
+          { component: 'ExportApiService', action: 'exportOrdered' },
+          { supportedFormats: ['zip', 'facebook-text', 'dba', 'json'], receivedFormat: format }
+        );
     }
 
     // Update filename to reflect ordering if applied
@@ -126,7 +135,11 @@ export class ExportApiService implements IExportApiService {
       case 'json':
         return await this.exportData(request, config);
       default:
-        throw new Error(`Unsupported export format: ${format}`);
+        throw createError.validation(
+          `Unsupported export format: ${format}`,
+          { component: 'ExportApiService', action: 'export' },
+          { supportedFormats: ['zip', 'facebook-text', 'dba', 'json'], receivedFormat: format }
+        );
     }
   }
 
@@ -156,7 +169,11 @@ export class ExportApiService implements IExportApiService {
         blob = await exportApi.zipAuctionImages(itemIds![0]);
         break;
       default:
-        throw new Error(`Unsupported item type for image export: ${itemType}`);
+        throw createError.validation(
+          `Unsupported item type for image export: ${itemType}`,
+          { component: 'ExportApiService', action: 'exportImages' },
+          { supportedItemTypes: ['psa-card', 'raw-card', 'sealed-product', 'auction'], receivedItemType: itemType }
+        );
     }
 
     // Generate standardized filename
@@ -208,7 +225,11 @@ export class ExportApiService implements IExportApiService {
         itemCount = dbaResponse.data.itemCount;
         break;
       default:
-        throw new Error(`Unsupported data export format: ${format}`);
+        throw createError.validation(
+          `Unsupported data export format: ${format}`,
+          { component: 'ExportApiService', action: 'exportData' },
+          { supportedFormats: ['facebook-text', 'dba'], receivedFormat: format }
+        );
     }
 
     // Generate standardized filename

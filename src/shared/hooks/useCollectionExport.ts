@@ -30,7 +30,7 @@ import {
   orderingPersistence,
   storageHelpers,
 } from '../utils/storage';
-import { handleApiError } from '../utils/helpers/errorHandler';
+import { handleApiError, createError } from '../utils/helpers/errorHandler';
 import {
   showSuccessToast,
   showWarningToast,
@@ -305,7 +305,11 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         );
 
         if (!validation.exportValid) {
-          throw new Error(validation.exportError || 'Export validation failed');
+          throw createError.validation(
+            validation.exportError || 'Export validation failed',
+            { component: 'useCollectionExport', action: 'exportOrderedItems' },
+            { validation, request }
+          );
         }
 
         // Update the request with the final item order

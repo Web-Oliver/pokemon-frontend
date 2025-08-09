@@ -1,8 +1,9 @@
-import { error as logError } from '../performance/logger';
+import { error as logError, info as logInfo, warn as logWarn } from '../performance/logger';
 import { APIResponse } from './responseTransformer';
 import {
   showErrorToast,
   showStatusErrorToast,
+  showWarningToast,
 } from '../../components/organisms/ui/toastNotifications';
 
 /**
@@ -200,6 +201,397 @@ export const handleEnhancedApiError = (
   // Store for debugging
   if (typeof window !== 'undefined') {
     (window as any).__lastApiError = error;
+  }
+};
+
+/**
+ * Enhanced Error Types for comprehensive error handling
+ * Following CLAUDE.md principles: Single Responsibility, DRY, Reusability
+ */
+export enum ErrorSeverity {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
+export enum ErrorCategory {
+  API = 'api',
+  VALIDATION = 'validation',
+  NETWORK = 'network',
+  AUTHENTICATION = 'authentication',
+  AUTHORIZATION = 'authorization',
+  BUSINESS_LOGIC = 'business_logic',
+  SYSTEM = 'system',
+  USER_INPUT = 'user_input',
+}
+
+export interface ErrorContext {
+  component?: string;
+  action?: string;
+  userId?: string;
+  timestamp?: string;
+  additionalInfo?: Record<string, unknown>;
+}
+
+/**
+ * Enhanced Application Error class
+ * Replaces direct Error usage throughout the application
+ */
+export class ApplicationError extends Error {
+  public readonly severity: ErrorSeverity;
+  public readonly category: ErrorCategory;
+  public readonly context: ErrorContext;
+  public readonly recoverable: boolean;
+  public readonly statusCode?: number;
+  public readonly details?: any;
+  public readonly timestamp: string;
+
+  constructor(
+    message: string,
+    severity: ErrorSeverity = ErrorSeverity.MEDIUM,
+    category: ErrorCategory = ErrorCategory.SYSTEM,
+    context: ErrorContext = {},
+    recoverable: boolean = true,
+    statusCode?: number,
+    details?: any
+  ) {
+    super(message);
+    this.name = 'ApplicationError';
+    this.severity = severity;
+    this.category = category;
+    this.context = { ...context, timestamp: new Date().toISOString() };
+    this.recoverable = recoverable;
+    this.statusCode = statusCode;
+    this.details = details;
+    this.timestamp = new Date().toISOString();
+
+    // Maintain proper prototype chain
+    Object.setPrototypeOf(this, ApplicationError.prototype);
+  }
+
+  /**
+   * Get user-friendly error message based on category and severity
+   */
+  getUserMessage(): string {
+    const baseMessages = {
+      [ErrorCategory.API]: 'Unable to connect to the server. Please try again.',
+      [ErrorCategory.NETWORK]: 'Network connection issue. Please check your internet connection.',
+      [ErrorCategory.AUTHENTICATION]: 'Authentication failed. Please log in again.',
+      [ErrorCategory.AUTHORIZATION]: 'You do not have permission to perform this action.',
+      [ErrorCategory.VALIDATION]: 'Please check your input and try again.',
+      [ErrorCategory.BUSINESS_LOGIC]: 'Operation cannot be completed due to business rules.',
+      [ErrorCategory.USER_INPUT]: 'Please correct the highlighted fields and try again.',
+      [ErrorCategory.SYSTEM]: 'An unexpected error occurred. Please try again.',
+    };
+
+    return baseMessages[this.category] || this.message;
+  }
+
+  /**
+   * Get detailed error information for debugging
+   */
+  getDebugInfo(): Record<string, any> {
+    return {
+      name: this.name,
+      message: this.message,
+      severity: this.severity,
+      category: this.category,
+      context: this.context,
+      recoverable: this.recoverable,
+      statusCode: this.statusCode,
+      details: this.details,
+      timestamp: this.timestamp,
+      stack: this.stack,
+    };
+  }
+
+  /**
+   * Check if error should trigger automatic recovery
+   */
+  shouldAutoRecover(): boolean {
+    return this.recoverable && this.severity === ErrorSeverity.LOW;
+  }
+
+  /**
+   * Check if error requires immediate user notification
+   */
+  requiresUserNotification(): boolean {
+    return this.severity >= ErrorSeverity.MEDIUM;
+  }
+}
+
+/**
+ * Factory functions for creating standardized errors
+ * Replaces direct "throw new Error()" usage throughout application
+ */
+export const createError = {
+  api: (
+    message: string,
+    statusCode?: number,
+    context: ErrorContext = {},
+    details?: any
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.MEDIUM,
+      ErrorCategory.API,
+      context,
+      true,
+      statusCode,
+      details
+    ),
+
+  validation: (
+    message: string,
+    context: ErrorContext = {},
+    details?: any
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.LOW,
+      ErrorCategory.VALIDATION,
+      context,
+      true,
+      undefined,
+      details
+    ),
+
+  network: (
+    message: string = 'Network error occurred',
+    context: ErrorContext = {}
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.HIGH,
+      ErrorCategory.NETWORK,
+      context,
+      true
+    ),
+
+  auth: (
+    message: string = 'Authentication failed',
+    context: ErrorContext = {}
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.HIGH,
+      ErrorCategory.AUTHENTICATION,
+      context,
+      false,
+      401
+    ),
+
+  authorization: (
+    message: string = 'Access denied',
+    context: ErrorContext = {}
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.HIGH,
+      ErrorCategory.AUTHORIZATION,
+      context,
+      false,
+      403
+    ),
+
+  businessLogic: (
+    message: string,
+    context: ErrorContext = {},
+    details?: any
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.MEDIUM,
+      ErrorCategory.BUSINESS_LOGIC,
+      context,
+      true,
+      undefined,
+      details
+    ),
+
+  userInput: (
+    message: string,
+    context: ErrorContext = {},
+    details?: any
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.LOW,
+      ErrorCategory.USER_INPUT,
+      context,
+      true,
+      undefined,
+      details
+    ),
+
+  system: (
+    message: string,
+    context: ErrorContext = {},
+    recoverable: boolean = false
+  ): ApplicationError =>
+    new ApplicationError(
+      message,
+      ErrorSeverity.CRITICAL,
+      ErrorCategory.SYSTEM,
+      context,
+      recoverable
+    ),
+};
+
+/**
+ * Enhanced Error Handler - Centralized error processing
+ * Replaces direct throw new Error() usage throughout the application
+ */
+export const handleError = (
+  error: unknown,
+  context: ErrorContext = {},
+  userMessage?: string
+): ApplicationError => {
+  let processedError: ApplicationError;
+
+  // Handle ApplicationError instances
+  if (error instanceof ApplicationError) {
+    processedError = error;
+    // Merge additional context if provided
+    if (Object.keys(context).length > 0) {
+      processedError.context = { ...processedError.context, ...context };
+    }
+  }
+  // Handle APIError instances (backward compatibility)
+  else if (error instanceof APIError) {
+    processedError = createError.api(
+      error.message,
+      error.statusCode,
+      context,
+      error.details
+    );
+  }
+  // Handle API response errors
+  else if (isApiResponseError(error)) {
+    const axiosError = error as any;
+    const responseData = axiosError.response.data;
+    
+    processedError = createError.api(
+      responseData?.message || 'API request failed',
+      axiosError.response?.status,
+      context,
+      responseData
+    );
+  }
+  // Handle standard Error instances
+  else if (error instanceof Error) {
+    processedError = createError.system(
+      error.message,
+      context,
+      true
+    );
+  }
+  // Handle unknown error types
+  else {
+    processedError = createError.system(
+      typeof error === 'string' ? error : 'An unknown error occurred',
+      context,
+      false
+    );
+  }
+
+  // Log error based on severity
+  const debugInfo = processedError.getDebugInfo();
+  switch (processedError.severity) {
+    case ErrorSeverity.CRITICAL:
+      logError('CRITICAL ERROR:', debugInfo);
+      break;
+    case ErrorSeverity.HIGH:
+      logError('HIGH SEVERITY ERROR:', debugInfo);
+      break;
+    case ErrorSeverity.MEDIUM:
+      logWarn('MEDIUM SEVERITY ERROR:', debugInfo);
+      break;
+    case ErrorSeverity.LOW:
+      logInfo('LOW SEVERITY ERROR:', debugInfo);
+      break;
+  }
+
+  // Show user notification if required
+  if (processedError.requiresUserNotification()) {
+    const displayMessage = userMessage || processedError.getUserMessage();
+    
+    if (processedError.severity === ErrorSeverity.CRITICAL || processedError.severity === ErrorSeverity.HIGH) {
+      showErrorToast(displayMessage);
+    } else if (processedError.severity === ErrorSeverity.MEDIUM) {
+      showWarningToast(displayMessage);
+    }
+  }
+
+  // Store for debugging and ErrorBoundary integration
+  if (typeof window !== 'undefined') {
+    (window as any).__lastApplicationError = processedError;
+  }
+
+  return processedError;
+};
+
+/**
+ * Convenience function to throw standardized errors
+ * Replaces direct "throw new Error()" usage
+ */
+export const throwError = (
+  message: string,
+  category: ErrorCategory = ErrorCategory.SYSTEM,
+  severity: ErrorSeverity = ErrorSeverity.MEDIUM,
+  context: ErrorContext = {},
+  recoverable: boolean = true
+): never => {
+  const error = new ApplicationError(message, severity, category, context, recoverable);
+  const processedError = handleError(error, context);
+  throw processedError;
+};
+
+/**
+ * Safe execution wrapper with error handling
+ * Replaces try-catch blocks throughout the application
+ */
+export const safeExecute = async <T>(
+  operation: () => Promise<T> | T,
+  context: ErrorContext = {},
+  fallbackValue?: T
+): Promise<T | undefined> => {
+  try {
+    return await operation();
+  } catch (error) {
+    const processedError = handleError(error, context);
+    
+    if (processedError.shouldAutoRecover() && fallbackValue !== undefined) {
+      logInfo('Auto-recovering from error with fallback value:', {
+        error: processedError.getDebugInfo(),
+        fallbackValue,
+      });
+      return fallbackValue;
+    }
+    
+    // Re-throw if not recoverable or no fallback
+    throw processedError;
+  }
+};
+
+/**
+ * Get the last application error for debugging
+ */
+export const getLastApplicationError = (): ApplicationError | null => {
+  if (typeof window !== 'undefined') {
+    return (window as any).__lastApplicationError || null;
+  }
+  return null;
+};
+
+/**
+ * Clear stored error information
+ */
+export const clearLastError = (): void => {
+  if (typeof window !== 'undefined') {
+    delete (window as any).__lastApplicationError;
+    delete (window as any).__lastApiError;
   }
 };
 
