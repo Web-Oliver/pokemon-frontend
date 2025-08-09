@@ -7,13 +7,14 @@
  * - Reusability: Can be used by other components needing image downloads
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { CollectionItem } from './useCollectionItem';
 import { getExportApiService } from '../../services/ServiceRegistry';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../../shared/utils/performance/logger';
 import { navigationHelper } from '../../../shared/utils/helpers/navigation';
+import { useDataFetch } from '../common/useDataFetch';
 
 export interface UseImageDownloadReturn {
   downloadingZip: boolean;
@@ -23,12 +24,21 @@ export interface UseImageDownloadReturn {
 /**
  * Custom hook for managing image download operations
  * Handles ZIP creation and download for different item types
+ * REFACTORED: Uses useDataFetch to standardize async operation handling
  */
 export const useImageDownload = (
   item: CollectionItem | null,
   getItemTitle?: () => string
 ): UseImageDownloadReturn => {
-  const [downloadingZip, setDownloadingZip] = useState(false);
+  // REFACTORED: Use useDataFetch to replace manual loading state management
+  // Eliminates: const [downloadingZip, setDownloadingZip] = useState(false)
+  const downloadFetch = useDataFetch<void>(
+    undefined,
+    {
+      onSuccess: () => showSuccessToast('Images downloaded successfully!'),
+      onError: (error) => handleApiError(new Error(error), 'Failed to download images')
+    }
+  );
 
   // Get URL params for download operations
   const getUrlParams = useCallback(() => {
@@ -55,7 +65,7 @@ export const useImageDownload = (
     []
   );
 
-  // Download images as ZIP
+  // REFACTORED: Download images as ZIP using standardized async operation handling
   const handleDownloadImages = useCallback(async () => {
     if (!item) {
       return;
@@ -66,9 +76,7 @@ export const useImageDownload = (
       return;
     }
 
-    try {
-      setDownloadingZip(true);
-
+    await downloadFetch.execute(async (): Promise<void> => {
       const exportApi = getExportApiService();
       let zipBlob: Blob;
 
@@ -93,23 +101,18 @@ export const useImageDownload = (
 
       // Download the ZIP file
       exportApi.downloadBlob(zipBlob, filename);
-      showSuccessToast('Images downloaded successfully!');
 
       log('[ImageDownload] Images zip downloaded successfully', {
         itemId: id,
         type,
         filename,
       });
-    } catch (err: any) {
-      const errorMessage = 'Failed to download images';
-      handleApiError(err, errorMessage);
-    } finally {
-      setDownloadingZip(false);
-    }
-  }, [item, getUrlParams, generateFileName, getItemTitle]);
+    });
+  }, [item, getUrlParams, generateFileName, getItemTitle, downloadFetch]);
 
   return {
-    downloadingZip,
+    // REFACTORED: Use standardized loading state from useDataFetch
+    downloadingZip: downloadFetch.loading,
     handleDownloadImages,
   };
 };
