@@ -1,9 +1,21 @@
 /**
  * Theme Storage Hook
- * AGENT 3: THEMECONTEXT DECOMPOSITION - Task 2.5
- *
- * Focused hook for theme storage functionality following ISP
+ * CONSOLIDATED: Now part of UnifiedThemeProvider
+ * 
+ * @deprecated Use saveTheme, loadTheme, resetTheme from useUnifiedTheme instead
  * Provides type-safe access to theme persistence management
  */
 
-export { useThemeStorage } from '../../contexts/theme/ThemeStorageProvider';
+import { useUnifiedTheme } from '../../contexts/theme/UnifiedThemeProvider';
+
+export function useThemeStorage() {
+  const { saveTheme, loadTheme, resetTheme, exportTheme, importTheme } = useUnifiedTheme();
+  
+  return {
+    saveTheme,
+    loadTheme,
+    resetTheme,
+    exportTheme,
+    importTheme,
+  };
+}

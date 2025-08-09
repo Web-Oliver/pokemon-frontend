@@ -16,10 +16,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useCentralizedTheme } from '../utils/ui/themeConfig';
-import { useVisualTheme } from '../contexts/theme/VisualThemeProvider';
-import { useLayoutTheme } from '../contexts/theme/LayoutThemeProvider';
-import { useAnimationTheme } from '../contexts/theme/AnimationThemeProvider';
-import { useAccessibilityTheme } from '../contexts/theme/AccessibilityThemeProvider';
+import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../contexts/theme/UnifiedThemeProvider';
 import { useTheme as useNextTheme } from 'next-themes';
 import {
   VisualTheme,

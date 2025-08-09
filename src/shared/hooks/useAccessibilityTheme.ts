@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useCentralizedTheme } from '../utils/ui/themeConfig';
-import { useAccessibilityTheme as useAccessibilityProvider } from '../contexts/theme/AccessibilityThemeProvider';
+import { useAccessibilityTheme as useAccessibilityProvider } from '../contexts/theme/UnifiedThemeProvider';
 
 // ================================
 // ACCESSIBILITY INTERFACES

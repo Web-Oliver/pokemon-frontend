@@ -6,4 +6,4 @@
  * Provides type-safe access to accessibility settings management
  */
 
-export { useAccessibilityTheme } from '../../contexts/theme/AccessibilityThemeProvider';
+export { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';

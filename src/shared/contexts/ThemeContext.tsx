@@ -561,18 +561,14 @@ export const withTheme = <P extends object>(
 // THEME SYSTEM NOTES
 // ================================
 
-// Decomposed theme providers are available in ./theme/ directory
-// Use them directly to avoid circular dependencies:
-// - VisualThemeProvider from './theme/VisualThemeProvider'
-// - LayoutThemeProvider from './theme/LayoutThemeProvider'
-// - AnimationThemeProvider from './theme/AnimationThemeProvider'
-// - AccessibilityThemeProvider from './theme/AccessibilityThemeProvider'
-// - ThemeStorageProvider from './theme/ThemeStorageProvider'
-// - ComposedThemeProvider from './theme/ComposedThemeProvider'
+// UNIFIED THEME SYSTEM - Phase 2 Complete
+// Use UnifiedThemeProvider as the single entry point for all theme functionality:
+// - UnifiedThemeProvider from './theme/UnifiedThemeProvider' (RECOMMENDED)
+// - Individual providers are maintained for internal composition only
+// - All focused hooks (useVisualTheme, useAnimationTheme, etc.) are available from UnifiedThemeProvider
 
-// For backward compatibility, main provider is still available as ThemeProvider
-
-// Keep the original monolithic useTheme for backward compatibility during migration
+// MIGRATION COMPLETE: UnifiedThemeProvider consolidates all theme providers into a single system
+// Original hooks maintained for interface segregation while using unified state management
 export { useTheme as useLegacyTheme };
 
 // Default export for seamless migration

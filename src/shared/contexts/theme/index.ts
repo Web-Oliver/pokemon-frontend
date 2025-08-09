@@ -14,5 +14,5 @@ export {
   useAccessibilityTheme,
 } from './UnifiedThemeProvider';
 
-// LEGACY EXPORT - For backward compatibility during migration
-export { ComposedThemeProvider } from './ComposedThemeProvider';
+// LEGACY PROVIDERS DEPRECATED - Use UnifiedThemeProvider for all theme functionality
+// Individual providers are maintained for internal composition only

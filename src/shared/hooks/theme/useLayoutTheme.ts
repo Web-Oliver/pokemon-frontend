@@ -6,4 +6,4 @@
  * Provides type-safe access to layout and spacing management
  */
 
-export { useLayoutTheme } from '../../contexts/theme/LayoutThemeProvider';
+export { useLayoutTheme } from '../../contexts/theme/UnifiedThemeProvider';

@@ -6,4 +6,4 @@
  * Provides type-safe access to animation and motion management
  */
 
-export { useAnimationTheme } from '../../contexts/theme/AnimationThemeProvider';
+export { useAnimationTheme } from '../../contexts/theme/UnifiedThemeProvider';

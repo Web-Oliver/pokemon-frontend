@@ -6,4 +6,4 @@
  * Provides type-safe access to visual theme management
  */
 
-export { useVisualTheme } from '../../contexts/theme/VisualThemeProvider';
+export { useVisualTheme } from '../../contexts/theme/UnifiedThemeProvider';
