@@ -17,7 +17,7 @@ import {
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PriceHistoryDisplay } from '../../../../components/PriceHistoryDisplay';
-import ValidationField from '../fields/ValidationField';
+import { FormField } from '../fields/FormField';
 
 interface GradingPricingSectionProps {
   register: UseFormRegister<Record<string, unknown>>;
@@ -194,7 +194,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
               <div className="space-y-4">
                 <div>
-                  <ValidationField
+                  <FormField
                     name={fieldName}
                     label={fieldLabel}
                     type="select"
@@ -236,7 +236,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
 
               <div className="space-y-4">
                 <div>
-                  <ValidationField
+                  <FormField
                     name="myPrice"
                     label="My Price (kr.)"
                     type="price"
@@ -249,7 +249,7 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                 </div>
 
                 <div>
-                  <ValidationField
+                  <FormField
                     name="dateAdded"
                     label="Date Added"
                     type="date"

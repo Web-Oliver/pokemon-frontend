@@ -9,7 +9,7 @@ import { UseFormRegister, UseFormWatch, FieldErrors } from 'react-hook-form';
 import { Banknote } from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
-import ValidationField from '../fields/ValidationField';
+import { FormField } from '../fields/FormField';
 
 interface SaleDetailsSectionProps {
   register: UseFormRegister<Record<string, unknown>>;
@@ -64,7 +64,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <ValidationField
+              <FormField
                 name="actualSoldPrice"
                 label="Actual Sold Price (kr.)"
                 type="price"
@@ -109,7 +109,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <ValidationField
+              <FormField
                 name="dateSold"
                 label="Date Sold"
                 type="date"
@@ -137,7 +137,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div>
-              <ValidationField
+              <FormField
                 name="buyerPhoneNumber"
                 label="Buyer Phone"
                 type="phone"
@@ -148,7 +148,7 @@ const SaleDetailsSection: React.FC<SaleDetailsSectionProps> = ({
             </div>
 
             <div className="md:col-span-2">
-              <ValidationField
+              <FormField
                 name="buyerEmail"
                 label="Buyer Email"
                 type="email"

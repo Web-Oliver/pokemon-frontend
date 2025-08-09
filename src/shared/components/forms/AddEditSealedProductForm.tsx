@@ -27,7 +27,7 @@ import FormActionButtons from '../molecules/common/FormActionButtons';
 import { PokemonSearch } from '../design-system/PokemonSearch';
 import ImageUploader from '../../../components/ImageUploader';
 import { PriceHistoryDisplay } from '../../../components/PriceHistoryDisplay';
-import ValidationField from './fields/ValidationField';
+import { FormField } from './fields/FormField';
 import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
 import {
   FormValidationService,
@@ -475,7 +475,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           </div>
 
           <div>
-            <ValidationField
+            <FormField
               name="myPrice"
               label="My Price (kr.)"
               type="price"
@@ -492,7 +492,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           </div>
 
           <div>
-            <ValidationField
+            <FormField
               name="dateAdded"
               label="Date Added"
               type="date"
