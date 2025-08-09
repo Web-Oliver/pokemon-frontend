@@ -11,37 +11,32 @@ import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { log } from '../../../shared/utils/performance/logger';
-
-export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
-export type ItemType = 'psa-graded' | 'raw-card' | 'sealed-product';
-
-export interface ItemEditData {
-  item: CollectionItem;
-  itemType: ItemType;
-}
+import { 
+  ItemEditData,
+  CollectionItemType,
+  CollectionItemUrlType,
+  urlTypeToInternalType 
+} from '../../../shared/types/collectionDisplayTypes';
 
 export class CollectionItemService {
   /**
    * Fetch item for editing by URL type and ID
    */
-  static async fetchItemForEdit(urlType: string, id: string): Promise<ItemEditData> {
+  static async fetchItemForEdit(urlType: CollectionItemUrlType, id: string): Promise<ItemEditData> {
     log(`Fetching ${urlType} item with ID: ${id} for editing`);
 
-    let fetchedItem: CollectionItem;
-    let itemType: ItemType;
+    let fetchedItem: IPsaGradedCard | IRawCard | ISealedProduct;
+    const itemType: CollectionItemType = urlTypeToInternalType(urlType);
 
     switch (urlType) {
       case 'psa':
         fetchedItem = await unifiedApiService.collection.getPsaGradedCardById(id);
-        itemType = 'psa-graded';
         break;
       case 'raw':
         fetchedItem = await unifiedApiService.collection.getRawCardById(id);
-        itemType = 'raw-card';
         break;
       case 'sealed':
         fetchedItem = await unifiedApiService.collection.getSealedProductById(id);
-        itemType = 'sealed-product';
         break;
       default:
         throw new Error(`Unknown item type: ${urlType}`);
@@ -58,12 +53,12 @@ export class CollectionItemService {
   /**
    * Parse edit URL to extract item type and ID
    */
-  static parseEditUrl(pathname: string): { type: string; id: string } | null {
+  static parseEditUrl(pathname: string): { type: CollectionItemUrlType; id: string } | null {
     if (pathname.startsWith('/collection/edit/')) {
       const pathParts = pathname.split('/');
       if (pathParts.length === 5) {
         const [, , , type, id] = pathParts;
-        return { type, id };
+        return { type: type as CollectionItemUrlType, id };
       }
     }
     return null;

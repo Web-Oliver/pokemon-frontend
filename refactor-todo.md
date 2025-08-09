@@ -230,7 +230,7 @@
 
 ### Type Organization Review
 - [x] Audit all `features/*/types` for duplications
-- [ ] Move shared types to `shared/domain/models` or `shared/types`
+- [x] Move shared types to `shared/domain/models` or `shared/types`
 - [ ] Ensure feature types are truly feature-specific
 
 ### Type Consolidation

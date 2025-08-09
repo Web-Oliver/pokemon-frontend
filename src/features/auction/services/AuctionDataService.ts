@@ -11,21 +11,7 @@ import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
 import { processImageUrl } from '../../../shared/utils/helpers/formatting';
-
-// Unified collection item type for auction display
-export interface UnifiedCollectionItem {
-  id: string;
-  itemType: 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
-  displayName: string;
-  displayPrice: number;
-  displayImage?: string;
-  images?: string[];
-  setName?: string;
-  grade?: string;
-  condition?: string;
-  category?: string;
-  originalItem: IPsaGradedCard | IRawCard | ISealedProduct;
-}
+import { UnifiedCollectionItem } from '../../../shared/types/collectionDisplayTypes';
 
 export class AuctionDataService {
   /**
