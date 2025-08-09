@@ -26,6 +26,18 @@ export default defineConfig(({ mode }) => ({
         secure: false,
       },
     },
+    // Context7 Performance Optimization - Warmup most used files
+    warmup: {
+      clientFiles: [
+        // Most complex components based on analysis
+        './src/shared/components/atoms/design-system/PokemonSearch.tsx',
+        './src/shared/services/UnifiedApiService.ts',
+        './src/shared/utils/validation/index.ts',
+        // Frequently used utilities
+        './src/shared/utils/helpers/common.ts',
+        './src/shared/utils/core/index.ts',
+      ],
+    },
   },
   build: {
     // Context7 Bundle Optimization Settings
@@ -40,14 +52,9 @@ export default defineConfig(({ mode }) => ({
             return 'react-vendor';
           }
 
-          // UI libraries - lazy load candidates
-          if (id.includes('lucide-react') || id.includes('framer-motion')) {
+          // UI libraries - frequently used, pre-bundle
+          if (id.includes('lucide-react')) {
             return 'ui-vendor';
-          }
-
-          // Heavy libraries - separate chunks for better caching
-          if (id.includes('recharts')) {
-            return 'charts-vendor';
           }
 
           // Search and highlighting - lazy loadable
@@ -108,7 +115,7 @@ export default defineConfig(({ mode }) => ({
 
     // Context7 Bundle Size Optimizations
     chunkSizeWarningLimit: 1000, // 1MB warning threshold
-    reportCompressedSize: true, // Show gzipped sizes
+    reportCompressedSize: false, // Disable for faster builds - Context7 recommendation
 
     // Minification settings for production
     minify: 'terser',
@@ -127,20 +134,25 @@ export default defineConfig(({ mode }) => ({
     },
   },
 
-  // Context7 Dependency Optimization
+  // Context7 Dependency Optimization - Updated based on analysis
   optimizeDeps: {
     include: [
-      // Pre-bundle these dependencies for faster dev startup
+      // Core React dependencies - pre-bundle for faster dev startup
       'react',
       'react-dom',
       'react-hook-form',
       '@tanstack/react-query',
+      // UI components that are frequently used
+      'lucide-react',
+      'clsx',
+      'tailwind-merge',
     ],
     exclude: [
-      // Don't pre-bundle large or rarely used deps
-      'recharts',
-      'framer-motion',
+      // Large libraries that were removed from dependencies
+      // No longer excluding recharts, framer-motion as they're now removed
     ],
+    // Improved cold start performance based on Context7 optimization
+    holdUntilCrawlEnd: false,
   },
 
   // Context7 Module Resolution

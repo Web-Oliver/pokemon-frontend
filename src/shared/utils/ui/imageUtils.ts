@@ -5,7 +5,7 @@
  * Dependency Inversion: Uses abstractions, not concretions
  */
 
-import { generateId } from '../helpers/common';
+import { generateId } from '../core';
 import { API_BASE_URL } from '../helpers/constants';
 
 /**

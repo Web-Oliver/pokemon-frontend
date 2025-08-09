@@ -20,6 +20,9 @@ export {
 // Re-export React hooks
 export { useDebounce, useDebouncedCallback } from '../../hooks/useDebounce';
 
+// Re-export core utilities from single source of truth
+export { generateId, capitalize, toKebabCase, toCamelCase, safeArrayAccess, deepClone, isEmpty } from '../core';
+
 // Re-export cn from single source of truth
 export { cn } from '../ui/classNameUtils';
 
@@ -52,60 +55,7 @@ export {
   getStatusPriority,
 } from './auctionStatusUtils';
 
-/**
- * Safe array access utility
- * Provides safe access to array elements with fallback
- */
-export const safeArrayAccess = <T>(
-  array: T[] | undefined | null,
-  index: number,
-  fallback?: T
-): T | undefined => {
-  if (!Array.isArray(array) || index < 0 || index >= array.length) {
-    return fallback;
-  }
-  return array[index];
-};
-
-/**
- * Deep clone utility using JSON methods
- * Safe for objects without functions, symbols, or circular references
- */
-export const deepClone = <T>(obj: T): T => {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-
-  try {
-    return JSON.parse(JSON.stringify(obj));
-  } catch (error) {
-    console.warn('[COMMON UTILS] Failed to deep clone object:', error);
-    return obj;
-  }
-};
-
-/**
- * Check if value is empty (null, undefined, empty string, empty array, empty object)
- */
-export const isEmpty = (value: any): boolean => {
-  if (value === null || value === undefined) {
-    return true;
-  }
-
-  if (typeof value === 'string') {
-    return value.trim() === '';
-  }
-
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  }
-
-  if (typeof value === 'object') {
-    return Object.keys(value).length === 0;
-  }
-
-  return false;
-};
+// Core utility functions now imported from ../core/index.ts to prevent circular dependencies
 
 /**
  * Debounce utility function - CONSOLIDATED
@@ -134,49 +84,7 @@ export const throttle = <T extends (...args: any[]) => any>(
   };
 };
 
-/**
- * Generate unique ID utility
- * Creates a simple unique identifier for temporary use
- */
-export const generateId = (prefix: string = 'id'): string => {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
-
-/**
- * Capitalize first letter of string
- */
-export const capitalize = (str: string): string => {
-  if (!str || typeof str !== 'string') {
-    return str;
-  }
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
-
-/**
- * Convert string to kebab-case
- */
-export const toKebabCase = (str: string): string => {
-  if (!str || typeof str !== 'string') {
-    return str;
-  }
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/\s+/g, '-')
-    .toLowerCase();
-};
-
-/**
- * Convert string to camelCase
- */
-export const toCamelCase = (str: string): string => {
-  if (!str || typeof str !== 'string') {
-    return str;
-  }
-  return str
-    .toLowerCase()
-    .replace(/-([a-z])/g, (match, letter) => letter.toUpperCase())
-    .replace(/\s+([a-z])/g, (match, letter) => letter.toUpperCase());
-};
+// Functions moved to ../core/index.ts to break circular dependencies
 
 /**
  * Safe JSON parse with fallback
