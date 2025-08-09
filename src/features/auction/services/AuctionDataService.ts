@@ -90,8 +90,8 @@ export class AuctionDataService {
     const cardData = (card as any).cardId || card;
     const setData = cardData?.setId || cardData?.set;
 
-    let cardName = this.extractCardName(cardData);
-    let setName = this.extractSetName(setData, cardData);
+    const cardName = this.extractCardName(cardData);
+    const setName = this.extractSetName(setData, cardData);
     const variety = cardData?.variety || '';
     const pokemonNumber = cardData?.pokemonNumber || '';
 
@@ -123,8 +123,8 @@ export class AuctionDataService {
     const cardData = (card as any).cardId || card;
     const setData = cardData?.setId || cardData?.set;
 
-    let cardName = this.extractCardName(cardData);
-    let setName = this.extractSetName(setData, cardData);
+    const cardName = this.extractCardName(cardData);
+    const setName = this.extractSetName(setData, cardData);
     const variety = cardData?.variety || '';
     const pokemonNumber = cardData?.pokemonNumber || '';
 

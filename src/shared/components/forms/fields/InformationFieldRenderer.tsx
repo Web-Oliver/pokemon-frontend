@@ -16,7 +16,8 @@ import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import CardInformationFields from './CardInformationFields';
-import ProductInformationFields from './ProductInformationFields';
+import { FormField } from './FormField';
+import { ProductCategory } from '../../../domain/models/product';
 
 // Enhanced field types - supports both legacy and new central rendering
 type FieldType = 'card' | 'product' | 'individual';
@@ -225,23 +226,101 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
       );
 
     case 'product':
+      // Generate category options from ProductCategory enum if not provided
+      const categoryOptions = productCategories.length > 0 
+        ? productCategories 
+        : Object.values(ProductCategory).map((category) => ({
+            value: category,
+            label: String(category).replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+          }));
+
       return (
-        <ProductInformationFields
-          register={register}
-          errors={errors}
-          watch={watch!}
-          readOnlyFields={{
-            setProductName: readOnlyFields.setProductName,
-            productName: readOnlyFields.productName,
-            available: readOnlyFields.available,
-            price: readOnlyFields.price,
-            category: readOnlyFields.category,
-            url: readOnlyFields.url,
-          }}
-          productCategories={productCategories}
-          loadingOptions={loadingOptions}
-          isDisabled={isDisabled}
-        />
+        <>
+          {/* SetProduct Name - Auto-filled field */}
+          {readOnlyFields.setProductName && (
+            <FormField
+              name="setProductName"
+              label="Set Product"
+              type="text"
+              register={register}
+              error={errors.setProductName}
+              placeholder="Auto-filled from SetProduct selection"
+              autoFilled={true}
+              disabled={isDisabled}
+            />
+          )}
+
+          {/* Product Name - Auto-filled field */}
+          {readOnlyFields.productName && (
+            <FormField
+              name="productName"
+              label="Product Name"
+              type="text"
+              register={register}
+              error={errors.productName}
+              placeholder="Auto-filled from Product selection"
+              autoFilled={true}
+              disabled={isDisabled}
+            />
+          )}
+
+          {/* Category */}
+          {readOnlyFields.category && (
+            <FormField
+              name="category"
+              label="Category"
+              type="select"
+              register={register}
+              error={errors.category}
+              options={categoryOptions}
+              disabled={loadingOptions || isDisabled}
+              required={true}
+            />
+          )}
+
+          {/* Available - NEW field name matching Product model */}
+          {readOnlyFields.available && (
+            <FormField
+              name="available"
+              label="Available"
+              type="available"
+              register={register}
+              error={errors.available}
+              placeholder="0"
+              disabled={isDisabled}
+              required={true}
+            />
+          )}
+
+          {/* Price - From Product model */}
+          {readOnlyFields.price && (
+            <FormField
+              name="price"
+              label="Price"
+              type="price"
+              register={register}
+              error={errors.price}
+              placeholder="0.00"
+              disabled={isDisabled}
+              required={true}
+            />
+          )}
+
+          {/* URL - Product URL from Product model */}
+          {readOnlyFields.url && (
+            <div className="md:col-span-2">
+              <FormField
+                name="url"
+                label="Product URL"
+                type="url"
+                register={register}
+                error={errors.url}
+                placeholder="https://example.com/product"
+                disabled={isDisabled}
+              />
+            </div>
+          )}
+        </>
       );
 
     default:

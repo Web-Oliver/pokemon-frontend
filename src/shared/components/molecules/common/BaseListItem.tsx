@@ -126,12 +126,15 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
     timeline: [
       'relative',
       'mb-6',
-      'backdrop-blur-sm',
-      'bg-gradient-to-r from-white/[0.02] to-white/[0.05]',
-      'border border-white/[0.08]',
-      'rounded-lg',
-      'shadow-lg',
-      isHighContrast && 'bg-white/10 border-white/20',
+      'backdrop-blur-xl',
+      'bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.05] to-purple-500/[0.08]',
+      'border border-white/[0.15]',
+      'rounded-2xl',
+      'shadow-[0_8px_32px_0_rgba(6,182,212,0.15)]',
+      'hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.25)]',
+      'transition-all duration-500',
+      'group',
+      isHighContrast && 'bg-white/20 border-white/30',
     ].filter(Boolean).join(' '),
     
     card: [

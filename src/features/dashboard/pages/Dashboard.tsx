@@ -336,53 +336,53 @@ const Dashboard: React.FC = () => {
                           const colorMap = {
                             emerald: {
                               bg: 'from-emerald-500 to-teal-600',
-                              badge: 'bg-emerald-100 text-emerald-800',
+                              badge: 'bg-emerald-500/20 text-emerald-200',
                               dot: 'bg-emerald-400',
                             },
                             amber: {
                               bg: 'from-amber-500 to-orange-600',
-                              badge: 'bg-amber-100 text-amber-800',
+                              badge: 'bg-amber-500/20 text-amber-200',
                               dot: 'bg-amber-400',
                             },
                             purple: {
                               bg: 'from-purple-500 to-violet-600',
-                              badge: 'bg-purple-100 text-purple-800',
+                              badge: 'bg-purple-500/20 text-purple-200',
                               dot: 'bg-purple-400',
                             },
                             indigo: {
                               bg: 'from-indigo-500 to-blue-600',
-                              badge: 'bg-indigo-100 text-indigo-800',
+                              badge: 'bg-indigo-500/20 text-indigo-200',
                               dot: 'bg-indigo-400',
                             },
                             red: {
                               bg: 'from-red-500 to-rose-600',
-                              badge: 'bg-red-100 text-red-800',
+                              badge: 'bg-red-500/20 text-red-200',
                               dot: 'bg-red-400',
                             },
                             // Additional colors from activityHelpers
                             blue: {
                               bg: 'from-blue-500 to-blue-600',
-                              badge: 'bg-blue-100 text-blue-800',
+                              badge: 'bg-blue-500/20 text-blue-200',
                               dot: 'bg-blue-400',
                             },
                             orange: {
                               bg: 'from-orange-500 to-orange-600',
-                              badge: 'bg-orange-100 text-orange-800',
+                              badge: 'bg-orange-500/20 text-orange-200',
                               dot: 'bg-orange-400',
                             },
                             yellow: {
                               bg: 'from-yellow-500 to-yellow-600',
-                              badge: 'bg-yellow-100 text-yellow-800',
+                              badge: 'bg-yellow-500/20 text-yellow-200',
                               dot: 'bg-yellow-400',
                             },
                             cyan: {
                               bg: 'from-cyan-500 to-cyan-600',
-                              badge: 'bg-cyan-100 text-cyan-800',
+                              badge: 'bg-cyan-500/20 text-cyan-200',
                               dot: 'bg-cyan-400',
                             },
                             slate: {
                               bg: 'from-slate-500 to-slate-600',
-                              badge: 'bg-slate-100 text-slate-800',
+                              badge: 'bg-slate-500/20 text-slate-200',
                               dot: 'bg-slate-400',
                             },
                           };

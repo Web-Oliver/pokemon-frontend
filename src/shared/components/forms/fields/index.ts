@@ -7,5 +7,5 @@
  */
 
 export { default as CardInformationFields } from './CardInformationFields';
-export { default as ProductInformationFields } from './ProductInformationFields';
+export { FormField } from './FormField';
 export { default as InformationFieldRenderer } from './InformationFieldRenderer';

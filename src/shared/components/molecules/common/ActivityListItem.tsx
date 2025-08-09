@@ -70,7 +70,7 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({
 
       {/* Main neumorphic icon container */}
       <div
-        className={`relative w-16 h-16 bg-gradient-to-br ${colors.bg.replace('from-', 'from-').replace('to-', 'to-')} backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1),0_8px_16px_0_rgba(0,0,0,0.2)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}
+        className={`relative w-16 h-16 bg-gradient-to-br ${colors.bg} backdrop-blur-sm rounded-[1.2rem] shadow-[inset_0_2px_4px_0_rgba(255,255,255,0.1),inset_0_-2px_4px_0_rgba(0,0,0,0.1),0_8px_16px_0_rgba(0,0,0,0.2)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}
       >
         {/* Inner quantum glow */}
         <div className="absolute inset-2 bg-gradient-to-br from-white/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
@@ -98,21 +98,19 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({
     <div className="text-right relative flex items-center space-x-4">
       {/* Futuristic timestamp and price section */}
       <div className="text-right">
-        {/* Holographic timestamp container */}
+        {/* Timestamp container */}
         <div className="relative mb-3">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <span className="relative text-xs font-semibold text-cyan-200/70 bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/[0.08] backdrop-blur-sm group-hover:text-cyan-200 group-hover:border-cyan-400/20 transition-all duration-300">
+          <span className="relative text-xs font-semibold text-gray-300 bg-black/20 px-3 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm group-hover:text-white transition-all duration-300">
             {getRelativeTime(activity.timestamp)}
           </span>
         </div>
 
-        {/* Enhanced price display */}
+        {/* Price display */}
         {(activity.metadata?.newPrice ||
           activity.metadata?.salePrice ||
           activity.metadata?.estimatedValue) && (
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <span className="relative text-base font-black bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.10] backdrop-blur-sm group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+            <span className="relative text-base font-black text-white px-3 py-1.5 rounded-lg bg-black/30 border border-white/20 backdrop-blur-sm group-hover:scale-105 transition-transform duration-300">
               {activity.metadata.newPrice &&
                 displayPrice(activity.metadata.newPrice)}
               {activity.metadata.salePrice &&
@@ -126,9 +124,8 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({
 
       {/* Activity Indicator */}
       <div className="flex-shrink-0 relative mt-2">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 to-purple-400/30 opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-500"></div>
         <div
-          className={`relative w-4 h-4 ${colors.dot} rounded-full opacity-60 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_8px_currentColor] group-hover:scale-125`}
+          className={`relative w-4 h-4 ${colors.dot} rounded-full opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:scale-125`}
         >
           <div className="absolute inset-0.5 bg-white/30 rounded-full animate-pulse"></div>
         </div>
@@ -147,47 +144,46 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({
       leading={renderLeadingIcon()}
       trailing={renderTrailingInfo()}
       className="mb-6 group relative"
-    >
-      {/* Main content area */}
-      <div className="flex-1 min-w-0">
-        <div className="mb-4">
-          {/* Enhanced title with cyberpunk styling */}
-          <h3 className="text-xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent mb-3 leading-tight drop-shadow-[0_0_10px_rgba(6,182,212,0.3)] group-hover:from-cyan-300 group-hover:via-purple-300 group-hover:to-pink-300 transition-all duration-500">
-            {activity.title}
-          </h3>
-
-          {/* Description with neural glow */}
-          <p className="text-sm text-cyan-100/80 leading-relaxed mb-3 group-hover:text-white/90 transition-colors duration-300">
+      title={
+        <h3 className="text-xl font-black text-white mb-3 leading-tight transition-all duration-500">
+          {activity.title}
+        </h3>
+      }
+      subtitle={
+        <div>
+          <p className="text-sm text-gray-200 leading-relaxed mb-3 group-hover:text-white transition-colors duration-300">
             {activity.description}
           </p>
-
-          {/* Details with quantum accent */}
+          
+          {/* Details with subtle accent */}
           {activity.details && (
-            <p className="text-xs text-purple-200/60 font-medium group-hover:text-purple-200/80 transition-colors duration-300 italic">
+            <p className="text-xs text-gray-300 font-medium group-hover:text-gray-200 transition-colors duration-300 italic mb-4">
               {activity.details}
             </p>
           )}
-        </div>
 
-        {/* Badge System using PokemonBadge */}
-        <div className="flex items-center space-x-3 mt-4">
-          {activity.metadata?.badges?.map((badge, badgeIndex) => (
-            <PokemonBadge
-              key={badgeIndex}
-              variant="info"
-              style="glass"
-              shape="pill"
-              size="sm"
-              dot
-              pulse
-              className="group/badge hover:scale-105 transition-transform duration-300"
-            >
-              {badge}
-            </PokemonBadge>
-          ))}
+          {/* Badge System using PokemonBadge */}
+          {activity.metadata?.badges && activity.metadata.badges.length > 0 && (
+            <div className="flex items-center space-x-3 mt-4">
+              {activity.metadata.badges.map((badge, badgeIndex) => (
+                <PokemonBadge
+                  key={badgeIndex}
+                  variant="info"
+                  style="glass"
+                  shape="pill"
+                  size="sm"
+                  dot
+                  pulse
+                  className="group/badge hover:scale-105 transition-transform duration-300"
+                >
+                  {badge}
+                </PokemonBadge>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
-    </BaseListItem>
+      }
+    />
   );
 };
 

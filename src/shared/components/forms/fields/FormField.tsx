@@ -16,7 +16,9 @@ import React from 'react';
 import { FieldError, UseFormRegister } from 'react-hook-form';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { commonValidationRules, ValidationRule } from '../../../hooks/useFormValidation';
+
+// Simple validation rule type
+export type ValidationRule = Record<string, any>;
 
 // Comprehensive field types covering ALL form field needs
 export type FormFieldType =
@@ -35,7 +37,8 @@ export type FormFieldType =
   | 'multiselect'
   | 'checkbox'
   | 'radio'
-  | 'file';
+  | 'file'
+  | 'available'; // For available quantity fields
 
 // Option interface for select/radio fields
 export interface FieldOption {
@@ -61,6 +64,7 @@ export interface FormFieldProps {
   required?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
+  autoFilled?: boolean; // For auto-filled fields like setProductName, productName
   
   /** Validation */
   customValidation?: ValidationRule;
@@ -111,6 +115,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   required = false,
   disabled = false,
   readOnly = false,
+  autoFilled = false,
   customValidation,
   options = [],
   min,
@@ -160,8 +165,8 @@ export const FormField: React.FC<FormFieldProps> = ({
       case 'url':
         Object.assign(baseRules, {
           pattern: {
-            value: /^https?:\/\/.+\..+/,
-            message: 'Please enter a valid URL'
+            value: /^https?:\/\/.+/,
+            message: 'URL must be a valid HTTP/HTTPS URL'
           }
         });
         break;
@@ -179,8 +184,8 @@ export const FormField: React.FC<FormFieldProps> = ({
         Object.assign(baseRules, {
           min: { value: 0, message: 'Price cannot be negative' },
           pattern: {
-            value: /^\d+(\.\d{0,2})?$/,
-            message: 'Please enter a valid price (e.g., 10.99)'
+            value: /^\d+(\.\d{1,2})?$/,
+            message: 'Price must be a valid number with up to 2 decimal places'
           }
         });
         break;
@@ -193,6 +198,13 @@ export const FormField: React.FC<FormFieldProps> = ({
             value: /^(10|[1-9])$/,
             message: 'Grade must be a number from 1 to 10'
           }
+        });
+        break;
+        
+      case 'available':
+        Object.assign(baseRules, {
+          min: { value: 0, message: 'Available quantity must be 0 or greater' },
+          validate: (value: any) => !isNaN(Number(value)) || 'Must be a valid number'
         });
         break;
         
@@ -221,10 +233,15 @@ export const FormField: React.FC<FormFieldProps> = ({
 
   // Get input props based on field type
   const getInputProps = () => {
+    // Special styling for auto-filled fields
+    const autoFilledClasses = autoFilled 
+      ? 'text-center bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 cursor-not-allowed' 
+      : '';
+    
     const baseProps = {
-      placeholder: placeholder || `Enter ${label.toLowerCase()}`,
-      disabled: disabled || readOnly,
-      className,
+      placeholder: placeholder || (autoFilled ? `Auto-filled from ${label} selection` : `Enter ${label.toLowerCase()}`),
+      disabled: disabled || readOnly || autoFilled,
+      className: autoFilledClasses || className,
       onChange,
       onBlur,
       onFocus,
@@ -246,6 +263,15 @@ export const FormField: React.FC<FormFieldProps> = ({
           type: 'number',
           min: '1',
           max: '10',
+          step: '1',
+          inputMode: 'numeric' as const,
+        };
+        
+      case 'available':
+        return {
+          ...baseProps,
+          type: 'number',
+          min: '0',
           step: '1',
           inputMode: 'numeric' as const,
         };
@@ -343,14 +369,8 @@ export const FormField: React.FC<FormFieldProps> = ({
             disabled={disabled}
             className={className}
             required={required}
-          >
-            {!required && <option value="">Select {label.toLowerCase()}</option>}
-            {options.map((option) => (
-              <option key={option.value} value={option.value} disabled={option.disabled}>
-                {option.label}
-              </option>
-            ))}
-          </PokemonSelect>
+            options={options}
+          />
         </FieldContainer>
       );
 
