@@ -154,9 +154,9 @@
 - [x] Update imports throughout codebase
 
 ### Hooks Index File
-- [ ] Update `shared/hooks/index.ts` to re-export consolidated hooks
-- [ ] Provide clean entry point for hook imports
-- [ ] Remove exports for deprecated hooks
+- [x] Update `shared/hooks/index.ts` to re-export consolidated hooks
+- [x] Provide clean entry point for hook imports
+- [x] Remove exports for deprecated hooks
 
 ---
 
@@ -319,9 +319,9 @@
 
 ### Overall Progress
 **Total Tasks: 91**
-- [x] **Completed: 54/91 (59%)**
+- [x] **Completed: 57/91 (63%)**
 - [ ] **In Progress: 0/91 (0%)**  
-- [ ] **Remaining: 37/91 (41%)**
+- [ ] **Remaining: 34/91 (37%)**
 
 ---
 
