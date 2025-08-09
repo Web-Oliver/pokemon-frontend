@@ -17,8 +17,8 @@ import { Package, Star, CheckCircle, DollarSign, Eye } from 'lucide-react';
 import { BaseCard } from '../../shared/components/molecules/common/BaseCard';
 import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
 import { getImageUrl } from '../../shared/utils/ui/imageUtils';
-import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
-import { ISealedProduct } from '../../domain/models/sealedProduct';
+import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
+import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 

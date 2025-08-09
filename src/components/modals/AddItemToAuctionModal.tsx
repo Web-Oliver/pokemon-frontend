@@ -15,8 +15,8 @@ import {
   SelectableItem,
 } from './ItemSelectorModal';
 import { useCollectionOperations } from '../../shared/hooks/useCollectionOperations';
-import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
-import { ISealedProduct } from '../../domain/models/sealedProduct';
+import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
+import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
 
 interface AddItemToAuctionModalProps {
   isOpen: boolean;

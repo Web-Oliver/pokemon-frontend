@@ -17,9 +17,9 @@ import { CollectionItem } from './CollectionItemCard';
 import {
   ExportFormat,
   OrderedExportRequest,
-} from '../../interfaces/api/IExportApiService';
+} from '../../shared/interfaces/api/IExportApiService';
 import { ItemOrderingSection } from './ItemOrderingSection';
-import { ItemCategory, SortMethod } from '../../domain/models/ordering';
+import { ItemCategory, SortMethod } from '../../shared/domain/models/ordering';
 
 export interface CollectionExportModalProps {
   isOpen: boolean;

@@ -20,10 +20,10 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import {
   Archive,
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  Grid3X3,
+  // ArrowDown,
+  // ArrowUp,
+  // ArrowUpDown,
+  // Grid3X3,
   Package,
   Star,
   Users,

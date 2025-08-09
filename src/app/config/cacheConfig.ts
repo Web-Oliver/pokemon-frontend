@@ -214,7 +214,7 @@ export const getHierarchicalCacheTTL = (
  */
 export const getCacheInvalidationPattern = (
   changeType: keyof typeof CACHE_INVALIDATION
-): string[] => {
+): readonly string[] => {
   return CACHE_INVALIDATION[changeType];
 };
 

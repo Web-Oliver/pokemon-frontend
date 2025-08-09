@@ -223,7 +223,7 @@ function App() {
             {renderPage()}
           </Suspense>
         </MainLayout>
-        {import.meta.env.MODE === 'development' && (
+        {(import.meta as any).env?.MODE === 'development' && (
           <>
             <ReactQueryDevtools
               initialIsOpen={false}

@@ -24,7 +24,7 @@ import {
   CollectionItem,
   ItemCategory,
   SortMethod,
-} from '../../domain/models/ordering';
+} from '../../shared/domain/models/ordering';
 
 export interface ItemOrderingSectionProps {
   items: CollectionItem[];
@@ -51,10 +51,10 @@ const ItemOrderingSectionComponent: React.FC<ItemOrderingSectionProps> = ({
   selectedItemIds,
   lastSortMethod,
   onReorderItems,
-  onMoveItemUp,
-  onMoveItemDown,
+  onMoveItemUp: _onMoveItemUp,
+  onMoveItemDown: _onMoveItemDown,
   onAutoSortByPrice,
-  onSortCategoryByPrice,
+  onSortCategoryByPrice: _onSortCategoryByPrice,
   onResetOrder,
   onToggleItemSelection,
   showSelection = false,

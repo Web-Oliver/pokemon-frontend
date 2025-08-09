@@ -63,24 +63,69 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Simple aspect ratio analysis state (replaced missing hook)
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const analyzeExistingImages = useCallback(async () => {
-    if (!enableAspectRatioDetection) return;
+  const analyzeExistingImages = useCallback(async (imageUrls: string[]): Promise<Array<{index: number; aspectInfo: any}>> => {
+    if (!enableAspectRatioDetection || !imageUrls?.length) {
+      return [];
+    }
+    
     setIsAnalyzing(true);
-    // Simple analysis logic here if needed
-    setIsAnalyzing(false);
+    try {
+      const results = await Promise.all(
+        imageUrls.map(async (url, index) => {
+          return new Promise<{index: number; aspectInfo: any}>((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              const aspectRatio = img.width / img.height;
+              let aspectInfo = 'square';
+              if (aspectRatio > 1.2) aspectInfo = 'landscape';
+              else if (aspectRatio < 0.8) aspectInfo = 'portrait';
+              
+              resolve({ index, aspectInfo });
+            };
+            img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
+            img.src = url;
+          });
+        })
+      );
+      setIsAnalyzing(false);
+      return results;
+    } catch (error) {
+      setIsAnalyzing(false);
+      return [];
+    }
   }, [enableAspectRatioDetection]);
 
   const analyzeNewImages = useCallback(
-    async (images: any[]) => {
+    async (images: any[]): Promise<Array<{index: number; aspectInfo: any}>> => {
       if (!enableAspectRatioDetection || !images.length) {
         return [];
       }
 
       setIsAnalyzing(true);
-      // Simple analysis logic here if needed
-      const results = []; // Return empty results for now
-      setIsAnalyzing(false);
-      return results;
+      try {
+        const results = await Promise.all(
+          images.map(async (imageFile, index) => {
+            return new Promise<{index: number; aspectInfo: any}>((resolve) => {
+              const img = new Image();
+              img.onload = () => {
+                const aspectRatio = img.width / img.height;
+                let aspectInfo = 'square';
+                if (aspectRatio > 1.2) aspectInfo = 'landscape';
+                else if (aspectRatio < 0.8) aspectInfo = 'portrait';
+                
+                resolve({ index, aspectInfo });
+              };
+              img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
+              img.src = URL.createObjectURL(imageFile);
+            });
+          })
+        );
+        setIsAnalyzing(false);
+        return results;
+      } catch (error) {
+        setIsAnalyzing(false);
+        return [];
+      }
     },
     [enableAspectRatioDetection]
   );
@@ -236,7 +281,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     const analyzeExisting = async () => {
       const aspectResults = await analyzeExistingImages(existingImageUrls);
-      if (aspectResults.length > 0) {
+      if (Array.isArray(aspectResults) && aspectResults.length > 0) {
         setPreviews((prev) =>
           prev.map((preview, index) => {
             const result = aspectResults.find((r) => r.index === index);

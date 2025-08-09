@@ -56,13 +56,13 @@ const queryCache = new QueryCache({
     });
   },
   onSuccess: (data, query) => {
-    const isDev = import.meta.env.MODE === 'development';
+    const isDev = (import.meta as any).env?.MODE === 'development';
     if (isDev) {
       log('[QUERY CACHE] Query succeeded', {
         queryKey: query.queryKey,
         dataSize: JSON.stringify(data).length,
         cacheTime: query.options.gcTime,
-        staleTime: query.options.staleTime,
+        staleTime: (query.options as any).staleTime,
       });
     }
   },
