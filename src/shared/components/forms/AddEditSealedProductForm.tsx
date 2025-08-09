@@ -20,6 +20,7 @@ import {
   useFormSubmission,
   FormSubmissionPatterns,
 } from './wrappers/FormSubmissionWrapper';
+import { useLoadingState } from '../../hooks/common/useLoadingState';
 import { PokemonInput } from '../atoms/design-system/PokemonInput';
 import LoadingSpinner from '../molecules/common/LoadingSpinner';
 import UnifiedHeader from '../molecules/common/UnifiedHeader';
@@ -152,7 +153,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const [productCategories, setProductCategories] = useState<
     Array<{ value: string; label: string }>
   >([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
+  const optionsLoading = useLoadingState({
+    initialLoading: true,
+    errorContext: { component: 'AddEditSealedProductForm', action: 'loadOptions' }
+  });
   const [selectedProductData, setSelectedProductData] = useState<Record<
     string,
     unknown
@@ -188,8 +192,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   // Load dynamic options from backend
   useEffect(() => {
     const loadOptions = async () => {
-      setLoadingOptions(true);
-      try {
+      await optionsLoading.withLoading(async () => {
         // Categories matching ACTUAL DATABASE VALUES
         const categories = [
           { value: 'Booster-Boxes', label: 'Booster Boxes' },
@@ -202,11 +205,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           categories
         );
         setProductCategories(categories);
-      } catch (error) {
-        console.error('Failed to load form options:', error);
-      } finally {
-        setLoadingOptions(false);
-      }
+      });
     };
 
     loadOptions();

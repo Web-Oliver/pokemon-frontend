@@ -11,6 +11,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { ISaleDetails } from "../../types/common"';
 import { useCollectionOperations } from './useCollectionOperations';
+import { useLoadingState } from './common/useLoadingState';
 import { navigationHelper } from "../utils/navigation";
 import { getCollectionApiService } from '../services/ServiceRegistry';
 import { handleApiError } from '../utils/helpers/errorHandler';
@@ -44,18 +45,21 @@ export const useMarkSold = ({
   onSuccess,
   onError,
 }: UseMarkSoldOptions): UseMarkSoldReturn => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const saleState = useLoadingState({
+    errorContext: { 
+      component: 'useMarkSold', 
+      action: 'markAsSold',
+      itemType,
+      itemId
+    }
+  });
 
   const { updatePsaCard, updateRawCard, updateSealedProduct } =
     useCollectionOperations();
 
   const markAsSold = useCallback(
     async (saleDetails: ISaleDetails): Promise<void> => {
-      setIsProcessing(true);
-      setError(null);
-
-      try {
+      await saleState.withLoading(async () => {
         // Prepare the update data with sale details
         const updateData = {
           sold: true,
@@ -79,16 +83,17 @@ export const useMarkSold = ({
 
         // Call success callback if provided
         onSuccess?.();
-      } catch (err) {
-        const error =
-          err instanceof Error ? err : new Error('Failed to mark item as sold');
-        setError(error);
-        onError?.(error);
-      } finally {
-        setIsProcessing(false);
+      }, {
+        suppressErrors: false // Let the error be handled by the standardized error system
+      });
+
+      // Call onError if there was an error
+      if (saleState.hasError && onError) {
+        onError(saleState.error!);
       }
     },
     [
+      saleState,
       itemType,
       itemId,
       updatePsaCard,
@@ -99,15 +104,11 @@ export const useMarkSold = ({
     ]
   );
 
-  const clearError = useCallback((): void => {
-    setError(null);
-  }, []);
-
   return {
-    isProcessing,
-    error,
+    isProcessing: saleState.loading,
+    error: saleState.error,
     markAsSold,
-    clearError,
+    clearError: saleState.clearError,
   };
 };
 
@@ -123,12 +124,19 @@ export const useMarkSold = ({
  * - Mark as sold operations
  */
 export const useCollectionItemDetail = () => {
+  const itemState = useLoadingState({
+    initialLoading: true,
+    errorContext: { component: 'useCollectionItemDetail', action: 'fetchItem' }
+  });
+  const downloadState = useLoadingState({
+    errorContext: { component: 'useCollectionItemDetail', action: 'downloadImages' }
+  });
+  const deleteState = useLoadingState({
+    errorContext: { component: 'useCollectionItemDetail', action: 'deleteItem' }
+  });
+  
   const [item, setItem] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [downloadingZip, setDownloadingZip] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
   const [newPrice, setNewPrice] = useState<string>('');
 
@@ -147,9 +155,7 @@ export const useCollectionItemDetail = () => {
     const { type, id } = getUrlParams();
     if (!type || !id) return;
 
-    try {
-      setDownloadingZip(true);
-
+    await downloadState.withLoading(async () => {
       switch (type) {
         case 'psa':
           await collectionOps.downloadPsaCardImagesZip([id]);
@@ -163,20 +169,14 @@ export const useCollectionItemDetail = () => {
       }
 
       showSuccessToast('Images downloaded successfully!');
-    } catch (err: any) {
-      setError('Failed to download images');
-      handleApiError(err, 'Failed to download images');
-    } finally {
-      setDownloadingZip(false);
-    }
+    });
   };
 
   // Price update handler
   const handlePriceUpdate = async (newPrice: number, date: string) => {
     if (!item) return;
 
-    try {
-      setLoading(true);
+    await itemState.withLoading(async () => {
       const { type, id } = getUrlParams();
       if (!type || !id) throw new Error('Invalid URL parameters');
 
@@ -209,12 +209,7 @@ export const useCollectionItemDetail = () => {
       showSuccessToast(
         'Price updated successfully! My Price synced to latest entry.'
       );
-    } catch (err: any) {
-      setError('Failed to update price');
-      handleApiError(err, 'Failed to update price');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   // Handle custom price input
@@ -246,9 +241,7 @@ export const useCollectionItemDetail = () => {
     const { type, id } = getUrlParams();
     if (!item || !type || !id) return;
 
-    try {
-      setDeleting(true);
-
+    await deleteState.withLoading(async () => {
       switch (type) {
         case 'psa':
           await collectionOps.deletePsaCard(id);
@@ -264,11 +257,7 @@ export const useCollectionItemDetail = () => {
       showSuccessToast('Item deleted successfully');
       setShowDeleteConfirm(false);
       navigationHelper.navigateToCollection();
-    } catch (err) {
-      handleApiError(err, 'Failed to delete item');
-    } finally {
-      setDeleting(false);
-    }
+    });
   };
 
   // Edit operations
@@ -298,12 +287,11 @@ export const useCollectionItemDetail = () => {
   const fetchItem = async () => {
     const { type, id } = getUrlParams();
     if (!type || !id) {
-      setError('Invalid item type or ID');
-      setLoading(false);
+      itemState.setError('Invalid item type or ID');
       return;
     }
 
-    try {
+    await itemState.withLoading(async () => {
       const collectionApi = getCollectionApiService();
       let fetchedItem;
 
@@ -322,12 +310,7 @@ export const useCollectionItemDetail = () => {
       }
 
       setItem(fetchedItem);
-    } catch (err) {
-      handleApiError(err, 'Failed to fetch item details');
-      setError('Failed to load item details');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   useEffect(() => {
@@ -337,10 +320,10 @@ export const useCollectionItemDetail = () => {
   return {
     // State
     item,
-    loading,
-    error,
-    downloadingZip,
-    deleting,
+    loading: itemState.loading,
+    error: itemState.error,
+    downloadingZip: downloadState.loading,
+    deleting: deleteState.loading,
     isMarkSoldModalOpen,
     showDeleteConfirm,
     newPrice,
