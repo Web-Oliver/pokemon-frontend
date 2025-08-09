@@ -234,10 +234,10 @@
 - [x] Ensure feature types are truly feature-specific
 
 ### Type Consolidation
-- [ ] Review: types/api/ApiResponse.ts → consolidate if duplicate
-- [ ] Review: types/collection/CollectionTypes.ts → consolidate if duplicate
-- [ ] Review: types/form/FormTypes.ts → consolidate if duplicate
-- [ ] Review: components/routing/types/RouterTypes.ts → consolidate if duplicate
+- [x] Review: types/api/ApiResponse.ts → consolidate if duplicate
+- [x] Review: types/collection/CollectionTypes.ts → consolidate if duplicate
+- [x] Review: types/form/FormTypes.ts → consolidate if duplicate
+- [x] Review: components/routing/types/RouterTypes.ts → consolidate if duplicate
 
 ### Type Guards Consolidation
 - [ ] Move TypeGuards.ts to `shared/utils/validation/index.ts`

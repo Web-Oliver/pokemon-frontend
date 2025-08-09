@@ -20,28 +20,11 @@ import { getCollectionApiService } from '../services/ServiceRegistry';
 import { processImageUrl } from '../utils/helpers/formatting';
 import { log } from '../utils/performance/logger';
 
-// Shared form data interface
-export interface AuctionFormData {
-  topText: string;
-  bottomText: string;
-  auctionDate: string;
-  status: 'draft' | 'active' | 'sold' | 'expired';
-}
+// AuctionFormData moved to types/form/FormTypes.ts to eliminate duplication
+import { AuctionFormData } from '../../types/form/FormTypes';
 
-// Unified collection item interface for display
-export interface UnifiedCollectionItem {
-  id: string;
-  itemType: 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
-  displayName: string;
-  displayPrice: number;
-  displayImage?: string;
-  images?: string[];
-  setName?: string;
-  grade?: string;
-  condition?: string;
-  category?: string;
-  originalItem: IPsaGradedCard | IRawCard | ISealedProduct;
-}
+// UnifiedCollectionItem moved to shared/types/collectionDisplayTypes.ts to eliminate duplication
+import { UnifiedCollectionItem } from '../types/collectionDisplayTypes';
 
 // Search and filter state interface
 export interface SearchFilterState {

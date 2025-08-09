@@ -285,69 +285,8 @@ export interface CollectionSortOptions {
   direction: 'asc' | 'desc';
 }
 
-// ============================================================================
-// FORM DATA TYPES
-// ============================================================================
-
-/**
- * Form data for creating/editing PSA cards
- */
-export interface PsaCardFormData {
-  setName: string;
-  cardName: string;
-  grade: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  myPrice: number;
-  certificationNumber?: string;
-  gradingCompany?: 'PSA' | 'BGS' | 'CGC' | 'SGC';
-  images?: File[];
-}
-
-/**
- * Form data for creating/editing raw cards
- */
-export interface RawCardFormData {
-  setName: string;
-  cardName: string;
-  condition:
-    | 'mint'
-    | 'near_mint'
-    | 'excellent'
-    | 'very_good'
-    | 'good'
-    | 'fair'
-    | 'poor';
-  myPrice: number;
-  conditionNotes?: string;
-  images?: File[];
-}
-
-/**
- * Form data for creating/editing sealed products
- */
-export interface SealedProductFormData {
-  setName: string;
-  productName: string;
-  category:
-    | 'booster_box'
-    | 'elite_trainer_box'
-    | 'booster_pack'
-    | 'starter_deck'
-    | 'theme_deck'
-    | 'collection_box'
-    | 'other';
-  myPrice: number;
-  sealed: boolean;
-  language: 'english' | 'japanese' | 'other';
-  images?: File[];
-}
-
-/**
- * Discriminated union of form data types
- */
-export type CollectionItemFormData =
-  | (PsaCardFormData & { itemType: 'psa' })
-  | (RawCardFormData & { itemType: 'raw' })
-  | (SealedProductFormData & { itemType: 'sealed' });
+// Form data types moved to types/form/FormTypes.ts to eliminate duplication
+// Import form types from there when needed for type safety
 
 // ============================================================================
 // AUCTION TYPES

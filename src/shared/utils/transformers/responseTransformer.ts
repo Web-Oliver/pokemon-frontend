@@ -9,37 +9,17 @@
  * - Interface Segregation: Separate transformers for different response types
  */
 
-/**
- * Standard API response format - REMOVED (using new format only)
- * This interface is kept for reference but should not be used
- * @deprecated Use APIResponse<T> instead
- */
-export interface StandardApiResponse<T> {
-  success: boolean;
-  count?: number;
-  data: T;
-  message?: string;
-  meta?: Record<string, any>;
-}
+// Use standardized API response types from types/api/ApiResponse.ts
+import { 
+  ApiResponse, 
+  ApiSuccessResponse, 
+  ApiErrorResponse,
+  transformApiResponse,
+  createErrorResponse 
+} from '../../types/api/ApiResponse';
 
-/**
- * New enhanced API response format from updated backend
- * Includes structured metadata and standardized success/error handling
- */
-export interface APIResponse<T> {
-  success: boolean;
-  status: 'success' | 'error' | 'partial';
-  data?: T; // Optional for delete operations
-  count?: number;
-  message?: string;
-  meta?: {
-    timestamp: string;
-    version: string;
-    duration: string;
-    cached?: boolean;
-  };
-  details?: any; // For error responses
-}
+// Legacy APIResponse interface removed to align with standardized types
+// Use ApiResponse<T> from types/api/ApiResponse.ts for consistency
 
 /**
  * Configuration for response transformation
@@ -121,7 +101,7 @@ const METADATA_PROPERTIES = [
  */
 const validateApiResponse = (
   responseData: any
-): responseData is APIResponse<any> => {
+): responseData is ApiResponse<any> => {
   if (!responseData || typeof responseData !== 'object') {
     return false;
   }
