@@ -20,7 +20,6 @@ import {
   createSealedProductConfig
 } from './crud/useGenericCrudOperations';
 import { getCollectionApiService } from '../services/ServiceRegistry';
-import { useSealedProductOperations } from './useSealedProductOperations';
 import { useCollectionImageExport } from './useCollectionImageExport';
 
 export interface UseCollectionOperationsReturn {
@@ -132,7 +131,16 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     soldSuccess: rawEntityConfig.messages.soldSuccess,
   });
   
-  const sealedOperations = useSealedProductOperations();
+  // Create Sealed Product configuration and operations using generic hook
+  const sealedEntityConfig = createSealedProductConfig(collectionApi);
+  const sealedOperations = useGenericCrudOperations(sealedEntityConfig.apiMethods, {
+    entityName: sealedEntityConfig.entityName,
+    addSuccess: sealedEntityConfig.messages.addSuccess,
+    updateSuccess: sealedEntityConfig.messages.updateSuccess,
+    deleteSuccess: sealedEntityConfig.messages.deleteSuccess,
+    soldSuccess: sealedEntityConfig.messages.soldSuccess,
+  });
+  
   const imageExport = useCollectionImageExport();
   // React Query for PSA Cards
   const {
@@ -353,7 +361,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const addSealedProduct = useCallback(
     async (productData: Partial<ISealedProduct>) => {
       try {
-        const newProduct = await sealedOperations.addSealedProduct(productData);
+        const newProduct = await sealedOperations.add(productData);
         queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
         return newProduct;
       } catch (error) {
@@ -367,10 +375,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const updateSealedProduct = useCallback(
     async (id: string, productData: Partial<ISealedProduct>) => {
       try {
-        const updatedProduct = await sealedOperations.updateSealedProduct(
-          id,
-          productData
-        );
+        const updatedProduct = await sealedOperations.update(id, productData);
         queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
         return updatedProduct;
       } catch (error) {
@@ -384,7 +389,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const deleteSealedProduct = useCallback(
     async (id: string) => {
       try {
-        await sealedOperations.deleteSealedProduct(id);
+        await sealedOperations.delete(id);
         queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
       } catch (error) {
         // Error already handled by sealedOperations
@@ -397,10 +402,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const markSealedProductSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
-        const soldProduct = await sealedOperations.markSealedProductSold(
-          id,
-          saleDetails
-        );
+        const soldProduct = await sealedOperations.markSold(id, saleDetails);
         queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
         queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
         return soldProduct;
