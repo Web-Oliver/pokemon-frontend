@@ -9,7 +9,7 @@
  * - DRY: All use same underlying consolidated operations
  */
 
-import { getCollectionApiService } from '../../services/ServiceRegistry';
+
 import { useCollectionOperations } from '../useCollectionOperations';
 import {
   createPsaCardConfig,
@@ -27,7 +27,7 @@ import {
  * Maintains backward compatibility with existing interface
  */
 export const usePsaCardOperations = () => {
-  const collectionApi = getCollectionApiService();
+  const collectionApi = unifiedApiService.collection;
   const entityConfig = useEntityConfig(createPsaCardConfig, collectionApi);
   const operations = useCollectionOperations(entityConfig);
 
@@ -48,7 +48,7 @@ export const usePsaCardOperations = () => {
  * Maintains backward compatibility with existing interface
  */
 export const useRawCardOperations = () => {
-  const collectionApi = getCollectionApiService();
+  const collectionApi = unifiedApiService.collection;
   const entityConfig = useEntityConfig(createRawCardConfig, collectionApi);
   const operations = useCollectionOperations(entityConfig);
 
@@ -69,7 +69,7 @@ export const useRawCardOperations = () => {
  * Maintains backward compatibility with existing interface
  */
 export const useSealedProductOperations = () => {
-  const collectionApi = getCollectionApiService();
+  const collectionApi = unifiedApiService.collection;
   const entityConfig = useEntityConfig(
     createSealedProductConfig,
     collectionApi

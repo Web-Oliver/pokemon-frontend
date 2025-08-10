@@ -8,19 +8,18 @@ import { useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
-import { ISaleDetails } from "../../types/common";
+import { ISaleDetails } from '../../types/common';
 import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';
 import { storageWrappers } from '../utils/storage';
 
-import { 
-  useGenericCrudOperations, 
+import {
   createPsaCardConfig,
   createRawCardConfig,
-  createSealedProductConfig
+  createSealedProductConfig,
+  useGenericCrudOperations,
 } from './crud/useGenericCrudOperations';
-import { getCollectionApiService } from '../services/ServiceRegistry';
 import { useCollectionImageExport } from './useCollectionImageExport';
 
 export interface UseCollectionOperationsReturn {
@@ -110,8 +109,8 @@ const validateCollectionResponse = (data: any[], type: string): any[] => {
 
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const queryClient = useQueryClient();
-  const collectionApi = getCollectionApiService();
-  
+  const collectionApi = unifiedApiService.collection;
+
   // Create PSA Card configuration and operations using generic hook
   const psaEntityConfig = createPsaCardConfig(collectionApi);
   const psaOperations = useGenericCrudOperations(psaEntityConfig.apiMethods, {
@@ -121,7 +120,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     deleteSuccess: psaEntityConfig.messages.deleteSuccess,
     soldSuccess: psaEntityConfig.messages.soldSuccess,
   });
-  
+
   // Create Raw Card configuration and operations using generic hook
   const rawEntityConfig = createRawCardConfig(collectionApi);
   const rawOperations = useGenericCrudOperations(rawEntityConfig.apiMethods, {
@@ -131,17 +130,20 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     deleteSuccess: rawEntityConfig.messages.deleteSuccess,
     soldSuccess: rawEntityConfig.messages.soldSuccess,
   });
-  
+
   // Create Sealed Product configuration and operations using generic hook
   const sealedEntityConfig = createSealedProductConfig(collectionApi);
-  const sealedOperations = useGenericCrudOperations(sealedEntityConfig.apiMethods, {
-    entityName: sealedEntityConfig.entityName,
-    addSuccess: sealedEntityConfig.messages.addSuccess,
-    updateSuccess: sealedEntityConfig.messages.updateSuccess,
-    deleteSuccess: sealedEntityConfig.messages.deleteSuccess,
-    soldSuccess: sealedEntityConfig.messages.soldSuccess,
-  });
-  
+  const sealedOperations = useGenericCrudOperations(
+    sealedEntityConfig.apiMethods,
+    {
+      entityName: sealedEntityConfig.entityName,
+      addSuccess: sealedEntityConfig.messages.addSuccess,
+      updateSuccess: sealedEntityConfig.messages.updateSuccess,
+      deleteSuccess: sealedEntityConfig.messages.deleteSuccess,
+      soldSuccess: sealedEntityConfig.messages.soldSuccess,
+    }
+  );
+
   const imageExport = useCollectionImageExport();
   // React Query for PSA Cards
   const {
@@ -151,7 +153,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   } = useQuery({
     queryKey: queryKeys.psaCards(),
     queryFn: async () => {
-      return await unifiedApiService.collection.getPsaGradedCards({ sold: false });
+      return await unifiedApiService.collection.getPsaGradedCards({
+        sold: false,
+      });
     },
     select: (data) => validateCollectionResponse(data, 'PSA cards'),
   });
@@ -177,7 +181,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   } = useQuery({
     queryKey: queryKeys.sealedProducts(),
     queryFn: async () => {
-      return await unifiedApiService.collection.getSealedProducts({ sold: false });
+      return await unifiedApiService.collection.getSealedProducts({
+        sold: false,
+      });
     },
     select: (data) => validateCollectionResponse(data, 'sealed products'),
   });
@@ -393,7 +399,9 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
 
   // Handle refresh requests from session storage
   useEffect(() => {
-    const needsRefresh = storageWrappers.session.getItem('collectionNeedsRefresh');
+    const needsRefresh = storageWrappers.session.getItem(
+      'collectionNeedsRefresh'
+    );
     if (needsRefresh === 'true') {
       storageWrappers.session.removeItem('collectionNeedsRefresh');
       log(

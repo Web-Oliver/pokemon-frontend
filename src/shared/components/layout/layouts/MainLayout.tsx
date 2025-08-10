@@ -22,6 +22,7 @@ import {
   X,
   Zap,
 } from 'lucide-react';
+
 // ThemeToggle component removed as it doesn't exist in the current structure
 
 interface MainLayoutProps {
@@ -161,7 +162,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo - Stunning Modern Design - Clickable */}
-            <button 
+            <button
               onClick={() => handleNavigation('/dashboard')}
               className="flex items-center space-x-3 hover:scale-105 transition-transform duration-200 group"
               aria-label="Navigate to dashboard"

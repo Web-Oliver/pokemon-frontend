@@ -6,7 +6,7 @@
  * Handles: animation intensity, durations, delays, and motion settings
  */
 
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
 import { AnimationIntensity } from '../../types/themeTypes';
 
 // ================================

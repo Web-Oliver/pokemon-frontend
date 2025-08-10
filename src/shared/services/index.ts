@@ -22,16 +22,9 @@ export type {
 export { unifiedHttpClient, UnifiedHttpClient } from './base/UnifiedHttpClient';
 export type { IHttpClient } from './base/HttpClientInterface';
 
-// Existing service implementations
-export { UploadApiService } from './UploadApiService';
-export { SetProductApiService } from './SetProductApiService';
-export { SearchApiService } from './SearchApiService';
-export { ExportApiService } from './ExportApiService';
-export { CompositeCollectionApiService } from './CompositeCollectionApiService';
-export { CollectionApiService } from './CollectionApiService';
+// Available service implementations (only existing services)
+// Note: Most services have been consolidated into UnifiedApiService
 
-// Service registry
-export { ServiceRegistry } from './ServiceRegistry';
 
 // Form services
 export { FormValidationService } from './forms/FormValidationService';

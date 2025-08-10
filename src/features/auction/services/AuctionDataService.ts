@@ -1,6 +1,6 @@
 /**
  * Thin Auction Data Service Layer
- * 
+ *
  * Following CLAUDE.md principles:
  * - Thin layer for UI-specific data mapping
  * - Uses UnifiedApiService for actual API calls
@@ -43,26 +43,32 @@ export class AuctionDataService {
 
     // Transform PSA Graded Cards
     psaCards
-      .filter((card) => !card.sold)
+      .filter((card) => !card.sold && ((card.id != null && card.id !== '') || (card._id != null && card._id !== '')))
       .forEach((card) => {
         const transformedItem = this.transformPsaCard(card);
-        items.push(transformedItem);
+        if (transformedItem.id != null && transformedItem.id !== '') {
+          items.push(transformedItem);
+        }
       });
 
     // Transform Raw Cards
     rawCards
-      .filter((card) => !card.sold)
+      .filter((card) => !card.sold && ((card.id != null && card.id !== '') || (card._id != null && card._id !== '')))
       .forEach((card) => {
         const transformedItem = this.transformRawCard(card);
-        items.push(transformedItem);
+        if (transformedItem.id != null && transformedItem.id !== '') {
+          items.push(transformedItem);
+        }
       });
 
     // Transform Sealed Products
     sealedProducts
-      .filter((product) => !product.sold)
+      .filter((product) => !product.sold && ((product.id != null && product.id !== '') || (product._id != null && product._id !== '')))
       .forEach((product) => {
         const transformedItem = this.transformSealedProduct(product);
-        items.push(transformedItem);
+        if (transformedItem.id != null && transformedItem.id !== '') {
+          items.push(transformedItem);
+        }
       });
 
     return items;
@@ -82,7 +88,12 @@ export class AuctionDataService {
     const pokemonNumber = cardData?.pokemonNumber || '';
 
     // Build display name
-    const displayName = this.buildDisplayName(cardName, variety, pokemonNumber, `PSA ${card.grade}`);
+    const displayName = this.buildDisplayName(
+      cardName,
+      variety,
+      pokemonNumber,
+      `PSA ${card.grade}`
+    );
 
     // Process images
     const processedImages = (card.images || [])
@@ -90,7 +101,7 @@ export class AuctionDataService {
       .filter(Boolean) as string[];
 
     return {
-      id: card.id,
+      id: card.id || card._id || '',
       itemType: 'PsaGradedCard',
       displayName,
       displayPrice: Number(card.myPrice) || 0,
@@ -115,7 +126,12 @@ export class AuctionDataService {
     const pokemonNumber = cardData?.pokemonNumber || '';
 
     // Build display name
-    const displayName = this.buildDisplayName(cardName, variety, pokemonNumber, card.condition);
+    const displayName = this.buildDisplayName(
+      cardName,
+      variety,
+      pokemonNumber,
+      card.condition
+    );
 
     // Process images
     const processedImages = (card.images || [])
@@ -123,7 +139,7 @@ export class AuctionDataService {
       .filter(Boolean) as string[];
 
     return {
-      id: card.id,
+      id: card.id || card._id || '',
       itemType: 'RawCard',
       displayName,
       displayPrice: Number(card.myPrice) || 0,
@@ -138,8 +154,20 @@ export class AuctionDataService {
   /**
    * Transform Sealed Product for display
    */
-  private static transformSealedProduct(product: ISealedProduct): UnifiedCollectionItem {
-    const displayName = `${product.setName || 'Unknown Set'} - ${product.name || 'Unknown Product'}`;
+  private static transformSealedProduct(
+    product: ISealedProduct
+  ): UnifiedCollectionItem {
+    // Access nested productId object for product details (populated by backend)
+    const productData = (product as any).productId || product;
+    
+    // Extract product name - try multiple sources
+    const productName = productData?.name || productData?.productName || product.name || 'Unknown Product';
+    
+    // Extract set name - try multiple sources
+    const setName = productData?.setName || product.setName || 'Unknown Set';
+    
+    // Build clean display name
+    const displayName = `${setName} - ${productName}`;
 
     // Process images
     const processedImages = (product.images || [])
@@ -147,13 +175,13 @@ export class AuctionDataService {
       .filter(Boolean) as string[];
 
     return {
-      id: product.id,
+      id: product.id || product._id || '',
       itemType: 'SealedProduct',
       displayName,
       displayPrice: Number(product.myPrice) || 0,
       displayImage: processedImages[0],
       images: processedImages,
-      setName: product.setName,
+      setName,
       category: product.category,
       originalItem: product,
     };

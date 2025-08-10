@@ -5,11 +5,11 @@
  * Following CLAUDE.md principles: DRY, business logic extraction, reusable patterns
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ServiceRegistry } from '../services/ServiceRegistry';
+
 import { handleApiError } from '../utils/helpers/errorHandler';
-import { navigationHelper } from "../utils/navigation";
+import { navigationHelper } from '../utils/navigation';
 
 export interface UseItemActionsOptions {
   itemType: 'psa' | 'raw' | 'sealed';
@@ -47,7 +47,7 @@ export const useItemActions = ({
   // Get appropriate API service based on item type
   const getApiService = useCallback(() => {
     const collectionService =
-      ServiceRegistry.getInstance().getCollectionApiService();
+      
 
     switch (itemType) {
       case 'psa':
@@ -150,7 +150,7 @@ export const useItemActions = ({
       setDownloading(true);
       try {
         const exportService =
-          ServiceRegistry.getInstance().getExportApiService();
+          
 
         let downloadMethod;
         switch (itemType) {

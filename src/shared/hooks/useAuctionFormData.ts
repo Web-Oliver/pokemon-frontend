@@ -16,7 +16,7 @@ import { useFetchCollectionItems } from './useFetchCollectionItems';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { IAuctionItem } from '../domain/models/auction';
-import { getCollectionApiService } from '../services/ServiceRegistry';
+
 import { processImageUrl } from '../utils/helpers/formatting';
 import { log } from '../utils/performance/logger';
 
@@ -72,7 +72,7 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
   });
 
   // Collection data fetching hooks
-  const collectionApiService = getCollectionApiService();
+  const collectionApiService = unifiedApiService.collection;
   const {
     items: psaCards,
     loading: psaLoading,

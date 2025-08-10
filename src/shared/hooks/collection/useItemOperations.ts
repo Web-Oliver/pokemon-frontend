@@ -9,10 +9,9 @@
 
 import { useCallback } from 'react';
 import { CollectionItem, ItemType } from './useCollectionItem';
-import { getCollectionApiService } from '../../services/ServiceRegistry';
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
+import { unifiedApiService } from '../../services/UnifiedApiService';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
-import { navigationHelper } from "../../utils/navigation";
+import { navigationHelper } from '../../utils/navigation';
 import { useConfirmModal } from '../useModal';
 
 export interface UseItemOperationsReturn {
@@ -68,17 +67,15 @@ export const useItemOperations = (
     }
 
     await deleteConfirmModal.confirmAction(async () => {
-      const collectionApi = getCollectionApiService();
-
       switch (itemType) {
         case 'psa':
-          await collectionApi.deletePsaCard(itemId);
+          await unifiedApiService.collection.deletePsaCard(itemId);
           break;
         case 'raw':
-          await collectionApi.deleteRawCard(itemId);
+          await unifiedApiService.collection.deleteRawCard(itemId);
           break;
         case 'sealed':
-          await collectionApi.deleteSealedProduct(itemId);
+          await unifiedApiService.collection.deleteSealedProduct(itemId);
           break;
         default:
           throw new Error(`Unknown item type: ${itemType}`);

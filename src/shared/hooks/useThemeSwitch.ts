@@ -16,13 +16,18 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useCentralizedTheme } from '../utils/ui/themeConfig';
-import { useVisualTheme, useLayoutTheme, useAnimationTheme, useAccessibilityTheme } from '../contexts/theme/UnifiedThemeProvider';
+import {
+  useAccessibilityTheme,
+  useAnimationTheme,
+  useLayoutTheme,
+  useVisualTheme,
+} from '../contexts/theme/UnifiedThemeProvider';
 import { useTheme as useNextTheme } from 'next-themes';
 import {
-  VisualTheme,
+  AnimationIntensity,
   ColorScheme,
   Density,
-  AnimationIntensity,
+  VisualTheme,
 } from '../contexts/ThemeContext';
 import { ThemeColor } from '../theme/formThemes';
 

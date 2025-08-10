@@ -1,9 +1,9 @@
 /**
  * Core Utilities - Layer 1 Foundation
- * 
+ *
  * ZERO DEPENDENCIES - This file cannot import from any other utility files
  * Following CLAUDE.md Layered Architecture - This is the foundational layer
- * 
+ *
  * Contains only pure utility functions with no external dependencies
  * to prevent circular dependency issues.
  */
@@ -48,7 +48,7 @@ export const toCamelCase = (str: string): string => {
   }
   return str
     .toLowerCase()
-    .replace(/[-_\s]+(.)?/g, (_, char) => char ? char.toUpperCase() : '');
+    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''));
 };
 
 /**
@@ -114,12 +114,12 @@ export const simpleDebounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null;
-  
+
   return (...args: Parameters<T>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    
+
     timeout = setTimeout(() => {
       func(...args);
     }, wait);

@@ -9,14 +9,17 @@
  * - DRY: Eliminates ~100 lines of duplicate code per form component
  */
 
-import { useCallback, useState } from 'react';
-import { UseFormHandleSubmit, FieldValues } from 'react-hook-form';
+import { useCallback } from 'react';
+import { FieldValues, UseFormHandleSubmit } from 'react-hook-form';
 import { useFormLoadingState } from './common/useLoadingState';
-import { validateForm, sanitizers, type ValidationRules } from '../utils/validation';
-import { 
-  ApplicationError, 
-  handleError, 
-  type ErrorContext 
+import {
+  sanitizers,
+  validateForm,
+  type ValidationRules,
+} from '../utils/validation';
+import {
+  ApplicationError,
+  type ErrorContext,
 } from '../utils/helpers/errorHandler';
 
 interface ImageUploadHook {
@@ -39,14 +42,14 @@ interface FormSubmissionConfig<T extends FieldValues> {
   onError?: (error: ApplicationError) => void;
   submitFunction: (data: Partial<T>) => Promise<T>;
   updateFunction?: (id: string, data: Partial<T>) => Promise<T>;
-  
+
   // Enhanced with validation and transformation
   validationRules?: ValidationRules;
   transformData?: (formData: T) => Partial<T>;
   sanitizeData?: boolean; // Default: true
   validateOnSubmit?: boolean; // Default: true
   errorContext?: ErrorContext;
-  
+
   prepareFormData: (
     formData: any,
     uploadedImages: string[],
@@ -64,20 +67,20 @@ interface FormSubmissionConfig<T extends FieldValues> {
 interface UseFormSubmissionReturn<FormData extends FieldValues> {
   isSubmitting: boolean;
   error: ApplicationError | null;
-  
+
   // Enhanced submission handler with validation and transformation
   handleSubmit: (
     handleSubmit: UseFormHandleSubmit<FormData>
   ) => (
     onSubmit: (data: FormData) => Promise<void>
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  
+
   // Unified form submission with all features
   submitForm: (
     formData: FormData,
     reactHookFormHandleSubmit: UseFormHandleSubmit<FormData>
   ) => Promise<void>;
-  
+
   clearError: () => void;
   validateAndSubmit: (formData: FormData) => Promise<boolean>;
 }
@@ -118,111 +121,131 @@ export const useFormSubmission = <T, FormData extends FieldValues = any>(
   }, [submissionState]);
 
   // Data transformation and sanitization
-  const processFormData = useCallback((formData: FormData): FormData => {
-    let processedData = { ...formData };
+  const processFormData = useCallback(
+    (formData: FormData): FormData => {
+      let processedData = { ...formData };
 
-    // Apply data sanitization (trim strings, etc.)
-    if (sanitizeData) {
-      processedData = Object.entries(processedData).reduce((acc, [key, value]) => {
-        if (typeof value === 'string') {
-          acc[key as keyof FormData] = sanitizers.normalizeText(value) as FormData[keyof FormData];
-        } else {
-          acc[key as keyof FormData] = value;
-        }
-        return acc;
-      }, {} as FormData);
-    }
+      // Apply data sanitization (trim strings, etc.)
+      if (sanitizeData) {
+        processedData = Object.entries(processedData).reduce(
+          (acc, [key, value]) => {
+            if (typeof value === 'string') {
+              acc[key as keyof FormData] = sanitizers.normalizeText(
+                value
+              ) as FormData[keyof FormData];
+            } else {
+              acc[key as keyof FormData] = value;
+            }
+            return acc;
+          },
+          {} as FormData
+        );
+      }
 
-    // Apply custom transformation if provided
-    if (transformData) {
-      processedData = { ...processedData, ...transformData(processedData) };
-    }
+      // Apply custom transformation if provided
+      if (transformData) {
+        processedData = { ...processedData, ...transformData(processedData) };
+      }
 
-    return processedData;
-  }, [sanitizeData, transformData]);
+      return processedData;
+    },
+    [sanitizeData, transformData]
+  );
 
   // Validation function
-  const validateAndSubmit = useCallback(async (formData: FormData): Promise<boolean> => {
-    if (!validateOnSubmit || Object.keys(validationRules).length === 0) {
+  const validateAndSubmit = useCallback(
+    async (formData: FormData): Promise<boolean> => {
+      if (!validateOnSubmit || Object.keys(validationRules).length === 0) {
+        return true;
+      }
+
+      const validationErrors = validateForm(
+        formData as Record<string, string>,
+        validationRules
+      );
+
+      if (Object.keys(validationErrors).length > 0) {
+        const errorMessage = `Validation failed: ${Object.entries(
+          validationErrors
+        )
+          .map(([field, error]) => `${field}: ${error}`)
+          .join(', ')}`;
+
+        submissionState.setError(errorMessage);
+        return false;
+      }
+
       return true;
-    }
-
-    const validationErrors = validateForm(formData as Record<string, string>, validationRules);
-    
-    if (Object.keys(validationErrors).length > 0) {
-      const errorMessage = `Validation failed: ${Object.entries(validationErrors)
-        .map(([field, error]) => `${field}: ${error}`)
-        .join(', ')}`;
-      
-      submissionState.setError(errorMessage);
-      return false;
-    }
-
-    return true;
-  }, [validateOnSubmit, validationRules, submissionState]);
+    },
+    [validateOnSubmit, validationRules, submissionState]
+  );
 
   // Unified form submission with all features
-  const submitForm = useCallback(async (
-    formData: FormData,
-    reactHookFormHandleSubmit: UseFormHandleSubmit<FormData>
-  ): Promise<void> => {
-    await submissionState.withFormSubmission(
-      async () => {
-        // Step 1: Process and transform data
-        const processedData = processFormData(formData);
+  const submitForm = useCallback(
+    async (
+      formData: FormData,
+      reactHookFormHandleSubmit: UseFormHandleSubmit<FormData>
+    ): Promise<void> => {
+      await submissionState.withFormSubmission(
+        async () => {
+          // Step 1: Process and transform data
+          const processedData = processFormData(formData);
 
-        // Step 2: Validate data
-        const isValid = await validateAndSubmit(processedData);
-        if (!isValid) {
-          throw new Error('Form validation failed');
-        }
+          // Step 2: Validate data
+          const isValid = await validateAndSubmit(processedData);
+          if (!isValid) {
+            throw new Error('Form validation failed');
+          }
 
-        // Step 3: Upload images
-        const uploadedImages = await imageUpload.uploadImages();
+          // Step 3: Upload images
+          const uploadedImages = await imageUpload.uploadImages();
 
-        // Step 4: Prepare final submission data
-        const finalData = prepareFormData(processedData, uploadedImages, {
-          isEditing,
-          initialData,
-          selectedCardId,
-          currentPrice: priceHistory?.currentPrice,
-          priceHistory: priceHistory?.priceHistory,
-          remainingImages: imageUpload.remainingExistingImages,
-        });
+          // Step 4: Prepare final submission data
+          const finalData = prepareFormData(processedData, uploadedImages, {
+            isEditing,
+            initialData,
+            selectedCardId,
+            currentPrice: priceHistory?.currentPrice,
+            priceHistory: priceHistory?.priceHistory,
+            remainingImages: imageUpload.remainingExistingImages,
+          });
 
-        // Step 5: Submit data
-        const result = isEditing && updateFunction && initialData?.id
-          ? await updateFunction(initialData.id as string, finalData)
-          : await submitFunction(finalData);
+          // Step 5: Submit data
+          const result =
+            isEditing && updateFunction && initialData?.id
+              ? await updateFunction(initialData.id as string, finalData)
+              : await submitFunction(finalData);
 
-        return result;
-      },
-      {
-        onSuccess: (result) => {
-          onSuccess();
           return result;
         },
-        onError: (error) => {
-          onError?.(error);
-        },
-        resetOnSuccess: false,
-      }
-    );
-  }, [
-    submissionState,
-    processFormData,
-    validateAndSubmit,
-    imageUpload,
-    prepareFormData,
-    isEditing,
-    initialData,
-    selectedCardId,
-    priceHistory,
-    updateFunction,
-    submitFunction,
-    onSuccess,
-    onError,
-  ]);
+        {
+          onSuccess: (result) => {
+            onSuccess();
+            return result;
+          },
+          onError: (error) => {
+            onError?.(error);
+          },
+          resetOnSuccess: false,
+        }
+      );
+    },
+    [
+      submissionState,
+      processFormData,
+      validateAndSubmit,
+      imageUpload,
+      prepareFormData,
+      isEditing,
+      initialData,
+      selectedCardId,
+      priceHistory,
+      updateFunction,
+      submitFunction,
+      onSuccess,
+      onError,
+    ]
+  );
 
   // Enhanced handleSubmit with built-in processing
   const handleSubmit = useCallback(
@@ -231,9 +254,12 @@ export const useFormSubmission = <T, FormData extends FieldValues = any>(
         const memoizedSubmissionHandler = async (data: FormData) => {
           if (onSubmit) {
             // Custom submission handler
-            await submissionState.withFormSubmission(onSubmit.bind(null, data), {
-              onError: (error) => onError?.(error),
-            });
+            await submissionState.withFormSubmission(
+              onSubmit.bind(null, data),
+              {
+                onError: (error) => onError?.(error),
+              }
+            );
           } else {
             // Use unified submission
             await submitForm(data, reactHookFormHandleSubmit);
@@ -337,11 +363,11 @@ export const transformFormData = <T extends FieldValues>(
     // String transformation
     if (typeof value === 'string') {
       let processedValue = value;
-      
+
       if (trimStrings) {
         processedValue = sanitizers.normalizeText(processedValue);
       }
-      
+
       if (removeEmpty && processedValue === '') {
         delete transformed[key as keyof T];
         return;
@@ -384,22 +410,24 @@ export const createFormSubmissionPattern = <T extends FieldValues>(
     create: {
       sanitizeData: true,
       validateOnSubmit: true,
-      transformData: (data: T) => transformFormData(data, {
-        trimStrings: true,
-        convertNumbers: true,
-        convertDates: true,
-        removeEmpty: true,
-      }),
+      transformData: (data: T) =>
+        transformFormData(data, {
+          trimStrings: true,
+          convertNumbers: true,
+          convertDates: true,
+          removeEmpty: true,
+        }),
     },
     edit: {
       sanitizeData: true,
       validateOnSubmit: true,
-      transformData: (data: T) => transformFormData(data, {
-        trimStrings: true,
-        convertNumbers: true,
-        convertDates: true,
-        removeEmpty: false, // Keep empty fields for partial updates
-      }),
+      transformData: (data: T) =>
+        transformFormData(data, {
+          trimStrings: true,
+          convertNumbers: true,
+          convertDates: true,
+          removeEmpty: false, // Keep empty fields for partial updates
+        }),
     },
     delete: {
       sanitizeData: false,
@@ -408,12 +436,13 @@ export const createFormSubmissionPattern = <T extends FieldValues>(
     bulk: {
       sanitizeData: true,
       validateOnSubmit: true,
-      transformData: (data: T) => transformFormData(data, {
-        trimStrings: true,
-        convertNumbers: false,
-        convertDates: false,
-        removeEmpty: true,
-      }),
+      transformData: (data: T) =>
+        transformFormData(data, {
+          trimStrings: true,
+          convertNumbers: false,
+          convertDates: false,
+          removeEmpty: true,
+        }),
     },
   };
 

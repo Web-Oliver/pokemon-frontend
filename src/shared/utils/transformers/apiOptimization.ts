@@ -1,202 +1,122 @@
 /**
  * API Optimization Utilities
- * Layer 1: Core/Foundation (CLAUDE.md Architecture)
- *
- * Following Context7 + CLAUDE.md principles:
- * - Request deduplication to prevent duplicate API calls
- * - Simple caching layer with TTL for frequent requests
- * - Batch operations for bulk operations
- * - Performance optimizations without changing functionality
+ * Layer 1: Core/Foundation utilities
+ * 
+ * Following CLAUDE.md principles:
+ * - Single Responsibility: API request optimization only
+ * - No external dependencies to prevent circular imports
+ * - Performance-focused utilities
  */
-
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-
-// Cache interface for storing request results
-interface CacheEntry<T = any> {
-  data: T;
-  timestamp: number;
-  ttl: number; // Time to live in milliseconds
-}
-
-// Request cache with TTL support
-const requestCache = new Map<string, CacheEntry>();
-
-// Pending requests map for deduplication
-const pendingRequests = new Map<string, Promise<AxiosResponse>>();
 
 /**
- * Generate cache key from request config
+ * Optimized API request wrapper
+ * Provides request optimization and caching capabilities
  */
-function generateCacheKey(config: AxiosRequestConfig): string {
-  const { method = 'GET', url = '', params = {}, data = {} } = config;
-  const paramsStr = JSON.stringify(params);
-  const dataStr = method === 'GET' ? '' : JSON.stringify(data);
-  return `${method}:${url}:${paramsStr}:${dataStr}`;
-}
-
-/**
- * Check if cache entry is still valid
- */
-function isCacheValid(entry: CacheEntry): boolean {
-  return Date.now() - entry.timestamp < entry.ttl;
-}
-
-/**
- * Get cached data if valid
- */
-export function getCachedData<T>(cacheKey: string): T | null {
-  const entry = requestCache.get(cacheKey);
-  if (entry && isCacheValid(entry)) {
-    return entry.data;
+export const optimizedApiRequest = async <T>(
+  requestFn: () => Promise<T>,
+  options?: {
+    cache?: boolean;
+    timeout?: number;
+    retries?: number;
   }
+): Promise<T> => {
+  const { cache = false, timeout = 30000, retries = 0 } = options || {};
 
-  // Clean up expired cache entry
-  if (entry) {
-    requestCache.delete(cacheKey);
-  }
+  let lastError: Error | null = null;
+  let attempts = 0;
+  const maxAttempts = retries + 1;
 
-  return null;
-}
+  while (attempts < maxAttempts) {
+    try {
+      // Create timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), timeout);
+      });
 
-/**
- * Set cache data with TTL
- */
-export function setCacheData<T>(
-  cacheKey: string,
-  data: T,
-  ttl: number = 5 * 60 * 1000
-): void {
-  requestCache.set(cacheKey, {
-    data,
-    timestamp: Date.now(),
-    ttl,
-  });
-}
-
-/**
- * Request deduplication wrapper
- * Prevents multiple identical requests from being made simultaneously
- */
-export function deduplicateRequest<T>(
-  cacheKey: string,
-  requestFn: () => Promise<AxiosResponse<T>>
-): Promise<AxiosResponse<T>> {
-  // Check if there's already a pending request for this key
-  const existingRequest = pendingRequests.get(cacheKey);
-  if (existingRequest) {
-    return existingRequest as Promise<AxiosResponse<T>>;
-  }
-
-  // Create new request and store it
-  const newRequest = requestFn().finally(() => {
-    // Clean up pending request when completed
-    pendingRequests.delete(cacheKey);
-  });
-
-  pendingRequests.set(cacheKey, newRequest);
-  return newRequest;
-}
-
-/**
- * Optimized API request wrapper with caching and deduplication
- */
-export function optimizedApiRequest<T>(
-  requestFn: () => Promise<AxiosResponse<T>>,
-  config: AxiosRequestConfig,
-  options: {
-    enableCache?: boolean;
-    cacheTTL?: number;
-    enableDeduplication?: boolean;
-  } = {}
-): Promise<AxiosResponse<T>> {
-  const {
-    enableCache = false,
-    cacheTTL = 5 * 60 * 1000, // 5 minutes default
-    enableDeduplication = true,
-  } = options;
-
-  const cacheKey = generateCacheKey(config);
-
-  // Check cache first if enabled
-  if (enableCache) {
-    const cachedData = getCachedData<T>(cacheKey);
-    if (cachedData) {
-      // Return cached data wrapped in axios response format
-      return Promise.resolve({
-        data: cachedData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config,
-      } as AxiosResponse<T>);
+      // Race the request against the timeout
+      const result = await Promise.race([requestFn(), timeoutPromise]);
+      
+      return result;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+      attempts++;
+      
+      if (attempts >= maxAttempts) {
+        break;
+      }
+      
+      // Exponential backoff for retries
+      const delay = Math.min(1000 * Math.pow(2, attempts - 1), 10000);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
-  // Create the actual request function
-  const executeRequest = async (): Promise<AxiosResponse<T>> => {
-    const response = await requestFn();
-
-    // Cache the response data if caching is enabled
-    if (enableCache && response.status >= 200 && response.status < 300) {
-      setCacheData(cacheKey, response.data, cacheTTL);
-    }
-
-    return response;
-  };
-
-  // Apply deduplication if enabled
-  if (enableDeduplication) {
-    return deduplicateRequest(cacheKey, executeRequest);
-  }
-
-  return executeRequest();
-}
-
-// BatchProcessor class removed - not used by any frontend components after batch operations removal
+  throw lastError || new Error('Request failed after retries');
+};
 
 /**
- * Clear all cached data
+ * Request deduplication utility
+ * Prevents duplicate requests to the same endpoint
  */
-export function clearApiCache(): void {
-  requestCache.clear();
-}
+const pendingRequests = new Map<string, Promise<any>>();
+
+export const deduplicateRequest = async <T>(
+  key: string,
+  requestFn: () => Promise<T>
+): Promise<T> => {
+  if (pendingRequests.has(key)) {
+    return pendingRequests.get(key) as Promise<T>;
+  }
+
+  const request = requestFn().finally(() => {
+    pendingRequests.delete(key);
+  });
+
+  pendingRequests.set(key, request);
+  return request;
+};
+
+/**
+ * Simple request cache
+ * Caches successful responses for a specified duration
+ */
+const responseCache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+
+export const cacheRequest = async <T>(
+  key: string,
+  requestFn: () => Promise<T>,
+  ttl: number = 5 * 60 * 1000 // 5 minutes default
+): Promise<T> => {
+  const now = Date.now();
+  const cached = responseCache.get(key);
+
+  // Return cached result if still valid
+  if (cached && (now - cached.timestamp) < cached.ttl) {
+    return cached.data;
+  }
+
+  // Make fresh request
+  const result = await requestFn();
+  
+  // Cache successful result
+  responseCache.set(key, {
+    data: result,
+    timestamp: now,
+    ttl
+  });
+
+  return result;
+};
 
 /**
  * Clear expired cache entries
  */
-export function cleanupExpiredCache(): void {
-  for (const [key, entry] of requestCache.entries()) {
-    if (!isCacheValid(entry)) {
-      requestCache.delete(key);
+export const clearExpiredCache = (): void => {
+  const now = Date.now();
+  
+  for (const [key, cached] of responseCache.entries()) {
+    if ((now - cached.timestamp) >= cached.ttl) {
+      responseCache.delete(key);
     }
   }
-}
-
-/**
- * Get cache statistics
- */
-export function getCacheStats(): {
-  totalEntries: number;
-  validEntries: number;
-  expiredEntries: number;
-} {
-  let validEntries = 0;
-  let expiredEntries = 0;
-
-  for (const entry of requestCache.values()) {
-    if (isCacheValid(entry)) {
-      validEntries++;
-    } else {
-      expiredEntries++;
-    }
-  }
-
-  return {
-    totalEntries: requestCache.size,
-    validEntries,
-    expiredEntries,
-  };
-}
-
-// Auto-cleanup expired cache entries every 10 minutes
-setInterval(cleanupExpiredCache, 10 * 60 * 1000);
+};

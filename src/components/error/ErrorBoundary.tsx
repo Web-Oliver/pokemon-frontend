@@ -11,6 +11,7 @@
 
 import { Component, lazy, ReactNode, Suspense } from 'react';
 import { Activity, AlertTriangle, Code, Home, RefreshCw } from 'lucide-react';
+import { updateErrorMetrics } from './errorBoundaryUtils';
 
 // Context7: Lazy load ReactProfiler for performance monitoring
 const ReactProfiler = lazy(() => import('../debug/ReactProfiler'));
@@ -39,8 +40,6 @@ interface ErrorBoundaryProps {
   resetOnPropsChange?: boolean;
   componentName?: string;
 }
-
-import { updateErrorMetrics } from './errorBoundaryUtils';
 
 // Context7: Global error tracking for performance monitoring
 const errorMetrics = {

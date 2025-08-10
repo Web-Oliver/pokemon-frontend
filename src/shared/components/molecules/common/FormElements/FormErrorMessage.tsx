@@ -92,7 +92,11 @@ export const FormErrorMessage: React.FC<FormErrorMessageProps> = ({
       {showIcon && (icon || defaultIcon)}
       <div className="flex-1">
         {errors.map((errorMessage, index) => (
-          <p key={index} className={`${textSize} text-red-400 font-medium ${index > 0 ? 'mt-1' : ''}`} role="alert">
+          <p
+            key={index}
+            className={`${textSize} text-red-400 font-medium ${index > 0 ? 'mt-1' : ''}`}
+            role="alert"
+          >
             {errorMessage}
           </p>
         ))}
@@ -124,7 +128,10 @@ export const FormErrorMessage: React.FC<FormErrorMessageProps> = ({
           </p>
         )}
         {errors.map((errorMessage, index) => (
-          <p key={index} className={`${textSize} text-red-400 ${index > 0 ? 'mt-1' : ''}`}>
+          <p
+            key={index}
+            className={`${textSize} text-red-400 ${index > 0 ? 'mt-1' : ''}`}
+          >
             {errorMessage}
           </p>
         ))}
@@ -142,7 +149,11 @@ export const FormErrorMessage: React.FC<FormErrorMessageProps> = ({
           aria-label="Dismiss error"
         >
           <svg viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
           </svg>
         </button>
       )}
@@ -177,9 +188,7 @@ export const FormErrorMessage: React.FC<FormErrorMessageProps> = ({
                   {fieldName}:
                 </span>
               )}
-              <span className={`${textSize} text-red-400`}>
-                {errorMessage}
-              </span>
+              <span className={`${textSize} text-red-400`}>{errorMessage}</span>
             </div>
           </li>
         ))}

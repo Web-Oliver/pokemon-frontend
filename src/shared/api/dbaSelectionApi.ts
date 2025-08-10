@@ -104,7 +104,7 @@ const dbaSelectionOperations = createResourceOperations<
  * @returns Promise<DbaSelection[]> - Array of DBA selections
  */
 export const getDbaSelections = async (
-  params?: DbaSelectionParams
+  params?: DbaSelectionParams,
 ): Promise<DbaSelection[]> => {
   const { active, expiring, days } = params || {};
 
@@ -145,12 +145,12 @@ export const exportDbaSelections = dbaSelectionOperations.export;
  * @returns Promise<DbaSelectionResponse>
  */
 export const addToDbaSelection = async (
-  items: DbaSelectionItem[]
+  items: DbaSelectionItem[],
 ): Promise<DbaSelectionResponse> => {
   const response = await unifiedApiClient.apiCreate<DbaSelectionResponse>(
     '/dba-selection',
     { items },
-    'DBA selection items'
+    'DBA selection items',
   );
   return response;
 };
@@ -161,7 +161,7 @@ export const addToDbaSelection = async (
  * @returns Promise<DbaSelectionResponse>
  */
 export const removeFromDbaSelection = async (
-  items: Pick<DbaSelectionItem, 'itemId' | 'itemType'>[]
+  items: Pick<DbaSelectionItem, 'itemId' | 'itemType'>[],
 ): Promise<DbaSelectionResponse> => {
   const response = await unifiedApiClient.delete<DbaSelectionResponse>(
     '/dba-selection',
@@ -169,7 +169,7 @@ export const removeFromDbaSelection = async (
       data: { items },
       operation: 'remove DBA selection items',
       successMessage: 'Items removed from DBA selection successfully',
-    }
+    },
   );
   return response;
 };

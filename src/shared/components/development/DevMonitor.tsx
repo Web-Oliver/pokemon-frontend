@@ -1,10 +1,10 @@
 /**
  * Development Monitor Component
- * 
+ *
  * Provides comprehensive development monitoring tools for browser debugging
  * including React DevTools integration, performance monitoring, debugging utilities,
  * React Query DevTools, and React Scan integration.
- * 
+ *
  * Following CLAUDE.md principles for development tooling and monitoring.
  */
 
@@ -26,7 +26,8 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
   showReactQueryDevtools = true,
   showReactScan = false,
 }) => {
-  const [isReactDevToolsConnected, setIsReactDevToolsConnected] = useState(false);
+  const [isReactDevToolsConnected, setIsReactDevToolsConnected] =
+    useState(false);
   const [isReactScanActive, setIsReactScanActive] = useState(false);
   const [performanceStats, setPerformanceStats] = useState({
     renderCount: 0,
@@ -39,17 +40,17 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
       if (typeof window !== 'undefined') {
         // Check for React DevTools extension
         const hasReactDevTools = !!(
-          window.__REACT_DEVTOOLS_GLOBAL_HOOK__ && 
+          window.__REACT_DEVTOOLS_GLOBAL_HOOK__ &&
           window.__REACT_DEVTOOLS_GLOBAL_HOOK__.isDisabled !== true
         );
         setIsReactDevToolsConnected(hasReactDevTools);
-        
+
         if (!hasReactDevTools) {
           console.info(
             '🔧 React DevTools: Install the React Developer Tools browser extension for enhanced debugging:\n' +
-            '• Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi\n' +
-            '• Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/\n' +
-            '• Edge: https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil'
+              '• Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi\n' +
+              '• Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/\n' +
+              '• Edge: https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil'
           );
         }
       }
@@ -61,8 +62,13 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
     if (showPerformanceMonitor && 'performance' in window) {
       const observer = new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
-          if (entry.entryType === 'measure' || entry.entryType === 'navigation') {
-            console.log(`⚡ Performance: ${entry.name} - ${entry.duration?.toFixed(2)}ms`);
+          if (
+            entry.entryType === 'measure' ||
+            entry.entryType === 'navigation'
+          ) {
+            console.log(
+              `⚡ Performance: ${entry.name} - ${entry.duration?.toFixed(2)}ms`
+            );
           }
         });
       });
@@ -74,7 +80,7 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
 
   useEffect(() => {
     if (showRenderTracker) {
-      setPerformanceStats(prev => ({
+      setPerformanceStats((prev) => ({
         renderCount: prev.renderCount + 1,
         lastRenderTime: performance.now(),
       }));
@@ -97,7 +103,7 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
           console.warn('🔍 React Scan: Failed to initialize', error);
         }
       };
-      
+
       initReactScan();
     }
   }, [showReactScan]);
@@ -113,7 +119,14 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
       console.log('Environment:', import.meta.env.MODE);
       console.groupEnd();
     }
-  }, [isReactDevToolsConnected, isReactScanActive, showPerformanceMonitor, showRenderTracker, showReactQueryDevtools, showConsoleLogger]);
+  }, [
+    isReactDevToolsConnected,
+    isReactScanActive,
+    showPerformanceMonitor,
+    showRenderTracker,
+    showReactQueryDevtools,
+    showConsoleLogger,
+  ]);
 
   // Development overlay (only visible in development)
   return (
@@ -127,37 +140,51 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
           <div className="mt-2 space-y-1 font-mono">
             <div className="flex justify-between">
               <span>React DevTools:</span>
-              <span className={isReactDevToolsConnected ? 'text-green-400' : 'text-red-400'}>
+              <span
+                className={
+                  isReactDevToolsConnected ? 'text-green-400' : 'text-red-400'
+                }
+              >
                 {isReactDevToolsConnected ? '✓ Connected' : '✗ Not Found'}
               </span>
             </div>
-            
+
             <div className="flex justify-between">
               <span>React Query:</span>
-              <span className={showReactQueryDevtools ? 'text-green-400' : 'text-gray-400'}>
+              <span
+                className={
+                  showReactQueryDevtools ? 'text-green-400' : 'text-gray-400'
+                }
+              >
                 {showReactQueryDevtools ? '✓ Enabled' : '✗ Disabled'}
               </span>
             </div>
-            
+
             <div className="flex justify-between">
               <span>React Scan:</span>
-              <span className={isReactScanActive ? 'text-green-400' : 'text-red-400'}>
+              <span
+                className={
+                  isReactScanActive ? 'text-green-400' : 'text-red-400'
+                }
+              >
                 {isReactScanActive ? '✓ Active' : '✗ Inactive'}
               </span>
             </div>
-            
+
             {showRenderTracker && (
               <div className="flex justify-between">
                 <span>Renders:</span>
-                <span className="text-blue-400">{performanceStats.renderCount}</span>
+                <span className="text-blue-400">
+                  {performanceStats.renderCount}
+                </span>
               </div>
             )}
-            
+
             <div className="flex justify-between">
               <span>Environment:</span>
               <span className="text-yellow-400">{import.meta.env.MODE}</span>
             </div>
-            
+
             <div className="text-xs text-gray-400 mt-2 space-y-1">
               <div>F12 → Components (React DevTools)</div>
               <div>F12 → React Query (Queries)</div>
@@ -166,10 +193,10 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
           </div>
         </details>
       </div>
-      
+
       {/* React Query DevTools - Bottom left corner, separate from Dev Monitor */}
       {showReactQueryDevtools && import.meta.env.DEV && (
-        <ReactQueryDevtools 
+        <ReactQueryDevtools
           initialIsOpen={false}
           position="bottom-left"
           buttonPosition="bottom-left"

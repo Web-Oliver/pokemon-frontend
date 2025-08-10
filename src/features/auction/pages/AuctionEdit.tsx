@@ -5,26 +5,13 @@
  * Updated to use consistent PageLayout component
  */
 
-import React, { useState, useEffect } from 'react';
-import {
-  AlertCircle,
-  ArrowLeft,
-  Calendar,
-  Check,
-  Edit3,
-  Package,
-  Plus,
-  Save,
-  Trash2,
-  X,
-} from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Calendar, Check, Edit3, Package, Trash2 } from 'lucide-react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
-import { getStatusColor } from '../../../shared/utils/helpers/auctionStatusUtils';
 import CollectionItemCard, {
   CollectionItem,
 } from '../../../components/lists/CollectionItemCard';
@@ -32,13 +19,18 @@ import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionMo
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useGenericFormState } from '../../../shared/hooks/form/useGenericFormState';
 import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 interface AuctionEditProps {
   auctionId?: string;
 }
 
 const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
+  // Memoize auction ID to prevent infinite loops
+  const resolvedAuctionId = useMemo(() => {
+    return auctionId || navigationHelper.getAuctionIdFromUrl();
+  }, [auctionId]);
+
   const {
     currentAuction,
     loading,
@@ -49,7 +41,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     removeItemFromAuction,
     clearError,
     clearCurrentAuction,
-  } = useAuction();
+  } = useAuction(undefined, resolvedAuctionId || undefined);
 
   // Get auction ID from URL if not provided as prop
   const [currentAuctionId, setCurrentAuctionId] = useState<string>('');
@@ -76,7 +68,11 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       if (fieldName === 'topText' && !value?.trim()) {
         return 'Auction title is required';
       }
-      if (fieldName === 'auctionDate' && value && new Date(value) < new Date()) {
+      if (
+        fieldName === 'auctionDate' &&
+        value &&
+        new Date(value) < new Date()
+      ) {
         return 'Auction date cannot be in the past';
       }
       return null;
@@ -84,18 +80,18 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   });
 
   useEffect(() => {
-    // Extract auction ID from URL using navigationHelper
-    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
-
-    if (urlAuctionId && urlAuctionId !== 'auctions') {
-      setCurrentAuctionId(urlAuctionId);
-      fetchAuctionById(urlAuctionId);
+    // Set current auction ID for internal state tracking
+    if (resolvedAuctionId && resolvedAuctionId !== 'auctions') {
+      setCurrentAuctionId(resolvedAuctionId);
     }
+  }, [resolvedAuctionId]);
 
+  // Separate cleanup effect that doesn't depend on clearCurrentAuction
+  useEffect(() => {
     return () => {
       clearCurrentAuction();
     };
-  }, [auctionId, fetchAuctionById, clearCurrentAuction]);
+  }, []);
 
   // Update form data when auction is loaded
   useEffect(() => {
@@ -106,7 +102,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         auctionDate: currentAuction.auctionDate
           ? currentAuction.auctionDate.split('T')[0]
           : '',
-        status: currentAuction.status || 'draft' as 'draft' | 'active' | 'sold' | 'expired',
+        status:
+          currentAuction.status ||
+          ('draft' as 'draft' | 'active' | 'sold' | 'expired'),
       };
       formState.resetToData(auctionData);
     }
@@ -170,10 +168,32 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   const handleAddItems = async (
     items: { itemId: string; itemCategory: string }[]
   ) => {
+    let addedCount = 0;
+    let duplicateCount = 0;
+
     for (const item of items) {
-      await addItemToAuction(currentAuctionId, item);
+      try {
+        await addItemToAuction(currentAuctionId, item);
+        addedCount++;
+      } catch (err: any) {
+        if (err?.message === 'DUPLICATE_ITEM') {
+          duplicateCount++;
+          // Continue with next item, don't show error for duplicates
+        } else {
+          // Re-throw other errors to be handled by error boundary
+          throw err;
+        }
+      }
     }
-    showSuccessToast(`Added ${items.length} item(s) to auction`);
+
+    // Show appropriate success message
+    if (addedCount > 0 && duplicateCount > 0) {
+      showSuccessToast(`Added ${addedCount} item(s) to auction. ${duplicateCount} item(s) were already in the auction.`);
+    } else if (addedCount > 0) {
+      showSuccessToast(`Added ${addedCount} item(s) to auction`);
+    } else if (duplicateCount > 0) {
+      showSuccessToast(`${duplicateCount} item(s) were already in the auction`);
+    }
   };
 
   // Handle remove item from auction - show confirmation modal
@@ -239,7 +259,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     if (itemCategory === 'PsaGradedCard') {
       (normalizedItem as any).grade = actualItemData?.grade;
       (normalizedItem as any).cardId = actualItemData?.cardId;
-      (normalizedItem as any).cardName = actualItemData?.cardId?.cardName || actualItemData?.cardName;
+      (normalizedItem as any).cardName =
+        actualItemData?.cardId?.cardName || actualItemData?.cardName;
       // Ensure setName is available from cardId->setId->setName path
       if (actualItemData?.cardId?.setId) {
         (normalizedItem as any).setName = actualItemData.cardId.setId.setName;
@@ -247,7 +268,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     } else if (itemCategory === 'RawCard') {
       (normalizedItem as any).condition = actualItemData?.condition;
       (normalizedItem as any).cardId = actualItemData?.cardId;
-      (normalizedItem as any).cardName = actualItemData?.cardId?.cardName || actualItemData?.cardName;
+      (normalizedItem as any).cardName =
+        actualItemData?.cardId?.cardName || actualItemData?.cardName;
       // Ensure setName is available from cardId->setId->setName path
       if (actualItemData?.cardId?.setId) {
         (normalizedItem as any).setName = actualItemData.cardId.setId.setName;
@@ -304,7 +326,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
   };
 
   const pageTitle = currentAuction?.topText || 'Edit Auction';
-  const pageSubtitle = currentAuction?.bottomText || 'Modify your auction details and manage items';
+  const pageSubtitle =
+    currentAuction?.bottomText ||
+    'Modify your auction details and manage items';
 
   const headerActions = (
     <div className="flex items-center space-x-3">
@@ -383,95 +407,95 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         glow="medium"
         pattern="neural"
       >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
-              Auction Details
-            </h2>
-            <Edit3 className="w-6 h-6 text-[var(--theme-accent-secondary)]" />
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
+            Auction Details
+          </h2>
+          <Edit3 className="w-6 h-6 text-[var(--theme-accent-secondary)]" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Top Text */}
+          <div className="space-y-2">
+            <label
+              htmlFor="topText"
+              className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
+            >
+              Auction Title
+            </label>
+            <input
+              type="text"
+              id="topText"
+              name="topText"
+              value={formState.data.topText}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
+              placeholder="Enter auction title..."
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Top Text */}
-            <div className="space-y-2">
-              <label
-                htmlFor="topText"
-                className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-              >
-                Auction Title
-              </label>
+          {/* Auction Date */}
+          <div className="space-y-2">
+            <label
+              htmlFor="auctionDate"
+              className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
+            >
+              Auction Date
+            </label>
+            <div className="relative">
               <input
-                type="text"
-                id="topText"
-                name="topText"
-                value={formState.data.topText}
+                type="date"
+                id="auctionDate"
+                name="auctionDate"
+                value={formState.data.auctionDate}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-                placeholder="Enter auction title..."
+                className="w-full px-4 py-3 pr-10 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-            </div>
-
-            {/* Auction Date */}
-            <div className="space-y-2">
-              <label
-                htmlFor="auctionDate"
-                className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-              >
-                Auction Date
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  id="auctionDate"
-                  name="auctionDate"
-                  value={formState.data.auctionDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 pr-10 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-                <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--theme-text-muted)]" />
-              </div>
-            </div>
-
-            {/* Status */}
-            <div className="space-y-2">
-              <label
-                htmlFor="status"
-                className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-              >
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formState.data.status}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
-              >
-                <option value="draft">Draft</option>
-                <option value="active">Active</option>
-                <option value="sold">Sold</option>
-                <option value="expired">Expired</option>
-              </select>
-            </div>
-
-            {/* Bottom Text - Full Width */}
-            <div className="md:col-span-2 space-y-2">
-              <label
-                htmlFor="bottomText"
-                className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
-              >
-                Description
-              </label>
-              <textarea
-                id="bottomText"
-                name="bottomText"
-                value={formState.data.bottomText}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                placeholder="Enter auction description..."
-              />
+              <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--theme-text-muted)]" />
             </div>
           </div>
+
+          {/* Status */}
+          <div className="space-y-2">
+            <label
+              htmlFor="status"
+              className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
+            >
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              value={formState.data.status}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-[var(--theme-border)] rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-secondary)] focus:border-transparent bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
+            >
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="sold">Sold</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+
+          {/* Bottom Text - Full Width */}
+          <div className="md:col-span-2 space-y-2">
+            <label
+              htmlFor="bottomText"
+              className="block text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase"
+            >
+              Description
+            </label>
+            <textarea
+              id="bottomText"
+              name="bottomText"
+              value={formState.data.bottomText}
+              onChange={handleInputChange}
+              rows={4}
+              className="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 dark:border-zinc-600 rounded-xl text-sm font-medium backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+              placeholder="Enter auction description..."
+            />
+          </div>
+        </div>
       </GlassmorphismContainer>
 
       {/* Context7 Premium Auction Items Management */}

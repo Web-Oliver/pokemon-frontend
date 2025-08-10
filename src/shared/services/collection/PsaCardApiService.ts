@@ -14,13 +14,10 @@
 
 // Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { IPsaGradedCard } from '../../domain/models/card';
-import { ISaleDetails } from "../../types/common";
+import { ISaleDetails } from '../../types/common';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
-import {
-  IPsaCardApiService,
-  PsaGradedCardsParams,
-} from '../../interfaces/api/ICollectionApiService';
+import { IPsaCardApiService, PsaGradedCardsParams } from '../../interfaces/api/ICollectionApiService';
 
 /**
  * PSA Card API Service
@@ -41,7 +38,9 @@ export class PsaCardApiService
   async getPsaGradedCards(
     filters?: PsaGradedCardsParams
   ): Promise<IPsaGradedCard[]> {
-    throw new Error('DEPRECATED: Use unifiedApiService.collection.getPsaGradedCards() directly to avoid circular dependencies');
+    throw new Error(
+      'DEPRECATED: Use unifiedApiService.collection.getPsaGradedCards() directly to avoid circular dependencies'
+    );
   }
 
   /**

@@ -14,7 +14,7 @@
  */
 
 import React from 'react';
-import { Settings, Edit3, FileText } from 'lucide-react';
+import { Edit3, FileText, Settings } from 'lucide-react';
 
 interface SelectedItem {
   id: string;

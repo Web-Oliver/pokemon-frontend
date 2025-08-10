@@ -13,7 +13,7 @@
  */
 
 import React from 'react';
-import { useCentralizedTheme, themeUtils } from '../../../utils/ui/themeConfig';
+import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
 
 export interface ParticleSystemProps {
   /** Number of particles to render */

@@ -16,5 +16,6 @@ export interface SearchParams {
   query: string;
   limit?: number;
   page?: number;
+
   [key: string]: any;
 }

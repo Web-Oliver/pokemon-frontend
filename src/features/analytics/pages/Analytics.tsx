@@ -16,9 +16,9 @@ import DateRangeFilter, {
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import {
+  ActivityTimeline,
   AnalyticsBackground,
   AnalyticsHeader,
-  ActivityTimeline,
   CategoryStats,
   MetricsGrid,
 } from '../../../shared/components/analytics';

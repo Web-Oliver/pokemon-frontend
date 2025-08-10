@@ -6,9 +6,8 @@
  * DIP: Depends on theme context abstractions
  */
 
-import { useEffect, ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { useTheme } from '../../hooks/theme/useTheme';
 import { cn } from '../../../utils/ui/classNameUtils';
 
 export interface HighContrastThemeProps {

@@ -8,12 +8,12 @@
  * - Open/Closed: Extensible for different item types
  * - DRY: Reusable across all collection item types
  * - Layer 3: UI Building Block component
- * 
+ *
  * REFACTORED: Now uses BaseCard instead of ImageProductView for consistency
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { Package, Star, CheckCircle, DollarSign, Eye } from 'lucide-react';
+import { CheckCircle, DollarSign, Eye, Package, Star } from 'lucide-react';
 import { BaseCard } from '../../shared/components/molecules/common/BaseCard';
 import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
 import { getImageUrl } from '../../shared/utils/ui/imageUtils';
@@ -49,6 +49,17 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
 
+    // Debug logging to understand the data structure
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[COLLECTION ITEM DEBUG] Item structure:', {
+        item: itemRecord,
+        cardId: itemRecord.cardId,
+        cardIdType: typeof itemRecord.cardId,
+        cardIdCardName: (itemRecord.cardId as any)?.cardName,
+        directCardName: itemRecord.cardName
+      });
+    }
+
     // Handle different item types with new structure
     const cardName =
       // For PSA/Raw cards - check populated fields first, then direct fields
@@ -67,6 +78,16 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   // Memoized set name calculation - UPDATED for new field structure
   const setName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
+
+    // Debug logging to understand the data structure
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[COLLECTION ITEM DEBUG] Set structure:', {
+        cardId: itemRecord.cardId,
+        setId: (itemRecord.cardId as any)?.setId,
+        setIdSetName: (itemRecord.cardId as any)?.setId?.setName,
+        directSetName: itemRecord.setName
+      });
+    }
 
     return (
       // For PSA/Raw cards - check populated fields from Card->Set reference
@@ -154,22 +175,20 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
               <Package className="w-12 h-12 text-zinc-500" />
             </div>
           )}
-          
-          {/* Sold overlay */}
+
+          {/* Sold overlay - Reduced opacity to show image underneath */}
           {item.sold && (
-            <div className="absolute inset-0 bg-emerald-500/90 backdrop-blur-sm flex items-center justify-center">
+            <div className="absolute inset-0 bg-emerald-500/30 backdrop-blur-sm flex items-center justify-center">
               <div className="text-center">
-                <CheckCircle className="w-8 h-8 text-white mx-auto mb-2" />
-                <span className="text-white font-bold text-sm">SOLD</span>
+                <CheckCircle className="w-8 h-8 text-white mx-auto mb-2 drop-shadow-lg" />
+                <span className="text-white font-bold text-sm drop-shadow-lg">SOLD</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          {getBadgeContent()}
-        </div>
+        <div className="absolute top-3 left-3 z-10">{getBadgeContent()}</div>
       </div>
 
       {/* Content Section */}
@@ -226,7 +245,10 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
         {activeTab === 'sold-items' && (item as any).saleDetails?.dateSold && (
           <div className="pt-2 border-t border-[var(--theme-border)]">
             <div className="text-xs text-[var(--theme-text-muted)] text-center">
-              Sold on {new Date((item as any).saleDetails.dateSold).toLocaleDateString()}
+              Sold on{' '}
+              {new Date(
+                (item as any).saleDetails.dateSold
+              ).toLocaleDateString()}
             </div>
           </div>
         )}

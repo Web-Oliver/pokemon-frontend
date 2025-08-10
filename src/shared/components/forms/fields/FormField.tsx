@@ -5,7 +5,7 @@
  * CENTRAL: Consolidates ALL form field patterns across the application
  * Following CLAUDE.md SOLID principles:
  * - Single Responsibility: Renders ANY form field type with auto-validation
- * - DRY: Eliminates 80% of form field boilerplate across ALL forms  
+ * - DRY: Eliminates 80% of form field boilerplate across ALL forms
  * - Interface Segregation: Focused interface supporting all field types
  * - Open/Closed: Extensible field types without modification
  * - Dependency Inversion: Depends on design system abstractions
@@ -23,7 +23,7 @@ export type ValidationRule = Record<string, any>;
 // Comprehensive field types covering ALL form field needs
 export type FormFieldType =
   | 'text'
-  | 'email' 
+  | 'email'
   | 'password'
   | 'number'
   | 'price'
@@ -54,24 +54,24 @@ export interface FormFieldProps {
   name: string;
   label: string;
   type: FormFieldType;
-  
+
   /** Form integration */
   register: UseFormRegister<any>;
   error?: FieldError;
-  
+
   /** Field behavior */
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
   autoFilled?: boolean; // For auto-filled fields like setProductName, productName
-  
+
   /** Validation */
   customValidation?: ValidationRule;
-  
+
   /** Select/Radio options */
   options?: FieldOption[];
-  
+
   /** Input constraints */
   min?: string | number;
   max?: string | number;
@@ -79,22 +79,22 @@ export interface FormFieldProps {
   minLength?: number;
   maxLength?: number;
   rows?: number; // For textarea
-  
+
   /** File upload */
   accept?: string; // File types for file input
   multiple?: boolean; // Multiple file selection
-  
+
   /** Layout and styling */
   className?: string;
   containerClassName?: string;
   labelClassName?: string;
-  
+
   /** Additional features */
   description?: string;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
   icon?: React.ReactNode;
-  
+
   /** Event handlers */
   onChange?: (value: any) => void;
   onBlur?: () => void;
@@ -140,74 +140,75 @@ export const FormField: React.FC<FormFieldProps> = ({
   // Auto-generate validation rules based on field type
   const getValidationRules = (): Record<string, any> => {
     const baseRules: Record<string, any> = {};
-    
+
     if (required) {
       baseRules.required = `${label} is required`;
     }
-    
+
     // Apply custom validation first (highest priority)
     if (customValidation) {
       Object.assign(baseRules, customValidation);
       return baseRules;
     }
-    
+
     // Auto-apply validation rules based on field type
     switch (type) {
       case 'email':
         Object.assign(baseRules, {
           pattern: {
             value: /^\S+@\S+\.\S+$/,
-            message: 'Please enter a valid email address'
-          }
+            message: 'Please enter a valid email address',
+          },
         });
         break;
-        
+
       case 'url':
         Object.assign(baseRules, {
           pattern: {
             value: /^https?:\/\/.+/,
-            message: 'URL must be a valid HTTP/HTTPS URL'
-          }
+            message: 'URL must be a valid HTTP/HTTPS URL',
+          },
         });
         break;
-        
+
       case 'phone':
         Object.assign(baseRules, {
           pattern: {
             value: /^\+?[\d\s\-\(\)]+$/,
-            message: 'Please enter a valid phone number'
-          }
+            message: 'Please enter a valid phone number',
+          },
         });
         break;
-        
+
       case 'price':
         Object.assign(baseRules, {
           min: { value: 0, message: 'Price cannot be negative' },
           pattern: {
             value: /^\d+(\.\d{1,2})?$/,
-            message: 'Price must be a valid number with up to 2 decimal places'
-          }
+            message: 'Price must be a valid number with up to 2 decimal places',
+          },
         });
         break;
-        
+
       case 'grade':
         Object.assign(baseRules, {
           min: { value: 1, message: 'Grade must be between 1-10' },
           max: { value: 10, message: 'Grade must be between 1-10' },
           pattern: {
             value: /^(10|[1-9])$/,
-            message: 'Grade must be a number from 1 to 10'
-          }
+            message: 'Grade must be a number from 1 to 10',
+          },
         });
         break;
-        
+
       case 'available':
         Object.assign(baseRules, {
           min: { value: 0, message: 'Available quantity must be 0 or greater' },
-          validate: (value: any) => !isNaN(Number(value)) || 'Must be a valid number'
+          validate: (value: any) =>
+            !isNaN(Number(value)) || 'Must be a valid number',
         });
         break;
-        
+
       case 'number':
         if (min !== undefined) {
           baseRules.min = { value: min, message: `Must be at least ${min}` };
@@ -216,30 +217,40 @@ export const FormField: React.FC<FormFieldProps> = ({
           baseRules.max = { value: max, message: `Must be at most ${max}` };
         }
         break;
-        
+
       case 'text':
       case 'textarea':
         if (minLength) {
-          baseRules.minLength = { value: minLength, message: `Must be at least ${minLength} characters` };
+          baseRules.minLength = {
+            value: minLength,
+            message: `Must be at least ${minLength} characters`,
+          };
         }
         if (maxLength) {
-          baseRules.maxLength = { value: maxLength, message: `Must be at most ${maxLength} characters` };
+          baseRules.maxLength = {
+            value: maxLength,
+            message: `Must be at most ${maxLength} characters`,
+          };
         }
         break;
     }
-    
+
     return baseRules;
   };
 
   // Get input props based on field type
   const getInputProps = () => {
     // Special styling for auto-filled fields
-    const autoFilledClasses = autoFilled 
-      ? 'text-center bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 cursor-not-allowed' 
+    const autoFilledClasses = autoFilled
+      ? 'text-center bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 cursor-not-allowed'
       : '';
-    
+
     const baseProps = {
-      placeholder: placeholder || (autoFilled ? `Auto-filled from ${label} selection` : `Enter ${label.toLowerCase()}`),
+      placeholder:
+        placeholder ||
+        (autoFilled
+          ? `Auto-filled from ${label} selection`
+          : `Enter ${label.toLowerCase()}`),
       disabled: disabled || readOnly || autoFilled,
       className: autoFilledClasses || className,
       onChange,
@@ -256,7 +267,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           min: min || '0',
           inputMode: 'decimal' as const,
         };
-        
+
       case 'grade':
         return {
           ...baseProps,
@@ -266,7 +277,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           step: '1',
           inputMode: 'numeric' as const,
         };
-        
+
       case 'available':
         return {
           ...baseProps,
@@ -275,7 +286,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           step: '1',
           inputMode: 'numeric' as const,
         };
-        
+
       case 'number':
         return {
           ...baseProps,
@@ -285,46 +296,46 @@ export const FormField: React.FC<FormFieldProps> = ({
           max: max?.toString(),
           inputMode: 'numeric' as const,
         };
-        
+
       case 'email':
         return {
           ...baseProps,
           type: 'email',
           inputMode: 'email' as const,
         };
-        
+
       case 'phone':
         return {
           ...baseProps,
           type: 'tel',
           inputMode: 'tel' as const,
         };
-        
+
       case 'url':
         return {
           ...baseProps,
           type: 'url',
           inputMode: 'url' as const,
         };
-        
+
       case 'password':
         return {
           ...baseProps,
           type: 'password',
         };
-        
+
       case 'date':
         return {
           ...baseProps,
           type: 'date',
         };
-        
+
       case 'search':
         return {
           ...baseProps,
           type: 'search',
         };
-        
+
       case 'file':
         return {
           ...baseProps,
@@ -332,7 +343,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           accept,
           multiple,
         };
-        
+
       default:
         return {
           ...baseProps,
@@ -345,14 +356,20 @@ export const FormField: React.FC<FormFieldProps> = ({
   const inputProps = getInputProps();
 
   // Field container with optional description
-  const FieldContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) => (
     <div className={`space-y-1 ${containerClassName}`}>
       {children}
       {description && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
       )}
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error.message}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {error.message}
+        </p>
       )}
     </div>
   );
@@ -377,7 +394,9 @@ export const FormField: React.FC<FormFieldProps> = ({
     case 'textarea':
       return (
         <FieldContainer>
-          <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}>
+          <label
+            className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}
+          >
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -400,7 +419,9 @@ export const FormField: React.FC<FormFieldProps> = ({
               disabled={disabled}
               className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-offset-0 focus:ring-blue-200 focus:ring-opacity-50"
             />
-            <span className={`ml-2 text-sm text-gray-700 dark:text-gray-300 ${labelClassName}`}>
+            <span
+              className={`ml-2 text-sm text-gray-700 dark:text-gray-300 ${labelClassName}`}
+            >
               {label}
               {required && <span className="text-red-500 ml-1">*</span>}
             </span>
@@ -412,7 +433,9 @@ export const FormField: React.FC<FormFieldProps> = ({
       return (
         <FieldContainer>
           <fieldset>
-            <legend className={`text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}>
+            <legend
+              className={`text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}
+            >
               {label}
               {required && <span className="text-red-500 ml-1">*</span>}
             </legend>
@@ -439,7 +462,9 @@ export const FormField: React.FC<FormFieldProps> = ({
     case 'file':
       return (
         <FieldContainer>
-          <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}>
+          <label
+            className={`block text-sm font-medium text-gray-700 dark:text-gray-300 ${labelClassName}`}
+          >
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </label>

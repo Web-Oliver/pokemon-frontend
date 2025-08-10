@@ -18,7 +18,6 @@ import {
   ArrowLeft,
   Award,
   BarChart3,
-  Calendar,
   CheckCircle,
   Clock,
   Cpu,
@@ -41,21 +40,14 @@ import ActivityStatCard from '../../../shared/components/molecules/common/Activi
 import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
 import ActivityFilterHub from '../../../shared/components/molecules/common/ActivityFilterHub';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { ACTIVITY_TYPES, useActivity } from '../../../shared/hooks/useActivity';
-import {
-  displayPrice,
-  getRelativeTime,
-} from '../../../shared/utils/helpers/formatting';
 import { getActivityColor } from '../../../shared/utils/helpers/activityHelpers';
 import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Import our unified design system
 import {
-  PokemonCard,
   PokemonButton,
-  PokemonInput,
-  PokemonBadge,
+  PokemonCard,
   PokemonPageContainer,
 } from '../../../shared/components/atoms/design-system';
 
@@ -81,7 +73,6 @@ const Activity: React.FC = () => {
   useEffect(() => {
     setFilters({ type: undefined, dateRange: undefined });
   }, [setFilters]);
-
 
   // Context7 Icon Mapping for Activity Types
   const getActivityIcon = (type: string) => {
@@ -376,7 +367,11 @@ const Activity: React.FC = () => {
           <PokemonCard variant="glass" size="lg" className="relative">
             {loading && activities.length === 0 ? (
               <div className="flex justify-center py-16">
-                <GenericLoadingState variant="spinner" size="lg" text="Loading activities..." />
+                <GenericLoadingState
+                  variant="spinner"
+                  size="lg"
+                  text="Loading activities..."
+                />
               </div>
             ) : (
               <div className="space-y-6">

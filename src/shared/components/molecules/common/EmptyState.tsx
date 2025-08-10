@@ -32,7 +32,14 @@ interface EmptyStateProps {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   };
   /** Style variant for the empty state */
-  variant?: 'default' | 'error' | 'success' | 'warning' | 'info' | 'cosmic' | 'premium';
+  variant?:
+    | 'default'
+    | 'error'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'cosmic'
+    | 'premium';
   /** Size of the icon container */
   size?: 'sm' | 'md' | 'lg' | 'xl';
   /** DBA-specific props for backward compatibility */
@@ -118,15 +125,19 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       container: 'from-violet-500/20 to-pink-500/20',
       border: 'border-violet-400/30',
       icon: 'text-violet-400',
-      background: 'bg-gradient-to-br from-violet-900/80 via-purple-900/70 to-pink-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(139,92,246,0.2)]',
-      shimmer: 'bg-gradient-to-r from-transparent via-violet-400/5 to-transparent',
+      background:
+        'bg-gradient-to-br from-violet-900/80 via-purple-900/70 to-pink-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(139,92,246,0.2)]',
+      shimmer:
+        'bg-gradient-to-r from-transparent via-violet-400/5 to-transparent',
     },
     premium: {
       container: 'from-blue-500/20 to-purple-500/20',
       border: 'border-blue-400/30',
       icon: 'text-blue-400',
-      background: 'bg-gradient-to-br from-blue-900/80 via-indigo-900/70 to-purple-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(59,130,246,0.2)]',
-      shimmer: 'bg-gradient-to-r from-transparent via-blue-400/5 to-transparent',
+      background:
+        'bg-gradient-to-br from-blue-900/80 via-indigo-900/70 to-purple-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(59,130,246,0.2)]',
+      shimmer:
+        'bg-gradient-to-r from-transparent via-blue-400/5 to-transparent',
     },
   };
 
@@ -176,16 +187,26 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         {/* Holographic background */}
         <div className="absolute inset-0 bg-gradient-to-r from-violet-500/15 via-purple-500/15 to-pink-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
 
-        <div className={`relative ${variantStyle.background} rounded-3xl border ${variantStyle.border} ${sizeStyle.padding}`}>
+        <div
+          className={`relative ${variantStyle.background} rounded-3xl border ${variantStyle.border} ${sizeStyle.padding}`}
+        >
           {/* Shimmer effect */}
-          <div className={`absolute inset-0 ${variantStyle.shimmer} -translate-x-full group-hover:translate-x-full transition-transform duration-2000 ease-out rounded-3xl`}></div>
+          <div
+            className={`absolute inset-0 ${variantStyle.shimmer} -translate-x-full group-hover:translate-x-full transition-transform duration-2000 ease-out rounded-3xl`}
+          ></div>
 
           <div className="relative z-10 text-center">
             {/* Cosmic icon */}
             <div className="relative mb-12">
-              <div className={`${sizeStyle.container} bg-gradient-to-r ${variantStyle.container} rounded-full mx-auto mb-8 flex items-center justify-center border-4 ${variantStyle.border} backdrop-blur-sm`}>
+              <div
+                className={`${sizeStyle.container} bg-gradient-to-r ${variantStyle.container} rounded-full mx-auto mb-8 flex items-center justify-center border-4 ${variantStyle.border} backdrop-blur-sm`}
+              >
                 <div className="relative">
-                  {FinalIcon && <FinalIcon className={`${sizeStyle.icon} ${variantStyle.icon}`} />}
+                  {FinalIcon && (
+                    <FinalIcon
+                      className={`${sizeStyle.icon} ${variantStyle.icon}`}
+                    />
+                  )}
                   {/* Floating particles around icon */}
                   {[...Array(6)].map((_, i) => (
                     <div
@@ -204,9 +225,14 @@ const EmptyState: React.FC<EmptyStateProps> = ({
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/10 to-pink-500/10 blur-2xl animate-pulse"></div>
             </div>
 
-            <h3 className={`${sizeStyle.title} font-bold text-white mb-4`}>{title}</h3>
-            <p className={`${sizeStyle.description} text-zinc-400 max-w-md mx-auto mb-6`}>
-              {description || 'Add items to your collection to start exporting to DBA.dk'}
+            <h3 className={`${sizeStyle.title} font-bold text-white mb-4`}>
+              {title}
+            </h3>
+            <p
+              className={`${sizeStyle.description} text-zinc-400 max-w-md mx-auto mb-6`}
+            >
+              {description ||
+                'Add items to your collection to start exporting to DBA.dk'}
             </p>
 
             {action && (
@@ -249,17 +275,23 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         border ${variantStyle.border}
       `}
       >
-        {FinalIcon && <FinalIcon className={`${sizeStyle.icon} ${variantStyle.icon}`} />}
+        {FinalIcon && (
+          <FinalIcon className={`${sizeStyle.icon} ${variantStyle.icon}`} />
+        )}
       </div>
 
       {/* Title */}
-      <h3 className={`${sizeStyle.title} font-bold text-[var(--theme-text-primary)] mb-3`}>
+      <h3
+        className={`${sizeStyle.title} font-bold text-[var(--theme-text-primary)] mb-3`}
+      >
         {title}
       </h3>
 
       {/* Description */}
       {description && (
-        <p className={`${sizeStyle.description} text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-6`}>
+        <p
+          className={`${sizeStyle.description} text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-6`}
+        >
           {description}
         </p>
       )}

@@ -49,7 +49,11 @@ export const PageLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-12 ${className}`}>
-    <GenericLoadingState variant="spinner" text={text} themeColor={themeColor} />
+    <GenericLoadingState
+      variant="spinner"
+      text={text}
+      themeColor={themeColor}
+    />
   </div>
 );
 
@@ -63,7 +67,12 @@ export const ContentLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-16 ${className}`}>
-    <GenericLoadingState variant="spinner" size="lg" text={text} themeColor={themeColor} />
+    <GenericLoadingState
+      variant="spinner"
+      size="lg"
+      text={text}
+      themeColor={themeColor}
+    />
   </div>
 );
 
@@ -77,7 +86,12 @@ export const InlineLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <div className={`flex items-center ${className}`}>
-    <GenericLoadingState variant="spinner" size="sm" themeColor={themeColor} className="mr-2" />
+    <GenericLoadingState
+      variant="spinner"
+      size="sm"
+      themeColor={themeColor}
+      className="mr-2"
+    />
     {text && (
       <span className="text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300">
         {text}
@@ -96,7 +110,11 @@ export const ModalLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-8 ${className}`}>
-    <GenericLoadingState variant="spinner" text={text} themeColor={themeColor} />
+    <GenericLoadingState
+      variant="spinner"
+      text={text}
+      themeColor={themeColor}
+    />
   </div>
 );
 
@@ -110,6 +128,11 @@ export const CardLoading: React.FC<BaseLoadingProps & { text?: string }> = ({
   themeColor = 'dark',
 }) => (
   <div className={`flex items-center justify-center py-6 ${className}`}>
-    <GenericLoadingState variant="spinner" size="md" text={text} themeColor={themeColor} />
+    <GenericLoadingState
+      variant="spinner"
+      size="md"
+      text={text}
+      themeColor={themeColor}
+    />
   </div>
 );

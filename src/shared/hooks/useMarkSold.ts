@@ -8,13 +8,12 @@
  * - DRY: Centralizes sale logic
  */
 
-import { useCallback, useState, useEffect } from 'react';
-import { ISaleDetails } from "../../types/common";
+import { useCallback, useEffect, useState } from 'react';
+import { ISaleDetails } from '../../types/common';
 import { useCollectionOperations } from './useCollectionOperations';
 import { useLoadingState } from './common/useLoadingState';
-import { navigationHelper } from "../utils/navigation";
-import { getCollectionApiService } from '../services/ServiceRegistry';
-import { handleApiError } from '../utils/helpers/errorHandler';
+import { navigationHelper } from '../utils/navigation';
+
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 
 interface UseMarkSoldOptions {
@@ -46,12 +45,12 @@ export const useMarkSold = ({
   onError,
 }: UseMarkSoldOptions): UseMarkSoldReturn => {
   const saleState = useLoadingState({
-    errorContext: { 
-      component: 'useMarkSold', 
+    errorContext: {
+      component: 'useMarkSold',
       action: 'markAsSold',
       itemType,
-      itemId
-    }
+      itemId,
+    },
   });
 
   const { updatePsaCard, updateRawCard, updateSealedProduct } =
@@ -59,33 +58,36 @@ export const useMarkSold = ({
 
   const markAsSold = useCallback(
     async (saleDetails: ISaleDetails): Promise<void> => {
-      await saleState.withLoading(async () => {
-        // Prepare the update data with sale details
-        const updateData = {
-          sold: true,
-          saleDetails,
-        };
+      await saleState.withLoading(
+        async () => {
+          // Prepare the update data with sale details
+          const updateData = {
+            sold: true,
+            saleDetails,
+          };
 
-        // Call the appropriate update function based on item type
-        switch (itemType) {
-          case 'psa':
-            await updatePsaCard(itemId, updateData);
-            break;
-          case 'raw':
-            await updateRawCard(itemId, updateData);
-            break;
-          case 'sealed':
-            await updateSealedProduct(itemId, updateData);
-            break;
-          default:
-            throw new Error(`Unsupported item type: ${itemType}`);
+          // Call the appropriate update function based on item type
+          switch (itemType) {
+            case 'psa':
+              await updatePsaCard(itemId, updateData);
+              break;
+            case 'raw':
+              await updateRawCard(itemId, updateData);
+              break;
+            case 'sealed':
+              await updateSealedProduct(itemId, updateData);
+              break;
+            default:
+              throw new Error(`Unsupported item type: ${itemType}`);
+          }
+
+          // Call success callback if provided
+          onSuccess?.();
+        },
+        {
+          suppressErrors: false, // Let the error be handled by the standardized error system
         }
-
-        // Call success callback if provided
-        onSuccess?.();
-      }, {
-        suppressErrors: false // Let the error be handled by the standardized error system
-      });
+      );
 
       // Call onError if there was an error
       if (saleState.hasError && onError) {
@@ -126,15 +128,21 @@ export const useMarkSold = ({
 export const useCollectionItemDetail = () => {
   const itemState = useLoadingState({
     initialLoading: true,
-    errorContext: { component: 'useCollectionItemDetail', action: 'fetchItem' }
+    errorContext: { component: 'useCollectionItemDetail', action: 'fetchItem' },
   });
   const downloadState = useLoadingState({
-    errorContext: { component: 'useCollectionItemDetail', action: 'downloadImages' }
+    errorContext: {
+      component: 'useCollectionItemDetail',
+      action: 'downloadImages',
+    },
   });
   const deleteState = useLoadingState({
-    errorContext: { component: 'useCollectionItemDetail', action: 'deleteItem' }
+    errorContext: {
+      component: 'useCollectionItemDetail',
+      action: 'deleteItem',
+    },
   });
-  
+
   const [item, setItem] = useState<any>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
@@ -292,7 +300,7 @@ export const useCollectionItemDetail = () => {
     }
 
     await itemState.withLoading(async () => {
-      const collectionApi = getCollectionApiService();
+      const collectionApi = unifiedApiService.collection;
       let fetchedItem;
 
       switch (type) {

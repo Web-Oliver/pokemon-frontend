@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { UnifiedApiService } from '../UnifiedApiService'
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { UnifiedApiService } from '../UnifiedApiService';
 
 // Mock the HTTP client
 vi.mock('../base/UnifiedHttpClient', () => ({
@@ -8,35 +8,35 @@ vi.mock('../base/UnifiedHttpClient', () => ({
     post: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
-  }
-}))
+  },
+}));
 
 describe('UnifiedApiService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe('collection service', () => {
     it('should have collection endpoints', () => {
-      expect(UnifiedApiService.collection).toBeDefined()
-      expect(typeof UnifiedApiService.collection.getAllItems).toBe('function')
-      expect(typeof UnifiedApiService.collection.createItem).toBe('function')
-    })
-  })
+      expect(UnifiedApiService.collection).toBeDefined();
+      expect(typeof UnifiedApiService.collection.getAllItems).toBe('function');
+      expect(typeof UnifiedApiService.collection.createItem).toBe('function');
+    });
+  });
 
   describe('search service', () => {
     it('should have search endpoints', () => {
-      expect(UnifiedApiService.search).toBeDefined()
-      expect(typeof UnifiedApiService.search.searchCards).toBe('function')
-      expect(typeof UnifiedApiService.search.searchSets).toBe('function')
-    })
-  })
+      expect(UnifiedApiService.search).toBeDefined();
+      expect(typeof UnifiedApiService.search.searchCards).toBe('function');
+      expect(typeof UnifiedApiService.search.searchSets).toBe('function');
+    });
+  });
 
   describe('auctions service', () => {
     it('should have auction endpoints', () => {
-      expect(UnifiedApiService.auctions).toBeDefined()
-      expect(typeof UnifiedApiService.auctions.getAll).toBe('function')
-      expect(typeof UnifiedApiService.auctions.create).toBe('function')
-    })
-  })
-})
+      expect(UnifiedApiService.auctions).toBeDefined();
+      expect(typeof UnifiedApiService.auctions.getAll).toBe('function');
+      expect(typeof UnifiedApiService.auctions.create).toBe('function');
+    });
+  });
+});

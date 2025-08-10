@@ -17,14 +17,7 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react';
 import { Glow, Shimmer } from '../../molecules/common/FormElements';
 import { StandardButtonProps } from '../../types/themeTypes';
-import {
-  cn,
-  getSizeClasses,
-  getVariantClasses,
-  getStateClasses,
-  getAnimationClasses,
-  getA11yClasses,
-} from '../../../utils/helpers/unifiedUtilities';
+import { cn } from '../../../utils/ui/classNameUtils';
 import { generateThemeClasses } from '../../../utils/ui/themeUtils';
 import { focusRing } from '../../../utils/ui/classNameUtils';
 import { useTheme } from '../../../hooks/theme/useTheme';

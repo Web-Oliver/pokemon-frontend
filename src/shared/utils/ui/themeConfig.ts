@@ -45,8 +45,7 @@ export const useCentralizedTheme = (): CentralizedThemeConfig => {
     highContrast: theme.config.highContrast,
     reducedMotion: theme.config.reducedMotion,
   };
-};;
-
+};
 /**
  * Theme Configuration Utilities
  * Helper functions for common theme checks

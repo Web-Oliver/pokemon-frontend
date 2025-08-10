@@ -9,7 +9,7 @@
  * - DRY: Eliminates repeated product card JSX structures
  * - Reusability: Can be used across different product displays
  * - Design System Integration: Uses consistent styling patterns
- * 
+ *
  * REFACTORED: Now uses BaseCard for consistent card styling and behavior
  */
 

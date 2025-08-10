@@ -14,13 +14,10 @@
 
 // Removed circular dependency - import unifiedApiService directly in components/hooks instead
 import { IRawCard } from '../../domain/models/card';
-import { ISaleDetails } from "../../types/common";
+import { ISaleDetails } from '../../types/common';
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
-import {
-  IRawCardApiService,
-  RawCardsParams,
-} from '../../interfaces/api/ICollectionApiService';
+import { IRawCardApiService, RawCardsParams } from '../../interfaces/api/ICollectionApiService';
 
 /**
  * Raw Card API Service
@@ -39,7 +36,9 @@ export class RawCardApiService
    * This service creates circular dependencies and violates CLAUDE.md principles
    */
   async getRawCards(filters?: RawCardsParams): Promise<IRawCard[]> {
-    throw new Error('DEPRECATED: Use unifiedApiService.collection.getRawCards() directly to avoid circular dependencies');
+    throw new Error(
+      'DEPRECATED: Use unifiedApiService.collection.getRawCards() directly to avoid circular dependencies'
+    );
   }
 
   /**

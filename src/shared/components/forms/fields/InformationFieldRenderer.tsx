@@ -26,7 +26,16 @@ type FieldType = 'card' | 'product' | 'individual';
 export interface FieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'number' | 'select' | 'email' | 'url' | 'date' | 'textarea' | 'price' | 'grade';
+  type:
+    | 'text'
+    | 'number'
+    | 'select'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'textarea'
+    | 'price'
+    | 'grade';
   placeholder?: string;
   required?: boolean;
   readOnly?: boolean;
@@ -94,7 +103,7 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
   productCategories = [],
   loadingOptions = false,
   isDisabled = false,
-  
+
   // New central rendering props
   fields = [],
   sectionTitle,
@@ -109,7 +118,9 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
     const isFieldDisabled = field.disabled || field.readOnly || isDisabled;
 
     // Grid column span based on field configuration
-    const gridColsClass = field.gridCols ? `col-span-${field.gridCols}` : 'col-span-1';
+    const gridColsClass = field.gridCols
+      ? `col-span-${field.gridCols}`
+      : 'col-span-1';
 
     const fieldElement = (() => {
       switch (field.type) {
@@ -141,10 +152,14 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50"
               />
               {fieldError && (
-                <p className="text-sm text-red-600 dark:text-red-400">{fieldError.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {fieldError.message}
+                </p>
               )}
               {field.description && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">{field.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {field.description}
+                </p>
               )}
             </div>
           );
@@ -153,14 +168,32 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
           return (
             <PokemonInput
               {...register(field.name, field.validation)}
-              type={field.type === 'price' ? 'number' : field.type === 'grade' ? 'number' : field.type}
+              type={
+                field.type === 'price'
+                  ? 'number'
+                  : field.type === 'grade'
+                    ? 'number'
+                    : field.type
+              }
               label={field.label}
               placeholder={field.placeholder}
               error={fieldError?.message}
               disabled={isFieldDisabled}
               required={field.required}
-              step={field.type === 'price' ? '0.01' : field.type === 'grade' ? '1' : undefined}
-              min={field.type === 'grade' ? '1' : field.type === 'price' ? '0' : undefined}
+              step={
+                field.type === 'price'
+                  ? '0.01'
+                  : field.type === 'grade'
+                    ? '1'
+                    : undefined
+              }
+              min={
+                field.type === 'grade'
+                  ? '1'
+                  : field.type === 'price'
+                    ? '0'
+                    : undefined
+              }
               max={field.type === 'grade' ? '10' : undefined}
             />
           );
@@ -176,8 +209,10 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
 
   // NEW: Central field rendering mode
   if (fields.length > 0) {
-    const gridCols = layout === 'grid' ? `grid-cols-1 md:grid-cols-${columns}` : '';
-    const containerClass = layout === 'grid' ? `grid ${gridCols} gap-4` : 'space-y-4';
+    const gridCols =
+      layout === 'grid' ? `grid-cols-1 md:grid-cols-${columns}` : '';
+    const containerClass =
+      layout === 'grid' ? `grid ${gridCols} gap-4` : 'space-y-4';
 
     return (
       <div className="space-y-6">
@@ -247,10 +282,7 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
 
           {/* Complete Grades Breakdown */}
           {readOnlyFields.grades && watch && watch('grades') && (
-            <UnifiedGradeDisplay 
-              grades={watch('grades')}
-              showTotal={true}
-            />
+            <UnifiedGradeDisplay grades={watch('grades')} showTotal={true} />
           )}
 
           {/* Individual Grade Fields */}
@@ -369,12 +401,15 @@ const InformationFieldRenderer: React.FC<InformationFieldRendererProps> = ({
 
     case 'product':
       // Generate category options from ProductCategory enum if not provided
-      const categoryOptions = productCategories.length > 0 
-        ? productCategories 
-        : Object.values(ProductCategory).map((category) => ({
-            value: category,
-            label: String(category).replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-          }));
+      const categoryOptions =
+        productCategories.length > 0
+          ? productCategories
+          : Object.values(ProductCategory).map((category) => ({
+              value: category,
+              label: String(category)
+                .replace('-', ' ')
+                .replace(/\b\w/g, (l) => l.toUpperCase()),
+            }));
 
       return (
         <>
@@ -488,25 +523,28 @@ export const commonFields = {
   price: (name: string = 'price', label: string = 'Price') =>
     createFieldConfig(name, label, 'price', {
       placeholder: '0.00',
-      validation: { required: 'Price is required', min: { value: 0, message: 'Price must be positive' } },
+      validation: {
+        required: 'Price is required',
+        min: { value: 0, message: 'Price must be positive' },
+      },
     }),
 
   grade: (name: string = 'grade', label: string = 'Grade') =>
     createFieldConfig(name, label, 'grade', {
       placeholder: '1-10',
-      validation: { 
-        required: 'Grade is required', 
+      validation: {
+        required: 'Grade is required',
         min: { value: 1, message: 'Grade must be between 1-10' },
-        max: { value: 10, message: 'Grade must be between 1-10' }
+        max: { value: 10, message: 'Grade must be between 1-10' },
       },
     }),
 
   email: (name: string = 'email', label: string = 'Email') =>
     createFieldConfig(name, label, 'email', {
       placeholder: 'Enter email address',
-      validation: { 
+      validation: {
         required: 'Email is required',
-        pattern: { value: /^\S+@\S+\.\S+$/, message: 'Invalid email format' }
+        pattern: { value: /^\S+@\S+\.\S+$/, message: 'Invalid email format' },
       },
     }),
 
@@ -516,7 +554,14 @@ export const commonFields = {
       gridCols: 2, // Full width
     }),
 
-  category: (name: string = 'category', label: string = 'Category', options: Array<{ value: string; label: string }> = []) =>
+  category: (
+    name: string = 'category',
+    label: string = 'Category',
+    options: Array<{
+      value: string;
+      label: string;
+    }> = []
+  ) =>
     createFieldConfig(name, label, 'select', {
       options,
       placeholder: 'Select category',

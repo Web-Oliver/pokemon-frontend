@@ -4,21 +4,21 @@
  * Phase 9.1 - Auction List & Detail Pages implementation
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Package,
   Calendar,
-  DollarSign,
-  Share,
   Copy,
-  FileText,
+  DollarSign,
   Download,
+  FileText,
+  Package,
+  Share,
   X,
 } from 'lucide-react';
 import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
 import {
-  PokemonModal,
   PokemonConfirmModal,
+  PokemonModal,
 } from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
@@ -28,16 +28,18 @@ import { AuctionItemCard } from '../components/auction/AuctionItemCard';
 import { ISaleDetails } from '../../../shared/domain/models/common';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
-import { useModal, useConfirmModal } from '../../../shared/hooks/useModal';
+import { useConfirmModal, useModal } from '../../../shared/hooks/useModal';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import {
+  showErrorToast,
   showSuccessToast,
   showWarningToast,
 } from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from '../../../shared/utils/navigation';
 import {
   formatCurrency,
   formatDate,
+  getItemDisplayData,
 } from '../../../shared/utils/helpers/itemDisplayHelpers';
 import { getStatusColor } from '../../../shared/utils/helpers/auctionStatusUtils';
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
@@ -47,6 +49,9 @@ interface AuctionDetailProps {
 }
 
 const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
+  // Get auction ID from URL if not provided as prop
+  const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
+
   const {
     currentAuction,
     loading,
@@ -61,7 +66,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
     downloadAuctionImagesZip,
     clearError,
     clearCurrentAuction,
-  } = useAuction();
+  } = useAuction(undefined, urlAuctionId || undefined);
 
   const {
     markPsaCardSold,
@@ -94,42 +99,29 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const removeItemConfirmModal = useConfirmModal();
 
   useEffect(() => {
-    // Extract auction ID from URL or use prop
-    const urlAuctionId = auctionId || navigationHelper.getAuctionIdFromUrl();
-    
-    // Production: Debug statement removed for security
-
     if (urlAuctionId) {
-      
       setCurrentAuctionId(urlAuctionId);
-      fetchAuctionById(urlAuctionId);
-    } else {
-      // Production: Debug statement removed for security
     }
 
     return () => {
       clearCurrentAuction();
     };
-  }, [auctionId, fetchAuctionById, clearCurrentAuction]);
+  }, [urlAuctionId, clearCurrentAuction]);
 
   // Navigation
   const navigateToAuctions = () => {
-    
     navigationHelper.navigateTo('/auctions');
   };
 
   const navigateToEditAuction = () => {
-    
-    
-    
     if (!currentAuctionId) {
       // Production: Debug statement removed for security
       return;
     }
-    
+
     // Use correct path format: /auctions/{id}/edit
     const editPath = `/auctions/${currentAuctionId}/edit`;
-    
+
     navigationHelper.navigateTo(editPath);
   };
 
@@ -160,18 +152,81 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   const handleAddItems = async (
     items: { itemId: string; itemCategory: string }[]
   ) => {
-    for (const item of items) {
-      await addItemToAuction(currentAuctionId, item);
+    if (!currentAuction?.items) {
+      try {
+        await addItemToAuction(currentAuctionId, items[0]);
+        addItemModal.closeModal();
+        showSuccessToast('Items added to auction successfully');
+        return;
+      } catch (error: any) {
+        if (error?.message === 'DUPLICATE_ITEM') {
+          addItemModal.closeModal();
+          showWarningToast('Item is already in this auction');
+          return;
+        }
+        throw error;
+      }
     }
+
+    // Create a set of existing items for quick lookup
+    const existingItems = new Set(
+      currentAuction.items.map(item => `${item.itemId}-${item.itemCategory}`)
+    );
+
+    // Filter out items that already exist in the auction
+    const newItems = items.filter(
+      item => !existingItems.has(`${item.itemId}-${item.itemCategory}`)
+    );
+
+    // Check if any items were filtered out
+    const duplicateCount = items.length - newItems.length;
+
+    if (newItems.length === 0) {
+      addItemModal.closeModal();
+      showWarningToast('All selected items are already in this auction');
+      return;
+    }
+
+    // Add only the new items
+    let successCount = 0;
+    let failCount = 0;
+    let duplicateFromServer = 0;
+
+    for (const item of newItems) {
+      try {
+        await addItemToAuction(currentAuctionId, item);
+        successCount++;
+      } catch (error: any) {
+        if (error?.message === 'DUPLICATE_ITEM') {
+          duplicateFromServer++;
+        } else {
+          failCount++;
+        }
+        // Continue with other items even if one fails
+      }
+    }
+
     addItemModal.closeModal();
-    showSuccessToast('Items added to auction successfully');
+
+    // Provide detailed feedback
+    const totalDuplicates = duplicateCount + duplicateFromServer;
+    
+    if (failCount === 0 && totalDuplicates === 0) {
+      showSuccessToast(`${successCount} item${successCount === 1 ? '' : 's'} added to auction successfully`);
+    } else if (failCount === 0 && totalDuplicates > 0) {
+      showSuccessToast(`${successCount} item${successCount === 1 ? '' : 's'} added successfully. ${totalDuplicates} duplicate${totalDuplicates === 1 ? '' : 's'} skipped.`);
+    } else if (successCount > 0) {
+      showWarningToast(`${successCount} item${successCount === 1 ? '' : 's'} added successfully, but ${failCount} failed to add.`);
+    } else {
+      showErrorToast('Failed to add items to auction');
+    }
   };
 
   // Handle remove item from auction with new modal hook
   const handleRemoveItem = (item: any) => {
     const displayData = getItemDisplayData(item);
     setItemToRemove({
-      id: item.itemId || item._id,
+      id: item.itemId || item.itemData?._id || item._id,
       name: displayData.itemName,
       category: item.itemCategory,
     });
@@ -199,7 +254,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       return;
     }
 
-    const itemId = item.itemId || item.itemData?._id;
+    const itemId = item.itemId || item.itemData?._id || item._id;
     const displayData = getItemDisplayData(item);
 
     // Determine item type based on category
@@ -332,8 +387,8 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
 
   // Calculate progress
   const soldItems =
-    currentAuction?.items.filter((item) => isItemSold(item)).length || 0;
-  const totalItems = currentAuction?.items.length || 0;
+    currentAuction?.items?.filter((item) => isItemSold(item)).length || 0;
+  const totalItems = currentAuction?.items?.length || 0;
   const progress = totalItems > 0 ? (soldItems / totalItems) * 100 : 0;
 
   const headerActions = (
@@ -591,115 +646,115 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
             pattern="particles"
             className="border-zinc-700/20"
           >
-              <h3 className="text-2xl font-bold text-zinc-100 mb-6 tracking-wide">
-                Export & Social Media Tools
-              </h3>
+            <h3 className="text-2xl font-bold text-zinc-100 mb-6 tracking-wide">
+              Export & Social Media Tools
+            </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Facebook Post Generation */}
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-[var(--theme-accent-secondary)] tracking-wide uppercase">
-                    Facebook Post
-                  </h4>
-                  <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Facebook Post Generation */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-[var(--theme-accent-secondary)] tracking-wide uppercase">
+                  Facebook Post
+                </h4>
+                <div className="space-y-3">
+                  <PokemonButton
+                    onClick={handleGenerateFacebookPost}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center"
+                    variant="outline"
+                  >
+                    <Share className="w-4 h-4 mr-2" />
+                    Generate Post
+                  </PokemonButton>
+                  {facebookPostModal.isOpen && generatedFacebookPost && (
                     <PokemonButton
-                      onClick={handleGenerateFacebookPost}
-                      disabled={loading}
+                      onClick={handleCopyToClipboard}
                       className="w-full flex items-center justify-center"
                       variant="outline"
                     >
-                      <Share className="w-4 h-4 mr-2" />
-                      Generate Post
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy to Clipboard
                     </PokemonButton>
-                    {facebookPostModal.isOpen && generatedFacebookPost && (
-                      <PokemonButton
-                        onClick={handleCopyToClipboard}
-                        className="w-full flex items-center justify-center"
-                        variant="outline"
-                      >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy to Clipboard
-                      </PokemonButton>
-                    )}
-                  </div>
-                </div>
-
-                {/* Text File Export */}
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-[var(--theme-status-success)] tracking-wide uppercase">
-                    Text File Export
-                  </h4>
-                  <PokemonButton
-                    onClick={handleDownloadTextFile}
-                    disabled={loading}
-                    className="w-full flex items-center justify-center"
-                    variant="outline"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Download Text File
-                  </PokemonButton>
-                </div>
-
-                {/* Images Zip Export */}
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-amber-600 tracking-wide uppercase">
-                    Image Export
-                  </h4>
-                  <PokemonButton
-                    onClick={handleDownloadImagesZip}
-                    disabled={loading}
-                    className="w-full flex items-center justify-center"
-                    variant="outline"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Images Zip
-                  </PokemonButton>
+                  )}
                 </div>
               </div>
 
-              {/* Generated Facebook Post Display */}
-              {facebookPostModal.isOpen && generatedFacebookPost && (
-                <div className="mt-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
-                      Generated Facebook Post
-                    </h4>
+              {/* Text File Export */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-[var(--theme-status-success)] tracking-wide uppercase">
+                  Text File Export
+                </h4>
+                <PokemonButton
+                  onClick={handleDownloadTextFile}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center"
+                  variant="outline"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  Download Text File
+                </PokemonButton>
+              </div>
+
+              {/* Images Zip Export */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-bold text-amber-600 tracking-wide uppercase">
+                  Image Export
+                </h4>
+                <PokemonButton
+                  onClick={handleDownloadImagesZip}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center"
+                  variant="outline"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Images Zip
+                </PokemonButton>
+              </div>
+            </div>
+
+            {/* Generated Facebook Post Display */}
+            {facebookPostModal.isOpen && generatedFacebookPost && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-bold text-[var(--theme-text-secondary)] tracking-wide uppercase">
+                    Generated Facebook Post
+                  </h4>
+                  <PokemonButton
+                    onClick={facebookPostModal.closeModal}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <X className="w-4 h-4" />
+                  </PokemonButton>
+                </div>
+                <div className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl p-6 border border-[var(--theme-border)]">
+                  <textarea
+                    className="w-full h-32 p-4 border-0 bg-transparent resize-none focus:outline-none text-sm font-medium text-[var(--theme-text-secondary)]"
+                    value={generatedFacebookPost}
+                    readOnly
+                  />
+                  <div className="flex justify-end mt-3">
                     <PokemonButton
-                      onClick={facebookPostModal.closeModal}
-                      variant="outline"
+                      onClick={handleCopyToClipboard}
                       size="sm"
+                      className="flex items-center"
                     >
-                      <X className="w-4 h-4" />
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy
                     </PokemonButton>
                   </div>
-                  <div className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl p-6 border border-[var(--theme-border)]">
-                    <textarea
-                      className="w-full h-32 p-4 border-0 bg-transparent resize-none focus:outline-none text-sm font-medium text-[var(--theme-text-secondary)]"
-                      value={generatedFacebookPost}
-                      readOnly
-                    />
-                    <div className="flex justify-end mt-3">
-                      <PokemonButton
-                        onClick={handleCopyToClipboard}
-                        size="sm"
-                        className="flex items-center"
-                      >
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
-                      </PokemonButton>
-                    </div>
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
           </GlassmorphismContainer>
 
           {/* Context7 Premium Auction Items */}
           <AuctionItemsSection
-            items={currentAuction.items}
+            items={currentAuction.items || []}
             onAddItems={addItemModal.openModal}
           >
             <div className="p-8 space-y-6">
-              {currentAuction.items.map((item: any, index: number) => (
+              {currentAuction.items?.map((item: any, index: number) => (
                 <AuctionItemCard
                   key={`${item.itemId || item.itemData?._id}-${index}`}
                   item={item}

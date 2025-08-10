@@ -22,6 +22,7 @@ export interface SelectableItem {
   displayPrice?: number;
   displayImage?: string;
   category?: string;
+
   [key: string]: any; // Allow additional properties
 }
 

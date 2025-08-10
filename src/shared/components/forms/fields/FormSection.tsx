@@ -18,13 +18,13 @@ import { LucideIcon } from 'lucide-react';
 export type SectionLayout = 'stack' | 'grid' | 'inline';
 
 // Section styling variants
-export type SectionVariant = 
-  | 'default'      // Standard section with border
-  | 'card'         // Card-style with background
+export type SectionVariant =
+  | 'default' // Standard section with border
+  | 'card' // Card-style with background
   | 'glassmorphism' // Premium glass effect
-  | 'minimal'      // Clean minimal design
-  | 'premium'      // Premium with gradients
-  | 'none';        // No styling, just grouping
+  | 'minimal' // Clean minimal design
+  | 'premium' // Premium with gradients
+  | 'none'; // No styling, just grouping
 
 // Section size variants
 export type SectionSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -32,39 +32,39 @@ export type SectionSize = 'sm' | 'md' | 'lg' | 'xl';
 export interface FormSectionProps {
   /** Section content */
   children: React.ReactNode;
-  
+
   /** Section identification */
   title?: string;
   subtitle?: string;
   description?: string;
-  
+
   /** Visual elements */
   icon?: LucideIcon;
   variant?: SectionVariant;
   size?: SectionSize;
-  
+
   /** Layout configuration */
   layout?: SectionLayout;
   columns?: 1 | 2 | 3 | 4;
   gap?: 'sm' | 'md' | 'lg';
-  
+
   /** Behavior */
   collapsible?: boolean;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  
+
   /** Visibility */
   visible?: boolean;
   required?: boolean;
-  
+
   /** Styling */
   className?: string;
   headerClassName?: string;
   contentClassName?: string;
-  
+
   /** Actions */
   actions?: React.ReactNode;
-  
+
   /** Additional props */
   testId?: string;
 }
@@ -148,11 +148,14 @@ export const FormSection: React.FC<FormSectionProps> = ({
 
   // Variant configurations
   const variantConfig = {
-    default: 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm',
+    default:
+      'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm',
     card: 'bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md',
-    glassmorphism: 'backdrop-blur-xl bg-gradient-to-br from-white/10 via-cyan-500/5 to-purple-500/10 border border-white/20 rounded-2xl shadow-2xl',
+    glassmorphism:
+      'backdrop-blur-xl bg-gradient-to-br from-white/10 via-cyan-500/5 to-purple-500/10 border border-white/20 rounded-2xl shadow-2xl',
     minimal: 'border-b border-gray-200 dark:border-gray-700 pb-6',
-    premium: 'bg-gradient-to-br from-slate-900/95 via-purple-900/90 to-cyan-900/95 border border-purple-500/30 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.3)]',
+    premium:
+      'bg-gradient-to-br from-slate-900/95 via-purple-900/90 to-cyan-900/95 border border-purple-500/30 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.3)]',
     none: '',
   }[variant];
 
@@ -163,18 +166,24 @@ export const FormSection: React.FC<FormSectionProps> = ({
     }
 
     return (
-      <div className={`flex items-start justify-between mb-4 ${headerClassName}`}>
+      <div
+        className={`flex items-start justify-between mb-4 ${headerClassName}`}
+      >
         <div className="flex-1">
           {/* Title row with icon and collapse button */}
           {title && (
             <div className="flex items-center mb-2">
               {Icon && (
-                <div className={`${sizeConfig.iconSize} mr-3 text-gray-600 dark:text-gray-400 flex-shrink-0`}>
+                <div
+                  className={`${sizeConfig.iconSize} mr-3 text-gray-600 dark:text-gray-400 flex-shrink-0`}
+                >
                   <Icon className="w-full h-full" />
                 </div>
               )}
-              
-              <h3 className={`${sizeConfig.titleSize} text-gray-900 dark:text-gray-100 flex-1`}>
+
+              <h3
+                className={`${sizeConfig.titleSize} text-gray-900 dark:text-gray-100 flex-1`}
+              >
                 {title}
                 {required && <span className="text-red-500 ml-1">*</span>}
               </h3>
@@ -184,7 +193,9 @@ export const FormSection: React.FC<FormSectionProps> = ({
                   type="button"
                   onClick={handleToggle}
                   className="ml-2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                  aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
+                  aria-label={
+                    isCollapsed ? 'Expand section' : 'Collapse section'
+                  }
                 >
                   <svg
                     className={`w-4 h-4 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
@@ -192,7 +203,12 @@ export const FormSection: React.FC<FormSectionProps> = ({
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
               )}
@@ -201,7 +217,9 @@ export const FormSection: React.FC<FormSectionProps> = ({
 
           {/* Subtitle */}
           {subtitle && (
-            <p className={`${sizeConfig.subtitleSize} text-gray-600 dark:text-gray-400 mb-2`}>
+            <p
+              className={`${sizeConfig.subtitleSize} text-gray-600 dark:text-gray-400 mb-2`}
+            >
               {subtitle}
             </p>
           )}
@@ -215,11 +233,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
         </div>
 
         {/* Actions */}
-        {actions && (
-          <div className="flex-shrink-0 ml-4">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="flex-shrink-0 ml-4">{actions}</div>}
       </div>
     );
   };
@@ -230,32 +244,30 @@ export const FormSection: React.FC<FormSectionProps> = ({
       className={`${variantConfig} ${sizeConfig.padding} ${className}`}
     >
       <SectionHeader />
-      
+
       {/* Content */}
       {(!collapsible || !isCollapsed) && (
-        <div className={`${layoutConfig} ${contentClassName}`}>
-          {children}
-        </div>
+        <div className={`${layoutConfig} ${contentClassName}`}>{children}</div>
       )}
     </div>
   );
 };
 
 // Convenience components for common section types
-export const CardFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (props) => (
-  <FormSection {...props} variant="card" />
-);
+export const CardFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (
+  props
+) => <FormSection {...props} variant="card" />;
 
-export const MinimalFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (props) => (
-  <FormSection {...props} variant="minimal" />
-);
+export const MinimalFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (
+  props
+) => <FormSection {...props} variant="minimal" />;
 
-export const PremiumFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (props) => (
-  <FormSection {...props} variant="premium" />
-);
+export const PremiumFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (
+  props
+) => <FormSection {...props} variant="premium" />;
 
-export const GlassmorphismFormSection: React.FC<Omit<FormSectionProps, 'variant'>> = (props) => (
-  <FormSection {...props} variant="glassmorphism" />
-);
+export const GlassmorphismFormSection: React.FC<
+  Omit<FormSectionProps, 'variant'>
+> = (props) => <FormSection {...props} variant="glassmorphism" />;
 
 export default FormSection;

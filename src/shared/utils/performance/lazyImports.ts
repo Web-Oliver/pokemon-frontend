@@ -6,7 +6,7 @@
  * ARCHITECTURE LAYER: Layer 1 (Foundation/API Client)
  */
 
-import { lazy, ComponentType } from 'react';
+import { ComponentType, lazy } from 'react';
 
 /**
  * Lazy load development-only components

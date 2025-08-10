@@ -6,7 +6,7 @@
  * Supports preset-based configuration for different card types
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface SelectedCard {
   id: string;
@@ -18,6 +18,7 @@ interface SelectedCard {
   cardNumber?: string;
   baseName?: string;
   variety?: string;
+
   [key: string]: any;
 }
 
@@ -39,7 +40,9 @@ interface UseCardSelectionReturn {
  * Card Selection State Hook
  * Manages card selection state and search query for form components
  */
-export const useCardSelection = (config: UseCardSelectionConfig): UseCardSelectionReturn => {
+export const useCardSelection = (
+  config: UseCardSelectionConfig
+): UseCardSelectionReturn => {
   const [selectedCard, setSelectedCard] = useState<SelectedCard | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);

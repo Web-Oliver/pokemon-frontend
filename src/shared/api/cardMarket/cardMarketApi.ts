@@ -78,12 +78,11 @@ export const searchProducts = async (
 export const getCategories = async (): Promise<
   Array<{ name: string; count: number }>
 > => {
-  const response = await unifiedHttpClient.get<{data: Array<{ name: string; count: number }>}>(
-    '/api/cardmarket/categories',
-    {
-      operation: 'fetch CardMarket categories',
-    }
-  );
+  const response = await unifiedHttpClient.get<{
+    data: Array<{ name: string; count: number }>;
+  }>('/api/cardmarket/categories', {
+    operation: 'fetch CardMarket categories',
+  });
 
   return response.data;
 };
@@ -94,7 +93,7 @@ export const getCategories = async (): Promise<
 export const getCategoryDetails = async (
   category: string
 ): Promise<CategoryDetails> => {
-  const response = await unifiedHttpClient.get<{data: CategoryDetails}>(
+  const response = await unifiedHttpClient.get<{ data: CategoryDetails }>(
     `/api/cardmarket/categories/${encodeURIComponent(category)}`,
     {
       operation: `fetch CardMarket category details for ${category}`,

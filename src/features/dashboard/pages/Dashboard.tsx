@@ -17,14 +17,12 @@
 
 import {
   BarChart3,
-  Calendar,
   Cpu,
   Database,
   DollarSign,
   Grid3X3,
   Package,
   Plus,
-  Sparkles,
   Star,
   TrendingUp,
 } from 'lucide-react';
@@ -36,25 +34,20 @@ import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHe
 import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
-import { displayPrice } from '../../../shared/utils/helpers/formatting';
 import {
-  getActivityIcon,
   getActivityColor,
+  getActivityIcon,
 } from '../../../shared/utils/helpers/activityHelpers';
-import { navigationHelper } from "../../../shared/utils/navigation";
-import {
-  GlassmorphismContainer,
-  IconGlassmorphism,
-} from '../../../shared/components/organisms/effects/GlassmorphismContainer';
-import { ActivityTimeline } from '../../../shared/components/analytics/ActivityTimeline';
+import { navigationHelper } from '../../../shared/utils/navigation';
+import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
 import { ParticleSystem } from '../../../shared/components/organisms/effects';
 import {
-  DashboardItemsCard,
-  DashboardValueCard,
-  DashboardSalesCard,
-  DashboardGradedCard,
   DashboardDataCard,
+  DashboardGradedCard,
+  DashboardItemsCard,
+  DashboardSalesCard,
+  DashboardValueCard,
 } from '../components/dashboard';
 
 const Dashboard: React.FC = () => {
@@ -77,7 +70,6 @@ const Dashboard: React.FC = () => {
     queryFn: () => unifiedApiService.status.getDataCounts(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
 
   return (
     <PageLayout
@@ -214,7 +206,9 @@ const Dashboard: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => navigationHelper.navigateTo('/sales-analytics')}
+                    onClick={() =>
+                      navigationHelper.navigateTo('/sales-analytics')
+                    }
                     className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-status-success)]/50 rounded-3xl hover:border-[var(--theme-status-success)] hover:shadow-2xl hover:shadow-[var(--theme-status-success)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -318,8 +312,8 @@ const Dashboard: React.FC = () => {
                           timestamp: activity.timestamp || new Date(),
                           metadata: {
                             ...(activity.metadata || {}),
-                            badges: activity.metadata?.badges || []
-                          }
+                            badges: activity.metadata?.badges || [],
+                          },
                         };
 
                         // Use same color system as Activity page for consistency
@@ -377,7 +371,10 @@ const Dashboard: React.FC = () => {
                               dot: 'bg-slate-400',
                             },
                           };
-                          return colorMap[color as keyof typeof colorMap] || colorMap.indigo;
+                          return (
+                            colorMap[color as keyof typeof colorMap] ||
+                            colorMap.indigo
+                          );
                         };
 
                         const activityColor = getActivityColor(

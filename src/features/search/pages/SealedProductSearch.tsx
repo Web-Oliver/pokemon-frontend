@@ -12,19 +12,14 @@
  */
 
 import { Euro, Package, Search } from 'lucide-react';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import ProductSearchFilters from '../../../shared/components/molecules/common/ProductSearchFilters';
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
 import PaginationControls from '../../../shared/components/molecules/common/PaginationControls';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import {
-  IProduct,
-  ProductCategory,
-} from '../../../shared/domain/models/product';
 import { ISetProduct } from '../../../shared/domain/models/setProduct';
 import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
-import { log } from '../../../shared/utils/performance/logger';
 
 const ProductSearch: React.FC = () => {
   const {
@@ -48,16 +43,25 @@ const ProductSearch: React.FC = () => {
   const itemsPerPage = 20;
 
   // Shared search function using the hook - no more duplicate HTTP logic
-  const performProductSearch = useCallback(async (page: number = 1) => {
-    await searchProducts({
-      searchTerm: searchTerm.trim() || undefined,
-      categoryFilter: categoryFilter || undefined,
-      setProductId: setProductFilter?.id,
+  const performProductSearch = useCallback(
+    async (page: number = 1) => {
+      await searchProducts({
+        searchTerm: searchTerm.trim() || undefined,
+        categoryFilter: categoryFilter || undefined,
+        setProductId: setProductFilter?.id,
+        availableOnly,
+        page,
+        limit: itemsPerPage,
+      });
+    },
+    [
+      searchProducts,
+      searchTerm,
+      categoryFilter,
+      setProductFilter,
       availableOnly,
-      page,
-      limit: itemsPerPage,
-    });
-  }, [searchProducts, searchTerm, categoryFilter, setProductFilter, availableOnly]);
+    ]
+  );
 
   // Handle search submit
   const handleSearch = () => {
@@ -98,10 +102,15 @@ const ProductSearch: React.FC = () => {
     return Math.round(eurPrice * 7.46);
   };
 
-  // Initial load using shared hook
+  // Initial load using shared hook - FIXED: Remove performProductSearch dependency to prevent infinite loop
   useEffect(() => {
-    performProductSearch();
-  }, [performProductSearch]);
+    // Load initial data - empty query will trigger "show all" behavior in backend
+    searchProducts({
+      query: '', // Empty query for initial load (backend converts this to '*')
+      page: 1,
+      limit: itemsPerPage,
+    });
+  }, [searchProducts]); // Only depend on searchProducts
 
   const headerActions = (
     <div className="bg-gradient-to-r from-[var(--theme-status-success)]/10 via-[var(--theme-accent-secondary)]/10 to-[var(--theme-accent-secondary)]/10 p-4 rounded-3xl shadow-lg backdrop-blur-sm border border-[var(--theme-border)]">

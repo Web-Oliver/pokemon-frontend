@@ -1,7 +1,7 @@
 /**
  * Validation Utilities - Consolidated Entry Point
  * Following CLAUDE.md SOLID and DRY principles
- * 
+ *
  * Single Responsibility: Central validation functions for the entire application
  * Open/Closed: Extensible without modification
  * Dependency Inversion: Uses abstractions for validation logic
@@ -1060,10 +1060,11 @@ export function createStrictValidator<T>(
  * Enhanced validation context for complex validation scenarios
  */
 export interface ValidationContext {
-  [key: string]: unknown;
   formData?: Record<string, unknown>;
   dependencies?: string[];
   async?: boolean;
+
+  [key: string]: unknown;
 }
 
 /**
@@ -1073,9 +1074,15 @@ export interface EnhancedValidationRule extends ValidationRule {
   /** Cross-field validation */
   dependsOn?: string[];
   /** Async validation function */
-  asyncValidator?: (value: string, context: ValidationContext) => Promise<string | undefined>;
+  asyncValidator?: (
+    value: string,
+    context: ValidationContext
+  ) => Promise<string | undefined>;
   /** Complex validation with context */
-  complexValidator?: (value: string, context: ValidationContext) => string | undefined;
+  complexValidator?: (
+    value: string,
+    context: ValidationContext
+  ) => string | undefined;
   /** Debounce delay for async validation */
   debounceMs?: number;
 }
@@ -1097,10 +1104,13 @@ export const complexValidationPatterns = {
   },
 
   // Price validation with market context
-  priceReasonability: (price: string, marketPrice?: string): string | undefined => {
+  priceReasonability: (
+    price: string,
+    marketPrice?: string
+  ): string | undefined => {
     const priceNum = parseFloat(price);
     const marketPriceNum = marketPrice ? parseFloat(marketPrice) : null;
-    
+
     if (marketPriceNum && priceNum > marketPriceNum * 10) {
       return 'Price seems unusually high compared to market price';
     }
@@ -1111,27 +1121,34 @@ export const complexValidationPatterns = {
   },
 
   // Date validation with business rules
-  dateWithinRange: (date: string, minDate?: string, maxDate?: string): string | undefined => {
+  dateWithinRange: (
+    date: string,
+    minDate?: string,
+    maxDate?: string
+  ): string | undefined => {
     const dateObj = new Date(date);
     const now = new Date();
-    
+
     if (dateObj > now) {
       return 'Date cannot be in the future';
     }
-    
+
     if (minDate && dateObj < new Date(minDate)) {
       return `Date must be after ${minDate}`;
     }
-    
+
     if (maxDate && dateObj > new Date(maxDate)) {
       return `Date must be before ${maxDate}`;
     }
-    
+
     return undefined;
   },
 
   // Uniqueness validation
-  uniquenessCheck: (value: string, existingValues: string[]): string | undefined => {
+  uniquenessCheck: (
+    value: string,
+    existingValues: string[]
+  ): string | undefined => {
     if (existingValues.includes(value.trim())) {
       return 'This value already exists';
     }
@@ -1151,8 +1168,11 @@ export const complexValidationRules = {
       ...commonValidationRules.grade,
       complexValidator: (value: string, context: ValidationContext) => {
         const cardType = context.formData?.cardType as string;
-        return complexValidationPatterns.cardGradeRange(value, cardType || 'psa');
-      }
+        return complexValidationPatterns.cardGradeRange(
+          value,
+          cardType || 'psa'
+        );
+      },
     },
     myPrice: {
       ...commonValidationRules.price,
@@ -1160,13 +1180,13 @@ export const complexValidationRules = {
       complexValidator: (value: string, context: ValidationContext) => {
         const marketPrice = context.formData?.cardMarketPrice as string;
         return complexValidationPatterns.priceReasonability(value, marketPrice);
-      }
+      },
     },
     dateAdded: {
       required: true,
       complexValidator: (value: string) => {
         return complexValidationPatterns.dateWithinRange(value, '2000-01-01');
-      }
+      },
     },
   } as Record<string, EnhancedValidationRule>,
 
@@ -1178,8 +1198,11 @@ export const complexValidationRules = {
       complexValidator: (value: string) => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        return complexValidationPatterns.dateWithinRange(value, tomorrow.toISOString().split('T')[0]);
-      }
+        return complexValidationPatterns.dateWithinRange(
+          value,
+          tomorrow.toISOString().split('T')[0]
+        );
+      },
     },
     items: {
       required: true,
@@ -1196,7 +1219,7 @@ export const complexValidationRules = {
           return 'Invalid items data';
         }
         return undefined;
-      }
+      },
     },
   } as Record<string, EnhancedValidationRule>,
 } as const;
@@ -1291,8 +1314,9 @@ export const sanitizers = {
 
   /** Convert to title case */
   toTitleCase: (input: string): string => {
-    return input.replace(/\w\S*/g, (txt) => 
-      txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    return input.replace(
+      /\w\S*/g,
+      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
   },
 
@@ -1314,16 +1338,15 @@ export const sanitizers = {
  */
 export const enhancedValidationMessages = {
   ...validationMessages,
-  
+
   crossFieldError: (fieldName: string, dependentField: string) =>
     `${fieldName} is invalid based on ${dependentField}`,
-    
+
   asyncValidationError: (fieldName: string) =>
     `${fieldName} validation is in progress`,
-    
-  businessRuleViolation: (rule: string) =>
-    `Business rule violation: ${rule}`,
-    
+
+  businessRuleViolation: (rule: string) => `Business rule violation: ${rule}`,
+
   complexValidationFailed: (fieldName: string, reason: string) =>
     `${fieldName} validation failed: ${reason}`,
 } as const;

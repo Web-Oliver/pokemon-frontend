@@ -15,8 +15,8 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
-  UseFormRegister,
   FieldErrors,
+  UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
 } from 'react-hook-form';

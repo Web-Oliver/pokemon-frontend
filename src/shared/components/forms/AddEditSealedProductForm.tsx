@@ -10,34 +10,29 @@
  * - DRY: Reuses common form patterns
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Archive, Camera, Package, TrendingUp } from 'lucide-react';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
 import { useCollectionOperations } from '../../hooks/useCollectionOperations';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../utils/validation';
 import {
-  useFormSubmission,
   FormSubmissionPatterns,
+  useFormSubmission,
 } from './wrappers/FormSubmissionWrapper';
 import { useLoadingState } from '../../hooks/common/useLoadingState';
 import { PokemonInput } from '../atoms/design-system/PokemonInput';
 import GenericLoadingState from '../molecules/common/GenericLoadingState';
 import UnifiedHeader from '../molecules/common/UnifiedHeader';
 import FormActionButtons from '../molecules/common/FormActionButtons';
-import { PokemonSearch } from '../design-system/PokemonSearch';
 import ImageUploader from '../../../components/ImageUploader';
 import { PriceHistoryDisplay } from '../../../components/PriceHistoryDisplay';
 import { FormField } from './fields/FormField';
 import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
 import {
-  FormValidationService,
-  VALIDATION_CONFIGS,
-} from '../../services/forms/FormValidationService';
-import {
   convertObjectIdToString,
   transformRequestData,
-} from '../../../shared/utils/transformers/responseTransformer';
+} from '../../utils/transformers/responseTransformer';
 
 interface AddEditSealedProductFormProps {
   onCancel: () => void;
@@ -155,7 +150,10 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   >([]);
   const optionsLoading = useLoadingState({
     initialLoading: true,
-    errorContext: { component: 'AddEditSealedProductForm', action: 'loadOptions' }
+    errorContext: {
+      component: 'AddEditSealedProductForm',
+      action: 'loadOptions',
+    },
   });
   const [selectedProductData, setSelectedProductData] = useState<Record<
     string,
@@ -450,7 +448,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div>
             <PokemonInput
-              label="CardMarket Price (kr.)"
+              label="Market Price (kr.) - Update this field"
               type="number"
               step="1"
               min="0"
@@ -463,13 +461,18 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               })}
               error={errors.cardMarketPrice?.message}
               placeholder="0"
-              disabled={true} // Always disabled - autofilled from product selection
+              disabled={!isEditing} // Editable when editing, disabled when creating
             />
             {watchedCardMarketPrice && (
               <div className="mt-2 text-sm text-emerald-600 font-semibold">
-                CardMarket Price: {parseFloat(watchedCardMarketPrice || '0')}{' '}
+                Current Market Price: {parseFloat(watchedCardMarketPrice || '0')}{' '}
                 kr.
               </div>
+            )}
+            {isEditing && (
+              <p className="mt-2 text-xs text-emerald-400/80">
+                Update the market price to reflect current CardMarket values
+              </p>
             )}
           </div>
 
@@ -482,11 +485,18 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               required={true}
               register={register}
               error={errors.myPrice}
+              disabled={isEditing} // Read-only when editing
+              readOnly={isEditing}
             />
             {watchedPrice && (
               <div className="mt-2 text-sm text-slate-600 dark:text-zinc-400 dark:text-zinc-300 font-semibold">
-                Paid: {parseFloat(watchedPrice || '0')} kr.
+                Current: {parseFloat(watchedPrice || '0')} kr.
               </div>
+            )}
+            {isEditing && (
+              <p className="mt-2 text-xs text-gray-500">
+                My Price cannot be changed after adding the item
+              </p>
             )}
           </div>
 

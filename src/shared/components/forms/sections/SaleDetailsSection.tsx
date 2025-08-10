@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { UseFormRegister, UseFormWatch, FieldErrors } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { Banknote } from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';

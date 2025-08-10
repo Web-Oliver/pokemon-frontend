@@ -9,12 +9,7 @@
 
 import { useCallback } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import {
-  ThemeContextType,
-  ThemeConfiguration,
-  ColorScheme,
-  ThemeColor,
-} from '../../contexts/ThemeContext';
+import { ColorScheme, ThemeColor, ThemeConfiguration, ThemeContextType } from '../../contexts/ThemeContext';
 import { useVisualTheme } from './useVisualTheme';
 import { useLayoutTheme } from './useLayoutTheme';
 import { useAnimationTheme } from './useAnimationTheme';

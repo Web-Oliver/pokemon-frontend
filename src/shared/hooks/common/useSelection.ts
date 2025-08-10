@@ -1,7 +1,7 @@
 /**
  * useSelection Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Standardized selection state management hook
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles item selection logic
@@ -47,11 +47,11 @@ export interface UseSelectionReturn<T> {
 /**
  * Custom hook for item selection management
  * Replaces repetitive selectedItems useState patterns
- * 
+ *
  * @param getItemId - Function to extract unique ID from item
  * @param initialSelection - Initial selected items
  * @returns Selection management interface
- * 
+ *
  * @example
  * ```typescript
  * // Replace: const [selectedItems, setSelectedItems] = useState<User[]>([]);
@@ -59,7 +59,7 @@ export interface UseSelectionReturn<T> {
  *   (user) => user.id,
  *   []
  * );
- * 
+ *
  * // Usage:
  * selection.toggleSelection(user);
  * selection.selectAll(allUsers);
@@ -98,10 +98,12 @@ export const useSelection = <T>(
   const toggleSelection = useCallback(
     (item: T) => {
       const itemId = getItemId(item);
-      setSelectedItems(prev => {
-        const isCurrentlySelected = prev.some(selected => getItemId(selected) === itemId);
+      setSelectedItems((prev) => {
+        const isCurrentlySelected = prev.some(
+          (selected) => getItemId(selected) === itemId
+        );
         if (isCurrentlySelected) {
-          return prev.filter(selected => getItemId(selected) !== itemId);
+          return prev.filter((selected) => getItemId(selected) !== itemId);
         } else {
           return [...prev, item];
         }
@@ -113,10 +115,12 @@ export const useSelection = <T>(
   // Toggle selection by ID (with optional item)
   const toggleSelectionById = useCallback(
     (id: string, item?: T) => {
-      setSelectedItems(prev => {
-        const isCurrentlySelected = prev.some(selected => getItemId(selected) === id);
+      setSelectedItems((prev) => {
+        const isCurrentlySelected = prev.some(
+          (selected) => getItemId(selected) === id
+        );
         if (isCurrentlySelected) {
-          return prev.filter(selected => getItemId(selected) !== id);
+          return prev.filter((selected) => getItemId(selected) !== id);
         } else if (item) {
           return [...prev, item];
         }
@@ -130,8 +134,10 @@ export const useSelection = <T>(
   const selectItem = useCallback(
     (item: T) => {
       const itemId = getItemId(item);
-      setSelectedItems(prev => {
-        const isAlreadySelected = prev.some(selected => getItemId(selected) === itemId);
+      setSelectedItems((prev) => {
+        const isAlreadySelected = prev.some(
+          (selected) => getItemId(selected) === itemId
+        );
         if (!isAlreadySelected) {
           return [...prev, item];
         }
@@ -145,7 +151,9 @@ export const useSelection = <T>(
   const deselectItem = useCallback(
     (item: T) => {
       const itemId = getItemId(item);
-      setSelectedItems(prev => prev.filter(selected => getItemId(selected) !== itemId));
+      setSelectedItems((prev) =>
+        prev.filter((selected) => getItemId(selected) !== itemId)
+      );
     },
     [getItemId]
   );
@@ -153,9 +161,9 @@ export const useSelection = <T>(
   // Select multiple items
   const selectItems = useCallback(
     (items: T[]) => {
-      setSelectedItems(prev => {
+      setSelectedItems((prev) => {
         const prevIds = new Set(prev.map(getItemId));
-        const newItems = items.filter(item => !prevIds.has(getItemId(item)));
+        const newItems = items.filter((item) => !prevIds.has(getItemId(item)));
         return [...prev, ...newItems];
       });
     },
@@ -163,12 +171,9 @@ export const useSelection = <T>(
   );
 
   // Select all items from a list
-  const selectAll = useCallback(
-    (allItems: T[]) => {
-      setSelectedItems(allItems);
-    },
-    []
-  );
+  const selectAll = useCallback((allItems: T[]) => {
+    setSelectedItems(allItems);
+  }, []);
 
   // Clear all selections
   const clearSelection = useCallback(() => {
@@ -184,7 +189,7 @@ export const useSelection = <T>(
   const isAllSelected = useCallback(
     (allItems: T[]): boolean => {
       if (allItems.length === 0) return false;
-      return allItems.every(item => selectedIds.has(getItemId(item)));
+      return allItems.every((item) => selectedIds.has(getItemId(item)));
     },
     [selectedIds, getItemId]
   );
@@ -215,14 +220,14 @@ export const useSelection = <T>(
 /**
  * Hook for managing multi-select with shift/ctrl key support
  * Extends basic selection with keyboard interaction patterns
- * 
+ *
  * @example
  * ```typescript
  * const selection = useMultiSelection<User>(
  *   (user) => user.id,
  *   allUsers
  * );
- * 
+ *
  * // Handle click with keyboard modifiers
  * const handleItemClick = (user: User, event: React.MouseEvent) => {
  *   selection.handleItemClick(user, event);
@@ -251,9 +256,13 @@ export const useMultiSelection = <T>(
 
       if (shiftKey && lastClickedItem) {
         // Range selection
-        const lastIndex = allItems.findIndex(i => getItemId(i) === getItemId(lastClickedItem));
-        const currentIndex = allItems.findIndex(i => getItemId(i) === getItemId(item));
-        
+        const lastIndex = allItems.findIndex(
+          (i) => getItemId(i) === getItemId(lastClickedItem)
+        );
+        const currentIndex = allItems.findIndex(
+          (i) => getItemId(i) === getItemId(item)
+        );
+
         if (lastIndex !== -1 && currentIndex !== -1) {
           const start = Math.min(lastIndex, currentIndex);
           const end = Math.max(lastIndex, currentIndex);

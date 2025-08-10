@@ -15,7 +15,10 @@ import {
   getActivityColor,
   getActivityIcon,
 } from '../../../shared/utils/helpers/activityHelpers';
-import { displayPrice, getRelativeTime } from '../../../shared/utils/helpers/formatting';
+import {
+  displayPrice,
+  getRelativeTime,
+} from '../../../shared/utils/helpers/formatting';
 import { LineChart } from 'lucide-react';
 
 export interface ActivityTimelineProps {

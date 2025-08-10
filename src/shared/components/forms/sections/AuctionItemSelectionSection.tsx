@@ -11,24 +11,22 @@
  * - Open/Closed: Extensible through props and callbacks
  */
 
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   CheckCircle,
-  Eye,
-  Package,
-  Search,
-  X,
-  Hash,
-  TrendingUp,
-  Grid3X3,
-  Users,
-  Circle,
   ChevronRight,
+  Circle,
+  Eye,
+  Grid3X3,
+  Hash,
+  Package,
+  TrendingUp,
+  Users,
+  X,
 } from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { PokemonSearch } from '../../atoms/design-system/PokemonSearch';
+import { SearchInput } from '../../atoms/design-system/SearchInput';
 import { PokemonButton } from '../../atoms/design-system/PokemonButton';
-import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 
 interface UnifiedCollectionItem {
   id: string;
@@ -103,6 +101,9 @@ const AuctionItemSelectionSection: React.FC<
   // SOLID/DRY: Hierarchical filtering logic
   const filteredItems = useMemo(() => {
     let filtered = items;
+
+    // Filter out items with undefined or null IDs first
+    filtered = filtered.filter((item) => item.id != null && item.id !== '');
 
     // First: Filter by selected set (hierarchical)
     if (selectedSetName) {
@@ -265,15 +266,11 @@ const AuctionItemSelectionSection: React.FC<
             {/* Row 1: Set/SetProduct Search + Item Type Filter */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Option A: Set Search (for Cards) */}
-              <PokemonSearch
+              <SearchInput
                 searchType="sets"
                 placeholder="Search Pokemon Sets (for Cards)..."
-                onSelectionChange={handleSetSelection}
-                hierarchical={false}
-                themeColor="cyan"
+                onSelect={handleSetSelection}
                 className="w-full"
-                label="1A. Select Pokemon Set (for Cards)"
-                helperText="Choose a set to filter cards"
               />
 
               <PokemonSelect
@@ -292,21 +289,17 @@ const AuctionItemSelectionSection: React.FC<
 
             {/* Row 2: SetProduct Search (for Products) */}
             <div className="grid grid-cols-1 gap-4">
-              <PokemonSearch
+              <SearchInput
                 searchType="setProducts"
                 placeholder="OR Search Set Products (for Sealed Products)..."
-                onSelectionChange={handleSetSelection}
-                hierarchical={false}
-                themeColor="purple"
+                onSelect={handleSetSelection}
                 className="w-full"
-                label="1B. Select Set Product (for Sealed Products)"
-                helperText="Choose a set product to filter sealed products"
               />
             </div>
 
             {/* Row 3: Cards/Products Search Box - Secondary Filter */}
             <div className="grid grid-cols-1 gap-4">
-              <PokemonSearch
+              <SearchInput
                 searchType={
                   filterType === 'SealedProduct' ? 'products' : 'cards'
                 }
@@ -315,17 +308,9 @@ const AuctionItemSelectionSection: React.FC<
                     ? `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'} in ${selectedSetName}...`
                     : `Search ${filterType === 'SealedProduct' ? 'products' : 'cards'}...`
                 }
-                onSelectionChange={handleCardProductSelection}
-                parentValue={selectedSetName}
-                hierarchical={true}
-                themeColor="blue"
+                onSelect={handleCardProductSelection}
+                parentId={selectedSetName}
                 className="w-full"
-                label={`2. Search ${filterType === 'SealedProduct' ? 'Products' : 'Cards'}`}
-                helperText={
-                  selectedSetName
-                    ? `Searching ${filterType === 'SealedProduct' ? 'products' : 'cards'} within ${selectedSetName}`
-                    : `Search all ${filterType === 'SealedProduct' ? 'products' : 'cards'} or select a set/setProduct first`
-                }
               />
             </div>
           </div>
@@ -378,12 +363,12 @@ const AuctionItemSelectionSection: React.FC<
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredItems.map((item) => {
+              {filteredItems.map((item, index) => {
                 const isSelected = selectedItemIds.has(item.id);
 
                 return (
                   <div
-                    key={item.id}
+                    key={`${item.id}-${index}`}
                     onClick={() => onToggleSelection(item.id)}
                     className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col h-full hover:scale-102 ${
                       isSelected

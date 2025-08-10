@@ -9,12 +9,7 @@
  * - Reusability: Functions can be used across different ordering contexts
  */
 
-import {
-  CollectionItem,
-  ItemCategory,
-  OrderedCollectionItem,
-  OrderValidationResult,
-} from '../types/ordering';
+import { CollectionItem, ItemCategory, OrderedCollectionItem, OrderValidationResult } from '../types/ordering';
 
 /**
  * Determine the category of a collection item

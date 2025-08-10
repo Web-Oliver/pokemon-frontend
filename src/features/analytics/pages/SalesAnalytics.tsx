@@ -13,8 +13,7 @@
  */
 
 import React, { useState } from 'react';
-import { TrendingUp, DollarSign, Download } from 'lucide-react';
-import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
+import { DollarSign, Download, TrendingUp } from 'lucide-react';
 import { DateRangeState } from '../../../shared/components/molecules/common/DateRangeFilter';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';

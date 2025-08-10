@@ -21,7 +21,15 @@ export {
 export { useDebounce, useDebouncedCallback } from '../../hooks/useDebounce';
 
 // Re-export core utilities from single source of truth
-export { generateId, capitalize, toKebabCase, toCamelCase, safeArrayAccess, deepClone, isEmpty } from '../core';
+export {
+  generateId,
+  capitalize,
+  toKebabCase,
+  toCamelCase,
+  safeArrayAccess,
+  deepClone,
+  isEmpty,
+} from '../core';
 
 // Re-export cn from single source of truth
 export { cn } from '../ui/classNameUtils';
@@ -50,10 +58,7 @@ export {
   SEARCH_CONFIG,
 } from './constants';
 
-export {
-  getStatusColor,
-  getStatusPriority,
-} from './auctionStatusUtils';
+export { getStatusColor, getStatusPriority } from './auctionStatusUtils';
 
 // Core utility functions now imported from ../core/index.ts to prevent circular dependencies
 

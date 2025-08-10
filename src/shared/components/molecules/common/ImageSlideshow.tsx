@@ -15,7 +15,6 @@ interface ImageSlideshowProps {
   themeColor?: ThemeColor;
 }
 
-
 export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
   ({
     images,
@@ -196,31 +195,46 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
           >
             <div className="embla w-full h-full" ref={emblaMainRef}>
               <div className="embla__container flex h-full">
-                {images.map((image, index) => (
+                {images.map((image, index) => {
+                  const imageUrl = getImageUrl(image);
+                  // Debug logging
+                  console.log(`[ImageSlideshow] Image ${index + 1}:`, {
+                    originalPath: image,
+                    resolvedUrl: imageUrl,
+                    isBlob: image.startsWith('blob:'),
+                    isHttp: image.startsWith('http'),
+                  });
+                  
+                  return (
                   <div
                     className="embla__slide flex-[0_0_100%] min-w-0 h-full relative overflow-hidden"
                     key={index}
                   >
                     <div className="w-full h-full">
                       <img
-                        src={getImageUrl(image)}
+                        src={imageUrl}
                         alt={`Item image ${index + 1}`}
                         className="w-full h-full object-cover transition-opacity duration-300"
                         loading={index === 0 ? 'eager' : 'lazy'}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
-                          console.warn(`Failed to load image: ${target.src}`);
+                          console.error(`[ImageSlideshow] Failed to load image ${index + 1}:`, {
+                            originalPath: image,
+                            attemptedUrl: target.src,
+                            error: e
+                          });
                         }}
                         onLoad={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.opacity = '1';
+                          console.log(`[ImageSlideshow] Successfully loaded image ${index + 1}:`, target.src);
                         }}
                         style={{ opacity: 0 }}
                       />
                     </div>
                   </div>
-                ))}
+                )})})
               </div>
             </div>
           </div>

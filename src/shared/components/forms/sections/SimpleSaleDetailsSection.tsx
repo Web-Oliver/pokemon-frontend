@@ -12,16 +12,13 @@ interface SimpleSaleDetailsSectionProps {
   onSoldChange: (sold: boolean) => void;
 }
 
-export const SimpleSaleDetailsSection: React.FC<SimpleSaleDetailsSectionProps> = ({
-  saleDetails,
-  onSaleDetailsChange,
-  sold,
-  onSoldChange,
-}) => {
+export const SimpleSaleDetailsSection: React.FC<
+  SimpleSaleDetailsSectionProps
+> = ({ saleDetails, onSaleDetailsChange, sold, onSoldChange }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-white">Sale Details</h3>
-      
+
       <div>
         <label className="flex items-center space-x-2">
           <input
@@ -44,10 +41,12 @@ export const SimpleSaleDetailsSection: React.FC<SimpleSaleDetailsSectionProps> =
               type="number"
               step="0.01"
               value={saleDetails?.actualSoldPrice || ''}
-              onChange={(e) => onSaleDetailsChange({
-                ...saleDetails,
-                actualSoldPrice: e.target.value
-              })}
+              onChange={(e) =>
+                onSaleDetailsChange({
+                  ...saleDetails,
+                  actualSoldPrice: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               placeholder="0.00"
             />
@@ -59,11 +58,17 @@ export const SimpleSaleDetailsSection: React.FC<SimpleSaleDetailsSectionProps> =
             </label>
             <input
               type="date"
-              value={saleDetails?.dateSold ? new Date(saleDetails.dateSold).toISOString().split('T')[0] : ''}
-              onChange={(e) => onSaleDetailsChange({
-                ...saleDetails,
-                dateSold: e.target.value
-              })}
+              value={
+                saleDetails?.dateSold
+                  ? new Date(saleDetails.dateSold).toISOString().split('T')[0]
+                  : ''
+              }
+              onChange={(e) =>
+                onSaleDetailsChange({
+                  ...saleDetails,
+                  dateSold: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
             />
           </div>
@@ -75,10 +80,12 @@ export const SimpleSaleDetailsSection: React.FC<SimpleSaleDetailsSectionProps> =
             <input
               type="text"
               value={saleDetails?.buyerFullName || ''}
-              onChange={(e) => onSaleDetailsChange({
-                ...saleDetails,
-                buyerFullName: e.target.value
-              })}
+              onChange={(e) =>
+                onSaleDetailsChange({
+                  ...saleDetails,
+                  buyerFullName: e.target.value,
+                })
+              }
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
               placeholder="Enter buyer name"
             />

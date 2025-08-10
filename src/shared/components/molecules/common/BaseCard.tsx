@@ -1,7 +1,7 @@
 /**
  * BaseCard Component - Generic Card Foundation
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Generic card component for reusable card patterns
  * - DRY: Base card implementation to avoid duplication across card variants
@@ -11,36 +11,36 @@
 
 import React from 'react';
 import { cn } from '../../../utils/ui/classNameUtils';
-import { useCentralizedTheme, themeUtils } from '../../../utils/ui/themeConfig';
+import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
 
 export interface BaseCardProps {
   children?: React.ReactNode;
-  
+
   // Core card properties
   variant?: 'glass' | 'solid' | 'outline' | 'gradient' | 'cosmic';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  
+
   // Interactive states
   interactive?: boolean;
   loading?: boolean;
   disabled?: boolean;
-  
+
   // Status and styling
   status?: 'default' | 'active' | 'success' | 'warning' | 'danger';
   elevated?: boolean;
   rounded?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  
+
   // Event handlers
   onClick?: () => void;
   onHover?: () => void;
-  
+
   // Accessibility
   'aria-label'?: string;
   role?: string;
-  
+
   // Custom styling
   className?: string;
-  
+
   // Theme overrides
   disableAnimations?: boolean;
   disableEffects?: boolean;
@@ -69,8 +69,10 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   disableEffects = false,
 }) => {
   const themeConfig = useCentralizedTheme();
-  const shouldDisableAnimations = disableAnimations || themeUtils.shouldDisableAnimations(themeConfig);
-  const shouldShowEffects = !disableEffects && themeUtils.shouldShowParticles(themeConfig);
+  const shouldDisableAnimations =
+    disableAnimations || themeUtils.shouldDisableAnimations(themeConfig);
+  const shouldShowEffects =
+    !disableEffects && themeUtils.shouldShowParticles(themeConfig);
   const isHighContrast = themeUtils.isHighContrast(themeConfig);
 
   // Base card styling - consistent foundation
@@ -81,7 +83,9 @@ export const BaseCard: React.FC<BaseCardProps> = ({
     'group',
     disabled && 'opacity-50 pointer-events-none',
     !shouldDisableAnimations && 'transform-gpu',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // Variant-specific styling
   const variantClasses = {
@@ -91,35 +95,45 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       'border border-white/[0.12]',
       'shadow-[0_8px_32px_0_rgba(31,38,135,0.25)]',
       isHighContrast && 'border-white/30 bg-white/20',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     solid: [
       'bg-zinc-900/95',
       'border border-zinc-700/50',
       'shadow-lg',
       isHighContrast && 'bg-black border-white/50',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     outline: [
       'bg-transparent',
       'border border-zinc-600/40',
       'shadow-sm',
       isHighContrast && 'border-white/60',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     gradient: [
       'bg-gradient-to-br from-cyan-500/15 via-purple-500/10 to-pink-500/15',
       'border border-white/[0.08]',
       'shadow-[0_8px_32px_0_rgba(31,38,135,0.20)]',
       isHighContrast && 'from-cyan-300/30 to-purple-300/30 border-white/20',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     cosmic: [
       'bg-gradient-to-br from-zinc-800/90 via-cyan-900/20 to-purple-900/20',
       'border border-cyan-600/30',
       'shadow-[0_8px_32px_0_rgba(34,211,238,0.25)]',
       isHighContrast && 'border-cyan-300/50',
-    ].filter(Boolean).join(' '),
+    ]
+      .filter(Boolean)
+      .join(' '),
   };
 
   // Size-based spacing and radius
@@ -149,21 +163,29 @@ export const BaseCard: React.FC<BaseCardProps> = ({
   };
 
   // Interactive states
-  const interactiveClasses = (interactive || onClick) && !disabled ? [
-    'cursor-pointer',
-    !shouldDisableAnimations && [
-      'hover:scale-[1.02]',
-      'hover:-translate-y-0.5',
-      'active:scale-[0.98]',
-      'active:translate-y-0',
-    ].filter(Boolean).join(' '),
-    'hover:shadow-xl',
-    'focus-visible:outline-none',
-    'focus-visible:ring-2',
-    'focus-visible:ring-cyan-500/50',
-    'focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-zinc-900',
-  ].filter(Boolean).join(' ') : '';
+  const interactiveClasses =
+    (interactive || onClick) && !disabled
+      ? [
+          'cursor-pointer',
+          !shouldDisableAnimations &&
+            [
+              'hover:scale-[1.02]',
+              'hover:-translate-y-0.5',
+              'active:scale-[0.98]',
+              'active:translate-y-0',
+            ]
+              .filter(Boolean)
+              .join(' '),
+          'hover:shadow-xl',
+          'focus-visible:outline-none',
+          'focus-visible:ring-2',
+          'focus-visible:ring-cyan-500/50',
+          'focus-visible:ring-offset-2',
+          'focus-visible:ring-offset-zinc-900',
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : '';
 
   // Elevation shadow enhancement
   const elevatedClasses = elevated ? 'shadow-2xl hover:shadow-3xl' : '';
@@ -218,9 +240,7 @@ export const BaseCard: React.FC<BaseCardProps> = ({
       )}
 
       {/* Content area */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
 
       {/* Loading overlay */}
       {loading && (

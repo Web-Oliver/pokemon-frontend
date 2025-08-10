@@ -1,0 +1,161 @@
+<testsuites id="" name="" tests="8" failures="4" skipped="0" errors="0" time="18.895919">
+<testsuite name="functional/dashboard.spec.ts" timestamp="2025-08-09T17:35:37.716Z" hostname="chromium-old" tests="8" failures="4" skipped="0" time="49.784" errors="0">
+<testcase name="Dashboard - Complete Functionality › should load dashboard with all stats cards" classname="functional/dashboard.spec.ts" time="6.475">
+<failure message="dashboard.spec.ts:31:7 should load dashboard with all stats cards" type="FAILURE">
+<![CDATA[  [chromium-old] › functional/dashboard.spec.ts:31:7 › Dashboard - Complete Functionality › should load dashboard with all stats cards 
+
+    Error: Timed out 3000ms waiting for expect(locator).toContainText(expected)
+
+    Locator: locator('h1, [role="heading"]')
+    - Expected  - 1
+    + Received  + 2
+
+      Array [
+    +   "PokéCollection",
+    +   "Dashboard",
+        "Command Center",
+    -   "Dashboard",
+      ]
+    Call log:
+      - Expect "toContainText" with timeout 3000ms
+      - waiting for locator('h1, [role="heading"]')
+        6 × locator resolved to 3 elements
+
+
+      31 |   test('should load dashboard with all stats cards', async () => {
+      32 |     // Test header
+    > 33 |     await expect(page.locator('h1, [role="heading"]')).toContainText(['Command Center', 'Dashboard']);
+         |                                                        ^
+      34 |     
+      35 |     // Test stats cards are visible
+      36 |     const statsSelectors = [
+        at /home/oliver/apps/pokemon-collection/pokemon-collection-frontend/migration-tests/e2e/functional/dashboard.spec.ts:33:56
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/old/functional-dashboard-Dashb-ef591-hboard-with-all-stats-cards-chromium-old/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/old/functional-dashboard-Dashb-ef591-hboard-with-all-stats-cards-chromium-old/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-ef591-hboard-with-all-stats-cards-chromium-old/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-ef591-hboard-with-all-stats-cards-chromium-old/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should display stats with actual data or loading states" classname="functional/dashboard.spec.ts" time="6.643">
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should have working quick action buttons" classname="functional/dashboard.spec.ts" time="10.75">
+<failure message="dashboard.spec.ts:72:7 should have working quick action buttons" type="FAILURE">
+<![CDATA[  [chromium-old] › functional/dashboard.spec.ts:72:7 › Dashboard - Complete Functionality › should have working quick action buttons 
+
+    Error: expect(received).toMatch(expected)
+
+    Expected pattern: /collection/
+    Received string:  "http://localhost:5173/dashboard"
+
+      106 |       
+      107 |       const currentUrl = page.url();
+    > 108 |       expect(currentUrl).toMatch(/collection/);
+          |                          ^
+      109 |       
+      110 |       await page.goBack();
+      111 |       await page.waitForLoadState('networkidle');
+        at /home/oliver/apps/pokemon-collection/pokemon-collection-frontend/migration-tests/e2e/functional/dashboard.spec.ts:108:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/old/functional-dashboard-Dashb-86cb0-orking-quick-action-buttons-chromium-old/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/old/functional-dashboard-Dashb-86cb0-orking-quick-action-buttons-chromium-old/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-86cb0-orking-quick-action-buttons-chromium-old/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-86cb0-orking-quick-action-buttons-chromium-old/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should display recent activity section" classname="functional/dashboard.spec.ts" time="3.825">
+<failure message="dashboard.spec.ts:115:7 should display recent activity section" type="FAILURE">
+<![CDATA[  [chromium-old] › functional/dashboard.spec.ts:115:7 › Dashboard - Complete Functionality › should display recent activity section 
+
+    Error: expect(received).toBeTruthy()
+
+    Received: false
+
+      122 |     const hasEmptyState = await page.locator('text="No recent activity", text="no activity", text="empty"').count() > 0;
+      123 |     
+    > 124 |     expect(hasActivityItems || hasEmptyState).toBeTruthy();
+          |                                               ^
+      125 |     
+      126 |     // Test "View All Activity" button
+      127 |     const viewAllButton = page.locator('button:has-text("View All"), a:has-text("Activity")').first();
+        at /home/oliver/apps/pokemon-collection/pokemon-collection-frontend/migration-tests/e2e/functional/dashboard.spec.ts:124:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/old/functional-dashboard-Dashb-82483-lay-recent-activity-section-chromium-old/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/old/functional-dashboard-Dashb-82483-lay-recent-activity-section-chromium-old/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-82483-lay-recent-activity-section-chromium-old/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-82483-lay-recent-activity-section-chromium-old/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should handle API calls for data loading" classname="functional/dashboard.spec.ts" time="6.742">
+<system-out>
+<![CDATA[API calls detected: [
+  [32m'http://localhost:5173/src/shared/api/activityApi.ts'[39m,
+  [32m'http://localhost:5173/src/shared/api/unifiedApiClient.ts'[39m,
+  [32m'http://localhost:5173/src/shared/api/genericApiOperations.ts'[39m,
+  [32m'http://localhost:3000/api/activities/recent?limit=5&_t=1754760946726'[39m,
+  [32m'http://localhost:3000/api/psa-graded-cards?sold=false&_t=1754760946726'[39m
+]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should handle loading states gracefully" classname="functional/dashboard.spec.ts" time="3.25">
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should handle error states" classname="functional/dashboard.spec.ts" time="7.716">
+<failure message="dashboard.spec.ts:191:7 should handle error states" type="FAILURE">
+<![CDATA[  [chromium-old] › functional/dashboard.spec.ts:191:7 › Dashboard - Complete Functionality › should handle error states 
+
+    Error: expect(received).toBeTruthy()
+
+    Received: false
+
+      211 |     
+      212 |     // Should either show errors or fallback gracefully
+    > 213 |     expect(hasError || hasContent).toBeTruthy();
+          |                                    ^
+      214 |   });
+      215 |
+      216 |   test('should be responsive on different screen sizes', async () => {
+        at /home/oliver/apps/pokemon-collection/pokemon-collection-frontend/migration-tests/e2e/functional/dashboard.spec.ts:213:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/old/functional-dashboard-Dashb-a9772--should-handle-error-states-chromium-old/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/old/functional-dashboard-Dashb-a9772--should-handle-error-states-chromium-old/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Dashboard - Complete Functionality › should be responsive on different screen sizes" classname="functional/dashboard.spec.ts" time="4.383">
+</testcase>
+</testsuite>
+</testsuites>

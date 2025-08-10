@@ -11,23 +11,22 @@
 import React, { forwardRef, useEffect } from 'react';
 import { cn } from '../../../utils/ui/classNameUtils';
 import {
+  DefaultValues,
+  FieldValues,
   useForm,
   UseFormReturn,
-  FieldValues,
-  DefaultValues,
 } from 'react-hook-form';
 import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
-import { FormWrapper } from '../common/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
 import { ErrorMessage } from '../../molecules/common/FormElements/ErrorMessage';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import type {
-  VisualTheme,
-  Density,
   AnimationIntensity,
+  Density,
+  VisualTheme,
 } from '../../types/themeTypes';
 
 export interface PokemonFormField {
@@ -198,7 +197,11 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
     // Theme context integration
     // Theme context integration via centralized useTheme hook
     const { config } = useTheme();
-    const { visualTheme, density: contextDensity, animationIntensity: contextAnimationIntensity } = config;
+    const {
+      visualTheme,
+      density: contextDensity,
+      animationIntensity: contextAnimationIntensity,
+    } = config;
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;

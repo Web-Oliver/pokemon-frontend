@@ -67,7 +67,9 @@ export interface ISearchApiService {
 
   // Context management
   updateSearchContext(context: Partial<SearchContext>): void;
+
   clearSearchContext(): void;
+
   getSearchContext(): SearchContext;
 
   // Hierarchical suggestion methods
@@ -75,23 +77,28 @@ export interface ISearchApiService {
     query: string,
     limit?: number
   ): Promise<ISetProduct[]>;
+
   getHierarchicalProductSuggestions(
     query: string,
     config?: HierarchicalSearchConfig,
     limit?: number
   ): Promise<IProduct[]>;
+
   getHierarchicalSetSuggestions(query: string, limit?: number): Promise<ISet[]>;
 
   // Selection handling methods
   handleSetProductSelection(
     setProduct: ISetProduct
   ): Promise<SetProductSelectionResult>;
+
   handleProductSelection(product: IProduct): Promise<ProductSelectionResult>;
+
   handleSetSelection(set: ISet): Promise<SetSelectionResult>;
 
   // State validation
   shouldShowSuggestions(
     fieldType: 'setProduct' | 'product' | 'set' | 'card'
   ): boolean;
+
   validateHierarchicalState(): { isValid: boolean; issues: string[] };
 }

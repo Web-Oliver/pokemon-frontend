@@ -16,16 +16,10 @@
  * - Theme Integration: Full ThemeContext support with CSS custom properties
  */
 
-import React, { useEffect, forwardRef } from 'react';
-import { X, Check, AlertTriangle, Info } from 'lucide-react';
-import { StandardModalProps, ComponentSize } from '../../types/themeTypes';
-import {
-  cn,
-  getGlassmorphismClasses,
-  getAnimationClasses,
-  getA11yClasses,
-} from '../../../utils/helpers/unifiedUtilities';
-import { cardClasses } from '../../../utils/ui/classNameUtils';
+import React, { forwardRef, useEffect } from 'react';
+import { AlertTriangle, Check, Info, X } from 'lucide-react';
+import { ComponentSize, StandardModalProps } from '../../types/themeTypes';
+import { cn, cardClasses } from '../../../utils/ui/classNameUtils';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import { PokemonButton } from './PokemonButton';
 

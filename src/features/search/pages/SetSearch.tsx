@@ -11,24 +11,23 @@ import {
   Package,
   Search,
 } from 'lucide-react';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PokemonInput } from '../../../shared/components/atoms/design-system/PokemonInput';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
-import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Search parameters interface now handled by usePaginatedSearch
 
 const SetSearch: React.FC = () => {
-  const { 
-    items: sets, 
-    pagination, 
-    loading, 
-    error, 
-    searchSets, 
-    setPage, 
-    clearError 
+  const {
+    items: sets,
+    pagination,
+    loading,
+    error,
+    searchSets,
+    setPage,
+    clearError,
   } = usePaginatedSearch();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,19 +36,28 @@ const SetSearch: React.FC = () => {
   const itemsPerPage = 12;
 
   // SRP: Search operation using shared hook - no more duplicate HTTP logic
-  const performSearch = useCallback(async (params: any) => {
-    await searchSets({
-      search: params.search,
-      year: params.year?.toString(),
-      page: params.page || 1,
-      limit: params.limit || itemsPerPage,
-    });
-  }, [searchSets]);
+  const performSearch = useCallback(
+    async (params: any) => {
+      await searchSets({
+        query: params.search || '', // Pass query parameter as expected by API
+        search: params.search,
+        year: params.year?.toString(),
+        page: params.page || 1,
+        limit: params.limit || itemsPerPage,
+      });
+    },
+    [searchSets]
+  );
 
-  // Initial load using shared hook
+  // Initial load using shared hook - FIXED: Remove performSearch dependency to prevent infinite loop
   useEffect(() => {
-    performSearch({ page: 1, limit: itemsPerPage });
-  }, [performSearch]);
+    // Load initial data - empty query will trigger "show all" behavior in backend
+    searchSets({
+      query: '', // Empty query for initial load (backend converts this to '*')
+      page: 1,
+      limit: itemsPerPage,
+    });
+  }, [searchSets]); // Only depend on searchSets
 
   // Handle search input change
   const handleSearchChange = (value: string) => {

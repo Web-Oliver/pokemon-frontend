@@ -21,9 +21,8 @@ export default defineConfig({
           // React vendor chunk
           react: ['react', 'react-dom'],
           // UI vendor chunk
-          ui: ['lucide-react', 'framer-motion'],
-          // Charts vendor chunk
-          charts: ['recharts'],
+          ui: ['lucide-react'],
+          // Note: charts dependencies removed
           // Utility vendor chunk
           utils: ['axios', 'react-hot-toast', 'jszip'],
           // Query vendor chunk

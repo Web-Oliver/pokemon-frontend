@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { Camera, Image, Upload, Sparkles } from 'lucide-react';
+import { Camera, Image, Sparkles, Upload } from 'lucide-react';
 import ImageUploader from '../../../../components/ImageUploader';
 
 interface ImageUploadSectionProps {

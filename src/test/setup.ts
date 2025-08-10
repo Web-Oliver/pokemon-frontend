@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 // Mock window.matchMedia for components that use media queries
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -18,12 +18,15 @@ Object.defineProperty(window, 'matchMedia', {
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
+
   observe() {
     return null;
   }
+
   disconnect() {
     return null;
   }
+
   unobserve() {
     return null;
   }
@@ -32,12 +35,15 @@ global.IntersectionObserver = class IntersectionObserver {
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
   constructor() {}
+
   observe() {
     return null;
   }
+
   disconnect() {
     return null;
   }
+
   unobserve() {
     return null;
   }

@@ -14,7 +14,7 @@ import {
   formatCurrency,
   formatDate,
 } from '../../../../shared/utils/helpers/itemDisplayHelpers';
-import { navigationHelper } from "../../../../shared/utils/navigation";
+import { navigationHelper } from '../../../../shared/utils/navigation';
 
 export interface ItemEssentialDetailsProps {
   item: CollectionItem;

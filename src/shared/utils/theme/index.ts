@@ -21,18 +21,18 @@ export * from '../../../theme/formThemes';
 
 // Re-export ThemePropertyManager as part of centralized utilities
 export { ThemePropertyManager } from './ThemePropertyManager';
-export type { 
-  AnimationConfig, 
-  VisualConfig, 
-  ThemeConfig, 
-  FormTheme 
+export type {
+  AnimationConfig,
+  VisualConfig,
+  ThemeConfig,
+  FormTheme,
 } from './ThemePropertyManager';
 
 // Re-export centralized theme config utilities
-export { 
-  useCentralizedTheme, 
-  themeUtils, 
-  type CentralizedThemeConfig 
+export {
+  useCentralizedTheme,
+  themeUtils,
+  type CentralizedThemeConfig,
 } from '../ui/themeConfig';
 
 // ================================
@@ -49,18 +49,18 @@ export const DEFAULT_THEME_CONFIG = {
   colorScheme: 'system' as const,
   density: 'comfortable' as const,
   animationIntensity: 'normal' as const,
-  
+
   // Color Configuration
   primaryColor: 'dark' as const,
-  
+
   // Accessibility Settings
   highContrast: false,
   reducedMotion: false,
-  
+
   // Advanced Settings
   glassmorphismIntensity: 50, // 0-100
   particleEffectsEnabled: true,
-  
+
   // Performance Settings
   enableAnimations: true,
   enableParticles: true,
@@ -116,7 +116,8 @@ export const THEME_PRESETS = {
       glassmorphismIntensity: 80,
     },
     preview: {
-      gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+      gradient:
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
       backgroundColor: '#1e1e2e',
       textColor: '#f5c2e7',
     },
@@ -212,7 +213,7 @@ export const CSS_CUSTOM_PROPERTIES = {
   THEME_HEADER_BACKGROUND: '--theme-header-background',
   THEME_BORDER_COLOR: '--theme-border-color',
   THEME_FOCUS_RING: '--theme-focus-ring',
-  
+
   // Animation Properties
   ANIMATION_DURATION_FAST: '--animation-duration-fast',
   ANIMATION_DURATION_NORMAL: '--animation-duration-normal',
@@ -222,14 +223,14 @@ export const CSS_CUSTOM_PROPERTIES = {
   ANIMATION_DELAY_LONG: '--animation-delay-long',
   ANIMATION_DURATION_ORBIT: '--animation-duration-orbit',
   ANIMATION_DURATION_PARTICLE: '--animation-duration-particle',
-  
+
   // Density Spacing
   DENSITY_SPACING_XS: '--density-spacing-xs',
   DENSITY_SPACING_SM: '--density-spacing-sm',
   DENSITY_SPACING_MD: '--density-spacing-md',
   DENSITY_SPACING_LG: '--density-spacing-lg',
   DENSITY_SPACING_XL: '--density-spacing-xl',
-  
+
   // Glassmorphism Effects
   GLASS_ALPHA: '--glass-alpha',
   GLASS_BLUR: '--glass-blur',
@@ -245,7 +246,11 @@ export const CSS_CUSTOM_PROPERTIES = {
  * @returns Object with fast, normal, and slow duration values
  */
 export function getAnimationDurations(animationIntensity: string) {
-  return ANIMATION_DURATIONS[animationIntensity as keyof typeof ANIMATION_DURATIONS] || ANIMATION_DURATIONS.normal;
+  return (
+    ANIMATION_DURATIONS[
+      animationIntensity as keyof typeof ANIMATION_DURATIONS
+    ] || ANIMATION_DURATIONS.normal
+  );
 }
 
 /**
@@ -254,7 +259,10 @@ export function getAnimationDurations(animationIntensity: string) {
  * @returns Multiplier value for spacing calculations
  */
 export function getDensityMultiplier(density: string): number {
-  return DENSITY_MULTIPLIERS[density as keyof typeof DENSITY_MULTIPLIERS] || DENSITY_MULTIPLIERS.comfortable;
+  return (
+    DENSITY_MULTIPLIERS[density as keyof typeof DENSITY_MULTIPLIERS] ||
+    DENSITY_MULTIPLIERS.comfortable
+  );
 }
 
 /**
@@ -280,7 +288,10 @@ export function calculateGlassAlpha(intensity: number): number {
  * @param config - Theme configuration object
  * @returns true if animations should be disabled
  */
-export function shouldDisableAnimations(config: { animationIntensity: string; reducedMotion: boolean }): boolean {
+export function shouldDisableAnimations(config: {
+  animationIntensity: string;
+  reducedMotion: boolean;
+}): boolean {
   return config.animationIntensity === 'disabled' || config.reducedMotion;
 }
 
@@ -289,7 +300,10 @@ export function shouldDisableAnimations(config: { animationIntensity: string; re
  * @param config - Theme configuration object
  * @returns true if particles should be displayed
  */
-export function shouldShowParticles(config: { particleEffectsEnabled: boolean; reducedMotion: boolean }): boolean {
+export function shouldShowParticles(config: {
+  particleEffectsEnabled: boolean;
+  reducedMotion: boolean;
+}): boolean {
   return config.particleEffectsEnabled && !config.reducedMotion;
 }
 
@@ -309,10 +323,15 @@ export function getThemePreset(presetId: string) {
  */
 export function validateThemeConfig(config: any): boolean {
   if (!config || typeof config !== 'object') return false;
-  
+
   // Check required properties exist
-  const requiredProps = ['visualTheme', 'colorScheme', 'density', 'animationIntensity'];
-  return requiredProps.every(prop => prop in config);
+  const requiredProps = [
+    'visualTheme',
+    'colorScheme',
+    'density',
+    'animationIntensity',
+  ];
+  return requiredProps.every((prop) => prop in config);
 }
 
 /**
@@ -322,7 +341,7 @@ export function validateThemeConfig(config: any): boolean {
  * @returns Merged configuration object
  */
 export function mergeThemeConfig<T extends Record<string, any>>(
-  userConfig: Partial<T>, 
+  userConfig: Partial<T>,
   defaults: T
 ): T {
   return { ...defaults, ...userConfig };
@@ -361,7 +380,10 @@ export const THEME_STORAGE_KEYS = {
  */
 export function saveThemeConfig(config: any): void {
   try {
-    localStorage.setItem(THEME_STORAGE_KEYS.THEME_CONFIG, JSON.stringify(config));
+    localStorage.setItem(
+      THEME_STORAGE_KEYS.THEME_CONFIG,
+      JSON.stringify(config)
+    );
   } catch (error) {
     console.warn('Failed to save theme configuration:', error);
   }
@@ -386,7 +408,7 @@ export function loadThemeConfig(): any | null {
  */
 export function resetThemeConfig(): void {
   try {
-    Object.values(THEME_STORAGE_KEYS).forEach(key => {
+    Object.values(THEME_STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key);
     });
   } catch (error) {
@@ -408,7 +430,7 @@ export default {
   GLASSMORPHISM_PRESETS,
   CSS_CUSTOM_PROPERTIES,
   THEME_STORAGE_KEYS,
-  
+
   // Utility functions
   getAnimationDurations,
   getDensityMultiplier,

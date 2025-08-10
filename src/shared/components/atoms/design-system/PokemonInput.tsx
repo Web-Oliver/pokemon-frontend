@@ -9,18 +9,17 @@
  */
 
 import React, { forwardRef } from 'react';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn, inputClasses } from '../../../utils/ui/classNameUtils';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from '../../../hooks/theme/useTheme';
-import { inputClasses } from '../../../utils/ui/classNameUtils';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';
 import { Label } from '../../molecules/common/FormElements/Label';
 import { HelperText } from '../../molecules/common/FormElements/HelperText';
 import { FormErrorMessage } from '../../molecules/common/FormElements/FormErrorMessage';
 import type {
-  VisualTheme,
-  Density,
   AnimationIntensity,
+  Density,
+  VisualTheme,
 } from '../../../../types/themeTypes';
 
 export interface PokemonInputProps
@@ -90,7 +89,11 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
     // Theme context integration
     // Theme context integration via centralized useTheme hook
     const { config } = useTheme();
-    const { visualTheme, density: contextDensity, animationIntensity: contextAnimationIntensity } = config;
+    const {
+      visualTheme,
+      density: contextDensity,
+      animationIntensity: contextAnimationIntensity,
+    } = config;
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;

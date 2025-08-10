@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { useCentralizedTheme, themeUtils } from '../../../utils/ui/themeConfig';
+import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
 import {
-  generateCosmicBackground,
   COSMIC_GRADIENTS,
+  generateCosmicBackground,
   ParticleConfig,
 } from '../../../utils/ui/cosmicEffects';
 

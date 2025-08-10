@@ -11,7 +11,7 @@
  * - Pure Functions: No side effects, testable and predictable
  */
 
-import { RouteParams, RouteMatch } from '../types/RouterTypes';
+import { RouteMatch, RouteParams } from '../types/RouterTypes';
 
 /**
  * Parse route path into segments

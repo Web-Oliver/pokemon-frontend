@@ -329,7 +329,11 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
           >
             {isExporting ? (
-              <GenericLoadingState variant="spinner" size="sm" className="mr-2" />
+              <GenericLoadingState
+                variant="spinner"
+                size="sm"
+                className="mr-2"
+              />
             ) : (
               <Download className="w-4 h-4 mr-2" />
             )}

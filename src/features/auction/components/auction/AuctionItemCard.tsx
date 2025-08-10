@@ -4,19 +4,19 @@
  * Extracted from AuctionDetail.tsx to follow SRP principle
  * Handles display of individual auction items with actions
  * Following CLAUDE.md principles: Single Responsibility, reusable UI components
- * 
+ *
  * REFACTORED: Now uses BaseCard for consistent card styling and behavior
  */
 
 import React from 'react';
-import { Trash2, DollarSign, Package, ShoppingBag } from 'lucide-react';
+import { DollarSign, Package, Trash2 } from 'lucide-react';
 import { BaseCard } from '../../../../shared/components/molecules/common/BaseCard';
 import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
 import {
-  getItemDisplayData,
-  getItemCategoryColor,
-  formatItemCategory,
   formatCurrency,
+  formatItemCategory,
+  getItemCategoryColor,
+  getItemDisplayData,
 } from '../../../../shared/utils/helpers/itemDisplayHelpers';
 
 export interface AuctionItemCardProps {
@@ -102,9 +102,7 @@ export const AuctionItemCard: React.FC<AuctionItemCardProps> = ({
           <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
             {displayData.setName && (
               <div className="flex justify-between">
-                <span className="text-[var(--theme-text-secondary)]">
-                  Set:
-                </span>
+                <span className="text-[var(--theme-text-secondary)]">Set:</span>
                 <span className="text-[var(--theme-text-primary)] font-medium truncate ml-2">
                   {displayData.setName}
                 </span>
@@ -145,9 +143,7 @@ export const AuctionItemCard: React.FC<AuctionItemCardProps> = ({
             )}
 
             <div className="flex justify-between col-span-2">
-              <span className="text-[var(--theme-text-secondary)]">
-                Price:
-              </span>
+              <span className="text-[var(--theme-text-secondary)]">Price:</span>
               <span className="text-[var(--theme-accent-primary)] font-semibold text-lg">
                 {formatCurrency(displayData.price)}
               </span>

@@ -13,7 +13,7 @@
  */
 
 import { useCallback } from 'react';
-import { UseFormSetValue, UseFormClearErrors } from 'react-hook-form';
+import { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
 import { transformRequestData } from '../../utils/transformers/responseTransformer';
 
 interface SelectedCardData {
@@ -32,6 +32,7 @@ interface SelectedCardData {
   cardNumber?: string | number;
   baseName?: string;
   variety?: string;
+
   [key: string]: any;
 }
 

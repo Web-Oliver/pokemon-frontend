@@ -1,7 +1,7 @@
 /**
  * Generic Loading State Component - Standardized Loading Patterns
  * Unified component supporting multiple loading variants with theme integration
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Centralized loading state management
  * - Interface Segregation: Multiple variant support
@@ -136,13 +136,13 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
 
   const renderShimmer = () => (
     <div className={`${fullScreen ? containerClasses : ''} ${className}`}>
-      <div className={`relative overflow-hidden ${elementTheme.background} rounded-lg ${width} ${height}`}>
+      <div
+        className={`relative overflow-hidden ${elementTheme.background} rounded-lg ${width} ${height}`}
+      >
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
         {text && (
           <div className="flex items-center justify-center h-full">
-            <p className={`text-zinc-400 ${textSizeClasses[size]}`}>
-              {text}
-            </p>
+            <p className={`text-zinc-400 ${textSizeClasses[size]}`}>{text}</p>
           </div>
         )}
       </div>

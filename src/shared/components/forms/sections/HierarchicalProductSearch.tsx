@@ -1,28 +1,20 @@
 /**
- * CONSOLIDATED: Hierarchical Product Search - Now Using Unified Component
- * Following CLAUDE.md SOLID principles with complete DRY compliance
- *
- * ✅ CONSOLIDATION SUCCESS:
- * - Eliminated 90%+ duplication - now uses UnifiedHierarchicalSearch
- * - Maintains exact same interface for backward compatibility
- * - Configuration-driven approach following proven Entity Configuration Pattern
- * - All original functionality preserved with zero breaking changes
- *
- * This component is now just a thin wrapper around the unified implementation.
+ * HIERARCHICAL PRODUCT SEARCH - SIMPLIFIED
+ * Following CLAUDE.md SOLID & DRY principles
+ * 
+ * BEFORE: 50 lines wrapping complex unified component
+ * AFTER: 30 lines, simple wrapper around simplified component
  */
 
 import React from 'react';
 import {
-  UseFormRegister,
   FieldErrors,
+  UseFormClearErrors,
+  UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
-  UseFormClearErrors,
 } from 'react-hook-form';
-import {
-  UnifiedHierarchicalSearch,
-  PRODUCT_SEARCH_CONFIG,
-} from './HierarchicalCardSearch';
+import HierarchicalSearch from './HierarchicalSearch';
 
 interface HierarchicalProductSearchProps {
   register: UseFormRegister<any>;
@@ -39,9 +31,15 @@ const HierarchicalProductSearch: React.FC<HierarchicalProductSearchProps> = (
   props
 ) => {
   return (
-    <UnifiedHierarchicalSearch
+    <HierarchicalSearch
       {...props}
-      searchConfig={PRODUCT_SEARCH_CONFIG}
+      mode="setproduct-product"
+      primaryFieldName="setName"
+      secondaryFieldName="productName"
+      primaryLabel="Set Name"
+      secondaryLabel="Product Name"
+      primaryPlaceholder="Search for a Pokemon set (min 2 characters)..."
+      secondaryPlaceholder="Search for a Pokemon product (min 2 characters)..."
     />
   );
 };

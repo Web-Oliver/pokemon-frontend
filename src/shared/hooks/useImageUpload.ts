@@ -5,10 +5,11 @@
  */
 
 import { useCallback, useState } from 'react';
-import { getUploadApiService } from '../services/ServiceRegistry';
+
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 import { log } from '../utils/performance/logger';
 import { useAsyncOperation } from './useAsyncOperation';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
 export interface UseImageUploadReturn {
   selectedImages: File[];
@@ -35,7 +36,7 @@ export const useImageUpload = (
   const [remainingExistingImages, setRemainingExistingImages] =
     useState<string[]>(initialImages);
   const { loading, error, execute, clearError } = useAsyncOperation();
-  const uploadApi = getUploadApiService();
+  // TODO: Implement upload functionality when needed
 
   const handleImagesChange = useCallback(
     (files: File[], remainingExistingUrls?: string[]) => {
@@ -61,10 +62,8 @@ export const useImageUpload = (
       }
 
       log(`[IMAGE UPLOAD HOOK] Uploading ${selectedImages.length} images...`);
-      const uploadedUrls = await uploadApi.uploadMultipleImages(selectedImages);
-      log(
-        `[IMAGE UPLOAD HOOK] Successfully uploaded ${uploadedUrls.length} images`
-      );
+      const uploadedUrls = await unifiedApiService.upload.uploadMultipleImages(selectedImages);
+      log(`[IMAGE UPLOAD HOOK] Successfully uploaded ${uploadedUrls.length} images`);
       showSuccessToast(`Uploaded ${uploadedUrls.length} images successfully`);
 
       // Clear selected images after successful upload
@@ -72,7 +71,7 @@ export const useImageUpload = (
 
       return uploadedUrls;
     });
-  }, [selectedImages, execute, uploadApi]);
+  }, [selectedImages, execute]);
 
   const removeExistingImage = useCallback((imageUrl: string) => {
     setRemainingExistingImages((prev) =>

@@ -18,6 +18,11 @@ import React, {
   useState,
 } from 'react';
 import { Activity, AlertTriangle, BarChart3, Clock, Zap } from 'lucide-react';
+import {
+  updateMetricsStore,
+  updateRenderHistory,
+  updateWebVitals,
+} from './profilerUtils';
 
 // Context7: Performance metrics interfaces
 interface ProfilerMetrics {
@@ -61,12 +66,6 @@ interface ReactProfilerProps {
   enableWebVitals?: boolean;
   className?: string;
 }
-
-import {
-  updateMetricsStore,
-  updateRenderHistory,
-  updateWebVitals,
-} from './profilerUtils';
 
 // Context7: Global metrics store for performance aggregation
 const metricsStore = new Map<string, AggregatedMetrics>();

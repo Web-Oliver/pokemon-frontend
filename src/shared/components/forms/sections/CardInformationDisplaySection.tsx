@@ -30,6 +30,7 @@ interface CardInformationDisplaySectionProps {
   className?: string;
   gridClassName?: string;
 }
+
 /**
  * Card Information Display Section
  * Renders read-only Card Number and Variety fields
@@ -65,21 +66,21 @@ const CardInformationDisplaySection: React.FC<
             {...register('cardNumber')}
             error={errors.cardNumber?.message}
             placeholder="e.g., 006, 025, 150"
-            disabled={true}
+            disabled={false}
             value={watch('cardNumber') || ''}
-            className={readOnlyFieldClass}
+            className=""
           />
         </div>
         {/* Variety Field - Full Width */}
-        <div className="md:col-span-2">
+        <div>
           <PokemonInput
             label="Variety"
             {...register('variety')}
             error={errors.variety?.message}
             placeholder="e.g., Holo, Shadowless, 1st Edition"
-            disabled={true}
+            disabled={false}
             value={watch('variety') || ''}
-            className={readOnlyFieldClass}
+            className=""
           />
         </div>
       </div>

@@ -45,7 +45,7 @@ export const ThemeComponents = {
   // Main Components
   ThemePicker,
   ThemeToggle,
-  
+
   // Accessibility Components
   AccessibilityTheme,
   HighContrastTheme,

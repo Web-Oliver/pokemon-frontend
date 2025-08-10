@@ -11,8 +11,8 @@
 import React from 'react';
 import { Package } from 'lucide-react';
 import {
-  PokemonModal,
   PokemonConfirmModal,
+  PokemonModal,
 } from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
@@ -33,7 +33,7 @@ import {
   SealedProductDetailSection,
 } from '../components/collection';
 import { getItemDisplayData } from '../../../shared/utils/helpers/itemDisplayHelpers';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 const CollectionItemDetail: React.FC = () => {
   // Extracted hooks for clean separation of concerns
@@ -156,7 +156,13 @@ const CollectionItemDetail: React.FC = () => {
 
   // Loading state
   if (loading) {
-    return <GenericLoadingState variant="spinner" size="lg" text="Loading item details..." />;
+    return (
+      <GenericLoadingState
+        variant="spinner"
+        size="lg"
+        text="Loading item details..."
+      />
+    );
   }
 
   // Error state

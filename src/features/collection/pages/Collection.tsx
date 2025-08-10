@@ -18,7 +18,23 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useToggle, useSelection } from '../../../shared/hooks';
+import { useToggle } from '../../../shared/hooks';
+import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { CollectionItem } from '../../../components/lists/CollectionItemCard';
+import CollectionStats from '../../../components/lists/CollectionStats';
+import CollectionTabs, {
+  TabType,
+} from '../../../components/lists/CollectionTabs';
+import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
+import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
+import { navigationHelper } from '../../../shared/utils/navigation';
+import { storageWrappers } from '../../../shared/utils/storage';
+
+// Import unified design system
+import {
+  PokemonButton,
+  PokemonModal,
+} from '../../../shared/components/atoms/design-system';
 // Lazy load modal/form components for better performance
 const MarkSoldForm = React.lazy(() =>
   import('../../../shared/components/forms/MarkSoldForm').then((m) => ({
@@ -28,26 +44,10 @@ const MarkSoldForm = React.lazy(() =>
 const CollectionExportModal = React.lazy(
   () => import('../../../components/lists/CollectionExportModal')
 );
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { CollectionItem } from '../../../components/lists/CollectionItemCard';
-import CollectionStats from '../../../components/lists/CollectionStats';
-import CollectionTabs, {
-  TabType,
-} from '../../../components/lists/CollectionTabs';
-import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
-import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
-import { navigationHelper } from "../../../shared/utils/navigation";
-import { storageWrappers } from '../../../shared/utils/storage';
-
-// Import unified design system
-import {
-  PokemonButton,
-  PokemonModal,
-} from '../../../shared/components/atoms/design-system';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('psa-graded');
-  
+
   // Replace repetitive modal useState patterns with useToggle
   const markSoldModal = useToggle(false);
   const exportModal = useToggle(false);
@@ -79,7 +79,9 @@ const Collection: React.FC = () => {
 
   // Additional check for refresh flag when component mounts
   useEffect(() => {
-    const needsRefresh = storageWrappers.session.getItem('collectionNeedsRefresh');
+    const needsRefresh = storageWrappers.session.getItem(
+      'collectionNeedsRefresh'
+    );
     if (needsRefresh === 'true') {
       storageWrappers.session.removeItem('collectionNeedsRefresh');
       // Production: Debug statement removed for security

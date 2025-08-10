@@ -30,7 +30,7 @@ import {
   orderingPersistence,
   storageHelpers,
 } from '../utils/storage';
-import { handleApiError, createError } from '../utils/helpers/errorHandler';
+import { createError, handleApiError } from '../utils/helpers/errorHandler';
 import {
   showSuccessToast,
   showWarningToast,

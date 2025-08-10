@@ -1,24 +1,24 @@
 /**
  * Generic Data Fetching Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Consolidates repetitive useState patterns for loading, error, and data states
  * Replaces patterns like:
  * - const [loading, setLoading] = useState(false)
- * - const [error, setError] = useState<string | null>(null)  
+ * - const [error, setError] = useState<string | null>(null)
  * - const [data, setData] = useState<T[]>([])
- * 
+ *
  * Following CLAUDE.md SOLID principles and DRY pattern consolidation
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { log } from '../../utils/performance/logger';
-import { 
-  handleApiError, 
-  ApplicationError, 
+import {
+  ApplicationError,
+  type ErrorContext,
+  handleApiError,
   handleError,
   safeExecute,
-  type ErrorContext 
 } from '../../utils/helpers/errorHandler';
 
 export interface UseDataFetchOptions<T> {
@@ -36,14 +36,14 @@ export interface UseDataFetchReturn<T> {
   data: T;
   loading: boolean;
   error: ApplicationError | null; // Enhanced error type
-  
+
   // Actions
   execute: (fetcher: () => Promise<T>) => Promise<T | undefined>;
   refetch: () => Promise<T | undefined>;
   reset: () => void;
   clearError: () => void;
   setData: (data: T) => void;
-  
+
   // Status
   hasData: boolean;
   isSuccess: boolean;
@@ -75,10 +75,10 @@ export const useDataFetch = <T>(
   const [error, setError] = useState<ApplicationError | null>(null);
 
   // Store the fetcher for refetch functionality
-  const [currentFetcher, setCurrentFetcher] = useState<(() => Promise<T>) | null>(
-    fetcher || null
-  );
-  
+  const [currentFetcher, setCurrentFetcher] = useState<
+    (() => Promise<T>) | null
+  >(fetcher || null);
+
   // Race condition prevention
   const mountedRef = useRef<boolean>(true);
   const currentFetchRef = useRef<Promise<T> | null>(null);
@@ -93,65 +93,78 @@ export const useDataFetch = <T>(
     setError(null);
   }, [initialData]);
 
-  const execute = useCallback(async (fetcherFn: () => Promise<T>): Promise<T | undefined> => {
-    if (loading) return; // Prevent concurrent fetches
-    
-    setLoading(true);
-    setError(null);
+  const execute = useCallback(
+    async (fetcherFn: () => Promise<T>): Promise<T | undefined> => {
+      if (loading) return; // Prevent concurrent fetches
 
-    log('[USE DATA FETCH] Executing data fetch operation');
-    
-    const fetchPromise = safeExecute(
-      async () => {
-        const result = await fetcherFn();
-        
-        // Optional data validation
-        if (validateData && !validateData(result)) {
-          throw new Error('Data validation failed');
-        }
-        
-        return result;
-      },
-      { ...errorContext, action: 'execute' }
-    );
-    
-    currentFetchRef.current = fetchPromise;
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await fetchPromise;
-      
-      // Only update state if component is still mounted and this is the current fetch
-      if (mountedRef.current && currentFetchRef.current === fetchPromise) {
-        if (result !== undefined) {
-          setData(result);
-          onSuccess?.(result);
-        }
-        setLoading(false);
-      }
+      log('[USE DATA FETCH] Executing data fetch operation');
 
-      log('[USE DATA FETCH] Data fetch completed successfully');
-      return result;
-    } catch (err) {
-      // Only update error state if component is still mounted
-      if (mountedRef.current && currentFetchRef.current === fetchPromise) {
-        const processedError = handleError(err, errorContext);
-        setError(processedError);
-        setLoading(false);
+      const fetchPromise = safeExecute(
+        async () => {
+          const result = await fetcherFn();
 
-        log('[USE DATA FETCH] Data fetch failed', { error: processedError.getDebugInfo() });
+          // Optional data validation
+          if (validateData && !validateData(result)) {
+            throw new Error('Data validation failed');
+          }
 
-        // Enhanced error callback
-        if (onError) {
-          onError(processedError);
+          return result;
+        },
+        { ...errorContext, action: 'execute' }
+      );
+
+      currentFetchRef.current = fetchPromise;
+
+      try {
+        const result = await fetchPromise;
+
+        // Only update state if component is still mounted and this is the current fetch
+        console.log('[USE DATA FETCH] Checking state update:', {
+          mountedRefCurrent: mountedRef.current,
+          fetchPromisesMatch: currentFetchRef.current === fetchPromise,
+          result: !!result
+        });
+        if (mountedRef.current && currentFetchRef.current === fetchPromise) {
+          if (result !== undefined) {
+            console.log('[USE DATA FETCH] Setting data and loading=false');
+            setData(result);
+            onSuccess?.(result);
+          }
+          setLoading(false);
         } else {
-          // Use centralized error handler if no custom handler provided
-          handleApiError(err, 'Data fetch failed');
+          console.log('[USE DATA FETCH] NOT updating state - component unmounted or different fetch');
         }
-      }
 
-      return undefined;
-    }
-  }, [loading, validateData, onSuccess, onError, errorContext]);
+        log('[USE DATA FETCH] Data fetch completed successfully');
+        return result;
+      } catch (err) {
+        // Only update error state if component is still mounted
+        if (mountedRef.current && currentFetchRef.current === fetchPromise) {
+          const processedError = handleError(err, errorContext);
+          setError(processedError);
+          setLoading(false);
+
+          log('[USE DATA FETCH] Data fetch failed', {
+            error: processedError.getDebugInfo(),
+          });
+
+          // Enhanced error callback
+          if (onError) {
+            onError(processedError);
+          } else {
+            // Use centralized error handler if no custom handler provided
+            handleApiError(err, 'Data fetch failed');
+          }
+        }
+
+        return undefined;
+      }
+    },
+    [loading, validateData, onSuccess, onError, errorContext]
+  );
 
   const refetch = useCallback(async (): Promise<T | undefined> => {
     if (!currentFetcher) {
@@ -173,15 +186,15 @@ export const useDataFetch = <T>(
     if (immediate && fetcher) {
       execute(fetcher);
     }
-    
-    return () => {
-      mountedRef.current = false;
-    };
   }, [immediate, fetcher, execute]);
 
   // Handle dependency changes
   useEffect(() => {
-    if (refetchOnDependencyChange && currentFetcher && dependencies.length > 0) {
+    if (
+      refetchOnDependencyChange &&
+      currentFetcher &&
+      dependencies.length > 0
+    ) {
       execute(currentFetcher);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,14 +217,14 @@ export const useDataFetch = <T>(
     data,
     loading,
     error,
-    
+
     // Actions
     execute,
     refetch,
     reset,
     clearError,
     setData,
-    
+
     // Status
     hasData,
     isSuccess,
@@ -248,7 +261,13 @@ export const useArrayDataFetch = <T>(
  * Handles pagination state and append/replace logic
  */
 export const usePaginatedDataFetch = <T>(
-  fetcher?: (offset: number, limit: number) => Promise<{ data: T[]; meta: { hasMore: boolean; total: number; page: number } }>,
+  fetcher?: (
+    offset: number,
+    limit: number
+  ) => Promise<{
+    data: T[];
+    meta: { hasMore: boolean; total: number; page: number };
+  }>,
   limit: number = 50
 ) => {
   const [offset, setOffset] = useState(0);
@@ -257,27 +276,25 @@ export const usePaginatedDataFetch = <T>(
   const [page, setPage] = useState(1);
 
   const paginatedFetcher = useCallback(async () => {
-    if (!fetcher) return { data: [] as T[], meta: { hasMore: false, total: 0, page: 1 } };
+    if (!fetcher)
+      return { data: [] as T[], meta: { hasMore: false, total: 0, page: 1 } };
     return fetcher(offset, limit);
   }, [fetcher, offset, limit]);
 
-  const result = useArrayDataFetch(
-    paginatedFetcher,
-    {
-      onSuccess: (response) => {
-        setHasMore(response.meta.hasMore);
-        setTotal(response.meta.total);
-        setPage(response.meta.page);
-      }
-    }
-  );
+  const result = useArrayDataFetch(paginatedFetcher, {
+    onSuccess: (response) => {
+      setHasMore(response.meta.hasMore);
+      setTotal(response.meta.total);
+      setPage(response.meta.page);
+    },
+  });
 
   const loadMore = useCallback(async () => {
     if (!hasMore || result.loading) return;
-    
+
     const nextOffset = offset + limit;
     setOffset(nextOffset);
-    
+
     // Execute with new offset and append results
     const newData = await result.execute(() => fetcher!(nextOffset, limit));
     if (newData) {
@@ -295,13 +312,13 @@ export const usePaginatedDataFetch = <T>(
 
   return {
     ...result,
-    
+
     // Pagination state
     hasMore,
     total,
     page,
     offset,
-    
+
     // Pagination actions
     loadMore,
     resetPagination,

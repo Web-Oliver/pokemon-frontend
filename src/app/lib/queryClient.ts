@@ -9,7 +9,7 @@
  * - Performance monitoring and cache analytics
  */
 
-import { QueryClient, QueryCache, MutationCache } from '@tanstack/react-query';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { log } from '../../shared/utils/performance/logger';
 
 // Cache time constants for different data types
@@ -195,7 +195,7 @@ export const queryKeys = {
     history: () => ['search', 'history'] as const,
     suggestions: (type: string, query: string) =>
       ['search', 'suggestions', type, query] as const,
-    
+
     // Unified search functions
     unified: (query: string, types?: string[], strategy?: string) =>
       ['search', 'unified', { query, types, strategy }] as const,

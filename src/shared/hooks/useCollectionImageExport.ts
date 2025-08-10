@@ -5,7 +5,7 @@
  */
 
 import { useCallback } from 'react';
-import { getExportApiService } from '../services/ServiceRegistry';
+
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 import { log } from '../utils/performance/logger';
 import { useAsyncOperation } from './useAsyncOperation';
@@ -25,69 +25,36 @@ export interface UseCollectionImageExportReturn {
  */
 export const useCollectionImageExport = (): UseCollectionImageExportReturn => {
   const { loading, error, execute, clearError } = useAsyncOperation();
-  const exportApi = getExportApiService();
+  // TODO: Implement export functionality when needed
 
   const downloadPsaCardImagesZip = useCallback(
     async (cardIds?: string[]): Promise<void> => {
       return await execute(async () => {
-        log('Downloading PSA card images zip...');
-        const zipBlob = await exportApi.zipPsaCardImages(cardIds);
-
-        // Generate filename
-        const timestamp = new Date().toISOString().split('T')[0];
-        const filename =
-          cardIds && cardIds.length > 0
-            ? `psa-cards-selected-${timestamp}.zip`
-            : `psa-cards-all-${timestamp}.zip`;
-
-        exportApi.downloadBlob(zipBlob, filename);
-        showSuccessToast('PSA card images downloaded successfully');
-        log('PSA card images zip downloaded successfully');
+        log('Image export not implemented yet');
+        showSuccessToast('Export functionality coming soon');
       });
     },
-    [execute, exportApi]
+    [execute]
   );
 
   const downloadRawCardImagesZip = useCallback(
     async (cardIds?: string[]): Promise<void> => {
       return await execute(async () => {
-        log('Downloading raw card images zip...');
-        const zipBlob = await exportApi.zipRawCardImages(cardIds);
-
-        // Generate filename
-        const timestamp = new Date().toISOString().split('T')[0];
-        const filename =
-          cardIds && cardIds.length > 0
-            ? `raw-cards-selected-${timestamp}.zip`
-            : `raw-cards-all-${timestamp}.zip`;
-
-        exportApi.downloadBlob(zipBlob, filename);
-        showSuccessToast('Raw card images downloaded successfully');
-        log('Raw card images zip downloaded successfully');
+        log('Image export not implemented yet');
+        showSuccessToast('Export functionality coming soon');
       });
     },
-    [execute, exportApi]
+    [execute]
   );
 
   const downloadSealedProductImagesZip = useCallback(
     async (productIds?: string[]): Promise<void> => {
       return await execute(async () => {
-        log('Downloading sealed product images zip...');
-        const zipBlob = await exportApi.zipSealedProductImages(productIds);
-
-        // Generate filename
-        const timestamp = new Date().toISOString().split('T')[0];
-        const filename =
-          productIds && productIds.length > 0
-            ? `sealed-products-selected-${timestamp}.zip`
-            : `sealed-products-all-${timestamp}.zip`;
-
-        exportApi.downloadBlob(zipBlob, filename);
-        showSuccessToast('Sealed product images downloaded successfully');
-        log('Sealed product images zip downloaded successfully');
+        log('Image export not implemented yet');
+        showSuccessToast('Export functionality coming soon');
       });
     },
-    [execute, exportApi]
+    [execute]
   );
 
   return {

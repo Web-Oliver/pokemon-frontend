@@ -11,12 +11,7 @@
  * - Dependency Inversion: Abstract form contracts for type safety
  */
 
-import {
-  FieldErrors,
-  UseFormSetValue,
-  UseFormClearErrors,
-  UseFormWatch,
-} from 'react-hook-form';
+import { FieldErrors, UseFormClearErrors, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 
 /**
  * Generic Form Field Value Types

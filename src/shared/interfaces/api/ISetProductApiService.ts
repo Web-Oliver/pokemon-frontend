@@ -31,17 +31,21 @@ export interface SetProductFilters {
 export interface ISetProductApiService {
   // Read operations
   getSetProducts(filters?: SetProductFilters): Promise<ISetProduct[]>;
+
   getSetProductById(id: string): Promise<ISetProduct>;
+
   getSetProductByUniqueId(
     uniqueSetProductId: number
   ): Promise<ISetProduct | null>;
 
   // Search operations (for hierarchical autocomplete)
   searchSetProducts(query: string, limit?: number): Promise<ISetProduct[]>;
+
   getSetProductSuggestions(
     query: string,
     limit?: number
   ): Promise<ISetProduct[]>;
+
   getBestMatchSetProduct(query: string): Promise<ISetProduct | null>;
 
   // No write operations - SetProducts are read-only reference data

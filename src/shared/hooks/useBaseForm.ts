@@ -14,14 +14,12 @@ import {
 import { useFormValidation, ValidationRules } from './form/useFormValidation';
 import { useImageUpload } from './useImageUpload';
 import { usePriceHistory } from './usePriceHistory';
-import { 
-  useFormSubmission, 
-  transformFormData, 
+import {
   createFormSubmissionPattern,
-  type FormSubmissionConfig 
+  type FormSubmissionConfig,
+  transformFormData,
+  useFormSubmission,
 } from './useFormSubmission';
-import { useFormLoadingState } from './common/useLoadingState';
-import { sanitizers } from '../utils/validation';
 
 export interface BaseFormConfig<T extends FieldValues> {
   defaultValues?: DefaultValues<T>;
@@ -36,7 +34,7 @@ export interface BaseFormConfig<T extends FieldValues> {
   isEditing?: boolean;
   /** Custom field mapping for initialData */
   fieldMapping?: Record<string, string | ((value: any) => any)>;
-  
+
   // Enhanced form handling options
   /** Enable automatic data transformation (trim, convert types, etc.) */
   enableDataTransformation?: boolean;
@@ -77,7 +75,7 @@ export interface UseBaseFormReturn<T extends FieldValues> {
   resetForm: () => void;
   setFormData: (data: Partial<T>) => void;
   updateWithInitialData: (data: Partial<T>) => void;
-  
+
   // New enhanced features
   /** Transform form data using configured patterns */
   transformData: (data: T) => T;
@@ -87,8 +85,12 @@ export interface UseBaseFormReturn<T extends FieldValues> {
     options?: { validate?: boolean; transform?: boolean }
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   /** Sanitize and validate form data */
-  processFormData: (data: T) => { data: T; isValid: boolean; errors: Record<string, string> };
-  
+  processFormData: (data: T) => {
+    data: T;
+    isValid: boolean;
+    errors: Record<string, string>;
+  };
+
   // Integrated form submission (if enabled)
   formSubmission?: ReturnType<typeof useFormSubmission>;
 }
@@ -121,7 +123,7 @@ export const useBaseForm = <T extends FieldValues>(
   const [formError, setFormError] = useState<Error | undefined>(undefined);
 
   // Get submission pattern configuration
-  const submissionPatternConfig = enableDataTransformation 
+  const submissionPatternConfig = enableDataTransformation
     ? createFormSubmissionPattern<T>(submissionPattern)
     : { sanitizeData: false, validateOnSubmit: false };
 
@@ -239,124 +241,145 @@ export const useBaseForm = <T extends FieldValues>(
   }, [isEditing, initialData]);
 
   // Convenience methods for backward compatibility
-  const setValue = useCallback((name: keyof T, value: any) => {
-    form.setValue(name as any, value);
-  }, [form]);
+  const setValue = useCallback(
+    (name: keyof T, value: any) => {
+      form.setValue(name as any, value);
+    },
+    [form]
+  );
 
-  const setError = useCallback((name: string, error: Error) => {
-    if (name === 'submit') {
-      setFormError(error);
-    } else {
-      form.setError(name as any, { message: error.message });
-    }
-  }, [form]);
+  const setError = useCallback(
+    (name: string, error: Error) => {
+      if (name === 'submit') {
+        setFormError(error);
+      } else {
+        form.setError(name as any, { message: error.message });
+      }
+    },
+    [form]
+  );
 
   // Enhanced data transformation
-  const transformData = useCallback((data: T): T => {
-    if (!enableDataTransformation) {
-      return data;
-    }
+  const transformData = useCallback(
+    (data: T): T => {
+      if (!enableDataTransformation) {
+        return data;
+      }
 
-    // Apply pattern-based transformation
-    if (submissionPatternConfig.transformData) {
-      const transformed = submissionPatternConfig.transformData(data);
-      return { ...data, ...transformed };
-    }
+      // Apply pattern-based transformation
+      if (submissionPatternConfig.transformData) {
+        const transformed = submissionPatternConfig.transformData(data);
+        return { ...data, ...transformed };
+      }
 
-    // Apply custom transformation
-    if (customTransform) {
-      const transformed = customTransform(data);
-      return { ...data, ...transformed };
-    }
+      // Apply custom transformation
+      if (customTransform) {
+        const transformed = customTransform(data);
+        return { ...data, ...transformed };
+      }
 
-    // Default transformation
-    return transformFormData(data, {
-      trimStrings: true,
-      convertNumbers: false, // Keep as strings for form handling
-      convertDates: false,   // Keep as strings for form handling
-      removeEmpty: false,
-    });
-  }, [enableDataTransformation, submissionPatternConfig, customTransform]);
+      // Default transformation
+      return transformFormData(data, {
+        trimStrings: true,
+        convertNumbers: false, // Keep as strings for form handling
+        convertDates: false, // Keep as strings for form handling
+        removeEmpty: false,
+      });
+    },
+    [enableDataTransformation, submissionPatternConfig, customTransform]
+  );
 
   // Process form data with validation
-  const processFormData = useCallback((data: T) => {
-    const transformedData = transformData(data);
-    
-    if (!validationRules || Object.keys(validationRules).length === 0) {
-      return { data: transformedData, isValid: true, errors: {} };
-    }
+  const processFormData = useCallback(
+    (data: T) => {
+      const transformedData = transformData(data);
 
-    const errors: Record<string, string> = {};
-    let isValid = true;
-
-    // Validate each field
-    Object.entries(validationRules).forEach(([fieldName, rule]) => {
-      const fieldValue = transformedData[fieldName as keyof T];
-      const error = validateField(fieldName, fieldValue);
-      
-      if (error) {
-        errors[fieldName] = error;
-        isValid = false;
+      if (!validationRules || Object.keys(validationRules).length === 0) {
+        return { data: transformedData, isValid: true, errors: {} };
       }
-    });
 
-    return { data: transformedData, isValid, errors };
-  }, [transformData, validationRules, validateField]);
+      const errors: Record<string, string> = {};
+      let isValid = true;
+
+      // Validate each field
+      Object.entries(validationRules).forEach(([fieldName, rule]) => {
+        const fieldValue = transformedData[fieldName as keyof T];
+        const error = validateField(fieldName, fieldValue);
+
+        if (error) {
+          errors[fieldName] = error;
+          isValid = false;
+        }
+      });
+
+      return { data: transformedData, isValid, errors };
+    },
+    [transformData, validationRules, validateField]
+  );
 
   // Unified form submission handler
-  const handleUnifiedSubmit = useCallback((
-    onSubmit: (data: T) => Promise<void>,
-    options: { validate?: boolean; transform?: boolean } = {}
-  ) => {
-    const { validate = true, transform = true } = options;
+  const handleUnifiedSubmit = useCallback(
+    (
+      onSubmit: (data: T) => Promise<void>,
+      options: { validate?: boolean; transform?: boolean } = {}
+    ) => {
+      const { validate = true, transform = true } = options;
 
-    return form.handleSubmit(async (data: T) => {
-      setIsSubmitting(true);
-      setFormError(undefined);
+      return form.handleSubmit(async (data: T) => {
+        setIsSubmitting(true);
+        setFormError(undefined);
 
-      try {
-        // Process data if requested
-        const processedData = transform ? processFormData(data) : { data, isValid: true, errors: {} };
-        
-        // Validate if requested
-        if (validate && !processedData.isValid) {
-          // Set form errors
-          Object.entries(processedData.errors).forEach(([field, error]) => {
-            form.setError(field as any, { message: error });
-          });
-          
-          throw new Error('Form validation failed');
+        try {
+          // Process data if requested
+          const processedData = transform
+            ? processFormData(data)
+            : { data, isValid: true, errors: {} };
+
+          // Validate if requested
+          if (validate && !processedData.isValid) {
+            // Set form errors
+            Object.entries(processedData.errors).forEach(([field, error]) => {
+              form.setError(field as any, { message: error });
+            });
+
+            throw new Error('Form validation failed');
+          }
+
+          // Execute submission
+          await onSubmit(processedData.data);
+        } catch (error) {
+          const formError =
+            error instanceof Error
+              ? error
+              : new Error('Form submission failed');
+          setFormError(formError);
+          throw formError;
+        } finally {
+          setIsSubmitting(false);
         }
-
-        // Execute submission
-        await onSubmit(processedData.data);
-      } catch (error) {
-        const formError = error instanceof Error ? error : new Error('Form submission failed');
-        setFormError(formError);
-        throw formError;
-      } finally {
-        setIsSubmitting(false);
-      }
-    });
-  }, [form, processFormData, setIsSubmitting]);
+      });
+    },
+    [form, processFormData, setIsSubmitting]
+  );
 
   // Initialize integrated form submission if enabled
-  const formSubmission = enableSubmissionIntegration && submissionConfig
-    ? useFormSubmission({
-        ...submissionConfig,
-        isEditing,
-        initialData,
-        imageUpload,
-        priceHistory,
-        validationRules,
-        ...submissionPatternConfig,
-      } as FormSubmissionConfig<T>)
-    : undefined;
+  const formSubmission =
+    enableSubmissionIntegration && submissionConfig
+      ? useFormSubmission({
+          ...submissionConfig,
+          isEditing,
+          initialData,
+          imageUpload,
+          priceHistory,
+          validationRules,
+          ...submissionPatternConfig,
+        } as FormSubmissionConfig<T>)
+      : undefined;
 
   return {
     form,
     isSubmitting,
-    
+
     // Convenience accessors
     values: values as T,
     setValue,
@@ -372,7 +395,7 @@ export const useBaseForm = <T extends FieldValues>(
     resetForm,
     setFormData,
     updateWithInitialData,
-    
+
     // Enhanced features
     transformData,
     handleUnifiedSubmit,

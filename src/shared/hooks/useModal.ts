@@ -14,7 +14,7 @@
  * - Provides modal operations to Layer 3 components
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // ===============================
 // CORE TYPES & INTERFACES
@@ -85,16 +85,16 @@ export interface UnifiedModalReturn<T = any> {
   // Basic modal state
   isOpen: boolean;
   data?: T;
-  
+
   // Basic modal actions
   openModal: (data?: T) => void;
   closeModal: () => void;
   toggleModal: () => void;
-  
+
   // Confirmation workflow (when enabled)
   confirmAction?: (callback: () => void | Promise<void>) => void;
   isConfirming?: boolean;
-  
+
   // Loading state (when enabled)
   isLoading?: boolean;
   setLoading?: (loading: boolean) => void;
@@ -123,7 +123,7 @@ export const useUnifiedModal = <T = any>(
 
   // Confirmation state
   const [isConfirming, setIsConfirming] = useState(false);
-  
+
   // Loading state
   const [isLoading, setIsLoading] = useState(false);
 
@@ -180,18 +180,18 @@ export const useUnifiedModal = <T = any>(
     // Basic modal state
     isOpen: modalState.isOpen,
     data: modalState.data,
-    
+
     // Basic modal actions
     openModal,
     closeModal,
     toggleModal,
-    
+
     // Conditional features
     ...(enableConfirmation && {
       confirmAction,
       isConfirming,
     }),
-    
+
     ...(enableLoading && {
       isLoading,
       setLoading: setLoadingState,
@@ -258,7 +258,7 @@ export const useMultiModal = (modalKeys: string[]): MultiModalReturn => {
 /** Basic modal with no additional features */
 export const useModal = (initialOpen = false): BasicModalReturn => {
   const modal = useUnifiedModal({ initialOpen });
-  
+
   return {
     isOpen: modal.isOpen,
     openModal: () => modal.openModal(),
@@ -273,7 +273,7 @@ export const useDataModal = <T = any>(
   initialData?: T
 ): DataModalReturn<T> => {
   const modal = useUnifiedModal<T>({ initialOpen, initialData });
-  
+
   return {
     isOpen: modal.isOpen,
     data: modal.data,
@@ -290,7 +290,7 @@ export const useConfirmModal = (initialOpen = false): ConfirmModalReturn => {
     enableConfirmation: true,
     autoCloseOnConfirm: true,
   });
-  
+
   return {
     isOpen: modal.isOpen,
     openModal: () => modal.openModal(),
@@ -314,7 +314,7 @@ export const useConfirmationModal = () => {
       onConfirm: (data: ConfirmationModalData) => Promise<void>
     ) => {
       if (!modal.data) return;
-      
+
       try {
         modal.setLoading?.(true);
         await onConfirm(data);
@@ -369,7 +369,7 @@ export const useAddItemModal = () => {
 /** @deprecated Use useUnifiedModal or useModal */
 export const useModalManager = <T = any>(initialState = false) => {
   const modal = useUnifiedModal<T>({ initialOpen: initialState });
-  
+
   return {
     open: modal.openModal,
     close: modal.closeModal,

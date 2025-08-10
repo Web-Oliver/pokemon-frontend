@@ -14,18 +14,13 @@ interface SimpleGradingPricingSectionProps {
   error?: string;
 }
 
-export const SimpleGradingPricingSection: React.FC<SimpleGradingPricingSectionProps> = ({
-  grade,
-  onGradeChange,
-  price,
-  onPriceChange,
-  priceLabel,
-  error,
-}) => {
+export const SimpleGradingPricingSection: React.FC<
+  SimpleGradingPricingSectionProps
+> = ({ grade, onGradeChange, price, onPriceChange, priceLabel, error }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-white">Grading & Pricing</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* PSA Grade */}
         <div>
@@ -67,9 +62,7 @@ export const SimpleGradingPricingSection: React.FC<SimpleGradingPricingSectionPr
         </div>
       </div>
 
-      {error && (
-        <div className="text-red-400 text-sm">{error}</div>
-      )}
+      {error && <div className="text-red-400 text-sm">{error}</div>}
     </div>
   );
 };

@@ -23,22 +23,17 @@
 
 import React, {
   createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
   ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 
 // Import consolidated types
-import {
-  VisualTheme,
-  ThemePreset,
-  ColorScheme,
-  ThemeConfiguration,
-} from '../../types/themeTypes';
+import { ColorScheme, ThemePreset, VisualTheme } from '../../types/themeTypes';
 import { ThemeColor } from '../../theme/formThemes';
 
 // ===============================

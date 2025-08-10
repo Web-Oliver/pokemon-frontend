@@ -6,7 +6,7 @@
  * Handles: high contrast, reduced motion, and a11y-related theme aspects
  */
 
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
 
 // ================================
 // ACCESSIBILITY THEME INTERFACES

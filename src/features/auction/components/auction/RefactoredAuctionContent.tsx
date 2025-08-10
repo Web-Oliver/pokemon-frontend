@@ -21,8 +21,8 @@
  */
 
 import React from 'react';
-import { X, DollarSign, Download, Facebook, FileText } from 'lucide-react';
-import { UnifiedHeader, SectionContainer } from '../common';
+import { DollarSign, Download, Facebook, FileText, X } from 'lucide-react';
+import { SectionContainer, UnifiedHeader } from '../common';
 import { Context7Background } from '../effects';
 import { PokemonButton } from '../design-system';
 

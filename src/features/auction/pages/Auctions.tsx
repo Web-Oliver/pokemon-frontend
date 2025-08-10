@@ -14,16 +14,15 @@
  */
 
 import {
-  ArrowLeft,
+  Award,
   Calendar,
+  Clock,
   DollarSign,
   Filter,
   Package,
   Plus,
   X,
   Zap,
-  Award,
-  Clock,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
@@ -35,14 +34,14 @@ import {
   getStatusPriority,
 } from '../../../shared/utils/helpers/auctionStatusUtils';
 import { formatDateWithTime } from '../../../shared/utils/helpers/formatting';
-import { navigationHelper } from "../../../shared/utils/navigation";
+import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Import unified design system
 import {
-  PokemonCard,
   PokemonButton,
-  PokemonSelect,
+  PokemonCard,
   PokemonPageContainer,
+  PokemonSelect,
 } from '../../../shared/components/atoms/design-system';
 
 const Auctions: React.FC = () => {
@@ -382,7 +381,10 @@ const Auctions: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse"></div>
 
                 <div className="relative z-10">
-                  <GenericLoadingState variant="spinner" text="Loading auctions..." />
+                  <GenericLoadingState
+                    variant="spinner"
+                    text="Loading auctions..."
+                  />
                 </div>
               </div>
             </div>

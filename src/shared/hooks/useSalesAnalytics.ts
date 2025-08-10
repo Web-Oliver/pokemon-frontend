@@ -69,49 +69,51 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
 
   // REFACTORED: Use useDataFetch to replace repetitive useState patterns
   // Eliminates: const [loading, setLoading], const [error, setError], and data states
-  const salesDataFetch = useDataFetch<SalesAnalyticsData>(
-    undefined,
-    {
-      initialData: {
-        sales: [],
-        summary: null,
-        graphData: []
-      },
-      onError: (error) => log('Error in sales analytics:', error)
-    }
-  );
+  const salesDataFetch = useDataFetch<SalesAnalyticsData>(undefined, {
+    initialData: {
+      sales: [],
+      summary: null,
+      graphData: [],
+    },
+    onError: (error) => log('Error in sales analytics:', error),
+  });
 
   /**
    * Fetch sales data from multiple endpoints
    * REFACTORED: Using useDataFetch.execute() - eliminates manual loading/error state management
    */
-  const fetchSalesData = useCallback(async (params?: DateRange) => {
-    await salesDataFetch.execute(async (): Promise<SalesAnalyticsData> => {
-      log('Fetching sales analytics data', params);
+  const fetchSalesData = useCallback(
+    async (params?: DateRange) => {
+      await salesDataFetch.execute(async (): Promise<SalesAnalyticsData> => {
+        log('Fetching sales analytics data', params);
 
-      // Fetch all sales analytics data in parallel
-      const [salesData, summaryData, graphDataRaw] = await Promise.all([
-        getSalesData(params).catch(() => []),
-        getSalesSummary(params).catch(() => null),
-        getSalesGraphData(params).catch(() => []),
-      ]);
+        // Fetch all sales analytics data in parallel
+        const [salesData, summaryData, graphDataRaw] = await Promise.all([
+          getSalesData(params).catch(() => []),
+          getSalesSummary(params).catch(() => null),
+          getSalesGraphData(params).catch(() => []),
+        ]);
 
-      // Process the data
-      const processedData: SalesAnalyticsData = {
-        sales: Array.isArray(salesData) ? salesData : [],
-        summary: summaryData,
-        graphData: processGraphData(Array.isArray(graphDataRaw) ? graphDataRaw : [])
-      };
+        // Process the data
+        const processedData: SalesAnalyticsData = {
+          sales: Array.isArray(salesData) ? salesData : [],
+          summary: summaryData,
+          graphData: processGraphData(
+            Array.isArray(graphDataRaw) ? graphDataRaw : []
+          ),
+        };
 
-      log('Sales analytics data loaded successfully', {
-        salesCount: processedData.sales.length,
-        summaryData: processedData.summary,
-        graphDataCount: processedData.graphData.length,
+        log('Sales analytics data loaded successfully', {
+          salesCount: processedData.sales.length,
+          summaryData: processedData.summary,
+          graphDataCount: processedData.graphData.length,
+        });
+
+        return processedData;
       });
-
-      return processedData;
-    });
-  }, [salesDataFetch]);
+    },
+    [salesDataFetch]
+  );
 
   /**
    * Refresh all data using current date range
@@ -128,7 +130,9 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   const exportSalesCSV = useCallback(() => {
     try {
       // Get sales data from the consolidated data fetch hook
-      const safeSales = Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : [];
+      const safeSales = Array.isArray(salesDataFetch.data?.sales)
+        ? salesDataFetch.data.sales
+        : [];
 
       // Prepare data with computed values for CSV export
       const exportData = safeSales.map((sale) => ({
@@ -183,12 +187,16 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
   }, [fetchSalesData]);
 
   // REFACTORED: Computed values using salesDataFetch.data instead of separate state variables
-  const kpis = calculateKPIs(Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : []);
+  const kpis = calculateKPIs(
+    Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : []
+  );
   const categoryBreakdown = aggregateByCategory(
     Array.isArray(salesDataFetch.data?.sales) ? salesDataFetch.data.sales : []
   );
   const trendAnalysis = calculateTrendAnalysis(
-    Array.isArray(salesDataFetch.data?.graphData) ? salesDataFetch.data.graphData : []
+    Array.isArray(salesDataFetch.data?.graphData)
+      ? salesDataFetch.data.graphData
+      : []
   );
 
   return {

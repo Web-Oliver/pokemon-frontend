@@ -32,6 +32,7 @@ interface BaseFormData {
   name?: string;
   category?: string;
   availability?: boolean;
+
   [key: string]: any;
 }
 

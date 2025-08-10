@@ -18,6 +18,18 @@ import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
+import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
+import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
+import { log } from '../../../shared/utils/performance/logger';
+import { storageWrappers } from '../../../shared/utils/storage';
+import { navigationHelper } from '../../../shared/utils/navigation';
+import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
+import {
+  CollectionItem,
+  CollectionItemService,
+  ItemType,
+} from '../services/CollectionItemService';
+import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 // Lazy load form components for better bundle splitting
 const AddEditCardForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditCardForm')
@@ -25,14 +37,6 @@ const AddEditCardForm = React.lazy(
 const AddEditSealedProductForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditSealedProductForm')
 );
-import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
-import { log } from '../../../shared/utils/performance/logger';
-import { storageWrappers } from '../../../shared/utils/storage';
-import { navigationHelper } from "../../../shared/utils/navigation";
-import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
-import { CollectionItemService, CollectionItem, ItemType } from '../services/CollectionItemService';
-import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 
 type ItemTypeOption = 'psa-graded' | 'raw-card' | 'sealed-product' | null;
 
@@ -48,7 +52,9 @@ const AddEditItem: React.FC = () => {
   const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
   const themeConfig = useCentralizedTheme();
-  const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(null);
+  const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(
+    null
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [itemData, setItemData] = useState<CollectionItem | null>(null);
   const [fetchLoading, setFetchLoading] = useState(false);
@@ -77,7 +83,10 @@ const AddEditItem: React.FC = () => {
     setFetchError(null);
 
     try {
-      const { item, itemType } = await CollectionItemService.fetchItemForEdit(urlType, id);
+      const { item, itemType } = await CollectionItemService.fetchItemForEdit(
+        urlType,
+        id
+      );
       setItemData(item);
       setSelectedItemType(itemType);
       log('Item fetched successfully for editing');
@@ -161,7 +170,12 @@ const AddEditItem: React.FC = () => {
       case 'psa-graded':
         return (
           <Suspense
-            fallback={<GenericLoadingState variant="spinner" text="Loading PSA Card Form..." />}
+            fallback={
+              <GenericLoadingState
+                variant="spinner"
+                text="Loading PSA Card Form..."
+              />
+            }
           >
             <AddEditCardForm
               cardType="psa-graded"
@@ -175,7 +189,12 @@ const AddEditItem: React.FC = () => {
       case 'raw-card':
         return (
           <Suspense
-            fallback={<GenericLoadingState variant="spinner" text="Loading Raw Card Form..." />}
+            fallback={
+              <GenericLoadingState
+                variant="spinner"
+                text="Loading Raw Card Form..."
+              />
+            }
           >
             <AddEditCardForm
               cardType="raw-card"
@@ -189,7 +208,12 @@ const AddEditItem: React.FC = () => {
       case 'sealed-product':
         return (
           <Suspense
-            fallback={<GenericLoadingState variant="spinner" text="Loading Sealed Product Form..." />}
+            fallback={
+              <GenericLoadingState
+                variant="spinner"
+                text="Loading Sealed Product Form..."
+              />
+            }
           >
             <AddEditSealedProductForm
               onCancel={handleFormCancel}

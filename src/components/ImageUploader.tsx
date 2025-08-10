@@ -26,10 +26,10 @@ import { FormErrorMessage } from '../shared/components/molecules/common/FormElem
 import { useDragAndDrop } from '../shared/hooks/useDragAndDrop';
 import { useImageRemoval } from '../shared/hooks/useImageRemoval';
 import {
-  createExistingImagePreview,
-  processImageFiles,
   cleanupObjectURL,
+  createExistingImagePreview,
   type ImagePreview,
+  processImageFiles,
 } from '../shared/utils/ui/imageUtils';
 import { cn } from '../shared/utils/ui/classNameUtils';
 
@@ -63,40 +63,54 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Simple aspect ratio analysis state (replaced missing hook)
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const analyzeExistingImages = useCallback(async (imageUrls: string[]): Promise<Array<{index: number; aspectInfo: any}>> => {
-    if (!enableAspectRatioDetection || !imageUrls?.length) {
-      return [];
-    }
-    
-    setIsAnalyzing(true);
-    try {
-      const results = await Promise.all(
-        imageUrls.map(async (url, index) => {
-          return new Promise<{index: number; aspectInfo: any}>((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-              const aspectRatio = img.width / img.height;
-              let aspectInfo = 'square';
-              if (aspectRatio > 1.2) aspectInfo = 'landscape';
-              else if (aspectRatio < 0.8) aspectInfo = 'portrait';
-              
-              resolve({ index, aspectInfo });
-            };
-            img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
-            img.src = url;
-          });
-        })
-      );
-      setIsAnalyzing(false);
-      return results;
-    } catch (error) {
-      setIsAnalyzing(false);
-      return [];
-    }
-  }, [enableAspectRatioDetection]);
+  const analyzeExistingImages = useCallback(
+    async (
+      imageUrls: string[]
+    ): Promise<
+      Array<{
+        index: number;
+        aspectInfo: any;
+      }>
+    > => {
+      if (!enableAspectRatioDetection || !imageUrls?.length) {
+        return [];
+      }
+
+      setIsAnalyzing(true);
+      try {
+        const results = await Promise.all(
+          imageUrls.map(async (url, index) => {
+            return new Promise<{ index: number; aspectInfo: any }>(
+              (resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                  const aspectRatio = img.width / img.height;
+                  let aspectInfo = 'square';
+                  if (aspectRatio > 1.2) aspectInfo = 'landscape';
+                  else if (aspectRatio < 0.8) aspectInfo = 'portrait';
+
+                  resolve({ index, aspectInfo });
+                };
+                img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
+                img.src = url;
+              }
+            );
+          })
+        );
+        setIsAnalyzing(false);
+        return results;
+      } catch (error) {
+        setIsAnalyzing(false);
+        return [];
+      }
+    },
+    [enableAspectRatioDetection]
+  );
 
   const analyzeNewImages = useCallback(
-    async (images: any[]): Promise<Array<{index: number; aspectInfo: any}>> => {
+    async (
+      images: any[]
+    ): Promise<Array<{ index: number; aspectInfo: any }>> => {
       if (!enableAspectRatioDetection || !images.length) {
         return [];
       }
@@ -105,19 +119,21 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       try {
         const results = await Promise.all(
           images.map(async (imageFile, index) => {
-            return new Promise<{index: number; aspectInfo: any}>((resolve) => {
-              const img = new Image();
-              img.onload = () => {
-                const aspectRatio = img.width / img.height;
-                let aspectInfo = 'square';
-                if (aspectRatio > 1.2) aspectInfo = 'landscape';
-                else if (aspectRatio < 0.8) aspectInfo = 'portrait';
-                
-                resolve({ index, aspectInfo });
-              };
-              img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
-              img.src = URL.createObjectURL(imageFile);
-            });
+            return new Promise<{ index: number; aspectInfo: any }>(
+              (resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                  const aspectRatio = img.width / img.height;
+                  let aspectInfo = 'square';
+                  if (aspectRatio > 1.2) aspectInfo = 'landscape';
+                  else if (aspectRatio < 0.8) aspectInfo = 'portrait';
+
+                  resolve({ index, aspectInfo });
+                };
+                img.onerror = () => resolve({ index, aspectInfo: 'unknown' });
+                img.src = URL.createObjectURL(imageFile);
+              }
+            );
           })
         );
         setIsAnalyzing(false);
@@ -365,7 +381,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       </div>
 
       {/* Error display */}
-      <FormErrorMessage error={error} variant="toast" dismissible onDismiss={() => setError(null)} />
+      <FormErrorMessage
+        error={error}
+        variant="toast"
+        dismissible
+        onDismiss={() => setError(null)}
+      />
 
       {/* Image previews grid */}
       {previews.length > 0 && (

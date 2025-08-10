@@ -60,22 +60,22 @@ export interface ItemEditData {
 export const ItemTypeMapping = {
   // URL type to internal type
   urlToInternal: {
-    'psa': 'psa-graded',
-    'raw': 'raw-card', 
-    'sealed': 'sealed-product',
+    psa: 'psa-graded',
+    raw: 'raw-card',
+    sealed: 'sealed-product',
   } as const,
-  
+
   // Internal type to URL type
   internalToUrl: {
     'psa-graded': 'psa',
     'raw-card': 'raw',
     'sealed-product': 'sealed',
   } as const,
-  
+
   // Internal type to display type
   internalToDisplay: {
     'psa-graded': 'PsaGradedCard',
-    'raw-card': 'RawCard', 
+    'raw-card': 'RawCard',
     'sealed-product': 'SealedProduct',
   } as const,
 } as const;
@@ -83,7 +83,9 @@ export const ItemTypeMapping = {
 /**
  * Type guards for collection item display types
  */
-export function isUnifiedCollectionItem(item: any): item is UnifiedCollectionItem {
+export function isUnifiedCollectionItem(
+  item: any
+): item is UnifiedCollectionItem {
   return (
     item &&
     typeof item.id === 'string' &&
@@ -97,20 +99,26 @@ export function isUnifiedCollectionItem(item: any): item is UnifiedCollectionIte
 /**
  * Helper function to convert URL type to internal type
  */
-export function urlTypeToInternalType(urlType: CollectionItemUrlType): CollectionItemType {
+export function urlTypeToInternalType(
+  urlType: CollectionItemUrlType
+): CollectionItemType {
   return ItemTypeMapping.urlToInternal[urlType];
 }
 
 /**
- * Helper function to convert internal type to URL type  
+ * Helper function to convert internal type to URL type
  */
-export function internalTypeToUrlType(internalType: CollectionItemType): CollectionItemUrlType {
+export function internalTypeToUrlType(
+  internalType: CollectionItemType
+): CollectionItemUrlType {
   return ItemTypeMapping.internalToUrl[internalType];
 }
 
 /**
  * Helper function to convert internal type to display type
  */
-export function internalTypeToDisplayType(internalType: CollectionItemType): string {
+export function internalTypeToDisplayType(
+  internalType: CollectionItemType
+): string {
   return ItemTypeMapping.internalToDisplay[internalType];
 }

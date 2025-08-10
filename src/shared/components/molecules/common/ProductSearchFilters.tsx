@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { Search, Filter, Package } from 'lucide-react';
+import { Filter, Package, Search } from 'lucide-react';
 import { ProductCategory } from '../../../domain/models/product';
 import { ISetProduct } from '../../../domain/models/setProduct';
 

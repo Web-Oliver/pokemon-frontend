@@ -119,6 +119,7 @@ export interface OptimizationConfig {
  */
 export interface EnhancedRequestConfig extends ApiRequestConfig {
   optimization?: OptimizationConfig;
+  skipTransform?: boolean; // Skip response transformation for raw API access
 }
 
 // BatchRequestConfig removed - not used by any frontend components
@@ -159,6 +160,7 @@ class DefaultOptimizationStrategy implements OptimizationStrategy {
 export class UnifiedApiClient {
   private client: AxiosInstance;
   private optimizationStrategy: OptimizationStrategy;
+
   // batchProcessors removed - not used by any frontend components
 
   constructor(
@@ -598,7 +600,10 @@ export class UnifiedApiClient {
 
         // Log request for debugging (in development)
         if (import.meta.env.MODE === 'development') {
-          log(`[HTTP ${config.method?.toUpperCase()}] ${config.url}`, config.params || config.data);
+          log(
+            `[HTTP ${config.method?.toUpperCase()}] ${config.url}`,
+            config.params || config.data
+          );
         }
 
         return config;
@@ -640,14 +645,18 @@ export class UnifiedApiClient {
         // Retry logic for transient errors
         if (this.shouldRetry(error) && config) {
           config.__retryCount = config.__retryCount || 0;
-          
+
           if (config.__retryCount < HTTP_CONFIG.RETRY_ATTEMPTS) {
             config.__retryCount++;
-            log(`[HTTP Retry] Attempt ${config.__retryCount}/${HTTP_CONFIG.RETRY_ATTEMPTS} for ${config.url}`);
-            
+            log(
+              `[HTTP Retry] Attempt ${config.__retryCount}/${HTTP_CONFIG.RETRY_ATTEMPTS} for ${config.url}`
+            );
+
             // Wait before retrying
-            await new Promise(resolve => setTimeout(resolve, HTTP_CONFIG.RETRY_DELAY * config.__retryCount));
-            
+            await new Promise((resolve) =>
+              setTimeout(resolve, HTTP_CONFIG.RETRY_DELAY * config.__retryCount)
+            );
+
             // Retry the request
             return instance(config);
           }
@@ -679,7 +688,11 @@ export class UnifiedApiClient {
     }
 
     // Retry for network errors
-    if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND' || error.code === 'ECONNRESET') {
+    if (
+      error.code === 'ECONNABORTED' ||
+      error.code === 'ENOTFOUND' ||
+      error.code === 'ECONNRESET'
+    ) {
       return true;
     }
 
@@ -710,6 +723,7 @@ export class UnifiedApiClient {
       logRequest = true,
       logResponse = true,
       optimization = {},
+      skipTransform = false,
     } = config;
 
     try {
@@ -729,6 +743,12 @@ export class UnifiedApiClient {
 
       if (successMessage) {
         log(successMessage);
+      }
+
+      // CRITICAL FIX: Allow skipping transformation for raw API access
+      if (skipTransform) {
+        console.log('[HTTP CLIENT] Skipping transformation, returning raw response.data');
+        return response.data as T;
       }
 
       // Use simplified response transformer for new API format only

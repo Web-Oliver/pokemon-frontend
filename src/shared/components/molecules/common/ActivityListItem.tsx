@@ -154,7 +154,7 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({
           <p className="text-sm text-gray-200 leading-relaxed mb-3 group-hover:text-white transition-colors duration-300">
             {activity.description}
           </p>
-          
+
           {/* Details with subtle accent */}
           {activity.details && (
             <p className="text-xs text-gray-300 font-medium group-hover:text-gray-200 transition-colors duration-300 italic mb-4">

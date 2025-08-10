@@ -7,13 +7,13 @@
  * - Reusability: Can be used by other components needing price management
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { CollectionItem } from './useCollectionItem';
-import { getCollectionApiService } from '../../services/ServiceRegistry';
+
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from "../../utils/navigation";
+import { navigationHelper } from '../../utils/navigation';
 
 export interface UsePriceManagementReturn {
   newPrice: string;
@@ -73,7 +73,7 @@ export const usePriceManagement = (
           { price, dateUpdated: date },
         ];
 
-        const collectionApi = getCollectionApiService();
+        const collectionApi = unifiedApiService.collection;
         let updatedItem: CollectionItem;
 
         // Update item based on type - backend will automatically sync myPrice to latest price

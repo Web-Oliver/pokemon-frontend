@@ -15,16 +15,15 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { ISaleDetails } from "../../types/common";
+import { ISaleDetails } from '../../types/common';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../utils/performance/logger';
 import { useAsyncOperation } from '../useAsyncOperation';
 import {
-  ResourceOperations,
-  ResourceConfig,
   createResourceOperations,
-  OperationOptions,
   GenericParams,
+  OperationOptions,
+  ResourceConfig,
 } from '../../api/genericApiOperations';
 
 // ============================================================================
@@ -50,13 +49,24 @@ export interface GenericCrudOperationsReturn<T> {
   loading: boolean;
   error: string | null;
   add: (data: Partial<T>, options?: OperationOptions) => Promise<T>;
-  update: (id: string, data: Partial<T>, options?: OperationOptions) => Promise<T>;
+  update: (
+    id: string,
+    data: Partial<T>,
+    options?: OperationOptions
+  ) => Promise<T>;
   delete: (id: string, options?: OperationOptions) => Promise<void>;
-  markSold: (id: string, saleDetails: ISaleDetails, options?: OperationOptions) => Promise<T>;
+  markSold: (
+    id: string,
+    saleDetails: ISaleDetails,
+    options?: OperationOptions
+  ) => Promise<T>;
   search: (params: GenericParams, options?: OperationOptions) => Promise<T[]>;
   getAll: (params?: GenericParams, options?: OperationOptions) => Promise<T[]>;
   getById: (id: string, options?: OperationOptions) => Promise<T>;
-  export?: (params?: GenericParams, options?: OperationOptions) => Promise<Blob>;
+  export?: (
+    params?: GenericParams,
+    options?: OperationOptions
+  ) => Promise<Blob>;
   clearError: () => void;
 }
 
@@ -67,11 +77,11 @@ export interface GenericCrudOperationsReturn<T> {
 export interface EnhancedCrudConfig {
   // Direct ResourceConfig for automatic operation generation
   resourceConfig?: ResourceConfig;
-  
+
   // Specialized operation flags (from createResourceOperations)
   includeSoldOperations?: boolean;
   includeExportOperations?: boolean;
-  
+
   // Custom API operations (legacy support)
   apiOperations?: CrudApiOperations<any>;
 }
@@ -183,13 +193,19 @@ export const useEnhancedGenericCrudOperations = <T>(
       });
     }
     return null;
-  }, [config.resourceConfig, config.includeSoldOperations, config.includeExportOperations]);
+  }, [
+    config.resourceConfig,
+    config.includeSoldOperations,
+    config.includeExportOperations,
+  ]);
 
   // Use ResourceOperations or fallback to custom API operations
   const apiOperations = resourceOperations || config.apiOperations;
 
   if (!apiOperations) {
-    throw new Error('useEnhancedGenericCrudOperations: Either resourceConfig or apiOperations must be provided');
+    throw new Error(
+      'useEnhancedGenericCrudOperations: Either resourceConfig or apiOperations must be provided'
+    );
   }
 
   const add = useCallback(
@@ -206,7 +222,11 @@ export const useEnhancedGenericCrudOperations = <T>(
   );
 
   const update = useCallback(
-    async (id: string, data: Partial<T>, options?: OperationOptions): Promise<T> => {
+    async (
+      id: string,
+      data: Partial<T>,
+      options?: OperationOptions
+    ): Promise<T> => {
       return await execute(async () => {
         log(`Updating ${messages.entityName.toLowerCase()} ${id}...`);
         const updatedItem = await apiOperations.update(id, data, options);
@@ -231,10 +251,16 @@ export const useEnhancedGenericCrudOperations = <T>(
   );
 
   const markSold = useCallback(
-    async (id: string, saleDetails: ISaleDetails, options?: OperationOptions): Promise<T> => {
+    async (
+      id: string,
+      saleDetails: ISaleDetails,
+      options?: OperationOptions
+    ): Promise<T> => {
       return await execute(async () => {
         if (!apiOperations.markSold) {
-          throw new Error(`markSold operation not available for ${messages.entityName}`);
+          throw new Error(
+            `markSold operation not available for ${messages.entityName}`
+          );
         }
         log(`Marking ${messages.entityName.toLowerCase()} ${id} as sold...`);
         const soldItem = await apiOperations.markSold(id, saleDetails, options);
@@ -259,11 +285,16 @@ export const useEnhancedGenericCrudOperations = <T>(
   );
 
   const getAll = useCallback(
-    async (params?: GenericParams, options?: OperationOptions): Promise<T[]> => {
+    async (
+      params?: GenericParams,
+      options?: OperationOptions
+    ): Promise<T[]> => {
       return await execute(async () => {
         log(`Fetching all ${messages.entityName.toLowerCase()}s...`);
         const items = await apiOperations.getAll(params, options);
-        log(`Fetched ${Array.isArray(items) ? items.length : 0} ${messages.entityName.toLowerCase()}s`);
+        log(
+          `Fetched ${Array.isArray(items) ? items.length : 0} ${messages.entityName.toLowerCase()}s`
+        );
         return items;
       });
     },
@@ -286,8 +317,11 @@ export const useEnhancedGenericCrudOperations = <T>(
     if (!apiOperations.export) {
       return undefined;
     }
-    
-    return async (params?: GenericParams, options?: OperationOptions): Promise<Blob> => {
+
+    return async (
+      params?: GenericParams,
+      options?: OperationOptions
+    ): Promise<Blob> => {
       return await execute(async () => {
         log(`Exporting ${messages.entityName.toLowerCase()}s...`);
         const blob = await apiOperations.export!(params, options);
@@ -370,7 +404,8 @@ export const createPsaCardConfig = (collectionApi: any): EntityConfig<any> => {
       create: (data: any) => collectionApi.createPsaCard(data),
       update: (id: string, data: any) => collectionApi.updatePsaCard(id, data),
       delete: (id: string) => collectionApi.deletePsaCard(id),
-      markSold: (id: string, saleDetails: any) => collectionApi.markPsaCardSold(id, saleDetails),
+      markSold: (id: string, saleDetails: any) =>
+        collectionApi.markPsaCardSold(id, saleDetails),
     },
     entityName: 'PSA Graded Card',
     messages: {
@@ -392,7 +427,8 @@ export const createRawCardConfig = (collectionApi: any): EntityConfig<any> => {
       create: (data: any) => collectionApi.createRawCard(data),
       update: (id: string, data: any) => collectionApi.updateRawCard(id, data),
       delete: (id: string) => collectionApi.deleteRawCard(id),
-      markSold: (id: string, saleDetails: any) => collectionApi.markRawCardSold(id, saleDetails),
+      markSold: (id: string, saleDetails: any) =>
+        collectionApi.markRawCardSold(id, saleDetails),
     },
     entityName: 'Raw Card',
     messages: {
@@ -408,13 +444,17 @@ export const createRawCardConfig = (collectionApi: any): EntityConfig<any> => {
  * Factory function for Sealed Product operations configuration
  * Provides maximum flexibility for Sealed product CRUD operations
  */
-export const createSealedProductConfig = (collectionApi: any): EntityConfig<any> => {
+export const createSealedProductConfig = (
+  collectionApi: any
+): EntityConfig<any> => {
   return {
     apiMethods: {
       create: (data: any) => collectionApi.createSealedProduct(data),
-      update: (id: string, data: any) => collectionApi.updateSealedProduct(id, data),
+      update: (id: string, data: any) =>
+        collectionApi.updateSealedProduct(id, data),
       delete: (id: string) => collectionApi.deleteSealedProduct(id),
-      markSold: (id: string, saleDetails: any) => collectionApi.markSealedProductSold(id, saleDetails),
+      markSold: (id: string, saleDetails: any) =>
+        collectionApi.markSealedProductSold(id, saleDetails),
     },
     entityName: 'Sealed Product',
     messages: {
@@ -565,14 +605,16 @@ export class CrudConfigBuilder<T> {
    */
   buildHook(): GenericCrudOperationsReturn<T> {
     const { config, messages } = this.build();
-    
+
     if (config.resourceConfig) {
       return useEnhancedGenericCrudOperations<T>(config, messages);
     } else if (config.apiOperations) {
       return useGenericCrudOperations<T>(config.apiOperations, messages);
     }
-    
-    throw new Error('CrudConfigBuilder: Either resourceConfig or apiOperations must be provided');
+
+    throw new Error(
+      'CrudConfigBuilder: Either resourceConfig or apiOperations must be provided'
+    );
   }
 }
 
@@ -600,8 +642,8 @@ export const createCollectionConfig = <T>(
   return createCrudConfig<T>()
     .withEntityName(entityName)
     .withApiOperations(apiOperations)
-    .withSoldOperations(true)  // Collection items support being sold
-    .withExportOperations(true)  // Collection items support export
+    .withSoldOperations(true) // Collection items support being sold
+    .withExportOperations(true) // Collection items support export
     .withMessages(customMessages || {})
     .build();
 };
@@ -618,8 +660,8 @@ export const createStandardConfig = <T>(
   return createCrudConfig<T>()
     .withEntityName(entityName)
     .withApiOperations(apiOperations)
-    .withSoldOperations(false)  // Standard entities typically don't support being sold
-    .withExportOperations(false)  // Standard entities typically don't support export
+    .withSoldOperations(false) // Standard entities typically don't support being sold
+    .withExportOperations(false) // Standard entities typically don't support export
     .withMessages(customMessages || {})
     .build();
 };

@@ -30,14 +30,16 @@
  * - CSS custom properties for dynamic styling
  */
 
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import {
+  AnimationIntensity,
   ComponentSize,
-  ComponentVariant,
   ComponentState,
+  ComponentVariant,
+  Density,
+  VisualTheme,
 } from '../types/themeTypes';
-import { VisualTheme, Density, AnimationIntensity } from '../types/themeTypes';
 
 // ===============================
 // CORE CLASSNAME UTILITY - SINGLE SOURCE OF TRUTH
@@ -65,7 +67,7 @@ export function cn(...inputs: ClassValue[]): string {
 export function cva(
   condition: boolean,
   trueClasses: string,
-  falseClasses: string = ''
+  falseClasses: string = '',
 ): string {
   return condition ? trueClasses : falseClasses;
 }
@@ -78,7 +80,7 @@ export function cvn(conditions: Record<string, boolean>): string {
   return cn(
     Object.entries(conditions)
       .filter(([, condition]) => condition)
-      .map(([className]) => className)
+      .map(([className]) => className),
   );
 }
 
@@ -125,7 +127,7 @@ export function responsive(config: {
  */
 export function stateClasses(
   state: ComponentState,
-  variants: Partial<Record<ComponentState, string>>
+  variants: Partial<Record<ComponentState, string>>,
 ): string {
   return variants[state] || '';
 }
@@ -137,7 +139,7 @@ export function stateClasses(
 export function sizeClasses(
   size: ComponentSize,
   type: 'padding' | 'text' | 'spacing' | 'border' | 'custom' = 'padding',
-  customSizes?: Partial<Record<ComponentSize, string>>
+  customSizes?: Partial<Record<ComponentSize, string>>,
 ): string {
   if (type === 'custom' && customSizes) {
     return customSizes[size] || '';
@@ -184,7 +186,7 @@ export function sizeClasses(
 export function variantClasses(
   variant: ComponentVariant,
   variants: Partial<Record<ComponentVariant, string>>,
-  fallback: string = ''
+  fallback: string = '',
 ): string {
   return variants[variant] || fallback;
 }
@@ -233,7 +235,7 @@ export function themeAware(config: {
  */
 export function glassmorphism(
   intensity: number = 80,
-  variant: 'primary' | 'secondary' | 'accent' = 'primary'
+  variant: 'primary' | 'secondary' | 'accent' = 'primary',
 ): string {
   const baseClasses = 'backdrop-blur-theme border';
 
@@ -256,7 +258,7 @@ export function glassmorphism(
  */
 export function animationClasses(
   intensity: AnimationIntensity,
-  type: 'hover' | 'focus' | 'active' | 'entrance' = 'hover'
+  type: 'hover' | 'focus' | 'active' | 'entrance' = 'hover',
 ): string {
   if (intensity === 'disabled') {
     return '';
@@ -293,7 +295,7 @@ export function animationClasses(
 export function colorSchemeClasses(
   lightClasses: string,
   darkClasses: string,
-  resolved?: 'light' | 'dark'
+  resolved?: 'light' | 'dark',
 ): string {
   if (resolved) {
     return resolved === 'light' ? lightClasses : darkClasses;
@@ -312,7 +314,7 @@ export function colorSchemeClasses(
  */
 export function focusRing(
   variant: ComponentVariant = 'primary',
-  intensity: 'light' | 'normal' | 'heavy' = 'normal'
+  intensity: 'light' | 'normal' | 'heavy' = 'normal',
 ): string {
   const baseClasses = 'focus-visible:outline-none focus-visible:ring-offset-2';
 
@@ -344,7 +346,7 @@ export function focusRing(
  */
 export function hoverEffect(
   type: 'lift' | 'scale' | 'glow' | 'rotate' | 'slide' = 'scale',
-  intensity: AnimationIntensity = 'normal'
+  intensity: AnimationIntensity = 'normal',
 ): string {
   if (intensity === 'disabled') {
     return '';
@@ -385,7 +387,7 @@ export function hoverEffect(
  */
 export function loadingClasses(
   isLoading: boolean,
-  type: 'spinner' | 'pulse' | 'shimmer' = 'pulse'
+  type: 'spinner' | 'pulse' | 'shimmer' = 'pulse',
 ): string {
   if (!isLoading) {
     return '';
@@ -413,7 +415,7 @@ export function disabledClasses(isDisabled: boolean): string {
     'opacity-50',
     'cursor-not-allowed',
     'pointer-events-none',
-    'select-none'
+    'select-none',
   );
 }
 
@@ -430,7 +432,7 @@ export function errorClasses(hasError: boolean): string {
     'border-red-500',
     'bg-red-500/5',
     'text-red-500',
-    'focus:ring-red-500/50'
+    'focus:ring-red-500/50',
   );
 }
 
@@ -494,7 +496,7 @@ export function buttonClasses(config: {
     // State classes
     cva(fullWidth, 'w-full'),
     loadingClasses(loading),
-    disabledClasses(disabled || loading)
+    disabledClasses(disabled || loading),
   );
 }
 
@@ -536,7 +538,7 @@ export function inputClasses(config: {
     // State classes
     cva(fullWidth, 'w-full'),
     errorClasses(hasError),
-    disabledClasses(disabled)
+    disabledClasses(disabled),
   );
 }
 
@@ -580,9 +582,9 @@ export function cardClasses(config: {
       cn(
         'cursor-pointer',
         hoverEffect('scale', animationIntensity),
-        focusRing(variant)
-      )
-    )
+        focusRing(variant),
+      ),
+    ),
   );
 }
 

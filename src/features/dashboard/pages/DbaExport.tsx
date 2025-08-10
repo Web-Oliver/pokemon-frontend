@@ -10,15 +10,16 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { Archive, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
+import { AlertTriangle, Archive, CheckSquare, Clock } from 'lucide-react';
 import ErrorBoundary from '../../../shared/components/organisms/ui/ErrorBoundary';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { useDbaExport } from '../../../shared/hooks/useDbaExport';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
 
 // CONSOLIDATED: Direct import instead of lazy to debug the issue
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
+// Using unified EmptyState component
+import EmptyState from '../../../shared/components/molecules/common/EmptyState';
 
 // Dynamic imports for heavy DBA components (code splitting optimization)
 const DbaCosmicBackground = lazy(
@@ -58,8 +59,6 @@ const DbaItemsWithoutTimers = lazy(
       /* webpackChunkName: "dba-heavy" */ '../components/dba/DbaItemsWithoutTimers'
     )
 );
-// Using unified EmptyState component
-import EmptyState from '../../../shared/components/molecules/common/EmptyState';
 
 const DbaExport: React.FC = () => {
   // Production: Debug statement removed for security
@@ -154,7 +153,7 @@ const DbaExport: React.FC = () => {
 
   try {
     // Production: Debug statement removed for security
-    
+
     return (
       <PageLayout loading={loading} error={error} variant="default">
         <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
@@ -162,7 +161,13 @@ const DbaExport: React.FC = () => {
         </Suspense>
 
         {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
-        <ErrorBoundary fallback={<div className="p-4 bg-yellow-100 text-yellow-800">UnifiedHeader failed to load</div>}>
+        <ErrorBoundary
+          fallback={
+            <div className="p-4 bg-yellow-100 text-yellow-800">
+              UnifiedHeader failed to load
+            </div>
+          }
+        >
           <UnifiedHeader
             title="DBA Export"
             subtitle="Export your collection items to DBA.dk"
@@ -174,59 +179,59 @@ const DbaExport: React.FC = () => {
           />
         </ErrorBoundary>
 
-      {/* Content wrapper with original cosmic background styling */}
-      <div className="relative z-10 p-8">
-        <div className="max-w-7xl mx-auto space-y-12">
-          {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
-          <DbaExportConfiguration
-            selectedItems={selectedItems}
-            customDescription={customDescription}
-            setCustomDescription={setCustomDescription}
-            updateItemCustomization={updateItemCustomization}
-            generateTitle={generateDefaultTitle}
-            generateDescription={generateDefaultDescription}
-            exportCollectionData={handleExportToDba}
-            downloadZip={downloadZip}
-            isExporting={isExporting}
-            exportResult={exportResult}
-          />
-
-          <DbaExportSuccess exportResult={exportResult} />
-
-          {/* Item Selection - Split into 2 sections */}
-          <div className="space-y-8">
-            {/* Section 1: Items with DBA Timers (Previously Selected) */}
-            <DbaItemsWithTimers
-              psaCards={psaCards}
-              rawCards={rawCards}
-              sealedProducts={sealedProducts}
-              getDbaInfo={getDbaInfo}
-              renderItemCard={renderItemCard}
+        {/* Content wrapper with original cosmic background styling */}
+        <div className="relative z-10 p-8">
+          <div className="max-w-7xl mx-auto space-y-12">
+            {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
+            <DbaExportConfiguration
+              selectedItems={selectedItems}
+              customDescription={customDescription}
+              setCustomDescription={setCustomDescription}
+              updateItemCustomization={updateItemCustomization}
+              generateTitle={generateDefaultTitle}
+              generateDescription={generateDefaultDescription}
+              exportCollectionData={handleExportToDba}
+              downloadZip={downloadZip}
+              isExporting={isExporting}
+              exportResult={exportResult}
             />
 
-            {/* Section 2: Items without DBA Timers (Available for Selection) */}
-            <DbaItemsWithoutTimers
-              psaCards={psaCards}
-              rawCards={rawCards}
-              sealedProducts={sealedProducts}
-              getDbaInfo={getDbaInfo}
-              renderItemCard={renderItemCard}
+            <DbaExportSuccess exportResult={exportResult} />
+
+            {/* Item Selection - Split into 2 sections */}
+            <div className="space-y-8">
+              {/* Section 1: Items with DBA Timers (Previously Selected) */}
+              <DbaItemsWithTimers
+                psaCards={psaCards}
+                rawCards={rawCards}
+                sealedProducts={sealedProducts}
+                getDbaInfo={getDbaInfo}
+                renderItemCard={renderItemCard}
+              />
+
+              {/* Section 2: Items without DBA Timers (Available for Selection) */}
+              <DbaItemsWithoutTimers
+                psaCards={psaCards}
+                rawCards={rawCards}
+                sealedProducts={sealedProducts}
+                getDbaInfo={getDbaInfo}
+                renderItemCard={renderItemCard}
+              />
+            </div>
+
+            {/* 🌌 COSMIC EMPTY STATE */}
+            <EmptyState
+              variant="cosmic"
+              size="xl"
+              title="No Items Found"
+              psaCardsLength={psaCards.length}
+              rawCardsLength={rawCards.length}
+              sealedProductsLength={sealedProducts.length}
             />
           </div>
-
-          {/* 🌌 COSMIC EMPTY STATE */}
-          <EmptyState
-            variant="cosmic"
-            size="xl"
-            title="No Items Found"
-            psaCardsLength={psaCards.length}
-            rawCardsLength={rawCards.length}
-            sealedProductsLength={sealedProducts.length}
-          />
         </div>
-      </div>
-    </PageLayout>
-  );
+      </PageLayout>
+    );
   } catch (error) {
     // Production: Debug statement removed for security
     return (

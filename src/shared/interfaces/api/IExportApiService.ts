@@ -59,9 +59,13 @@ export interface ExportResult {
  */
 export interface IImageExportApiService {
   exportImages(request: ExportRequest): Promise<ExportResult>;
+
   zipPsaCardImages(cardIds?: string[]): Promise<Blob>;
+
   zipRawCardImages(cardIds?: string[]): Promise<Blob>;
+
   zipSealedProductImages(productIds?: string[]): Promise<Blob>;
+
   downloadBlob(blob: Blob, filename: string): void;
 }
 
@@ -71,6 +75,7 @@ export interface IImageExportApiService {
  */
 export interface IDataExportApiService {
   exportData(request: ExportRequest): Promise<ExportResult>;
+
   getCollectionFacebookTextFile(itemIds?: string[]): Promise<Blob>;
 }
 

@@ -26,7 +26,9 @@ interface SimpleHierarchicalCardSearchProps {
   disabled?: boolean;
 }
 
-export const SimpleHierarchicalCardSearch: React.FC<SimpleHierarchicalCardSearchProps> = ({
+export const SimpleHierarchicalCardSearch: React.FC<
+  SimpleHierarchicalCardSearchProps
+> = ({
   selectedCard,
   onCardSelect,
   searchQuery,
@@ -47,7 +49,7 @@ export const SimpleHierarchicalCardSearch: React.FC<SimpleHierarchicalCardSearch
             </span>
           </div>
         </div>
-        
+
         {selectedCard && (
           <div className="bg-zinc-800/50 backdrop-blur-sm border border-zinc-600/50 rounded-xl p-4">
             <h4 className="text-white font-semibold mb-2">Selected Card</h4>
@@ -76,23 +78,27 @@ export const SimpleHierarchicalCardSearch: React.FC<SimpleHierarchicalCardSearch
           disabled={isLoading}
         />
       </div>
-      
+
       {isLoading && (
         <div className="text-center py-4">
           <div className="text-white/70">Searching...</div>
         </div>
       )}
-      
+
       {selectedCard && (
         <div className="bg-zinc-800/50 backdrop-blur-sm border border-zinc-600/50 rounded-xl p-4">
           <div className="flex justify-between items-start">
             <div>
-              <h4 className="text-white font-semibold">{selectedCard.cardName}</h4>
+              <h4 className="text-white font-semibold">
+                {selectedCard.cardName}
+              </h4>
               {selectedCard.setName && (
                 <p className="text-zinc-400 text-sm">{selectedCard.setName}</p>
               )}
               {selectedCard.cardNumber && (
-                <p className="text-zinc-400 text-sm">#{selectedCard.cardNumber}</p>
+                <p className="text-zinc-400 text-sm">
+                  #{selectedCard.cardNumber}
+                </p>
               )}
             </div>
             <button

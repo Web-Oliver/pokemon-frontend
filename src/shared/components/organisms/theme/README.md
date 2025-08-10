@@ -1,18 +1,21 @@
 # Consolidated Theme UI Components
 
-This directory contains all theme-related UI components for the Pokemon Collection frontend. All theme management UI has been consolidated here to follow CLAUDE.md principles of Single Responsibility and DRY.
+This directory contains all theme-related UI components for the Pokemon Collection frontend. All theme management UI has
+been consolidated here to follow CLAUDE.md principles of Single Responsibility and DRY.
 
 ## Components Included
 
 ### Main Theme Components
 
 #### `ThemePicker.tsx`
+
 - Complete visual theme selection interface
 - Interactive theme switching with live preview
 - Responsive grid layout with theme preview cards
 - Theme-aware styling and animations
 
 #### `ThemeToggle.tsx` (moved from ui directory)
+
 - Stunning modern theme toggle component
 - Light/dark/system mode switching
 - Beautiful animated transitions
@@ -21,24 +24,29 @@ This directory contains all theme-related UI components for the Pokemon Collecti
 ### Accessibility Theme Components
 
 #### `AccessibilityTheme.tsx`
+
 - High contrast theme support
 - Reduced motion theme settings
 - Focus management controls
 - Comprehensive accessibility controls
 
 #### `HighContrastTheme.tsx`
+
 - High contrast mode implementation
 - WCAG compliant color schemes
 
 #### `ReducedMotionTheme.tsx`
+
 - Reduced motion support
 - Animation intensity controls
 
 #### `FocusManagementTheme.tsx`
+
 - Focus ring management
 - Keyboard navigation support
 
 #### `AccessibilityControls.tsx`
+
 - Accessibility settings panel
 - Toggle controls for accessibility features
 

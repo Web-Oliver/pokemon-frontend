@@ -22,25 +22,25 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Gavel, ArrowLeft } from 'lucide-react';
+import { Gavel } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { IAuctionItem } from '../../../shared/domain/models/auction';
-import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
-import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { useAuction } from '../../../shared/hooks/useAuction';
-import { useFetchCollectionItems } from '../../../shared/hooks/useFetchCollectionItems';
 import { useAuctionFormAdapter } from '../../../shared/hooks/form/useGenericFormStateAdapter';
 import { log } from '../../../shared/utils/performance/logger';
 import AuctionFormContainer from '../../../shared/components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../../../shared/components/forms/sections/AuctionItemSelectionSection';
 import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import {
-  ParticleSystem,
   NeuralNetworkBackground,
+  ParticleSystem,
 } from '../../../shared/components/organisms/effects';
-import { AuctionDataService, UnifiedCollectionItem } from '../services/AuctionDataService';
+import {
+  AuctionDataService,
+  UnifiedCollectionItem,
+} from '../services/AuctionDataService';
 import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Form data interface
@@ -63,7 +63,9 @@ const CreateAuction: React.FC = () => {
   } = useAuction();
 
   // Collection items state (using thin service layer)
-  const [allCollectionItems, setAllCollectionItems] = useState<UnifiedCollectionItem[]>([]);
+  const [allCollectionItems, setAllCollectionItems] = useState<
+    UnifiedCollectionItem[]
+  >([]);
   const [collectionLoading, setCollectionLoading] = useState(false);
   const [collectionError, setCollectionError] = useState<string | null>(null);
 
@@ -106,10 +108,18 @@ const CreateAuction: React.FC = () => {
       setCollectionError(null);
 
       try {
-        const { psaCards, rawCards, sealedProducts } = await AuctionDataService.fetchAllCollectionItems();
-        const unifiedItems = AuctionDataService.transformToUnifiedItems(psaCards, rawCards, sealedProducts);
+        const { psaCards, rawCards, sealedProducts } =
+          await AuctionDataService.fetchAllCollectionItems();
+        const unifiedItems = AuctionDataService.transformToUnifiedItems(
+          psaCards,
+          rawCards,
+          sealedProducts
+        );
         setAllCollectionItems(unifiedItems);
-        log('Successfully loaded and transformed collection items:', unifiedItems.length);
+        log(
+          'Successfully loaded and transformed collection items:',
+          unifiedItems.length
+        );
       } catch (error) {
         log('Error loading collection data:', error);
         setCollectionError('Failed to load collection items');
@@ -120,7 +130,6 @@ const CreateAuction: React.FC = () => {
 
     loadCollectionData();
   }, []);
-
 
   // Get selected items grouped by type with their orders and sorting
   const selectedItemsByType = useMemo(() => {
@@ -154,22 +163,30 @@ const CreateAuction: React.FC = () => {
 
   // Calculate selected items total value
   const selectedItemsValue = useMemo(() => {
-    const allSelectedItems = [
-      ...selectedItemsByType.PsaGradedCard,
-      ...selectedItemsByType.RawCard,
-      ...selectedItemsByType.SealedProduct,
-    ];
-    return allSelectedItems.reduce((total, item) => {
-      return total + (item?.displayPrice || 0);
-    }, 0);
-  }, [selectedItemsByType]);
-
+    // Calculate value directly from selectedItemIds and allCollectionItems to avoid circular dependency
+    let total = 0;
+    selectedItemIds.forEach((itemId) => {
+      const item = allCollectionItems.find((item) => item.id === itemId);
+      if (item) {
+        total += item.displayPrice || 0;
+      }
+    });
+    return total;
+  }, [selectedItemIds, allCollectionItems]);
 
   // Handle item selection with separate ordering per category
   const toggleItemSelection = useCallback(
     (itemId: string) => {
+      console.log('[DEBUG] toggleItemSelection called for itemId:', itemId);
+      
+      if (!itemId) {
+        console.error('[DEBUG] toggleItemSelection received undefined itemId');
+        return;
+      }
+
       const item = allCollectionItems.find((item) => item.id === itemId);
       if (!item) {
+        console.error('[DEBUG] Item not found for itemId:', itemId);
         return;
       }
 
@@ -178,81 +195,76 @@ const CreateAuction: React.FC = () => {
         const isCurrentlySelected = newSet.has(itemId);
 
         if (isCurrentlySelected) {
+          // Remove from selection
           newSet.delete(itemId);
+          
+          // Remove from order array for this item type
+          setSelectedItemOrderByType((prevOrder) => ({
+            ...prevOrder,
+            [item.itemType]: prevOrder[item.itemType].filter((id) => id !== itemId),
+          }));
         } else {
+          // Add to selection
           newSet.add(itemId);
+          
+          // Add to order array for this item type (if not already present)
+          setSelectedItemOrderByType((prevOrder) => ({
+            ...prevOrder,
+            [item.itemType]: prevOrder[item.itemType].includes(itemId)
+              ? prevOrder[item.itemType]
+              : [...prevOrder[item.itemType], itemId],
+          }));
         }
+
         return newSet;
       });
-
-      setSelectedItemOrderByType((prevOrder) => {
-        const isCurrentlySelected = selectedItemIds.has(itemId);
-
-        if (isCurrentlySelected) {
-          return {
-            ...prevOrder,
-            [item.itemType]: prevOrder[item.itemType].filter(
-              (id) => id !== itemId
-            ),
-          };
-        } else {
-          const currentOrder = prevOrder[item.itemType];
-          if (!currentOrder.includes(itemId)) {
-            return {
-              ...prevOrder,
-              [item.itemType]: [...currentOrder, itemId],
-            };
-          }
-          return prevOrder;
-        }
-      });
     },
-    [allCollectionItems, selectedItemIds]
+    [allCollectionItems]
   );
 
   // SOLID/DRY: Select all filtered items with hierarchical filtering
   const selectAllItems = useCallback(() => {
-    const filteredItems = allCollectionItems.filter((item) => {
-      const matchesType = filterType === 'all' || item.itemType === filterType;
+    // Apply the same filtering logic as in AuctionItemSelectionSection
+    let filteredItems = allCollectionItems;
 
-      // Hierarchical filtering: first by set, then by card/product
-      const matchesSet =
-        !selectedSetName ||
-        item.setName?.toLowerCase().includes(selectedSetName.toLowerCase());
-      const matchesCardProduct =
-        !cardProductSearchTerm.trim() ||
-        item.displayName
-          .toLowerCase()
-          .includes(cardProductSearchTerm.toLowerCase());
+    // First: Filter by selected set (hierarchical)
+    if (selectedSetName) {
+      filteredItems = filteredItems.filter((item) =>
+        item.setName?.toLowerCase().includes(selectedSetName.toLowerCase())
+      );
+    }
 
-      return matchesType && matchesSet && matchesCardProduct;
-    });
+    // Second: Filter by item type
+    if (filterType !== 'all') {
+      filteredItems = filteredItems.filter((item) => item.itemType === filterType);
+    }
 
-    const newSelection = new Set(selectedItemIds);
-    const newOrderItemsByType = { ...selectedItemOrderByType };
+    // Third: Filter by card/product search term
+    if (cardProductSearchTerm.trim()) {
+      const search = cardProductSearchTerm.toLowerCase();
+      filteredItems = filteredItems.filter((item) =>
+        item.displayName.toLowerCase().includes(search)
+      );
+    }
+
+    // Add all filtered items to selection
+    const newSelectedIds = new Set(selectedItemIds);
+    const newOrderByType = { ...selectedItemOrderByType };
 
     filteredItems.forEach((item) => {
-      if (!newSelection.has(item.id)) {
-        newSelection.add(item.id);
-        if (!newOrderItemsByType[item.itemType].includes(item.id)) {
-          newOrderItemsByType[item.itemType] = [
-            ...newOrderItemsByType[item.itemType],
-            item.id,
-          ];
+      if (!newSelectedIds.has(item.id)) {
+        newSelectedIds.add(item.id);
+        
+        // Add to order array for this item type (if not already present)
+        if (!newOrderByType[item.itemType].includes(item.id)) {
+          newOrderByType[item.itemType] = [...newOrderByType[item.itemType], item.id];
         }
       }
     });
 
-    setSelectedItemIds(newSelection);
-    setSelectedItemOrderByType(newOrderItemsByType);
-  }, [
-    selectedItemIds,
-    allCollectionItems,
-    selectedItemOrderByType,
-    filterType,
-    selectedSetName,
-    cardProductSearchTerm,
-  ]);
+    setSelectedItemIds(newSelectedIds);
+    setSelectedItemOrderByType(newOrderByType);
+  }, [allCollectionItems, selectedSetName, filterType, cardProductSearchTerm, selectedItemIds, selectedItemOrderByType]);
 
   // Clear all selections
   const clearAllSelections = useCallback(() => {
@@ -298,6 +310,13 @@ const CreateAuction: React.FC = () => {
         ...(formData.auctionDate && { auctionDate: formData.auctionDate }),
       };
 
+      console.log('[AUCTION CREATE DEBUG] Selected items state:', {
+        selectedItemIds: Array.from(selectedItemIds),
+        selectedItemsByType: selectedItemsByType,
+        auctionItemsCount: auctionItems.length,
+        auctionItems: auctionItems
+      });
+
       log('Creating auction with data:', {
         topText: auctionData.topText,
         bottomText: auctionData.bottomText,
@@ -324,7 +343,6 @@ const CreateAuction: React.FC = () => {
       log('Error creating auction:', err);
     }
   };
-
 
   // Theme-aware background while preserving Context7 2025 futuristic aesthetic
   const backgroundStyles = {

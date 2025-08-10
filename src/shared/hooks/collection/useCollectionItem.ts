@@ -7,13 +7,13 @@
  * - Reusability: Can be used by other components needing item data
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
-import { getCollectionApiService } from '../../services/ServiceRegistry';
+
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from "../../utils/navigation";
+import { navigationHelper } from '../../utils/navigation';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 export type ItemType = 'psa' | 'raw' | 'sealed';
@@ -48,7 +48,7 @@ export const useCollectionItem = (
   // Fetch item data based on type
   const fetchItemData = useCallback(
     async (itemType: string, itemId: string): Promise<CollectionItem> => {
-      const collectionApi = getCollectionApiService();
+      const collectionApi = unifiedApiService.collection;
 
       switch (itemType) {
         case 'psa':

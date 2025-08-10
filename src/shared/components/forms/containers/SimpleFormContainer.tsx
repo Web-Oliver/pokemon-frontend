@@ -1,7 +1,7 @@
 /**
  * Simple Form Container Component
  * Layer 3: Components (UI Building Blocks) - Simple Container Pattern
- * 
+ *
  * Provides a simple form wrapper with header and loading/error states
  * Used by AddEditCardForm as a lightweight container
  */
@@ -81,9 +81,7 @@ export const SimpleFormContainer: React.FC<SimpleFormContainerProps> = ({
       )}
 
       {/* Form Content */}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
     </div>
   );
 };

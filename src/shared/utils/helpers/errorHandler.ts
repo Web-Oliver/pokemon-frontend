@@ -276,12 +276,17 @@ export class ApplicationError extends Error {
   getUserMessage(): string {
     const baseMessages = {
       [ErrorCategory.API]: 'Unable to connect to the server. Please try again.',
-      [ErrorCategory.NETWORK]: 'Network connection issue. Please check your internet connection.',
-      [ErrorCategory.AUTHENTICATION]: 'Authentication failed. Please log in again.',
-      [ErrorCategory.AUTHORIZATION]: 'You do not have permission to perform this action.',
+      [ErrorCategory.NETWORK]:
+        'Network connection issue. Please check your internet connection.',
+      [ErrorCategory.AUTHENTICATION]:
+        'Authentication failed. Please log in again.',
+      [ErrorCategory.AUTHORIZATION]:
+        'You do not have permission to perform this action.',
       [ErrorCategory.VALIDATION]: 'Please check your input and try again.',
-      [ErrorCategory.BUSINESS_LOGIC]: 'Operation cannot be completed due to business rules.',
-      [ErrorCategory.USER_INPUT]: 'Please correct the highlighted fields and try again.',
+      [ErrorCategory.BUSINESS_LOGIC]:
+        'Operation cannot be completed due to business rules.',
+      [ErrorCategory.USER_INPUT]:
+        'Please correct the highlighted fields and try again.',
       [ErrorCategory.SYSTEM]: 'An unexpected error occurred. Please try again.',
     };
 
@@ -471,7 +476,7 @@ export const handleError = (
   else if (isApiResponseError(error)) {
     const axiosError = error as any;
     const responseData = axiosError.response.data;
-    
+
     processedError = createError.api(
       responseData?.message || 'API request failed',
       axiosError.response?.status,
@@ -481,11 +486,7 @@ export const handleError = (
   }
   // Handle standard Error instances
   else if (error instanceof Error) {
-    processedError = createError.system(
-      error.message,
-      context,
-      true
-    );
+    processedError = createError.system(error.message, context, true);
   }
   // Handle unknown error types
   else {
@@ -516,8 +517,11 @@ export const handleError = (
   // Show user notification if required
   if (processedError.requiresUserNotification()) {
     const displayMessage = userMessage || processedError.getUserMessage();
-    
-    if (processedError.severity === ErrorSeverity.CRITICAL || processedError.severity === ErrorSeverity.HIGH) {
+
+    if (
+      processedError.severity === ErrorSeverity.CRITICAL ||
+      processedError.severity === ErrorSeverity.HIGH
+    ) {
       showErrorToast(displayMessage);
     } else if (processedError.severity === ErrorSeverity.MEDIUM) {
       showWarningToast(displayMessage);
@@ -543,7 +547,13 @@ export const throwError = (
   context: ErrorContext = {},
   recoverable: boolean = true
 ): never => {
-  const error = new ApplicationError(message, severity, category, context, recoverable);
+  const error = new ApplicationError(
+    message,
+    severity,
+    category,
+    context,
+    recoverable
+  );
   const processedError = handleError(error, context);
   throw processedError;
 };
@@ -561,7 +571,7 @@ export const safeExecute = async <T>(
     return await operation();
   } catch (error) {
     const processedError = handleError(error, context);
-    
+
     if (processedError.shouldAutoRecover() && fallbackValue !== undefined) {
       log('Auto-recovering from error with fallback value:', {
         error: processedError.getDebugInfo(),
@@ -569,7 +579,7 @@ export const safeExecute = async <T>(
       });
       return fallbackValue;
     }
-    
+
     // Re-throw if not recoverable or no fallback
     throw processedError;
   }

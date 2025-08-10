@@ -9,11 +9,11 @@
 
 import { useCallback } from 'react';
 import { CollectionItem } from './useCollectionItem';
-import { getExportApiService } from '../../services/ServiceRegistry';
+
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { log } from '../../../shared/utils/performance/logger';
-import { navigationHelper } from "../../utils/navigation";
+import { navigationHelper } from '../../utils/navigation';
 import { useDataFetch } from '../common/useDataFetch';
 
 export interface UseImageDownloadReturn {
@@ -32,13 +32,11 @@ export const useImageDownload = (
 ): UseImageDownloadReturn => {
   // REFACTORED: Use useDataFetch to replace manual loading state management
   // Eliminates: const [downloadingZip, setDownloadingZip] = useState(false)
-  const downloadFetch = useDataFetch<void>(
-    undefined,
-    {
-      onSuccess: () => showSuccessToast('Images downloaded successfully!'),
-      onError: (error) => handleApiError(new Error(error), 'Failed to download images')
-    }
-  );
+  const downloadFetch = useDataFetch<void>(undefined, {
+    onSuccess: () => showSuccessToast('Images downloaded successfully!'),
+    onError: (error) =>
+      handleApiError(new Error(error), 'Failed to download images'),
+  });
 
   // Get URL params for download operations
   const getUrlParams = useCallback(() => {

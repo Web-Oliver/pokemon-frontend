@@ -4,12 +4,10 @@
  */
 
 import { useCallback, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { unifiedApiService } from '../services/UnifiedApiService';
-import * as auctionsApi from '../api/auctionsApi';
-import * as exportApi from '../api/exportApi';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { unifiedApiService, AuctionsParams, AddItemToAuctionData } from '../services/UnifiedApiService';
 import { IAuction } from '../domain/models/auction';
-import { queryKeys, CACHE_TIMES } from '../../app/lib/queryClient';
+import { CACHE_TIMES, queryKeys } from '../../app/lib/queryClient';
 import { handleApiError } from '../utils/helpers/errorHandler';
 
 export interface UseAuctionState {
@@ -20,14 +18,14 @@ export interface UseAuctionState {
 }
 
 export interface UseAuctionActions {
-  fetchAuctions: (_params?: auctionsApi.AuctionsParams) => Promise<void>;
+  fetchAuctions: (_params?: AuctionsParams) => Promise<void>;
   fetchAuctionById: (_id: string) => Promise<void>;
   createAuction: (_data: Partial<IAuction>) => Promise<IAuction>;
   updateAuction: (_id: string, _data: Partial<IAuction>) => Promise<void>;
   deleteAuction: (_id: string) => Promise<void>;
   addItemToAuction: (
     _id: string,
-    _itemData: auctionsApi.AddItemToAuctionData
+    _itemData: AddItemToAuctionData
   ) => Promise<void>;
   removeItemFromAuction: (
     _id: string,
@@ -51,16 +49,16 @@ export type UseAuctionHook = UseAuctionState & UseAuctionActions;
  * Custom hook for auction management with React Query caching
  */
 export const useAuction = (
-  params?: auctionsApi.AuctionsParams
+  params?: AuctionsParams,
+  auctionId?: string
 ): UseAuctionHook => {
   const queryClient = useQueryClient();
-  const [currentAuction, setCurrentAuction] = useState<IAuction | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Cached auctions list
   const {
     data: auctions = [],
-    isLoading: loading,
+    isLoading: listLoading,
     error: _queryError,
     refetch: _refetchAuctions,
   } = useQuery({
@@ -70,11 +68,27 @@ export const useAuction = (
     gcTime: CACHE_TIMES.COLLECTION_DATA.gcTime,
   });
 
+  // Cached individual auction detail
+  const {
+    data: currentAuction = null,
+    isLoading: detailLoading,
+    error: detailError,
+  } = useQuery({
+    queryKey: queryKeys.auctionDetail(auctionId!),
+    queryFn: () => unifiedApiService.auctions.getAuctionById(auctionId!),
+    enabled: !!auctionId,
+    staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
+    gcTime: CACHE_TIMES.COLLECTION_DATA.gcTime,
+  });
+
+  // Combined loading state
+  const loading = listLoading || detailLoading;
+
   /**
    * Fetch all auctions with optional filters (now just triggers refetch)
    */
   const fetchAuctions = useCallback(
-    async (newParams?: auctionsApi.AuctionsParams) => {
+    async (newParams?: AuctionsParams) => {
       try {
         setError(null);
         // Invalidate and refetch with new params
@@ -91,18 +105,16 @@ export const useAuction = (
   );
 
   /**
-   * Fetch auction by ID with caching
+   * Fetch auction by ID (now uses React Query cache)
    */
   const fetchAuctionById = useCallback(
     async (id: string) => {
       try {
         setError(null);
-        const auction = await queryClient.fetchQuery({
+        // This now just triggers a refetch of the React Query cache
+        await queryClient.invalidateQueries({
           queryKey: queryKeys.auctionDetail(id),
-          queryFn: () => unifiedApiService.auctions.getAuctionById(id),
-          staleTime: CACHE_TIMES.COLLECTION_DATA.staleTime,
         });
-        setCurrentAuction(auction);
       } catch (err) {
         const errorMessage = 'Failed to fetch auction';
         setError(errorMessage);
@@ -114,7 +126,8 @@ export const useAuction = (
 
   // Create auction mutation
   const createAuctionMutation = useMutation({
-    mutationFn: (data: Partial<IAuction>) => unifiedApiService.auctions.createAuction(data),
+    mutationFn: (data: Partial<IAuction>) =>
+      unifiedApiService.auctions.createAuction(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
     },
@@ -145,8 +158,8 @@ export const useAuction = (
       itemData,
     }: {
       id: string;
-      itemData: auctionsApi.AddItemToAuctionData;
-    }) => auctionsApi.addItemToAuction(id, itemData), // TODO: Add to UnifiedApiService
+      itemData: AddItemToAuctionData;
+    }) => unifiedApiService.auctions.addItemToAuction(id, itemData),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -163,7 +176,7 @@ export const useAuction = (
       id: string;
       itemId: string;
       itemCategory?: string;
-    }) => auctionsApi.removeItemFromAuction(id, itemId, itemCategory),
+    }) => unifiedApiService.auctions.removeItemFromAuction(id, itemId, itemCategory),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -178,7 +191,7 @@ export const useAuction = (
     }: {
       id: string;
       saleData: { itemId: string; itemCategory: string; soldPrice: number };
-    }) => auctionsApi.markAuctionItemSold(id, saleData),
+    }) => unifiedApiService.auctions.markAuctionItemSold(id, saleData),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
@@ -233,9 +246,7 @@ export const useAuction = (
         }
 
         // Clear current auction if it's the one being deleted
-        if ((currentAuction?.id || currentAuction?._id) === id) {
-          setCurrentAuction(null);
-        }
+        // Note: React Query will handle clearing the cache automatically
 
         await deleteAuctionMutation.mutateAsync(id);
 
@@ -256,14 +267,27 @@ export const useAuction = (
    * Add item to auction with React Query mutation
    */
   const addItemToAuction = useCallback(
-    async (id: string, itemData: auctionsApi.AddItemToAuctionData) => {
+    async (id: string, itemData: AddItemToAuctionData) => {
       try {
         setError(null);
         await addItemToAuctionMutation.mutateAsync({ id, itemData });
-      } catch (err) {
-        const errorMessage = `Failed to add item to auction with ID: ${id}`;
-        setError(errorMessage);
-        handleApiError(err, errorMessage);
+      } catch (err: any) {
+        // Handle specific duplicate item error
+        if (err?.response?.data?.message === 'Item already exists in this auction' || 
+            err?.response?.data?.error === 'Item already exists in this auction' ||
+            (err?.message && err.message.includes('Item already exists in this auction')) ||
+            (err?.data?.message && err.data.message.includes('Item already exists in this auction'))) {
+          if (import.meta.env.MODE === 'development') {
+            console.log('[useAuction] Item already exists in auction, skipping...');
+          }
+          // Don't set error state for duplicate items - let the caller handle this
+          throw new Error('DUPLICATE_ITEM');
+        } else {
+          const errorMessage = `Failed to add item to auction with ID: ${id}`;
+          setError(errorMessage);
+          handleApiError(err, errorMessage);
+          throw err;
+        }
       }
     },
     [addItemToAuctionMutation]
@@ -337,10 +361,11 @@ export const useAuction = (
   );
 
   /**
-   * Clear current auction
+   * Clear current auction (React Query handles this automatically)
    */
   const clearCurrentAuction = useCallback(() => {
-    setCurrentAuction(null);
+    // React Query automatically handles cleanup when component unmounts
+    // This is kept for compatibility
   }, []);
 
   /**
@@ -350,14 +375,12 @@ export const useAuction = (
     async (id: string): Promise<string> => {
       try {
         setError(null);
-        const postText = await exportApi.generateAuctionFacebookPost(id); // TODO: Add to UnifiedApiService
+        const postText = await unifiedApiService.export.generateAuctionFacebookPost(id);
 
-        // Update the current auction with the generated post
-        if ((currentAuction?.id || currentAuction?._id) === id) {
-          setCurrentAuction((prev) =>
-            prev ? { ...prev, generatedFacebookPost: postText } : null
-          );
-        }
+        // Invalidate the auction detail cache to refresh with generated post
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.auctionDetail(id),
+        });
 
         return postText;
       } catch (err) {
@@ -367,8 +390,7 @@ export const useAuction = (
         throw err;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentAuction?._id]
+    [queryClient]
   );
 
   /**
@@ -378,9 +400,9 @@ export const useAuction = (
     async (id: string): Promise<void> => {
       try {
         setError(null);
-        const blob = await exportApi.getAuctionFacebookTextFile(id); // TODO: Add to UnifiedApiService
+        const blob = await unifiedApiService.export.getAuctionFacebookTextFile(id);
         const filename = `auction-${id}-facebook-post.txt`;
-        exportApi.downloadBlob(blob, filename);
+        unifiedApiService.export.downloadBlob(blob, filename);
       } catch (err) {
         const errorMessage = `Failed to download text file for auction with ID: ${id}`;
         setError(errorMessage);
@@ -399,7 +421,7 @@ export const useAuction = (
         setError(null);
         const blob = await unifiedApiService.export.exportAuctionImages(id);
         const filename = `auction-${id}-images.zip`;
-        exportApi.downloadBlob(blob, filename);
+        unifiedApiService.export.downloadBlob(blob, filename);
       } catch (err) {
         const errorMessage = `Failed to download images zip for auction with ID: ${id}`;
         setError(errorMessage);

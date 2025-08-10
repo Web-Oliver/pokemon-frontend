@@ -12,7 +12,7 @@
  */
 
 import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
-import { ApiTransformers } from '../utils/transformers/unifiedResponseTransformer';
+import { transformApiResponse } from '../utils/transformers/responseTransformer';
 
 // ========== INTERFACES ==========
 
@@ -81,7 +81,7 @@ export async function getCollection<T>(
   }
 
   // Use unified transformation system
-  return ApiTransformers[transformStrategy]<T[]>(data);
+  return transformApiResponse(data) as T[];
 }
 
 /**
@@ -111,7 +111,7 @@ export async function getResource<T>(
   }
 
   // Use unified transformation system
-  return ApiTransformers[transformStrategy]<T>(data);
+  return transformApiResponse(data) as T;
 }
 
 /**

@@ -6,8 +6,8 @@
  * Handles: visual themes, presets, and visual appearance settings
  */
 
-import React, { createContext, useContext, useCallback } from 'react';
-import { VisualTheme, ThemePreset } from '../../types/themeTypes';
+import React, { createContext, useCallback, useContext } from 'react';
+import { ThemePreset, VisualTheme } from '../../types/themeTypes';
 
 // Import theme presets from ThemeContext (this is safe - no circular dependency)
 import { themePresets } from '../ThemeContext';

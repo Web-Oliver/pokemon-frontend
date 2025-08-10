@@ -8,10 +8,9 @@
  */
 
 import React from 'react';
-import { ArrowLeft, Edit, Check, Trash2, Star } from 'lucide-react';
+import { Check, Edit, Star, Trash2 } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
-
 
 export interface CollectionItemHeaderProps {
   item: CollectionItem;
@@ -82,7 +81,9 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
 
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4 sm:mt-6">
                 <div className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl bg-[var(--theme-surface-secondary)] backdrop-blur-xl border border-[var(--theme-border)] text-[var(--theme-text-primary)] min-w-0">
-                  <span className="text-xs sm:text-sm font-medium break-words">Set: {setName}</span>
+                  <span className="text-xs sm:text-sm font-medium break-words">
+                    Set: {setName}
+                  </span>
                 </div>
                 <div className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl bg-[var(--theme-status-success)]/20 backdrop-blur-xl border border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]">
                   <span className="text-xs sm:text-sm font-bold whitespace-nowrap">

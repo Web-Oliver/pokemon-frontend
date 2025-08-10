@@ -7,14 +7,14 @@
 
 import { useMemo } from 'react';
 import {
-  getItemDisplayData,
-  getItemTitle,
-  getItemSubtitle,
   formatCurrency,
   formatDate,
-  getStatusColor,
-  getItemCategoryColor,
   formatItemCategory,
+  getItemCategoryColor,
+  getItemDisplayData,
+  getItemSubtitle,
+  getItemTitle,
+  getStatusColor,
   ItemDisplayData,
 } from '../utils/helpers/itemDisplayHelpers';
 

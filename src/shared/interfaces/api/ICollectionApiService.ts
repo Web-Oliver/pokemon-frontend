@@ -6,7 +6,7 @@
 
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
-import { ISaleDetails } from "../../types/common";
+import { ISaleDetails } from '../../types/common';
 
 // Filter interfaces for better type safety
 export interface PsaGradedCardsParams {
@@ -37,15 +37,19 @@ export interface SealedProductCollectionParams {
 export interface IPsaCardApiService {
   // Read operations
   getPsaGradedCards(filters?: PsaGradedCardsParams): Promise<IPsaGradedCard[]>;
+
   getPsaGradedCardById(id: string): Promise<IPsaGradedCard>;
 
   // Write operations
   createPsaCard(cardData: Partial<IPsaGradedCard>): Promise<IPsaGradedCard>;
+
   updatePsaCard(
     id: string,
     cardData: Partial<IPsaGradedCard>
   ): Promise<IPsaGradedCard>;
+
   deletePsaCard(id: string): Promise<void>;
+
   markPsaCardSold(
     id: string,
     saleDetails: ISaleDetails
@@ -59,12 +63,16 @@ export interface IPsaCardApiService {
 export interface IRawCardApiService {
   // Read operations
   getRawCards(filters?: RawCardsParams): Promise<IRawCard[]>;
+
   getRawCardById(id: string): Promise<IRawCard>;
 
   // Write operations
   createRawCard(cardData: Partial<IRawCard>): Promise<IRawCard>;
+
   updateRawCard(id: string, cardData: Partial<IRawCard>): Promise<IRawCard>;
+
   deleteRawCard(id: string): Promise<void>;
+
   markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard>;
 }
 
@@ -77,17 +85,21 @@ export interface ISealedProductApiService {
   getSealedProducts(
     filters?: SealedProductCollectionParams
   ): Promise<ISealedProduct[]>;
+
   getSealedProductById(id: string): Promise<ISealedProduct>;
 
   // Write operations
   createSealedProduct(
     productData: Partial<ISealedProduct>
   ): Promise<ISealedProduct>;
+
   updateSealedProduct(
     id: string,
     productData: Partial<ISealedProduct>
   ): Promise<ISealedProduct>;
+
   deleteSealedProduct(id: string): Promise<void>;
+
   markSealedProductSold(
     id: string,
     saleDetails: ISaleDetails

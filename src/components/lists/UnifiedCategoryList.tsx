@@ -18,21 +18,8 @@
 
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import {
-  Archive,
-  // ArrowDown,
-  // ArrowUp,
-  // ArrowUpDown,
-  // Grid3X3,
-  Package,
-  Star,
-  Users,
-} from 'lucide-react';
-import {
-  DragDropProvider,
-  reorderArray,
-  SortableList,
-} from '../../shared/contexts/DragDropContext';
+import { Archive, Package, Star, Users } from 'lucide-react';
+import { DragDropProvider, reorderArray, SortableList } from '../../shared/contexts/DragDropContext';
 import { PokemonCard } from '../../shared/components/atoms/design-system/PokemonCard';
 import { CollectionItem, ItemCategory } from '../../shared/domain/models/ordering';
 import { applyItemOrder, getItemCategory } from '../../shared/utils/helpers/orderingUtils';

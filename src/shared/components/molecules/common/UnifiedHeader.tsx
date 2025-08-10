@@ -107,7 +107,6 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   centered = false,
   showDivider = true,
 }) => {
-
   // Size configurations - More compact sizing
   const sizeConfigs = {
     sm: {

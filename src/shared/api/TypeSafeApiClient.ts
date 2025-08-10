@@ -14,16 +14,16 @@
  */
 
 import {
-  ApiSuccessResponse,
   ApiErrorResponse,
-  PaginatedResponse,
+  ApiSuccessResponse,
   CollectionResponse,
-  ResourceResponse,
-  transformApiResponse,
   createErrorResponse,
   isSuccessResponse,
+  PaginatedResponse,
+  ResourceResponse,
+  transformApiResponse,
 } from '../types/api/ApiResponse';
-import { unifiedApiClient, EnhancedRequestConfig } from './unifiedApiClient';
+import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
 
 /**
  * Type-Safe API Client Class
@@ -418,44 +418,52 @@ export interface ITypeSafeHttpClient {
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<T>>;
+
   post<TResponse, TRequest = any>(
     url: string,
     data: TRequest,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<TResponse>>;
+
   put<TResponse, TRequest = any>(
     url: string,
     data: TRequest,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<TResponse>>;
+
   delete<T = void>(
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<T>>;
+
   getCollection<T>(
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<CollectionResponse<T>>;
+
   getPaginated<T>(
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<PaginatedResponse<T>>;
+
   getResource<T>(
     url: string,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ResourceResponse<T>>;
+
   getById<T>(
     basePath: string,
     id: string | number,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ResourceResponse<T>>;
+
   putById<TResponse, TRequest = any>(
     basePath: string,
     id: string | number,
@@ -463,12 +471,14 @@ export interface ITypeSafeHttpClient {
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ResourceResponse<TResponse>>;
+
   deleteById(
     basePath: string,
     id: string | number,
     operation: string,
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<void>>;
+
   postById<TResponse, TRequest = any>(
     basePath: string,
     id: string | number,

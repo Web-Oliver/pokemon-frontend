@@ -17,7 +17,6 @@ import { queryClient } from './lib/queryClient';
 import { UnifiedThemeProvider as ThemeProvider } from '../shared/contexts/theme/UnifiedThemeProvider';
 import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
-
 // Layout
 import MainLayout from '../shared/components/layout/layouts/MainLayout';
 

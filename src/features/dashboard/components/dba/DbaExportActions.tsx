@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Zap, FileDown } from 'lucide-react';
+import { FileDown, Zap } from 'lucide-react';
 import { PokemonButton } from '../design-system/PokemonButton';
 
 interface DbaExportActionsProps {

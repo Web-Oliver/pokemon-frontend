@@ -4,15 +4,15 @@
  * Following CLAUDE.md + Context7 principles for award-winning design
  */
 
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import {
   Award,
-  Star,
-  TrendingUp,
-  Target,
-  DollarSign,
-  Calendar,
   Banknote,
+  Calendar,
+  DollarSign,
+  Star,
+  Target,
+  TrendingUp,
 } from 'lucide-react';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
@@ -356,39 +356,37 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           {/* Grade/Condition Selection */}
           <div>
-            <PokemonSelect
-              label={fieldLabel}
-              {...register(fieldName, {
-                required: `${fieldLabel} is required`,
-              })}
-              error={errors[fieldName]?.message}
-              options={options}
-              disabled={disableGradeConditionEdit}
-            />
-            {currentGradeOrCondition && (
-              <div
-                className={`mt-3 p-3 bg-gradient-to-r ${colorScheme.bg} ${colorScheme.border} border rounded-xl backdrop-blur-sm`}
-              >
-                <div className="flex items-center">
-                  <IconComponent
-                    className={`w-4 h-4 ${colorScheme.accent} mr-2`}
-                  />
-                  <span className={`text-sm ${colorScheme.text} font-bold`}>
-                    Selected:{' '}
-                    {
-                      options.find(
-                        (option) => option.value === currentGradeOrCondition
-                      )?.label
-                    }
-                  </span>
+            {!disableGradeConditionEdit ? (
+              <PokemonSelect
+                label={fieldLabel}
+                {...register(fieldName, {
+                  required: `${fieldLabel} is required`,
+                })}
+                error={errors[fieldName]?.message}
+                options={options}
+                disabled={disableGradeConditionEdit}
+              />
+            ) : (
+              /* Read-only grade/condition display like the price field */
+              <div>
+                <label className="block text-sm font-medium text-white/90 mb-2">
+                  {fieldLabel}
+                </label>
+                <div className="bg-white/10 border border-white/20 rounded-lg px-3 py-2">
+                  <div className="flex items-center">
+                    <IconComponent className="w-4 h-4 text-white/70 mr-2" />
+                    <span className="text-white font-medium">
+                      {options.find(option => option.value === currentGradeOrCondition)?.label || currentGradeOrCondition || 'Not set'}
+                    </span>
+                  </div>
                 </div>
+                <p className="mt-2 text-xs text-emerald-400/80">
+                  Current: {options.find(option => option.value === currentGradeOrCondition)?.label || 'Not set'}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {isPsaCard ? 'Grade' : 'Condition'} cannot be changed after card is created or sold
+                </p>
               </div>
-            )}
-            {disableGradeConditionEdit && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500 dark:text-zinc-400">
-                {isPsaCard ? 'Grade' : 'Condition'} cannot be changed after
-                adding
-              </p>
             )}
           </div>
 

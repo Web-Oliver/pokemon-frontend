@@ -1,7 +1,7 @@
 /**
  * BaseListItem Component - Generic List Item Foundation
  * Layer 3: Components (CLAUDE.md Architecture)
- * 
+ *
  * Following CLAUDE.md principles:
  * - Single Responsibility: Generic list item component for reusable list patterns
  * - DRY: Base list implementation to avoid duplication across list variants
@@ -11,47 +11,47 @@
 
 import React from 'react';
 import { cn } from '../../../utils/ui/classNameUtils';
-import { useCentralizedTheme, themeUtils } from '../../../utils/ui/themeConfig';
+import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
 
 export interface BaseListItemProps {
   children?: React.ReactNode;
-  
+
   // Core list item properties
   variant?: 'default' | 'glass' | 'hover' | 'timeline' | 'card';
   size?: 'sm' | 'md' | 'lg';
-  
+
   // Interactive states
   interactive?: boolean;
   loading?: boolean;
   disabled?: boolean;
   selected?: boolean;
-  
+
   // Visual enhancements
   showBorder?: boolean;
   showHoverEffect?: boolean;
   showTimeline?: boolean;
-  
+
   // Event handlers
   onClick?: () => void;
   onHover?: () => void;
-  
+
   // Accessibility
   'aria-label'?: string;
   role?: string;
-  
+
   // Custom styling
   className?: string;
-  
+
   // Content sections
-  leading?: React.ReactNode;  // Icon, avatar, thumbnail
+  leading?: React.ReactNode; // Icon, avatar, thumbnail
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
   trailing?: React.ReactNode; // Actions, badges, prices
-  
+
   // Timeline specific props
   timelineColor?: string;
   timelineIcon?: React.ReactNode;
-  
+
   // Key for list rendering
   itemKey?: string;
 }
@@ -85,7 +85,8 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
   itemKey,
 }) => {
   const themeConfig = useCentralizedTheme();
-  const shouldDisableAnimations = themeUtils.shouldDisableAnimations(themeConfig);
+  const shouldDisableAnimations =
+    themeUtils.shouldDisableAnimations(themeConfig);
   const shouldShowEffects = themeUtils.shouldShowParticles(themeConfig);
   const isHighContrast = themeUtils.isHighContrast(themeConfig);
 
@@ -97,7 +98,9 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
     disabled && 'opacity-50 pointer-events-none',
     !shouldDisableAnimations && 'transform-gpu',
     loading && 'animate-pulse pointer-events-none',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // Variant-specific styling
   const variantClasses = {
@@ -105,8 +108,10 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
       'border-b border-transparent',
       showBorder && 'border-zinc-700/20',
       isHighContrast && 'border-white/20',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     glass: [
       'backdrop-blur-sm',
       'bg-gradient-to-r from-white/[0.02] to-white/[0.05]',
@@ -114,15 +119,19 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
       'rounded-lg',
       'mb-2',
       isHighContrast && 'bg-white/10 border-white/20',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     hover: [
       'border-b border-transparent',
       'hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5',
       'hover:border-cyan-500/20',
       isHighContrast && 'hover:bg-white/10',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     timeline: [
       'relative',
       'mb-6',
@@ -135,8 +144,10 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
       'transition-all duration-500',
       'group',
       isHighContrast && 'bg-white/20 border-white/30',
-    ].filter(Boolean).join(' '),
-    
+    ]
+      .filter(Boolean)
+      .join(' '),
+
     card: [
       'backdrop-blur-xl',
       'bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-white/[0.08]',
@@ -145,7 +156,9 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
       'shadow-[0_8px_32px_0_rgba(31,38,135,0.25)]',
       'mb-4',
       isHighContrast && 'bg-white/15 border-white/30',
-    ].filter(Boolean).join(' '),
+    ]
+      .filter(Boolean)
+      .join(' '),
   };
 
   // Size-based spacing
@@ -156,35 +169,49 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
   };
 
   // Interactive states
-  const interactiveClasses = (interactive || onClick) && !disabled ? [
-    'cursor-pointer',
-    showHoverEffect && [
-      !shouldDisableAnimations && 'hover:scale-[1.01]',
-      'hover:shadow-lg',
-    ].filter(Boolean).join(' '),
-    'focus-visible:outline-none',
-    'focus-visible:ring-2',
-    'focus-visible:ring-cyan-500/50',
-    'focus-visible:ring-offset-2',
-    'focus-visible:ring-offset-zinc-900',
-  ].filter(Boolean).join(' ') : '';
+  const interactiveClasses =
+    (interactive || onClick) && !disabled
+      ? [
+          'cursor-pointer',
+          showHoverEffect &&
+            [
+              !shouldDisableAnimations && 'hover:scale-[1.01]',
+              'hover:shadow-lg',
+            ]
+              .filter(Boolean)
+              .join(' '),
+          'focus-visible:outline-none',
+          'focus-visible:ring-2',
+          'focus-visible:ring-cyan-500/50',
+          'focus-visible:ring-offset-2',
+          'focus-visible:ring-offset-zinc-900',
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : '';
 
   // Selection state
-  const selectedClasses = selected ? [
-    'bg-cyan-500/10',
-    'border-cyan-500/30',
-    'shadow-[0_0_20px_rgba(34,211,238,0.15)]',
-  ].join(' ') : '';
+  const selectedClasses = selected
+    ? [
+        'bg-cyan-500/10',
+        'border-cyan-500/30',
+        'shadow-[0_0_20px_rgba(34,211,238,0.15)]',
+      ].join(' ')
+    : '';
 
   // Timeline accent styling
-  const timelineAccentClasses = showTimeline ? [
-    'before:absolute before:left-0 before:top-0 before:h-full before:w-[2px]',
-    'before:bg-gradient-to-b before:from-transparent before:via-current before:to-transparent',
-    timelineColor === 'cyan' && 'before:text-cyan-400/30',
-    timelineColor === 'purple' && 'before:text-purple-400/30',
-    timelineColor === 'emerald' && 'before:text-emerald-400/30',
-    'before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500',
-  ].filter(Boolean).join(' ') : '';
+  const timelineAccentClasses = showTimeline
+    ? [
+        'before:absolute before:left-0 before:top-0 before:h-full before:w-[2px]',
+        'before:bg-gradient-to-b before:from-transparent before:via-current before:to-transparent',
+        timelineColor === 'cyan' && 'before:text-cyan-400/30',
+        timelineColor === 'purple' && 'before:text-purple-400/30',
+        timelineColor === 'emerald' && 'before:text-emerald-400/30',
+        'before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500',
+      ]
+        .filter(Boolean)
+        .join(' ')
+    : '';
 
   // Combine all classes
   const finalClassName = cn(
@@ -221,11 +248,7 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
     return (
       <div className="flex items-center space-x-4">
         {/* Leading section (icon, avatar, thumbnail) */}
-        {leading && (
-          <div className="flex-shrink-0">
-            {leading}
-          </div>
-        )}
+        {leading && <div className="flex-shrink-0">{leading}</div>}
 
         {/* Main content section */}
         <div className="flex-1 min-w-0">
@@ -242,11 +265,7 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
         </div>
 
         {/* Trailing section (actions, badges, prices) */}
-        {trailing && (
-          <div className="flex-shrink-0">
-            {trailing}
-          </div>
-        )}
+        {trailing && <div className="flex-shrink-0">{trailing}</div>}
       </div>
     );
   };
@@ -282,9 +301,7 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
       )}
 
       {/* Content area */}
-      <div className="relative z-10">
-        {renderContent()}
-      </div>
+      <div className="relative z-10">{renderContent()}</div>
 
       {/* Loading overlay */}
       {loading && (

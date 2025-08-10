@@ -14,23 +14,17 @@
  * - CSS design system (pokemon-design-system.css)
  */
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import { ThemeColor, formThemes } from '../../theme/formThemes';
+import { formThemes, ThemeColor } from '../../theme/formThemes';
 import { ThemePropertyManager } from '../utils/theme/ThemePropertyManager';
 import {
-  VisualTheme,
+  AnimationIntensity,
   ColorScheme,
   Density,
-  AnimationIntensity,
   ThemeConfiguration,
   ThemePreset,
+  VisualTheme,
 } from '../types/themeTypes';
 
 /**

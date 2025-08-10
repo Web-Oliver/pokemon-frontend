@@ -6,7 +6,7 @@
  * Handles: density settings, spacing tokens, and layout configurations
  */
 
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
 import { Density } from '../../types/themeTypes';
 
 // ================================

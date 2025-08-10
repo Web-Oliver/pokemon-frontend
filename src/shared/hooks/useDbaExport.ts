@@ -8,7 +8,7 @@
  * - DIP: Depends on API abstractions
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { unifiedApiService } from '../services/UnifiedApiService';
 import { useCollectionOperations } from './useCollectionOperations';
@@ -78,25 +78,30 @@ export const useDbaExport = () => {
   const [error, _setError] = useState<string | null>(null);
 
   // React Query for DBA selections with proper caching
-  const { data: dbaSelections = [], isLoading: loadingDbaSelections, error: dbaError } =
-    useQuery({
-      queryKey: queryKeys.dbaSelections({ active: true }),
-      queryFn: async () => {
-        console.log('[DBA DEBUG] Starting getDbaSelections API call...');
-        try {
-          const result = await unifiedApiService.dbaSelection.getDbaSelections({ active: true });
-          console.log('[DBA DEBUG] API call successful:', result);
-          return result;
-        } catch (error) {
-          console.error('[DBA DEBUG] API call failed:', error);
-          throw error;
-        }
-      },
-      staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
-      gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
-      retry: 2,
-      retryDelay: 1000,
-    });
+  const {
+    data: dbaSelections = [],
+    isLoading: loadingDbaSelections,
+    error: dbaError,
+  } = useQuery({
+    queryKey: queryKeys.dbaSelections({ active: true }),
+    queryFn: async () => {
+      console.log('[DBA DEBUG] Starting getDbaSelections API call...');
+      try {
+        const result = await unifiedApiService.dbaSelection.getDbaSelections({
+          active: true,
+        });
+        console.log('[DBA DEBUG] API call successful:', result);
+        return result;
+      } catch (error) {
+        console.error('[DBA DEBUG] API call failed:', error);
+        throw error;
+      }
+    },
+    staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
+    gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
+    retry: 2,
+    retryDelay: 1000,
+  });
 
   // Debug logging for collection data
   useEffect(() => {

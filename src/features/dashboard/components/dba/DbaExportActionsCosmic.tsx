@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Zap, FileDown } from 'lucide-react';
+import { FileDown, Zap } from 'lucide-react';
 import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
 
 interface DbaExportActionsCosmicProps {

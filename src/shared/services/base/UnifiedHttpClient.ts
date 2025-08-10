@@ -11,10 +11,7 @@
  * - LSP: Substitutable HTTP client implementation
  */
 
-import {
-  unifiedApiClient,
-  EnhancedRequestConfig,
-} from '../../api/unifiedApiClient';
+import { EnhancedRequestConfig, unifiedApiClient } from '../../api/unifiedApiClient';
 import { IHttpClient } from './HttpClientInterface';
 
 /**

@@ -1,7 +1,7 @@
 /**
  * useFormValidation Hook
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * 
+ *
  * Standardized form validation hook with advanced validation features
  * Following CLAUDE.md principles:
  * - Single Responsibility: Only handles form validation logic
@@ -12,23 +12,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDebounce } from '../useDebounce';
 import {
-  validateField,
-  validateEnhancedField,
-  validateFieldAsync,
-  validateCrossField,
-  sanitizers,
-  type ValidationRule,
   type EnhancedValidationRule,
+  sanitizers,
+  validateCrossField,
+  validateEnhancedField,
+  validateField,
+  validateFieldAsync,
   type ValidationContext,
-  FormValidationRules,
-  EnhancedValidationMessages,
-  enhancedValidationMessages,
+  type ValidationRule,
 } from '../../utils/validation';
 import {
-  ApplicationError,
-  createError,
-  handleError,
   type ErrorContext,
+  handleError,
 } from '../../utils/helpers/errorHandler';
 
 export interface UseFormValidationOptions<T = Record<string, string>> {
@@ -51,7 +46,10 @@ export interface UseFormValidationOptions<T = Record<string, string>> {
   /** Error context for enhanced error handling */
   errorContext?: ErrorContext;
   /** Callback when validation state changes */
-  onValidationChange?: (isValid: boolean, errors: Record<string, string>) => void;
+  onValidationChange?: (
+    isValid: boolean,
+    errors: Record<string, string>
+  ) => void;
 }
 
 export interface UseFormValidationReturn<T = Record<string, string>> {
@@ -67,7 +65,7 @@ export interface UseFormValidationReturn<T = Record<string, string>> {
   isDirty: boolean;
   /** Which fields have been touched */
   touchedFields: Set<string>;
-  
+
   /** Update a field value with validation */
   updateField: (fieldName: keyof T, value: string) => void;
   /** Update multiple fields at once */
@@ -93,13 +91,13 @@ export interface UseFormValidationReturn<T = Record<string, string>> {
 /**
  * Advanced form validation hook with async validation, cross-field validation,
  * and automatic sanitization support
- * 
+ *
  * @example
  * ```typescript
  * const validation = useFormValidation({
  *   rules: {
  *     cardName: { required: true, min: 2, max: 100 },
- *     myPrice: { 
+ *     myPrice: {
  *       required: true,
  *       dependsOn: ['cardMarketPrice'],
  *       complexValidator: (value, context) => {
@@ -111,7 +109,7 @@ export interface UseFormValidationReturn<T = Record<string, string>> {
  *   validateOnChange: true,
  *   enableAsyncValidation: true
  * });
- * 
+ *
  * // Usage in component:
  * <input
  *   value={validation.formData.cardName}
@@ -140,7 +138,9 @@ export const useFormValidation = <T extends Record<string, string>>(
   // State management
   const [formData, setFormData] = useState<T>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [validatingFields, setValidatingFields] = useState<Set<string>>(new Set());
+  const [validatingFields, setValidatingFields] = useState<Set<string>>(
+    new Set()
+  );
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [isDirty, setIsDirty] = useState(false);
 
@@ -159,158 +159,205 @@ export const useFormValidation = <T extends Record<string, string>>(
   }, []);
 
   // Get sanitized field value
-  const getSanitizedValue = useCallback((fieldName: keyof T, value: string): string => {
-    const customSanitizer = customSanitizers[fieldName];
-    if (customSanitizer) {
-      return customSanitizer(value);
-    }
+  const getSanitizedValue = useCallback(
+    (fieldName: keyof T, value: string): string => {
+      const customSanitizer = customSanitizers[fieldName];
+      if (customSanitizer) {
+        return customSanitizer(value);
+      }
 
-    // Apply default sanitizers based on field patterns
-    const fieldRule = rules[fieldName];
-    if (fieldRule?.pattern?.toString() === '/^\\d+$/') {
-      return sanitizers.numericOnly(value);
-    }
-    
-    // Default: normalize whitespace
-    return sanitizers.normalizeText(value);
-  }, [customSanitizers, rules]);
+      // Apply default sanitizers based on field patterns
+      const fieldRule = rules[fieldName];
+      if (fieldRule?.pattern?.toString() === '/^\\d+$/') {
+        return sanitizers.numericOnly(value);
+      }
+
+      // Default: normalize whitespace
+      return sanitizers.normalizeText(value);
+    },
+    [customSanitizers, rules]
+  );
 
   // Validate a specific field
-  const validateSingleField = useCallback(async (
-    fieldName: keyof T, 
-    value: string,
-    allFormData: T = formData
-  ): Promise<string | undefined> => {
-    const fieldRule = rules[fieldName];
-    if (!fieldRule) return undefined;
+  const validateSingleField = useCallback(
+    async (
+      fieldName: keyof T,
+      value: string,
+      allFormData: T = formData
+    ): Promise<string | undefined> => {
+      const fieldRule = rules[fieldName];
+      if (!fieldRule) return undefined;
 
-    const stringFieldName = String(fieldName);
+      const stringFieldName = String(fieldName);
 
-    try {
-      // Prevent concurrent validation of the same field
-      if (validationInProgressRef.current.has(stringFieldName)) {
-        return undefined;
-      }
-
-      validationInProgressRef.current.add(stringFieldName);
-
-      // Update validating fields state
-      if (enableAsyncValidation) {
-        setValidatingFields(prev => new Set([...prev, stringFieldName]));
-      }
-
-      // Create validation context
-      const context: ValidationContext = {
-        formData: allFormData,
-        dependencies: (fieldRule as EnhancedValidationRule).dependsOn,
-      };
-
-      let error: string | undefined;
-
-      // Run enhanced validation if it's an enhanced rule
-      if ('complexValidator' in fieldRule || 'asyncValidator' in fieldRule) {
-        const enhancedRule = fieldRule as EnhancedValidationRule;
-        
-        if (enableAsyncValidation && enhancedRule.asyncValidator) {
-          error = await validateFieldAsync(value, enhancedRule, stringFieldName, context);
-        } else {
-          error = validateEnhancedField(value, enhancedRule, stringFieldName, context);
+      try {
+        // Prevent concurrent validation of the same field
+        if (validationInProgressRef.current.has(stringFieldName)) {
+          return undefined;
         }
-      } else {
-        // Run basic validation
-        error = validateField(value, fieldRule, stringFieldName);
-      }
 
-      // Cross-field validation
-      if (!error && enableCrossFieldValidation && (fieldRule as EnhancedValidationRule).dependsOn) {
-        error = validateCrossField(
-          allFormData as Record<string, string>,
-          stringFieldName,
-          fieldRule as EnhancedValidationRule,
-          rules as Record<string, EnhancedValidationRule>
-        );
-      }
+        validationInProgressRef.current.add(stringFieldName);
 
-      return error;
-    } catch (err) {
-      const processedError = handleError(err, { 
-        ...errorContext, 
-        component: 'useFormValidation',
-        action: 'validateSingleField',
-        fieldName: stringFieldName 
-      });
-      
-      return `Validation error: ${processedError.message}`;
-    } finally {
-      validationInProgressRef.current.delete(stringFieldName);
-      
-      if (enableAsyncValidation && mountedRef.current) {
-        setValidatingFields(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(stringFieldName);
-          return newSet;
+        // Update validating fields state
+        if (enableAsyncValidation) {
+          setValidatingFields((prev) => new Set([...prev, stringFieldName]));
+        }
+
+        // Create validation context
+        const context: ValidationContext = {
+          formData: allFormData,
+          dependencies: (fieldRule as EnhancedValidationRule).dependsOn,
+        };
+
+        let error: string | undefined;
+
+        // Run enhanced validation if it's an enhanced rule
+        if ('complexValidator' in fieldRule || 'asyncValidator' in fieldRule) {
+          const enhancedRule = fieldRule as EnhancedValidationRule;
+
+          if (enableAsyncValidation && enhancedRule.asyncValidator) {
+            error = await validateFieldAsync(
+              value,
+              enhancedRule,
+              stringFieldName,
+              context
+            );
+          } else {
+            error = validateEnhancedField(
+              value,
+              enhancedRule,
+              stringFieldName,
+              context
+            );
+          }
+        } else {
+          // Run basic validation
+          error = validateField(value, fieldRule, stringFieldName);
+        }
+
+        // Cross-field validation
+        if (
+          !error &&
+          enableCrossFieldValidation &&
+          (fieldRule as EnhancedValidationRule).dependsOn
+        ) {
+          error = validateCrossField(
+            allFormData as Record<string, string>,
+            stringFieldName,
+            fieldRule as EnhancedValidationRule,
+            rules as Record<string, EnhancedValidationRule>
+          );
+        }
+
+        return error;
+      } catch (err) {
+        const processedError = handleError(err, {
+          ...errorContext,
+          component: 'useFormValidation',
+          action: 'validateSingleField',
+          fieldName: stringFieldName,
         });
+
+        return `Validation error: ${processedError.message}`;
+      } finally {
+        validationInProgressRef.current.delete(stringFieldName);
+
+        if (enableAsyncValidation && mountedRef.current) {
+          setValidatingFields((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(stringFieldName);
+            return newSet;
+          });
+        }
       }
-    }
-  }, [formData, rules, enableAsyncValidation, enableCrossFieldValidation, errorContext]);
+    },
+    [
+      formData,
+      rules,
+      enableAsyncValidation,
+      enableCrossFieldValidation,
+      errorContext,
+    ]
+  );
 
   // Update field value with validation
-  const updateField = useCallback((fieldName: keyof T, value: string) => {
-    const sanitizedValue = getSanitizedValue(fieldName, value);
-    
-    setFormData(prev => ({
-      ...prev,
-      [fieldName]: sanitizedValue,
-    }));
+  const updateField = useCallback(
+    (fieldName: keyof T, value: string) => {
+      const sanitizedValue = getSanitizedValue(fieldName, value);
 
-    setIsDirty(true);
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: sanitizedValue,
+      }));
 
-    if (validateOnChange) {
-      // Validate immediately for sync validation, or after debounce for async
-      const validateImmediately = !enableAsyncValidation;
-      
-      if (validateImmediately) {
-        validateSingleField(fieldName, sanitizedValue).then(error => {
-          if (mountedRef.current) {
-            setErrors(prev => ({
-              ...prev,
-              [fieldName]: error || '',
-            }));
-          }
-        });
+      setIsDirty(true);
+
+      if (validateOnChange) {
+        // Validate immediately for sync validation, or after debounce for async
+        const validateImmediately = !enableAsyncValidation;
+
+        if (validateImmediately) {
+          validateSingleField(fieldName, sanitizedValue).then((error) => {
+            if (mountedRef.current) {
+              setErrors((prev) => ({
+                ...prev,
+                [fieldName]: error || '',
+              }));
+            }
+          });
+        }
       }
-    }
-  }, [getSanitizedValue, validateOnChange, enableAsyncValidation, validateSingleField]);
+    },
+    [
+      getSanitizedValue,
+      validateOnChange,
+      enableAsyncValidation,
+      validateSingleField,
+    ]
+  );
 
   // Update multiple fields at once
-  const updateFields = useCallback((updates: Partial<T>) => {
-    const sanitizedUpdates = Object.entries(updates).reduce((acc, [key, value]) => {
-      if (typeof value === 'string') {
-        acc[key as keyof T] = getSanitizedValue(key as keyof T, value) as T[keyof T];
+  const updateFields = useCallback(
+    (updates: Partial<T>) => {
+      const sanitizedUpdates = Object.entries(updates).reduce(
+        (acc, [key, value]) => {
+          if (typeof value === 'string') {
+            acc[key as keyof T] = getSanitizedValue(
+              key as keyof T,
+              value
+            ) as T[keyof T];
+          }
+          return acc;
+        },
+        {} as Partial<T>
+      );
+
+      setFormData((prev) => ({ ...prev, ...sanitizedUpdates }));
+      setIsDirty(true);
+
+      if (validateOnChange) {
+        // Validate all updated fields
+        Object.keys(sanitizedUpdates).forEach((fieldName) => {
+          const value = sanitizedUpdates[fieldName as keyof T] as string;
+          validateSingleField(fieldName as keyof T, value);
+        });
       }
-      return acc;
-    }, {} as Partial<T>);
-
-    setFormData(prev => ({ ...prev, ...sanitizedUpdates }));
-    setIsDirty(true);
-
-    if (validateOnChange) {
-      // Validate all updated fields
-      Object.keys(sanitizedUpdates).forEach(fieldName => {
-        const value = sanitizedUpdates[fieldName as keyof T] as string;
-        validateSingleField(fieldName as keyof T, value);
-      });
-    }
-  }, [getSanitizedValue, validateOnChange, validateSingleField]);
+    },
+    [getSanitizedValue, validateOnChange, validateSingleField]
+  );
 
   // Validate debounced form data (for async validation)
   useEffect(() => {
     if (enableAsyncValidation && validateOnChange && isDirty) {
       Object.entries(debouncedFormData).forEach(([fieldName, value]) => {
         if (typeof value === 'string' && touchedFields.has(fieldName)) {
-          validateSingleField(fieldName as keyof T, value, debouncedFormData).then(error => {
+          validateSingleField(
+            fieldName as keyof T,
+            value,
+            debouncedFormData
+          ).then((error) => {
             if (mountedRef.current) {
-              setErrors(prev => ({
+              setErrors((prev) => ({
                 ...prev,
                 [fieldName]: error || '',
               }));
@@ -319,22 +366,32 @@ export const useFormValidation = <T extends Record<string, string>>(
         }
       });
     }
-  }, [debouncedFormData, enableAsyncValidation, validateOnChange, isDirty, touchedFields, validateSingleField]);
+  }, [
+    debouncedFormData,
+    enableAsyncValidation,
+    validateOnChange,
+    isDirty,
+    touchedFields,
+    validateSingleField,
+  ]);
 
   // Validate specific field (public method)
-  const validateFieldPublic = useCallback(async (fieldName: keyof T): Promise<string | undefined> => {
-    const value = formData[fieldName];
-    if (typeof value !== 'string') return undefined;
+  const validateFieldPublic = useCallback(
+    async (fieldName: keyof T): Promise<string | undefined> => {
+      const value = formData[fieldName];
+      if (typeof value !== 'string') return undefined;
 
-    const error = await validateSingleField(fieldName, value);
-    
-    setErrors(prev => ({
-      ...prev,
-      [fieldName]: error || '',
-    }));
+      const error = await validateSingleField(fieldName, value);
 
-    return error;
-  }, [formData, validateSingleField]);
+      setErrors((prev) => ({
+        ...prev,
+        [fieldName]: error || '',
+      }));
+
+      return error;
+    },
+    [formData, validateSingleField]
+  );
 
   // Validate entire form
   const validateForm = useCallback(async (): Promise<boolean> => {
@@ -359,9 +416,9 @@ export const useFormValidation = <T extends Record<string, string>>(
     });
 
     setErrors(newErrors);
-    
+
     const isValid = Object.keys(newErrors).length === 0;
-    
+
     // Mark all fields as touched
     setTouchedFields(new Set(fieldNames.map(String)));
 
@@ -370,7 +427,7 @@ export const useFormValidation = <T extends Record<string, string>>(
 
   // Clear field error
   const clearFieldError = useCallback((fieldName: keyof T) => {
-    setErrors(prev => {
+    setErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[String(fieldName)];
       return newErrors;
@@ -383,13 +440,16 @@ export const useFormValidation = <T extends Record<string, string>>(
   }, []);
 
   // Mark field as touched
-  const touchField = useCallback((fieldName: keyof T) => {
-    setTouchedFields(prev => new Set([...prev, String(fieldName)]));
-    
-    if (validateOnBlur) {
-      validateFieldPublic(fieldName);
-    }
-  }, [validateOnBlur, validateFieldPublic]);
+  const touchField = useCallback(
+    (fieldName: keyof T) => {
+      setTouchedFields((prev) => new Set([...prev, String(fieldName)]));
+
+      if (validateOnBlur) {
+        validateFieldPublic(fieldName);
+      }
+    },
+    [validateOnBlur, validateFieldPublic]
+  );
 
   // Reset form
   const resetForm = useCallback(() => {
@@ -409,7 +469,9 @@ export const useFormValidation = <T extends Record<string, string>>(
 
   // Computed values
   const isValid = useMemo(() => {
-    const hasErrors = Object.values(errors).some(error => error && error.trim() !== '');
+    const hasErrors = Object.values(errors).some(
+      (error) => error && error.trim() !== ''
+    );
     const hasValidatingFields = validatingFields.size > 0;
     return !hasErrors && !hasValidatingFields;
   }, [errors, validatingFields]);
