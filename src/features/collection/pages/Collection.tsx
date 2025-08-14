@@ -21,10 +21,10 @@ import React, {
 import { useToggle } from '../../../shared/hooks';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
 import { CollectionItem } from '../../../shared/components/molecules/collection/CollectionItemCard';
-import CollectionStats from '../../../components/lists/CollectionStats';
+import CollectionStats from '../../../shared/components/organisms/collection/CollectionStats';
 import CollectionTabs, {
   TabType,
-} from '../../../components/lists/CollectionTabs';
+} from '../../../shared/components/organisms/collection/CollectionTabs';
 import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { navigationHelper } from '../../../shared/utils/navigation';
@@ -42,7 +42,7 @@ const MarkSoldForm = React.lazy(() =>
   }))
 );
 const CollectionExportModal = React.lazy(
-  () => import('../../../components/lists/CollectionExportModal')
+  () => import('../../../shared/components/organisms/collection/CollectionExportModal')
 );
 
 const Collection: React.FC = () => {

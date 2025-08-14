@@ -11,10 +11,10 @@
 
 import React, { memo } from 'react';
 import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
-import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
-import CollectionItemCard, { CollectionItem } from '../../shared/components/molecules/collection/CollectionItemCard';
-import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
-import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
+import GenericLoadingState from '../../molecules/common/GenericLoadingState';
+import CollectionItemCard, { CollectionItem } from '../../molecules/collection/CollectionItemCard';
+import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
+import { ISealedProduct } from '../../../domain/models/sealedProduct';
 
 export type TabType =
   | 'psa-graded'

@@ -11,15 +11,15 @@
 
 import React, { useState } from 'react';
 import { ArrowUpDown, Download, FileText, Image, Package } from 'lucide-react';
-import { PokemonModal } from '../../shared/components/atoms/design-system/PokemonModal';
-import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
-import { CollectionItem } from './CollectionItemCard';
+import { PokemonModal } from '../../atoms/design-system/PokemonModal';
+import GenericLoadingState from '../../molecules/common/GenericLoadingState';
+import { CollectionItem } from '../../molecules/collection/CollectionItemCard';
 import {
   ExportFormat,
   OrderedExportRequest,
-} from '../../shared/interfaces/api/IExportApiService';
+} from '../../../interfaces/api/IExportApiService';
 import { ItemOrderingSection } from './ItemOrderingSection';
-import { ItemCategory, SortMethod } from '../../shared/domain/models/ordering';
+import { ItemCategory, SortMethod } from '../../../domain/models/ordering';
 
 export interface CollectionExportModalProps {
   isOpen: boolean;

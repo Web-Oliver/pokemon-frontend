@@ -67,7 +67,7 @@ vi.mock('../../../../shared/components/forms/MarkSoldForm', () => ({
   ),
 }));
 
-vi.mock('../../../../components/lists/CollectionExportModal', () => ({
+vi.mock('../../../../shared/components/organisms/collection/CollectionExportModal', () => ({
   default: ({ isOpen, onClose }: any) =>
     isOpen ? (
       <div data-testid="export-modal">
@@ -241,7 +241,7 @@ describe('Collection Page', () => {
     );
 
     // Mock the CollectionTabs component
-    vi.doMock('../../../../components/lists/CollectionTabs', () => ({
+    vi.doMock('../../../../shared/components/organisms/collection/CollectionTabs', () => ({
       default: MockCollectionTabs,
     }));
 
@@ -272,7 +272,7 @@ describe('Collection Page', () => {
       </button>
     );
 
-    vi.doMock('../../../../components/lists/CollectionTabs', () => ({
+    vi.doMock('../../../../shared/components/organisms/collection/CollectionTabs', () => ({
       default: MockCollectionTabs,
     }));
 
@@ -336,7 +336,7 @@ describe('Collection Page', () => {
       </div>
     );
 
-    vi.doMock('../../../../components/lists/CollectionTabs', () => ({
+    vi.doMock('../../../../shared/components/organisms/collection/CollectionTabs', () => ({
       default: MockCollectionTabs,
     }));
 
@@ -388,7 +388,7 @@ describe('Collection Page', () => {
       </button>
     );
 
-    vi.doMock('../../../../components/lists/CollectionTabs', () => ({
+    vi.doMock('../../../../shared/components/organisms/collection/CollectionTabs', () => ({
       default: MockCollectionTabs,
     }));
 
@@ -414,7 +414,7 @@ describe('Collection Page', () => {
       </button>
     );
 
-    vi.doMock('../../../../components/lists/CollectionTabs', () => ({
+    vi.doMock('../../../../shared/components/organisms/collection/CollectionTabs', () => ({
       default: MockCollectionTabs,
     }));
 

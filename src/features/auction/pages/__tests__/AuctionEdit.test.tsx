@@ -67,7 +67,7 @@ vi.mock('../components/auction/sections/AuctionItemsSection', () => ({
   ),
 }));
 
-vi.mock('../../../components/lists/CollectionItemCard', () => ({
+vi.mock('../../../shared/components/molecules/collection/CollectionItemCard', () => ({
   default: ({ item, onRemove }: any) => (
     <div data-testid="collection-item-card">
       <div>{item.itemData?.cardId?.cardName || 'Test Item'}</div>

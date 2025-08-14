@@ -24,7 +24,7 @@ import {
   CollectionItem,
   ItemCategory,
   SortMethod,
-} from '../../shared/domain/models/ordering';
+} from '../../../domain/models/ordering';
 
 export interface ItemOrderingSectionProps {
   items: CollectionItem[];
