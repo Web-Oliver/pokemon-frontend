@@ -4,11 +4,11 @@
  * Based on Context7 analysis of industry best practices
  */
 
-import { useTheme } from '../../hooks/theme/useTheme';
+import { useTheme } from '../../../hooks/use-theme';
 
 export interface ThemeConfig {
   // Visual settings
-  visualTheme: string;
+  
   particleEffectsEnabled: boolean;
   glassmorphismIntensity: number;
 
@@ -31,7 +31,6 @@ export const useThemeConfig = (): ThemeConfig => {
   const theme = useTheme();
 
   return {
-    visualTheme: theme.visualTheme || 'g100',
     particleEffectsEnabled: true,
     glassmorphismIntensity: 0.8,
     density: theme.density || 'comfortable',

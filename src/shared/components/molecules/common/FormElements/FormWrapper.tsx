@@ -36,11 +36,11 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   // Theme-aware gradient colors using visual theme
   const primaryGradient = error
     ? 'from-red-500/20 via-rose-500/20 to-red-500/20'
-    : `from-${themeConfig.visualTheme}-500/20 via-blue-500/20 to-${themeConfig.visualTheme}-500/20`;
+    : `from-${themeConfig.primaryColor || 'cyan'}-500/20 via-blue-500/20 to-${themeConfig.primaryColor || 'cyan'}-500/20`;
 
   const backgroundGradient = error
     ? 'from-red-500/10 via-rose-500/10 to-red-500/10'
-    : `from-${themeConfig.visualTheme}-500/10 via-blue-500/10 to-${themeConfig.visualTheme}-500/10`;
+    : `from-${themeConfig.primaryColor || 'cyan'}-500/10 via-blue-500/10 to-${themeConfig.primaryColor || 'cyan'}-500/10`;
 
   return (
     <div

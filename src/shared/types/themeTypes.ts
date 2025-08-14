@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { ThemeColor } from '../theme/formThemes';
+import { string } from '../theme/formThemes';
 
 // Theme types moved here to prevent circular dependencies
 export type VisualTheme =
@@ -31,13 +31,13 @@ export type AnimationIntensity = 'subtle' | 'normal' | 'enhanced' | 'disabled';
 // Theme configuration interface
 export interface ThemeConfiguration {
   // Visual Theme Settings
-  visualTheme: VisualTheme;
+  
   colorScheme: ColorScheme;
   density: Density;
   animationIntensity: AnimationIntensity;
 
   // Color Configuration
-  primaryColor: ThemeColor;
+  primaryColor: string;
 
   // Accessibility Settings
   highContrast: boolean;
@@ -74,7 +74,7 @@ export interface BaseThemeProps {
   /** Visual theme variant (overrides context theme) */
   theme?: VisualTheme;
   /** Color scheme (overrides context color scheme) */
-  colorScheme?: ThemeColor;
+  colorScheme?: string;
   /** Component density (overrides context density) */
   density?: Density;
   /** Animation intensity (overrides context setting) */

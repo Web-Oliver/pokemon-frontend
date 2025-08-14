@@ -20,7 +20,7 @@ import {
   resolveTheme,
   defaultThemeSettings,
   isGlassTheme,
-  getThemeDisplayName,
+  // getThemeDisplayName, // Commented out - unused
 } from './DesignSystem';
 
 interface ThemeContextType {
@@ -46,7 +46,7 @@ interface ThemeContextType {
   isLoaded: boolean;
   
   // Legacy compatibility
-  visualTheme: ThemeName;
+  
   density: Density;
 }
 
@@ -171,7 +171,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     isLoaded,
     
     // Legacy compatibility
-    visualTheme: resolvedThemeName,
     density: settings.density,
   };
 

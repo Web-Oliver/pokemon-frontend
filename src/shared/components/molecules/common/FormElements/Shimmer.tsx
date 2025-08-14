@@ -21,9 +21,9 @@ export const Shimmer: React.FC<ShimmerProps> = ({ className = '' }) => {
 
   // Theme-aware shimmer colors
   const shimmerColor =
-    themeConfig.visualTheme === 'dark'
+    themeConfig.isDarkMode
       ? 'via-cyan-200/20'
-      : `via-${themeConfig.visualTheme}-200/20`;
+      : `via-${themeConfig.primaryColor || 'cyan'}-200/20`;
 
   // Animation duration based on theme settings
   const animationDuration = themeConfig.reducedMotion

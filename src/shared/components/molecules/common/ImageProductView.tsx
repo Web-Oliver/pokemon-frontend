@@ -26,7 +26,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
-import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
 
 export interface ImageProductViewProps {
   // Core image data
@@ -54,7 +53,7 @@ export interface ImageProductViewProps {
   // Layout options
   aspectRatio?: 'auto' | 'card' | 'square' | 'wide';
   className?: string;
-  themeColor?: ThemeColor;
+  themeColor?: string;
 
   // Callback functions
   onView?: () => void;
@@ -94,7 +93,6 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   onShare,
   onFavorite,
 }) => {
-  const elementTheme = getElementTheme(themeColor);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   // Size configuration - Made image much bigger, text smaller
@@ -226,7 +224,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
 
           {isActionsOpen && (
             <div
-              className={`absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl ${elementTheme.border} p-2 min-w-[120px]`}
+              className={`absolute top-10 right-0 bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl bg-background border-border p-2 min-w-[120px]`}
             >
               {actions.map((action, index) => {
                 const Icon = action.icon;

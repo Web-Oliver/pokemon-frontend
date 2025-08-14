@@ -1,44 +1,99 @@
 /**
- * Pokemon Collection Design System - The Complete Component Library
- * Consolidates ALL UI patterns into solid, DRY, reusable components
- *
- * Following CLAUDE.md layered architecture:
- * - Layer 3: Components (UI Building Blocks)
- * - Single source of truth for ALL UI components
- * - Eliminates 1000+ lines of duplicate styling across the codebase
- * - Promotes consistency and maintainability
+ * Pokemon Design System - Centralized Component Exports
+ * 
+ * This is the SINGLE source of truth for all Pokemon components.
+ * All components use shadcn/ui as their foundation with Pokemon theming.
+ * Fully integrated with existing theme system.
+ * 
+ * Import pattern: import { PokemonButton, PokemonInput } from '@/shared/components/atoms/design-system'
  */
 
-// Foundation Components - The Big 5 that replace everything
-export { PokemonCard } from './PokemonCard';
-export type { PokemonCardProps } from './PokemonCard';
-
+// === CORE COMPONENTS (Built on shadcn foundation) ===
 export { PokemonButton } from './PokemonButton';
 export type { PokemonButtonProps } from './PokemonButton';
 
 export { PokemonInput } from './PokemonInput';
 export type { PokemonInputProps } from './PokemonInput';
 
-export { PokemonSelect } from './PokemonSelect';
-export type { PokemonSelectProps, SelectOption } from './PokemonSelect';
-
-export { PokemonModal, PokemonConfirmModal } from './PokemonModal';
-export type {
-  PokemonModalProps,
-  PokemonConfirmModalProps,
+export { 
+  PokemonModal, 
+  PokemonConfirmModal, 
+  PokemonItemSelectorModal 
 } from './PokemonModal';
+export type { PokemonModalProps } from './PokemonModal';
 
-// Specialized Components
-export { PokemonBadge } from './PokemonBadge';
-export type { PokemonBadgeProps } from './PokemonBadge';
-
-export { PokemonPageContainer } from './PokemonPageContainer';
-export type { PokemonPageContainerProps } from './PokemonPageContainer';
-
-// Form Components (only used components)
-export { PokemonForm } from './PokemonForm';
+export { 
+  PokemonForm,
+  PokemonCardForm,
+  PokemonProductForm,
+  PokemonAuctionForm,
+  PokemonSaleForm,
+  PokemonSearchForm,
+  PokemonFilterForm
+} from './PokemonForm';
 export type { PokemonFormProps, PokemonFormField, PokemonFormSection } from './PokemonForm';
 
-// Component aliases for backward compatibility (removed to fix circular dependency)
-// These aliases were causing module loading issues
-// Import components directly by their full names instead
+// === ADDITIONAL COMPONENTS ===
+export { PokemonBadge } from './PokemonBadge';
+export { PokemonCard } from './PokemonCard';
+export { PokemonSelect } from './PokemonSelect';
+export { PokemonIcon } from './PokemonIcon';
+export { DashboardIcon } from './DashboardIcon';
+export { SearchInput } from './SearchInput';
+export { PokemonPageContainer } from './PokemonPageContainer';
+
+// === DESIGN SYSTEM INFO ===
+export const POKEMON_DESIGN_SYSTEM_VERSION = '2.0.0';
+export const POKEMON_DESIGN_SYSTEM_INFO = {
+  name: 'Pokemon Design System',
+  version: POKEMON_DESIGN_SYSTEM_VERSION,
+  foundation: 'shadcn/ui',
+  description: 'Pokemon-themed components built on shadcn/ui foundation',
+  components: [
+    'PokemonButton',
+    'PokemonInput', 
+    'PokemonModal',
+    'PokemonForm',
+    'PokemonBadge',
+    'PokemonCard',
+    'PokemonSelect'
+  ],
+  features: [
+    'Consistent Pokemon theming',
+    'shadcn/ui accessibility',
+    'TypeScript support',
+    'Responsive design',
+    'Dark mode support'
+  ]
+};
+
+// === DESIGN SYSTEM CORE ===
+// Uses EXISTING theme system from /theme/DesignSystem.ts
+export * from './unifiedVariants';
+
+// === SHADCN COMPONENTS ===
+// Import shadcn components directly: import { Button } from '@/components/ui/button'
+// Note: shadcn components are not re-exported to avoid build issues
+
+/**
+ * USAGE EXAMPLES:
+ * 
+ * // Basic button
+ * <PokemonButton variant="primary">Click me</PokemonButton>
+ * 
+ * // Form with validation
+ * <PokemonForm 
+ *   onSubmit={handleSubmit}
+ *   fields={[
+ *     { type: 'input', name: 'name', label: 'Name', required: true }
+ *   ]}
+ * />
+ * 
+ * // Confirmation modal
+ * <PokemonModal 
+ *   open={isOpen} 
+ *   onClose={onClose}
+ *   confirmVariant="danger"
+ *   onConfirm={handleConfirm}
+ * />
+ */

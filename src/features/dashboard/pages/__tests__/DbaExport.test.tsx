@@ -26,7 +26,7 @@ vi.mock('../../../../shared/hooks/useDbaExport', () => ({
 
 vi.mock('../../../../shared/utils/ui/themeConfig', () => ({
   useCentralizedTheme: vi.fn(() => ({
-    visualTheme: 'cosmic',
+    ,
     particleEffectsEnabled: true,
     glassmorphismIntensity: 0.8,
   })),

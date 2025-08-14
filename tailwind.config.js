@@ -1,9 +1,59 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'selector',
+  darkMode: ['class'],
   theme: {
     extend: {
+      // shadcn/ui color system
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
+        },
+        // Pokemon brand colors
+        pokemon: {
+          red: 'hsl(var(--pokemon-red))',
+          blue: 'hsl(var(--pokemon-blue))',
+          yellow: 'hsl(var(--pokemon-yellow))',
+          green: 'hsl(var(--pokemon-green))',
+        },
+      },
       // Context7 Premium Animation Extensions
       animation: {
         shimmer: 'shimmer 2s linear infinite',
@@ -78,64 +128,6 @@ export default {
           },
         },
       },
-      // THEME-AWARE COLORS
-      // Integrates with ThemeContext and pokemon-design-system.css
-      colors: {
-        // Theme-aware dynamic colors
-        'theme-primary': 'var(--theme-primary)',
-        'theme-primary-hover': 'var(--theme-primary-hover)',
-        'theme-secondary': 'var(--theme-secondary)',
-        'theme-accent': 'var(--theme-accent)',
-        'theme-bg-primary': 'var(--theme-bg-primary)',
-        'theme-bg-secondary': 'var(--theme-bg-secondary)',
-        'theme-bg-accent': 'var(--theme-bg-accent)',
-        'theme-border-primary': 'var(--theme-border-primary)',
-        'theme-border-secondary': 'var(--theme-border-secondary)',
-        'theme-border-accent': 'var(--theme-border-accent)',
-
-        // Legacy premium colors (maintained for compatibility)
-        premium: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-
-        // Enhanced glassmorphism colors (intensity-aware)
-        glass: {
-          primary: 'var(--bg-glass-primary)',
-          secondary: 'var(--bg-glass-secondary)',
-          accent: 'var(--bg-glass-accent)',
-          overlay: 'var(--bg-glass-overlay)',
-          border: {
-            light: 'var(--border-glass-light)',
-            medium: 'var(--border-glass-medium)',
-            subtle: 'var(--border-glass-subtle)',
-          },
-        },
-
-        // Pokemon brand colors (static)
-        pokemon: {
-          red: 'var(--color-pokemon-red)',
-          blue: 'var(--color-pokemon-blue)',
-          yellow: 'var(--color-pokemon-yellow)',
-          green: 'var(--color-pokemon-green)',
-        },
-
-        // Context7 futuristic colors (static)
-        cyber: {
-          cyan: 'var(--color-cyber-cyan)',
-          purple: 'var(--color-neural-purple)',
-          pink: 'var(--color-quantum-pink)',
-          emerald: 'var(--color-plasma-emerald)',
-        },
-      },
       // DENSITY-AWARE SPACING
       // Integrates with ThemeContext density settings
       spacing: {
@@ -153,8 +145,11 @@ export default {
         88: '22rem',
         128: '32rem',
       },
-      // Context7 Premium Border Radius
+      // shadcn/ui border radius + extensions
       borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
         '4xl': '2rem',
         '5xl': '2.5rem',
         '6xl': '3rem',
@@ -215,107 +210,5 @@ export default {
       },
     },
   },
-  plugins: [
-    // THEME-AWARE UTILITIES PLUGIN
-    // Phase 1.1.3: Enhanced plugin with CSS custom properties integration
-    function ({ addUtilities, addComponents }) {
-      // Theme-aware utilities
-      const themeUtilities = {
-        // Dynamic glassmorphism utilities
-        '.glass-morphism': {
-          background: 'var(--bg-glass-primary)',
-          'backdrop-filter': 'blur(var(--glass-blur))',
-          border: '1px solid var(--border-glass-light)',
-        },
-        '.glass-morphism-secondary': {
-          background: 'var(--bg-glass-secondary)',
-          'backdrop-filter': 'blur(var(--glass-blur))',
-          border: '1px solid var(--border-glass-medium)',
-        },
-        '.glass-morphism-accent': {
-          background: 'var(--bg-glass-accent)',
-          'backdrop-filter': 'blur(var(--glass-blur))',
-          border: '1px solid var(--border-glass-subtle)',
-        },
-
-        // Theme-aware shadows
-        '.theme-shadow': {
-          'box-shadow': 'var(--theme-shadow-primary)',
-        },
-        '.theme-shadow-hover': {
-          'box-shadow': 'var(--theme-shadow-hover)',
-        },
-
-        // Animation utilities with theme support
-        '.shimmer': {
-          background:
-            'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
-          animation: 'shimmer 2s infinite',
-        },
-        '.shimmer-theme': {
-          background:
-            'linear-gradient(90deg, transparent, var(--border-glass-light), transparent)',
-          animation: 'shimmer var(--animation-duration-slow) infinite',
-        },
-
-        // Theme-aware gradient border
-        '.gradient-border-theme': {
-          background:
-            'linear-gradient(var(--theme-bg-primary), var(--theme-bg-primary)) padding-box, var(--theme-signature-gradient) border-box',
-          border: '2px solid transparent',
-        },
-
-        // Legacy utilities (maintained for compatibility)
-        '.glass-morphism-dark': {
-          background: 'rgba(0, 0, 0, 0.8)',
-          'backdrop-filter': 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-        },
-        '.gradient-border': {
-          background:
-            'linear-gradient(white, white) padding-box, linear-gradient(45deg, #6366f1, #8b5cf6, #3b82f6) border-box',
-          border: '2px solid transparent',
-        },
-        '.premium-shadow': {
-          'box-shadow':
-            '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        },
-        '.premium-glow': {
-          'box-shadow':
-            '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(31, 38, 135, 0.37)',
-        },
-      };
-      addUtilities(themeUtilities);
-
-      // Theme-aware component classes
-      const themeComponents = {
-        '.card-theme': {
-          background: 'var(--theme-card-background)',
-          'backdrop-filter': 'blur(var(--glass-blur))',
-          border: '1px solid var(--theme-card-border)',
-          'border-radius': 'var(--radius-3xl)',
-          'box-shadow': 'var(--theme-shadow-primary)',
-          transition: 'all var(--animation-duration-normal) var(--ease-out)',
-        },
-        '.card-theme:hover': {
-          'box-shadow': 'var(--theme-shadow-hover)',
-          transform: 'scale(1.02) translateY(-4px)',
-        },
-        '.btn-theme': {
-          background: 'var(--theme-primary)',
-          color: 'white',
-          padding: 'var(--density-spacing-sm) var(--density-spacing-lg)',
-          'border-radius': 'var(--radius-2xl)',
-          'box-shadow': 'var(--theme-shadow-primary)',
-          transition: 'all var(--animation-duration-normal) var(--ease-out)',
-        },
-        '.btn-theme:hover': {
-          background: 'var(--theme-primary-hover)',
-          'box-shadow': 'var(--theme-shadow-hover)',
-          transform: 'scale(1.05) translateY(-2px)',
-        },
-      };
-      addComponents(themeComponents);
-    },
-  ],
-};
+  plugins: [],
+}

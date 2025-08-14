@@ -10,8 +10,8 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../hooks/theme/useTheme';
-import { getElementTheme, ThemeColor } from '../../../../theme/formThemes';
+import { useTheme } from '../../../../hooks/use-theme';
+import { getElementTheme, type ThemeColor } from '../../../../lib/theme-utils';
 
 export type LoadingVariant = 'spinner' | 'skeleton' | 'shimmer';
 
@@ -74,37 +74,36 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
   const renderSpinner = () => (
     <div className={containerClasses}>
       <div className="flex flex-col items-center">
-        {/* Context7 Premium Loading Container */}
+        {/* Loading Container */}
         <div className="relative">
-          {/* Multi-layer rotating rings with theme colors */}
+          {/* Multi-layer rotating rings */}
           <div
-            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r ${elementTheme.gradient} animate-spin ${sizeClasses[size]} [clip-path:polygon(0%_0%,25%_0%,25%_25%,0%_25%)]`}
+            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r ${elementTheme.gradient} animate-spin ${sizeClasses[size]}`}
           ></div>
           <div
-            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l ${elementTheme.glow} animate-spin ${sizeClasses[size]} opacity-60 [clip-path:polygon(75%_75%,100%_75%,100%_100%,75%_100%)] [animation-duration:1.5s] [animation-direction:reverse]`}
+            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l ${elementTheme.glow} animate-spin ${sizeClasses[size]} opacity-60`}
+            style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}
           ></div>
 
-          {/* Inner pulsing circle with enhanced glow */}
+          {/* Inner pulsing circle */}
           <div
-            className={`relative bg-zinc-900/95 backdrop-blur-sm rounded-full ${elementTheme.border} shadow-2xl flex items-center justify-center ${sizeClasses[size]} shadow-[0_0_20px_0_rgb(6,182,212,0.3)]`}
+            className={`relative ${elementTheme.background} ${elementTheme.border} rounded-full shadow-2xl flex items-center justify-center ${sizeClasses[size]}`}
           >
             <div
               className={`w-1/2 h-1/2 bg-gradient-to-br ${colorClasses[color]} rounded-full animate-pulse opacity-90 shadow-lg`}
             ></div>
           </div>
 
-          {/* Premium shimmer effect with enhanced animation */}
+          {/* Shimmer effect */}
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-30 ${sizeClasses[size]} [animation-delay:0.5s]`}
-          ></div>
-          <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-20 ${sizeClasses[size]} [animation-delay:1s]`}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-30 ${sizeClasses[size]}`}
+            style={{ animationDelay: '0.5s' }}
           ></div>
         </div>
 
         {text && (
           <p
-            className={`mt-4 text-zinc-300 font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse bg-gradient-to-r ${elementTheme.gradient} bg-clip-text text-transparent`}
+            className={`mt-4 ${elementTheme.text} font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse bg-gradient-to-r ${elementTheme.gradient} bg-clip-text text-transparent`}
           >
             {text}
           </p>
@@ -125,7 +124,7 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
           />
         ))}
         {text && (
-          <p className={`text-zinc-400 ${textSizeClasses[size]} mt-2`}>
+          <p className={`${elementTheme.text} ${textSizeClasses[size]} mt-2`}>
             {text}
           </p>
         )}
@@ -141,7 +140,7 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
         {text && (
           <div className="flex items-center justify-center h-full">
-            <p className={`text-zinc-400 ${textSizeClasses[size]}`}>{text}</p>
+            <p className={`${elementTheme.text} ${textSizeClasses[size]}`}>{text}</p>
           </div>
         )}
       </div>

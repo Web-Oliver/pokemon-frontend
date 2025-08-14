@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -158,10 +159,8 @@ export default defineConfig(({ mode }) => ({
     // Context7 Module Resolution
     resolve: {
       alias: {
-        // Enable tree-shaking for commonly used utilities
-        '@/utils': '/src/utils',
-        '@/components': '/src/components',
-        '@/hooks': '/src/hooks',
+        // shadcn/ui alias for proper component imports
+        '@': path.resolve(__dirname, './src'),
       },
     }
 ));

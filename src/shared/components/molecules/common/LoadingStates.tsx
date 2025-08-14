@@ -12,11 +12,11 @@
 
 import React from 'react';
 import GenericLoadingState from './GenericLoadingState';
-import { ThemeColor } from '../../theme/formThemes';
+import { string } from '../../theme/formThemes';
 
 interface BaseLoadingProps {
   className?: string;
-  themeColor?: ThemeColor;
+  themeColor?: string;
 }
 
 /**

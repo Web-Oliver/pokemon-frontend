@@ -14,7 +14,7 @@ import { log } from '../shared/utils/performance/logger';
 import { Toaster } from 'react-hot-toast';
 import { PageLoading } from '../shared/components/molecules/common/LoadingStates';
 import { queryClient } from './lib/queryClient';
-import { ThemeProvider } from '../theme';
+import { ThemeProvider } from '../contexts/theme-context';
 import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
 // Layout
@@ -205,7 +205,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="pokemon-theme">
         <MainLayout>
           {/* Context7 Pattern: Suspense boundary with transition state */}
           <Suspense

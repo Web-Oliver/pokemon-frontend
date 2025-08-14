@@ -27,16 +27,16 @@ export const Glow: React.FC<GlowProps> = ({
   const getGlowVariant = (variantType: string) => {
     const baseVariants = {
       primary:
-        themeConfig.visualTheme === 'dark'
+        themeConfig.isDarkMode
           ? 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20'
-          : `from-${themeConfig.visualTheme}-500/20 via-blue-500/20 to-${themeConfig.visualTheme}-500/20`,
+          : `from-${themeConfig.primaryColor || 'cyan'}-500/20 via-blue-500/20 to-${themeConfig.primaryColor || 'cyan'}-500/20`,
       secondary: 'from-zinc-500/20 via-zinc-600/20 to-zinc-500/20',
       danger: 'from-red-500/20 via-rose-500/20 to-red-500/20',
       success: 'from-emerald-500/20 via-teal-500/20 to-emerald-500/20',
       default:
-        themeConfig.visualTheme === 'dark'
+        themeConfig.isDarkMode
           ? 'from-cyan-500/20 via-blue-500/20 to-cyan-500/20'
-          : `from-${themeConfig.visualTheme}-500/20 via-blue-500/20 to-${themeConfig.visualTheme}-500/20`,
+          : `from-${themeConfig.primaryColor || 'cyan'}-500/20 via-blue-500/20 to-${themeConfig.primaryColor || 'cyan'}-500/20`,
     };
     return baseVariants[variantType] || baseVariants.default;
   };

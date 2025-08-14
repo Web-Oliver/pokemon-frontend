@@ -13,7 +13,7 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
-import { getElementTheme, ThemeColor } from '../../theme/formThemes';
+import { 
 import { getImageUrl } from '../../utils/ui/imageUtils';
 
 interface OptimizedImageViewProps {
@@ -23,7 +23,7 @@ interface OptimizedImageViewProps {
   fallbackIcon?: React.ReactNode;
   onLoad?: () => void;
   onError?: (error: any) => void;
-  themeColor?: ThemeColor;
+  themeColor?: string;
 }
 
 const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
@@ -35,7 +35,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
   onError,
   themeColor = 'dark',
 }) => {
-  const elementTheme = getElementTheme(themeColor);
+  const elementTheme = 
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isInView, setIsInView] = useState(false);
@@ -84,7 +84,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
     return (
       <div
         ref={containerRef}
-        className={`flex items-center justify-center bg-zinc-800/60 rounded-xl ${elementTheme.border} backdrop-blur-sm ${className}`}
+        className={`flex items-center justify-center bg-zinc-800/60 rounded-xl bg-background border-border backdrop-blur-sm ${className}`}
       >
         <div className="flex flex-col items-center space-y-2 text-zinc-400">
           {fallbackIcon}
@@ -99,7 +99,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
       {/* Placeholder while loading with theme integration */}
       {!isLoaded && (
         <div
-          className={`absolute inset-0 flex items-center justify-center bg-zinc-800/60 rounded-xl ${elementTheme.border} backdrop-blur-sm`}
+          className={`absolute inset-0 flex items-center justify-center bg-zinc-800/60 rounded-xl bg-background border-border backdrop-blur-sm`}
         >
           <div className="animate-pulse flex flex-col items-center space-y-2">
             {fallbackIcon}

@@ -79,7 +79,7 @@ vi.mock('../../../../shared/utils/helpers/auctionStatusUtils', () => ({
   getStatusColor: vi.fn((status) => 'bg-blue-500 text-white'),
 }));
 
-vi.mock('../../../../shared/hooks/theme/useTheme', () => ({
+vi.mock('../../../../shared/hooks/use-theme', () => ({
   useTheme: vi.fn(() => ({
     currentTheme: 'cosmic',
     setTheme: vi.fn(),

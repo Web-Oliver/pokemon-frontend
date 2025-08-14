@@ -10,7 +10,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
-import { formThemes, ThemeColor } from '../../theme/formThemes';
+import { formThemes, string } from '../../theme/formThemes';
 // NOTE: ThemePropertyManager removed - using simplified theme system
 import {
   AnimationIntensity,
@@ -35,7 +35,7 @@ export interface ThemeContextType {
   setColorScheme: (scheme: ColorScheme) => void;
   setDensity: (density: Density) => void;
   setAnimationIntensity: (intensity: AnimationIntensity) => void;
-  setPrimaryColor: (color: ThemeColor) => void;
+  setPrimaryColor: (color: string) => void;
 
   // Accessibility
   toggleHighContrast: () => void;
@@ -74,7 +74,7 @@ export const themePresets: ThemePreset[] = [
     description:
       'Glassmorphism design with premium gradients and micro-interactions',
     config: {
-      visualTheme: 'context7-premium',
+      ,
       primaryColor: 'dark',
       density: 'comfortable',
       animationIntensity: 'normal',
@@ -92,7 +92,7 @@ export const themePresets: ThemePreset[] = [
     name: 'Context7 2025 Futuristic',
     description: 'Advanced neural network patterns with holographic effects',
     config: {
-      visualTheme: 'context7-futuristic',
+      ,
       primaryColor: 'blue',
       density: 'comfortable',
       animationIntensity: 'enhanced',
@@ -111,7 +111,7 @@ export const themePresets: ThemePreset[] = [
     description:
       'Space-themed with cosmic gradients and holographic backgrounds',
     config: {
-      visualTheme: 'dba-cosmic',
+      ,
       primaryColor: 'purple',
       density: 'spacious',
       animationIntensity: 'enhanced',
@@ -129,7 +129,7 @@ export const themePresets: ThemePreset[] = [
     name: 'Minimal Clean',
     description: 'Clean, accessible design with reduced visual complexity',
     config: {
-      visualTheme: 'minimal',
+      ,
       primaryColor: 'emerald',
       density: 'comfortable',
       animationIntensity: 'subtle',
@@ -151,7 +151,7 @@ export const themePresets: ThemePreset[] = [
 // ================================
 
 export const defaultConfig: ThemeConfiguration = {
-  visualTheme: 'context7-premium',
+  ,
   colorScheme: 'system',
   density: 'comfortable',
   animationIntensity: 'normal',
@@ -311,7 +311,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Visual theme classes
     root.className = root.className.replace(/theme-\w+/g, '');
-    root.classList.add(`theme-${themeConfig.visualTheme}`);
+    root.classList.add(`theme-${themeConfig.}`);
 
     // Accessibility settings
     if (themeConfig.reducedMotion) {
@@ -332,7 +332,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Theme manipulation functions
   const setVisualTheme = useCallback((theme: VisualTheme) => {
-    setConfig((prev) => ({ ...prev, visualTheme: theme }));
+    setConfig((prev) => ({ ...prev, }));
   }, []);
 
   const setColorScheme = useCallback(
@@ -351,7 +351,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     setConfig((prev) => ({ ...prev, animationIntensity: intensity }));
   }, []);
 
-  const setPrimaryColor = useCallback((color: ThemeColor) => {
+  const setPrimaryColor = useCallback((color: string) => {
     setConfig((prev) => ({ ...prev, primaryColor: color }));
   }, []);
 
@@ -431,7 +431,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   // Utility functions
   const getThemeClasses = useCallback((): string => {
     const classes = [
-      `theme-${config.visualTheme}`,
+      `theme-${config.}`,
       `density-${config.density}`,
       `animation-${config.animationIntensity}`,
     ];

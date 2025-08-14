@@ -9,7 +9,7 @@
  * - Interface Segregation: Separate interfaces for different theme aspects
  */
 
-export type ThemeColor =
+export type string =
   | 'purple'
   | 'blue'
   | 'emerald'
@@ -61,7 +61,7 @@ export interface FormThemeConfig {
  * Centralized theme configurations
  * Single source of truth for all form component theming
  */
-export const formThemes: Record<ThemeColor, FormThemeConfig> = {
+export const formThemes: Record<string, FormThemeConfig> = {
   purple: {
     header: {
       background: 'from-zinc-900/80 to-zinc-800/80',
@@ -194,7 +194,7 @@ export const formThemes: Record<ThemeColor, FormThemeConfig> = {
  * Helper function to get theme configuration
  * Provides type safety and default fallback
  */
-export const getFormTheme = (color: ThemeColor = 'dark'): FormThemeConfig => {
+export const getFormTheme = (color: string = 'dark'): FormThemeConfig => {
   return formThemes[color];
 };
 
@@ -202,7 +202,7 @@ export const getFormTheme = (color: ThemeColor = 'dark'): FormThemeConfig => {
  * Helper function to get header theme only
  * For components that only need header styling
  */
-export const getHeaderTheme = (color: ThemeColor = 'dark'): FormHeaderTheme => {
+export const getHeaderTheme = (color: string = 'dark'): FormHeaderTheme => {
   return formThemes[color].header;
 };
 
@@ -210,7 +210,7 @@ export const getHeaderTheme = (color: ThemeColor = 'dark'): FormHeaderTheme => {
  * Helper function to get button theme only
  * For components that only need button styling
  */
-export const getButtontheme = (color: ThemeColor = 'dark'): FormButtonTheme => {
+export const getButtontheme = (color: string = 'dark'): FormButtonTheme => {
   return formThemes[color].button;
 };
 
@@ -219,7 +219,7 @@ export const getButtontheme = (color: ThemeColor = 'dark'): FormButtonTheme => {
  * For premium form elements that need gradient/glow effects
  */
 export const getElementTheme = (
-  color: ThemeColor = 'dark'
+  color: string = 'dark'
 ): PremiumElementTheme => {
   const theme = formThemes[color];
   if (!theme) {
@@ -234,16 +234,16 @@ export const getElementTheme = (
  * Combines multiple theme aspects into ready-to-use className strings
  */
 export const buildThemeClasses = {
-  headerBackground: (color: ThemeColor) =>
+  headerBackground: (color: string) =>
     `bg-gradient-to-br ${getHeaderTheme(color).background}`,
-  headerBorder: (color: ThemeColor) => `border ${getHeaderTheme(color).border}`,
-  buttonPrimary: (color: ThemeColor) => {
+  headerBorder: (color: string) => `border ${getHeaderTheme(color).border}`,
+  buttonPrimary: (color: string) => {
     const theme = getButtontheme(color);
     return `${theme.primary} ${theme.primaryHover}`;
   },
-  elementGradient: (color: ThemeColor) =>
+  elementGradient: (color: string) =>
     `bg-gradient-to-r ${getElementTheme(color).gradient}`,
-  elementGlow: (color: ThemeColor) =>
+  elementGlow: (color: string) =>
     `bg-gradient-to-r ${getElementTheme(color).glow}`,
 } as const;
 

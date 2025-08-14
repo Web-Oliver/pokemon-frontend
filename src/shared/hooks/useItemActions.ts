@@ -46,8 +46,7 @@ export const useItemActions = ({
 
   // Get appropriate API service based on item type
   const getApiService = useCallback(() => {
-    const collectionService =
-      
+    const collectionService = null; // TODO: Import proper collection service
 
     switch (itemType) {
       case 'psa':

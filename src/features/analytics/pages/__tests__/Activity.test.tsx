@@ -57,7 +57,7 @@ vi.mock('../../../../shared/utils/helpers/activityHelpers', () => ({
   getActivityColor: vi.fn((type) => 'blue'),
 }));
 
-vi.mock('../../../../shared/hooks/theme/useTheme', () => ({
+vi.mock('../../../../shared/hooks/use-theme', () => ({
   useTheme: vi.fn(() => ({
     currentTheme: 'cosmic',
     setTheme: vi.fn(),
@@ -70,7 +70,7 @@ vi.mock('../../../../shared/hooks/theme/useTheme', () => ({
 
 vi.mock('../../../../shared/utils/ui/themeConfig', () => ({
   useCentralizedTheme: vi.fn(() => ({
-    visualTheme: 'cosmic',
+    ,
     particleEffectsEnabled: true,
     glassmorphismIntensity: 0.8,
   })),

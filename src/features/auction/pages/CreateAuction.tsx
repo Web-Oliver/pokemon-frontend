@@ -356,10 +356,7 @@ const CreateAuction: React.FC = () => {
 
   // Theme-aware background while preserving Context7 2025 futuristic aesthetic
   const backgroundStyles = {
-    background:
-      themeConfig.visualTheme === 'context7-futuristic'
-        ? 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)'
-        : 'linear-gradient(135deg, var(--theme-background-start, rgb(2 6 23)) 0%, var(--theme-background-mid, rgba(88 28 135 / 0.2)) 50%, var(--theme-background-end, rgba(49 46 129 / 0.3)) 100%)',
+    background: 'linear-gradient(135deg, rgb(2 6 23) 0%, rgba(88 28 135 / 0.2) 50%, rgba(49 46 129 / 0.3) 100%)',
   };
 
   return (

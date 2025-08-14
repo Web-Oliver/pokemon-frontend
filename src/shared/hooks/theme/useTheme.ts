@@ -17,7 +17,6 @@ export const useTheme = () => {
   return {
     // Current theme info
     colorScheme: theme.settings.colorScheme,
-    visualTheme: theme.resolvedTheme,
     density: theme.settings.density,
     resolvedTheme: theme.resolvedTheme,
     
@@ -50,11 +49,10 @@ export const useTheme = () => {
  * @deprecated Use useThemeSettings from new theme system
  */
 export const useThemeInfo = () => {
-  const { settings, resolvedTheme } = useNewTheme();
+  const { settings, resolvedTheme } = useTheme();
   
   return {
     colorScheme: settings.colorScheme,
-    visualTheme: settings.theme,
     density: settings.density,
     isDarkMode: resolvedTheme !== 'light',
     isLightMode: resolvedTheme === 'light',

@@ -46,7 +46,7 @@ vi.mock('../../../../shared/utils/performance/logger', () => ({
 
 vi.mock('../../../../shared/utils/ui/themeConfig', () => ({
   useCentralizedTheme: vi.fn(() => ({
-    visualTheme: 'cosmic',
+    ,
     particleEffectsEnabled: true,
     glassmorphismIntensity: 0.8,
   })),

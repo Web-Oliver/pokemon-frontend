@@ -1,27 +1,18 @@
-/**
- * Pokemon Modal Component - The Ultimate Dialog Engine
- * Enhanced with advanced theme integration from common/Modal
- *
- * Consolidates ALL modal patterns across the entire codebase:
- * - PokemonModal (heavily used design system)
- * - common/Modal (advanced theme integration)
- * - ConfirmModal (confirmation dialog patterns)
- * - ItemSelectorModal (selection patterns)
- * - Various specific modals (export, auction, etc.)
- *
- * Following CLAUDE.md principles:
- * - DRY: Eliminates ALL duplicate modal implementations
- * - SRP: Single definitive modal component
- * - Reusable: Works everywhere - confirmations, forms, image views, details
- * - Theme Integration: Full ThemeContext support with CSS custom properties
- */
-
 import React, { forwardRef, useEffect } from 'react';
 import { AlertTriangle, Check, Info, X } from 'lucide-react';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter 
+} from '../../../../components/ui/dialog';
 import { ComponentSize, StandardModalProps } from '../../types/themeTypes';
 import { cn, cardClasses } from '../../../utils';
-import { useTheme } from '../../../hooks/theme/useTheme';
+import { useTheme } from '../../../../hooks/use-theme';
 import { PokemonButton } from './PokemonButton';
+import { pokemonModalVariants } from './unifiedVariants';
 
 export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
   // Base modal props
@@ -70,10 +61,6 @@ export interface PokemonModalProps extends Omit<StandardModalProps, 'size'> {
   renderItem?: (item: any) => React.ReactNode;
 }
 
-/**
- * THE definitive modal - consolidates ALL modal patterns
- * Handles: confirmations, forms, image viewers, detail dialogs, item selection, etc.
- */
 export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
   (
     {
@@ -126,112 +113,20 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
     },
     ref
   ) => {
-    // Extract only DOM-compatible props
-    const {
-      // Remove modal-specific props that shouldn't go to DOM
-      confirmText: _confirmText,
-      confirmtext: _confirmtext,
-      ...restDomProps
-    } = domProps;
     // Theme context integration
-    // Theme context integration via centralized useTheme hook
     const themeContext = useTheme();
-    const contextTheme = themeContext.visualTheme || 'dark';
-    const contextDensity = themeContext.density || 'comfortable';
 
     // Resolve open state (legacy vs theme system)
     const modalOpen = open !== undefined ? open : isOpen || false;
 
-    // Resolve close on backdrop (legacy vs theme system)
-    const shouldCloseOnBackdrop =
-      closeOnBackdrop !== undefined
-        ? closeOnBackdrop
-        : closeOnOverlayClick !== false;
-
-    // Merge context theme with component props
-    const effectiveTheme = theme || contextTheme;
-    const effectiveDensity = density || contextDensity;
-    const effectiveAnimationIntensity = 'normal';
-
-    // Handle escape key
-    useEffect(() => {
-      if (!modalOpen || !closeOnEscape) return;
-
-      const handleEscape = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-          onClose();
-        }
-      };
-
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }, [modalOpen, closeOnEscape, onClose]);
-
-    // Prevent body scroll when modal is open
-    useEffect(() => {
-      if (modalOpen) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = 'unset';
-      }
-
-      return () => {
-        document.body.style.overflow = 'unset';
-      };
-    }, [modalOpen]);
-
-    if (!modalOpen) return null;
-
-    // Size mapping with theme system support
-    const resolvedMaxWidth = maxWidth || size;
+    // Size mapping
     const sizeClasses = {
       sm: 'max-w-md',
       md: 'max-w-2xl',
       lg: 'max-w-4xl',
       xl: 'max-w-6xl',
       full: 'max-w-[95vw]',
-      fullscreen: 'w-screen h-screen max-w-none max-h-none m-0 rounded-none',
-    };
-
-    // Variant system with theme integration
-    const variantClasses = {
-      default: [
-        'bg-[var(--theme-surface,rgba(15,23,42,0.95))]',
-        'border border-[var(--theme-border,rgba(148,163,184,0.2))]',
-        'text-[var(--theme-text,#f8fafc)]',
-      ].join(' '),
-      glass: [
-        'bg-gradient-to-br from-[var(--theme-glass-primary,rgba(15,23,42,0.8))] to-[var(--theme-glass-secondary,rgba(30,41,59,0.9))]',
-        'backdrop-blur-2xl border border-[var(--theme-accent-primary,#0891b2)]/20',
-        'shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] shadow-[var(--theme-accent-primary,#0891b2)]/20',
-        'text-[var(--theme-text,#f8fafc)]',
-      ].join(' '),
-      solid: [
-        'bg-[var(--theme-surface-solid,#1e293b)]',
-        'border border-[var(--theme-border,rgba(148,163,184,0.3))]',
-        'shadow-2xl',
-        'text-[var(--theme-text,#f8fafc)]',
-      ].join(' '),
-      center: [
-        'bg-white dark:bg-slate-800',
-        'border border-slate-200 dark:border-slate-700',
-        'shadow-xl',
-        'text-slate-900 dark:text-slate-100',
-      ].join(' '),
-    };
-
-    // Animation classes based on intensity
-    const getAnimationClasses = () => {
-      switch (effectiveAnimationIntensity) {
-        case 'none':
-          return 'transition-none';
-        case 'reduced':
-          return 'transition-opacity duration-200 ease-out';
-        case 'enhanced':
-          return 'transition-all duration-500 ease-out animate-in slide-in-from-bottom-4 fade-in-0';
-        default:
-          return 'transition-all duration-300 ease-out animate-in slide-in-from-bottom-2 fade-in-0';
-      }
+      fullscreen: 'w-screen h-screen max-w-none max-h-none',
     };
 
     // Confirmation modal content
@@ -255,43 +150,27 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       const Icon = iconMap[confirmVariant];
 
       return (
-        <div className="text-center">
+        <div className="text-center space-y-4">
           {Icon && (
-            <div
-              className={cn(
-                'mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center',
-                colorMap[confirmVariant]
-              )}
-            >
+            <div className={cn('mx-auto w-16 h-16 rounded-full flex items-center justify-center', colorMap[confirmVariant])}>
               <Icon className="w-8 h-8" />
             </div>
           )}
-          <h3 className="text-lg font-semibold mb-2">
-            {confirmTitle || title}
-          </h3>
-          {confirmMessage && (
-            <p className="text-sm opacity-80 mb-6">{confirmMessage}</p>
-          )}
-          <div className="flex gap-3 justify-center">
-            <PokemonButton
-              variant="outline"
-              onClick={() => {
-                onCancel?.();
-                onClose();
-              }}
-            >
+          <DialogHeader>
+            <DialogTitle>{confirmTitle || title}</DialogTitle>
+            {confirmMessage && <DialogDescription>{confirmMessage}</DialogDescription>}
+          </DialogHeader>
+          <DialogFooter>
+            <PokemonButton variant="outline" onClick={() => { onCancel?.(); onClose(); }}>
               {cancelButtonText}
             </PokemonButton>
-            <PokemonButton
-              variant={confirmVariant === 'danger' ? 'danger' : 'primary'}
-              onClick={() => {
-                onConfirm?.();
-                onClose();
-              }}
+            <PokemonButton 
+              variant={confirmVariant === 'danger' ? 'danger' : 'primary'} 
+              onClick={() => { onConfirm?.(); onClose(); }}
             >
               {confirmButtonText}
             </PokemonButton>
-          </div>
+          </DialogFooter>
         </div>
       );
     };
@@ -326,83 +205,47 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
       );
     };
 
-    // Generate card classes from theme system
-    const cardStyleClasses = cardClasses({
-      variant: 'elevated',
-      theme: effectiveTheme,
-      colorScheme: _colorScheme,
-      density: effectiveDensity,
-    });
-
-    const modalClasses = cn(
-      // Base modal styles
-      'relative rounded-2xl overflow-hidden',
-      sizeClasses[resolvedMaxWidth],
-      variantClasses[variant],
-      getAnimationClasses(),
-      cardStyleClasses,
-      resolvedMaxWidth === 'fullscreen' ? '' : 'mx-4',
-      className
-    );
-
     return (
-      <div
-        data-testid={testId}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        onClick={shouldCloseOnBackdrop ? onClose : undefined}
-      >
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-
-        {/* Modal */}
-        <div
+      <Dialog open={modalOpen} onOpenChange={() => onClose()}>
+        <DialogContent 
           ref={ref}
-          className={modalClasses}
-          onClick={(e) => e.stopPropagation()}
-          {...restDomProps}
+          className={cn(
+            // Pokemon theming on top of shadcn
+            'bg-gradient-to-br from-zinc-900/95 to-slate-900/95',
+            'backdrop-blur-xl border border-cyan-500/20',
+            'shadow-2xl shadow-cyan-500/10',
+            'text-zinc-100',
+            sizeClasses[size || 'md'],
+            className
+          )}
+          data-testid={testId}
+          {...domProps}
         >
-          {/* Header */}
-          {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              {title && (
-                <h2 className="text-xl font-bold text-white">{title}</h2>
-              )}
-              {showCloseButton && (
-                <PokemonButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={onClose}
-                  className="ml-auto -mr-2"
-                >
-                  <X className="w-5 h-5" />
-                </PokemonButton>
-              )}
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
             </div>
+          ) : (
+            <>
+              {confirmVariant ? (
+                renderConfirmationContent()
+              ) : items ? (
+                renderItemSelectorContent()
+              ) : (
+                <>
+                  {title && !confirmVariant && (
+                    <DialogHeader>
+                      <DialogTitle className="text-white">{title}</DialogTitle>
+                    </DialogHeader>
+                  )}
+                  {children}
+                  {footer && <DialogFooter>{footer}</DialogFooter>}
+                </>
+              )}
+            </>
           )}
-
-          {/* Content */}
-          <div className="p-6">
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              <>
-                {confirmVariant ? renderConfirmationContent() : null}
-                {items ? renderItemSelectorContent() : null}
-                {!confirmVariant && !items ? children : null}
-              </>
-            )}
-          </div>
-
-          {/* Footer */}
-          {footer && (
-            <div className="px-6 py-4 border-t border-white/10 bg-black/20">
-              {footer}
-            </div>
-          )}
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

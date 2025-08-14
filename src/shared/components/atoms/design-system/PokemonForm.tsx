@@ -1,28 +1,25 @@
-/**
- * Pokemon Form Component - THE Form to Rule All Data Entry
- * Consolidates ALL form patterns: cards, products, auctions, sales
- *
- * Following CLAUDE.md principles:
- * - DRY: Eliminates 4,000+ lines of duplicate form logic
- * - SOLID: One definitive form implementation with variants
- * - Reusable: Works everywhere - cards, products, auctions, sales
- */
-
 import React, { forwardRef, useEffect } from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../../lib/utils';
 import {
   DefaultValues,
   FieldValues,
   useForm,
   UseFormReturn,
 } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../../../../components/ui/form';
 import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
-import { Label } from '../../molecules/common/FormElements/Label';
-import { ErrorMessage } from '../../molecules/common/FormElements/ErrorMessage';
-import { HelperText } from '../../molecules/common/FormElements/HelperText';
+import { Label } from '../../../../components/ui/label';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
-import { useTheme } from '../../../hooks/theme/useTheme';
+import { useTheme } from '../../../../hooks/use-theme';
 import type {
   AnimationIntensity,
   Density,
@@ -147,10 +144,6 @@ export interface PokemonFormProps<T extends FieldValues = FieldValues> {
   children?: React.ReactNode; // Custom form content
 }
 
-/**
- * THE definitive form - replaces all Add/Edit/Search/Filter forms
- * Handles: cards, products, auctions, sales, search, configuration
- */
 export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
   (
     {
@@ -195,17 +188,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
     ref
   ) => {
     // Theme context integration
-    // Theme context integration via centralized useTheme hook
     const themeContext = useTheme();
-    const visualTheme = themeContext.visualTheme || 'dark';
-    const contextDensity = themeContext.density || 'comfortable';
-    const contextAnimationIntensity = 'normal';
-
-    // Merge context theme with component props
-    const effectiveTheme = theme || visualTheme;
-    const effectiveDensity = density || contextDensity;
-    const effectiveAnimationIntensity =
-      animationIntensity || contextAnimationIntensity;
 
     // Form instance - use external or create internal
     const internalForm = useForm<any>({
@@ -213,39 +196,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
       mode: 'onChange',
     });
     const formInstance = externalForm || internalForm;
-    const {
-      register,
-      handleSubmit,
-      formState: { errors },
-      setValue,
-      watch,
-      reset,
-    } = formInstance;
-
-    // Form variant styling
-    const formVariantClasses = {
-      glass: [
-        'bg-zinc-900/90 backdrop-blur-sm',
-        'border border-zinc-700/50',
-        'rounded-xl shadow-2xl',
-      ].join(' '),
-      solid: [
-        'bg-zinc-800',
-        'border border-zinc-600',
-        'rounded-lg shadow-lg',
-      ].join(' '),
-      outline: [
-        'bg-transparent',
-        'border-2 border-zinc-600/50',
-        'rounded-lg',
-      ].join(' '),
-      cosmic: [
-        'bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20',
-        'border border-cyan-500/30',
-        'rounded-xl shadow-2xl shadow-cyan-500/10',
-        'backdrop-blur-sm',
-      ].join(' '),
-    };
+    const { handleSubmit, watch, reset } = formInstance;
 
     // Layout classes
     const layoutClasses = {
@@ -262,13 +213,14 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
       loose: 'space-y-9',
     };
 
-    // Form container classes
+    // Form container classes with Pokemon theming
     const containerClasses = cn(
       'w-full max-w-4xl mx-auto',
+      'bg-gradient-to-br from-zinc-900/95 to-slate-900/95',
+      'backdrop-blur-xl border border-cyan-500/20',
+      'rounded-2xl shadow-2xl shadow-cyan-500/10',
+      'text-zinc-100 p-6',
       'transition-all duration-300',
-      formVariantClasses[variant],
-      effectiveAnimationIntensity === 'enhanced' &&
-        'hover:shadow-3xl hover:scale-[1.01]',
       disabled && 'opacity-50 cursor-not-allowed',
       className
     );
@@ -282,19 +234,12 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
       }
     };
 
-    // Field change handler
-    const handleFieldChange = (fieldName: string, value: any) => {
-      setValue(fieldName, value);
-      onFieldChange?.(fieldName, value);
-    };
-
     // Auto-save functionality
     useEffect(() => {
       if (!autoSave) return;
 
       const subscription = watch((data) => {
         const timeoutId = setTimeout(() => {
-          // Auto-save logic would go here
           console.log('Auto-saving form data:', data);
         }, autoSaveDelay);
 
@@ -306,15 +251,9 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
 
     // Render form field
     const renderField = (field: PokemonFormField) => {
-      const fieldError = errors[field.name]?.message as string;
-
       // Check conditional rendering
       if (field.conditionalOn) {
-        const {
-          field: condField,
-          value: condValue,
-          operator = '=',
-        } = field.conditionalOn;
+        const { field: condField, value: condValue, operator = '=' } = field.conditionalOn;
         const currentValue = watch(condField);
 
         let shouldShow = false;
@@ -326,202 +265,111 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
             shouldShow = currentValue !== condValue;
             break;
           case 'includes':
-            shouldShow =
-              Array.isArray(currentValue) && currentValue.includes(condValue);
+            shouldShow = Array.isArray(currentValue) && currentValue.includes(condValue);
             break;
-          // Add more operators as needed
         }
 
         if (!shouldShow) return null;
       }
 
-      const baseFieldProps = {
-        ...register(field.name, field.validation),
-        placeholder: field.placeholder,
-        disabled: disabled || field.disabled,
-        readOnly: readOnly || field.readOnly,
-        className: field.className,
-      };
-
-      switch (field.type) {
-        case 'input':
-        case 'email':
-        case 'tel':
-        case 'url':
-        case 'password':
-          return (
-            <PokemonInput
-              key={field.name}
-              type={field.type}
-              label={field.label}
-              error={fieldError}
-              helper={field.helper}
-              variant={field.variant}
-              size={field.size}
-              leftIcon={field.leftIcon}
-              rightIcon={field.rightIcon}
-              fullWidth={field.fullWidth}
-              theme={effectiveTheme}
-              density={effectiveDensity}
-              animationIntensity={effectiveAnimationIntensity}
-              {...baseFieldProps}
-            />
-          );
-
-        case 'number':
-          return (
-            <PokemonInput
-              key={field.name}
-              type="number"
-              label={field.label}
-              error={fieldError}
-              helper={field.helper}
-              variant={field.variant}
-              size={field.size}
-              leftIcon={field.leftIcon}
-              rightIcon={field.rightIcon}
-              fullWidth={field.fullWidth}
-              min={field.min}
-              max={field.max}
-              step={field.step}
-              theme={effectiveTheme}
-              density={effectiveDensity}
-              animationIntensity={effectiveAnimationIntensity}
-              {...baseFieldProps}
-            />
-          );
-
-        case 'date':
-          return (
-            <PokemonInput
-              key={field.name}
-              type="date"
-              label={field.label}
-              error={fieldError}
-              helper={field.helper}
-              variant={field.variant}
-              size={field.size}
-              fullWidth={field.fullWidth}
-              theme={effectiveTheme}
-              density={effectiveDensity}
-              animationIntensity={effectiveAnimationIntensity}
-              {...baseFieldProps}
-            />
-          );
-
-        case 'select':
-          return (
-            <div key={field.name} className="space-y-2">
+      return (
+        <FormField
+          key={field.name}
+          control={formInstance.control}
+          name={field.name}
+          render={({ field: fieldProps }) => (
+            <FormItem>
               {field.label && (
-                <Label htmlFor={field.name} required={field.required}>
+                <FormLabel className="text-zinc-200">
                   {field.label}
-                </Label>
+                  {field.required && <span className="text-red-400 ml-1">*</span>}
+                </FormLabel>
               )}
-              <select
-                id={field.name}
-                className={cn(
-                  'block w-full',
-                  'bg-zinc-900/90 backdrop-blur-sm',
-                  'border border-zinc-700/50',
-                  'rounded-xl shadow-lg',
-                  'text-zinc-100 font-medium',
-                  'transition-all duration-300',
-                  'focus:outline-none focus:ring-2 focus:border-transparent',
-                  'focus:ring-cyan-500/50 focus:bg-zinc-800/95',
-                  'hover:border-cyan-500/40',
-                  'disabled:opacity-50 disabled:cursor-not-allowed',
-                  effectiveDensity === 'compact'
-                    ? 'px-3 py-2 text-sm'
-                    : effectiveDensity === 'spacious'
-                      ? 'px-6 py-4 text-base'
-                      : 'px-4 py-3 text-base',
-                  fieldError && 'border-red-400/60 focus:ring-red-500/50',
-                  field.className
+              <FormControl>
+                {field.type === 'select' ? (
+                  <select
+                    {...fieldProps}
+                    className={cn(
+                      'block w-full bg-zinc-900/90 backdrop-blur-sm',
+                      'border border-zinc-700/50 rounded-xl shadow-lg',
+                      'text-zinc-100 font-medium px-4 py-3',
+                      'transition-all duration-300',
+                      'focus:outline-none focus:ring-2 focus:border-transparent',
+                      'focus:ring-cyan-500/50 focus:bg-zinc-800/95',
+                      'hover:border-cyan-500/40',
+                      'disabled:opacity-50 disabled:cursor-not-allowed',
+                      field.className
+                    )}
+                    disabled={disabled || field.disabled}
+                  >
+                    <option value="">Select {field.label}</option>
+                    {field.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : field.type === 'textarea' ? (
+                  <textarea
+                    {...fieldProps}
+                    rows={field.rows || 4}
+                    placeholder={field.placeholder}
+                    className={cn(
+                      'block w-full bg-zinc-900/90 backdrop-blur-sm',
+                      'border border-zinc-700/50 rounded-xl shadow-lg',
+                      'text-zinc-100 font-medium px-4 py-3',
+                      'placeholder-zinc-400 resize-none',
+                      'transition-all duration-300',
+                      'focus:outline-none focus:ring-2 focus:border-transparent',
+                      'focus:ring-cyan-500/50 focus:bg-zinc-800/95',
+                      'hover:border-cyan-500/40',
+                      'disabled:opacity-50 disabled:cursor-not-allowed',
+                      field.className
+                    )}
+                    disabled={disabled || field.disabled}
+                    readOnly={readOnly || field.readOnly}
+                  />
+                ) : field.type === 'checkbox' ? (
+                  <div className="flex items-center space-x-3">
+                    <input
+                      {...fieldProps}
+                      type="checkbox"
+                      className={cn(
+                        'w-4 h-4 rounded bg-zinc-900/90',
+                        'border border-zinc-700/50 text-cyan-500',
+                        'focus:ring-cyan-500/50 transition-all duration-300',
+                        'disabled:opacity-50 disabled:cursor-not-allowed',
+                        field.className
+                      )}
+                      disabled={disabled || field.disabled}
+                    />
+                    {field.label && <Label className="mb-0 text-zinc-200">{field.label}</Label>}
+                  </div>
+                ) : (
+                  <PokemonInput
+                    {...fieldProps}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    variant={field.variant}
+                    inputSize={field.size}
+                    leftIcon={field.leftIcon}
+                    rightIcon={field.rightIcon}
+                    fullWidth={field.fullWidth}
+                    disabled={disabled || field.disabled}
+                    readOnly={readOnly || field.readOnly}
+                    className={field.className}
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                  />
                 )}
-                {...baseFieldProps}
-              >
-                <option value="">Select {field.label}</option>
-                {field.options?.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
-              {field.helper && !fieldError && (
-                <HelperText>{field.helper}</HelperText>
-              )}
-            </div>
-          );
-
-        case 'textarea':
-          return (
-            <div key={field.name} className="space-y-2">
-              {field.label && (
-                <Label htmlFor={field.name} required={field.required}>
-                  {field.label}
-                </Label>
-              )}
-              <textarea
-                id={field.name}
-                rows={field.rows || 4}
-                className={cn(
-                  'block w-full',
-                  'bg-zinc-900/90 backdrop-blur-sm',
-                  'border border-zinc-700/50',
-                  'rounded-xl shadow-lg',
-                  'text-zinc-100 font-medium',
-                  'placeholder-zinc-400',
-                  'transition-all duration-300',
-                  'focus:outline-none focus:ring-2 focus:border-transparent',
-                  'focus:ring-cyan-500/50 focus:bg-zinc-800/95',
-                  'hover:border-cyan-500/40',
-                  'disabled:opacity-50 disabled:cursor-not-allowed resize-none',
-                  effectiveDensity === 'compact'
-                    ? 'px-3 py-2 text-sm'
-                    : effectiveDensity === 'spacious'
-                      ? 'px-6 py-4 text-base'
-                      : 'px-4 py-3 text-base',
-                  fieldError && 'border-red-400/60 focus:ring-red-500/50',
-                  field.className
-                )}
-                {...baseFieldProps}
-              />
-              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
-              {field.helper && !fieldError && (
-                <HelperText>{field.helper}</HelperText>
-              )}
-            </div>
-          );
-
-        case 'checkbox':
-          return (
-            <div key={field.name} className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                id={field.name}
-                className={cn(
-                  'w-4 h-4 rounded',
-                  'bg-zinc-900/90 border border-zinc-700/50',
-                  'text-cyan-500 focus:ring-cyan-500/50',
-                  'transition-all duration-300',
-                  'disabled:opacity-50 disabled:cursor-not-allowed',
-                  field.className
-                )}
-                {...baseFieldProps}
-              />
-              {field.label && (
-                <Label htmlFor={field.name} className="mb-0">
-                  {field.label}
-                </Label>
-              )}
-              {fieldError && <ErrorMessage>{fieldError}</ErrorMessage>}
-            </div>
-          );
-
-        default:
-          return null;
-      }
+              </FormControl>
+              {field.helper && <FormDescription className="text-zinc-400">{field.helper}</FormDescription>}
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+      );
     };
 
     // Render form section
@@ -532,12 +380,8 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
             <div className="space-y-2">
               {section.title && (
                 <div className="flex items-center space-x-2">
-                  {section.icon && (
-                    <section.icon className="w-5 h-5 text-cyan-400" />
-                  )}
-                  <h3 className="text-lg font-semibold text-zinc-100">
-                    {section.title}
-                  </h3>
+                  {section.icon && <section.icon className="w-5 h-5 text-cyan-400" />}
+                  <h3 className="text-lg font-semibold text-zinc-100">{section.title}</h3>
                 </div>
               )}
               {section.description && (
@@ -545,11 +389,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
               )}
             </div>
           )}
-          <div
-            className={cn(
-              layout === 'grid' ? layoutClasses.grid : spacingClasses[spacing]
-            )}
-          >
+          <div className={cn(layout === 'grid' ? layoutClasses.grid : spacingClasses[spacing])}>
             {section.fields.map(renderField)}
           </div>
         </div>
@@ -558,12 +398,7 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
 
     if (isLoading) {
       return (
-        <div
-          className={cn(
-            containerClasses,
-            'flex items-center justify-center p-12'
-          )}
-        >
+        <div className={cn(containerClasses, 'flex items-center justify-center p-12')}>
           <GenericLoadingState variant="spinner" size="lg" />
         </div>
       );
@@ -571,111 +406,81 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
 
     return (
       <div className={containerClasses}>
-        <form
-          ref={ref}
-          onSubmit={handleSubmit(handleFormSubmit)}
-          className={cn('p-6 space-y-6', formClassName)}
-          {...props}
-        >
-          {/* Form Header */}
-          {(title || description) && (
-            <div
-              className={cn(
-                'space-y-2 border-b border-zinc-700/50 pb-4',
-                headerClassName
-              )}
-            >
-              {title && (
-                <div className="flex items-center space-x-3">
-                  {Icon && <Icon className="w-6 h-6 text-cyan-400" />}
-                  <h2 className="text-xl font-bold text-zinc-100">{title}</h2>
+        <Form {...formInstance}>
+          <form
+            ref={ref}
+            onSubmit={handleSubmit(handleFormSubmit)}
+            className={cn('space-y-6', formClassName)}
+            {...props}
+          >
+            {/* Form Header */}
+            {(title || description) && (
+              <div className={cn('space-y-2 border-b border-zinc-700/50 pb-4', headerClassName)}>
+                {title && (
+                  <div className="flex items-center space-x-3">
+                    {Icon && <Icon className="w-6 h-6 text-cyan-400" />}
+                    <h2 className="text-xl font-bold text-zinc-100">{title}</h2>
+                  </div>
+                )}
+                {description && <p className="text-zinc-400">{description}</p>}
+              </div>
+            )}
+
+            {/* Form Body */}
+            <div className={cn('space-y-6', bodyClassName)}>
+              {/* Custom children content */}
+              {children}
+
+              {/* Sections */}
+              {sections.length > 0 && (
+                <div className={cn(layout === 'sections' ? layoutClasses.sections : spacingClasses[spacing])}>
+                  {sections.map(renderSection)}
                 </div>
               )}
-              {description && <p className="text-zinc-400">{description}</p>}
+
+              {/* Standalone fields */}
+              {fields.length > 0 && sections.length === 0 && (
+                <div className={cn(layout === 'grid' ? layoutClasses.grid : spacingClasses[spacing])}>
+                  {fields.map(renderField)}
+                </div>
+              )}
             </div>
-          )}
 
-          {/* Form Body */}
-          <div className={cn('space-y-6', bodyClassName)}>
-            {/* Custom children content */}
-            {children}
+            {/* Form Footer */}
+            <div className={cn('flex items-center justify-end space-x-3', 'border-t border-zinc-700/50 pt-4', footerClassName)}>
+              {showReset && (
+                <PokemonButton
+                  type="button"
+                  variant="outline"
+                  onClick={() => reset()}
+                  disabled={disabled || isSubmitting}
+                >
+                  {resetText}
+                </PokemonButton>
+              )}
 
-            {/* Sections */}
-            {sections.length > 0 && (
-              <div
-                className={cn(
-                  layout === 'sections'
-                    ? layoutClasses.sections
-                    : spacingClasses[spacing]
-                )}
-              >
-                {sections.map(renderSection)}
-              </div>
-            )}
+              {showCancel && onCancel && (
+                <PokemonButton
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={disabled || isSubmitting}
+                >
+                  {cancelText}
+                </PokemonButton>
+              )}
 
-            {/* Standalone fields */}
-            {fields.length > 0 && sections.length === 0 && (
-              <div
-                className={cn(
-                  layout === 'grid'
-                    ? layoutClasses.grid
-                    : spacingClasses[spacing]
-                )}
-              >
-                {fields.map(renderField)}
-              </div>
-            )}
-          </div>
-
-          {/* Form Footer */}
-          <div
-            className={cn(
-              'flex items-center justify-end space-x-3',
-              'border-t border-zinc-700/50 pt-4',
-              footerClassName
-            )}
-          >
-            {showReset && (
               <PokemonButton
-                type="button"
-                variant="outline"
-                onClick={() => reset()}
+                type="submit"
+                variant="primary"
+                loading={isSubmitting}
                 disabled={disabled || isSubmitting}
-                theme={effectiveTheme}
-                density={effectiveDensity}
-                animationIntensity={effectiveAnimationIntensity}
               >
-                {resetText}
+                {submitText}
               </PokemonButton>
-            )}
-
-            {showCancel && onCancel && (
-              <PokemonButton
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={disabled || isSubmitting}
-                theme={effectiveTheme}
-                density={effectiveDensity}
-                animationIntensity={effectiveAnimationIntensity}
-              >
-                {cancelText}
-              </PokemonButton>
-            )}
-
-            <PokemonButton
-              type="submit"
-              variant="primary"
-              loading={isSubmitting}
-              disabled={disabled || isSubmitting}
-              theme={effectiveTheme}
-              density={effectiveDensity}
-              animationIntensity={effectiveAnimationIntensity}
-            >
-              {submitText}
-            </PokemonButton>
-          </div>
-        </form>
+            </div>
+          </form>
+        </Form>
       </div>
     );
   }
@@ -688,22 +493,22 @@ export const PokemonCardForm = (props: Omit<PokemonFormProps, 'formType'>) => (
   <PokemonForm {...props} formType="card" />
 );
 
-export const PokemonProductForm = (
-  props: Omit<PokemonFormProps, 'formType'>
-) => <PokemonForm {...props} formType="product" />;
+export const PokemonProductForm = (props: Omit<PokemonFormProps, 'formType'>) => (
+  <PokemonForm {...props} formType="product" />
+);
 
-export const PokemonAuctionForm = (
-  props: Omit<PokemonFormProps, 'formType'>
-) => <PokemonForm {...props} formType="auction" />;
+export const PokemonAuctionForm = (props: Omit<PokemonFormProps, 'formType'>) => (
+  <PokemonForm {...props} formType="auction" />
+);
 
 export const PokemonSaleForm = (props: Omit<PokemonFormProps, 'formType'>) => (
   <PokemonForm {...props} formType="sale" />
 );
 
-export const PokemonSearchForm = (
-  props: Omit<PokemonFormProps, 'formType'>
-) => <PokemonForm {...props} formType="search" />;
+export const PokemonSearchForm = (props: Omit<PokemonFormProps, 'formType'>) => (
+  <PokemonForm {...props} formType="search" />
+);
 
-export const PokemonFilterForm = (
-  props: Omit<PokemonFormProps, 'formType'>
-) => <PokemonForm {...props} formType="filter" />;
+export const PokemonFilterForm = (props: Omit<PokemonFormProps, 'formType'>) => (
+  <PokemonForm {...props} formType="filter" />
+);

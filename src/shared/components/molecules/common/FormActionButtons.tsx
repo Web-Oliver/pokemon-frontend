@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { PokemonButton } from '../../atoms/design-system/PokemonButton';
-import { buildThemeClasses, ThemeColor } from '../../../../theme/formThemes';
+import { buildThemeClasses, string } from '../../../../theme/formThemes';
 
 interface FormActionButtonsProps {
   /** Function to call when cancel button is clicked */
@@ -25,7 +25,7 @@ interface FormActionButtonsProps {
   /** Custom text for loading submit button (overrides default) */
   loadingSubmitText?: string;
   /** Primary color theme for submit button */
-  primaryButtonColorClass?: ThemeColor;
+  primaryButtonColorClass?: string;
   /** Whether cancel button should be disabled */
   cancelDisabled?: boolean;
   /** Additional CSS classes for the container */

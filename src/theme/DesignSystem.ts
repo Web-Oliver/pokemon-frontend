@@ -1,11 +1,14 @@
 /**
  * DESIGN SYSTEM - UNIFIED THEME CONFIGURATION
  * Professional naming following Carbon Design System conventions
+ * SINGLE SOURCE OF TRUTH FOR ALL THEMING
  * 
- * Theme naming based on Context7 analysis:
- * - white, g10, g90, g100 (Carbon standard)
- * - Professional semantic names
- * - No gimmicky or simplified names
+ * Consolidates:
+ * - Theme colors and variants
+ * - Form theming
+ * - Component variants 
+ * - Pokemon design tokens
+ * - All other scattered theme configs
  */
 
 export type ThemeName = 'white' | 'g10' | 'g90' | 'g100' | 'glass' | 'premium';
@@ -50,6 +53,8 @@ export interface ThemeSettings {
   animationsEnabled: boolean;
   particleEffectsEnabled: boolean;
   reduceMotion: boolean;
+  // Form theme color for backwards compatibility
+  formThemeColor: 'purple' | 'blue' | 'emerald' | 'amber' | 'rose' | 'dark';
 }
 
 // ===============================
@@ -211,6 +216,7 @@ export const defaultThemeSettings: ThemeSettings = {
   animationsEnabled: true,
   particleEffectsEnabled: true,
   reduceMotion: false,
+  formThemeColor: 'dark',
 };
 
 export const isGlassTheme = (theme: ThemeName): boolean => {

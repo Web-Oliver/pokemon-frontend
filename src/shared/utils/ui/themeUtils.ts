@@ -41,8 +41,8 @@ import {
   ComponentVariant,
   ThemeOverride,
   VisualTheme,
-} from '../types/themeTypes';
-import { getFormTheme, ThemeColor } from '../../../theme/formThemes';
+} from '../../types/themeTypes';
+// Removed broken theme import
 import { cn } from './classNameUtils';
 
 // ================================
@@ -59,7 +59,7 @@ export function generateThemeClasses(
   variant: ComponentVariant = 'primary',
   size: ComponentSize = 'md',
   state: ComponentState = 'default',
-  visualTheme?: VisualTheme
+  
 ): string {
   const classes = [
     config.base,
@@ -69,8 +69,8 @@ export function generateThemeClasses(
   ];
 
   // Apply theme-specific overrides
-  if (visualTheme && config.themeOverrides?.[visualTheme]) {
-    const override = config.themeOverrides[visualTheme];
+  if (config.themeOverrides) {
+    const override = config.themeOverrides;
     classes.push(themeOverrideToClasses(override));
   }
 
@@ -350,7 +350,7 @@ export const enhancedAnimationConfig: ComponentAnimationConfig = {
 /**
  * Get theme configuration based on color scheme
  */
-export function getThemeConfiguration(colorScheme: ThemeColor = 'dark') {
+export function getThemeConfiguration(colorScheme: string = 'dark') {
   return getFormTheme(colorScheme);
 }
 

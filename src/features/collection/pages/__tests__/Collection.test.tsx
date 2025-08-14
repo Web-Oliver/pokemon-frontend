@@ -46,7 +46,7 @@ vi.mock('../../../../shared/utils/storage', () => ({
   },
 }));
 
-vi.mock('../../../../shared/hooks/theme/useTheme', () => ({
+vi.mock('../../../../shared/hooks/use-theme', () => ({
   useTheme: vi.fn(() => ({
     currentTheme: 'cosmic',
     setTheme: vi.fn(),
