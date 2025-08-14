@@ -216,10 +216,10 @@ const Activity: React.FC = () => {
           >
             {/* Floating geometric elements */}
             <div
-              className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+              className="absolute top-8 right-8 w-20 h-20 border-2 border-[var(--theme-accent)]/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[var(--shadow-cosmic)]"
               style={{ animationDuration: '20s' }}
             ></div>
-            <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]"></div>
+            <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-[var(--theme-primary)]/50 rounded-full animate-pulse opacity-40 shadow-[var(--shadow-quantum)]"></div>
 
             <div className="relative z-10">
               <div className="flex items-center mb-8">
@@ -250,7 +250,7 @@ const Activity: React.FC = () => {
 
                 {/* Title section */}
                 <div className="flex-1">
-                  <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+                  <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-[var(--theme-accent)] via-[var(--theme-primary)] to-[var(--theme-secondary)] bg-clip-text text-transparent drop-shadow-[var(--shadow-cosmic)]">
                     Activity Feed
                   </h1>
                   <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
@@ -272,7 +272,7 @@ const Activity: React.FC = () => {
                     iconColor: 'text-cyan-300',
                     titleColor: 'text-cyan-200/90',
                     valueGradient: 'from-cyan-300 via-purple-300 to-pink-300',
-                    valueShadow: 'drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]',
+                    valueShadow: 'drop-shadow-[var(--shadow-cosmic)]',
                     dotColors: {
                       primary: 'bg-cyan-400',
                       secondary: 'bg-purple-400',
@@ -294,7 +294,7 @@ const Activity: React.FC = () => {
                     iconColor: 'text-purple-300',
                     titleColor: 'text-purple-200/90',
                     valueGradient: 'from-purple-300 via-pink-300 to-orange-300',
-                    valueShadow: 'drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]',
+                    valueShadow: 'drop-shadow-[var(--shadow-quantum)]',
                     dotColors: {
                       primary: 'bg-purple-400',
                       secondary: 'bg-pink-400',
@@ -321,7 +321,7 @@ const Activity: React.FC = () => {
                     iconColor: 'text-emerald-300',
                     titleColor: 'text-emerald-200/90',
                     valueGradient: 'from-emerald-300 via-cyan-300 to-blue-300',
-                    valueShadow: 'drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]',
+                    valueShadow: 'drop-shadow-[var(--shadow-neural)]',
                     dotColors: {
                       primary: 'bg-emerald-400',
                       secondary: 'bg-cyan-400',

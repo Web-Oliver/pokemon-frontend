@@ -5,7 +5,7 @@
  */
 
 import { cva } from 'class-variance-authority';
-import { buttonVariants } from '../../../../components/ui/button';
+import { buttonVariants } from '../../../ui/primitives/Button';
 
 // === POKEMON BUTTON VARIANTS (using existing theme) ===
 export const pokemonButtonVariants = cva(

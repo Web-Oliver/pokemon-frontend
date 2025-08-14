@@ -86,7 +86,7 @@ vi.mock('@tanstack/react-query', async () => {
 
 vi.mock('../../../../shared/utils/ui/themeConfig', () => ({
   useCentralizedTheme: vi.fn(() => ({
-    ,
+    visualTheme: 'context7-premium',
     particleEffectsEnabled: true,
     glassmorphismIntensity: 0.8,
   })),

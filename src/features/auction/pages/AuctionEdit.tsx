@@ -14,7 +14,7 @@ import { PokemonConfirmModal } from '../../../shared/components/atoms/design-sys
 import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import CollectionItemCard, {
   CollectionItem,
-} from '../../../components/lists/CollectionItemCard';
+} from '../../../shared/components/molecules/collection/CollectionItemCard';
 import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionModal';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useGenericFormState } from '../../../shared/hooks/form/useGenericFormState';

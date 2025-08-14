@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
-import { Button, buttonVariants } from '../../../../components/ui/button';
-import { cn } from '../../../../lib/utils';
+import { Button, buttonVariants } from '../../../ui/primitives/Button';
+import { cn } from '../../../utils/ui/classNameUtils';
 import { type VariantProps } from 'class-variance-authority';
 import { pokemonButtonVariants } from './unifiedVariants';
 

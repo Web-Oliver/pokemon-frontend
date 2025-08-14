@@ -19,7 +19,29 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      // UNIFIED ABSOLUTE IMPORTS SYSTEM
+      // Phase 2.1: Enhanced path mapping for systematic migration
+      "@/*": ["./src/*"],
+      
+      // UI COMPONENT PATHS
+      "@/ui/*": ["./src/shared/ui/*"],
+      "@/components/*": ["./src/shared/components/*"],
+      
+      // THEME & DESIGN SYSTEM PATHS
+      "@/theme/*": ["./src/theme/*"],
+      "@/styles/*": ["./src/styles/*"],
+      
+      // FEATURE MODULE PATHS
+      "@/features/*": ["./src/features/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/services/*": ["./src/shared/services/*"],
+      "@/utils/*": ["./src/shared/utils/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/lib/*": ["./src/lib/*"],
+      
+      // API & DATA PATHS
+      "@/api/*": ["./src/shared/api/*"],
+      "@/contexts/*": ["./src/contexts/*"]
     },
     "strict": true,
     "noUnusedLocals": true,

@@ -39,7 +39,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
 }) => {
   // Theme context integration via centralized useTheme hook
   const { config, setVisualTheme, applyPreset } = useTheme();
-  const { , density } = config;
+  const { visualTheme, density } = config;
   // Use theme presets from context (imported above)
   const presets = themePresets;
 
@@ -55,7 +55,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
   };
 
   const renderThemePreview = (preset: (typeof themePresets)[0]) => {
-    const isSelected = 
+    const isSelected = visualTheme === preset.id;
 
     return (
       <PokemonCard
@@ -201,7 +201,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({
           <div>
             <span className="text-sm text-zinc-400">Current Theme:</span>
             <h3 className="text-lg font-semibold text-white">
-              {presets.find((p) => p.id === }
+              {presets.find((p) => p.id === visualTheme)?.name || visualTheme}
             </h3>
           </div>
           <div className="text-right">

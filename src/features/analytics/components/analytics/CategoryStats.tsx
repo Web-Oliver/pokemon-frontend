@@ -27,7 +27,7 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
       icon: Package,
       colorScheme: 'success' as const,
       iconColors: 'from-emerald-500 to-teal-600',
-      shadowColor: 'rgba(16,185,129,0.3)',
+      shadowColor: 'hsl(var(--theme-success) / 0.3)',
     },
     {
       name: 'Auctions',
@@ -40,7 +40,7 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
         to: 'pink-500/20',
       },
       iconColors: 'from-purple-500 to-violet-600',
-      shadowColor: 'rgba(147,51,234,0.3)',
+      shadowColor: 'hsl(var(--theme-primary) / 0.3)',
     },
     {
       name: 'Sales',
@@ -48,7 +48,7 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
       icon: DollarSign,
       colorScheme: 'success' as const,
       iconColors: 'from-emerald-500 to-green-600',
-      shadowColor: 'rgba(16,185,129,0.3)',
+      shadowColor: 'hsl(var(--theme-success) / 0.3)',
     },
     {
       name: 'System',
@@ -56,7 +56,7 @@ export const CategoryStats: React.FC<CategoryStatsProps> = ({
       icon: Settings,
       colorScheme: 'secondary' as const,
       iconColors: 'from-slate-500 to-slate-600',
-      shadowColor: 'rgba(100,116,139,0.3)',
+      shadowColor: 'hsl(var(--theme-accent) / 0.3)',
     },
   ];
 

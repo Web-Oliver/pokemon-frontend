@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect } from 'react';
-import { cn } from '../../../../lib/utils';
+import { cn } from '../../../utils/ui/classNameUtils';
 import {
   DefaultValues,
   FieldValues,
@@ -14,10 +14,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../../components/ui/form';
+} from '../../../ui/primitives/Form';
 import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
-import { Label } from '../../../../components/ui/label';
+import { Label } from '../../../ui/primitives/Label';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
 import { useTheme } from '../../../../hooks/use-theme';
 import type {

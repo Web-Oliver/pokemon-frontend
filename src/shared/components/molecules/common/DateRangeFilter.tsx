@@ -64,7 +64,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   className = '',
   themeColor = 'dark',
 }) => {
-  const elementTheme = 
+  const elementTheme = getElementTheme(themeColor);
   const headerTheme = getHeaderTheme(themeColor);
   const [localCustomRange, setLocalCustomRange] = useState({
     startDate: value.startDate || '',

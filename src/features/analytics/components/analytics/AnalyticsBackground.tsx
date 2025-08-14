@@ -44,7 +44,7 @@ export const AnalyticsBackground: React.FC<AnalyticsBackgroundProps> = ({
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: `linear-gradient(90deg, transparent 97%, rgba(6, 182, 212, 0.08) 100%), linear-gradient(transparent 97%, rgba(168, 85, 247, 0.08) 100%)`,
+            backgroundImage: `linear-gradient(90deg, transparent 97%, hsl(var(--theme-accent)) / 0.08 100%), linear-gradient(transparent 97%, hsl(var(--theme-primary)) / 0.08 100%)`,
             backgroundSize: '60px 60px',
           }}
         />
@@ -62,7 +62,7 @@ export const AnalyticsBackground: React.FC<AnalyticsBackgroundProps> = ({
               width: `${Math.random() * 4 + 1}px`,
               height: `${Math.random() * 4 + 1}px`,
               background: `radial-gradient(circle, ${
-                ['#06b6d4', '#a855f7', '#10b981', '#f59e0b'][
+                ['hsl(var(--theme-accent))', 'hsl(var(--theme-primary))', 'hsl(var(--theme-success))', 'hsl(var(--theme-warning))'][
                   Math.floor(Math.random() * 4)
                 ]
               }, transparent)`,

@@ -70,11 +70,32 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, []);
 
   // Apply theme whenever settings change
+  // PHASE 2.1: Enhanced with density and glass intensity application
   useEffect(() => {
     if (isLoaded) {
       const resolvedThemeName = resolveTheme(settings);
+      
+      // Apply core theme via data attributes
       applyTheme(resolvedThemeName);
+      
+      // DENSITY-AWARE SPACING APPLICATION
+      applyDensitySettings(settings.density);
+      
+      // GLASSMORPHISM INTENSITY APPLICATION
+      applyGlassmorphismSettings(settings.glassmorphismEnabled);
+      
+      // ANIMATION PREFERENCES APPLICATION
+      applyAnimationSettings(settings);
+      
+      // Save settings
       saveThemeSettings(settings);
+      
+      console.log('✅ Theme system updated:', {
+        theme: resolvedThemeName,
+        density: settings.density,
+        glass: settings.glassmorphismEnabled,
+        animations: settings.animationsEnabled
+      });
     }
   }, [settings, isLoaded]);
 
@@ -217,3 +238,102 @@ export const useColorScheme = (): {
 };
 
 export default ThemeProvider;
+
+// ===============================
+// PHASE 2.1: UNIFIED THEME HELPERS
+// CSS Variable Application Functions
+// ===============================
+
+/**
+ * Apply density-aware spacing to CSS variables
+ */
+const applyDensitySettings = (density: Density): void => {
+  const root = document.documentElement;
+  
+  const densityMap = {
+    compact: {
+      xs: '0.125rem',
+      sm: '0.25rem', 
+      md: '0.5rem',
+      lg: '0.75rem',
+      xl: '1rem',
+      '2xl': '1.5rem',
+      '3xl': '2rem'
+    },
+    comfortable: {
+      xs: '0.25rem',
+      sm: '0.5rem',
+      md: '1rem', 
+      lg: '1.5rem',
+      xl: '2rem',
+      '2xl': '3rem',
+      '3xl': '4rem'
+    },
+    spacious: {
+      xs: '0.5rem',
+      sm: '0.75rem',
+      md: '1.5rem',
+      lg: '2.25rem', 
+      xl: '3rem',
+      '2xl': '4.5rem',
+      '3xl': '6rem'
+    }
+  };
+  
+  const spacings = densityMap[density];
+  
+  Object.entries(spacings).forEach(([key, value]) => {
+    root.style.setProperty(`--density-spacing-${key}`, value);
+  });
+  
+  root.setAttribute('data-density', density);
+};
+
+/**
+ * Apply glassmorphism intensity settings
+ */
+const applyGlassmorphismSettings = (enabled: boolean): void => {
+  const root = document.documentElement;
+  
+  if (enabled) {
+    root.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.1)');
+    root.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.2)');
+    root.style.setProperty('--glass-blur', '20px');
+  } else {
+    root.style.setProperty('--glass-bg', 'rgba(0, 0, 0, 0.05)');
+    root.style.setProperty('--glass-border', 'rgba(0, 0, 0, 0.1)'); 
+    root.style.setProperty('--glass-blur', '0px');
+  }
+  
+  root.setAttribute('data-glass-enabled', enabled.toString());
+};
+
+/**
+ * Apply animation and motion settings
+ */
+const applyAnimationSettings = (settings: ThemeSettings): void => {
+  const root = document.documentElement;
+  
+  // Animation duration based on level
+  const durationMap = {
+    reduced: { fast: '50ms', normal: '100ms', slow: '150ms' },
+    normal: { fast: '150ms', normal: '250ms', slow: '400ms' },
+    enhanced: { fast: '200ms', normal: '350ms', slow: '600ms' }
+  };
+  
+  const durations = durationMap[settings.animationLevel];
+  
+  Object.entries(durations).forEach(([key, value]) => {
+    root.style.setProperty(`--animation-duration-${key}`, value);
+  });
+  
+  // Reduced motion override
+  if (settings.reduceMotion) {
+    root.style.setProperty('--animation-duration-fast', '0ms');
+    root.style.setProperty('--animation-duration-normal', '0ms');
+    root.style.setProperty('--animation-duration-slow', '0ms');
+  }
+  
+  root.setAttribute('data-animations-enabled', settings.animationsEnabled.toString());
+  root.setAttribute('data-reduce-motion', settings.reduceMotion.toString());
+};

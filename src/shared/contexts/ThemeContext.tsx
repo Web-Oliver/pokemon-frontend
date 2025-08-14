@@ -74,7 +74,7 @@ export const themePresets: ThemePreset[] = [
     description:
       'Glassmorphism design with premium gradients and micro-interactions',
     config: {
-      ,
+      visualTheme: 'context7-premium',
       primaryColor: 'dark',
       density: 'comfortable',
       animationIntensity: 'normal',
@@ -92,7 +92,7 @@ export const themePresets: ThemePreset[] = [
     name: 'Context7 2025 Futuristic',
     description: 'Advanced neural network patterns with holographic effects',
     config: {
-      ,
+      visualTheme: 'context7-futuristic',
       primaryColor: 'blue',
       density: 'comfortable',
       animationIntensity: 'enhanced',
@@ -111,7 +111,7 @@ export const themePresets: ThemePreset[] = [
     description:
       'Space-themed with cosmic gradients and holographic backgrounds',
     config: {
-      ,
+      visualTheme: 'dba-cosmic',
       primaryColor: 'purple',
       density: 'spacious',
       animationIntensity: 'enhanced',
@@ -129,7 +129,7 @@ export const themePresets: ThemePreset[] = [
     name: 'Minimal Clean',
     description: 'Clean, accessible design with reduced visual complexity',
     config: {
-      ,
+      visualTheme: 'minimal',
       primaryColor: 'emerald',
       density: 'comfortable',
       animationIntensity: 'subtle',
@@ -151,7 +151,7 @@ export const themePresets: ThemePreset[] = [
 // ================================
 
 export const defaultConfig: ThemeConfiguration = {
-  ,
+  visualTheme: 'context7-premium',
   colorScheme: 'system',
   density: 'comfortable',
   animationIntensity: 'normal',
@@ -284,13 +284,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       spacious: 1.2,
     }[themeConfig.density];
 
-    // Apply theme properties using consolidated utility (eliminates duplication)
-    ThemePropertyManager.applyLegacyThemeProperties(
-      root,
-      formTheme,
-      themeConfig,
-      densityMultiplier
-    );
+    // Apply theme properties directly
+    if (formTheme) {
+      // Apply form theme colors and styles
+      Object.entries(formTheme).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          root.style.setProperty(`--theme-${key}`, value);
+        }
+      });
+    }
+    
+    // Apply density-based spacing
+    root.style.setProperty('--density-spacing-xs', `${0.5 * densityMultiplier}rem`);
+    root.style.setProperty('--density-spacing-sm', `${0.75 * densityMultiplier}rem`);
+    root.style.setProperty('--density-spacing-md', `${1 * densityMultiplier}rem`);
+    root.style.setProperty('--density-spacing-lg', `${1.5 * densityMultiplier}rem`);
     // Additional XL spacing (not included in legacy method to maintain compatibility)
     root.style.setProperty(
       '--density-spacing-xl',
@@ -311,7 +319,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Visual theme classes
     root.className = root.className.replace(/theme-\w+/g, '');
-    root.classList.add(`theme-${themeConfig.}`);
+    root.classList.add(`theme-${themeConfig.visualTheme}`);
 
     // Accessibility settings
     if (themeConfig.reducedMotion) {
@@ -332,7 +340,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Theme manipulation functions
   const setVisualTheme = useCallback((theme: VisualTheme) => {
-    setConfig((prev) => ({ ...prev, }));
+    setConfig((prev) => ({ ...prev, visualTheme: theme }));
   }, []);
 
   const setColorScheme = useCallback(
@@ -431,7 +439,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   // Utility functions
   const getThemeClasses = useCallback((): string => {
     const classes = [
-      `theme-${config.}`,
+      `theme-${config.visualTheme}`,
       `density-${config.density}`,
       `animation-${config.animationIntensity}`,
     ];

@@ -20,6 +20,7 @@ import {
   getRelativeTime,
 } from '../../../shared/utils';
 import { LineChart } from 'lucide-react';
+import { Button } from '../../../../shared/ui/primitives/Button';
 
 export interface ActivityTimelineProps {
   activities: any[];
@@ -67,12 +68,14 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               <LineChart className="w-6 h-6 mr-3 text-indigo-400" />
               Recent Activity Timeline
             </h3>
-            <button
+            <Button
               onClick={() => handleNavigation('/activity')}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105"
+              variant="pokemon"
+              size="default"
+              className=""
             >
               View All Activities
-            </button>
+            </Button>
           </div>
         )}
 
@@ -96,7 +99,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
                     className="flex items-center p-4 rounded-2xl backdrop-blur-sm bg-[var(--theme-surface)]/50 border border-[var(--theme-border)]/30 hover:bg-[var(--theme-surface-hover)]/70 transition-all duration-300 group/activity hover:shadow-md"
                   >
                     <div
-                      className={`w-12 h-12 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover/activity:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(99,102,241,0.3)]`}
+                      className={`w-12 h-12 bg-gradient-to-br from-${color}-500 to-${color}-600 rounded-xl flex items-center justify-center mr-4 shadow-[var(--shadow-neural)] group-hover/activity:scale-110 transition-transform duration-[var(--animation-duration-normal)]`}
                     >
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
@@ -168,7 +171,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[var(--theme-border)] shadow-xl backdrop-blur-sm">
+            <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-accent)]/20 to-[var(--theme-primary)]/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[var(--theme-border-primary)] shadow-[var(--theme-shadow-primary)] backdrop-blur-sm">
               <LineChart className="w-8 h-8 text-[var(--theme-text-secondary)]" />
             </div>
             <h4 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">

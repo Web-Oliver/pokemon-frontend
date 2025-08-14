@@ -20,7 +20,7 @@ import React, {
 } from 'react';
 import { useToggle } from '../../../shared/hooks';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { CollectionItem } from '../../../components/lists/CollectionItemCard';
+import { CollectionItem } from '../../../shared/components/molecules/collection/CollectionItemCard';
 import CollectionStats from '../../../components/lists/CollectionStats';
 import CollectionTabs, {
   TabType,

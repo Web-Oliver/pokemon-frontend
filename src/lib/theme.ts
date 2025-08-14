@@ -185,14 +185,41 @@ export function setThemeMode(mode: ThemeMode) {
   const variables = getThemeVariables(mode);
   applyThemeVariables(variables);
   
-  // Update document class for compatibility
+  // Phase 1.3: Use data attribute for theme switching (performance optimized)
   const root = document.documentElement;
+  
+  // Maintain backwards compatibility with class-based themes
   root.classList.remove("light", "dark");
   
   if (mode === "system") {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    root.classList.add(prefersDark ? "dark" : "light");
+    const resolvedTheme = prefersDark ? "dark" : "light";
+    root.classList.add(resolvedTheme);
+    root.setAttribute("data-theme", resolvedTheme);
   } else {
     root.classList.add(mode);
+    root.setAttribute("data-theme", mode);
+  }
+}
+
+// Phase 1.3: Enhanced theme switching with extended theme modes
+export type ExtendedThemeMode = ThemeMode | "pokemon" | "glass";
+
+export function setExtendedThemeMode(mode: ExtendedThemeMode) {
+  const root = document.documentElement;
+  
+  // Handle extended themes
+  if (mode === "pokemon" || mode === "glass") {
+    // Set base dark theme variables first
+    const darkVars = getThemeVariables("dark");
+    applyThemeVariables(darkVars);
+    
+    // Add the extended theme
+    root.classList.remove("light", "dark");
+    root.classList.add("dark"); // Base for extended themes
+    root.setAttribute("data-theme", mode);
+  } else {
+    // Handle standard themes
+    setThemeMode(mode);
   }
 }

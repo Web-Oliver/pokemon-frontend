@@ -4,10 +4,15 @@ export default {
   darkMode: ['class'],
   theme: {
     extend: {
-      // shadcn/ui color system
+      // UNIFIED THEME COLOR SYSTEM
+      // Maps CSS custom properties to Tailwind classes
       colors: {
+        // THEME-AWARE CORE COLORS
+        // These dynamically change based on [data-theme] attribute
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        
+        // THEME-AWARE SURFACES
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
@@ -16,6 +21,8 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
+        
+        // THEME-AWARE PRIMARY COLORS
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -24,6 +31,8 @@ export default {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
+        
+        // THEME-AWARE UTILITY COLORS
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
@@ -36,9 +45,13 @@ export default {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
+        
+        // THEME-AWARE BORDERS & INPUTS
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        
+        // CHART COLORS
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -46,12 +59,30 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
-        // Pokemon brand colors
+        
+        // POKEMON BRAND COLORS (Static)
         pokemon: {
           red: 'hsl(var(--pokemon-red))',
           blue: 'hsl(var(--pokemon-blue))',
           yellow: 'hsl(var(--pokemon-yellow))',
           green: 'hsl(var(--pokemon-green))',
+        },
+        
+        // THEME-AWARE TEXT COLORS
+        // Generated from unified CSS variables
+        text: {
+          primary: 'var(--theme-text-primary)',
+          secondary: 'var(--theme-text-secondary)',
+          muted: 'var(--theme-text-muted)',
+          accent: 'var(--theme-text-accent)',
+        },
+        
+        // THEME-AWARE SURFACE COLORS
+        surface: {
+          DEFAULT: 'var(--theme-surface)',
+          primary: 'var(--theme-bg-primary)',
+          secondary: 'var(--theme-bg-secondary)',
+          accent: 'var(--theme-bg-accent)',
         },
       },
       // Context7 Premium Animation Extensions
@@ -154,37 +185,40 @@ export default {
         '5xl': '2.5rem',
         '6xl': '3rem',
       },
-      // THEME-AWARE SHADOWS
-      // Integrates with glassmorphism intensity and visual themes
+      // UNIFIED SHADOW SYSTEM
+      // Maps to CSS variables from unified theme system
       boxShadow: {
         // Theme-aware dynamic shadows
         'theme-primary': 'var(--theme-shadow-primary)',
         'theme-hover': 'var(--theme-shadow-hover)',
-        'glass-main': 'var(--shadow-glass)',
+        
+        // Glassmorphism shadows
+        'glass': 'var(--shadow-glass)',
         'glass-hover': 'var(--shadow-glass-hover)',
-        neural: 'var(--shadow-neural)',
-        quantum: 'var(--shadow-quantum)',
-        cosmic: 'var(--shadow-cosmic)',
-        minimal: 'var(--shadow-minimal)',
-
+        
+        // Effect shadows
+        'neural': 'var(--shadow-neural)',
+        'quantum': 'var(--shadow-quantum)',
+        'cosmic': 'var(--shadow-cosmic)',
+        'minimal': 'var(--shadow-minimal)',
+        
         // Legacy shadows (maintained for compatibility)
-        glow: '0 0 20px rgba(99, 102, 241, 0.4)',
+        'glow': '0 0 20px rgba(99, 102, 241, 0.4)',
         'glow-lg': '0 0 30px rgba(99, 102, 241, 0.6)',
-        premium:
-          '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        glass: '0 8px 32px rgba(31, 38, 135, 0.37)',
-        float: '0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.2)',
+        'premium': '0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        'float': '0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.2)',
       },
-      // THEME-AWARE BACKDROP BLUR
-      // Integrates with glassmorphism intensity settings
+      
+      // GLASSMORPHISM BACKDROP BLUR SYSTEM
+      // Integrates with theme intensity settings
       backdropBlur: {
-        theme: 'var(--glass-blur)',
-        xs: '2px',
+        'theme': 'var(--glass-blur)',
+        'xs': '2px',
         '4xl': '72px',
       },
-
-      // ANIMATION INTENSITY SUPPORT
-      // Integrates with ThemeContext animationIntensity settings
+      
+      // THEME-AWARE ANIMATIONS
+      // Integrates with motion preference settings
       transitionDuration: {
         'theme-fast': 'var(--animation-duration-fast)',
         'theme-normal': 'var(--animation-duration-normal)',

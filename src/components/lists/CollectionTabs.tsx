@@ -12,7 +12,7 @@
 import React, { memo } from 'react';
 import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
 import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
-import CollectionItemCard, { CollectionItem } from './CollectionItemCard';
+import CollectionItemCard, { CollectionItem } from '../../shared/components/molecules/collection/CollectionItemCard';
 import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
 import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
 

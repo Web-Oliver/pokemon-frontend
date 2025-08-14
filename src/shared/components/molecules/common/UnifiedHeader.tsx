@@ -243,8 +243,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     },
   };
 
-  const sizeConfig = sizeConfigs[size];
-  const variantConfig = variantConfigs[variant];
+  const sizeConfig = sizeConfigs[size] || sizeConfigs.md;
+  const variantConfig = variantConfigs[variant] || variantConfigs.glassmorphism;
 
   // Stat item component
   const StatItem: React.FC<{ stat: HeaderStat }> = ({ stat }) => {
@@ -272,7 +272,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
 
   return (
     <div
-      className={`${variantConfig.container.join(' ')} ${sizeConfig.container} ${className}`}
+      className={`${Array.isArray(variantConfig.container) ? variantConfig.container.join(' ') : variantConfig.container || ''} ${sizeConfig.container} ${className}`}
     >
       {/* Background effects */}
       {variantConfig.effects}

@@ -1,0 +1,30 @@
+<style>
+  /* Ensure theme variables are available in Storybook */
+  .sb-show-main {
+    background: var(--theme-bg-primary, #f8fafc);
+  }
+
+  /* Theme switching animations */
+  .sb-show-main,
+  .sb-show-main * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Custom scrollbar for Pokemon theme */
+  .sb-show-main::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .sb-show-main::-webkit-scrollbar-track {
+    background: var(--theme-bg-secondary);
+  }
+
+  .sb-show-main::-webkit-scrollbar-thumb {
+    background: var(--theme-border-primary);
+    border-radius: 4px;
+  }
+
+  .sb-show-main::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-border-accent);
+  }
+</style>

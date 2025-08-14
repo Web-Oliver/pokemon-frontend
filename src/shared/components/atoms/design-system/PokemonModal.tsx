@@ -7,9 +7,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter 
-} from '../../../../components/ui/dialog';
+} from '../../../ui/primitives/Modal';
 import { ComponentSize, StandardModalProps } from '../../types/themeTypes';
-import { cn, cardClasses } from '../../../utils';
+import { cn } from '../../../utils/ui/classNameUtils';
 import { useTheme } from '../../../../hooks/use-theme';
 import { PokemonButton } from './PokemonButton';
 import { pokemonModalVariants } from './unifiedVariants';

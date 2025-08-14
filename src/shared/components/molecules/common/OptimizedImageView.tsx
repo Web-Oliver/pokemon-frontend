@@ -13,7 +13,6 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
-import { 
 import { getImageUrl } from '../../utils/ui/imageUtils';
 
 interface OptimizedImageViewProps {
@@ -35,7 +34,7 @@ const OptimizedImageViewComponent: React.FC<OptimizedImageViewProps> = ({
   onError,
   themeColor = 'dark',
 }) => {
-  const elementTheme = 
+  const elementTheme = themeColor;
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isInView, setIsInView] = useState(false);

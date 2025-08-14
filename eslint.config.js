@@ -77,14 +77,31 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error', // Enforce strict typing
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+
+      // UI/Theme compliance rules
+      'no-inline-styles': 'error',
+      'prefer-const': 'error',
 
       // General ESLint rules (relaxed for development)
       'no-console': 'off',
       'no-debugger': 'error',
       'no-alert': 'error',
+
+      // Custom theme compliance rules (warnings for now, will be errors in production)
+      'no-restricted-syntax': [
+        'warn',
+        {
+          'selector': 'Literal[value=/^(#[0-9a-f]{3,8}|rgb\\(|rgba\\(|hsl\\(|hsla\\()/i]',
+          'message': 'Avoid hardcoded colors. Use CSS variables from the theme system instead.'
+        },
+        {
+          'selector': 'TemplateLiteral > TemplateElement[value.raw=/bg-(red|blue|green|yellow|purple|pink|indigo|gray|black|white)-\\d+/]',
+          'message': 'Avoid hardcoded Tailwind color classes. Use CSS variables like bg-[var(--theme-primary)] instead.'
+        }
+      ]
     },
     settings: {
       react: {

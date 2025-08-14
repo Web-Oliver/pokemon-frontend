@@ -1,0 +1,21 @@
+{
+  "projectToken": "PROJECT_TOKEN_PLACEHOLDER",
+  "buildScriptName": "build-storybook",
+  "exitZeroOnChanges": true,
+  "exitOnceUploaded": true,
+  "autoAcceptChanges": "main",
+  "ignoreLastBuildOnBranch": "main",
+  "skip": "dependabot/**",
+  "externals": [
+    "public/**"
+  ],
+  "delay": 500,
+  "diffThreshold": 0.2,
+  "threshold": 0.2,
+  "viewports": [
+    375,
+    768,
+    1024,
+    1440
+  ]
+}
