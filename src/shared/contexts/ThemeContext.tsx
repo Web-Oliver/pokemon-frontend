@@ -1,23 +1,17 @@
 /**
- * Unified Theme Context System
- * Phase 1.1.1: Foundation & Infrastructure
- *
- * Following CLAUDE.md principles:
- * - Single Responsibility: Manages comprehensive theme configuration
- * - Open/Closed: Extensible by adding new theme presets
- * - DRY: Single source of truth for all theme management
- * - Dependency Inversion: Abstracts theme details from components
- *
- * Integrates with:
- * - Existing next-themes system (ThemeToggle.tsx)
- * - Form theme system (formThemes.ts)
- * - CSS design system (pokemon-design-system.css)
+ * LEGACY THEME CONTEXT - DEPRECATED
+ * This file has been replaced by the simplified theme system
+ * 
+ * New theme system location: /src/theme/ThemeProvider.tsx
+ * 
+ * @deprecated Use new ThemeProvider from /theme/ThemeProvider.tsx instead
+ * This file is kept temporarily for migration compatibility
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useTheme as useNextTheme } from 'next-themes';
 import { formThemes, ThemeColor } from '../../theme/formThemes';
-import { ThemePropertyManager } from '../utils/theme/ThemePropertyManager';
+// NOTE: ThemePropertyManager removed - using simplified theme system
 import {
   AnimationIntensity,
   ColorScheme,

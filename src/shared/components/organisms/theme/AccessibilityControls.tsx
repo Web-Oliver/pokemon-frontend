@@ -6,7 +6,7 @@
  * DIP: Depends on theme context abstractions
  */
 
-import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../theme/ThemeProvider';
 import { cn } from '../../../utils';
 
 export interface AccessibilityControlsProps {
@@ -38,7 +38,7 @@ export const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
   enableQuickToggles = true,
   controlClassName,
 }) => {
-  const accessibility = useAccessibilityTheme();
+  const accessibility = useTheme();
 
   if (!showControls) {
     return null;

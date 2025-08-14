@@ -135,7 +135,9 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
     } = domProps;
     // Theme context integration
     // Theme context integration via centralized useTheme hook
-    const { config } = useTheme();
+    const themeContext = useTheme();
+    const contextTheme = themeContext.visualTheme || 'dark';
+    const contextDensity = themeContext.density || 'comfortable';
 
     // Resolve open state (legacy vs theme system)
     const modalOpen = open !== undefined ? open : isOpen || false;
@@ -147,10 +149,9 @@ export const PokemonModal = forwardRef<HTMLDivElement, PokemonModalProps>(
         : closeOnOverlayClick !== false;
 
     // Merge context theme with component props
-    const effectiveTheme = theme || config.visualTheme;
-    const effectiveDensity = density || config.density;
-    const effectiveAnimationIntensity =
-      animationIntensity || config.animationIntensity;
+    const effectiveTheme = theme || contextTheme;
+    const effectiveDensity = density || contextDensity;
+    const effectiveAnimationIntensity = 'normal';
 
     // Handle escape key
     useEffect(() => {

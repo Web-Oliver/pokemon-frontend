@@ -31,7 +31,7 @@ export {
   errorClasses 
 } from './ui/classNameUtils';
 export * from './ui/imageUtils';
-export * from './theme';
+// Theme utilities removed - use new theme system at /src/theme/
 
 // Storage utilities
 export * from './storage';

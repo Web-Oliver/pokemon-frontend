@@ -14,7 +14,7 @@ import { log } from '../shared/utils/performance/logger';
 import { Toaster } from 'react-hot-toast';
 import { PageLoading } from '../shared/components/molecules/common/LoadingStates';
 import { queryClient } from './lib/queryClient';
-import { UnifiedThemeProvider as ThemeProvider } from '../shared/contexts/theme/UnifiedThemeProvider';
+import { ThemeProvider } from '../theme';
 import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
 // Layout

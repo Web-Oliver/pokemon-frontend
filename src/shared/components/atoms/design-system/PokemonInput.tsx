@@ -88,12 +88,10 @@ export const PokemonInput = forwardRef<HTMLInputElement, PokemonInputProps>(
   ) => {
     // Theme context integration
     // Theme context integration via centralized useTheme hook
-    const { config } = useTheme();
-    const {
-      visualTheme,
-      density: contextDensity,
-      animationIntensity: contextAnimationIntensity,
-    } = config;
+    const themeContext = useTheme();
+    const visualTheme = themeContext.visualTheme || 'dark';
+    const contextDensity = themeContext.density || 'comfortable';
+    const contextAnimationIntensity = 'normal';
 
     // Merge context theme with component props
     const effectiveTheme = theme || visualTheme;

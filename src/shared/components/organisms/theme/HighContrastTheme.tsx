@@ -7,7 +7,7 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../theme/ThemeProvider';
 import { cn } from '../../../utils';
 
 export interface HighContrastThemeProps {
@@ -41,7 +41,7 @@ export const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
   colorOverrides,
   autoDetect = true,
 }) => {
-  const accessibility = useAccessibilityTheme({
+  const accessibility = useTheme({
     autoDetectPreferences: autoDetect,
   });
 

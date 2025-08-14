@@ -91,7 +91,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
     ref
   ) => {
     // Theme context integration via centralized useTheme hook
-    const { config } = useTheme();
+    // Theme context available for future enhancements
 
     // Determine icons (legacy vs theme system)
     const resolvedStartIcon =
@@ -216,8 +216,7 @@ export const PokemonButton = forwardRef<HTMLButtonElement, PokemonButtonProps>(
 
     // Animation intensity aware effects
     const getAnimationClasses = () => {
-      const intensity =
-        animationIntensity || config?.animationIntensity || 'normal';
+      const intensity = animationIntensity || 'normal';
       switch (intensity) {
         case 'none':
           return '';

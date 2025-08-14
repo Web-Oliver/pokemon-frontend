@@ -22,7 +22,7 @@
  */
 
 import React from 'react';
-import { useUnifiedTheme } from '../../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../../theme/ThemeProvider';
 
 // ===============================
 // UNIFIED INTERFACE
@@ -77,7 +77,7 @@ export const UnifiedFormElement: React.FC<UnifiedFormElementProps> = ({
   children,
   role,
 }) => {
-  const theme = useUnifiedTheme();
+  const theme = useTheme();
 
   // ===============================
   // THEME-AWARE SIZING

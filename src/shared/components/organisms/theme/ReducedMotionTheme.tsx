@@ -7,7 +7,7 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../theme/ThemeProvider';
 import { cn } from '../../../utils';
 
 export interface ReducedMotionThemeProps {
@@ -46,7 +46,7 @@ export const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
   },
   autoDetect = true,
 }) => {
-  const accessibility = useAccessibilityTheme({
+  const accessibility = useTheme({
     autoDetectPreferences: autoDetect,
   });
 

@@ -5,12 +5,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
 import { Monitor, Moon, Sparkles, Sun } from 'lucide-react';
+import { useTheme } from '../../../../theme/ThemeProvider';
+import StunningThemeToggle from '../../../../components/stunning/StunningThemeToggle';
 
 const ThemeToggle: React.FC = () => {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { settings, setColorScheme, resolvedTheme } = useTheme();
 
   // Ensure component is mounted to prevent hydration mismatch
   useEffect(() => {
@@ -23,9 +24,16 @@ const ThemeToggle: React.FC = () => {
     );
   }
 
-  const themes = [
+  // Use stunning theme toggle for stunning themes
+  const isStunningTheme = ['liquid-glass', 'holo-collection', 'cosmic-aurora', 'ethereal-dream'].includes(resolvedTheme);
+  
+  if (isStunningTheme) {
+    return <StunningThemeToggle />;
+  }
+
+  const colorSchemes = [
     {
-      name: 'light',
+      name: 'light' as const,
       icon: Sun,
       label: 'Light Mode',
       gradient: 'from-amber-400 to-orange-500',
@@ -35,7 +43,7 @@ const ThemeToggle: React.FC = () => {
       textDark: 'text-amber-400',
     },
     {
-      name: 'dark',
+      name: 'dark' as const,
       icon: Moon,
       label: 'Dark Mode',
       gradient: 'from-indigo-500 to-purple-600',
@@ -45,7 +53,7 @@ const ThemeToggle: React.FC = () => {
       textDark: 'text-indigo-400',
     },
     {
-      name: 'system',
+      name: 'system' as const,
       icon: Monitor,
       label: 'System',
       gradient: 'from-emerald-500 to-teal-600',
@@ -56,13 +64,13 @@ const ThemeToggle: React.FC = () => {
     },
   ];
 
-  const currentTheme = themes.find((t) => t.name === theme) || themes[0];
-  const Icon = currentTheme.icon;
+  const currentScheme = colorSchemes.find((t) => t.name === settings.colorScheme) || colorSchemes[1];
+  const Icon = currentScheme.icon;
 
   const handleThemeChange = () => {
-    const currentIndex = themes.findIndex((t) => t.name === theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex].name);
+    const currentIndex = colorSchemes.findIndex((t) => t.name === settings.colorScheme);
+    const nextIndex = (currentIndex + 1) % colorSchemes.length;
+    setColorScheme(colorSchemes[nextIndex].name);
   };
 
   return (
@@ -73,19 +81,19 @@ const ThemeToggle: React.FC = () => {
         className={`
           relative w-10 h-10 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95
           ${
-            resolvedTheme === 'dark'
-              ? `${currentTheme.bgDark} border border-zinc-700/50 shadow-lg hover:shadow-xl`
-              : `${currentTheme.bgLight} border border-white/50 shadow-lg hover:shadow-xl`
+            resolvedTheme === 'light'
+              ? `${currentScheme.bgLight} border border-white/50 shadow-lg hover:shadow-xl`
+              : `${currentScheme.bgDark} border border-zinc-700/50 shadow-lg hover:shadow-xl`
           }
           group-hover:shadow-2xl backdrop-blur-sm
         `}
-        aria-label={`Switch to next theme. Current: ${currentTheme.label}`}
-        title={currentTheme.label}
+        aria-label={`Switch to next color scheme. Current: ${currentScheme.label}`}
+        title={currentScheme.label}
       >
         {/* Animated Background Glow */}
         <div
           className={`
-          absolute inset-0 rounded-xl bg-gradient-to-r ${currentTheme.gradient} 
+          absolute inset-0 rounded-xl bg-gradient-to-r ${currentScheme.gradient} 
           opacity-0 group-hover:opacity-20 transition-opacity duration-300
         `}
         />
@@ -94,7 +102,7 @@ const ThemeToggle: React.FC = () => {
         <Icon
           className={`
             relative z-10 w-5 h-5 transition-all duration-300
-            ${resolvedTheme === 'dark' ? currentTheme.textDark : currentTheme.textLight}
+            ${resolvedTheme === 'light' ? currentScheme.textLight : currentScheme.textDark}
             group-hover:scale-110
           `}
         />
@@ -116,34 +124,34 @@ const ThemeToggle: React.FC = () => {
         text-xs font-medium rounded-lg opacity-0 pointer-events-none transition-all duration-300
         group-hover:opacity-100 group-hover:translate-y-0 translate-y-1
         ${
-          resolvedTheme === 'dark'
-            ? 'bg-zinc-800/95 text-zinc-200 border border-zinc-700/50'
-            : 'bg-white/95 text-zinc-700 border border-zinc-200/50'
+          resolvedTheme === 'light'
+            ? 'bg-white/95 text-zinc-700 border border-zinc-200/50'
+            : 'bg-zinc-800/95 text-zinc-200 border border-zinc-700/50'
         }
         backdrop-blur-sm shadow-lg whitespace-nowrap z-50
       `}
       >
-        {currentTheme.label}
+        {currentScheme.label}
         <div
           className={`
           absolute top-full left-1/2 transform -translate-x-1/2 w-2 h-2 rotate-45
-          ${resolvedTheme === 'dark' ? 'bg-zinc-800/95 border-r border-b border-zinc-700/50' : 'bg-white/95 border-r border-b border-zinc-200/50'}
+          ${resolvedTheme === 'light' ? 'bg-white/95 border-r border-b border-zinc-200/50' : 'bg-zinc-800/95 border-r border-b border-zinc-700/50'}
         `}
         />
       </div>
 
       {/* System Theme Indicator */}
-      {theme === 'system' && (
+      {settings.colorScheme === 'system' && (
         <div
           className={`
           absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse
-          ${resolvedTheme === 'dark' ? 'bg-emerald-400' : 'bg-emerald-500'}
+          ${resolvedTheme === 'light' ? 'bg-emerald-500' : 'bg-emerald-400'}
         `}
         >
           <div
             className={`
             absolute inset-0 rounded-full animate-ping
-            ${resolvedTheme === 'dark' ? 'bg-emerald-400' : 'bg-emerald-500'}
+            ${resolvedTheme === 'light' ? 'bg-emerald-500' : 'bg-emerald-400'}
           `}
           />
         </div>

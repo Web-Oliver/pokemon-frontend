@@ -41,8 +41,7 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
   height = 'h-4',
 }) => {
   // Theme context integration via centralized useTheme hook
-  const { config } = useTheme();
-  const { visualTheme: _visualTheme } = config;
+  const { visualTheme } = useTheme();
   const elementTheme = getElementTheme(themeColor);
 
   const sizeClasses = {

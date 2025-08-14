@@ -22,7 +22,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useUnifiedTheme } from '../../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../theme/ThemeProvider';
 
 // ===============================
 // UNIFIED INTERFACE
@@ -97,7 +97,7 @@ export const UnifiedEffectSystem: React.FC<UnifiedEffectSystemProps> = ({
   respectThemeSettings = true,
   children,
 }) => {
-  const theme = useUnifiedTheme();
+  const theme = useTheme();
 
   // Check if effects should be disabled based on theme settings
   const effectsEnabled =

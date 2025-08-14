@@ -149,8 +149,7 @@ export const useItemActions = ({
 
       setDownloading(true);
       try {
-        const exportService =
-          
+        const exportService = new ExportService();
 
         let downloadMethod;
         switch (itemType) {

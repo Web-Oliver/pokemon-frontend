@@ -7,7 +7,7 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../theme/ThemeProvider';
 import { cn } from '../../../utils';
 
 export interface FocusManagementThemeProps {
@@ -45,7 +45,7 @@ export const FocusManagementTheme: React.FC<FocusManagementThemeProps> = ({
   focusIndicatorColor,
   focusIndicatorThickness = 2,
 }) => {
-  useAccessibilityTheme();
+  useTheme();
 
   useEffect(() => {
     if (typeof document === 'undefined') {

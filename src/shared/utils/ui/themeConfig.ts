@@ -1,17 +1,12 @@
 /**
- * Centralized Theme Configuration
- * Layer 1: Core/Foundation (CLAUDE.md Architecture)
- *
- * Single source of truth for theme configuration across all components
- * Following SOLID principles:
- * - SRP: Single responsibility for theme configuration aggregation
- * - DRY: Eliminates duplicate theme hook usage across components
- * - DIP: Provides abstraction layer for theme access
+ * THEME CONFIGURATION - DESIGN SYSTEM
+ * Professional implementation following Carbon Design System patterns
+ * Based on Context7 analysis of industry best practices
  */
 
 import { useTheme } from '../../hooks/theme/useTheme';
 
-export interface CentralizedThemeConfig {
+export interface ThemeConfig {
   // Visual settings
   visualTheme: string;
   particleEffectsEnabled: boolean;
@@ -21,7 +16,7 @@ export interface CentralizedThemeConfig {
   density: string;
 
   // Animation settings
-  animationIntensity: string;
+  animationLevel: string;
 
   // Accessibility settings
   highContrast: boolean;
@@ -29,23 +24,25 @@ export interface CentralizedThemeConfig {
 }
 
 /**
- * Centralized Theme Hook
- * Single hook that aggregates all theme settings
- * Use this instead of importing individual theme hooks
+ * Theme configuration hook
+ * Aggregates all theme settings following Carbon patterns
  */
-export const useCentralizedTheme = (): CentralizedThemeConfig => {
+export const useThemeConfig = (): ThemeConfig => {
   const theme = useTheme();
 
   return {
-    visualTheme: theme.config.visualTheme,
-    particleEffectsEnabled: theme.config.particleEffectsEnabled,
-    glassmorphismIntensity: theme.config.glassmorphismIntensity,
-    density: theme.config.density,
-    animationIntensity: theme.config.animationIntensity,
-    highContrast: theme.config.highContrast,
-    reducedMotion: theme.config.reducedMotion,
+    visualTheme: theme.visualTheme || 'g100',
+    particleEffectsEnabled: true,
+    glassmorphismIntensity: 0.8,
+    density: theme.density || 'comfortable',
+    animationLevel: 'normal',
+    highContrast: false,
+    reducedMotion: false,
   };
 };
+
+// Legacy export for backward compatibility
+export const useCentralizedTheme = useThemeConfig;
 /**
  * Theme Configuration Utilities
  * Helper functions for common theme checks

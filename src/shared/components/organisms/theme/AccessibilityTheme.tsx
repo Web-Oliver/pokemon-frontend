@@ -10,12 +10,12 @@
  *
  * Integrates with:
  * - ThemeContext.tsx for theme state management
- * - useAccessibilityTheme.ts for accessibility-specific operations
+ * - useTheme.ts for accessibility-specific operations
  * - pokemon-design-system.css for accessibility styles
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { useTheme } from '../../../../../theme/ThemeProvider';
 import { cn } from '../../../utils';
 
 // CLAUDE.md COMPLIANCE: Following SRP by separating large components into focused modules
@@ -250,7 +250,7 @@ const AccessibilityTheme: React.FC<
   indicatorPosition = 'top-right',
   indicatorClassName,
 }) => {
-  const accessibility = useAccessibilityTheme({
+  const accessibility = useTheme({
     autoDetectPreferences,
     enableKeyboardShortcuts,
     highContrastOverrides,
