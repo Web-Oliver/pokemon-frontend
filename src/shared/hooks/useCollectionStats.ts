@@ -6,7 +6,7 @@
 
 import { useMemo } from 'react';
 import { useCollectionOperations } from './useCollectionOperations';
-import { displayPrice } from '../utils/helpers/formatting';
+import { displayPrice } from '../utils';
 
 export interface CollectionStats {
   totalItems: number;

@@ -16,8 +16,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * @param delay - Delay in milliseconds
  * @returns Debounced function
  */
-// Re-exported from consolidated debounceUtils to eliminate duplication
-export { useDebounce } from '../utils/helpers/debounceUtils';
+export const useDebounce = <T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  return useCallback((...args: Parameters<T>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  }, [callback, delay]);
+};
 
 /**
  * Hook for cancelling a debounced operation
@@ -80,5 +93,5 @@ export const useDebouncedValue = <T>(value: T, delay: number): T => {
   return debouncedValue;
 };
 
-// Default export: re-export the useDebounce hook for backward compatibility
-export { useDebounce as default } from '../utils/helpers/debounceUtils';
+// Default export for backward compatibility
+export default useDebounce;

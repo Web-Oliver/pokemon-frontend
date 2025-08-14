@@ -132,11 +132,8 @@ export const COSMIC_GRADIENTS = {
   },
 } as const;
 
-// getHolographicBorderStyles moved to ../../ui/context7Styles.ts
-// Import from: import { getContext7HolographicBorderStyles } from '../../ui/context7Styles';
-
-// COSMIC_TIMER_CONFIG moved to components/design-system/PokemonBadge.tsx
-// Import from: import { COSMIC_TIMER_CONFIG } from '../components/atoms/design-system/PokemonBadge';
+// Cosmic background configuration utilities consolidated here
+// Components using cosmic effects should import from this central module
 
 /**
  * Animation system for cosmic effects

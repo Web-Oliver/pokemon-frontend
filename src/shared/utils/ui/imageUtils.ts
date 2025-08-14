@@ -150,3 +150,17 @@ export const cleanupObjectURL = (preview: ImagePreview) => {
     URL.revokeObjectURL(preview.url);
   }
 };
+
+/**
+ * Process image URLs for consistent display 
+ * Handles localhost prefix cleanup and proper URL construction
+ */
+export const processImageUrl = (
+  imagePath: string | undefined
+): string | undefined => {
+  if (!imagePath) {
+    return undefined;
+  }
+
+  return getImageUrl(imagePath);
+};

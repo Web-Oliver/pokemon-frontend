@@ -8,10 +8,8 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import {
-  GlassmorphismContainer,
-  IconGlassmorphism,
-} from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
+import { GlassmorphismContainer } from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
+import { StatCardIcon } from '../../../../shared/components/atoms/design-system/DashboardIcon';
 
 export interface DashboardStatCardProps {
   title: string;
@@ -67,30 +65,25 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[var(--theme-accent-primary)]/5 via-transparent to-[var(--theme-accent-secondary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="relative z-10 flex items-center h-full">
-          {/* Icon container */}
+          {/* SOLID-compliant icon component */}
           <div className="mr-6">
-            <IconGlassmorphism
-              variant="premium"
+            <StatCardIcon
+              icon={Icon}
               colorScheme={colorScheme}
-              className="relative"
-            >
-              <Icon
-                size={32}
-                className="relative z-10 drop-shadow-lg"
-                style={{
-                  filter: 'drop-shadow(0 0 20px var(--theme-accent-primary))',
-                }}
-              />
-            </IconGlassmorphism>
+            />
           </div>
 
-          {/* Content */}
+          {/* Enhanced Content */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[var(--theme-text-secondary)] mb-1 uppercase tracking-wide">
+            <p className="text-xs font-bold text-[var(--theme-text-secondary)] mb-2 uppercase tracking-widest opacity-80">
               {title}
             </p>
-            <p className="text-3xl font-bold text-[var(--theme-text-primary)] truncate">
-              {loading ? '--' : value}
+            <p className="text-2xl md:text-3xl font-bold text-[var(--theme-text-primary)] truncate leading-tight">
+              {loading ? (
+                <span className="animate-pulse bg-[var(--theme-text-secondary)]/20 rounded-lg px-4 py-2">--</span>
+              ) : (
+                value
+              )}
             </p>
           </div>
         </div>

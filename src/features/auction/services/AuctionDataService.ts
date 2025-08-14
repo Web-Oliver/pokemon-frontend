@@ -10,7 +10,7 @@
 import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
 import { ISealedProduct } from '../../../shared/domain/models/sealedProduct';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
-import { processImageUrl } from '../../../shared/utils/helpers/formatting';
+import { processImageUrl } from '../../../shared/utils';
 import { UnifiedCollectionItem } from '../../../shared/types/collectionDisplayTypes';
 
 export class AuctionDataService {
@@ -85,13 +85,13 @@ export class AuctionDataService {
     const cardName = this.extractCardName(cardData);
     const setName = this.extractSetName(setData, cardData);
     const variety = cardData?.variety || '';
-    const pokemonNumber = cardData?.pokemonNumber || '';
+    const cardNumber = cardData?.cardNumber || '';
 
     // Build display name
     const displayName = this.buildDisplayName(
       cardName,
       variety,
-      pokemonNumber,
+      cardNumber,
       `PSA ${card.grade}`
     );
 
@@ -123,13 +123,13 @@ export class AuctionDataService {
     const cardName = this.extractCardName(cardData);
     const setName = this.extractSetName(setData, cardData);
     const variety = cardData?.variety || '';
-    const pokemonNumber = cardData?.pokemonNumber || '';
+    const cardNumber = cardData?.cardNumber || '';
 
     // Build display name
     const displayName = this.buildDisplayName(
       cardName,
       variety,
-      pokemonNumber,
+      cardNumber,
       card.condition
     );
 
@@ -160,11 +160,31 @@ export class AuctionDataService {
     // Access nested productId object for product details (populated by backend)
     const productData = (product as any).productId || product;
     
-    // Extract product name - try multiple sources
-    const productName = productData?.name || productData?.productName || product.name || 'Unknown Product';
+    // Extract product name - try multiple sources with safe circular reference handling
+    let productName = 'Unknown Product';
+    try {
+      productName = productData?.name || productData?.productName || product.name || 'Unknown Product';
+    } catch (error) {
+      console.warn('[AUCTION DATA] Error accessing product name:', error);
+      productName = 'Unknown Product';
+    }
     
-    // Extract set name - try multiple sources
-    const setName = productData?.setName || product.setName || 'Unknown Set';
+    // Extract set name - try multiple sources with safe circular reference handling
+    let setName = 'Unknown Set';
+    try {
+      if (productData?.setName && typeof productData.setName === 'string') {
+        setName = productData.setName;
+      } else if (productData?.setProductId && typeof productData.setProductId === 'object' && productData.setProductId.setProductName) {
+        setName = String(productData.setProductId.setProductName);
+      } else if (product.setName && typeof product.setName === 'string') {
+        setName = product.setName;
+      } else if (product.setProductName && typeof product.setProductName === 'string') {
+        setName = product.setProductName;
+      }
+    } catch (error) {
+      console.warn('[AUCTION DATA] Error accessing set name:', error);
+      setName = 'Unknown Set';
+    }
     
     // Build clean display name
     const displayName = `${setName} - ${productName}`;
@@ -188,28 +208,47 @@ export class AuctionDataService {
   }
 
   /**
-   * Extract card name from card data
+   * Extract card name from card data - Safe circular reference handling
    */
   private static extractCardName(cardData: any): string {
-    if (cardData?.cardName) {
-      return cardData.cardName;
-    } else if (cardData?.baseName) {
-      return cardData.baseName;
-    } else if (cardData?.pokemonNumber) {
-      return `Card #${cardData.pokemonNumber}`;
+    try {
+      if (cardData && typeof cardData === 'object') {
+        if (cardData.cardName && typeof cardData.cardName === 'string') {
+          return cardData.cardName;
+        } else if (cardData.cardNumber && typeof cardData.cardNumber === 'string') {
+          return `Card #${cardData.cardNumber}`;
+        }
+      }
+    } catch (error) {
+      console.warn('[AUCTION DATA] Error extracting card name:', error);
     }
     return 'Unknown Card';
   }
 
   /**
-   * Extract set name from set data or card data
+   * Extract set name from set data or card data - Safe circular reference handling
    */
   private static extractSetName(setData: any, cardData: any): string {
-    if (setData?.setName) {
-      return setData.setName;
-    } else if (cardData?.setName) {
-      return cardData.setName;
+    try {
+      // Try setData first (most common case)
+      if (setData && typeof setData === 'object' && setData.setName && typeof setData.setName === 'string') {
+        return setData.setName;
+      }
+      
+      // Try cardData setName (fallback)
+      if (cardData && typeof cardData === 'object' && cardData.setName && typeof cardData.setName === 'string') {
+        return cardData.setName;
+      }
+      
+      // Try nested setId in cardData
+      if (cardData && typeof cardData === 'object' && cardData.setId && typeof cardData.setId === 'object' && cardData.setId.setName) {
+        return String(cardData.setId.setName);
+      }
+      
+    } catch (error) {
+      console.warn('[AUCTION DATA] Error extracting set name:', error);
     }
+    
     return 'Unknown Set';
   }
 
@@ -219,7 +258,7 @@ export class AuctionDataService {
   private static buildDisplayName(
     cardName: string,
     variety: string,
-    pokemonNumber: string,
+    cardNumber: string,
     suffix: string
   ): string {
     // Clean card name
@@ -239,8 +278,8 @@ export class AuctionDataService {
     }
 
     // Handle unknown cards with pokemon number
-    if (pokemonNumber && cleanCardName === 'Unknown Card') {
-      displayName = `#${pokemonNumber}`;
+    if (cardNumber && cleanCardName === 'Unknown Card') {
+      displayName = `#${cardNumber}`;
     }
 
     // Add suffix (grade or condition)

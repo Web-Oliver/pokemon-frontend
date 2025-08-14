@@ -17,9 +17,8 @@
 import React, { ButtonHTMLAttributes, forwardRef } from 'react';
 import { Glow, Shimmer } from '../../molecules/common/FormElements';
 import { StandardButtonProps } from '../../types/themeTypes';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn, focusRing } from '../../../utils';
 import { generateThemeClasses } from '../../../utils/ui/themeUtils';
-import { focusRing } from '../../../utils/ui/classNameUtils';
 import { useTheme } from '../../../hooks/theme/useTheme';
 
 export interface PokemonButtonProps

@@ -7,14 +7,7 @@
  * - DRY: Centralized image processing logic
  */
 
-// Context7 styling functions moved to ../../ui/context7Styles.ts
-// Re-export for backward compatibility
-export {
-  getContext7ContainerClasses,
-  getContext7ImageClasses,
-  getContext7GlassOverlay,
-  getContext7ShimmerEffect,
-} from '../ui/context7Styles';
+// Context7 styling functions removed during cleanup - no longer needed
 
 export interface ImageAspectInfo {
   ratio: number;
@@ -269,7 +262,7 @@ export const buildResponsiveImageClasses = (
   return classes.join(' ');
 };
 
-// Context7 styling functions moved to ../../ui/context7Styles.ts
+// Image processing utilities optimized for Pokemon card display
 
 /**
  * Determines optimal grid layout based on mixed aspect ratios
@@ -350,7 +343,7 @@ export const getOptimalGridLayout = (
   }
 };
 
-// Context7 overlay and shimmer effects moved to ../../ui/context7Styles.ts
+// Responsive image utilities for optimal display across devices
 
 /**
  * Preloads an image and returns aspect ratio information

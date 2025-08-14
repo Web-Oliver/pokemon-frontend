@@ -130,12 +130,30 @@ export const useDbaExport = () => {
   };
 
   const getItemDisplayName = (item: any, type: string): string => {
-    if (type === 'sealed') {
-      // NEW: Use hierarchical SetProduct → Product structure
-      return item.productId?.productName || item.name || 'Unknown Product';
-    } else {
-      const cardName = item.cardId?.cardName || item.cardName || 'Unknown Card';
-      return formatCardNameForDisplay(cardName);
+    try {
+      if (type === 'sealed') {
+        // NEW: Use hierarchical SetProduct → Product structure - Safe circular reference handling
+        if (item.productId && typeof item.productId === 'object' && item.productId.productName) {
+          return String(item.productId.productName);
+        } else if (item.name && typeof item.name === 'string') {
+          return item.name;
+        } else if (item.productName && typeof item.productName === 'string') {
+          return item.productName;
+        }
+        return 'Unknown Product';
+      } else {
+        // Cards - Safe circular reference handling
+        let cardName = 'Unknown Card';
+        if (item.cardId && typeof item.cardId === 'object' && item.cardId.cardName) {
+          cardName = String(item.cardId.cardName);
+        } else if (item.cardName && typeof item.cardName === 'string') {
+          cardName = item.cardName;
+        }
+        return formatCardNameForDisplay(cardName);
+      }
+    } catch (error) {
+      console.warn('[DBA EXPORT] Error getting item display name:', error);
+      return type === 'sealed' ? 'Unknown Product' : 'Unknown Card';
     }
   };
 

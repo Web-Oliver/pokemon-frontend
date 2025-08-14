@@ -18,7 +18,7 @@ import {
 import {
   displayPrice,
   getRelativeTime,
-} from '../../../shared/utils/helpers/formatting';
+} from '../../../shared/utils';
 import { LineChart } from 'lucide-react';
 
 export interface ActivityTimelineProps {

@@ -49,7 +49,7 @@ vi.mock('../../../../shared/utils/helpers/auctionStatusUtils', () => ({
   }),
 }));
 
-vi.mock('../../../../shared/utils/helpers/formatting', () => ({
+vi.mock('../../../../shared/utils', () => ({
   formatDateWithTime: vi.fn((date) => '2024-01-15 10:30 AM'),
 }));
 

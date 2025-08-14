@@ -31,7 +31,7 @@ import {
   type ImagePreview,
   processImageFiles,
 } from '../shared/utils/ui/imageUtils';
-import { cn } from '../shared/utils/ui/classNameUtils';
+import { cn } from '../shared/utils';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;

@@ -136,7 +136,7 @@ export const applyItemOrder = (
   items: CollectionItem[],
   order: string[]
 ): CollectionItem[] => {
-  const itemMap = new Map(items.map((item) => [item.id, item]));
+  const itemMap = new Map(items.map((item) => [item.id || (item as any)._id, item]));
   const orderedItems: CollectionItem[] = [];
 
   // Add items in specified order
@@ -182,7 +182,7 @@ export const validateItemOrder = (
     };
   }
 
-  const itemIds = new Set(items.map((item) => item.id));
+  const itemIds = new Set(items.map((item) => item.id || (item as any)._id));
   const orderSet = new Set(order);
 
   // Check for duplicates in order
@@ -288,12 +288,12 @@ export const moveItemDown = (order: string[], itemId: string): string[] => {
  * Reset order to default (original item order)
  */
 export const resetToDefaultOrder = (items: CollectionItem[]): string[] => {
-  return items.map((item) => item.id);
+  return items.map((item) => item.id || (item as any)._id);
 };
 
 /**
  * Generate order from sorted items
  */
 export const generateOrderFromItems = (items: CollectionItem[]): string[] => {
-  return items.map((item) => item.id);
+  return items.map((item) => item.id || (item as any)._id);
 };

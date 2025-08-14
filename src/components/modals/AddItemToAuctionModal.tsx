@@ -72,7 +72,21 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           ...card,
           id: card.id || (card as any)._id,
           itemType: 'PsaGradedCard' as const,
-          displayName: `${(card as any).cardId?.cardName || (card as any).cardName || (card as any).baseName || 'Unknown Card'} - Grade ${card.grade}`,
+          displayName: (() => {
+            try {
+              let cardName = 'Unknown Card';
+              const cardData = (card as any).cardId;
+              if (cardData && typeof cardData === 'object' && cardData.cardName) {
+                cardName = String(cardData.cardName);
+              } else if ((card as any).cardName) {
+                cardName = String((card as any).cardName);
+              }
+              return `${cardName} - Grade ${card.grade}`;
+            } catch (error) {
+              console.warn('[ADD ITEM MODAL] Error creating PSA card display name:', error);
+              return `Unknown Card - Grade ${card.grade}`;
+            }
+          })(),
           displayPrice: card.myPrice,
           displayImage: getImageUrl(card.images?.[0]),
           category: 'PSA Graded Card',
@@ -86,7 +100,21 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
           ...card,
           id: card.id || (card as any)._id,
           itemType: 'RawCard' as const,
-          displayName: `${(card as any).cardId?.cardName || (card as any).cardName || (card as any).baseName || 'Unknown Card'} - ${card.condition}`,
+          displayName: (() => {
+            try {
+              let cardName = 'Unknown Card';
+              const cardData = (card as any).cardId;
+              if (cardData && typeof cardData === 'object' && cardData.cardName) {
+                cardName = String(cardData.cardName);
+              } else if ((card as any).cardName) {
+                cardName = String((card as any).cardName);
+              }
+              return `${cardName} - ${card.condition}`;
+            } catch (error) {
+              console.warn('[ADD ITEM MODAL] Error creating Raw card display name:', error);
+              return `Unknown Card - ${card.condition}`;
+            }
+          })(),
           displayPrice: card.myPrice,
           displayImage: getImageUrl(card.images?.[0]),
           category: 'Raw Card',

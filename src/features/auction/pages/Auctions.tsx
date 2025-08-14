@@ -33,7 +33,7 @@ import {
   getStatusColor,
   getStatusPriority,
 } from '../../../shared/utils/helpers/auctionStatusUtils';
-import { formatDateWithTime } from '../../../shared/utils/helpers/formatting';
+import { formatDateWithTime } from '../../../shared/utils';
 import { navigationHelper } from '../../../shared/utils/navigation';
 
 // Import unified design system

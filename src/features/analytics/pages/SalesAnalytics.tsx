@@ -25,7 +25,7 @@ import SalesDateRangeFilter from '../../../shared/components/molecules/common/Sa
 import { useExportOperations } from '../../../shared/hooks/useExportOperations';
 import { useSalesAnalytics } from '../../../shared/hooks/useSalesAnalytics';
 import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
-import { displayPrice } from '../../../shared/utils/helpers/formatting';
+import { displayPrice } from '../../../shared/utils';
 // Removed CSS import - using unified theme system instead
 
 const SalesAnalytics: React.FC = () => {
@@ -37,7 +37,7 @@ const SalesAnalytics: React.FC = () => {
     endDate: dateRange?.endDate,
   });
 
-  // Use centralized price formatting from utils/helpers/formatting.ts
+  // Use centralized price formatting from utils.ts
 
   const { exportSalesData } = useExportOperations();
 

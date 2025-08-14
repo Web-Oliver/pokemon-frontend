@@ -119,7 +119,7 @@ export const useGenericFormState = <T extends Record<string, any>>(
       setIsDirty(false);
       setErrors({});
     }
-  }, [initialData, originalData, enableDeepComparison]);
+  }, [initialData, enableDeepComparison]); // Removed originalData from deps to prevent infinite loop
 
   // Check if form is dirty whenever data changes
   useEffect(() => {

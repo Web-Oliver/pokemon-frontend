@@ -15,8 +15,8 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { cn } from '../../../utils';
 
 // CLAUDE.md COMPLIANCE: Following SRP by separating large components into focused modules
 // This file now contains only the main AccessibilityTheme component and small helper components
@@ -147,7 +147,7 @@ const AccessibilityIndicators: React.FC<AccessibilityIndicatorsProps> = ({
 
   const indicators = [];
 
-  if (theme.config.highContrast) {
+  if (accessibility.config.highContrast) {
     indicators.push({
       id: 'high-contrast',
       label: 'High Contrast',
@@ -156,7 +156,7 @@ const AccessibilityIndicators: React.FC<AccessibilityIndicatorsProps> = ({
     });
   }
 
-  if (theme.config.reducedMotion) {
+  if (accessibility.config.reducedMotion) {
     indicators.push({
       id: 'reduced-motion',
       label: 'Reduced Motion',
@@ -250,7 +250,6 @@ const AccessibilityTheme: React.FC<
   indicatorPosition = 'top-right',
   indicatorClassName,
 }) => {
-  const theme = useAccessibilityThemeContext();
   const accessibility = useAccessibilityTheme({
     autoDetectPreferences,
     enableKeyboardShortcuts,
@@ -268,7 +267,7 @@ const AccessibilityTheme: React.FC<
     const root = document.documentElement;
 
     // High contrast mode CSS properties
-    if (theme.config.highContrast) {
+    if (accessibility.config.highContrast) {
       root.style.setProperty('--accessibility-high-contrast', 'true');
 
       // Apply high contrast overrides if provided
@@ -303,7 +302,7 @@ const AccessibilityTheme: React.FC<
     }
 
     // Reduced motion mode CSS properties
-    if (theme.config.reducedMotion) {
+    if (accessibility.config.reducedMotion) {
       root.style.setProperty('--accessibility-reduced-motion', 'true');
 
       // Apply reduced motion overrides if provided
@@ -338,10 +337,10 @@ const AccessibilityTheme: React.FC<
 
     // Add accessibility classes to document
     const accessibilityClasses = [];
-    if (theme.config.highContrast) {
+    if (accessibility.config.highContrast) {
       accessibilityClasses.push('accessibility-high-contrast');
     }
-    if (theme.config.reducedMotion) {
+    if (accessibility.config.reducedMotion) {
       accessibilityClasses.push('accessibility-reduced-motion');
     }
     if (focusManagement.trapFocus) {
@@ -356,8 +355,8 @@ const AccessibilityTheme: React.FC<
       root.classList.add(...accessibilityClasses);
     }
   }, [
-    theme.config.highContrast,
-    theme.config.reducedMotion,
+    accessibility.config.highContrast,
+    accessibility.config.reducedMotion,
     highContrastOverrides,
     reducedMotionOverrides,
     focusManagement,
@@ -367,8 +366,8 @@ const AccessibilityTheme: React.FC<
     <div
       className={cn(
         'accessibility-theme-wrapper',
-        theme.config.highContrast && 'theme-high-contrast',
-        theme.config.reducedMotion && 'theme-reduced-motion'
+        accessibility.config.highContrast && 'theme-high-contrast',
+        accessibility.config.reducedMotion && 'theme-reduced-motion'
       )}
       data-accessibility-features={JSON.stringify({
         highContrast: theme.config.highContrast,

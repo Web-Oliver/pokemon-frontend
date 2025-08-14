@@ -6,8 +6,8 @@
  * DIP: Depends on theme context abstractions
  */
 
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { cn } from '../../../utils';
 
 export interface AccessibilityControlsProps {
   /** Show accessibility control panel */
@@ -38,7 +38,6 @@ export const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
   enableQuickToggles = true,
   controlClassName,
 }) => {
-  const theme = useAccessibilityThemeContext();
   const accessibility = useAccessibilityTheme();
 
   if (!showControls) {
@@ -81,17 +80,17 @@ export const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
             className={cn(
               'w-full flex items-center justify-between px-3 py-2 rounded-lg',
               'text-sm font-medium transition-colors',
-              theme.config.highContrast
+              accessibility.config.highContrast
                 ? 'bg-yellow-600 text-white'
                 : 'bg-gray-700 hover:bg-gray-600 text-gray-100'
             )}
-            aria-pressed={theme.config.highContrast}
+            aria-pressed={accessibility.config.highContrast}
           >
             <span>High Contrast</span>
             <span
               className={cn(
                 'w-4 h-4 rounded-full transition-all',
-                theme.config.highContrast ? 'bg-white' : 'bg-gray-400'
+                accessibility.config.highContrast ? 'bg-white' : 'bg-gray-400'
               )}
             />
           </button>
@@ -101,17 +100,17 @@ export const AccessibilityControls: React.FC<AccessibilityControlsProps> = ({
             className={cn(
               'w-full flex items-center justify-between px-3 py-2 rounded-lg',
               'text-sm font-medium transition-colors',
-              theme.config.reducedMotion
+              accessibility.config.reducedMotion
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-700 hover:bg-gray-600 text-gray-100'
             )}
-            aria-pressed={theme.config.reducedMotion}
+            aria-pressed={accessibility.config.reducedMotion}
           >
             <span>Reduced Motion</span>
             <span
               className={cn(
                 'w-4 h-4 rounded-full transition-all',
-                theme.config.reducedMotion ? 'bg-white' : 'bg-gray-400'
+                accessibility.config.reducedMotion ? 'bg-white' : 'bg-gray-400'
               )}
             />
           </button>

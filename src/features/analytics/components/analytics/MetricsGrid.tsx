@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { MetricCard } from './MetricCard';
-import { getRelativeTime } from '../../../shared/utils/helpers/formatting';
+import { getRelativeTime } from '../../../shared/utils';
 
 export interface MetricsGridProps {
   analyticsData: any;

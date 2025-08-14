@@ -16,8 +16,9 @@ import { useFetchCollectionItems } from './useFetchCollectionItems';
 import { IPsaGradedCard, IRawCard } from '../domain/models/card';
 import { ISealedProduct } from '../domain/models/sealedProduct';
 import { IAuctionItem } from '../domain/models/auction';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
-import { processImageUrl } from '../utils/helpers/formatting';
+import { processImageUrl } from '../utils';
 import { log } from '../utils/performance/logger';
 
 // AuctionFormData moved to types/form/FormTypes.ts to eliminate duplication
@@ -156,10 +157,10 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         const setData = cardData?.setId || cardData?.set;
 
         const cardName =
-          cardData?.cardName || cardData?.baseName || 'Unknown Card';
+          cardData?.cardName || 'Unknown Card';
         const setName = setData?.setName || cardData?.setName || 'Unknown Set';
         const variety = cardData?.variety || '';
-        const pokemonNumber = cardData?.pokemonNumber || '';
+        const cardNumber = cardData?.cardNumber || '';
 
         // Clean card name
         const cleanCardName = cardName
@@ -174,8 +175,8 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         if (variety && !displayName.includes(variety)) {
           displayName = `${displayName} (${variety})`;
         }
-        if (pokemonNumber && cleanCardName === 'Unknown Card') {
-          displayName = `#${pokemonNumber}`;
+        if (cardNumber && cleanCardName === 'Unknown Card') {
+          displayName = `#${cardNumber}`;
         }
         displayName = `${displayName} - PSA ${card.grade}`;
 
@@ -204,7 +205,7 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
         const setData = cardData?.setId || cardData?.set;
 
         const cardName =
-          cardData?.cardName || cardData?.baseName || 'Unknown Card';
+          cardData?.cardName || 'Unknown Card';
         const setName = setData?.setName || cardData?.setName || 'Unknown Set';
         const displayName = `${cardName} - ${card.condition}`;
 
@@ -283,7 +284,7 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
 
         const items = uniqueSelectedIds
           .map((itemId) =>
-            allCollectionItems.find((item) => item.id === itemId)
+            allCollectionItems.find((item) => (item.id || (item as any)._id) === itemId)
           )
           .filter(Boolean) as UnifiedCollectionItem[];
 
@@ -314,7 +315,7 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
   // Handle item selection with separate ordering per category
   const toggleItemSelection = useCallback(
     (itemId: string) => {
-      const item = allCollectionItems.find((item) => item.id === itemId);
+      const item = allCollectionItems.find((item) => (item.id || (item as any)._id) === itemId);
       if (!item) return;
 
       setItemSelection((prev) => {
@@ -372,12 +373,13 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
       const newOrderItemsByType = { ...prev.selectedItemOrderByType };
 
       filteredItems.forEach((item) => {
-        if (!newSelection.has(item.id)) {
-          newSelection.add(item.id);
-          if (!newOrderItemsByType[item.itemType].includes(item.id)) {
+        const itemId = item.id || (item as any)._id;
+        if (!newSelection.has(itemId)) {
+          newSelection.add(itemId);
+          if (!newOrderItemsByType[item.itemType].includes(itemId)) {
             newOrderItemsByType[item.itemType] = [
               ...newOrderItemsByType[item.itemType],
-              item.id,
+              itemId,
             ];
           }
         }
@@ -406,17 +408,17 @@ export const useAuctionFormData = (initialData?: Partial<AuctionFormData>) => {
   const convertToAuctionItems = useCallback((): IAuctionItem[] => {
     return [
       ...selectedItemsByType.PsaGradedCard.map((item) => ({
-        itemId: String(item.id),
+        itemId: String(item.id || (item as any)._id),
         itemCategory: 'PsaGradedCard' as const,
         sold: false,
       })),
       ...selectedItemsByType.RawCard.map((item) => ({
-        itemId: String(item.id),
+        itemId: String(item.id || (item as any)._id),
         itemCategory: 'RawCard' as const,
         sold: false,
       })),
       ...selectedItemsByType.SealedProduct.map((item) => ({
-        itemId: String(item.id),
+        itemId: String(item.id || (item as any)._id),
         itemCategory: 'SealedProduct' as const,
         sold: false,
       })),

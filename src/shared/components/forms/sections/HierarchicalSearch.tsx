@@ -70,7 +70,10 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
   const handlePrimarySelection = (result: any) => {
     setValue(primaryFieldName, result.displayName);
     clearErrors(primaryFieldName);
-    setSelectedParentId(result.id);
+    // Use MongoDB ObjectId from result data
+    const parentId = result.data._id || result.data.id || result.id;
+    console.log('[HIERARCHICAL] Setting parent ID:', parentId, 'for mode:', mode);
+    setSelectedParentId(parentId);
     
     // Clear secondary field when primary changes to ensure proper filtering
     if (secondaryValue) {
@@ -104,7 +107,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
       }
       
       // Auto-fill Card Number - try different field names
-      const cardNumber = result.data.cardNumber || result.data.pokemonNumber || result.data.cardNumb;
+      const cardNumber = result.data.cardNumber || result.data.cardNumb;
       if (cardNumber) {
         setValue('cardNumber', cardNumber);
         clearErrors('cardNumber');
@@ -116,9 +119,22 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
         clearErrors('variety');
       }
 
-      // BIDIRECTIONAL: Auto-fill Set Name when card is selected
-      const setData = result.data.setName || result.data.set || result.data.setId || result.data.pokemon_set;
-      const setName = typeof setData === 'object' && setData?.setName ? setData.setName : setData;
+      // BIDIRECTIONAL: Auto-fill Set Name when card is selected - Safe circular reference handling
+      let setName = '';
+      try {
+        if (result.data.setName && typeof result.data.setName === 'string') {
+          setName = result.data.setName;
+        } else if (result.data.setId && typeof result.data.setId === 'object' && result.data.setId.setName) {
+          setName = String(result.data.setId.setName);
+        } else if (result.data.set && typeof result.data.set === 'string') {
+          setName = result.data.set;
+        } else if (result.data.pokemon_set && typeof result.data.pokemon_set === 'string') {
+          setName = result.data.pokemon_set;
+        }
+      } catch (error) {
+        console.warn('[HIERARCHICAL] Error accessing set name for auto-fill:', error);
+        setName = '';
+      }
       
       if (setName && !primaryValue) {
         setValue(primaryFieldName, setName);
@@ -126,10 +142,22 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
       }
     }
 
-    // BIDIRECTIONAL: Auto-fill SetProduct when product is selected
+    // BIDIRECTIONAL: Auto-fill SetProduct when product is selected - Safe circular reference handling
     if (mode === 'setproduct-product' && result.data) {
-      if (result.data.setProductName && !primaryValue) {
-        setValue(primaryFieldName, result.data.setProductName);
+      let setProductName = '';
+      try {
+        if (result.data.setProductName && typeof result.data.setProductName === 'string') {
+          setProductName = result.data.setProductName;
+        } else if (result.data.setProductId && typeof result.data.setProductId === 'object' && result.data.setProductId.setProductName) {
+          setProductName = String(result.data.setProductId.setProductName);
+        }
+      } catch (error) {
+        console.warn('[HIERARCHICAL] Error accessing set product name for auto-fill:', error);
+        setProductName = '';
+      }
+      
+      if (setProductName && !primaryValue) {
+        setValue(primaryFieldName, setProductName);
         clearErrors(primaryFieldName);
       }
     }

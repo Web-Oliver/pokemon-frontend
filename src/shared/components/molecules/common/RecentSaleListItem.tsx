@@ -13,7 +13,7 @@
 
 import React from 'react';
 import BaseListItem from './BaseListItem';
-import { displayPrice } from '../../../utils/helpers/formatting';
+import { displayPrice } from '../../../utils';
 import { getImageUrl } from '../../../utils/ui/imageUtils';
 
 interface SaleItem {

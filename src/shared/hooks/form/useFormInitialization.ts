@@ -22,8 +22,7 @@ interface BaseFormData {
   setId?: any;
   setName?: string;
   cardName?: string;
-  pokemonNumber?: string;
-  baseName?: string;
+  cardNumber?: string;
   variety?: string;
   myPrice?: number;
   dateAdded?: string | Date;
@@ -39,8 +38,7 @@ interface BaseFormData {
 interface CardDataExtraction {
   setName: string;
   cardName: string;
-  pokemonNumber: string;
-  baseName: string;
+  cardNumber: string;
   variety: string;
 }
 
@@ -72,8 +70,7 @@ const extractCardData = (cardId: any): CardDataExtraction => {
     return {
       setName: '',
       cardName: '',
-      pokemonNumber: '',
-      baseName: '',
+      cardNumber: '',
       variety: '',
     };
   }
@@ -82,8 +79,7 @@ const extractCardData = (cardId: any): CardDataExtraction => {
   return {
     setName,
     cardName: cardId.cardName || '',
-    pokemonNumber: cardId.pokemonNumber || '',
-    baseName: cardId.baseName || '',
+    cardNumber: cardId.cardNumber || '',
     variety: cardId.variety || '',
   };
 };
@@ -155,12 +151,11 @@ export const useFormInitialization = (
       const cardData = extractCardData(initialData.cardId);
 
       if (cardData.setName || cardData.cardName) {
-        const { setName, cardName, pokemonNumber, baseName, variety } =
+        const { setName, cardName, cardNumber, variety } =
           cardData;
         setValue('setName', setName);
         setValue('cardName', cardName);
-        setValue('pokemonNumber', pokemonNumber);
-        setValue('baseName', baseName);
+        setValue('cardNumber', cardNumber);
         setValue('variety', variety);
       }
     }

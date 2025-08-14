@@ -324,6 +324,11 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       markSoldModal.closeModal();
       setSelectedItem(null);
       showSuccessToast('Item marked as sold successfully');
+      
+      // Navigate back to auctions list after successful sale
+      setTimeout(() => {
+        navigateToAuctions();
+      }, 1500); // Small delay to let user see the success message
     } catch (error) {
       handleApiError(error, 'Failed to mark item as sold');
     }

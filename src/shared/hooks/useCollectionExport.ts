@@ -315,7 +315,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         // Update the request with the final item order
         const finalRequest: OrderedExportRequest = {
           ...request,
-          itemIds: orderedItems.map((item) => item.id),
+          itemIds: orderedItems.map((item) => item.id || (item as any)._id),
         };
 
         const result = await unifiedApiService.export.export(finalRequest);
@@ -369,7 +369,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
         return;
       }
 
-      const itemIds = safeItems.map((item) => item.id);
+      const itemIds = safeItems.map((item) => item.id || (item as any)._id);
       await exportItems({
         itemType: 'psa-card', // Default, but format determines actual behavior
         format,
@@ -441,7 +441,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
   const selectAllItems = useCallback(
     (items: CollectionItem[]) => {
       const safeItems = items || [];
-      const allIds = safeItems.map((item) => item.id);
+      const allIds = safeItems.map((item) => item.id || (item as any)._id);
       setSelectedItemsForExport(allIds);
 
       // Save to persistence
@@ -477,8 +477,9 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
             if (!acc[category]) {
               acc[category] = [];
             }
-            if (newOrder.includes(item.id)) {
-              acc[category].push(item.id);
+            const itemId = item.id || (item as any)._id;
+            if (newOrder.includes(itemId)) {
+              acc[category].push(itemId);
             }
             return acc;
           },
@@ -569,7 +570,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
 
       // Rebuild the order maintaining other items' positions
       const currentOrder =
-        itemOrder.length > 0 ? itemOrder : safeItems.map((item) => item.id);
+        itemOrder.length > 0 ? itemOrder : safeItems.map((item) => item.id || (item as any)._id);
       const newOrder: string[] = [];
 
       currentOrder.forEach((itemId) => {
@@ -588,7 +589,7 @@ export const useCollectionExport = (): UseCollectionExportReturn => {
 
       // Insert sorted category items at appropriate positions
       // For simplicity, add them in sorted order maintaining category grouping
-      const sortedCategoryIds = sortedCategoryItems.map((item) => item.id);
+      const sortedCategoryIds = sortedCategoryItems.map((item) => item.id || (item as any)._id);
 
       // Find where to insert the sorted category items
       const existingCategoryIndex = newOrder.findIndex((id) => {

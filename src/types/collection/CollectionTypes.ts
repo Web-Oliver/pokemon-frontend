@@ -120,9 +120,8 @@ export interface CardReference {
   _id: string;
   setId: string;
   setName: string;
-  pokemonNumber: string;
+  cardNumber: string;
   cardName: string;
-  baseName: string;
   variety?: string;
   rarity?: string;
   artist?: string;

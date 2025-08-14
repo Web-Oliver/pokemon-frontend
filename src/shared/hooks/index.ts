@@ -16,8 +16,18 @@ export {
   useHierarchicalSearch 
 } from './useSearch';
 
+// ========== BIDIRECTIONAL SEARCH HOOKS ==========
+export { 
+  useCardsInSet, 
+  useCardWithContext, 
+  useProductsInSetProduct, 
+  useProductWithContext, 
+  useSmartHierarchicalSearch,
+  useBreadcrumbNavigation 
+} from './useBidirectionalSearch';
+
 // ========== CORE HOOKS ==========
-export { useDebouncedValue } from './useDebounce';
+export { useDebounce, useDebouncedValue } from './useDebounce';
 export { useModal } from './useModal';
 export { useToggle } from './common/useToggle';
 export { useDataFetch } from './common/useDataFetch';

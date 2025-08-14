@@ -16,7 +16,6 @@ interface SelectedCard {
   };
   setName?: string;
   cardNumber?: string;
-  baseName?: string;
   variety?: string;
 
   [key: string]: any;

@@ -19,7 +19,7 @@
 import React, { forwardRef, useEffect } from 'react';
 import { AlertTriangle, Check, Info, X } from 'lucide-react';
 import { ComponentSize, StandardModalProps } from '../../types/themeTypes';
-import { cn, cardClasses } from '../../../utils/ui/classNameUtils';
+import { cn, cardClasses } from '../../../utils';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import { PokemonButton } from './PokemonButton';
 

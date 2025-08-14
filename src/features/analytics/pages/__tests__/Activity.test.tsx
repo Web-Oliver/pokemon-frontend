@@ -48,7 +48,7 @@ vi.mock('../../../../shared/utils/navigation', () => ({
   },
 }));
 
-vi.mock('../../../../shared/utils/helpers/formatting', () => ({
+vi.mock('../../../../shared/utils', () => ({
   displayPrice: vi.fn((price) => `$${price}`),
   getRelativeTime: vi.fn((date) => '2 hours ago'),
 }));

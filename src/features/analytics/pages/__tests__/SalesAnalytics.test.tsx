@@ -36,7 +36,7 @@ vi.mock(
   })
 );
 
-vi.mock('../../../../shared/utils/helpers/formatting', () => ({
+vi.mock('../../../../shared/utils', () => ({
   displayPrice: vi.fn((price) => `$${price}`),
 }));
 
@@ -388,7 +388,7 @@ describe('SalesAnalytics Page', () => {
   it('formats prices correctly using display utility', () => {
     const {
       displayPrice,
-    } = require('../../../../shared/utils/helpers/formatting');
+    } = require('../../../../shared/utils');
 
     render(<SalesAnalytics />, { wrapper: createWrapper() });
 

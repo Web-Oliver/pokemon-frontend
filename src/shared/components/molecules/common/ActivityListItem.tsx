@@ -18,7 +18,7 @@ import BaseListItem from './BaseListItem';
 import {
   displayPrice,
   getRelativeTime,
-} from '../../../utils/helpers/formatting';
+} from '../../../utils';
 
 interface ActivityMetadata {
   color?: string;

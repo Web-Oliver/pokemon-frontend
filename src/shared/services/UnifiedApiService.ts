@@ -56,14 +56,16 @@ export interface PaginatedSetsParams {
  */
 export interface CardSearchParams {
   query: string;
-  setId?: string;
+  setId?: string; // MongoDB ObjectId for hierarchical filtering
   setName?: string;
   year?: number;
-  pokemonNumber?: string;
+  cardNumber?: string;
   variety?: string;
   minPsaPopulation?: number;
   limit?: number;
   page?: number;
+  populate?: string; // For auto-population (e.g., 'setId')
+  exclude?: string; // For excluding specific card ID
 }
 
 export interface SetSearchParams {
@@ -81,12 +83,14 @@ export interface ProductSearchParams {
   query: string;
   category?: string;
   setName?: string;
-  setProductId?: string;
+  setProductId?: string; // MongoDB ObjectId for hierarchical filtering
   minPrice?: number;
   maxPrice?: number;
   availableOnly?: boolean;
   limit?: number;
   page?: number;
+  populate?: string; // For auto-population (e.g., 'setProductId')
+  exclude?: string; // For excluding specific product ID
 }
 
 export interface SearchResponse<T> {
@@ -293,13 +297,19 @@ export interface ISearchService {
 
   searchSetProducts(
     params: ProductSearchParams
-  ): Promise<SearchResponse<IProduct>>;
+  ): Promise<SearchResponse<ISetProduct>>;
 
   searchProducts(
     params: ProductSearchParams
   ): Promise<SearchResponse<IProduct>>;
 
   searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>>;
+
+  // Hierarchical search methods
+  getCardsInSet(setId: string, query?: string): Promise<SearchResponse<ICard>>;
+  getProductsInSetProduct(setProductId: string, query?: string): Promise<SearchResponse<IProduct>>;
+  getCardWithContext(cardId: string): Promise<{card: ICard; relatedCards: ICard[]; setInfo: ISet}>;
+  getProductWithContext(productId: string): Promise<{product: IProduct; relatedProducts: IProduct[]; setProductInfo: ISetProduct}>;
 }
 
 /**
@@ -437,7 +447,7 @@ export class UnifiedApiService {
     ): Promise<IAuction> {
       const body = { itemId, itemCategory };
       const response = await unifiedHttpClient.delete(
-        `/auctions/${id}/remove-item`,
+        `/auctions/${id}/items/${itemId}`,
         { data: body }
       );
       return response.data || response;
@@ -458,27 +468,27 @@ export class UnifiedApiService {
   // ========== COLLECTION DOMAIN ==========
 
   public readonly collection: ICollectionService = {
-    // PSA Graded Cards
+    // PSA Graded Cards - Updated to use unified collections endpoint
     async getPsaGradedCards(
       params?: PsaGradedCardsParams
     ): Promise<IPsaGradedCard[]> {
-      const response = await unifiedHttpClient.get<IPsaGradedCard[]>(
-        '/psa-graded-cards',
+      const response = await unifiedHttpClient.get<{success: boolean; data: IPsaGradedCard[]; meta?: any}>(
+        '/collections/psa-graded-cards',
         { params }
       );
       return response.data || response;
     },
 
     async getPsaGradedCardById(id: string): Promise<IPsaGradedCard> {
-      return await unifiedHttpClient.getById<IPsaGradedCard>(
-        '/psa-graded-cards',
-        id
+      const response = await unifiedHttpClient.get<{success: boolean; data: IPsaGradedCard}>(
+        `/collections/psa-graded-cards/${id}`
       );
+      return response.data || response;
     },
 
     async getPsaCardById(id: string): Promise<IPsaGradedCard> {
       return await unifiedHttpClient.getById<IPsaGradedCard>(
-        '/psa-graded-cards',
+        '/collections/psa-graded-cards',
         id
       );
     },
@@ -486,8 +496,8 @@ export class UnifiedApiService {
     async createPsaCard(
       data: Partial<IPsaGradedCard>
     ): Promise<IPsaGradedCard> {
-      const response = await unifiedHttpClient.post<IPsaGradedCard>(
-        '/psa-graded-cards',
+      const response = await unifiedHttpClient.post<{success: boolean; data: IPsaGradedCard}>(
+        '/collections/psa-graded-cards',
         data
       );
       return response.data || response;
@@ -497,31 +507,31 @@ export class UnifiedApiService {
       id: string,
       data: Partial<IPsaGradedCard>
     ): Promise<IPsaGradedCard> {
-      const response = await unifiedHttpClient.put<IPsaGradedCard>(
-        `/psa-graded-cards/${id}`,
+      const response = await unifiedHttpClient.put<{success: boolean; data: IPsaGradedCard}>(
+        `/collections/psa-graded-cards/${id}`,
         data
       );
       return response.data || response;
     },
 
     async deletePsaCard(id: string): Promise<void> {
-      await unifiedHttpClient.delete(`/psa-graded-cards/${id}`);
+      await unifiedHttpClient.delete(`/collections/psa-graded-cards/${id}`);
     },
 
     async markPsaCardSold(
       id: string,
       saleDetails: ISaleDetails
     ): Promise<IPsaGradedCard> {
-      const response = await unifiedHttpClient.post<IPsaGradedCard>(
-        `/psa-graded-cards/${id}/mark-sold`,
-        { saleDetails }
+      const response = await unifiedHttpClient.patch<{success: boolean; data: IPsaGradedCard}>(
+        `/collections/psa-graded-cards/${id}`,
+        { sold: true, saleDetails }
       );
       return response.data || response;
     },
 
-    // Raw Cards
+    // Raw Cards - Updated to use unified collections endpoint
     async getRawCards(params?: RawCardsParams): Promise<IRawCard[]> {
-      const response = await unifiedHttpClient.get<IRawCard[]>('/raw-cards', {
+      const response = await unifiedHttpClient.get<{success: boolean; data: IRawCard[]}>('/collections/raw-cards', {
         params: {
           ...params,
           _t: Date.now(), // Cache busting
@@ -536,12 +546,15 @@ export class UnifiedApiService {
     },
 
     async getRawCardById(id: string): Promise<IRawCard> {
-      return await unifiedHttpClient.getById<IRawCard>('/raw-cards', id);
+      const response = await unifiedHttpClient.get<{success: boolean; data: IRawCard}>(
+        `/collections/raw-cards/${id}`
+      );
+      return response.data || response;
     },
 
     async createRawCard(data: Partial<IRawCard>): Promise<IRawCard> {
-      const response = await unifiedHttpClient.post<IRawCard>(
-        '/raw-cards',
+      const response = await unifiedHttpClient.post<{success: boolean; data: IRawCard}>(
+        '/collections/raw-cards',
         data
       );
       return response.data || response;
@@ -551,51 +564,51 @@ export class UnifiedApiService {
       id: string,
       data: Partial<IRawCard>
     ): Promise<IRawCard> {
-      const response = await unifiedHttpClient.put<IRawCard>(
-        `/raw-cards/${id}`,
+      const response = await unifiedHttpClient.put<{success: boolean; data: IRawCard}>(
+        `/collections/raw-cards/${id}`,
         data
       );
       return response.data || response;
     },
 
     async deleteRawCard(id: string): Promise<void> {
-      await unifiedHttpClient.delete(`/raw-cards/${id}`);
+      await unifiedHttpClient.delete(`/collections/raw-cards/${id}`);
     },
 
     async markRawCardSold(
       id: string,
       saleDetails: ISaleDetails
     ): Promise<IRawCard> {
-      const response = await unifiedHttpClient.post<IRawCard>(
-        `/raw-cards/${id}/mark-sold`,
-        { saleDetails }
+      const response = await unifiedHttpClient.patch<{success: boolean; data: IRawCard}>(
+        `/collections/raw-cards/${id}`,
+        { sold: true, saleDetails }
       );
       return response.data || response;
     },
 
-    // Sealed Products
+    // Sealed Products - Updated to use unified collections endpoint
     async getSealedProducts(
       params?: SealedProductCollectionParams
     ): Promise<ISealedProduct[]> {
-      const response = await unifiedHttpClient.get<ISealedProduct[]>(
-        '/sealed-products',
+      const response = await unifiedHttpClient.get<{success: boolean; data: ISealedProduct[]}>(
+        '/collections/sealed-products',
         { params }
       );
       return response.data || response;
     },
 
     async getSealedProductById(id: string): Promise<ISealedProduct> {
-      return await unifiedHttpClient.getById<ISealedProduct>(
-        '/sealed-products',
-        id
+      const response = await unifiedHttpClient.get<{success: boolean; data: ISealedProduct}>(
+        `/collections/sealed-products/${id}`
       );
+      return response.data || response;
     },
 
     async createSealedProduct(
       data: Partial<ISealedProduct>
     ): Promise<ISealedProduct> {
-      const response = await unifiedHttpClient.post<ISealedProduct>(
-        '/sealed-products',
+      const response = await unifiedHttpClient.post<{success: boolean; data: ISealedProduct}>(
+        '/collections/sealed-products',
         data
       );
       return response.data || response;
@@ -605,24 +618,24 @@ export class UnifiedApiService {
       id: string,
       data: Partial<ISealedProduct>
     ): Promise<ISealedProduct> {
-      const response = await unifiedHttpClient.put<ISealedProduct>(
-        `/sealed-products/${id}`,
+      const response = await unifiedHttpClient.put<{success: boolean; data: ISealedProduct}>(
+        `/collections/sealed-products/${id}`,
         data
       );
       return response.data || response;
     },
 
     async deleteSealedProduct(id: string): Promise<void> {
-      await unifiedHttpClient.delete(`/sealed-products/${id}`);
+      await unifiedHttpClient.delete(`/collections/sealed-products/${id}`);
     },
 
     async markSealedProductSold(
       id: string,
       saleDetails: ISaleDetails
     ): Promise<ISealedProduct> {
-      const response = await unifiedHttpClient.post<ISealedProduct>(
-        `/sealed-products/${id}/mark-sold`,
-        { saleDetails }
+      const response = await unifiedHttpClient.patch<{success: boolean; data: ISealedProduct}>(
+        `/collections/sealed-products/${id}`,
+        { sold: true, saleDetails }
       );
       return response.data || response;
     },
@@ -697,71 +710,70 @@ export class UnifiedApiService {
 
   public readonly search: ISearchService = {
     async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
-      console.log('[API DEBUG] Calling /search/sets with params:', params);
+      console.log('[API DEBUG] Calling unified /search?type=sets with params:', params);
       try {
-        // CRITICAL FIX: Get raw response without transformation
-        const response = await unifiedHttpClient.get<any>('/search/sets', {
-          params,
-          skipTransform: true, // Skip the double transformation
+        // Use unified search endpoint with type parameter
+        const response = await unifiedHttpClient.get<any>('/search', {
+          params: {
+            domain: 'cards', // Card Domain: Set → Card hierarchy
+            type: 'sets',
+            query: params.query,
+            limit: params.limit,
+            page: params.page,
+            year: params.year,
+            minYear: params.minYear,
+            maxYear: params.maxYear,
+            minPsaPopulation: params.minPsaPopulation,
+            minCardCount: params.minCardCount,
+          },
+          skipTransform: true,
         });
-        console.log('[API DEBUG] /search/sets RAW response:', {
-          rawResponse: response,
-          responseKeys: response ? Object.keys(response) : 'no response',
-          hasSuccess: response?.success,
-          hasData: response?.data !== undefined,
-          dataKeys: response?.data ? Object.keys(response.data) : 'no data',
-          hasDirectSets: response?.data?.sets !== undefined,
-          directSetsLength: response?.data?.sets?.length || 0,
-        });
-
-        // Handle the actual API response format: {success: true, data: {sets: [...], count: N}}
+        
+        // Extract sets from nested response structure {data: {sets: [...]}}
+        const setsData = response?.data?.sets || response?.data || [];
         const searchResponse: SearchResponse<ISet> = {
-          data: response?.data?.sets || [],
-          count: response?.data?.count || response?.data?.total || 0,
-          success: response?.success || true,
+          data: setsData,
+          count: Array.isArray(setsData) ? setsData.length : 0,
+          success: response?.success !== false,
           query: params.query,
         };
 
         console.log('[API DEBUG] Final searchResponse:', searchResponse);
         return searchResponse;
       } catch (error) {
-        console.error('[API DEBUG] /search/sets ERROR:', error);
-        // Return empty result instead of throwing
+        console.error('[API DEBUG] /search?type=sets ERROR:', error);
         return { data: [], count: 0, success: false, query: params.query };
       }
     },
 
     async searchSetProducts(
       params: ProductSearchParams
-    ): Promise<SearchResponse<IProduct>> {
+    ): Promise<SearchResponse<ISetProduct>> {
       console.log(
-        '[API DEBUG] Calling /set-products/search with params:',
+        '[API DEBUG] Calling unified /search?type=set-products with params:',
         params
       );
       try {
-        // CRITICAL FIX: Use the correct endpoint /set-products/search with raw response
-        const response = await unifiedHttpClient.get<any>(
-          '/set-products/search',
-          { 
-            params: { query: params.query, limit: params.limit, page: params.page },
-            skipTransform: true
-          }
-        );
-        console.log('[API DEBUG] /set-products/search RAW response:', {
-          rawResponse: response,
-          responseKeys: response ? Object.keys(response) : 'no response',
-          hasSuccess: response?.success,
-          hasData: response?.data !== undefined,
-          dataKeys: response?.data ? Object.keys(response.data) : 'no data',
-          hasSetProducts: response?.data?.setProducts !== undefined,
-          setProductsLength: response?.data?.setProducts?.length || 0,
+        // Use unified search endpoint for set products
+        const response = await unifiedHttpClient.get<any>('/search', {
+          params: {
+            domain: 'products', // Product Domain: SetProduct → Product hierarchy
+            type: 'set-products',
+            query: params.query,
+            limit: params.limit,
+            page: params.page,
+            category: params.category,
+            setName: params.setName,
+          },
+          skipTransform: true
         });
 
-        // Handle the actual API response format: {success: true, data: {setProducts: [...]}}
-        const searchResponse: SearchResponse<IProduct> = {
-          data: response?.data?.setProducts || [],
-          count: response?.data?.count || response?.data?.total || 0,
-          success: response?.success || true,
+        // Extract setProducts from nested response structure {data: {setProducts: [...]}}
+        const setProductsData = response?.data?.setProducts || response?.data || [];
+        const searchResponse: SearchResponse<ISetProduct> = {
+          data: setProductsData,
+          count: Array.isArray(setProductsData) ? setProductsData.length : 0,
+          success: response?.success !== false,
           query: params.query,
         };
 
@@ -771,7 +783,7 @@ export class UnifiedApiService {
         );
         return searchResponse;
       } catch (error) {
-        console.error('[API DEBUG] /set-products/search ERROR:', error);
+        console.error('[API DEBUG] /search?type=set-products ERROR:', error);
         return { data: [], count: 0, success: false, query: params.query };
       }
     },
@@ -779,27 +791,34 @@ export class UnifiedApiService {
     async searchProducts(
       params: ProductSearchParams
     ): Promise<SearchResponse<IProduct>> {
-      console.log('[API DEBUG] Calling /search/products with params:', params);
+      console.log('[API DEBUG] Calling unified /search?type=products with params:', params);
       try {
-        const response = await unifiedHttpClient.get<any>('/search/products', {
-          params,
+        const response = await unifiedHttpClient.get<any>('/search', {
+          params: {
+            domain: 'products', // Product Domain: SetProduct → Product hierarchy
+            type: 'products',
+            query: params.query,
+            limit: params.limit,
+            page: params.page,
+            category: params.category,
+            setName: params.setName,
+            setProductId: params.setProductId, // For hierarchical filtering
+            minPrice: params.minPrice,
+            maxPrice: params.maxPrice,
+            availableOnly: params.availableOnly,
+            populate: params.populate, // For auto-population
+            exclude: params.exclude, // For excluding items
+          },
           skipTransform: true,
         });
-        console.log('[API DEBUG] /search/products RAW response:', {
-          rawResponse: response,
-          responseKeys: response ? Object.keys(response) : 'no response',
-          hasSuccess: response?.success,
-          hasData: response?.data !== undefined,
-          dataKeys: response?.data ? Object.keys(response.data) : 'no data',
-          hasProducts: response?.data?.products !== undefined,
-          productsLength: response?.data?.products?.length || 0,
-        });
 
-        // Handle the actual API response format: {success: true, data: {products: [...]}}
+        // Extract products from nested response structure {data: {products: {results: [...]}}}
+        const productsContainer = response?.data?.products;
+        const productsData = productsContainer?.results || response?.data || [];
         const searchResponse: SearchResponse<IProduct> = {
-          data: response?.data?.products || [],
-          count: response?.data?.count || response?.data?.total || 0,
-          success: response?.success || true,
+          data: productsData,
+          count: productsContainer?.total || (Array.isArray(productsData) ? productsData.length : 0),
+          success: response?.success !== false,
           query: params.query,
         };
 
@@ -809,7 +828,7 @@ export class UnifiedApiService {
         );
         return searchResponse;
       } catch (error) {
-        console.error('[API DEBUG] /search/products ERROR:', error);
+        console.error('[API DEBUG] /search?type=products ERROR:', error);
         return { data: [], count: 0, success: false, query: params.query };
       }
     },
@@ -817,35 +836,128 @@ export class UnifiedApiService {
     async searchCards(
       params: CardSearchParams
     ): Promise<SearchResponse<ICard>> {
-      console.log('[API DEBUG] Calling /search/cards with params:', params);
+      console.log('[API DEBUG] Calling unified /search?type=cards with params:', params);
       try {
-        const response = await unifiedHttpClient.get<any>('/search/cards', {
-          params,
+        const response = await unifiedHttpClient.get<any>('/search', {
+          params: {
+            domain: 'cards', // Card Domain: Set → Card hierarchy
+            type: 'cards',
+            query: params.query,
+            limit: params.limit,
+            page: params.page,
+            setId: params.setId, // For hierarchical filtering by MongoDB ObjectId
+            setName: params.setName,
+            year: params.year,
+            cardNumber: params.cardNumber,
+            variety: params.variety,
+            minPsaPopulation: params.minPsaPopulation,
+            populate: params.populate, // For auto-population (e.g., 'setId')
+            exclude: params.exclude, // For excluding specific cards
+          },
           skipTransform: true,
         });
-        console.log('[API DEBUG] /search/cards RAW response:', {
-          rawResponse: response,
-          responseKeys: response ? Object.keys(response) : 'no response',
-          hasSuccess: response?.success,
-          hasData: response?.data !== undefined,
-          dataKeys: response?.data ? Object.keys(response.data) : 'no data',
-          hasCards: response?.data?.cards !== undefined,
-          cardsLength: response?.data?.cards?.length || 0,
-        });
 
-        // Handle the actual API response format: {success: true, data: {cards: [...]}}
+        // Extract cards from nested response structure {data: {cards: [...]}}
+        const cardsData = response?.data?.cards || response?.data || [];
         const searchResponse: SearchResponse<ICard> = {
-          data: response?.data?.cards || [],
-          count: response?.data?.count || response?.data?.total || 0,
-          success: response?.success || true,
+          data: cardsData,
+          count: Array.isArray(cardsData) ? cardsData.length : 0,
+          success: response?.success !== false,
           query: params.query,
         };
 
         console.log('[API DEBUG] Final cards searchResponse:', searchResponse);
         return searchResponse;
       } catch (error) {
-        console.error('[API DEBUG] /search/cards ERROR:', error);
+        console.error('[API DEBUG] /search?type=cards ERROR:', error);
         return { data: [], count: 0, success: false, query: params.query };
+      }
+    },
+
+    // Hierarchical search methods for MongoDB ObjectId relationships
+    async getCardsInSet(setId: string, query?: string): Promise<SearchResponse<ICard>> {
+      console.log('[API DEBUG] Getting cards in set:', { setId, query });
+      return this.searchCards({
+        query: query || '',
+        setId, // Filter by MongoDB ObjectId
+        populate: 'setId', // Auto-populate set information
+        limit: 20,
+      });
+    },
+
+    async getProductsInSetProduct(setProductId: string, query?: string): Promise<SearchResponse<IProduct>> {
+      console.log('[API DEBUG] Getting products in set product:', { setProductId, query });
+      return this.searchProducts({
+        query: query || '',
+        setProductId, // Filter by MongoDB ObjectId
+        populate: 'setProductId', // Auto-populate set product information
+        limit: 20,
+      });
+    },
+
+    async getCardWithContext(cardId: string): Promise<{card: ICard; relatedCards: ICard[]; setInfo: ISet}> {
+      console.log('[API DEBUG] Getting card with context:', { cardId });
+      try {
+        // Get the card with its set information populated
+        const cardResponse = await unifiedHttpClient.get<any>(`/cards/${cardId}`, {
+          params: { populate: 'setId' },
+          skipTransform: true,
+        });
+        const card = cardResponse?.data || cardResponse;
+        
+        if (!card?.setId?._id) {
+          throw new Error('Card does not have set information');
+        }
+
+        // Get related cards in the same set (excluding the current card)
+        const relatedCardsResponse = await this.searchCards({
+          query: '',
+          setId: card.setId._id,
+          exclude: cardId,
+          limit: 10,
+        });
+
+        return {
+          card,
+          relatedCards: relatedCardsResponse.data,
+          setInfo: card.setId,
+        };
+      } catch (error) {
+        console.error('[API DEBUG] Error getting card with context:', error);
+        throw error;
+      }
+    },
+
+    async getProductWithContext(productId: string): Promise<{product: IProduct; relatedProducts: IProduct[]; setProductInfo: ISetProduct}> {
+      console.log('[API DEBUG] Getting product with context:', { productId });
+      try {
+        // Get the product with its set product information populated
+        const productResponse = await unifiedHttpClient.get<any>(`/products/${productId}`, {
+          params: { populate: 'setProductId' },
+          skipTransform: true,
+        });
+        const product = productResponse?.data || productResponse;
+        
+        if (!product?.setProductId?._id) {
+          throw new Error('Product does not have set product information');
+        }
+
+        // Get related products in the same set product (excluding the current product)
+        const relatedProductsResponse = await this.searchProducts({
+          query: '',
+          setProductId: product.setProductId._id,
+          exclude: productId,
+          limit: 10,
+        });
+
+        return {
+          product,
+          relatedProducts: relatedProductsResponse.data,
+          setProductInfo: product.setProductId,
+        };
+      } catch (error) {
+        console.error('[API DEBUG] Error getting product with context:', error);
+        throw error;
       }
     },
   };
@@ -958,7 +1070,7 @@ export class UnifiedApiService {
       // Get collection data based on item type
       const endpoint =
         itemType === 'psaGradedCards'
-          ? '/export/zip/psa-cards'
+          ? '/export/zip/psa-graded-cards'
           : itemType === 'rawCards'
             ? '/export/zip/raw-cards'
             : '/export/zip/sealed-products';
@@ -991,7 +1103,6 @@ export class UnifiedApiService {
               if (itemType === 'psaGradedCards' || itemType === 'rawCards') {
                 const cardName = (
                   item.cardId?.cardName ||
-                  item.cardId?.baseName ||
                   'Unknown'
                 )
                   .replace(/[^a-zA-Z0-9\s]/g, '')
@@ -1002,7 +1113,7 @@ export class UnifiedApiService {
                   .replace(/[^a-zA-Z0-9\s]/g, '')
                   .replace(/\s+/g, '_')
                   .toLowerCase();
-                const number = item.cardId?.pokemonNumber || '000';
+                const number = item.cardId?.cardNumber || '000';
 
                 if (itemType === 'psaGradedCards' && item.grade) {
                   itemName = `${category}_${setName}_${cardName}_${number}_PSA${item.grade}`;
@@ -1083,7 +1194,6 @@ export class UnifiedApiService {
                 ) {
                   const cardName = (
                     item.itemData.cardId?.cardName ||
-                    item.itemData.cardId?.baseName ||
                     'Unknown'
                   )
                     .replace(/[^a-zA-Z0-9\s]/g, '')
@@ -1096,7 +1206,7 @@ export class UnifiedApiService {
                     .replace(/[^a-zA-Z0-9\s]/g, '')
                     .replace(/\s+/g, '_')
                     .toLowerCase();
-                  const number = item.itemData.cardId?.pokemonNumber || '000';
+                  const number = item.itemData.cardId?.cardNumber || '000';
 
                   if (item.itemCategory === 'PsaGradedCard') {
                     const grade = item.itemData.grade || '0';
@@ -1145,15 +1255,17 @@ export class UnifiedApiService {
     },
 
     async exportDbaItems(): Promise<Blob> {
-      return await unifiedHttpClient.get('/export/dba/download', {
+      return await unifiedHttpClient.get('/collections/exports/dba', {
         responseType: 'blob',
       });
     },
 
     async exportToDba(exportRequest: any): Promise<any> {
+      // Use the correct REST endpoint that the backend actually supports
+      const { type = 'psa-graded-cards', ...requestData } = exportRequest;
       const response = await unifiedHttpClient.post<any>(
-        '/export/dba',
-        exportRequest
+        `/collections/${type}/exports`,
+        { format: 'dba', ...requestData }
       );
       return response.data || response;
     },
@@ -1161,7 +1273,7 @@ export class UnifiedApiService {
     async downloadDbaZip(): Promise<void> {
       try {
         // Use raw fetch to ensure proper binary handling
-        const response = await fetch('http://localhost:3000/api/export/dba/download', {
+        const response = await fetch('http://localhost:3000/api/collections/exports/dba', {
           method: 'GET',
           headers: {
             'Accept': 'application/zip, application/octet-stream',
@@ -1222,7 +1334,7 @@ export class UnifiedApiService {
         // Create a fallback download with error information
         const timestamp = new Date().toISOString().split('T')[0];
         const filename = `dba-export-error-${timestamp}.txt`;
-        const errorText = `DBA Export Download Failed: ${timestamp}\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nThe backend zip file could not be downloaded properly.\nPlease try again or contact support.\n\nTechnical details:\n- Backend endpoint: /api/export/dba/download\n- Expected: Binary zip file\n- Error type: ${typeof error}\n\nTroubleshooting:\n1. Check if backend is running\n2. Verify export was successful\n3. Check browser console for network errors`;
+        const errorText = `DBA Export Download Failed: ${timestamp}\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nThe backend zip file could not be downloaded properly.\nPlease try again or contact support.\n\nTechnical details:\n- Backend endpoint: /api/collections/exports/dba\n- Expected: Binary zip file\n- Error type: ${typeof error}\n\nTroubleshooting:\n1. Check if backend is running\n2. Verify export was successful\n3. Check browser console for network errors`;
         
         const errorBlob = new Blob([errorText], { type: 'text/plain' });
         const url = window.URL.createObjectURL(errorBlob);

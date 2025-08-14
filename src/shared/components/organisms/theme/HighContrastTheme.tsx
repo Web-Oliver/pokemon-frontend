@@ -7,8 +7,8 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { cn } from '../../../utils';
 
 export interface HighContrastThemeProps {
   /** Children to render */
@@ -41,13 +41,12 @@ export const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
   colorOverrides,
   autoDetect = true,
 }) => {
-  const theme = useAccessibilityThemeContext();
-  const _accessibility = useAccessibilityTheme({
+  const accessibility = useAccessibilityTheme({
     autoDetectPreferences: autoDetect,
   });
 
   useEffect(() => {
-    if (!theme.config.highContrast) {
+    if (!accessibility.config.highContrast) {
       return;
     }
 
@@ -98,9 +97,9 @@ export const HighContrastTheme: React.FC<HighContrastThemeProps> = ({
         root.style.removeProperty('--accessibility-hc-border-override');
       }
     };
-  }, [theme.config.highContrast, intensity, colorOverrides]);
+  }, [accessibility.config.highContrast, intensity, colorOverrides]);
 
-  if (!theme.config.highContrast) {
+  if (!accessibility.config.highContrast) {
     return <>{children}</>;
   }
 

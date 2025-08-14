@@ -108,7 +108,7 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       };
       formState.resetToData(auctionData);
     }
-  }, [currentAuction, formState]);
+  }, [currentAuction]); // Removed formState from deps to prevent infinite loop
 
   // Navigation using navigationHelper
   const navigateToAuctionDetail = () => {
@@ -141,6 +141,11 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
       return;
     }
 
+    // Don't allow saving if form is not dirty (no changes made)
+    if (!formState.isDirty) {
+      return;
+    }
+
     // Validate form before submission
     if (!formState.validateForm()) {
       return;
@@ -156,6 +161,9 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         status: formState.data.status,
       });
       showSuccessToast('Auction updated successfully!');
+      
+      // Reset form dirty state after successful save
+      formState.markClean();
     } catch (_error) {
       // Error handled by hook
     } finally {
@@ -305,7 +313,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     item: CollectionItem,
     type: 'psa' | 'raw' | 'sealed'
   ) => {
-    navigationHelper.navigateToItemDetail(type, item.id);
+    const itemId = item.id || (item as any)._id;
+    navigationHelper.navigateToItemDetail(type, itemId);
   };
 
   // Handle mark item as sold (show remove from auction option)
@@ -322,7 +331,8 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
         : type === 'raw'
           ? 'RawCard'
           : 'SealedProduct';
-    handleRemoveItem(item.id, itemName, itemCategory);
+    const itemId = item.id || (item as any)._id;
+    handleRemoveItem(itemId, itemName, itemCategory);
   };
 
   const pageTitle = currentAuction?.topText || 'Edit Auction';
@@ -334,13 +344,23 @@ const AuctionEdit: React.FC<AuctionEditProps> = ({ auctionId }) => {
     <div className="flex items-center space-x-3">
       <button
         onClick={handleSaveChanges}
-        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
+        disabled={!formState.isDirty || formState.loading || isEditing}
+        className={`px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg ${
+          formState.isDirty && !formState.loading && !isEditing
+            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white hover:shadow-xl hover:scale-105'
+            : 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed opacity-50'
+        }`}
       >
-        Save Changes
+        {formState.loading || isEditing ? 'Saving...' : 'Save Changes'}
       </button>
       <button
         onClick={handleCancelEdit}
-        className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105"
+        disabled={formState.loading || isEditing}
+        className={`px-6 py-3 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg ${
+          !formState.loading && !isEditing
+            ? 'bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white hover:shadow-xl hover:scale-105'
+            : 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed opacity-50'
+        }`}
       >
         Cancel
       </button>

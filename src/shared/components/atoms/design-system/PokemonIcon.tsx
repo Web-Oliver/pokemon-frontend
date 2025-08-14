@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn } from '../../../utils';
 
 export interface PokemonIconProps {
   children: React.ReactNode;

@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { displayPrice } from '../../../utils/helpers/formatting';
+import { displayPrice } from '../../../utils';
 
 interface CategoryConfig {
   /** Category name */

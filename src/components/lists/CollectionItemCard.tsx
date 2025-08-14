@@ -15,7 +15,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { CheckCircle, DollarSign, Eye, Package, Star } from 'lucide-react';
 import { BaseCard } from '../../shared/components/molecules/common/BaseCard';
-import { formatCardNameForDisplay } from '../../shared/utils/helpers/formatting';
+import { formatCardName } from '../../shared/utils';
 import { getImageUrl } from '../../shared/utils/ui/imageUtils';
 import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
 import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
@@ -45,60 +45,79 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
-  // Memoized item display name calculation - UPDATED for new field structure
+  // Memoized item display name calculation - FIXED for circular reference issues
   const itemName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
 
-    // Debug logging to understand the data structure
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[COLLECTION ITEM DEBUG] Item structure:', {
-        item: itemRecord,
-        cardId: itemRecord.cardId,
-        cardIdType: typeof itemRecord.cardId,
-        cardIdCardName: (itemRecord.cardId as any)?.cardName,
-        directCardName: itemRecord.cardName
-      });
+    try {
+      let cardName = 'Unknown Item';
+
+      // For PSA/Raw cards - safely access nested properties
+      const cardId = itemRecord.cardId as any;
+      if (cardId && typeof cardId === 'object' && cardId.cardName && typeof cardId.cardName === 'string') {
+        cardName = cardId.cardName;
+      }
+      // Direct card name on item
+      else if (itemRecord.cardName && typeof itemRecord.cardName === 'string') {
+        cardName = itemRecord.cardName;
+      }
+      // For sealed products - safely access Product name
+      else if (itemRecord.name && typeof itemRecord.name === 'string') {
+        cardName = itemRecord.name;
+      }
+      else {
+        const productId = itemRecord.productId as any;
+        if (productId && typeof productId === 'object' && productId.productName && typeof productId.productName === 'string') {
+          cardName = productId.productName;
+        }
+        else if (itemRecord.productName && typeof itemRecord.productName === 'string') {
+          cardName = itemRecord.productName;
+        }
+      }
+
+      // Format card name for display (remove hyphens and parentheses)
+      return formatCardName(cardName);
+    } catch (error) {
+      console.error('[COLLECTION ITEM] Error extracting item name:', error);
+      return 'Unknown Item';
     }
-
-    // Handle different item types with new structure
-    const cardName =
-      // For PSA/Raw cards - check populated fields first, then direct fields
-      ((itemRecord.cardId as Record<string, unknown>)?.cardName ||
-        itemRecord.cardName ||
-        // For sealed products - use name or productName
-        itemRecord.name ||
-        (itemRecord.productId as Record<string, unknown>)?.productName ||
-        itemRecord.productName ||
-        'Unknown Item') as string;
-
-    // Format card name for display (remove hyphens and parentheses)
-    return formatCardNameForDisplay(cardName);
   }, [item]);
 
-  // Memoized set name calculation - UPDATED for new field structure
+  // Memoized set name calculation - FIXED for circular reference issues
   const setName = useMemo(() => {
     const itemRecord = item as Record<string, unknown>;
 
-    // Debug logging to understand the data structure
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[COLLECTION ITEM DEBUG] Set structure:', {
-        cardId: itemRecord.cardId,
-        setId: (itemRecord.cardId as any)?.setId,
-        setIdSetName: (itemRecord.cardId as any)?.setId?.setName,
-        directSetName: itemRecord.setName
-      });
-    }
+    try {
+      // For PSA/Raw cards - safely access nested properties
+      const cardId = itemRecord.cardId as any;
+      if (cardId && typeof cardId === 'object') {
+        const setId = cardId.setId;
+        if (setId && typeof setId === 'object' && setId.setName && typeof setId.setName === 'string') {
+          return setId.setName;
+        }
+      }
 
-    return (
-      // For PSA/Raw cards - check populated fields from Card->Set reference
-      (itemRecord.cardId as Record<string, unknown>)?.setId?.setName ||
-      itemRecord.setName ||
-      (itemRecord.cardId as Record<string, unknown>)?.setName ||
-      // For sealed products - check Product->SetProduct reference
-      (itemRecord.productId as Record<string, unknown>)?.setProductName ||
-      itemRecord.setProductName ||
-      'Unknown Set'
-    );
+      // Direct set name on item
+      if (itemRecord.setName && typeof itemRecord.setName === 'string') {
+        return itemRecord.setName;
+      }
+
+      // For sealed products - safely access Product->SetProduct reference
+      const productId = itemRecord.productId as any;
+      if (productId && typeof productId === 'object' && productId.setProductName && typeof productId.setProductName === 'string') {
+        return productId.setProductName;
+      }
+
+      // Direct setProductName on item
+      if (itemRecord.setProductName && typeof itemRecord.setProductName === 'string') {
+        return itemRecord.setProductName;
+      }
+
+      return 'Unknown Set';
+    } catch (error) {
+      console.error('[COLLECTION ITEM] Error extracting set name:', error);
+      return 'Unknown Set';
+    }
   }, [item]);
 
   // Memoized click handler to prevent unnecessary re-renders

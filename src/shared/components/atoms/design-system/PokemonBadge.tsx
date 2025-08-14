@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn } from '../../../utils';
 
 // Timer icon component (inline to avoid external dependencies)
 const TimerIcon: React.FC<{ className?: string }> = ({

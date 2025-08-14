@@ -17,6 +17,7 @@ import {
   createSealedProductConfig,
   useEntityConfig,
 } from './collectionEntityConfigs';
+import { unifiedApiService } from '../../services/UnifiedApiService';
 
 // ============================================================================
 // ENTITY-SPECIFIC HOOKS - FOLLOWING ENTITY CONFIGURATION PATTERN

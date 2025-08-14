@@ -67,7 +67,7 @@ vi.mock('../../../../shared/utils/navigation', () => ({
   },
 }));
 
-vi.mock('../../../../shared/utils/helpers/formatting', () => ({
+vi.mock('../../../../shared/utils', () => ({
   displayPrice: vi.fn((price) => `$${price?.toLocaleString() || '0'}`),
 }));
 

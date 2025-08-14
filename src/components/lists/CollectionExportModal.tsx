@@ -176,144 +176,148 @@ export const CollectionExportModal: React.FC<CollectionExportModalProps> = ({
         )}
 
         {/* Tab Content */}
-        {activeTab === 'selection' ? (
-          <>
-            <div className="flex items-center justify-between">
-              <p className="text-zinc-300">
-                Select items from your collection to include in the export.
-              </p>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={onSelectAllItems}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  Select All
-                </button>
-                <span className="text-zinc-700">|</span>
-                <button
-                  onClick={onClearSelection}
-                  className="text-zinc-300 hover:text-zinc-300 text-sm font-medium"
-                >
-                  Clear All
-                </button>
-              </div>
-            </div>
-
-            {/* Export format selection */}
-            <div className="space-y-4">
-              <div className="bg-zinc-950 border border-zinc-700 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-white mb-3">
-                  Export Format
-                </h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {exportFormats.map((format) => {
-                    const Icon = format.icon;
-                    return (
-                      <label
-                        key={format.value}
-                        className={`flex items-start p-3 border rounded-lg cursor-pointer transition-colors ${selectedFormat === format.value ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
-                      >
-                        <input
-                          type="radio"
-                          name="exportFormat"
-                          value={format.value}
-                          checked={selectedFormat === format.value}
-                          onChange={(e) =>
-                            setSelectedFormat(e.target.value as ExportFormat)
-                          }
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 mt-0.5"
-                        />
-                        <div className="ml-3 flex-1">
-                          <div className="flex items-center">
-                            <Icon className="w-4 h-4 text-zinc-400 mr-2" />
-                            <span className="text-sm font-medium text-white">
-                              {format.label}
-                            </span>
-                            <span className="ml-2 text-xs text-zinc-400">
-                              {format.extension}
-                            </span>
-                          </div>
-                          <p className="text-xs text-zinc-300 mt-1">
-                            {format.description}
-                          </p>
-                        </div>
-                      </label>
-                    );
-                  })}
+        <div key="tab-content">
+          {activeTab === 'selection' ? (
+            <div key="selection-tab">
+              <div className="flex items-center justify-between">
+                <p className="text-zinc-300">
+                  Select items from your collection to include in the export.
+                </p>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={onSelectAllItems}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-zinc-700">|</span>
+                  <button
+                    onClick={onClearSelection}
+                    className="text-zinc-300 hover:text-zinc-300 text-sm font-medium"
+                  >
+                    Clear All
+                  </button>
                 </div>
               </div>
 
-              {/* Selected count */}
-              <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
-                <p className="text-blue-300 font-medium">
-                  {selectedItemIds.length} items selected for export as{' '}
-                  {exportFormats.find((f) => f.value === selectedFormat)?.label}
-                </p>
+              {/* Export format selection */}
+              <div className="space-y-4">
+                <div className="bg-zinc-950 border border-zinc-700 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-white mb-3">
+                    Export Format
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3">
+                    {exportFormats.map((format) => {
+                      const Icon = format.icon;
+                      return (
+                        <label
+                          key={format.value}
+                          className={`flex items-start p-3 border rounded-lg cursor-pointer transition-colors ${selectedFormat === format.value ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
+                        >
+                          <input
+                            type="radio"
+                            name="exportFormat"
+                            value={format.value}
+                            checked={selectedFormat === format.value}
+                            onChange={(e) =>
+                              setSelectedFormat(e.target.value as ExportFormat)
+                            }
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 mt-0.5"
+                          />
+                          <div className="ml-3 flex-1">
+                            <div className="flex items-center">
+                              <Icon className="w-4 h-4 text-zinc-400 mr-2" />
+                              <span className="text-sm font-medium text-white">
+                                {format.label}
+                              </span>
+                              <span className="ml-2 text-xs text-zinc-400">
+                                {format.extension}
+                              </span>
+                            </div>
+                            <p className="text-xs text-zinc-300 mt-1">
+                              {format.description}
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected count */}
+                <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
+                  <p className="text-blue-300 font-medium">
+                    {selectedItemIds.length} items selected for export as{' '}
+                    {exportFormats.find((f) => f.value === selectedFormat)?.label}
+                  </p>
+                </div>
+              </div>
+
+              {/* Items list */}
+              <div className="max-h-96 overflow-y-auto space-y-2">
+                {items.map((item, index) => {
+                  const itemId = item.id || item._id || `item-${index}`;
+                  const isSelected = selectedItemIds.includes(itemId);
+                  const itemType = getItemType(item);
+                  const itemName = getItemName(item);
+
+                  return (
+                    <div
+                      key={`export-item-${itemId}-${index}`}
+                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
+                      onClick={() => onToggleItemSelection(itemId)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => onToggleItemSelection(itemId)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 rounded mr-3"
+                          />
+                          <div>
+                            <h4 className="font-medium text-white">{itemName}</h4>
+                            <p className="text-sm text-zinc-400">
+                              {itemType} • {item.myPrice || '0'} kr.
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${itemType === 'PSA Graded' ? 'bg-blue-100 text-blue-800' : itemType === 'Raw Card' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}
+                        >
+                          {itemType}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-
-            {/* Items list */}
-            <div className="max-h-96 overflow-y-auto space-y-2">
-              {items.map((item) => {
-                const itemId = item.id;
-                const isSelected = selectedItemIds.includes(itemId);
-                const itemType = getItemType(item);
-                const itemName = getItemName(item);
-
-                return (
-                  <div
-                    key={itemId}
-                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-600 hover:border-zinc-500'}`}
-                    onClick={() => onToggleItemSelection(itemId)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => onToggleItemSelection(itemId)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-zinc-600 rounded mr-3"
-                        />
-                        <div>
-                          <h4 className="font-medium text-white">{itemName}</h4>
-                          <p className="text-sm text-zinc-400">
-                            {itemType} • {item.myPrice || '0'} kr.
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${itemType === 'PSA Graded' ? 'bg-blue-100 text-blue-800' : itemType === 'Raw Card' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}
-                      >
-                        {itemType}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+          ) : (
+            /* Ordering Tab */
+            <div key="ordering-tab">
+              {hasOrderingFeatures &&
+                onReorderItems &&
+                onMoveItemUp &&
+                onMoveItemDown && (
+                  <ItemOrderingSection
+                    items={items.filter((item) => selectedItemIds.includes(item.id || (item as any)._id))}
+                    itemOrder={itemOrder}
+                    selectedItemIds={selectedItemIds}
+                    lastSortMethod={lastSortMethod}
+                    onReorderItems={onReorderItems}
+                    onMoveItemUp={onMoveItemUp}
+                    onMoveItemDown={onMoveItemDown}
+                    onAutoSortByPrice={onAutoSortByPrice || (() => {})}
+                    onSortCategoryByPrice={onSortCategoryByPrice || (() => {})}
+                    onResetOrder={onResetOrder || (() => {})}
+                    onToggleItemSelection={onToggleItemSelection}
+                    showSelection={false}
+                  />
+                )}
             </div>
-          </>
-        ) : (
-          /* Ordering Tab */
-          hasOrderingFeatures &&
-          onReorderItems &&
-          onMoveItemUp &&
-          onMoveItemDown && (
-            <ItemOrderingSection
-              items={items.filter((item) => selectedItemIds.includes(item.id))}
-              itemOrder={itemOrder}
-              selectedItemIds={selectedItemIds}
-              lastSortMethod={lastSortMethod}
-              onReorderItems={onReorderItems}
-              onMoveItemUp={onMoveItemUp}
-              onMoveItemDown={onMoveItemDown}
-              onAutoSortByPrice={onAutoSortByPrice || (() => {})}
-              onSortCategoryByPrice={onSortCategoryByPrice || (() => {})}
-              onResetOrder={onResetOrder || (() => {})}
-              onToggleItemSelection={onToggleItemSelection}
-              showSelection={false}
-            />
-          )
-        )}
+          )}
+        </div>
 
         {/* Export actions */}
         <div className="flex items-center justify-end space-x-3 pt-4 border-t border-zinc-700">

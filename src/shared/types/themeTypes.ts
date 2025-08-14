@@ -470,16 +470,5 @@ export interface ThemeAwareComponentConfig {
   compound?: CompoundComponentProps;
 }
 
-export default {
-  BaseThemeProps,
-  StandardButtonProps,
-  StandardInputProps,
-  StandardSelectProps,
-  StandardCardProps,
-  StandardModalProps,
-  StandardBadgeProps,
-  StandardAlertProps,
-  ComponentStyleConfig,
-  ComponentAnimationConfig,
-  ThemeAwareComponentConfig,
-};
+// TypeScript interfaces are exported as named exports above
+// No default export needed for type definitions

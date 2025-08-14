@@ -30,7 +30,6 @@ interface SelectedCardData {
   setName?: string;
   cardName?: string;
   cardNumber?: string | number;
-  baseName?: string;
   variety?: string;
 
   [key: string]: any;
@@ -90,7 +89,6 @@ export const useCardSelection = (config: CardSelectionConfig) => {
         setValue('setName', '');
         setValue('cardName', '');
         setValue('cardNumber', '');
-        setValue('baseName', '');
         setValue('variety', '');
         clearErrors('setName');
         clearErrors('cardName');
@@ -208,16 +206,6 @@ export const useCardSelection = (config: CardSelectionConfig) => {
       setValue('cardNumber', cardNumber, { shouldValidate: true });
       clearErrors('cardNumber');
 
-      // Auto-fill base name
-      const baseName = selectedData.baseName || selectedData.cardName || '';
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] Setting Base Name:`,
-          baseName
-        );
-      }
-      setValue('baseName', baseName, { shouldValidate: true });
-      clearErrors('baseName');
 
       // Auto-fill variety
       const varietyValue = selectedData.variety || '';
@@ -243,7 +231,6 @@ export const useCardSelection = (config: CardSelectionConfig) => {
             setName: cardSetName,
             cardName: selectedData.cardName,
             cardNumber,
-            baseName,
             variety: varietyValue,
           }
         );

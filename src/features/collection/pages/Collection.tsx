@@ -102,7 +102,13 @@ const Collection: React.FC = () => {
   // Handle navigation to item detail page
   const handleViewItemDetail = useCallback(
     (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
-      navigationHelper.navigateToItemDetail(type, item.id);
+      // Extract ID from either id or _id field (MongoDB uses _id)
+      const itemId = item.id || (item as any)._id;
+      if (!itemId) {
+        console.error('[COLLECTION] No ID found for item:', item);
+        return;
+      }
+      navigationHelper.navigateToItemDetail(type, itemId);
     },
     []
   );
@@ -110,8 +116,14 @@ const Collection: React.FC = () => {
   // Handle mark as sold button click
   const handleMarkAsSold = useCallback(
     (item: CollectionItem, type: 'psa' | 'raw' | 'sealed') => {
+      // Extract ID from either id or _id field (MongoDB uses _id)
+      const itemId = item.id || (item as any)._id;
+      if (!itemId) {
+        console.error('[COLLECTION] No ID found for item:', item);
+        return;
+      }
       setSelectedItem({
-        id: item.id,
+        id: itemId,
         type,
         name:
           // UPDATED: Handle new field structures (cardNumber, setProductName, productName)

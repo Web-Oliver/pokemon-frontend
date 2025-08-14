@@ -140,6 +140,24 @@ export const handleApiError = (error: unknown, userMessage?: string): void => {
     const response = err.response as Record<string, unknown> | undefined;
     const data = response?.data as Record<string, unknown> | undefined;
 
+    // Check for network errors specifically
+    if (err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+      displayMessage = 'Unable to connect to the server. Please check if the backend is running.';
+      apiError = new APIError(
+        displayMessage,
+        0,
+        { networkError: true, originalMessage: err.message },
+        undefined
+      );
+      
+      // Don't spam console with network errors - log once per session
+      if (!sessionStorage.getItem('network-error-logged')) {
+        logError('Network Error: Backend not accessible');
+        sessionStorage.setItem('network-error-logged', 'true');
+      }
+      return; // Skip toast notification for network errors
+    }
+
     if (data?.message && typeof data.message === 'string') {
       displayMessage = data.message;
     } else if (err.message && typeof err.message === 'string') {
@@ -154,7 +172,7 @@ export const handleApiError = (error: unknown, userMessage?: string): void => {
       data as any
     );
 
-    logError('Legacy API Error:', apiError.getDebugInfo());
+    logError('API Error:', apiError.getDebugInfo());
   }
   // Handle other error types
   else {

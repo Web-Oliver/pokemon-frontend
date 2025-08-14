@@ -22,6 +22,7 @@ import {
 import { commonCSVColumns, exportToCSV } from '../utils/helpers/fileOperations';
 import { log } from '../utils/performance/logger';
 import { useDataFetch } from './common/useDataFetch';
+import { ApplicationError, ErrorCategory } from '../utils/helpers/errorHandler';
 
 export interface DateRange {
   startDate?: string;
@@ -43,6 +44,7 @@ export interface UseSalesAnalyticsResult {
   // Loading & Error State
   loading: boolean;
   error: string | null;
+  isNetworkError: boolean;
 
   // Computed Data
   kpis: ReturnType<typeof calculateKPIs>;
@@ -82,38 +84,35 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
    * Fetch sales data from multiple endpoints
    * REFACTORED: Using useDataFetch.execute() - eliminates manual loading/error state management
    */
-  const fetchSalesData = useCallback(
-    async (params?: DateRange) => {
-      await salesDataFetch.execute(async (): Promise<SalesAnalyticsData> => {
-        log('Fetching sales analytics data', params);
+  const fetchSalesData = useCallback(async (params?: DateRange) => {
+    await salesDataFetch.execute(async (): Promise<SalesAnalyticsData> => {
+      log('Fetching sales analytics data', params);
 
-        // Fetch all sales analytics data in parallel
-        const [salesData, summaryData, graphDataRaw] = await Promise.all([
-          getSalesData(params).catch(() => []),
-          getSalesSummary(params).catch(() => null),
-          getSalesGraphData(params).catch(() => []),
-        ]);
+      // Fetch all sales analytics data in parallel
+      const [salesData, summaryData, graphDataRaw] = await Promise.all([
+        getSalesData(params).catch(() => []),
+        getSalesSummary(params).catch(() => null),
+        getSalesGraphData(params).catch(() => []),
+      ]);
 
-        // Process the data
-        const processedData: SalesAnalyticsData = {
-          sales: Array.isArray(salesData) ? salesData : [],
-          summary: summaryData,
-          graphData: processGraphData(
-            Array.isArray(graphDataRaw) ? graphDataRaw : []
-          ),
-        };
+      // Process the data
+      const processedData: SalesAnalyticsData = {
+        sales: Array.isArray(salesData) ? salesData : [],
+        summary: summaryData,
+        graphData: processGraphData(
+          Array.isArray(graphDataRaw) ? graphDataRaw : []
+        ),
+      };
 
-        log('Sales analytics data loaded successfully', {
-          salesCount: processedData.sales.length,
-          summaryData: processedData.summary,
-          graphDataCount: processedData.graphData.length,
-        });
-
-        return processedData;
+      log('Sales analytics data loaded successfully', {
+        salesCount: processedData.sales.length,
+        summaryData: processedData.summary,
+        graphDataCount: processedData.graphData.length,
       });
-    },
-    [salesDataFetch]
-  );
+
+      return processedData;
+    });
+  }, []);
 
   /**
    * Refresh all data using current date range
@@ -199,6 +198,13 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
       : []
   );
 
+  // Check if error is network-related
+  const isNetworkError = 
+    salesDataFetch.error instanceof ApplicationError &&
+    (salesDataFetch.error.category === ErrorCategory.NETWORK ||
+     salesDataFetch.error.message.includes('Network Error') ||
+     salesDataFetch.error.details?.networkError === true);
+
   return {
     // REFACTORED: Data State from consolidated useDataFetch hook
     sales: salesDataFetch.data?.sales || [],
@@ -208,6 +214,7 @@ export const useSalesAnalytics = (): UseSalesAnalyticsResult => {
     // REFACTORED: Loading & Error State from useDataFetch hook
     loading: salesDataFetch.loading,
     error: salesDataFetch.error,
+    isNetworkError,
 
     // Computed Data
     kpis,

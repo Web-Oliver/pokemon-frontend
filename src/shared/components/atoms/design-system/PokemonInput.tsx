@@ -9,7 +9,7 @@
  */
 
 import React, { forwardRef } from 'react';
-import { cn, inputClasses } from '../../../utils/ui/classNameUtils';
+import { cn, inputClasses } from '../../../utils';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from '../../../hooks/theme/useTheme';
 import { FormWrapper } from '../../molecules/common/FormElements/FormWrapper';

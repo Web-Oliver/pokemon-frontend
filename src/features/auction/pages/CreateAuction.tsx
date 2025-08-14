@@ -69,12 +69,21 @@ const CreateAuction: React.FC = () => {
   const [collectionLoading, setCollectionLoading] = useState(false);
   const [collectionError, setCollectionError] = useState<string | null>(null);
 
+  // Get today's date in YYYY-MM-DD format for default auction date
+  const getTodayDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Initialize form using our consolidated form state with react-hook-form adapter
   const formAdapter = useAuctionFormAdapter({
     topText: '',
     bottomText: '',
-    auctionDate: '',
-    status: 'draft' as 'draft' | 'active' | 'sold' | 'expired',
+    auctionDate: getTodayDate(),
+    status: 'active' as 'draft' | 'active' | 'sold' | 'expired',
   });
 
   // Item selection state with separate ordering for each category
@@ -150,7 +159,7 @@ const CreateAuction: React.FC = () => {
 
         const items = uniqueSelectedIds
           .map((itemId) =>
-            allCollectionItems.find((item) => item.id === itemId)
+            allCollectionItems.find((item) => (item.id || (item as any)._id) === itemId)
           )
           .filter(Boolean) as UnifiedCollectionItem[];
 
@@ -166,7 +175,7 @@ const CreateAuction: React.FC = () => {
     // Calculate value directly from selectedItemIds and allCollectionItems to avoid circular dependency
     let total = 0;
     selectedItemIds.forEach((itemId) => {
-      const item = allCollectionItems.find((item) => item.id === itemId);
+      const item = allCollectionItems.find((item) => (item.id || (item as any)._id) === itemId);
       if (item) {
         total += item.displayPrice || 0;
       }
@@ -184,7 +193,7 @@ const CreateAuction: React.FC = () => {
         return;
       }
 
-      const item = allCollectionItems.find((item) => item.id === itemId);
+      const item = allCollectionItems.find((item) => (item.id || (item as any)._id) === itemId);
       if (!item) {
         console.error('[DEBUG] Item not found for itemId:', itemId);
         return;
@@ -252,12 +261,13 @@ const CreateAuction: React.FC = () => {
     const newOrderByType = { ...selectedItemOrderByType };
 
     filteredItems.forEach((item) => {
-      if (!newSelectedIds.has(item.id)) {
-        newSelectedIds.add(item.id);
+      const itemId = item.id || (item as any)._id;
+      if (!newSelectedIds.has(itemId)) {
+        newSelectedIds.add(itemId);
         
         // Add to order array for this item type (if not already present)
-        if (!newOrderByType[item.itemType].includes(item.id)) {
-          newOrderByType[item.itemType] = [...newOrderByType[item.itemType], item.id];
+        if (!newOrderByType[item.itemType].includes(itemId)) {
+          newOrderByType[item.itemType] = [...newOrderByType[item.itemType], itemId];
         }
       }
     });
@@ -284,17 +294,17 @@ const CreateAuction: React.FC = () => {
       // Prepare selected items for auction (preserving category order)
       const auctionItems: IAuctionItem[] = [
         ...selectedItemsByType.PsaGradedCard.map((item) => ({
-          itemId: String(item.id),
+          itemId: String(item.id || (item as any)._id),
           itemCategory: 'PsaGradedCard' as const,
           sold: false,
         })),
         ...selectedItemsByType.RawCard.map((item) => ({
-          itemId: String(item.id),
+          itemId: String(item.id || (item as any)._id),
           itemCategory: 'RawCard' as const,
           sold: false,
         })),
         ...selectedItemsByType.SealedProduct.map((item) => ({
-          itemId: String(item.id),
+          itemId: String(item.id || (item as any)._id),
           itemCategory: 'SealedProduct' as const,
           sold: false,
         })),

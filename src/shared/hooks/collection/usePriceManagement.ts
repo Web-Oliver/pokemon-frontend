@@ -9,6 +9,7 @@
 
 import { useCallback, useState } from 'react';
 import { CollectionItem } from './useCollectionItem';
+import { unifiedApiService } from '../../services/UnifiedApiService';
 
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';

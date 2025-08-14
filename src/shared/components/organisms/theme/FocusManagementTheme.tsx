@@ -7,8 +7,8 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { cn } from '../../../utils';
 
 export interface FocusManagementThemeProps {
   /** Children to render */
@@ -45,7 +45,6 @@ export const FocusManagementTheme: React.FC<FocusManagementThemeProps> = ({
   focusIndicatorColor,
   focusIndicatorThickness = 2,
 }) => {
-  useAccessibilityThemeContext();
   useAccessibilityTheme();
 
   useEffect(() => {

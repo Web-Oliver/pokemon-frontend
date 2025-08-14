@@ -7,8 +7,8 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useAccessibilityTheme as useAccessibilityThemeContext } from '../../contexts/theme/UnifiedThemeProvider';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { useAccessibilityTheme } from '../../contexts/theme/UnifiedThemeProvider';
+import { cn } from '../../../utils';
 
 export interface ReducedMotionThemeProps {
   /** Children to render */
@@ -46,13 +46,12 @@ export const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
   },
   autoDetect = true,
 }) => {
-  const theme = useAccessibilityThemeContext();
-  const _accessibility = useAccessibilityTheme({
+  const accessibility = useAccessibilityTheme({
     autoDetectPreferences: autoDetect,
   });
 
   useEffect(() => {
-    if (!theme.config.reducedMotion) {
+    if (!accessibility.config.reducedMotion) {
       return;
     }
 
@@ -95,9 +94,9 @@ export const ReducedMotionTheme: React.FC<ReducedMotionThemeProps> = ({
       root.style.removeProperty('--accessibility-allow-scroll-animations');
       root.style.removeProperty('--accessibility-motion-reduction');
     };
-  }, [theme.config.reducedMotion, sensitivityLevel, motionPreferences]);
+  }, [accessibility.config.reducedMotion, sensitivityLevel, motionPreferences]);
 
-  if (!theme.config.reducedMotion) {
+  if (!accessibility.config.reducedMotion) {
     return <>{children}</>;
   }
 

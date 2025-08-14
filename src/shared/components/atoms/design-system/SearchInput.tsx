@@ -151,11 +151,29 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               }`}
             >
               <div className="font-medium">{result.displayName}</div>
-              {result.data?.setName && result.type !== 'set' && (
-                <div className="text-xs text-zinc-500 mt-1">
-                  Set: {result.data.setName}
-                </div>
-              )}
+              {(() => {
+                try {
+                  // Safe property access to prevent circular references
+                  let setName = '';
+                  if (result.data?.setName) {
+                    setName = String(result.data.setName);
+                  } else if (result.data?.setId && typeof result.data.setId === 'object' && result.data.setId.setName) {
+                    setName = String(result.data.setId.setName);
+                  }
+                  
+                  if (setName && result.type !== 'set') {
+                    return (
+                      <div className="text-xs text-zinc-500 mt-1">
+                        Set: {setName}
+                      </div>
+                    );
+                  }
+                  return null;
+                } catch (error) {
+                  console.warn('[SEARCH INPUT] Error accessing set name:', error);
+                  return null;
+                }
+              })()}
             </div>
           ))}
         </div>

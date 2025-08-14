@@ -13,6 +13,7 @@ import { ISaleDetails } from '../../types/common';
 import { useCollectionOperations } from './useCollectionOperations';
 import { useLoadingState } from './common/useLoadingState';
 import { navigationHelper } from '../utils/navigation';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 

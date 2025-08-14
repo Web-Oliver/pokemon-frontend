@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
+import { unifiedApiService } from '../../services/UnifiedApiService';
 
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';

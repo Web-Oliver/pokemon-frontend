@@ -6,6 +6,7 @@
  */
 
 import { getImageUrl } from '../ui/imageUtils';
+import { displayKrPrice, displayPriceWithFallback } from '../formatting/prices';
 
 // Core item display data interface
 export interface ItemDisplayData {
@@ -216,15 +217,9 @@ export const getItemSubtitle = (item: any): string => {
   return parts.join(' • ');
 };
 
-// Format currency consistently
+// Format currency consistently - SOLID compliant kr formatting using centralized utility
 export const formatCurrency = (amount: number | undefined): string => {
-  if (amount === undefined || amount === null) {
-    return '$0.00';
-  }
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
+  return displayPriceWithFallback(amount, '0 kr');
 };
 
 // Format date consistently
