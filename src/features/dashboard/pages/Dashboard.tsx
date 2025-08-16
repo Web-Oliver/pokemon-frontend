@@ -23,6 +23,7 @@ import {
   Grid3X3,
   Package,
   Plus,
+  Sparkles,
   Star,
   TrendingUp,
 } from 'lucide-react';
@@ -30,7 +31,6 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { useRecentActivities } from '../../../shared/hooks/useActivity';
 import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
 import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
@@ -39,9 +39,14 @@ import {
   getActivityIcon,
 } from '../../../shared/utils/helpers/activityHelpers';
 import { navigationHelper } from '../../../shared/utils/navigation';
-import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
 import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
-import { ParticleSystem } from '../../../shared/components/organisms/effects';
+
+// Import our unified design system
+import {
+  PokemonButton,
+  PokemonCard,
+  PokemonPageContainer,
+} from '../../../shared/components/atoms/design-system';
 import {
   DashboardDataCard,
   DashboardGradedCard,
@@ -72,58 +77,52 @@ const Dashboard: React.FC = () => {
   });
 
   return (
-    <PageLayout
-      title="Dashboard"
-      subtitle="Professional Pokémon Collection Management"
-    >
-      <div className="min-h-screen bg-gradient-to-br from-[var(--theme-background)] via-purple-950/20 to-indigo-950/30 relative overflow-hidden">
-        {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
-        <div className="absolute inset-0 opacity-20">
-          {/* Primary Neural Network Pattern */}
-          <div
-            className="absolute inset-0 animate-pulse"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cfilter id='glow'%3E%3CfeGaussianBlur stdDeviation='3' result='coloredBlur'/%3E%3CfeMerge%3E%3CfeMergeNode in='coloredBlur'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='%2306b6d4' stroke-width='0.5' filter='url(%23glow)'%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3Cline x1='60' y1='30' x2='60' y2='90'/%3E%3Cline x1='30' y1='60' x2='90' y2='60'/%3E%3Cline x1='40' y1='40' x2='80' y2='80'/%3E%3Cline x1='80' y1='40' x2='40' y2='80'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-          {/* Secondary Quantum Particles */}
-          <div
-            className="absolute inset-0 animate-bounce"
-            style={{
-              animationDuration: '6s',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23a855f7' fill-opacity='0.05'%3E%3Ccircle cx='100' cy='50' r='1.5'/%3E%3Ccircle cx='50' cy='100' r='1'/%3E%3Ccircle cx='150' cy='100' r='1.5'/%3E%3Ccircle cx='100' cy='150' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-          {/* Holographic Grid Overlay */}
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `linear-gradient(90deg, transparent 98%, rgba(6, 182, 212, 0.1) 100%), linear-gradient(transparent 98%, rgba(168, 85, 247, 0.1) 100%)`,
-              backgroundSize: '40px 40px',
-            }}
-          />
-        </div>
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-12">
+            {/* Unified Header using PokemonCard */}
+            <PokemonCard
+              variant="glass"
+              size="xl"
+              className="text-white relative overflow-hidden"
+            >
+              {/* Floating geometric elements */}
+              <div
+                className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 z-10"
+                style={{ animationDuration: '20s' }}
+              ></div>
+              <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 z-10"></div>
 
-        {/* Floating Particle Systems */}
-        <ParticleSystem
-          particleCount={15}
-          colors={['#06b6d4', '#a855f7', '#ec4899', '#10b981']}
-          sizeRange={[2, 8]}
-          durationRange={[3, 7]}
-          opacity={0.2}
-          animationType="pulse"
-        />
+              <div className="relative z-20">
+                <div className="flex items-center mb-8">
+                  {/* Icon container */}
+                  <div className="relative mr-8">
+                    <div className="w-20 h-20 bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl flex items-center justify-center border border-white/[0.15] group-hover:scale-105 transition-all duration-500">
+                      <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/10 to-purple-500/10 rounded-xl blur-lg"></div>
+                      <Cpu className="w-10 h-10 text-cyan-300 relative z-10 animate-pulse" />
+                      <div
+                        className="absolute inset-0 animate-spin opacity-40"
+                        style={{ animationDuration: '15s' }}
+                      >
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full absolute -top-1 left-1/2 transform -translate-x-1/2"></div>
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full absolute -bottom-1 left-1/2 transform -translate-x-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
 
-        <div className="relative z-10 p-8">
-          <div className="max-w-7xl mx-auto space-y-12">
-            <UnifiedHeader
-              icon={Cpu}
-              title="Command Center"
-              subtitle="Neural-powered collection management for your universe"
-              variant="glassmorphism"
-              size="lg"
-              className="mb-6"
-            />
+                  {/* Title section */}
+                  <div className="flex-1">
+                    <h1 className="text-5xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Command Center
+                    </h1>
+                    <p className="text-cyan-100/90 text-xl font-medium leading-relaxed flex items-center gap-3">
+                      <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
+                      Neural-powered collection management for your universe
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </PokemonCard>
 
             {/* Context7 2025 Futuristic Neural Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
@@ -173,97 +172,76 @@ const Dashboard: React.FC = () => {
               />
             </div>
             {/* Context7 Premium Quick Actions */}
-            <GlassmorphismContainer
-              variant="intense"
-              colorScheme="primary"
-              size="full"
-              rounded="3xl"
-              pattern="neural"
-              glow="medium"
-              className="relative overflow-hidden"
-            >
-              <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
-                <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide">
+            <PokemonCard variant="glass" size="lg" className="relative">
+              <div className="p-8 border-b border-white/[0.15] relative z-10">
+                <h2 className="text-2xl font-bold text-white tracking-wide">
                   Quick Actions
                 </h2>
               </div>
               <div className="p-8 relative z-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  <button
+                  <div
                     onClick={() => navigationHelper.navigateTo('/add-item')}
-                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-primary)]/50 rounded-3xl hover:border-[var(--theme-accent-primary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-primary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)]"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-primary)]/10 to-[var(--theme-accent-secondary)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Plus className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
                       Add New Item
                     </p>
-                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
+                    <p className="text-sm text-zinc-400 font-medium">
                       Add cards or products
                     </p>
-                  </button>
+                  </div>
 
-                  <button
-                    onClick={() =>
-                      navigationHelper.navigateTo('/sales-analytics')
-                    }
-                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-status-success)]/50 rounded-3xl hover:border-[var(--theme-status-success)] hover:shadow-2xl hover:shadow-[var(--theme-status-success)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                  <div
+                    onClick={() => navigationHelper.navigateTo('/sales-analytics')}
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)]"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-status-success)]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-status-success)] to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <BarChart3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors duration-300">
                       View Analytics
                     </p>
-                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
+                    <p className="text-sm text-zinc-400 font-medium">
                       Sales and trends
                     </p>
-                  </button>
+                  </div>
 
-                  <button
+                  <div
                     onClick={() => navigationHelper.navigateTo('/collection')}
-                    className="group p-8 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 backdrop-blur-sm border-2 border-[var(--theme-accent-secondary)]/50 rounded-3xl hover:border-[var(--theme-accent-secondary)] hover:shadow-2xl hover:shadow-[var(--theme-accent-secondary)]/20 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)]"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent-secondary)]/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-violet-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Grid3X3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-accent-secondary)] transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors duration-300">
                       Browse Collection
                     </p>
-                    <p className="text-sm text-[var(--theme-text-muted)] font-medium">
+                    <p className="text-sm text-zinc-400 font-medium">
                       View all items
                     </p>
-                  </button>
+                  </div>
                 </div>
               </div>
-            </GlassmorphismContainer>
+            </PokemonCard>
 
             {/* Context7 Premium Recent Activity */}
-            <GlassmorphismContainer
-              variant="intense"
-              colorScheme="secondary"
-              size="full"
-              rounded="3xl"
-              pattern="waves"
-              glow="medium"
-              className="relative overflow-hidden"
-            >
+            <PokemonCard variant="glass" size="lg" className="relative">
               {/* Header */}
-              <div className="p-8 border-b border-[var(--theme-border)] relative z-10">
+              <div className="p-8 border-b border-white/[0.15] relative z-10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-[var(--theme-text-primary)] tracking-wide flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent-secondary)] to-[var(--theme-accent-secondary)] rounded-2xl shadow-xl flex items-center justify-center mr-4">
+                  <h2 className="text-2xl font-bold text-white tracking-wide flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl flex items-center justify-center mr-4">
                       <BarChart3 className="w-6 h-6 text-white" />
                     </div>
                     Recent Activity
                   </h2>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-[var(--theme-status-success)] rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-[var(--theme-text-muted)]">
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-zinc-400">
                       Live
                     </span>
                   </div>
@@ -395,13 +373,13 @@ const Dashboard: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6">
-                      <Package className="w-10 h-10 text-[var(--theme-text-muted)]" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-white rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-200/50 shadow-lg">
+                      <Package className="w-10 h-10 text-slate-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-[var(--theme-text-primary)] mb-3">
+                    <h3 className="text-xl font-bold text-white mb-3">
                       No recent activity
                     </h3>
-                    <p className="text-[var(--theme-text-muted)] font-medium max-w-md mx-auto leading-relaxed">
+                    <p className="text-zinc-400 font-medium max-w-md mx-auto leading-relaxed">
                       Start adding items to your collection to see activity
                       here.
                     </p>
@@ -409,27 +387,26 @@ const Dashboard: React.FC = () => {
                 )}
 
                 {/* Show More Button */}
-                <div className="mt-8 pt-6 border-t border-[var(--theme-border)]">
-                  <button
+                <div className="mt-8 pt-6 border-t border-white/[0.15]">
+                  <div
                     onClick={() => navigationHelper.navigateTo('/activity')}
-                    className="w-full group bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 border-2 border-[var(--theme-accent-primary)]/50 hover:border-[var(--theme-accent-primary)] rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:shadow-[var(--theme-accent-primary)]/20"
+                    className="w-full group bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] p-4 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/20 cursor-pointer"
                   >
                     <div className="flex items-center justify-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <BarChart3 className="w-4 h-4 text-white" />
                       </div>
-                      <span className="text-sm font-bold text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
+                      <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors duration-300">
                         View All Activity & Analytics
                       </span>
                     </div>
-                  </button>
+                  </div>
                 </div>
               </div>
-            </GlassmorphismContainer>
+            </PokemonCard>
           </div>
-        </div>
-      </div>
-    </PageLayout>
+        </PokemonPageContainer>
+      </PageLayout>
   );
 };
 

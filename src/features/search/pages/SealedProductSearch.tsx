@@ -18,6 +18,7 @@ import ProductSearchFilters from '../../../shared/components/molecules/common/Pr
 import ProductCard from '../../../shared/components/molecules/common/ProductCard';
 import PaginationControls from '../../../shared/components/molecules/common/PaginationControls';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
 import { ISetProduct } from '../../../shared/domain/models/setProduct';
 import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
 
@@ -119,158 +120,182 @@ const ProductSearch: React.FC = () => {
   );
 
   return (
-    <PageLayout
-      title="Product Search"
-      subtitle="Discover CardMarket reference products with real-time pricing"
-      loading={loading}
-      error={error}
-      actions={headerActions}
-      variant="emerald"
-    >
-      {/* Premium Page Header */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-10 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-status-success)]/5 via-teal-500/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-[var(--theme-text-primary)] tracking-wide mb-3 bg-gradient-to-r from-[var(--theme-status-success)] to-teal-400 bg-clip-text text-transparent">
-                Product Search
-              </h1>
-              <p className="text-xl text-[var(--theme-text-secondary)] font-medium leading-relaxed">
-                Browse CardMarket reference products and pricing
-              </p>
-            </div>
-            <div className="flex items-center bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 rounded-2xl px-6 py-3 text-white shadow-xl">
-              <Package className="w-6 h-6 mr-3" />
-              <div className="text-right">
-                <div className="text-2xl font-bold">{pagination.total}</div>
-                <div className="text-sm opacity-90">Total Products</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Premium shimmer effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-text-primary)]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-      </div>
-
-      {/* Premium Search Filters using ProductSearchFilters component */}
-      <ProductSearchFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        setProductFilter={setProductFilter}
-        setSetProductFilter={setSetProductFilter}
-        setNameFilter={setNameFilter}
-        setSetNameFilter={setSetNameFilter}
-        availableOnly={availableOnly}
-        setAvailableOnly={setAvailableOnly}
-        loading={loading}
-        handleSearch={handleSearch}
-        handleClearFilters={handleClearFilters}
-        handleKeyPress={handleKeyPress}
-      />
-
-      {/* Premium Search Results */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-surface-secondary)]/30 to-[var(--theme-status-success)]/10"></div>
-        <div className="p-8 relative z-10">
-          {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="text-center">
-                <GenericLoadingState variant="spinner" size="lg" />
-                <p className="mt-4 text-[var(--theme-text-secondary)] font-medium">
-                  Loading products...
-                </p>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-center py-20">
-              <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-status-error)]/50 to-pink-900/50 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-[var(--theme-status-error)]/30">
-                <Package className="w-10 h-10 text-[var(--theme-status-error)]" />
-              </div>
-              <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-3">
-                Error Loading Products
-              </h3>
-              <p className="text-[var(--theme-text-secondary)] font-medium mb-6 max-w-md mx-auto">
-                {error}
-              </p>
-              <button
-                onClick={handleSearch}
-                className="bg-gradient-to-r from-[var(--theme-status-error)] to-pink-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-              >
-                Try Again
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && products.length === 0 && (
-            <div className="text-center py-20">
-              <div className="w-20 h-20 bg-gradient-to-br from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-[var(--theme-border)]">
-                <Search className="w-10 h-10 text-[var(--theme-text-muted)]" />
-              </div>
-              <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-3">
-                No Products Found
-              </h3>
-              <p className="text-[var(--theme-text-secondary)] font-medium mb-6 max-w-md mx-auto">
-                Try adjusting your search criteria to find more products.
-              </p>
-              <button
-                onClick={handleClearFilters}
-                className="bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && products.length > 0 && (
-            <>
-              {/* Results Header */}
-              <div className="flex items-center justify-between mb-8">
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden"
+          >
+            <div className="relative z-20">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[var(--theme-text-primary)]">
-                    Products
-                    {setProductFilter && (
-                      <span className="text-lg text-[var(--theme-accent-primary)] ml-2">
-                        → {setProductFilter.setProductName}
-                      </span>
-                    )}
-                  </h2>
-                  <p className="text-[var(--theme-text-secondary)] font-medium mt-1">
-                    Showing {products.length} of {pagination.total} products
-                    {pagination.totalPages > 1 &&
-                      ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
+                  <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Product Search
+                  </h1>
+                  <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                    Discover CardMarket reference products with real-time pricing
                   </p>
                 </div>
-                <div className="flex items-center text-sm text-[var(--theme-text-secondary)] bg-[var(--theme-surface-secondary)]/50 px-4 py-2 rounded-xl border border-[var(--theme-border)]">
-                  <Euro className="w-4 h-4 mr-2" />
-                  <span>Prices in EUR → DKK conversion</span>
+                <div className="flex items-center bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl px-6 py-3 border border-emerald-400/30 backdrop-blur-sm">
+                  <Package className="w-6 h-6 mr-3 text-emerald-300" />
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-white">{pagination.total}</div>
+                    <div className="text-sm text-emerald-200">Total Products</div>
+                  </div>
                 </div>
               </div>
+              
+              {/* Error Display */}
+              {error && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {error}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </PokemonCard>
 
-              {/* Products Grid using ProductCard component */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    convertToDKK={convertToDKK}
-                  />
-                ))}
+          {/* Loading State */}
+          {loading && (
+            <PokemonCard variant="glass" size="xl">
+              <div className="flex justify-center items-center py-20">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto"></div>
+                  <p className="mt-4 text-cyan-100/70 font-medium">
+                    Loading products...
+                  </p>
+                </div>
               </div>
+            </PokemonCard>
+          )}
 
-              {/* Premium Pagination using PaginationControls component */}
-              <PaginationControls
-                pagination={pagination}
-                onPageChange={handlePageChange}
-              />
-            </>
+          {/* Search Filters */}
+          {!loading && (
+            <PokemonCard variant="glass" size="lg" className="relative">
+              <div className="relative z-10">
+                <ProductSearchFilters
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  categoryFilter={categoryFilter}
+                  setCategoryFilter={setCategoryFilter}
+                  setProductFilter={setProductFilter}
+                  setSetProductFilter={setSetProductFilter}
+                  setNameFilter={setNameFilter}
+                  setSetNameFilter={setSetNameFilter}
+                  availableOnly={availableOnly}
+                  setAvailableOnly={setAvailableOnly}
+                  loading={loading}
+                  handleSearch={handleSearch}
+                  handleClearFilters={handleClearFilters}
+                  handleKeyPress={handleKeyPress}
+                />
+              </div>
+            </PokemonCard>
+          )}
+
+          {/* Results Section */}
+          {!loading && (
+            <PokemonCard variant="glass" size="xl" className="relative">
+              <div className="relative z-10">
+                {error && (
+                  <div className="text-center py-20">
+                    <div className="w-20 h-20 bg-red-900/30 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-red-500/30">
+                      <Package className="w-10 h-10 text-red-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                      Error Loading Products
+                    </h3>
+                    <p className="text-cyan-100/70 font-medium mb-6 max-w-md mx-auto">
+                      {error}
+                    </p>
+                    <button
+                      onClick={handleSearch}
+                      className="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                )}
+
+                {!error && products.length === 0 && (
+                  <div className="text-center py-20">
+                    <div className="w-20 h-20 bg-white/10 rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 border border-white/20">
+                      <Search className="w-10 h-10 text-cyan-300/70" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                      No Products Found
+                    </h3>
+                    <p className="text-cyan-100/70 font-medium mb-6 max-w-md mx-auto">
+                      Try adjusting your search criteria to find more products.
+                    </p>
+                    <button
+                      onClick={handleClearFilters}
+                      className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                )}
+
+                {!error && products.length > 0 && (
+                  <>
+                    {/* Results Header */}
+                    <div className="flex items-center justify-between mb-8">
+                      <div>
+                        <h2 className="text-2xl font-bold text-white">
+                          Products
+                          {setProductFilter && (
+                            <span className="text-lg text-cyan-400 ml-2">
+                              → {setProductFilter.setProductName}
+                            </span>
+                          )}
+                        </h2>
+                        <p className="text-cyan-100/70 font-medium mt-1">
+                          Showing {products.length} of {pagination.total} products
+                          {pagination.totalPages > 1 &&
+                            ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
+                        </p>
+                      </div>
+                      <div className="flex items-center text-sm text-cyan-200 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
+                        <Euro className="w-4 h-4 mr-2" />
+                        <span>Prices in EUR → DKK conversion</span>
+                      </div>
+                    </div>
+
+                    {/* Products Grid using ProductCard component */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {products.map((product) => (
+                        <ProductCard
+                          key={product._id}
+                          product={product}
+                          convertToDKK={convertToDKK}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Premium Pagination using PaginationControls component */}
+                    <div className="mt-8">
+                      <PaginationControls
+                        pagination={pagination}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </PokemonCard>
           )}
         </div>
-      </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

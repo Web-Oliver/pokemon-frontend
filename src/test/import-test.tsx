@@ -13,7 +13,7 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { themes, ThemeName } from '@/theme/DesignSystem';
 
 // Shared Components
-import { BaseCard } from '@/components/molecules/common/BaseCard';
+import { InformationWidget } from '@/components/molecules/common/InformationWidget';
 import { EmptyState } from '@/components/molecules/common/EmptyState';
 
 // Services & API
@@ -58,10 +58,12 @@ const ImportTestComponent: React.FC = () => {
         </Card>
         
         {/* Shared Components Test */}
-        <BaseCard className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Shared Components</h2>
-          <p>BaseCard imported from @/components/molecules/common/</p>
-        </BaseCard>
+        <InformationWidget 
+          title="Shared Components"
+          value="✓"
+          subtitle="Components imported successfully"
+          className="p-4"
+        />
         
         {/* Theme System Test */}
         <Card className="p-4">

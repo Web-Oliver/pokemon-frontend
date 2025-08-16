@@ -51,17 +51,29 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     }
   }, [value]);
 
-  // Use search hook
+  // Use search hook - search with empty query when parentId exists to show all items
   const { results, loading } = useSearch(query, {
     searchType,
-    parentId
+    parentId,
+    minLength: parentId ? 0 : 2, // Allow empty search when parentId exists
   });
 
   const handleInputChange = (newValue: string) => {
     setQuery(newValue);
-    setShowDropdown(newValue.length >= 2);
+    setShowDropdown(newValue.length >= 2 || (parentId && newValue.length >= 0));
     setSelectedIndex(-1);
     onInputChange?.(newValue);
+  };
+
+  const handleFocus = () => {
+    // If parentId exists (set/setproduct selected), show all items immediately
+    if (parentId) {
+      setShowDropdown(true);
+      setSelectedIndex(-1);
+    } else if (query.length >= 2) {
+      // Normal case: show dropdown if query is long enough
+      setShowDropdown(true);
+    }
   };
 
   const handleSelect = (result: SearchResult) => {
@@ -99,19 +111,19 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   return (
     <div className={`relative w-full ${className}`}>
       {/* Input Field */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-400" />
+      <div className="relative group">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-300 group-hover:text-cyan-400 transition-colors duration-300" />
         <input
           ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => setShowDropdown(query.length >= 2)}
+          onFocus={handleFocus}
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full pl-10 pr-10 py-3 bg-zinc-900/90 border border-zinc-700/50 rounded-xl text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300"
+          className="w-full pl-10 pr-10 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-cyan-200/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/30 focus:border-cyan-400/30 hover:bg-white/15 hover:border-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         {loading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
@@ -120,22 +132,28 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
           {loading && (
-            <div className="px-4 py-3 text-center text-zinc-400">
-              <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2" />
+            <div className="px-4 py-3 text-center text-cyan-200">
+              <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2 text-cyan-400" />
               Searching {searchType}...
             </div>
           )}
           
           {!loading && results.length === 0 && query.length >= 2 && (
-            <div className="px-4 py-3 text-center text-zinc-400">
+            <div className="px-4 py-3 text-center text-cyan-200">
               No {searchType} found for "{query}"
             </div>
           )}
           
-          {!loading && query.length < 2 && (
-            <div className="px-4 py-3 text-center text-zinc-400">
+          {!loading && results.length === 0 && query.length === 0 && parentId && (
+            <div className="px-4 py-3 text-center text-cyan-200">
+              No {searchType} found in selected {searchType === 'cards' ? 'set' : 'set product'}
+            </div>
+          )}
+          
+          {!loading && query.length < 2 && !parentId && (
+            <div className="px-4 py-3 text-center text-cyan-200">
               Type at least 2 characters to search {searchType}...
             </div>
           )}
@@ -144,10 +162,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             <div
               key={result.id}
               onClick={() => handleSelect(result)}
-              className={`px-4 py-3 cursor-pointer transition-all duration-200 ${
+              className={`px-4 py-3 cursor-pointer transition-all duration-300 ${
                 index === selectedIndex
-                  ? 'bg-cyan-500/20 text-cyan-100 border-l-4 border-cyan-400'
-                  : 'hover:bg-zinc-800/60 text-zinc-300 hover:text-zinc-100'
+                  ? 'bg-cyan-400/20 text-white border-l-4 border-cyan-400 backdrop-blur-sm'
+                  : 'hover:bg-white/10 text-white hover:backdrop-blur-sm'
               }`}
             >
               <div className="font-medium">{result.displayName}</div>
@@ -163,7 +181,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                   
                   if (setName && result.type !== 'set') {
                     return (
-                      <div className="text-xs text-zinc-500 mt-1">
+                      <div className="text-xs text-cyan-200/70 mt-1">
                         Set: {setName}
                       </div>
                     );

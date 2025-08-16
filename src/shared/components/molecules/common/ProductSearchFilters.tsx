@@ -15,6 +15,8 @@ import React from 'react';
 import { Filter, Package, Search } from 'lucide-react';
 import { ProductCategory } from '../../../domain/models/product';
 import { ISetProduct } from '../../../domain/models/setProduct';
+import { PokemonInput } from '../../atoms/design-system/PokemonInput';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
 
 interface ProductSearchFiltersProps {
   /** Current search term */
@@ -71,46 +73,44 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
 
   return (
     <div
-      className={`bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden ${className}`}
+      className={`bg-white/10 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden ${className}`}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-status-success)]/5 to-teal-500/5"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-pink-500/5"></div>
       <div className="relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Product Name Search */}
           <div className="lg:col-span-4">
-            <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
+            <label className="block text-sm font-bold text-cyan-200 mb-3 tracking-wide">
               Product Name
             </label>
-            <div className="relative group">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-status-success)] transition-colors duration-300 z-10" />
-              <input
-                type="text"
-                placeholder="Search product names..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="w-full pl-10 pr-4 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-status-success)]/50 focus:border-[var(--theme-status-success)] focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] placeholder-[var(--theme-text-muted)] transition-all duration-300 hover:shadow-xl"
-              />
-            </div>
+            <PokemonInput
+              variant="search"
+              inputSize="lg"
+              leftIcon={<Search className="w-5 h-5" />}
+              placeholder="Search product names..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="rounded-2xl"
+            />
           </div>
 
           {/* Category Filter */}
           <div className="lg:col-span-3">
-            <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
+            <label className="block text-sm font-bold text-cyan-200 mb-3 tracking-wide">
               Category
             </label>
             <div className="relative group">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/10 via-cyan-500/10 to-emerald-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-teal-400 transition-colors duration-300 z-10" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5 group-focus-within:text-cyan-400 transition-colors duration-300 z-10" />
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-400 focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer"
+                className="w-full pl-10 pr-10 py-3 text-base font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 text-white transition-all duration-300 hover:shadow-xl appearance-none cursor-pointer"
               >
                 <option
                   value=""
-                  className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
+                  className="bg-zinc-900 text-white"
                 >
                   All Categories
                 </option>
@@ -118,7 +118,7 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
                   <option
                     key={category}
                     value={category}
-                    className="bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)]"
+                    className="bg-zinc-900 text-white"
                   >
                     {category.replace(/-/g, ' ')}
                   </option>
@@ -126,7 +126,7 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none z-10">
                 <svg
-                  className="w-5 h-5 text-[var(--theme-text-muted)]"
+                  className="w-5 h-5 text-white/60"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -144,21 +144,19 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
 
           {/* Set Name Filter */}
           <div className="lg:col-span-3">
-            <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
+            <label className="block text-sm font-bold text-cyan-200 mb-3 tracking-wide">
               Set Name
             </label>
-            <div className="relative group">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-teal-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-              <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300 z-10" />
-              <input
-                type="text"
-                placeholder="Filter by set name..."
-                value={setNameFilter}
-                onChange={(e) => setSetNameFilter(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="w-full pl-10 pr-4 py-3 text-base font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-primary)]/50 focus:border-[var(--theme-accent-primary)] focus:bg-[var(--theme-surface-secondary)] text-[var(--theme-text-primary)] placeholder-[var(--theme-text-muted)] transition-all duration-300 hover:shadow-xl"
-              />
-            </div>
+            <PokemonInput
+              variant="filter"
+              inputSize="lg"
+              leftIcon={<Package className="w-5 h-5" />}
+              placeholder="Filter by set name..."
+              value={setNameFilter}
+              onChange={(e) => setSetNameFilter(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="rounded-2xl"
+            />
           </div>
 
           {/* Action Buttons and Available Filter */}
@@ -176,8 +174,8 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
                   <div
                     className={`w-6 h-6 rounded-lg border-2 transition-all duration-300 ${
                       availableOnly
-                        ? 'bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 border-[var(--theme-status-success)]'
-                        : 'border-[var(--theme-border)] bg-[var(--theme-surface-secondary)] group-hover:border-[var(--theme-status-success)]'
+                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 border-cyan-400/30'
+                        : 'border-white/20 bg-white/10 group-hover:border-cyan-400/30'
                     }`}
                   >
                     {availableOnly && (
@@ -195,7 +193,7 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
                     )}
                   </div>
                 </div>
-                <span className="text-sm font-bold text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
+                <span className="text-sm font-bold text-cyan-200 group-hover:text-white transition-colors duration-300">
                   Available Only
                 </span>
               </label>
@@ -203,27 +201,28 @@ const ProductSearchFilters: React.FC<ProductSearchFiltersProps> = ({
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
-              <button
+              <PokemonButton
+                variant="success"
+                size="lg"
+                fullWidth
                 onClick={handleSearch}
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[var(--theme-status-success)] to-teal-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--theme-status-success)]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                loading={loading}
+                loadingText="Searching..."
+                className="py-4 text-lg font-bold rounded-2xl"
               >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-[var(--theme-text-secondary)]/30 border-t-[var(--theme-text-secondary)] rounded-full animate-spin mr-2"></div>
-                    Searching...
-                  </div>
-                ) : (
-                  'Search'
-                )}
-              </button>
-              <button
+                Search
+              </PokemonButton>
+              <PokemonButton
+                variant="secondary"
+                size="lg"
+                fullWidth
                 onClick={handleClearFilters}
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] px-6 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[var(--theme-border)] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="py-4 text-lg font-bold rounded-2xl bg-white/10 hover:bg-white/20 text-cyan-200 hover:text-white border-white/20"
               >
                 Clear
-              </button>
+              </PokemonButton>
             </div>
           </div>
         </div>

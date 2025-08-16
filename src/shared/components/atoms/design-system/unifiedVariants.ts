@@ -5,29 +5,65 @@
  */
 
 import { cva } from 'class-variance-authority';
-import { buttonVariants } from '../../../ui/primitives/Button';
 
-// === POKEMON BUTTON VARIANTS (using existing theme) ===
+// === POKEMON BUTTON VARIANTS (clean, no shadcn conflicts) ===
 export const pokemonButtonVariants = cva(
-  "relative overflow-hidden group transition-all duration-300",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden group transition-all duration-300",
   {
     variants: {
       variant: {
-        // Standard shadcn variants
-        default: buttonVariants({ variant: "default" }),
-        destructive: buttonVariants({ variant: "destructive" }),
-        outline: buttonVariants({ variant: "outline" }),
-        secondary: buttonVariants({ variant: "secondary" }),
-        ghost: buttonVariants({ variant: "ghost" }),
-        link: buttonVariants({ variant: "link" }),
+        // Clean Pokemon variants with NO shadcn conflicts
+        default: [
+          'bg-gradient-to-r from-slate-600 to-slate-700',
+          'hover:from-slate-700 hover:to-slate-800',
+          'text-white border border-slate-500/20',
+          'shadow-[0_4px_14px_0_rgba(0,0,0,0.3)]',
+          'hover:shadow-[0_6px_20px_0_rgba(0,0,0,0.4)]',
+        ].join(' '),
         
-        // Pokemon variants using CSS custom properties from DesignSystem.ts
         primary: [
           'bg-gradient-to-r from-cyan-600 to-blue-600',
           'hover:from-cyan-700 hover:to-blue-700',
-          'text-white border-cyan-500/20',
+          'text-white border border-cyan-500/20',
           'shadow-[0_4px_14px_0_rgb(6,182,212,0.3)]',
           'hover:shadow-[0_6px_20px_0_rgb(6,182,212,0.4)]',
+        ].join(' '),
+        
+        secondary: [
+          'bg-gradient-to-r from-white/10 to-white/20',
+          'hover:from-white/20 hover:to-white/30',
+          'text-white border border-white/30',
+          'backdrop-blur-sm',
+          'shadow-[0_4px_14px_0_rgba(255,255,255,0.1)]',
+          'hover:shadow-[0_6px_20px_0_rgba(255,255,255,0.2)]',
+        ].join(' '),
+        
+        outline: [
+          'bg-transparent border-2 border-cyan-500/50',
+          'hover:bg-cyan-500/10 hover:border-cyan-400',
+          'text-cyan-300 hover:text-cyan-200',
+          'shadow-[0_0_10px_0_rgb(6,182,212,0.2)]',
+          'hover:shadow-[0_0_20px_0_rgb(6,182,212,0.4)]',
+        ].join(' '),
+        
+        ghost: [
+          'bg-transparent hover:bg-white/10',
+          'text-white/70 hover:text-white',
+          'border border-transparent hover:border-white/20',
+        ].join(' '),
+        
+        destructive: [
+          'bg-gradient-to-r from-red-600 to-rose-600',
+          'hover:from-red-700 hover:to-rose-700',
+          'text-white border border-red-500/20',
+          'shadow-[0_4px_14px_0_rgb(220,38,38,0.3)]',
+          'hover:shadow-[0_6px_20px_0_rgb(220,38,38,0.4)]',
+        ].join(' '),
+        
+        link: [
+          'text-cyan-400 hover:text-cyan-300',
+          'underline-offset-4 hover:underline',
+          'bg-transparent border-none shadow-none',
         ].join(' '),
         
         success: [
@@ -65,11 +101,11 @@ export const pokemonButtonVariants = cva(
       },
       
       size: {
-        // Standard shadcn sizes
-        default: buttonVariants({ size: "default" }),
-        sm: buttonVariants({ size: "sm" }),
-        lg: buttonVariants({ size: "lg" }),
-        icon: buttonVariants({ size: "icon" }),
+        // Clean size variants without shadcn conflicts
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8", 
+        icon: "h-10 w-10",
         
         // Pokemon custom sizes
         xs: 'h-6 px-2 text-xs',
@@ -86,7 +122,7 @@ export const pokemonButtonVariants = cva(
 
 // === POKEMON INPUT VARIANTS (using existing theme) ===
 export const pokemonInputVariants = cva(
-  "transition-all duration-300 backdrop-blur-sm",
+  "transition-all duration-300 backdrop-blur-sm disabled:bg-zinc-800/90 disabled:border-zinc-600/30 disabled:text-zinc-200 disabled:placeholder:text-zinc-500 disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
@@ -95,6 +131,7 @@ export const pokemonInputVariants = cva(
           'text-zinc-100 placeholder:text-zinc-400',
           'focus:border-cyan-500/60 focus:ring-cyan-500/50',
           'hover:border-cyan-500/40',
+          'disabled:bg-zinc-800/90 disabled:border-zinc-600/30 disabled:text-zinc-200',
         ].join(' '),
         
         search: [
@@ -102,6 +139,7 @@ export const pokemonInputVariants = cva(
           'text-zinc-100 placeholder:text-zinc-400',
           'focus:border-blue-400/60 focus:ring-blue-400/50',
           'hover:border-blue-400/40',
+          'disabled:bg-zinc-800/90 disabled:border-zinc-600/30 disabled:text-zinc-200',
         ].join(' '),
         
         filter: [
@@ -109,6 +147,7 @@ export const pokemonInputVariants = cva(
           'text-slate-100 placeholder:text-slate-400',
           'focus:border-purple-400/60 focus:ring-purple-400/50',
           'hover:border-purple-400/40',
+          'disabled:bg-slate-800/90 disabled:border-slate-600/30 disabled:text-slate-200',
         ].join(' '),
         
         inline: [
@@ -116,6 +155,7 @@ export const pokemonInputVariants = cva(
           'text-zinc-200 placeholder:text-zinc-500',
           'focus:border-cyan-400/50 focus:ring-cyan-400/30',
           'hover:border-cyan-400/30',
+          'disabled:bg-zinc-800/60 disabled:border-zinc-600/20 disabled:text-zinc-300',
         ].join(' '),
       },
       

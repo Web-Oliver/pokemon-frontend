@@ -131,8 +131,8 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
   // Development overlay (only visible in development)
   return (
     <>
-      {/* Dev Monitor - Top right corner */}
-      <div className="fixed top-2 right-2 z-50 max-w-xs">
+      {/* Dev Monitor - Top left corner */}
+      <div className="fixed top-2 left-2 z-50 max-w-xs">
         <details className="bg-black/80 text-white text-xs p-2 rounded backdrop-blur-sm">
           <summary className="cursor-pointer select-none font-mono">
             🔧 Dev Monitor

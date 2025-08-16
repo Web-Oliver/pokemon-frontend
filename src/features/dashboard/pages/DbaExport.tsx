@@ -13,8 +13,8 @@ import React, { lazy, Suspense } from 'react';
 import { AlertTriangle, Archive, CheckSquare, Clock } from 'lucide-react';
 import ErrorBoundary from '../../../shared/components/organisms/ui/ErrorBoundary';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
 import { useDbaExport } from '../../../shared/hooks/useDbaExport';
-import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
 
 // CONSOLIDATED: Direct import instead of lazy to debug the issue
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
@@ -155,81 +155,145 @@ const DbaExport: React.FC = () => {
     // Production: Debug statement removed for security
 
     return (
-      <PageLayout loading={loading} error={error} variant="default">
-        <Suspense fallback={<div className="fixed inset-0 bg-black/90" />}>
-          <DbaCosmicBackground />
-        </Suspense>
-
-        {/* CONSOLIDATED: UnifiedHeader replaces DbaHeaderGalaxyCosmic */}
-        <ErrorBoundary
-          fallback={
-            <div className="p-4 bg-yellow-100 text-yellow-800">
-              UnifiedHeader failed to load
-            </div>
-          }
-        >
-          <UnifiedHeader
-            title="DBA Export"
-            subtitle="Export your collection items to DBA.dk"
-            icon={Archive}
-            variant="cosmic"
-            size="lg"
-            stats={headerStats}
-            className="mb-6"
-          />
-        </ErrorBoundary>
-
-        {/* Content wrapper with original cosmic background styling */}
-        <div className="relative z-10 p-8">
-          <div className="max-w-7xl mx-auto space-y-12">
-            {/* 🎛️ QUANTUM EXPORT CONFIGURATION */}
-            <DbaExportConfiguration
-              selectedItems={selectedItems}
-              customDescription={customDescription}
-              setCustomDescription={setCustomDescription}
-              updateItemCustomization={updateItemCustomization}
-              generateTitle={generateDefaultTitle}
-              generateDescription={generateDefaultDescription}
-              exportCollectionData={handleExportToDba}
-              downloadZip={downloadZip}
-              isExporting={isExporting}
-              exportResult={exportResult}
-            />
-
-            <DbaExportSuccess exportResult={exportResult} />
-
-            {/* Item Selection - Split into 2 sections */}
-            <div className="space-y-8">
-              {/* Section 1: Items with DBA Timers (Previously Selected) */}
-              <DbaItemsWithTimers
-                psaCards={psaCards}
-                rawCards={rawCards}
-                sealedProducts={sealedProducts}
-                getDbaInfo={getDbaInfo}
-                renderItemCard={renderItemCard}
-              />
-
-              {/* Section 2: Items without DBA Timers (Available for Selection) */}
-              <DbaItemsWithoutTimers
-                psaCards={psaCards}
-                rawCards={rawCards}
-                sealedProducts={sealedProducts}
-                getDbaInfo={getDbaInfo}
-                renderItemCard={renderItemCard}
-              />
-            </div>
-
-            {/* 🌌 COSMIC EMPTY STATE */}
-            <EmptyState
-              variant="cosmic"
+      <PageLayout>
+        <PokemonPageContainer withParticles={true} withNeural={true}>
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Header */}
+            <PokemonCard
+              variant="glass"
               size="xl"
-              title="No Items Found"
-              psaCardsLength={psaCards.length}
-              rawCardsLength={rawCards.length}
-              sealedProductsLength={sealedProducts.length}
-            />
+              className="text-white relative overflow-hidden"
+            >
+              <div className="relative z-20">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      DBA Export
+                    </h1>
+                    <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                      Export your collection items to DBA.dk
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    {headerStats.map((stat, index) => (
+                      <div key={index} className="flex items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                        <stat.icon className="w-5 h-5 mr-2 text-cyan-300" />
+                        <div>
+                          <div className="text-lg font-bold text-white">{stat.value}</div>
+                          <div className="text-xs text-cyan-200">{stat.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Error Display */}
+                {error && (
+                  <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                        Error
+                      </div>
+                      <span className="text-red-300 font-medium">
+                        {error}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </PokemonCard>
+
+            {/* Loading State */}
+            {loading && (
+              <PokemonCard variant="glass" size="xl">
+                <div className="flex justify-center items-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+                </div>
+              </PokemonCard>
+            )}
+
+            {/* Content */}
+            {!loading && (
+              <>
+                {/* Export Configuration */}
+                <Suspense fallback={
+                  <PokemonCard variant="glass" size="lg">
+                    <div className="flex justify-center py-10">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+                    </div>
+                  </PokemonCard>
+                }>
+                  <DbaExportConfiguration
+                    selectedItems={selectedItems}
+                    customDescription={customDescription}
+                    setCustomDescription={setCustomDescription}
+                    updateItemCustomization={updateItemCustomization}
+                    generateTitle={generateDefaultTitle}
+                    generateDescription={generateDefaultDescription}
+                    exportCollectionData={handleExportToDba}
+                    downloadZip={downloadZip}
+                    isExporting={isExporting}
+                    exportResult={exportResult}
+                  />
+                </Suspense>
+
+                <DbaExportSuccess exportResult={exportResult} />
+
+                {/* Item Selection - Split into 2 sections */}
+                <div className="space-y-8">
+                  {/* Section 1: Items with DBA Timers (Previously Selected) */}
+                  <Suspense fallback={
+                    <PokemonCard variant="glass" size="lg">
+                      <div className="flex justify-center py-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+                      </div>
+                    </PokemonCard>
+                  }>
+                    <DbaItemsWithTimers
+                      psaCards={psaCards}
+                      rawCards={rawCards}
+                      sealedProducts={sealedProducts}
+                      getDbaInfo={getDbaInfo}
+                      renderItemCard={renderItemCard}
+                    />
+                  </Suspense>
+
+                  {/* Section 2: Items without DBA Timers (Available for Selection) */}
+                  <Suspense fallback={
+                    <PokemonCard variant="glass" size="lg">
+                      <div className="flex justify-center py-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+                      </div>
+                    </PokemonCard>
+                  }>
+                    <DbaItemsWithoutTimers
+                      psaCards={psaCards}
+                      rawCards={rawCards}
+                      sealedProducts={sealedProducts}
+                      getDbaInfo={getDbaInfo}
+                      renderItemCard={renderItemCard}
+                    />
+                  </Suspense>
+                </div>
+
+                {/* Empty State */}
+                {(psaCards.length === 0 && rawCards.length === 0 && sealedProducts.length === 0) && (
+                  <PokemonCard variant="glass" size="xl">
+                    <div className="text-center py-20">
+                      <Archive className="w-16 h-16 text-cyan-300/50 mx-auto mb-4" />
+                      <h3 className="text-2xl font-bold text-white mb-4">
+                        No Items Found
+                      </h3>
+                      <p className="text-cyan-100/70 max-w-md mx-auto">
+                        Add items to your collection to start exporting to DBA.dk
+                      </p>
+                    </div>
+                  </PokemonCard>
+                )}
+              </>
+            )}
           </div>
-        </div>
+        </PokemonPageContainer>
       </PageLayout>
     );
   } catch (error) {

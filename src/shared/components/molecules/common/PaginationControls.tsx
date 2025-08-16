@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PokemonButton } from '../../atoms/design-system/PokemonButton';
 
 interface PaginationData {
   currentPage: number;
@@ -76,17 +77,19 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
 
   return (
     <div className={`mt-12 flex items-center justify-center ${className}`}>
-      <div className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-2xl shadow-xl border border-[var(--theme-border)] p-6">
+      <div className="bg-gradient-to-br from-zinc-900/95 to-slate-900/95 backdrop-blur-sm rounded-2xl shadow-2xl shadow-cyan-500/10 border border-cyan-500/20 p-6">
         <div className="flex items-center space-x-4">
           {/* Previous Button */}
-          <button
+          <PokemonButton
+            variant="outline"
+            size="default"
             onClick={() => onPageChange(pagination.currentPage - 1)}
             disabled={!pagination.hasPrevPage}
-            className="flex items-center px-4 py-3 bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
+            startIcon={<ChevronLeft className="w-5 h-5" />}
+            className="text-cyan-200 border-cyan-500/30 hover:border-cyan-400/60 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            <ChevronLeft className="w-5 h-5 mr-2" />
             Previous
-          </button>
+          </PokemonButton>
 
           {/* Page Numbers */}
           <div className="flex items-center space-x-2">
@@ -96,10 +99,10 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
                 <button
                   key={pageNumber}
                   onClick={() => onPageChange(pageNumber)}
-                  className={`w-12 h-12 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
+                  className={`w-12 h-12 rounded-xl font-bold text-sm backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 ${
                     isCurrentPage
-                      ? 'bg-gradient-to-r from-[var(--theme-status-success)] to-teal-600 text-white'
-                      : 'bg-[var(--theme-surface-secondary)] text-[var(--theme-text-secondary)] hover:bg-gradient-to-r hover:from-[var(--theme-status-success)]/50 hover:to-teal-900/50 hover:text-[var(--theme-status-success)] border border-[var(--theme-border)]'
+                      ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white border border-cyan-400/60 shadow-cyan-400/30'
+                      : 'bg-zinc-800/90 text-cyan-200 hover:bg-gradient-to-r hover:from-cyan-600/50 hover:to-blue-600/50 hover:text-white border border-cyan-500/30 hover:border-cyan-400/60'
                   }`}
                 >
                   {pageNumber}
@@ -109,18 +112,20 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
           </div>
 
           {/* Next Button */}
-          <button
+          <PokemonButton
+            variant="outline"
+            size="default"
             onClick={() => onPageChange(pagination.currentPage + 1)}
             disabled={!pagination.hasNextPage}
-            className="flex items-center px-4 py-3 bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 text-[var(--theme-text-secondary)] rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 hover:text-[var(--theme-text-primary)] transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
+            endIcon={<ChevronRight className="w-5 h-5" />}
+            className="text-cyan-200 border-cyan-500/30 hover:border-cyan-400/60 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Next
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </button>
+          </PokemonButton>
         </div>
 
         {/* Pagination Info */}
-        <div className="mt-4 text-center text-sm text-[var(--theme-text-muted)]">
+        <div className="mt-4 text-center text-sm text-cyan-200/80">
           Page {pagination.currentPage} of {pagination.totalPages} •{' '}
           {pagination.total} total products
         </div>

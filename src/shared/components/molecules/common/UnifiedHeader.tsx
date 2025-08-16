@@ -143,8 +143,8 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   const variantConfigs = {
     glassmorphism: {
       container: [
-        'backdrop-blur-xl bg-gradient-to-br from-white/[0.15] via-cyan-500/[0.12] to-purple-500/[0.15]',
-        'border border-white/[0.20] rounded-[2rem] shadow-2xl text-white relative overflow-hidden group',
+        'bg-white/10 backdrop-blur-sm rounded-[2rem] shadow-2xl text-white relative overflow-hidden group',
+        'border border-white/20',
       ],
       effects: (
         <>
@@ -152,17 +152,17 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent opacity-30 group-hover:opacity-100 transition-all duration-1000 animate-pulse" />
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 opacity-80 animate-pulse" />
           <div
-            className="absolute top-8 right-8 w-20 h-20 border-2 border-cyan-400/50 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+            className="absolute top-8 right-8 w-20 h-20 border-2 border-white/20 rounded-2xl rotate-45 animate-spin opacity-40 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
             style={{ animationDuration: '20s' }}
           />
-          <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-purple-400/50 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]" />
+          <div className="absolute bottom-8 left-8 w-16 h-16 border-2 border-white/20 rounded-full animate-pulse opacity-40 shadow-[0_0_20px_rgba(168,85,247,0.3)]" />
         </>
       ),
       titleClasses:
         'font-black tracking-tight bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.5)]',
-      subtitleClasses: 'text-cyan-100/90 font-medium leading-relaxed',
+      subtitleClasses: 'text-cyan-200 font-medium leading-relaxed',
       iconContainer:
-        'bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-[1.5rem] shadow-2xl border border-white/[0.15] group-hover:scale-105 transition-all duration-500',
+        'bg-white/10 backdrop-blur-sm rounded-[1.5rem] shadow-2xl border border-white/20 group-hover:scale-105 transition-all duration-500',
       iconClasses: 'text-cyan-300 relative z-10 animate-pulse',
     },
     cosmic: {
@@ -185,15 +185,15 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     },
     minimal: {
       container: [
-        'bg-white dark:bg-zinc-900',
-        'border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-lg text-zinc-900 dark:text-white',
+        'bg-white/10 backdrop-blur-sm',
+        'border border-white/20 rounded-2xl shadow-lg text-white',
       ],
       effects: null,
-      titleClasses: 'font-bold tracking-tight',
-      subtitleClasses: 'text-zinc-600 dark:text-zinc-400',
+      titleClasses: 'font-bold tracking-tight text-white',
+      subtitleClasses: 'text-cyan-200',
       iconContainer:
-        'bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700',
-      iconClasses: 'text-zinc-700 dark:text-zinc-300',
+        'bg-white/10 backdrop-blur-sm rounded-xl border border-white/20',
+      iconClasses: 'text-cyan-300',
     },
     analytics: {
       container: [
@@ -219,26 +219,26 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
     },
     card: {
       container: [
-        'bg-zinc-800 dark:bg-zinc-900',
-        'border border-zinc-700 dark:border-zinc-600 rounded-lg shadow-lg text-white',
+        'bg-white/10 backdrop-blur-sm',
+        'border border-white/20 rounded-lg shadow-lg text-white',
       ],
       effects: null,
-      titleClasses: 'font-bold',
-      subtitleClasses: 'text-zinc-400',
-      iconContainer: 'bg-blue-600 rounded-lg',
-      iconClasses: 'text-white',
+      titleClasses: 'font-bold text-white',
+      subtitleClasses: 'text-cyan-200',
+      iconContainer: 'bg-white/10 backdrop-blur-sm rounded-lg border border-white/20',
+      iconClasses: 'text-cyan-300',
     },
     gradient: {
       container: [
-        'bg-gradient-to-r from-purple-600 via-pink-600 to-red-600',
+        'bg-gradient-to-r from-cyan-600 via-purple-600 to-pink-600',
         'rounded-2xl shadow-lg text-white relative overflow-hidden',
       ],
       effects: (
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       ),
-      titleClasses: 'font-bold tracking-tight',
-      subtitleClasses: 'text-white/90',
-      iconContainer: 'bg-white/20 backdrop-blur-sm rounded-xl',
+      titleClasses: 'font-bold tracking-tight text-white',
+      subtitleClasses: 'text-cyan-200',
+      iconContainer: 'bg-white/10 backdrop-blur-sm rounded-xl border border-white/20',
       iconClasses: 'text-white',
     },
   };
@@ -261,10 +261,10 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
         <StatIcon
           className={`w-4 h-4 mx-auto mb-1 ${variantClasses[stat.variant || 'default']}`}
         />
-        <p className="text-xs text-zinc-400 mb-0.5">{stat.label}</p>
+        <p className="text-xs text-cyan-200 mb-0.5">{stat.label}</p>
         <p className="text-lg font-bold text-white">{stat.value}</p>
         {stat.description && (
-          <p className="text-xs text-zinc-500 mt-0.5">{stat.description}</p>
+          <p className="text-xs text-cyan-200/60 mt-0.5">{stat.description}</p>
         )}
       </div>
     );
@@ -289,7 +289,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={onBack}
-                className="mr-4 text-current hover:bg-white/10"
+                className="mr-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
                 startIcon={<span>←</span>}
               >
                 Back
@@ -374,7 +374,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-zinc-700/50 backdrop-blur-sm rounded-lg p-2"
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-2 border border-white/20"
               >
                 <StatItem stat={stat} />
               </div>

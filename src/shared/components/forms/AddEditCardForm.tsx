@@ -111,6 +111,7 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
       images: [],
       sold: false,
       saleDetails: {},
+      dateAdded: new Date().toISOString().split('T')[0], // Default to today's date
     };
 
     if (cardType === 'psa-graded') {

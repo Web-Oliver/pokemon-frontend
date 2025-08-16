@@ -66,15 +66,15 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
     return '🌐';
   };
 
-  // Render product thumbnail with category badge
+  // Render product thumbnail with category badge - NATURAL ASPECT RATIO NO SQUARES
   const renderThumbnail = () => (
     <div className="flex-shrink-0 relative">
-      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--theme-surface)] to-zinc-800/20 border border-[var(--theme-border)] overflow-hidden backdrop-blur-sm">
+      <div className="rounded-2xl bg-white/10 border border-white/20 overflow-hidden backdrop-blur-sm shadow-lg p-4">
         {sale.thumbnailUrl ? (
           <img
             src={getImageUrl(sale.thumbnailUrl)}
             alt={sale.itemName}
-            className="w-full h-full object-cover"
+            className="w-48 md:w-64 lg:w-80 h-auto object-contain max-h-none"
             onError={(e) => {
               // Fallback to emoji if image fails to load
               const target = e.currentTarget;
@@ -87,7 +87,7 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
           />
         ) : null}
         <div
-          className="w-full h-full flex items-center justify-center text-zinc-400 text-lg"
+          className="w-48 md:w-64 lg:w-80 aspect-square flex items-center justify-center text-white/80 text-6xl"
           style={{
             display: sale.thumbnailUrl ? 'none' : 'flex',
           }}
@@ -97,53 +97,56 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
       </div>
 
       {/* Category badge - Premium glassmorphism */}
-      <div className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-cyan-300 border border-blue-400/30 backdrop-blur-sm">
+      <div className="absolute -top-3 -right-3 px-3 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-500/80 to-purple-500/80 text-white border border-blue-400/70 backdrop-blur-md shadow-lg">
         {getCategoryBadge(sale.itemCategory)}
       </div>
     </div>
   );
 
-  // Render product name and details
+  // Render product name and details - CLEAN READABLE TEXT
   const renderTitle = () => (
-    <div className="flex-1 min-w-0">
-      <h3 className="text-lg font-semibold text-[var(--theme-text-primary)] group-hover:text-cyan-200 transition-colors mb-1 truncate">
+    <div className="flex-1 min-w-0 py-6 px-6">
+      <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-cyan-200 transition-colors mb-4 leading-relaxed line-clamp-2">
         {sale.itemName || 'Unknown Item'}
       </h3>
-      <div className="flex items-center space-x-4 text-sm text-[var(--theme-text-secondary)]">
-        <span>
-          📅{' '}
-          {sale.dateSold
-            ? new Date(sale.dateSold).toLocaleDateString('da-DK', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              })
-            : 'Unknown'}
-        </span>
-        <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 text-[var(--theme-text-secondary)] border border-[var(--theme-border)] backdrop-blur-sm">
-          {getSourceEmoji(sale.source)} {sale.source || 'Unknown'}
-        </span>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center text-cyan-200/90">
+          <span className="text-xl mr-2">📅</span>
+          <span className="text-base font-medium">
+            {sale.dateSold
+              ? new Date(sale.dateSold).toLocaleDateString('da-DK', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+              : 'Unknown Date'}
+          </span>
+        </div>
+        <div className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-white/20 text-white border border-white/30 backdrop-blur-sm w-fit">
+          <span className="text-base mr-2">{getSourceEmoji(sale.source)}</span>
+          {sale.source || 'Unknown Source'}
+        </div>
       </div>
     </div>
   );
 
-  // Render price information
+  // Render price information - CLEAN PRICE DISPLAY
   const renderPriceInfo = () => (
-    <div className="flex items-center space-x-8">
-      <div className="text-right">
-        <div className="text-xs text-[var(--theme-text-muted)] uppercase tracking-wide mb-1">
+    <div className="flex flex-col space-y-4 px-6 py-6 min-w-[180px]">
+      <div className="text-center">
+        <div className="text-sm text-white/70 uppercase tracking-wider mb-2 font-medium">
           My Price
         </div>
-        <div className="text-sm font-semibold text-[var(--theme-text-secondary)]">
+        <div className="text-lg font-semibold text-white/90 bg-white/10 rounded-lg py-2 px-4 border border-white/20">
           {displayPrice(myPrice)}
         </div>
       </div>
 
-      <div className="text-right">
-        <div className="text-xs text-emerald-400 uppercase tracking-wide mb-1">
+      <div className="text-center">
+        <div className="text-sm text-emerald-400 uppercase tracking-wider mb-2 font-medium">
           Sale Price
         </div>
-        <div className="text-lg font-bold text-emerald-300">
+        <div className="text-2xl font-bold text-emerald-400 bg-emerald-500/20 rounded-lg py-3 px-4 border border-emerald-400/30">
           {displayPrice(actualPrice)}
         </div>
       </div>
@@ -153,14 +156,14 @@ const RecentSaleListItem: React.FC<RecentSaleListItemProps> = ({
   return (
     <BaseListItem
       itemKey={sale.id || `sale-${index}`}
-      variant="hover"
-      size="lg"
+      variant="glass"
+      size="xl"
       interactive
       showHoverEffect
       leading={renderThumbnail()}
       title={renderTitle()}
       trailing={renderPriceInfo()}
-      className={`backdrop-blur-sm ${className}`}
+      className={`backdrop-blur-sm bg-white/5 border border-white/20 rounded-2xl shadow-xl hover:bg-white/10 hover:border-white/30 hover:shadow-2xl transition-all duration-300 ${className}`}
     />
   );
 };

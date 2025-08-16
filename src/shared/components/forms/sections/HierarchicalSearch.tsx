@@ -56,6 +56,43 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
   const primaryValue = watch(primaryFieldName) || '';
   const secondaryValue = watch(secondaryFieldName) || '';
 
+  // Handle primary field input changes - reset parent selection when user types
+  const handlePrimaryInputChange = (value: string) => {
+    setValue(primaryFieldName, value);
+    
+    // If user is typing something different from selected item, clear parent selection
+    // This allows reselection after bidirectional auto-fill
+    if (selectedParentId && value.trim() !== primaryValue.trim()) {
+      console.log('[HIERARCHICAL] Clearing parent selection due to input change:', { 
+        newValue: value.trim(), 
+        currentValue: primaryValue.trim(),
+        selectedParentId 
+      });
+      setSelectedParentId(undefined);
+      
+      // Also clear secondary field since parent context changed
+      if (secondaryValue) {
+        setValue(secondaryFieldName, '');
+        clearErrors(secondaryFieldName);
+        
+        // Clear autofilled fields when context changes
+        if (mode === 'set-card') {
+          setValue('cardId', '');
+          setValue('cardNumber', '');
+          setValue('variety', '');
+          clearErrors('cardId');
+          clearErrors('cardNumber');
+          clearErrors('variety');
+        }
+      }
+    }
+  };
+
+  // Handle secondary field input changes  
+  const handleSecondaryInputChange = (value: string) => {
+    setValue(secondaryFieldName, value);
+  };
+
   // Show editing message if in edit mode
   if (isEditing) {
     return (
@@ -122,10 +159,13 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
       // BIDIRECTIONAL: Auto-fill Set Name when card is selected - Safe circular reference handling
       let setName = '';
       try {
-        if (result.data.setName && typeof result.data.setName === 'string') {
-          setName = result.data.setName;
+        // Check for set name in all possible backend response formats
+        if (result.data.setDisplayName && typeof result.data.setDisplayName === 'string') {
+          setName = result.data.setDisplayName;
         } else if (result.data.setId && typeof result.data.setId === 'object' && result.data.setId.setName) {
           setName = String(result.data.setId.setName);
+        } else if (result.data.setName && typeof result.data.setName === 'string') {
+          setName = result.data.setName;
         } else if (result.data.set && typeof result.data.set === 'string') {
           setName = result.data.set;
         } else if (result.data.pokemon_set && typeof result.data.pokemon_set === 'string') {
@@ -136,9 +176,19 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
         setName = '';
       }
       
-      if (setName && !primaryValue) {
+      if (setName) {
+        console.log('[HIERARCHICAL] Auto-filling set name from card selection:', setName);
         setValue(primaryFieldName, setName);
         clearErrors(primaryFieldName);
+        
+        // CRITICAL FIX: Update selectedParentId to match the auto-filled set
+        if (result.data.setId && typeof result.data.setId === 'object' && result.data.setId._id) {
+          console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId._id);
+          setSelectedParentId(result.data.setId._id);
+        } else if (result.data.setId && typeof result.data.setId === 'string') {
+          console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId);
+          setSelectedParentId(result.data.setId);
+        }
       }
     }
 
@@ -156,9 +206,19 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
         setProductName = '';
       }
       
-      if (setProductName && !primaryValue) {
+      if (setProductName) {
+        console.log('[HIERARCHICAL] Auto-filling set product name from product selection:', setProductName);
         setValue(primaryFieldName, setProductName);
         clearErrors(primaryFieldName);
+        
+        // CRITICAL FIX: Update selectedParentId to match the auto-filled setProduct
+        if (result.data.setProductId && typeof result.data.setProductId === 'object' && result.data.setProductId._id) {
+          console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId._id);
+          setSelectedParentId(result.data.setProductId._id);
+        } else if (result.data.setProductId && typeof result.data.setProductId === 'string') {
+          console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId);
+          setSelectedParentId(result.data.setProductId);
+        }
       }
     }
     
@@ -182,7 +242,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
           placeholder={primaryPlaceholder}
           value={primaryValue}
           onSelect={handlePrimarySelection}
-          onInputChange={(value) => setValue(primaryFieldName, value)}
+          onInputChange={handlePrimaryInputChange}
           disabled={isSubmitting}
         />
         {errors[primaryFieldName] && (
@@ -209,7 +269,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
           placeholder={secondaryPlaceholder}
           value={secondaryValue}
           onSelect={handleSecondarySelection}
-          onInputChange={(value) => setValue(secondaryFieldName, value)}
+          onInputChange={handleSecondaryInputChange}
           disabled={isSubmitting}
           parentId={selectedParentId}
         />

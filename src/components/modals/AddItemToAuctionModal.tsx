@@ -223,7 +223,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
             <img
               src={item.displayImage}
               alt={item.displayName}
-              className="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-zinc-700 dark:border-zinc-700"
+              className="w-16 h-auto object-contain rounded-lg border border-gray-200 dark:border-zinc-700 dark:border-zinc-700"
             />
           </div>
         )}

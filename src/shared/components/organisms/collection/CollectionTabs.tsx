@@ -10,11 +10,14 @@
  */
 
 import React, { memo } from 'react';
-import { Archive, CheckCircle, Package, Plus, Star } from 'lucide-react';
+import { Archive, CheckCircle, Package, Plus, Star, Eye } from 'lucide-react';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
-import CollectionItemCard, { CollectionItem } from '../../molecules/collection/CollectionItemCard';
+import { CollectionItem } from '../../molecules/collection/CollectionItemCard';
+import { PokemonCard } from '../../atoms/design-system/PokemonCard';
 import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
+import { formatCardName } from '../../../utils';
+import { getImageUrl } from '../../../utils/ui/imageUtils';
 
 export type TabType =
   | 'psa-graded'
@@ -253,14 +256,67 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                 ? `${item.id || (item as any)._id}-${index}`
                 : `fallback-${activeTab}-${index}`;
 
+            // Extract item data for PokemonCard
+            const itemRecord = item as Record<string, unknown>;
+            
+            // Get item name
+            let itemName = 'Unknown Item';
+            const cardId = itemRecord.cardId as any;
+            if (cardId && typeof cardId === 'object' && cardId.cardName && typeof cardId.cardName === 'string') {
+              itemName = cardId.cardName;
+            } else if (itemRecord.cardName && typeof itemRecord.cardName === 'string') {
+              itemName = itemRecord.cardName;
+            } else if (itemRecord.name && typeof itemRecord.name === 'string') {
+              itemName = itemRecord.name;
+            } else {
+              const productId = itemRecord.productId as any;
+              if (productId && typeof productId === 'object' && productId.productName && typeof productId.productName === 'string') {
+                itemName = productId.productName;
+              } else if (itemRecord.productName && typeof itemRecord.productName === 'string') {
+                itemName = itemRecord.productName;
+              }
+            }
+
+            // Get set name
+            let setName = 'Unknown Set';
+            if (cardId && typeof cardId === 'object') {
+              const setId = cardId.setId;
+              if (setId && typeof setId === 'object' && setId.setName && typeof setId.setName === 'string') {
+                setName = setId.setName;
+              }
+            }
+            if (itemRecord.setName && typeof itemRecord.setName === 'string') {
+              setName = itemRecord.setName;
+            }
+
+            // Get other properties
+            const images = (itemRecord.images as string[]) || [];
+            const price = (itemRecord.myPrice as number) || 0;
+            const grade = itemType === 'psa' ? (itemRecord.grade as number) : undefined;
+            const condition = itemType === 'raw' ? (itemRecord.condition as string) : undefined;
+            const category = itemType === 'sealed' ? (itemRecord.category as string) : undefined;
+            const isSold = (itemRecord.sold as boolean) || false;
+
             return (
-              <div key={uniqueKey} className="w-full aspect-[3/5]">
-                <CollectionItemCard
-                  item={item}
-                  itemType={itemType}
-                  activeTab={activeTab}
-                  onViewDetails={onViewItemDetail}
-                  onMarkAsSold={onMarkAsSold}
+              <div key={uniqueKey} className="w-full">
+                <PokemonCard
+                  cardType="collection"
+                  variant="glass"
+                  size="md"
+                  interactive={true}
+                  title={formatCardName(itemName)}
+                  subtitle={setName}
+                  images={images.map(img => getImageUrl(img))}
+                  price={price}
+                  grade={grade}
+                  condition={condition}
+                  category={category}
+                  sold={isSold}
+                  showBadge={true}
+                  showPrice={true}
+                  showActions={true}
+                  onView={() => onViewItemDetail(item, itemType)}
+                  onMarkSold={activeTab !== 'sold-items' ? () => onMarkAsSold(item, itemType) : undefined}
                 />
               </div>
             );
@@ -270,9 +326,11 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
     };
 
     return (
-      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-        {renderTabContent()}
-      </div>
+      <PokemonCard variant="glass" size="xl" className="relative">
+        <div className="relative z-10">
+          {renderTabContent()}
+        </div>
+      </PokemonCard>
     );
   }
 );

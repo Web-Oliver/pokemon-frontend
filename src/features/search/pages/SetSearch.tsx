@@ -14,6 +14,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { PokemonInput } from '../../../shared/components/atoms/design-system/PokemonInput';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard, PokemonButton } from '../../../shared/components/atoms/design-system';
 import { usePaginatedSearch } from '../../../shared/hooks/usePaginatedSearch';
 import { navigationHelper } from '../../../shared/utils/navigation';
 
@@ -129,172 +130,219 @@ const SetSearch: React.FC = () => {
   );
 
   return (
-    <PageLayout
-      title="Set Search"
-      subtitle="Discover and explore Pokémon card sets with premium filtering"
-      loading={loading}
-      error={error}
-      actions={statsActions}
-      variant="default"
-    >
-      {/* Premium Search Filters */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Set Name Search */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
-                Set Name
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300" />
-                <PokemonInput
-                  type="text"
-                  placeholder="Search sets by name..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="pl-12 pr-4 py-4 text-lg font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-primary)]/50 focus:border-[var(--theme-accent-primary)] focus:bg-[var(--theme-surface-secondary)] transition-all duration-300 hover:shadow-xl text-[var(--theme-text-primary)]"
-                />
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden"
+          >
+            <div className="relative z-20">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Set Search
+                  </h1>
+                  <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                    Discover and explore Pokémon card sets with premium filtering
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  {statsActions}
+                </div>
               </div>
-            </div>
-
-            {/* Year Filter */}
-            <div>
-              <label className="block text-sm font-bold text-[var(--theme-text-secondary)] mb-3 tracking-wide">
-                Year
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
-                <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] w-5 h-5 group-focus-within:text-[var(--theme-accent-primary)] transition-colors duration-300" />
-                <PokemonInput
-                  type="number"
-                  placeholder="e.g. 1998"
-                  value={yearFilter}
-                  onChange={(e) => handleYearChange(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="pl-12 pr-4 py-4 text-lg font-medium bg-[var(--theme-surface-secondary)] backdrop-blur-sm border border-[var(--theme-border)] rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent-primary)]/50 focus:border-[var(--theme-accent-primary)] focus:bg-[var(--theme-surface-secondary)] transition-all duration-300 hover:shadow-xl text-[var(--theme-text-primary)]"
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col justify-end space-y-3">
-              <button
-                onClick={handleSearch}
-                className="bg-gradient-to-r from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] hover:from-[var(--theme-accent-primary)]/80 hover:to-[var(--theme-accent-secondary)]/80 text-white px-6 py-4 rounded-2xl transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 font-bold tracking-wide"
-              >
-                <Search className="w-5 h-5 mr-2" />
-                Search
-              </button>
-              <button
-                onClick={handleClearFilters}
-                className="bg-gradient-to-r from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80 hover:from-[var(--theme-surface-secondary)]/80 hover:to-[var(--theme-surface-secondary)]/60 text-[var(--theme-text-secondary)] px-6 py-4 rounded-2xl transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 font-bold tracking-wide border border-[var(--theme-border)]"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Results Section */}
-      <div className="bg-[var(--theme-surface)] backdrop-blur-xl rounded-3xl shadow-2xl border border-[var(--theme-border)] p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5"></div>
-        <div className="relative z-10">
-          {sets && sets.length > 0 ? (
-            <>
-              {/* Results Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                {sets.map((set: any) => (
-                  <div
-                    key={set._id}
-                    onClick={() => handleSetClick(set._id)}
-                    className="bg-[var(--theme-surface-secondary)] backdrop-blur-sm rounded-3xl shadow-lg border border-[var(--theme-border)] p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-accent-primary)]/5 via-[var(--theme-accent-secondary)]/5 to-[var(--theme-accent-primary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="bg-gradient-to-r from-[var(--theme-accent-primary)]/10 to-[var(--theme-accent-secondary)]/10 p-3 rounded-2xl">
-                          <Package className="w-6 h-6 text-[var(--theme-accent-primary)]" />
-                        </div>
-                        <div className="text-sm font-bold text-[var(--theme-text-muted)] bg-[var(--theme-surface-secondary)] px-3 py-1 rounded-full">
-                          {set.year || 'Unknown'}
-                        </div>
-                      </div>
-                      <h3 className="text-lg font-bold text-[var(--theme-text-primary)] mb-2 group-hover:text-[var(--theme-accent-primary)] transition-colors duration-300">
-                        {set.setName}
-                      </h3>
-                      <div className="space-y-2 text-sm text-[var(--theme-text-muted)]">
-                        {set.totalCardsInSet && (
-                          <div className="flex justify-between">
-                            <span>Total Cards:</span>
-                            <span className="font-semibold">
-                              {set.totalCardsInSet}
-                            </span>
-                          </div>
-                        )}
-                        {set.total_grades?.total_graded && (
-                          <div className="flex justify-between">
-                            <span>PSA Population:</span>
-                            <span className="font-semibold">
-                              {set.total_grades.total_graded}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-[var(--theme-text-muted)] font-medium">
-                    Page {pagination.currentPage} of {pagination.totalPages} (
-                    {pagination.total} total sets)
-                  </div>
+              
+              {/* Error Display */}
+              {error && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
                   <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() =>
-                        handlePageChange(pagination.currentPage - 1)
-                      }
-                      disabled={!pagination.hasPrevPage}
-                      className="inline-flex items-center px-6 py-3 text-sm font-bold text-[var(--theme-text-secondary)] bg-[var(--theme-surface-secondary)] border border-[var(--theme-border)] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    >
-                      <ChevronLeft className="w-4 h-4 mr-2" />
-                      Previous
-                    </button>
-                    <button
-                      onClick={() =>
-                        handlePageChange(pagination.currentPage + 1)
-                      }
-                      disabled={!pagination.hasNextPage}
-                      className="inline-flex items-center px-6 py-3 text-sm font-bold text-[var(--theme-text-secondary)] bg-[var(--theme-surface-secondary)] border border-[var(--theme-border)] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </button>
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {error}
+                    </span>
                   </div>
                 </div>
               )}
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <Package className="w-16 h-16 text-[var(--theme-text-muted)] mx-auto mb-4" />
-              <p className="text-xl text-[var(--theme-text-secondary)] font-medium">
-                No sets found
-              </p>
-              <p className="text-sm text-[var(--theme-text-muted)] mt-2">
-                Try adjusting your search criteria
-              </p>
             </div>
+          </PokemonCard>
+
+          {/* Loading State */}
+          {loading && (
+            <PokemonCard variant="glass" size="xl">
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+              </div>
+            </PokemonCard>
+          )}
+
+          {/* Search Filters */}
+          {!loading && (
+            <PokemonCard variant="glass" size="lg" className="relative">
+              <div className="relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  {/* Set Name Search */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-bold text-cyan-200 mb-3 tracking-wide">
+                      Set Name
+                    </label>
+                    <div className="relative group">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-300/70 w-5 h-5 group-focus-within:text-cyan-300 transition-colors duration-300" />
+                      <PokemonInput
+                        type="text"
+                        placeholder="Search sets by name..."
+                        value={searchTerm}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="pl-12 pr-4 py-4 text-lg font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 transition-all duration-300 hover:shadow-xl text-white placeholder-cyan-200/50"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Year Filter */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-200 mb-3 tracking-wide">
+                      Year
+                    </label>
+                    <div className="relative group">
+                      <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-300/70 w-5 h-5 group-focus-within:text-cyan-300 transition-colors duration-300" />
+                      <PokemonInput
+                        type="number"
+                        placeholder="e.g. 1998"
+                        value={yearFilter}
+                        onChange={(e) => handleYearChange(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="pl-12 pr-4 py-4 text-lg font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 transition-all duration-300 hover:shadow-xl text-white placeholder-cyan-200/50"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col justify-end space-y-3">
+                    <PokemonButton
+                      variant="primary"
+                      size="md"
+                      onClick={handleSearch}
+                    >
+                      <Search className="w-5 h-5 mr-2" />
+                      Search
+                    </PokemonButton>
+                    <PokemonButton
+                      variant="glass"
+                      size="md"
+                      onClick={handleClearFilters}
+                    >
+                      Clear
+                    </PokemonButton>
+                  </div>
+                </div>
+              </div>
+            </PokemonCard>
+          )}
+
+          {/* Results Section */}
+          {!loading && (
+            <PokemonCard variant="glass" size="xl" className="relative">
+              <div className="relative z-10">
+                {sets && sets.length > 0 ? (
+                  <>
+                    {/* Results Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                      {sets.map((set: any) => (
+                        <PokemonCard
+                          key={set._id}
+                          variant="glass"
+                          size="md"
+                          interactive
+                          onClick={() => handleSetClick(set._id)}
+                          className="group"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 p-3 rounded-2xl">
+                              <Package className="w-6 h-6 text-cyan-400" />
+                            </div>
+                            <div className="text-sm font-bold text-cyan-200/70 bg-white/10 px-3 py-1 rounded-full">
+                              {set.year || 'Unknown'}
+                            </div>
+                          </div>
+                          <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-300">
+                            {set.setName}
+                          </h3>
+                          <div className="space-y-2 text-sm text-cyan-100/70">
+                            {set.totalCardsInSet && (
+                              <div className="flex justify-between">
+                                <span>Total Cards:</span>
+                                <span className="font-semibold">
+                                  {set.totalCardsInSet}
+                                </span>
+                              </div>
+                            )}
+                            {set.total_grades?.total_graded && (
+                              <div className="flex justify-between">
+                                <span>PSA Population:</span>
+                                <span className="font-semibold">
+                                  {set.total_grades.total_graded}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </PokemonCard>
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {pagination.totalPages > 1 && (
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-cyan-100/70 font-medium">
+                          Page {pagination.currentPage} of {pagination.totalPages} (
+                          {pagination.total} total sets)
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <PokemonButton
+                            variant="glass"
+                            size="sm"
+                            onClick={() =>
+                              handlePageChange(pagination.currentPage - 1)
+                            }
+                            disabled={!pagination.hasPrevPage}
+                          >
+                            <ChevronLeft className="w-4 h-4 mr-2" />
+                            Previous
+                          </PokemonButton>
+                          <PokemonButton
+                            variant="glass"
+                            size="sm"
+                            onClick={() =>
+                              handlePageChange(pagination.currentPage + 1)
+                            }
+                            disabled={!pagination.hasNextPage}
+                          >
+                            Next
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                          </PokemonButton>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <Package className="w-16 h-16 text-cyan-300/50 mx-auto mb-4" />
+                    <p className="text-xl text-white font-medium">
+                      No sets found
+                    </p>
+                    <p className="text-sm text-cyan-100/70 mt-2">
+                      Try adjusting your search criteria
+                    </p>
+                  </div>
+                )}
+              </div>
+            </PokemonCard>
           )}
         </div>
-      </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

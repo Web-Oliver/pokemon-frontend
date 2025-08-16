@@ -56,7 +56,7 @@ export const PokemonPageContainer: React.FC<PokemonPageContainerProps> = ({
     }
   };
   return (
-    <div className={cn('page-container', className)}>
+    <div className={cn('page-container', 'relative z-10', className)}>
       {/* Context7 2025 Futuristic Neural Background */}
       {withNeural && (
         <div className="absolute inset-0 opacity-20">

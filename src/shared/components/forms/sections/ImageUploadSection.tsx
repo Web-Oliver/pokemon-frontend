@@ -67,8 +67,112 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
           </p>
         </div>
 
-        {/* Premium Image Upload Container */}
-        <div className="relative z-10">
+        {/* Premium Image Upload Container - New Optimized Layout */}
+        <div className="relative z-10 space-y-6">
+          {/* Top Row: Image Preview and Guidelines - Same Height */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Image Preview Section - Full Height Image */}
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl p-1 border border-white/20 shadow-lg">
+              <div className="h-[406px] rounded-lg overflow-hidden bg-black/20">
+                {existingImageUrls && existingImageUrls.length > 0 ? (
+                  <img
+                    src={existingImageUrls[0].startsWith('http') ? existingImageUrls[0] : `http://localhost:3000${existingImageUrls[0]}`}
+                    alt="Pokemon Card Preview"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      console.error('Image failed to load:', existingImageUrls[0]);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-center text-white/50">
+                    <div>
+                      <Image className="w-12 h-12 mx-auto mb-3" />
+                      <p>No image uploaded yet</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Context7 Premium Guidelines - Matching Height */}
+            <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-xl p-6 border border-white/10 h-[416px] overflow-y-auto">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10">
+                  <Sparkles className="w-5 h-5 text-violet-400" />
+                </div>
+                <span className="text-white font-semibold">
+                  Photography Guidelines
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* Upload Specs */}
+                <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-600/20 backdrop-blur-xl border border-white/10">
+                      <Upload className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-white/80 font-semibold text-sm">
+                      Upload Specs
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs text-white/60">
+                    <p>• Up to {maxFiles} images</p>
+                    <p>• Max {maxFileSize}MB each</p>
+                    <p>• JPG, PNG, WebP</p>
+                  </div>
+                </div>
+
+                {/* Shot Types */}
+                <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-white/10">
+                      <Image className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <span className="text-white/80 font-semibold text-sm">
+                      Shot Types
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs text-white/60">
+                    <p>• Front & back views</p>
+                    <p>• Corner detail shots</p>
+                    <p>• Surface condition</p>
+                  </div>
+                </div>
+
+                {/* Pro Tips */}
+                <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-600/20 backdrop-blur-xl border border-white/10">
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <span className="text-white/80 font-semibold text-sm">
+                      Pro Tips
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs text-white/60">
+                    <p>• Good lighting is key</p>
+                    <p>• Avoid shadows/glare</p>
+                    <p>• Show card clearly</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Premium Status Indicator */}
+              <div className="mt-4 flex items-center justify-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-xl shadow-lg">
+                <div className="relative">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <div className="absolute inset-0 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75"></div>
+                </div>
+                <span className="text-xs font-semibold text-green-300">
+                  Ready for Upload
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Row: Image Upload Area - Full Width Horizontal */}
           <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-lg">
             <ImageUploader
               onImagesChange={onImagesChange}
@@ -77,82 +181,6 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
               maxFiles={maxFiles}
               maxFileSize={maxFileSize}
             />
-          </div>
-
-          {/* Context7 Premium Guidelines */}
-          <div className="mt-6 bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-xl p-6 border border-white/10">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-600/20 backdrop-blur-xl border border-white/10">
-                <Sparkles className="w-5 h-5 text-violet-400" />
-              </div>
-              <span className="text-white font-semibold">
-                Photography Guidelines
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Upload Specs */}
-              <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
-                <div className="flex items-center space-x-2 mb-3">
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-600/20 backdrop-blur-xl border border-white/10">
-                    <Upload className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <span className="text-white/80 font-semibold text-sm">
-                    Upload Specs
-                  </span>
-                </div>
-                <div className="space-y-1 text-xs text-white/60">
-                  <p>• Up to {maxFiles} images</p>
-                  <p>• Max {maxFileSize}MB each</p>
-                  <p>• JPG, PNG, WebP</p>
-                </div>
-              </div>
-
-              {/* Shot Types */}
-              <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
-                <div className="flex items-center space-x-2 mb-3">
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-600/20 backdrop-blur-xl border border-white/10">
-                    <Image className="w-4 h-4 text-emerald-400" />
-                  </div>
-                  <span className="text-white/80 font-semibold text-sm">
-                    Shot Types
-                  </span>
-                </div>
-                <div className="space-y-1 text-xs text-white/60">
-                  <p>• Front & back views</p>
-                  <p>• Corner detail shots</p>
-                  <p>• Surface condition</p>
-                </div>
-              </div>
-
-              {/* Pro Tips */}
-              <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-lg p-4 border border-white/10">
-                <div className="flex items-center space-x-2 mb-3">
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-600/20 backdrop-blur-xl border border-white/10">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <span className="text-white/80 font-semibold text-sm">
-                    Pro Tips
-                  </span>
-                </div>
-                <div className="space-y-1 text-xs text-white/60">
-                  <p>• Good lighting is key</p>
-                  <p>• Avoid shadows/glare</p>
-                  <p>• Show card clearly</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Premium Status Indicator */}
-            <div className="mt-4 flex items-center justify-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 px-4 py-2 rounded-xl shadow-lg">
-              <div className="relative">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <div className="absolute inset-0 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75"></div>
-              </div>
-              <span className="text-xs font-semibold text-green-300">
-                Ready for Upload
-              </span>
-            </div>
           </div>
         </div>
 

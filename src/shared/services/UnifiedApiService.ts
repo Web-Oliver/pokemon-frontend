@@ -713,10 +713,8 @@ export class UnifiedApiService {
       console.log('[API DEBUG] Calling unified /search?type=sets with params:', params);
       try {
         // Use unified search endpoint with type parameter
-        const response = await unifiedHttpClient.get<any>('/search', {
+        const response = await unifiedHttpClient.get<any>('/search/sets', {
           params: {
-            domain: 'cards', // Card Domain: Set → Card hierarchy
-            type: 'sets',
             query: params.query,
             limit: params.limit,
             page: params.page,
@@ -755,10 +753,8 @@ export class UnifiedApiService {
       );
       try {
         // Use unified search endpoint for set products
-        const response = await unifiedHttpClient.get<any>('/search', {
+        const response = await unifiedHttpClient.get<any>('/search/set-products', {
           params: {
-            domain: 'products', // Product Domain: SetProduct → Product hierarchy
-            type: 'set-products',
             query: params.query,
             limit: params.limit,
             page: params.page,
@@ -791,41 +787,36 @@ export class UnifiedApiService {
     async searchProducts(
       params: ProductSearchParams
     ): Promise<SearchResponse<IProduct>> {
-      console.log('[API DEBUG] Calling unified /search?type=products with params:', params);
+      console.log('[API DEBUG] Calling specific /search/products endpoint with params:', params);
       try {
-        const response = await unifiedHttpClient.get<any>('/search', {
+        const response = await unifiedHttpClient.get<any>('/search/products', {
           params: {
-            domain: 'products', // Product Domain: SetProduct → Product hierarchy
-            type: 'products',
-            query: params.query,
-            limit: params.limit,
-            page: params.page,
+            query: params.query || '*', // Use '*' for empty queries
             category: params.category,
             setName: params.setName,
-            setProductId: params.setProductId, // For hierarchical filtering
+            setProductId: params.setProductId, // Direct MongoDB ObjectId filtering
             minPrice: params.minPrice,
             maxPrice: params.maxPrice,
             availableOnly: params.availableOnly,
             populate: params.populate, // For auto-population
             exclude: params.exclude, // For excluding items
+            limit: params.limit || 50, // Increase default limit for better results
+            page: params.page,
           },
           skipTransform: true,
         });
 
-        // Extract products from nested response structure {data: {products: {results: [...]}}}
-        const productsContainer = response?.data?.products;
-        const productsData = productsContainer?.results || response?.data || [];
+        // Backend returns {success: true, data: {products: [...], total: N, ...}}
+        const responseData = response?.data?.data || response?.data || {};
+        const productsData = responseData.products || [];
         const searchResponse: SearchResponse<IProduct> = {
           data: productsData,
-          count: productsContainer?.total || (Array.isArray(productsData) ? productsData.length : 0),
-          success: response?.success !== false,
-          query: params.query,
+          count: responseData.total || responseData.count || productsData.length,
+          success: response?.data?.success !== false,
+          query: params.query || '*',
         };
 
-        console.log(
-          '[API DEBUG] Final products searchResponse:',
-          searchResponse
-        );
+        console.log('[API DEBUG] Products endpoint response:', searchResponse);
         return searchResponse;
       } catch (error) {
         console.error('[API DEBUG] /search?type=products ERROR:', error);
@@ -836,16 +827,12 @@ export class UnifiedApiService {
     async searchCards(
       params: CardSearchParams
     ): Promise<SearchResponse<ICard>> {
-      console.log('[API DEBUG] Calling unified /search?type=cards with params:', params);
+      console.log('[API DEBUG] Calling specific /search/cards endpoint with params:', params);
       try {
-        const response = await unifiedHttpClient.get<any>('/search', {
+        const response = await unifiedHttpClient.get<any>('/search/cards', {
           params: {
-            domain: 'cards', // Card Domain: Set → Card hierarchy
-            type: 'cards',
-            query: params.query,
-            limit: params.limit,
-            page: params.page,
-            setId: params.setId, // For hierarchical filtering by MongoDB ObjectId
+            query: params.query || '*', // Use '*' for empty queries
+            setId: params.setId, // Direct MongoDB ObjectId filtering
             setName: params.setName,
             year: params.year,
             cardNumber: params.cardNumber,
@@ -853,20 +840,23 @@ export class UnifiedApiService {
             minPsaPopulation: params.minPsaPopulation,
             populate: params.populate, // For auto-population (e.g., 'setId')
             exclude: params.exclude, // For excluding specific cards
+            limit: params.limit || 50, // Increase default limit for better results
+            page: params.page,
           },
           skipTransform: true,
         });
 
-        // Extract cards from nested response structure {data: {cards: [...]}}
-        const cardsData = response?.data?.cards || response?.data || [];
+        // Backend returns {success: true, data: {cards: [...], total: N, ...}}
+        const responseData = response?.data?.data || response?.data || {};
+        const cardsData = responseData.cards || [];
         const searchResponse: SearchResponse<ICard> = {
           data: cardsData,
-          count: Array.isArray(cardsData) ? cardsData.length : 0,
-          success: response?.success !== false,
-          query: params.query,
+          count: responseData.total || responseData.count || cardsData.length,
+          success: response?.data?.success !== false,
+          query: params.query || '*',
         };
 
-        console.log('[API DEBUG] Final cards searchResponse:', searchResponse);
+        console.log('[API DEBUG] Cards endpoint response:', searchResponse);
         return searchResponse;
       } catch (error) {
         console.error('[API DEBUG] /search?type=cards ERROR:', error);

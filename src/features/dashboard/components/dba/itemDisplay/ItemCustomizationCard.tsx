@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { processImageUrl } from '../../../../../shared/utils';
+import { PokemonCard } from '../../../../../shared/components/atoms/design-system/PokemonCard';
 
 interface SelectedItem {
   id: string;
@@ -64,7 +65,7 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
   const displayInfo = getItemDisplayInfo(item, generateTitle);
 
   return (
-    <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-600/30">
+    <PokemonCard variant="glass" size="md" className="bg-white/[0.08] border-white/20">
       {/* Responsive Layout - Mobile-first with responsive grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-4">
         {/* Item Info & Image Column */}
@@ -74,7 +75,7 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
             <span className="text-sm lg:text-sm font-medium text-white">
               {displayInfo.title}
             </span>
-            <p className="text-xs text-zinc-400 mt-1">{displayInfo.subtitle}</p>
+            <p className="text-xs text-cyan-200 mt-1">{displayInfo.subtitle}</p>
           </div>
 
           {/* Item Image */}
@@ -83,11 +84,11 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
               <img
                 src={displayInfo.imageUrl!}
                 alt={displayInfo.altText}
-                className="w-48 h-48 lg:w-64 lg:h-64 object-contain rounded-lg border border-zinc-600 bg-zinc-800"
+                className="w-48 h-auto lg:w-64 lg:h-auto object-contain rounded-lg border border-white/20 bg-white/10"
               />
             ) : (
-              <div className="w-48 h-48 lg:w-64 lg:h-64 bg-zinc-700 rounded-lg border border-zinc-600 flex items-center justify-center">
-                <span className="text-zinc-500 text-xs text-center">
+              <div className="w-48 h-48 lg:w-64 lg:h-64 bg-white/10 rounded-lg border border-white/20 flex items-center justify-center">
+                <span className="text-white/70 text-xs text-center">
                   No Image
                 </span>
               </div>
@@ -99,7 +100,7 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
         <div className="flex flex-col space-y-4">
           {/* Custom Title Field */}
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1">
+            <label className="block text-xs font-medium text-cyan-200 mb-1">
               Custom Title
             </label>
             <textarea
@@ -108,13 +109,13 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
                 updateItemCustomization(item.id, 'customTitle', e.target.value);
               }}
               placeholder="Enter custom title..."
-              className="w-full h-20 lg:h-[100px] px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none"
+              className="w-full h-20 lg:h-[100px] px-3 py-3 bg-white/10 text-white font-medium text-sm rounded-lg border border-white/20 placeholder-white/50 focus:outline-none focus:border-cyan-400/30 focus:bg-white/15 transition-all duration-200 resize-none"
             />
           </div>
 
           {/* Custom Description Field */}
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1">
+            <label className="block text-xs font-medium text-cyan-200 mb-1">
               Custom Description
             </label>
             <textarea
@@ -127,12 +128,12 @@ const ItemCustomizationCard: React.FC<ItemCustomizationCardProps> = ({
                 );
               }}
               placeholder="Enter custom description..."
-              className="w-full h-32 lg:h-[135px] px-3 py-3 bg-zinc-700 text-white font-medium text-sm rounded-lg border border-zinc-600 placeholder-zinc-400 focus:outline-none focus:border-blue-500 focus:bg-zinc-600 transition-all duration-200 resize-none"
+              className="w-full h-32 lg:h-[135px] px-3 py-3 bg-white/10 text-white font-medium text-sm rounded-lg border border-white/20 placeholder-white/50 focus:outline-none focus:border-cyan-400/30 focus:bg-white/15 transition-all duration-200 resize-none"
             />
           </div>
         </div>
       </div>
-    </div>
+    </PokemonCard>
   );
 };
 

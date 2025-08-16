@@ -53,7 +53,14 @@ export const useSearch = (query: string, config: SearchConfig) => {
           // Use hierarchical search if parentId (setId) is provided
           if (parentId) {
             console.log('[HIERARCHICAL SEARCH] Filtering cards by setId:', parentId, 'query:', debouncedQuery);
-            apiResponse = await unifiedApiService.search.getCardsInSet(parentId, debouncedQuery);
+            console.log('[API DEBUG] About to call searchCards with setId filter');
+            apiResponse = await unifiedApiService.search.searchCards({ 
+              query: debouncedQuery || '',
+              setId: parentId, // Direct filtering by setId
+              limit: 20,
+              populate: 'setId'
+            });
+            console.log('[API DEBUG] Cards response for setId filter:', apiResponse);
           } else {
             apiResponse = await unifiedApiService.search.searchCards({ 
               query: debouncedQuery,
@@ -66,7 +73,14 @@ export const useSearch = (query: string, config: SearchConfig) => {
           // Use hierarchical search if parentId (setProductId) is provided
           if (parentId) {
             console.log('[HIERARCHICAL SEARCH] Filtering products by setProductId:', parentId, 'query:', debouncedQuery);
-            apiResponse = await unifiedApiService.search.getProductsInSetProduct(parentId, debouncedQuery);
+            console.log('[API DEBUG] About to call searchProducts with setProductId filter');
+            apiResponse = await unifiedApiService.search.searchProducts({ 
+              query: debouncedQuery || '',
+              setProductId: parentId, // Direct filtering by setProductId
+              limit: 20,
+              populate: 'setProductId'
+            });
+            console.log('[API DEBUG] Products response for setProductId filter:', apiResponse);
           } else {
             apiResponse = await unifiedApiService.search.searchProducts({ 
               query: debouncedQuery,
@@ -95,13 +109,20 @@ export const useSearch = (query: string, config: SearchConfig) => {
           const cardName = item.cardName || 'Unknown Card';
           // Safe property access to prevent circular references
           let setName = 'Unknown Set';
+          
           try {
-            if (item.setId && typeof item.setId === 'object' && item.setId.setName) {
+            // Backend can return set name in multiple ways:
+            // 1. Populated setId object with setName
+            // 2. Direct setDisplayName field (from MongoDB query)
+            // 3. Direct setName field
+            if (item.setDisplayName && typeof item.setDisplayName === 'string') {
+              setName = String(item.setDisplayName);
+            } else if (item.setId && typeof item.setId === 'object' && item.setId.setName) {
               setName = String(item.setId.setName);
+            } else if (item.setName && typeof item.setName === 'string') {
+              setName = String(item.setName);
             } else if (typeof item.setId === 'string') {
               setName = item.setId;
-            } else if (item.setName) {
-              setName = String(item.setName);
             }
           } catch (error) {
             console.warn('[SEARCH] Error accessing set name:', error);
@@ -111,6 +132,7 @@ export const useSearch = (query: string, config: SearchConfig) => {
           displayName = `${cardName} #${number} (${setName})`;
         } else if (searchType === 'products') {
           const productName = item.productName || item.name || 'Unknown Product';
+          const category = item.category || '';
           // Safe property access to prevent circular references
           let setProductName = '';
           try {
@@ -125,7 +147,24 @@ export const useSearch = (query: string, config: SearchConfig) => {
             console.warn('[SEARCH] Error accessing set product name:', error);
             setProductName = '';
           }
-          displayName = setProductName ? `${productName} - ${setProductName}` : productName;
+          
+          // Improve category display with more descriptive names
+          const getCategoryDisplayName = (cat: string): string => {
+            switch (cat) {
+              case 'Booster-Boxes': return 'Booster Box';
+              case 'Boosters': return 'Booster Pack';
+              case 'Elite-Trainer-Boxes': return 'Elite Trainer Box';
+              case 'Theme-Decks': return 'Theme Deck';
+              case 'Box-Sets': return 'Box Set';
+              case 'Trainer-Kits': return 'Trainer Kit';
+              case 'Blisters': return 'Blister Pack';
+              case 'Tins': return 'Tin';
+              default: return cat;
+            }
+          };
+          
+          const categoryDisplay = category ? ` [${getCategoryDisplayName(category)}]` : '';
+          displayName = setProductName ? `${productName}${categoryDisplay} - ${setProductName}` : `${productName}${categoryDisplay}`;
         } else if (searchType === 'setproducts') {
           displayName = item.setProductName || item.name || 'Unknown Set Product';
         }

@@ -18,7 +18,7 @@ export interface BaseListItemProps {
 
   // Core list item properties
   variant?: 'default' | 'glass' | 'hover' | 'timeline' | 'card';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 
   // Interactive states
   interactive?: boolean;
@@ -166,6 +166,7 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
     sm: 'px-4 py-3',
     md: 'px-6 py-4',
     lg: 'px-8 py-6',
+    xl: 'px-10 py-8',
   };
 
   // Interactive states

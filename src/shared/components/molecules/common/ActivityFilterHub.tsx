@@ -1,5 +1,5 @@
 /**
- * ActivityFilterHub Component - DRY Violation Fix
+ * ActivityFilterHub Component - Unified Design System Implementation
  *
  * Reusable filter hub component extracted from Activity.tsx
  * to prevent JSX duplication for search input, filter pills, and date range selector.
@@ -8,15 +8,18 @@
  * - Single Responsibility: Handles all activity filtering UI and logic
  * - DRY: Eliminates repeated filter section JSX structures
  * - Reusability: Can be used across different activity displays
- * - Design System Integration: Uses PokemonCard, PokemonInput, and PokemonBadge for consistency
+ * - Design System Integration: Uses unified glassmorphism patterns with PokemonCard, PokemonInput, PokemonButton, and PokemonSelect
+ * - Unified Styling: Implements white/10 backgrounds, cyan-200 labels, white text, and cyan-400 highlights
  */
 
 import React from 'react';
 import { Calendar, LucideIcon, Search } from 'lucide-react';
 import {
   PokemonBadge,
+  PokemonButton,
   PokemonCard,
   PokemonInput,
+  PokemonSelect,
 } from '../../atoms/design-system';
 
 interface FilterOption {
@@ -76,13 +79,13 @@ const ActivityFilterHub: React.FC<ActivityFilterHubProps> = ({
         {/* Search */}
         <div className="flex-1 max-w-md">
           <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-cyan-200 w-5 h-5" />
             <PokemonInput
               type="text"
               placeholder="Search activities..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-12"
+              className="pl-12 bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-cyan-200/70 focus:border-cyan-400/30 focus:ring-cyan-400/20"
             />
             {searchTerm && (
               <button
@@ -91,7 +94,7 @@ const ActivityFilterHub: React.FC<ActivityFilterHubProps> = ({
                   setSearchInput('');
                   clearSearch();
                 }}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-cyan-200/80 hover:text-white transition-colors duration-200"
               >
                 ✕
               </button>
@@ -99,7 +102,7 @@ const ActivityFilterHub: React.FC<ActivityFilterHubProps> = ({
           </form>
         </div>
 
-        {/* Filter Pills using PokemonBadge */}
+        {/* Filter Pills using PokemonButton */}
         <div className="flex flex-wrap gap-3">
           {filterOptions.map((option) => {
             const IconComponent = option.icon;
@@ -108,41 +111,40 @@ const ActivityFilterHub: React.FC<ActivityFilterHubProps> = ({
               filters.type === option.value;
 
             return (
-              <button
+              <PokemonButton
                 key={option.value}
                 onClick={() => handleFilterChange(option.value)}
-                className="transition-all duration-300 hover:scale-105"
+                variant={isActive ? 'primary' : 'ghost'}
+                size="sm"
+                className={`
+                  ${isActive 
+                    ? 'bg-cyan-400/20 border border-cyan-400/30 text-white shadow-lg shadow-cyan-400/20' 
+                    : 'bg-white/10 border border-white/20 text-cyan-200 hover:bg-cyan-400/10 hover:border-cyan-400/30 hover:text-white'
+                  }
+                  backdrop-blur-sm transition-all duration-300
+                `}
+                startIcon={<IconComponent className="w-4 h-4" />}
               >
-                <PokemonBadge
-                  variant={isActive ? 'primary' : 'secondary'}
-                  style={isActive ? 'solid' : 'glass'}
-                  shape="pill"
-                  className={`transition-all duration-300 ${
-                    isActive ? 'shadow-lg scale-105' : 'hover:shadow-md'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  {option.label}
-                </PokemonBadge>
-              </button>
+                {option.label}
+              </PokemonButton>
             );
           })}
         </div>
 
         {/* Date Range */}
         <div className="flex items-center space-x-3">
-          <Calendar className="w-5 h-5 text-slate-500" />
-          <select
+          <Calendar className="w-5 h-5 text-cyan-200" />
+          <PokemonSelect
             value={filters.dateRange || 'all'}
             onChange={(e) => handleDateRangeChange(e.target.value)}
-            className="bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-4 py-2 text-sm font-medium text-zinc-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          >
-            {dateRangeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            options={dateRangeOptions.map(option => ({
+              value: option.value,
+              label: option.label
+            }))}
+            variant="filter"
+            size="sm"
+            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white focus:border-cyan-400/30 focus:ring-cyan-400/20"
+          />
         </div>
       </div>
     </PokemonCard>

@@ -17,6 +17,7 @@
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
@@ -246,192 +247,161 @@ const AddEditItem: React.FC = () => {
   );
 
   return (
-    <PageLayout
-      title={pageTitle}
-      subtitle={pageSubtitle}
-      loading={fetchLoading}
-      error={fetchError}
-      actions={headerActions}
-      variant="default"
-    >
-      {/* Context7 Award-Winning Item Type Selection */}
-      {!fetchLoading && !fetchError && !selectedItemType && (
-        <div className="relative">
-          {/* Background Glass Effects */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
-          <div className="absolute -inset-2 bg-gradient-to-r from-indigo-400/5 via-purple-400/5 to-pink-400/5 rounded-[2.5rem] blur-xl"></div>
-
-          <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-12 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
-            {/* Floating Orbs */}
-            <div className="absolute -top-8 -left-8 w-40 h-40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div
-              className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-pink-500/10 to-rose-500/10 rounded-full blur-2xl animate-pulse"
-              style={{ animationDelay: '1.5s' }}
-            ></div>
-
-            <div className="mb-12 relative z-10 text-center">
-              <h2 className="text-3xl font-bold text-gradient-primary mb-4 leading-tight">
-                Choose Your Collection Type
-              </h2>
-              <p className="text-xl text-[var(--theme-text-muted)] font-medium max-w-2xl mx-auto">
-                Select the type of precious item you want to add to your
-                collection
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
-              {itemTypes.map((itemType, index) => {
-                const Icon = itemType.icon;
-                const gradientClasses = {
-                  blue: 'from-cyan-500 to-blue-600',
-                  green: 'from-emerald-500 to-teal-600',
-                  purple: 'from-purple-500 to-violet-600',
-                };
-
-                const shadowClasses = {
-                  blue: 'hover:shadow-cyan-500/25',
-                  green: 'hover:shadow-emerald-500/25',
-                  purple: 'hover:shadow-purple-500/25',
-                };
-
-                const glowClasses = {
-                  blue: 'hover:ring-cyan-500/30',
-                  green: 'hover:ring-emerald-500/30',
-                  purple: 'hover:ring-purple-500/30',
-                };
-
-                return (
-                  <button
-                    key={itemType.id}
-                    onClick={() => setSelectedItemType(itemType.id)}
-                    className={`group relative text-center p-8 glass-bg backdrop-blur-2xl rounded-3xl transition-all duration-[var(--animation-duration-slow)] hover:scale-105 hover:shadow-2xl ${shadowClasses[itemType.color as keyof typeof shadowClasses]} border border-[var(--border-glass-medium)] ring-1 ring-[var(--border-glass-subtle)] hover:ring-2 ${glowClasses[itemType.color as keyof typeof glowClasses]} overflow-hidden transform hover:-translate-y-2`}
-                    style={{
-                      animationDelay: `${index * 200}ms`,
-                      animation: 'fadeInUp 0.8s ease-out forwards',
-                    }}
-                  >
-                    {/* Premium Gradient Overlay */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} opacity-0 group-hover:opacity-10 transition-all duration-500`}
-                    ></div>
-
-                    {/* Shimmer Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
-
-                    {/* Icon Container with Multiple Layers */}
-                    <div className="relative z-10 mb-6">
-                      <div className="relative mx-auto w-fit">
-                        {/* Outer Glow Ring */}
-                        <div
-                          className={`absolute -inset-4 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
-                        ></div>
-                        {/* Inner Glow Ring */}
-                        <div
-                          className={`absolute -inset-2 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-full blur-md opacity-20 group-hover:opacity-50 transition-all duration-500`}
-                        ></div>
-                        {/* Main Icon Container */}
-                        <div
-                          className={`relative w-20 h-20 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-2xl shadow-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/20`}
-                        >
-                          <Icon className="w-10 h-10 text-white drop-shadow-lg" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative z-10">
-                      <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-4 group-hover:text-[var(--theme-text-primary)] transition-colors duration-[var(--animation-duration-normal)]">
-                        {itemType.name}
-                      </h3>
-                      <p className="text-[var(--theme-text-muted)] text-base leading-relaxed group-hover:text-[var(--theme-text-secondary)] transition-colors duration-[var(--animation-duration-normal)] font-medium">
-                        {itemType.description}
-                      </p>
-                    </div>
-
-                    {/* Premium Arrow Indicator */}
-                    <div className="absolute bottom-6 right-6 w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-glass-primary)] backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] group-hover:text-[var(--theme-text-primary)] group-hover:bg-[var(--bg-glass-secondary)] group-hover:translate-x-1 group-hover:scale-110 transition-all duration-[var(--animation-duration-normal)] opacity-0 group-hover:opacity-100">
-                      <ArrowLeft className="w-4 h-4 rotate-180" />
-                    </div>
-
-                    {/* Bottom Glow Line */}
-                    <div
-                      className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientClasses[itemType.color as keyof typeof gradientClasses]} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                    ></div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Breathing Animation */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
-          </div>
-        </div>
-      )}
-
-      {/* Context7 Award-Winning Selected Form */}
-      {!fetchLoading && !fetchError && selectedItemType && (
-        <div className="relative">
-          {/* Background Glass Effects */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-60"></div>
-          <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400/5 via-teal-400/5 to-cyan-400/5 rounded-[2.5rem] blur-xl"></div>
-
-          <div className="relative glass-bg backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-[var(--border-glass-medium)] p-12 ring-1 ring-[var(--border-glass-subtle)] overflow-hidden">
-            {/* Floating Orbs */}
-            <div className="absolute -top-8 -right-8 w-40 h-40 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div
-              className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl animate-pulse"
-              style={{ animationDelay: '2s' }}
-            ></div>
-
-            <div className="flex items-center justify-between mb-12 relative z-10">
-              <div className="flex items-center space-x-6">
-                {!isEditing && (
-                  <button
-                    onClick={() => setSelectedItemType(null)}
-                    className="group relative overflow-hidden p-3 rounded-2xl glass-bg backdrop-blur-xl border border-[var(--border-glass-medium)] text-[var(--theme-text-muted)] hover:text-[var(--theme-text-primary)] shadow-lg hover:shadow-xl transition-all duration-[var(--animation-duration-normal)] transform hover:scale-105"
-                    aria-label="Back to item type selection"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <ArrowLeft className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                  </button>
-                )}
-
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden"
+          >
+            <div className="relative z-20">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h2 className="text-3xl font-bold text-gradient-primary leading-tight">
-                    {
-                      itemTypes.find((type) => type.id === selectedItemType)
-                        ?.name
-                    }
-                  </h2>
-                  <p className="text-lg text-[var(--theme-text-muted)] font-medium mt-2">
-                    {
-                      itemTypes.find((type) => type.id === selectedItemType)
-                        ?.description
-                    }
+                  <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    {pageTitle}
+                  </h1>
+                  <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                    {pageSubtitle}
                   </p>
                 </div>
-              </div>
-
-              {/* Premium Progress Indicator */}
-              <div className="flex items-center space-x-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-xl border border-emerald-500/30 px-6 py-3 rounded-2xl shadow-lg">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-emerald-400 rounded-full shadow-lg"></div>
-                  <div className="w-3 h-3 bg-emerald-300 rounded-full shadow-lg"></div>
-                  <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                <div className="flex-shrink-0">
+                  {headerActions}
                 </div>
-                <div className="h-4 w-px bg-white/20"></div>
-                <span className="text-sm font-semibold text-emerald-300">
-                  Step 2 of 3
-                </span>
               </div>
+              
+              {/* Error Display */}
+              {fetchError && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {fetchError}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
+          </PokemonCard>
 
-            <div className="relative z-10">{renderForm()}</div>
+          {/* Loading State */}
+          {fetchLoading && (
+            <PokemonCard variant="glass" size="xl">
+              <div className="flex justify-center items-center py-20">
+                <GenericLoadingState variant="spinner" size="lg" text="Loading item details..." />
+              </div>
+            </PokemonCard>
+          )}
 
-            {/* Breathing Animation */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-[2rem] animate-pulse opacity-40 pointer-events-none"></div>
-          </div>
+          {/* Item Type Selection */}
+          {!fetchLoading && !fetchError && !selectedItemType && (
+            <PokemonCard variant="glass" size="xl" className="relative">
+              <div className="relative z-10">
+                <div className="mb-12 text-center">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4 leading-tight">
+                    Choose Your Collection Type
+                  </h2>
+                  <p className="text-xl text-cyan-100/70 font-medium max-w-2xl mx-auto">
+                    Select the type of precious item you want to add to your collection
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {itemTypes.map((itemType, index) => {
+                    const Icon = itemType.icon;
+                    const gradientClasses = {
+                      blue: 'from-cyan-500 to-blue-600',
+                      green: 'from-emerald-500 to-teal-600',
+                      purple: 'from-purple-500 to-violet-600',
+                    };
+
+                    return (
+                      <PokemonCard
+                        key={itemType.id}
+                        variant="glass"
+                        size="lg"
+                        interactive
+                        onClick={() => setSelectedItemType(itemType.id)}
+                        className="group text-center transform hover:scale-105 transition-all duration-300"
+                      >
+                        {/* Icon Container */}
+                        <div className="mb-6">
+                          <div className="relative mx-auto w-fit">
+                            <div
+                              className={`w-20 h-20 bg-gradient-to-br ${gradientClasses[itemType.color as keyof typeof gradientClasses]} rounded-2xl shadow-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/20`}
+                            >
+                              <Icon className="w-10 h-10 text-white drop-shadow-lg" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors duration-300">
+                            {itemType.name}
+                          </h3>
+                          <p className="text-cyan-100/70 text-base leading-relaxed group-hover:text-cyan-100 transition-colors duration-300 font-medium">
+                            {itemType.description}
+                          </p>
+                        </div>
+                      </PokemonCard>
+                    );
+                  })}
+                </div>
+              </div>
+            </PokemonCard>
+          )}
+
+          {/* Selected Form */}
+          {!fetchLoading && !fetchError && selectedItemType && (
+            <PokemonCard variant="glass" size="xl" className="relative">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex items-center space-x-6">
+                    {!isEditing && (
+                      <PokemonCard
+                        variant="glass"
+                        size="sm"
+                        interactive
+                        onClick={() => setSelectedItemType(null)}
+                        className="p-3"
+                      >
+                        <ArrowLeft className="w-5 h-5 text-cyan-300 hover:text-white transition-colors duration-300" />
+                      </PokemonCard>
+                    )}
+
+                    <div>
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight">
+                        {itemTypes.find((type) => type.id === selectedItemType)?.name}
+                      </h2>
+                      <p className="text-lg text-cyan-100/70 font-medium mt-2">
+                        {itemTypes.find((type) => type.id === selectedItemType)?.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Progress Indicator */}
+                  <div className="flex items-center space-x-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-xl border border-emerald-500/30 px-6 py-3 rounded-2xl shadow-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-emerald-400 rounded-full shadow-lg"></div>
+                      <div className="w-3 h-3 bg-emerald-300 rounded-full shadow-lg"></div>
+                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                    </div>
+                    <div className="h-4 w-px bg-white/20"></div>
+                    <span className="text-sm font-semibold text-emerald-300">
+                      Step 2 of 3
+                    </span>
+                  </div>
+                </div>
+
+                <div>{renderForm()}</div>
+              </div>
+            </PokemonCard>
+          )}
         </div>
-      )}
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

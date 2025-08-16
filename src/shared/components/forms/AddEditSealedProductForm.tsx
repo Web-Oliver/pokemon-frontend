@@ -42,7 +42,7 @@ interface AddEditSealedProductFormProps {
 }
 
 interface FormData {
-  setName: string;
+  setProductName: string;
   productName: string;
   category: string;
   availability: number;
@@ -77,7 +77,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
   // Validation rules for Sealed Product form
   const validationRules = {
-    setName: { required: true },
+    setProductName: { required: true },
     productName: { required: true },
     category: { required: true },
     availability: {
@@ -99,7 +99,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   const memoizedInitialData = useMemo(() => {
     return initialData
       ? {
-          setName: initialData.setName,
+          setProductName: initialData.setName, // Legacy field mapping: setName -> setProductName
           productName: initialData.name, // Field mapping: name -> productName
           category: initialData.category,
           availability: initialData.availability,
@@ -113,7 +113,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
   // Initialize base form with specialized hooks and standardized initialData handling
   const baseForm = useBaseForm<FormData>({
     defaultValues: {
-      setName: initialData?.setName || '',
+      setProductName: initialData?.setName || '', // Legacy field mapping
       productName: initialData?.name || '',
       category: initialData?.category || '',
       availability: initialData?.availability || 0,
@@ -252,7 +252,7 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
 
       return {
         productId: selectedProductData?._id,
-        setName: formData.setName.trim(),
+        setName: formData.setProductName.trim(), // Map setProductName to backend's setName field
         name: formData.productName.trim(),
         category: formData.category,
         availability: Number(formData.availability),

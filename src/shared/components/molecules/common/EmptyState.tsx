@@ -11,7 +11,15 @@
  * - DRY: Single implementation for all empty states
  * - Single Responsibility: Handles only empty state display
  * - Reusability: Used across multiple contexts (no data, errors, loading, DBA)
- * - Design System Integration: Uses existing color variables and patterns
+ * - Unified Design System: Uses glassmorphism patterns, white text, cyan-200/70 secondary text, white/20 borders
+ *
+ * Design System Features:
+ * - Glassmorphism backgrounds (bg-white/10, backdrop-blur-xl)
+ * - Unified text colors (text-white main, text-cyan-200/70 secondary)
+ * - Consistent borders (border-white/20)
+ * - Gradient icon backgrounds (cyan/purple/pink patterns)
+ * - PokemonButton variants integration
+ * - Shimmer effects and interactive hover states
  */
 
 import React from 'react';
@@ -83,61 +91,56 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
   const FinalIcon = getDefaultIcon();
 
-  // Define variant-specific styles
+  // Define variant-specific styles with unified design system
   const variantStyles = {
     default: {
-      container:
-        'from-[var(--theme-surface-secondary)] to-[var(--theme-surface-secondary)]/80',
-      border: 'border-[var(--theme-border)]',
-      icon: 'text-[var(--theme-text-muted)]',
-      background: '',
-      shimmer: '',
+      container: 'from-cyan-500/20 via-purple-500/15 to-pink-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl',
+      shimmer: 'bg-gradient-to-r from-transparent via-white/5 to-transparent',
     },
     error: {
-      container: 'from-[var(--theme-status-error)]/50 to-pink-900/50',
-      border: 'border-[var(--theme-status-error)]/30',
-      icon: 'text-[var(--theme-status-error)]',
-      background: '',
-      shimmer: '',
+      container: 'from-red-500/20 via-pink-500/15 to-red-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl',
+      shimmer: 'bg-gradient-to-r from-transparent via-red-400/5 to-transparent',
     },
     success: {
-      container: 'from-[var(--theme-status-success)]/50 to-teal-600/50',
-      border: 'border-[var(--theme-status-success)]/30',
-      icon: 'text-[var(--theme-status-success)]',
-      background: '',
-      shimmer: '',
+      container: 'from-emerald-500/20 via-teal-500/15 to-cyan-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl',
+      shimmer: 'bg-gradient-to-r from-transparent via-emerald-400/5 to-transparent',
     },
     warning: {
-      container: 'from-amber-500/50 to-orange-600/50',
-      border: 'border-amber-400/30',
-      icon: 'text-amber-400',
-      background: '',
-      shimmer: '',
+      container: 'from-amber-500/20 via-orange-500/15 to-yellow-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl',
+      shimmer: 'bg-gradient-to-r from-transparent via-amber-400/5 to-transparent',
     },
     info: {
-      container: 'from-slate-100 to-white',
-      border: 'border-slate-200/50 dark:border-zinc-700/50',
-      icon: 'text-slate-500 dark:text-zinc-500 dark:text-zinc-400',
-      background: '',
-      shimmer: '',
+      container: 'from-blue-500/20 via-indigo-500/15 to-purple-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl',
+      shimmer: 'bg-gradient-to-r from-transparent via-blue-400/5 to-transparent',
     },
     cosmic: {
-      container: 'from-violet-500/20 to-pink-500/20',
-      border: 'border-violet-400/30',
-      icon: 'text-violet-400',
-      background:
-        'bg-gradient-to-br from-violet-900/80 via-purple-900/70 to-pink-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(139,92,246,0.2)]',
-      shimmer:
-        'bg-gradient-to-r from-transparent via-violet-400/5 to-transparent',
+      container: 'from-cyan-500/20 via-purple-500/15 to-pink-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl shadow-[0_0_80px_rgba(139,92,246,0.2)]',
+      shimmer: 'bg-gradient-to-r from-transparent via-purple-400/5 to-transparent',
     },
     premium: {
-      container: 'from-blue-500/20 to-purple-500/20',
-      border: 'border-blue-400/30',
-      icon: 'text-blue-400',
-      background:
-        'bg-gradient-to-br from-blue-900/80 via-indigo-900/70 to-purple-900/80 backdrop-blur-3xl shadow-[0_0_80px_rgba(59,130,246,0.2)]',
-      shimmer:
-        'bg-gradient-to-r from-transparent via-blue-400/5 to-transparent',
+      container: 'from-cyan-500/20 via-purple-500/15 to-pink-500/20',
+      border: 'border-white/20',
+      icon: 'text-white',
+      background: 'bg-white/10 backdrop-blur-xl shadow-[0_0_80px_rgba(59,130,246,0.2)]',
+      shimmer: 'bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent',
     },
   };
 
@@ -185,7 +188,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     return (
       <div className="relative group overflow-hidden">
         {/* Holographic background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/15 via-purple-500/15 to-pink-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/15 via-purple-500/15 to-pink-500/15 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
 
         <div
           className={`relative ${variantStyle.background} rounded-3xl border ${variantStyle.border} ${sizeStyle.padding}`}
@@ -211,7 +214,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                   {[...Array(6)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-1 h-1 bg-gradient-to-r from-violet-400 to-pink-400 rounded-full animate-bounce opacity-60"
+                      className="absolute w-1 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 rounded-full animate-bounce opacity-60"
                       style={{
                         left: `${Math.random() * 100 - 50}px`,
                         top: `${Math.random() * 100 - 50}px`,
@@ -222,14 +225,14 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/10 to-pink-500/10 blur-2xl animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 blur-2xl animate-pulse"></div>
             </div>
 
             <h3 className={`${sizeStyle.title} font-bold text-white mb-4`}>
               {title}
             </h3>
             <p
-              className={`${sizeStyle.description} text-zinc-400 max-w-md mx-auto mb-6`}
+              className={`${sizeStyle.description} text-cyan-200/70 max-w-md mx-auto mb-6`}
             >
               {description ||
                 'Add items to your collection to start exporting to DBA.dk'}
@@ -247,9 +250,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({
             )}
 
             {!action && (
-              <div className="inline-flex items-center px-4 py-2 bg-zinc-800 border border-zinc-600 rounded-lg">
-                <Star className="w-4 h-4 text-zinc-400 mr-2" />
-                <span className="text-zinc-300 text-sm">
+              <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg">
+                <Star className="w-4 h-4 text-cyan-200/70 mr-2" />
+                <span className="text-white text-sm">
                   Add items to get started
                 </span>
               </div>
@@ -260,53 +263,63 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     );
   }
 
-  // Standard variants use original layout
+  // Standard variants use unified design layout
   return (
-    <div className={`text-center ${sizeStyle.padding}`}>
-      {/* Icon Container */}
-      <div
-        className={`
-        ${sizeStyle.container} 
-        bg-gradient-to-br ${variantStyle.container} 
-        ${sizeStyle.rounded} 
-        shadow-xl 
-        flex items-center justify-center 
-        mx-auto mb-6 
-        border ${variantStyle.border}
-      `}
-      >
-        {FinalIcon && (
-          <FinalIcon className={`${sizeStyle.icon} ${variantStyle.icon}`} />
-        )}
+    <div className={`text-center ${sizeStyle.padding} relative group`}>
+      <div className={`relative ${variantStyle.background} rounded-3xl border ${variantStyle.border} p-8`}>
+        {/* Shimmer effect */}
+        <div
+          className={`absolute inset-0 ${variantStyle.shimmer} -translate-x-full group-hover:translate-x-full transition-transform duration-2000 ease-out rounded-3xl`}
+        ></div>
+
+        <div className="relative z-10">
+          {/* Icon Container */}
+          <div
+            className={`
+            ${sizeStyle.container} 
+            bg-gradient-to-br ${variantStyle.container} 
+            ${sizeStyle.rounded} 
+            shadow-xl 
+            flex items-center justify-center 
+            mx-auto mb-6 
+            border ${variantStyle.border}
+            backdrop-blur-sm
+          `}
+          >
+            {FinalIcon && (
+              <FinalIcon className={`${sizeStyle.icon} ${variantStyle.icon}`} />
+            )}
+          </div>
+
+          {/* Title */}
+          <h3
+            className={`${sizeStyle.title} font-bold text-white mb-3`}
+          >
+            {title}
+          </h3>
+
+          {/* Description */}
+          {description && (
+            <p
+              className={`${sizeStyle.description} text-cyan-200/70 font-medium max-w-md mx-auto leading-relaxed mb-6`}
+            >
+              {description}
+            </p>
+          )}
+
+          {/* Action Button */}
+          {action && (
+            <PokemonButton
+              onClick={action.onClick}
+              variant={action.variant || 'primary'}
+              size="lg"
+              className="shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              {action.label}
+            </PokemonButton>
+          )}
+        </div>
       </div>
-
-      {/* Title */}
-      <h3
-        className={`${sizeStyle.title} font-bold text-[var(--theme-text-primary)] mb-3`}
-      >
-        {title}
-      </h3>
-
-      {/* Description */}
-      {description && (
-        <p
-          className={`${sizeStyle.description} text-[var(--theme-text-secondary)] font-medium max-w-md mx-auto leading-relaxed mb-6`}
-        >
-          {description}
-        </p>
-      )}
-
-      {/* Action Button */}
-      {action && (
-        <PokemonButton
-          onClick={action.onClick}
-          variant={action.variant || 'primary'}
-          size="lg"
-          className="shadow-lg hover:shadow-xl hover:scale-105"
-        >
-          {action.label}
-        </PokemonButton>
-      )}
     </div>
   );
 };

@@ -34,11 +34,11 @@ const HierarchicalProductSearch: React.FC<HierarchicalProductSearchProps> = (
     <HierarchicalSearch
       {...props}
       mode="setproduct-product"
-      primaryFieldName="setName"
+      primaryFieldName="setProductName"
       secondaryFieldName="productName"
-      primaryLabel="Set Name"
+      primaryLabel="Set Product Name"
       secondaryLabel="Product Name"
-      primaryPlaceholder="Search for a Pokemon set (min 2 characters)..."
+      primaryPlaceholder="Search for a Pokemon set product (min 2 characters)..."
       secondaryPlaceholder="Search for a Pokemon product (min 2 characters)..."
     />
   );

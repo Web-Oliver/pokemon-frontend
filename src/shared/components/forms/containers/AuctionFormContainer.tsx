@@ -22,6 +22,7 @@ import {
 } from 'react-hook-form';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
+import { PokemonCard } from '../../atoms/design-system';
 import FormActionButtons from '../../molecules/common/FormActionButtons';
 
 interface AuctionFormContainerProps {
@@ -85,13 +86,11 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Basic Auction Information */}
-      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
-
+      <PokemonCard variant="glass" size="xl" className="relative">
         <div className="relative z-10 space-y-6">
-          <h4 className="text-xl font-bold text-zinc-100 mb-6 flex items-center">
+          <h4 className="text-xl font-bold text-white mb-6 flex items-center">
             {React.createElement(icon, {
-              className: 'w-6 h-6 mr-3 text-teal-400',
+              className: 'w-6 h-6 mr-3 text-cyan-400',
             })}
             Auction Details
           </h4>
@@ -108,7 +107,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
 
           {/* Footer Text Field */}
           <div>
-            <label className="block text-sm font-bold text-zinc-300 mb-2 tracking-wide">
+            <label className="block text-sm font-bold text-cyan-200 mb-2 tracking-wide">
               Auction Footer Text
             </label>
             <textarea
@@ -118,14 +117,14 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
               placeholder="Enter the auction footer/closing text"
               rows={4}
               disabled={isSubmitting}
-              className={`w-full px-4 py-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-2xl shadow-lg placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 focus:bg-zinc-800/95 text-zinc-100 font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl resize-none ${
+              className={`w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg placeholder-cyan-200/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-white font-medium transition-all duration-300 hover:shadow-xl focus:shadow-2xl resize-none ${
                 errors.bottomText
                   ? 'border-red-400/60 focus:ring-red-500/50 focus:border-red-400 bg-red-900/20'
-                  : 'border-zinc-700/50 focus:ring-cyan-500/50 focus:border-cyan-400'
+                  : 'border-white/20 focus:ring-cyan-400/50 focus:border-cyan-400'
               }`}
             />
             {errors.bottomText && (
-              <p className="mt-2 text-sm text-red-400 font-medium">
+              <p className="mt-2 text-sm text-red-300 font-medium">
                 {errors.bottomText.message}
               </p>
             )}
@@ -156,7 +155,7 @@ const AuctionFormContainer: React.FC<AuctionFormContainerProps> = ({
             disabled={isSubmitting}
           />
         </div>
-      </div>
+      </PokemonCard>
 
       {/* Item Selection Section */}
       {itemSelectionSection}

@@ -12,7 +12,7 @@
 import React, { ReactNode } from 'react';
 import { Package, Plus } from 'lucide-react';
 import { PokemonButton } from '../../../../../shared/components/atoms/design-system/PokemonButton';
-import { GlassmorphismContainer } from '../../../../../shared/components/organisms/effects/GlassmorphismContainer';
+import { PokemonCard } from '../../../../../shared/components/atoms/design-system/PokemonCard';
 
 interface AuctionItem {
   id: string;
@@ -37,30 +37,28 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
   children,
 }) => {
   return (
-    <GlassmorphismContainer
-      variant="intense"
-      colorScheme="primary"
+    <PokemonCard
+      variant="glass"
       size="lg"
-      rounded="3xl"
-      glow="intense"
-      pattern="waves"
       className="min-h-[400px] w-full"
     >
       {/* Section Header */}
-      <div className="px-8 py-6 border-b border-[var(--theme-border)] flex items-center justify-between bg-gradient-to-r from-blue-600/5 to-indigo-600/5">
+      <div className="px-8 py-6 border-b border-white/20 flex items-center justify-between bg-gradient-to-r from-cyan-500/5 to-purple-500/5">
         <div>
-          <h2 className="text-3xl font-bold text-[var(--theme-text-primary)] tracking-wide mb-2">
+          <h2 className="text-3xl font-bold tracking-wide mb-2 bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
             {title}
           </h2>
-          <p className="text-lg font-medium text-[var(--theme-text-secondary)]">
+          <p className="text-lg font-medium text-cyan-200">
             {items.length} item{items.length !== 1 ? 's' : ''} currently in this auction
           </p>
         </div>
         <PokemonButton
+          variant="success"
+          size="lg"
           onClick={onAddItems}
-          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 text-lg font-semibold"
+          startIcon={<Plus className="w-6 h-6" />}
+          className="px-8 py-4 text-lg font-semibold"
         >
-          <Plus className="w-6 h-6 mr-3" />
           Add Items
         </PokemonButton>
       </div>
@@ -68,29 +66,31 @@ const AuctionItemsSection: React.FC<AuctionItemsSectionProps> = ({
       {/* Empty State or Items Content */}
       {items.length === 0 ? (
         <div className="p-16 text-center">
-          <div className="w-32 h-32 bg-gradient-to-br from-[var(--theme-accent-primary)] to-[var(--theme-accent-secondary)] rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-8 animate-pulse">
+          <div className="w-32 h-32 bg-gradient-to-br from-cyan-500/30 to-purple-500/30 rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-8 animate-pulse border border-cyan-400/30">
             <Package className="w-16 h-16 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-4">
+          <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
             {emptyStateMessage}
           </h3>
-          <p className="text-lg text-[var(--theme-text-secondary)] font-medium max-w-lg mx-auto leading-relaxed mb-10">
+          <p className="text-lg text-cyan-200 font-medium max-w-lg mx-auto leading-relaxed mb-10">
             {emptyStateDescription}
           </p>
           <PokemonButton
+            variant="success"
+            size="lg"
             onClick={onAddItems}
-            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-5 rounded-2xl transition-all duration-300 inline-flex items-center shadow-lg hover:shadow-xl hover:scale-105 text-lg font-semibold"
+            startIcon={<Plus className="w-6 h-6" />}
+            className="px-10 py-5 text-lg font-semibold"
           >
-            <Plus className="w-6 h-6 mr-3" />
             Add First Item
           </PokemonButton>
         </div>
       ) : (
-        <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10">
+        <div className="bg-gradient-to-br from-cyan-500/5 to-purple-500/5 border-t border-white/10">
           {children}
         </div>
       )}
-    </GlassmorphismContainer>
+    </PokemonCard>
   );
 };
 

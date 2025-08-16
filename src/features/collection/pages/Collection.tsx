@@ -34,6 +34,8 @@ import { storageWrappers } from '../../../shared/utils/storage';
 import {
   PokemonButton,
   PokemonModal,
+  PokemonPageContainer,
+  PokemonCard,
 } from '../../../shared/components/atoms/design-system';
 // Lazy load modal/form components for better performance
 const MarkSoldForm = React.lazy(() =>
@@ -178,23 +180,21 @@ const Collection: React.FC = () => {
 
   const headerActions = useMemo(
     () => (
-      <div className="flex items-center space-x-3">
+      <div className="flex flex-wrap items-center gap-3">
         <PokemonButton
-          variant="secondary"
+          variant="glass"
           size="md"
           onClick={handleExportAllItems}
           disabled={isExporting || loading}
-          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <FileText className="w-5 h-5 mr-2" />
           {isExporting ? 'Exporting...' : 'Export All'}
         </PokemonButton>
         <PokemonButton
-          variant="secondary"
+          variant="glass"
           size="md"
           onClick={handleOpenExportModal}
           disabled={isExporting || loading}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <Download className="w-5 h-5 mr-2" />
           Export Selected
@@ -203,7 +203,6 @@ const Collection: React.FC = () => {
           variant="primary"
           size="md"
           onClick={handleAddNewItem}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl hover:scale-105"
         >
           <Plus className="w-5 h-5 mr-2" />
           Add New Item
@@ -220,73 +219,107 @@ const Collection: React.FC = () => {
   );
 
   return (
-    <PageLayout
-      title="My Premium Collection"
-      subtitle="Manage your Pokémon cards and sealed products with award-winning style"
-      loading={loading}
-      error={error}
-      actions={headerActions}
-      variant="default"
-    >
-      {/* Collection Statistics */}
-      <CollectionStats
-        psaGradedCount={psaCards.length}
-        rawCardsCount={rawCards.length}
-        sealedProductsCount={sealedProducts.length}
-        soldItemsCount={soldItems.length}
-        loading={loading}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden"
+          >
+            <div className="relative z-20">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    My Premium Collection
+                  </h1>
+                  <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                    Manage your Pokémon cards and sealed products with award-winning style
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  {headerActions}
+                </div>
+              </div>
+              
+              {/* Error Display */}
+              {error && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {error}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </PokemonCard>
 
-      {/* Collection Tabs */}
-      <CollectionTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        psaCards={psaCards}
-        rawCards={rawCards}
-        sealedProducts={sealedProducts}
-        soldItems={soldItems}
-        loading={loading}
-        error={error}
-        onAddNewItem={handleAddNewItem}
-        onViewItemDetail={handleViewItemDetail}
-        onMarkAsSold={handleMarkAsSold}
-      />
+          {/* Collection Statistics */}
+          <CollectionStats
+            psaGradedCount={psaCards.length}
+            rawCardsCount={rawCards.length}
+            sealedProductsCount={sealedProducts.length}
+            soldItemsCount={soldItems.length}
+            loading={loading}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
 
-      {/* Export Selection Modal */}
-      <Suspense fallback={<div>Loading export modal...</div>}>
-        <CollectionExportModal
-          isOpen={exportModal.value}
-          onClose={exportModal.setFalse}
-          items={getAllCollectionItems()}
-          selectedItemIds={selectedItemsForExport}
-          isExporting={isExporting}
-          onToggleItemSelection={toggleItemSelection}
-          onSelectAllItems={handleSelectAllItems}
-          onClearSelection={clearSelection}
-          onExportSelected={handleExportSelectedItems}
-        />
-      </Suspense>
+          {/* Collection Tabs */}
+          <CollectionTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            psaCards={psaCards}
+            rawCards={rawCards}
+            sealedProducts={sealedProducts}
+            soldItems={soldItems}
+            loading={loading}
+            error={error}
+            onAddNewItem={handleAddNewItem}
+            onViewItemDetail={handleViewItemDetail}
+            onMarkAsSold={handleMarkAsSold}
+          />
 
-      {/* Mark as Sold Modal using PokemonModal */}
-      <PokemonModal
-        isOpen={markSoldModal.value}
-        onClose={handleModalClose}
-        title={`Mark "${selectedItem?.name}" as Sold`}
-        size="lg"
-      >
-        {selectedItem && (
-          <Suspense fallback={<div>Loading form...</div>}>
-            <MarkSoldForm
-              itemId={selectedItem.id}
-              itemType={selectedItem.type}
-              onCancel={handleModalClose}
-              onSuccess={handleMarkSoldSuccess}
+          {/* Export Selection Modal */}
+          <Suspense fallback={<div>Loading export modal...</div>}>
+            <CollectionExportModal
+              isOpen={exportModal.value}
+              onClose={exportModal.setFalse}
+              items={getAllCollectionItems()}
+              selectedItemIds={selectedItemsForExport}
+              isExporting={isExporting}
+              onToggleItemSelection={toggleItemSelection}
+              onSelectAllItems={handleSelectAllItems}
+              onClearSelection={clearSelection}
+              onExportSelected={handleExportSelectedItems}
             />
           </Suspense>
-        )}
-      </PokemonModal>
+
+          {/* Mark as Sold Modal using PokemonModal */}
+          <PokemonModal
+            isOpen={markSoldModal.value}
+            onClose={handleModalClose}
+            title={`Mark "${selectedItem?.name}" as Sold`}
+            size="lg"
+          >
+            {selectedItem && (
+              <Suspense fallback={<div>Loading form...</div>}>
+                <MarkSoldForm
+                  itemId={selectedItem.id}
+                  itemType={selectedItem.type}
+                  onCancel={handleModalClose}
+                  onSuccess={handleMarkSoldSuccess}
+                />
+              </Suspense>
+            )}
+          </PokemonModal>
+        </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

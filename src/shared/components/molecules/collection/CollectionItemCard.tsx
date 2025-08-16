@@ -13,7 +13,7 @@
 
 import React, { memo, useCallback, useMemo } from 'react';
 import { CheckCircle, DollarSign, Eye, Package, Star } from 'lucide-react';
-import { BaseCard } from '../common/BaseCard';
+import { ImageCollectionCard } from '../common/ImageCollectionCard';
 import { formatCardName } from '../../../utils';
 import { getImageUrl } from '../../../utils/ui/imageUtils';
 import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
@@ -211,7 +211,7 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   }, [itemType, isSold]);
 
   return (
-    <BaseCard
+    <ImageCollectionCard
       title={itemName}
       subtitle={setName}
       imageUrl={primaryImage}

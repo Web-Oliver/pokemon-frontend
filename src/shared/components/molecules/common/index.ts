@@ -24,8 +24,10 @@ export type {
 } from './UnifiedGradeDisplay';
 
 // Foundation Components
-export { default as BaseCard } from './BaseCard';
-export type { BaseCardProps } from './BaseCard';
+export { default as InformationWidget } from './InformationWidget';
+export type { InformationWidgetProps } from './InformationWidget';
+export { default as ImageCollectionCard } from './ImageCollectionCard';
+export type { ImageCollectionCardProps, ImageCollectionCardAction, ImageCollectionCardBadge, ImageCollectionCardDetail } from './ImageCollectionCard';
 export { default as BaseListItem } from './BaseListItem';
 export type { BaseListItemProps } from './BaseListItem';
 

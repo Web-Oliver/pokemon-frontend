@@ -26,7 +26,12 @@ import { useExportOperations } from '../../../shared/hooks/useExportOperations';
 import { useSalesAnalytics } from '../../../shared/hooks/useSalesAnalytics';
 import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
 import { displayPrice } from '../../../shared/utils';
-// Removed CSS import - using unified theme system instead
+
+// Import unified design system
+import {
+  PokemonCard,
+  PokemonPageContainer,
+} from '../../../shared/components/atoms/design-system';
 
 const SalesAnalytics: React.FC = () => {
   const { sales, loading, error, dateRange, setDateRange } =
@@ -66,20 +71,33 @@ const SalesAnalytics: React.FC = () => {
   );
 
   return (
-    <PageLayout
-      title="Sales Analytics"
-      subtitle="Financial tracking and analytics dashboard for sales data"
-      loading={loading && (!Array.isArray(sales) || sales.length === 0)}
-      error={error}
-      actions={headerActions}
-      variant="default"
-    >
-      <div className="relative z-10 p-8">
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
         <div className="max-w-7xl mx-auto space-y-10">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden mb-8"
+          >
+            <div className="relative z-20">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h1 className="text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Sales Analytics
+                  </h1>
+                  <p className="text-cyan-100/90 text-xl font-medium">
+                    Financial tracking and analytics dashboard
+                  </p>
+                </div>
+                <div>{headerActions}</div>
+              </div>
+            </div>
+          </PokemonCard>
+
           {/* Sales Overview Section - Context7 Premium */}
-          <div className="relative mb-8">
-            <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl p-8 particles">
-              <div className="relative z-10">
+          <PokemonCard variant="glass" size="lg" className="relative">
+            <div className="relative z-10">
                 <UnifiedHeader
                   icon={TrendingUp}
                   title="Sales Overview"
@@ -207,25 +225,24 @@ const SalesAnalytics: React.FC = () => {
                   </>
                 ) : (
                   <div className="text-center py-20">
-                    <div className="w-24 h-24 bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 rounded-full mx-auto mb-8 flex items-center justify-center border border-[var(--theme-border)] backdrop-blur-sm float">
-                      <TrendingUp className="w-12 h-12 text-[var(--theme-text-muted)]" />
+                    <div className="w-24 h-24 bg-gradient-to-r from-slate-100 to-white rounded-full mx-auto mb-8 flex items-center justify-center border border-slate-200/50 shadow-lg">
+                      <TrendingUp className="w-12 h-12 text-slate-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-[var(--theme-text-primary)] mb-4">
+                    <h3 className="text-2xl font-bold text-white mb-4">
                       No Sales Data Yet
                     </h3>
-                    <p className="text-[var(--theme-text-secondary)] max-w-md mx-auto">
+                    <p className="text-zinc-400 max-w-md mx-auto">
                       Your sales analytics will appear here once you start
                       selling items from your collection.
                     </p>
                   </div>
                 )}
-              </div>
             </div>
-          </div>
+          </PokemonCard>
 
           {/* Recent Sales - Context7 Premium */}
-          <div className="card-premium bg-[var(--theme-surface)] border-[var(--theme-border)] rounded-2xl relative overflow-hidden particles">
-            <div className="p-8 border-b border-[var(--theme-border)]">
+          <PokemonCard variant="glass" size="lg" className="relative">
+            <div className="p-8 border-b border-white/[0.15]">
               <UnifiedHeader
                 icon={TrendingUp}
                 title="Recent Sales"
@@ -251,7 +268,7 @@ const SalesAnalytics: React.FC = () => {
               {/* Clean List View Layout */}
               <div className="p-0">
                 {Array.isArray(sales) && sales.length > 0 ? (
-                  <div className="divide-y divide-[var(--theme-border)]">
+                  <div className="divide-y divide-white/[0.15]">
                     {sales.slice(0, 10).map((sale, index) => (
                       <RecentSaleListItem
                         key={sale.id || `sale-${index}`}
@@ -262,13 +279,13 @@ const SalesAnalytics: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-20">
-                    <div className="w-16 h-16 bg-gradient-to-r from-zinc-700/20 to-zinc-600/10 rounded-xl mx-auto mb-6 flex items-center justify-center border border-[var(--theme-border)] backdrop-blur-sm float">
-                      <TrendingUp className="w-8 h-8 text-[var(--theme-text-muted)]" />
+                    <div className="w-16 h-16 bg-gradient-to-r from-slate-100 to-white rounded-xl mx-auto mb-6 flex items-center justify-center border border-slate-200/50 shadow-lg">
+                      <TrendingUp className="w-8 h-8 text-slate-400" />
                     </div>
-                    <h3 className="text-lg font-bold text-[var(--theme-text-primary)] mb-3">
+                    <h3 className="text-lg font-bold text-white mb-3">
                       No Sales Yet
                     </h3>
-                    <p className="text-[var(--theme-text-secondary)] max-w-md mx-auto">
+                    <p className="text-zinc-400 max-w-md mx-auto">
                       Your recent sales will appear here once you start selling
                       items.
                     </p>
@@ -278,15 +295,15 @@ const SalesAnalytics: React.FC = () => {
 
               {/* Footer with View All Button - Premium glassmorphism */}
               {Array.isArray(sales) && sales.length > 10 && (
-                <div className="px-8 py-6 border-t border-[var(--theme-border)] bg-gradient-to-r from-zinc-900/10 to-zinc-800/5 backdrop-blur-sm">
+                <div className="px-8 py-6 border-t border-white/[0.15] bg-gradient-to-r from-white/[0.05] to-white/[0.02] backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
-                      <p className="text-sm text-[var(--theme-text-secondary)] font-medium">
+                      <p className="text-sm text-zinc-400 font-medium">
                         Showing 10 of {sales.length} sales
                       </p>
                     </div>
-                    <button className="btn-premium px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 hover:text-blue-200 font-semibold rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 backdrop-blur-sm scale-on-hover">
+                    <button className="px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 hover:text-blue-200 font-semibold rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300 backdrop-blur-sm hover:scale-105">
                       <span className="flex items-center">
                         View All Sales
                         <svg
@@ -308,9 +325,9 @@ const SalesAnalytics: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </PokemonCard>
         </div>
-      </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

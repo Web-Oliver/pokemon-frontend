@@ -1,17 +1,16 @@
 /**
  * FormActionButtons Component
- * Reusable form action buttons with consistent styling and loading states
+ * Reusable form action buttons with unified design system styling
  *
- * Following CLAUDE.md principles + DRY optimization:
+ * Following CLAUDE.md principles + unified design system:
  * - Single Responsibility: Handles only form action button presentation
- * - Open/Closed: Extensible through theme configuration
- * - DRY: Eliminates repetitive button code across forms + uses centralized themes
- * - Theme centralization: Uses formThemes system to eliminate duplication
+ * - Open/Closed: Extensible through variant configuration
+ * - DRY: Uses unified button variants instead of custom themes
+ * - Unified Design: Uses cyan gradients and glass effects from design system
  */
 
 import React from 'react';
 import { PokemonButton } from '../../atoms/design-system/PokemonButton';
-import { buildThemeClasses, string } from '../../../../theme/formThemes';
 
 interface FormActionButtonsProps {
   /** Function to call when cancel button is clicked */
@@ -24,15 +23,11 @@ interface FormActionButtonsProps {
   submitButtonText?: string;
   /** Custom text for loading submit button (overrides default) */
   loadingSubmitText?: string;
-  /** Primary color theme for submit button */
-  primaryButtonColorClass?: string;
   /** Whether cancel button should be disabled */
   cancelDisabled?: boolean;
   /** Additional CSS classes for the container */
   className?: string;
 }
-
-// Theme configuration now centralized in formThemes system
 
 const FormActionButtons: React.FC<FormActionButtonsProps> = ({
   onCancel,
@@ -40,7 +35,6 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
   isEditing = false,
   submitButtonText,
   loadingSubmitText,
-  primaryButtonColorClass = 'purple',
   cancelDisabled = false,
   className = '',
 }) => {
@@ -51,29 +45,27 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
   const finalSubmitText = submitButtonText || `${defaultSubmitText} Item`;
   const finalLoadingText = loadingSubmitText || defaultLoadingText;
 
-  const buttonTheme = buildThemeClasses.buttonPrimary(primaryButtonColorClass);
-
   return (
     <div
-      className={`flex justify-end space-x-6 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 dark:border-zinc-700/50 ${className}`}
+      className={`flex justify-end space-x-6 pt-8 border-t border-slate-200/50 dark:border-zinc-700/50 ${className}`}
     >
-      {/* Cancel Button */}
+      {/* Cancel Button - Glass effect styling */}
       <PokemonButton
         type="button"
-        variant="secondary"
+        variant="outline"
         onClick={onCancel}
         disabled={isSubmitting || cancelDisabled}
-        className="px-8 py-3"
+        className="px-8 py-3 bg-zinc-900/60 backdrop-blur-xl border-cyan-500/20 text-zinc-100 hover:bg-zinc-800/70 hover:border-cyan-400/30 transition-all duration-300"
       >
         Cancel
       </PokemonButton>
 
-      {/* Submit Button */}
+      {/* Submit Button - Unified cyan gradient */}
       <PokemonButton
         type="submit"
         variant="primary"
         disabled={isSubmitting}
-        className={`min-w-[140px] px-8 py-3 ${buttonTheme}`}
+        className="min-w-[140px] px-8 py-3"
         loading={isSubmitting}
         loadingText={finalLoadingText}
       >

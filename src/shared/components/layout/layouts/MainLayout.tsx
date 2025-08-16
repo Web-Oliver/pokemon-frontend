@@ -158,7 +158,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       {/* Top Navigation Bar - Dark Futuristic */}
-      <header className="bg-zinc-800 border-b border-zinc-700 sticky top-0 z-50">
+      <header className="bg-zinc-800 border-b border-zinc-700 sticky top-0 z-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo - Stunning Modern Design - Clickable */}
@@ -289,7 +289,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
           {/* Mobile Navigation - Dark */}
           {sidebarOpen && (
-            <div className="md:hidden py-4 border-t border-zinc-700/50 bg-zinc-950/95 backdrop-blur-xl">
+            <div className="md:hidden py-4 border-t border-zinc-700/50 bg-zinc-950/95 backdrop-blur-xl relative z-50">
               <nav className="flex flex-col space-y-2">
                 {navigation.map((item) => {
                   const Icon = item.icon;
@@ -302,13 +302,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     const isMobileDropdownOpen = dropdownOpen === item.name;
 
                     return (
-                      <div key={item.name} className="space-y-2">
+                      <div key={item.name} className="space-y-2" data-dropdown>
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setDropdownOpen(
                               isMobileDropdownOpen ? null : item.name
-                            )
-                          }
+                            );
+                          }}
                           className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                             isDropdownActive
                               ? `${item.bgColor} text-white shadow-lg shadow-cyan-500/25`
@@ -325,9 +326,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                           />
                         </button>
 
-                        {/* Mobile Dropdown Items */}
+                        {/* Mobile Dropdown Items - FIXED */}
                         {isMobileDropdownOpen && (
-                          <div className="ml-6 space-y-1">
+                          <div className="ml-6 space-y-1 bg-zinc-900/50 rounded-lg p-2 border border-zinc-700/30" data-dropdown>
                             {item.dropdown.map((dropItem) => {
                               const DropIcon = dropItem.icon;
                               const isActive = currentPath === dropItem.href;
@@ -335,7 +336,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                               return (
                                 <button
                                   key={dropItem.name}
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     handleNavigation(dropItem.href);
                                     setSidebarOpen(false);
                                     setDropdownOpen(null);

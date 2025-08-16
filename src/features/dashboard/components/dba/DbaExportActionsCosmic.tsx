@@ -25,43 +25,41 @@ const DbaExportActionsCosmic: React.FC<DbaExportActionsCosmicProps> = ({
   hasExportResult,
 }) => {
   return (
-    <div className="flex gap-4 pt-6 border-t border-zinc-700/50">
+    <div className="flex gap-4 pt-6 border-t border-white/20">
       <PokemonButton
         onClick={onExportToDba}
         disabled={isExporting}
-        variant="cosmic"
+        variant="primary"
         size="lg"
         fullWidth
         loading={isExporting}
-        icon={<Zap className="w-5 h-5" />}
-        iconPosition="left"
-        rounded="xl"
-        className="py-5 text-lg font-bold group/btn"
+        className="py-5 text-lg font-bold"
       >
-        <div className="w-8 h-8 bg-gradient-to-r from-white/20 to-emerald-200/20 rounded-full flex items-center justify-center mr-3 group-hover/btn:animate-bounce">
-          <Zap className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mr-3 group-hover/btn:animate-bounce border border-cyan-400/30">
+            <Zap className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-white relative z-10">
+            {isExporting ? 'Exporting...' : 'Export to DBA'}
+          </span>
         </div>
-        <span className="text-white">
-          {isExporting ? 'Exporting...' : 'Export to DBA'}
-        </span>
       </PokemonButton>
 
       {hasExportResult && (
         <PokemonButton
           onClick={onDownloadZip}
           disabled={isExporting}
-          variant="cosmic"
+          variant="success"
           size="lg"
           fullWidth
-          icon={<FileDown className="w-5 h-5" />}
-          iconPosition="left"
-          rounded="xl"
-          className="py-5 text-lg font-bold group/btn"
+          className="py-5 text-lg font-bold"
         >
-          <div className="w-8 h-8 bg-gradient-to-r from-white/20 to-emerald-200/20 rounded-full flex items-center justify-center mr-3 group-hover/btn:animate-bounce">
-            <FileDown className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mr-3 group-hover/btn:animate-bounce border border-cyan-400/30">
+              <FileDown className="w-5 h-5 text-cyan-200" />
+            </div>
+            <span className="text-cyan-200 relative z-10">Download Files</span>
           </div>
-          <span className="text-white">Download Files</span>
         </PokemonButton>
       )}
     </div>

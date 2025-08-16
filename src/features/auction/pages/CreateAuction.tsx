@@ -25,6 +25,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Gavel } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
 import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
 import { IAuctionItem } from '../../../shared/domain/models/auction';
 import { useAuction } from '../../../shared/hooks/useAuction';
@@ -361,115 +362,119 @@ const CreateAuction: React.FC = () => {
 
   return (
     <PageLayout>
-      <div
-        className="min-h-screen relative overflow-hidden"
-        style={backgroundStyles}
-      >
-        {/* Context7 2025 Futuristic Neural Background - Quantum Field Effect */}
-        <NeuralNetworkBackground
-          primaryColor="#06b6d4"
-          secondaryColor="#a855f7"
-          gridColor="#06b6d4"
-          opacity={0.2}
-          enableQuantumParticles={true}
-          enableGrid={true}
-          animationSpeed={1}
-        />
-
-        {/* Context7 2025 Futuristic Particle Systems */}
-        <ParticleSystem
-          particleCount={12}
-          colors={['#06b6d4', '#a855f7', '#ec4899', '#10b981']}
-          sizeRange={[2, 8]}
-          durationRange={[3, 7]}
-          opacity={0.2}
-          animationType="pulse"
-        />
-
-        <div className="relative z-10 p-8">
-          <div className="max-w-7xl mx-auto space-y-12">
-            <UnifiedHeader
-              icon={Gavel}
-              title="Create Auction"
-              subtitle="Neural-powered auction creation for your collection universe"
-              variant="glassmorphism"
-              size="lg"
-              showBackButton={true}
-              onBack={() => navigationHelper.navigateToAuctions()}
-              className="mb-8"
-            />
-
-            {/* Context7 2025 Futuristic Form Container */}
-            <div className="relative group overflow-hidden">
-              {/* Holographic field effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/5 to-pink-500/10 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-all duration-1000 blur-sm"></div>
-
-              {/* Advanced glassmorphism container - theme-aware */}
-              <div
-                className="relative backdrop-blur-xl border rounded-[2rem] shadow-[0_16px_40px_0_rgba(31,38,135,0.2)] hover:shadow-[0_20px_50px_0_rgba(6,182,212,0.15)] transition-all duration-500"
-                style={{
-                  background: `linear-gradient(135deg, 
-                    rgba(255, 255, 255, ${0.08 * (themeConfig.glassmorphismIntensity / 100)}) 0%, 
-                    rgba(100, 116, 139, ${0.03 * (themeConfig.glassmorphismIntensity / 100)}) 50%, 
-                    rgba(168, 85, 247, ${0.08 * (themeConfig.glassmorphismIntensity / 100)}) 100%)`,
-                  borderColor: `rgba(255, 255, 255, ${0.12 * (themeConfig.glassmorphismIntensity / 100)})`,
-                }}
-              >
-                {/* Neural network grid pattern */}
-                <div
-                  className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-500"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.1'%3E%3Ccircle cx='30' cy='30' r='0.5' fill='%23ffffff' fill-opacity='0.1'/%3E%3Cpath d='M15 15 L45 45 M45 15 L15 45' stroke-dasharray='1,2'/%3E%3C/g%3E%3C/svg%3E")`,
-                    backgroundSize: '30px 30px',
-                  }}
-                ></div>
-
-                {/* Quantum accent line */}
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent animate-pulse"></div>
-
-                <div className="p-8 relative z-10">
-                  <AuctionFormContainer
-                    isEditing={false}
-                    isSubmitting={formAdapter.loading || auctionLoading}
-                    title="Create New Auction"
-                    description="Start a new auction for your Pokémon collection"
-                    icon={Gavel}
-                    primaryColorClass="blue"
-                    register={formAdapter.register}
-                    errors={formAdapter.formState.errors}
-                    setValue={formAdapter.setValue}
-                    watch={formAdapter.watch}
-                    handleSubmit={formAdapter.handleSubmit}
-                    onSubmit={handleSubmit}
-                    onCancel={() => navigationHelper.navigateToAuctions()}
-                    itemSelectionSection={
-                      <AuctionItemSelectionSection
-                        items={allCollectionItems}
-                        loading={collectionLoading}
-                        error={collectionError}
-                        selectedItemIds={selectedItemIds}
-                        onToggleSelection={toggleItemSelection}
-                        onSelectAll={selectAllItems}
-                        onClearSelection={clearAllSelections}
-                        selectedItemsValue={selectedItemsValue}
-                        selectedSetName={selectedSetName}
-                        onSetSelection={setSelectedSetName}
-                        cardProductSearchTerm={cardProductSearchTerm}
-                        onCardProductSearchChange={setCardProductSearchTerm}
-                        filterType={filterType}
-                        onFilterChange={setFilterType}
-                        showPreview={showPreview}
-                        onTogglePreview={() => setShowPreview(!showPreview)}
-                        selectedItemsByType={selectedItemsByType}
-                      />
-                    }
-                  />
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <PokemonCard
+            variant="glass"
+            size="xl"
+            className="text-white relative overflow-hidden"
+          >
+            <div className="relative z-20">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-black mb-3 tracking-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Create Auction
+                  </h1>
+                  <p className="text-cyan-100/90 text-lg sm:text-xl font-medium">
+                    Neural-powered auction creation for your collection universe
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                    <Gavel className="w-5 h-5 mr-2 text-cyan-300" />
+                    <div>
+                      <div className="text-lg font-bold text-white">{selectedItemIds.size}</div>
+                      <div className="text-xs text-cyan-200">Items Selected</div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              
+              {/* Error Display */}
+              {_error && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {_error}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Collection Error Display */}
+              {collectionError && (
+                <div className="mt-6 bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-400 text-sm font-medium bg-red-900/50 px-3 py-1 rounded-xl border border-red-500/30">
+                      Collection Error
+                    </div>
+                    <span className="text-red-300 font-medium">
+                      {collectionError}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </PokemonCard>
+
+          {/* Loading State */}
+          {(formAdapter.loading || auctionLoading || collectionLoading) && (
+            <PokemonCard variant="glass" size="xl">
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+              </div>
+            </PokemonCard>
+          )}
+
+          {/* Form Container */}
+          {!collectionLoading && (
+            <PokemonCard variant="glass" size="xl" className="relative">
+              <div className="relative z-10">
+                <AuctionFormContainer
+                  isEditing={false}
+                  isSubmitting={formAdapter.loading || auctionLoading}
+                  title="Create New Auction"
+                  description="Start a new auction for your Pokémon collection"
+                  icon={Gavel}
+                  primaryColorClass="blue"
+                  register={formAdapter.register}
+                  errors={formAdapter.formState.errors}
+                  setValue={formAdapter.setValue}
+                  watch={formAdapter.watch}
+                  handleSubmit={formAdapter.handleSubmit}
+                  onSubmit={handleSubmit}
+                  onCancel={() => navigationHelper.navigateToAuctions()}
+                  itemSelectionSection={
+                    <AuctionItemSelectionSection
+                      items={allCollectionItems}
+                      loading={collectionLoading}
+                      error={collectionError}
+                      selectedItemIds={selectedItemIds}
+                      onToggleSelection={toggleItemSelection}
+                      onSelectAll={selectAllItems}
+                      onClearSelection={clearAllSelections}
+                      selectedItemsValue={selectedItemsValue}
+                      selectedSetName={selectedSetName}
+                      onSetSelection={setSelectedSetName}
+                      cardProductSearchTerm={cardProductSearchTerm}
+                      onCardProductSearchChange={setCardProductSearchTerm}
+                      filterType={filterType}
+                      onFilterChange={setFilterType}
+                      showPreview={showPreview}
+                      onTogglePreview={() => setShowPreview(!showPreview)}
+                      selectedItemsByType={selectedItemsByType}
+                    />
+                  }
+                />
+              </div>
+            </PokemonCard>
+          )}
         </div>
-      </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

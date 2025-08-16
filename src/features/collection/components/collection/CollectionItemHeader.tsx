@@ -11,6 +11,7 @@ import React from 'react';
 import { Check, Edit, Star, Trash2 } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
 import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
+import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
 
 export interface CollectionItemHeaderProps {
   item: CollectionItem;
@@ -41,21 +42,6 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
 }) => {
   return (
     <div className={`mb-6 sm:mb-8 ${className}`}>
-      {/* Unified Header */}
-      <UnifiedHeader
-        icon={Star}
-        title={title}
-        subtitle={subtitle}
-        variant="glassmorphism"
-        size="lg"
-        showBackButton={true}
-        onBack={onBackToCollection}
-        actions={[]} // Explicitly pass empty actions array
-        className="mb-8"
-      />
-
-      {/* Action Buttons - Using custom buttons instead of incorrect FormActionButtons */}
-
       {/* Stunning Premium Header Section */}
       <div className="relative overflow-hidden mt-6 sm:mt-8">
         {/* Background Effects */}
@@ -65,6 +51,19 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
         <div className="relative bg-[var(--theme-surface)] backdrop-blur-2xl rounded-2xl sm:rounded-[2rem] shadow-2xl border border-[var(--theme-border)] p-4 sm:p-6 lg:p-8 ring-1 ring-[var(--theme-border)]/50">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-6 lg:space-y-0">
             <div className="flex-1">
+              {/* Back button */}
+              <div className="mb-6">
+                <PokemonButton
+                  onClick={onBackToCollection}
+                  variant="ghost"
+                  size="sm"
+                  startIcon={<div className="text-lg">←</div>}
+                  className="mb-4"
+                >
+                  Back
+                </PokemonButton>
+              </div>
+
               <div className="flex items-start space-x-3 sm:space-x-4 mb-4">
                 <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[var(--theme-accent-primary)]/20 to-[var(--theme-accent-secondary)]/20 backdrop-blur-xl border border-[var(--theme-border)] shadow-lg flex-shrink-0">
                   <Star className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--theme-accent-primary)]" />
@@ -106,40 +105,37 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
 
             {/* Premium Action Buttons */}
             <div className="flex flex-col sm:flex-row lg:flex-col space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-0 lg:space-y-2 w-full sm:w-auto lg:w-auto">
-              <button
+              <PokemonButton
                 onClick={onEdit}
-                className="group relative overflow-hidden px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-blue-400/20 flex-1 sm:flex-none"
+                variant="primary"
+                size="lg"
+                startIcon={<Edit className="w-4 h-4" />}
+                className="flex-1 sm:flex-none"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <Edit className="w-4 h-4" />
-                  <span className="text-sm sm:text-base">Edit Item</span>
-                </div>
-              </button>
+                Edit Item
+              </PokemonButton>
 
               {!item?.sold && (
-                <button
+                <PokemonButton
                   onClick={onMarkSold}
-                  className="group relative overflow-hidden px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-emerald-400/20 flex-1 sm:flex-none"
+                  variant="success"
+                  size="lg"
+                  startIcon={<Check className="w-4 h-4" />}
+                  className="flex-1 sm:flex-none"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center justify-center space-x-2">
-                    <Check className="w-4 h-4" />
-                    <span className="text-sm sm:text-base">Mark Sold</span>
-                  </div>
-                </button>
+                  Mark Sold
+                </PokemonButton>
               )}
 
-              <button
+              <PokemonButton
                 onClick={onDelete}
-                className="group relative overflow-hidden px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-[1.02] border border-red-400/20 flex-1 sm:flex-none"
+                variant="destructive"
+                size="lg"
+                startIcon={<Trash2 className="w-4 h-4" />}
+                className="flex-1 sm:flex-none"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-red-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <Trash2 className="w-4 h-4" />
-                  <span className="text-sm sm:text-base">Delete</span>
-                </div>
-              </button>
+                Delete
+              </PokemonButton>
             </div>
           </div>
 

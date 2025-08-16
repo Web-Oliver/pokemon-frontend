@@ -307,7 +307,11 @@
   
   /* LAYOUT PATTERNS */
   .page-container {
-    @apply min-h-screen bg-background;
+    @apply min-h-screen bg-background relative;
+    background: linear-gradient(135deg, 
+      rgba(6, 182, 212, 0.03) 0%,
+      rgba(168, 85, 247, 0.05) 50%,
+      rgba(236, 72, 153, 0.03) 100%);
   }
   
   .page-content {
@@ -317,6 +321,28 @@
   
   .section-container {
     @apply mb-8 space-y-4;
+  }
+
+  .content-wrapper {
+    @apply relative z-20;
+  }
+
+  .main-container {
+    @apply p-8;
+  }
+
+  /* PARTICLE SYSTEM - Fixed positioning to prevent overlap */
+  .particles {
+    @apply fixed inset-0 pointer-events-none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    @apply absolute rounded-full;
+    opacity: 0.15;
+    animation: particleFloat 8s ease-in-out infinite;
+    will-change: transform, opacity;
   }
   
   /* DENSITY-AWARE SPACING */
@@ -443,6 +469,25 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.05;
+  }
+  25% {
+    transform: translate(5px, -10px) rotate(90deg);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(-5px, -20px) rotate(180deg);
+    opacity: 0.1;
+  }
+  75% {
+    transform: translate(10px, -10px) rotate(270deg);
+    opacity: 0.12;
   }
 }
 

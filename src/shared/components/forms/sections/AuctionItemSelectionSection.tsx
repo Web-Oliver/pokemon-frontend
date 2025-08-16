@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
 import { SearchInput } from '../../atoms/design-system/SearchInput';
-import { PokemonButton } from '../../atoms/design-system/PokemonButton';
+import { PokemonButton, PokemonCard } from '../../atoms/design-system';
 
 interface UnifiedCollectionItem {
   id: string;
@@ -149,30 +149,30 @@ const AuctionItemSelectionSection: React.FC<
 
   if (loading) {
     return (
-      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl">
+      <PokemonCard variant="glass" size="xl">
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
-          <span className="ml-3 text-zinc-300">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+          <span className="ml-3 text-cyan-100">
             Loading collection items...
           </span>
         </div>
-      </div>
+      </PokemonCard>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl">
+      <PokemonCard variant="glass" size="xl">
         <div className="text-center py-8">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
             <X className="w-8 h-8 text-red-400" />
           </div>
-          <h4 className="text-lg font-bold text-red-400 mb-2">
+          <h4 className="text-lg font-bold text-red-300 mb-2">
             Error Loading Items
           </h4>
-          <p className="text-zinc-300">{error}</p>
+          <p className="text-cyan-100/70">{error}</p>
         </div>
-      </div>
+      </PokemonCard>
     );
   }
 
@@ -180,9 +180,9 @@ const AuctionItemSelectionSection: React.FC<
     <div className="space-y-6">
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-zinc-100 tracking-wide flex items-center">
-          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center mr-3">
-            <Package className="w-4 h-4 text-white" />
+        <h3 className="text-xl font-bold text-white tracking-wide flex items-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/30 via-purple-500/20 to-pink-500/30 backdrop-blur-sm rounded-xl flex items-center justify-center mr-3 border border-white/20">
+            <Package className="w-4 h-4 text-cyan-300" />
           </div>
           Select Items for Auction
         </h3>
@@ -257,9 +257,7 @@ const AuctionItemSelectionSection: React.FC<
       )}
 
       {/* Main Selection Interface */}
-      <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50"></div>
-
+      <PokemonCard variant="glass" size="xl" className="relative">
         <div className="relative z-10 space-y-6">
           {/* SOLID/DRY: Dual Search Interface - PROPER Hierarchical Search */}
           <div className="space-y-4">
@@ -406,16 +404,18 @@ const AuctionItemSelectionSection: React.FC<
 
                     {/* Item Image */}
                     <div className="w-full mb-3 mt-8">
-                      <div className="w-full h-48 bg-zinc-700 rounded-xl flex items-center justify-center overflow-hidden">
+                      <div className="w-full bg-white/10 rounded-xl overflow-hidden border border-white/20">
                         {item.displayImage ? (
                           <img
                             src={item.displayImage}
                             alt={item.displayName}
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-contain"
                             loading="lazy"
                           />
                         ) : (
-                          <Package className="w-8 h-8 text-zinc-500" />
+                          <div className="w-full h-32 flex items-center justify-center">
+                            <Package className="w-8 h-8 text-white/50" />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -483,7 +483,7 @@ const AuctionItemSelectionSection: React.FC<
             </div>
           )}
         </div>
-      </div>
+      </PokemonCard>
     </div>
   );
 };

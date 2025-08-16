@@ -53,11 +53,11 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
 
   const colorClasses = {
     blue: 'text-cyan-400',
-    gray: 'text-zinc-400',
-    green: 'text-emerald-400',
-    red: 'text-red-400',
-    yellow: 'text-amber-400',
-    purple: 'text-purple-400',
+    gray: 'text-cyan-400',
+    green: 'text-cyan-400',
+    red: 'text-cyan-400',
+    yellow: 'text-cyan-400',
+    purple: 'text-cyan-400',
   };
 
   const textSizeClasses = {
@@ -68,7 +68,7 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
   };
 
   const containerClasses = fullScreen
-    ? 'fixed inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm z-50'
+    ? 'fixed inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-lg z-50'
     : 'flex items-center justify-center';
 
   const renderSpinner = () => (
@@ -78,32 +78,32 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
         <div className="relative">
           {/* Multi-layer rotating rings */}
           <div
-            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r ${elementTheme.gradient} animate-spin ${sizeClasses[size]}`}
+            className={`absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-400 animate-spin ${sizeClasses[size]}`}
           ></div>
           <div
-            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l ${elementTheme.glow} animate-spin ${sizeClasses[size]} opacity-60`}
+            className={`absolute inset-1 rounded-full border border-transparent bg-gradient-to-l from-cyan-400/60 to-blue-400/60 animate-spin ${sizeClasses[size]} opacity-60`}
             style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}
           ></div>
 
           {/* Inner pulsing circle */}
           <div
-            className={`relative ${elementTheme.background} ${elementTheme.border} rounded-full shadow-2xl flex items-center justify-center ${sizeClasses[size]}`}
+            className={`relative bg-zinc-900/60 backdrop-blur-lg border border-cyan-400/30 rounded-full shadow-2xl flex items-center justify-center ${sizeClasses[size]}`}
           >
             <div
-              className={`w-1/2 h-1/2 bg-gradient-to-br ${colorClasses[color]} rounded-full animate-pulse opacity-90 shadow-lg`}
+              className={`w-1/2 h-1/2 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full animate-pulse opacity-90 shadow-lg`}
             ></div>
           </div>
 
           {/* Shimmer effect */}
           <div
-            className={`absolute inset-0 rounded-full bg-gradient-to-r ${elementTheme.glow} animate-ping opacity-30 ${sizeClasses[size]}`}
+            className={`absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 to-purple-400/20 animate-ping opacity-30 ${sizeClasses[size]}`}
             style={{ animationDelay: '0.5s' }}
           ></div>
         </div>
 
         {text && (
           <p
-            className={`mt-4 ${elementTheme.text} font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse bg-gradient-to-r ${elementTheme.gradient} bg-clip-text text-transparent`}
+            className={`mt-4 text-cyan-100/70 font-semibold tracking-wide ${textSizeClasses[size]} animate-pulse`}
           >
             {text}
           </p>
@@ -118,13 +118,13 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
         {Array.from({ length: skeletonLines }).map((_, index) => (
           <div
             key={index}
-            className={`bg-gradient-to-r ${elementTheme.background} rounded-md ${height} ${
+            className={`bg-gradient-to-r from-zinc-800/60 to-zinc-700/60 backdrop-blur-sm border border-cyan-400/10 rounded-md ${height} ${
               index === skeletonLines - 1 ? 'w-3/4' : width
             }`}
           />
         ))}
         {text && (
-          <p className={`${elementTheme.text} ${textSizeClasses[size]} mt-2`}>
+          <p className={`text-cyan-100/70 ${textSizeClasses[size]} mt-2`}>
             {text}
           </p>
         )}
@@ -135,12 +135,12 @@ const GenericLoadingState: React.FC<GenericLoadingStateProps> = ({
   const renderShimmer = () => (
     <div className={`${fullScreen ? containerClasses : ''} ${className}`}>
       <div
-        className={`relative overflow-hidden ${elementTheme.background} rounded-lg ${width} ${height}`}
+        className={`relative overflow-hidden bg-zinc-900/60 backdrop-blur-lg border border-cyan-400/20 rounded-lg ${width} ${height}`}
       >
-        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent"></div>
         {text && (
           <div className="flex items-center justify-center h-full">
-            <p className={`${elementTheme.text} ${textSizeClasses[size]}`}>{text}</p>
+            <p className={`text-cyan-100/70 ${textSizeClasses[size]}`}>{text}</p>
           </div>
         )}
       </div>

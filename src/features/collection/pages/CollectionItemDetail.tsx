@@ -15,6 +15,7 @@ import {
   PokemonModal,
 } from '../../../shared/components/atoms/design-system/PokemonModal';
 import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer } from '../../../shared/components/atoms/design-system';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
 import { useModal } from '../../../shared/hooks/useModal';
@@ -190,86 +191,85 @@ const CollectionItemDetail: React.FC = () => {
   }
 
   return (
-    <PageLayout
-      title={getItemTitle()}
-      subtitle={getItemSubtitle()}
-      loading={loading}
-      error={error}
-    >
-      {/* Header Component - Extracted from god class */}
-      <CollectionItemHeader
-        item={item}
-        title={getItemTitle()}
-        subtitle={getItemSubtitle()}
-        setName={getSetName()}
-        onEdit={operations.handleEdit}
-        onMarkSold={() => markSoldModal.openModal()}
-        onDelete={operations.handleDelete}
-        onBackToCollection={operations.handleBackToCollection}
-      />
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        {/* Essential Details - Extracted component */}
-        <ItemEssentialDetails item={item} />
-
-        {/* Image Gallery - Extracted component */}
-        <ItemImageGallery
-          item={item}
-          title={getItemTitle()}
-          setName={getSetName()}
-          onDownloadImages={imageDownload.handleDownloadImages}
-          downloadingZip={imageDownload.downloadingZip}
-        />
-
-        {/* Price History - Extracted component */}
-        <ItemPriceHistory
-          item={item}
-          newPrice={priceManagement.newPrice}
-          onPriceInputChange={priceManagement.handlePriceInputChange}
-          onCustomPriceUpdate={priceManagement.handleCustomPriceUpdate}
-          isValidPrice={priceManagement.isValidPrice}
-          isPriceChanged={priceManagement.isPriceChanged}
-        />
-      </div>
-
-      {/* Item-Specific Information - Reused existing components */}
-      <div className="mb-6 sm:mb-8">{renderItemSpecificInfo()}</div>
-
-      {/* Sale Details - Extracted component */}
-      <ItemSaleDetails item={item} />
-
-      {/* Mark as Sold Modal */}
-      <PokemonModal
-        isOpen={markSoldModal.isOpen}
-        onClose={markSoldModal.closeModal}
-        title={`Mark "${getItemTitle()}" as Sold`}
-        maxWidth="2xl"
-      >
-        {item && (
-          <MarkSoldForm
-            itemId={item.id || (item as any)._id}
-            itemType={(() => {
-              const { type } = navigationHelper.getCollectionItemParams();
-              return type as 'psa' | 'raw' | 'sealed';
-            })()}
-            onCancel={markSoldModal.closeModal}
-            onSuccess={handleMarkSoldSuccess}
+    <PageLayout>
+      <PokemonPageContainer withParticles={true} withNeural={true}>
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header Component - Extracted from god class */}
+          <CollectionItemHeader
+            item={item}
+            title={getItemTitle()}
+            subtitle={getItemSubtitle()}
+            setName={getSetName()}
+            onEdit={operations.handleEdit}
+            onMarkSold={() => markSoldModal.openModal()}
+            onDelete={operations.handleDelete}
+            onBackToCollection={operations.handleBackToCollection}
           />
-        )}
-      </PokemonModal>
 
-      {/* Delete Confirmation Modal */}
-      <PokemonConfirmModal
-        isOpen={operations.deleteConfirmModal.isOpen}
-        onClose={operations.deleteConfirmModal.closeModal}
-        onConfirm={operations.confirmDeleteItem}
-        title="Delete Collection Item"
-        confirmMessage="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
-        confirmText="Delete Item"
-        variant="danger"
-        loading={operations.deleteConfirmModal.isConfirming}
-      />
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            {/* Essential Details - Extracted component */}
+            <ItemEssentialDetails item={item} />
+
+            {/* Image Gallery - Extracted component */}
+            <ItemImageGallery
+              item={item}
+              title={getItemTitle()}
+              setName={getSetName()}
+              onDownloadImages={imageDownload.handleDownloadImages}
+              downloadingZip={imageDownload.downloadingZip}
+            />
+
+            {/* Price History - Extracted component */}
+            <ItemPriceHistory
+              item={item}
+              newPrice={priceManagement.newPrice}
+              onPriceInputChange={priceManagement.handlePriceInputChange}
+              onCustomPriceUpdate={priceManagement.handleCustomPriceUpdate}
+              isValidPrice={priceManagement.isValidPrice}
+              isPriceChanged={priceManagement.isPriceChanged}
+            />
+          </div>
+
+          {/* Item-Specific Information - Reused existing components */}
+          <div className="mb-6 sm:mb-8">{renderItemSpecificInfo()}</div>
+
+          {/* Sale Details - Extracted component */}
+          <ItemSaleDetails item={item} />
+
+          {/* Mark as Sold Modal */}
+          <PokemonModal
+            isOpen={markSoldModal.isOpen}
+            onClose={markSoldModal.closeModal}
+            title={`Mark "${getItemTitle()}" as Sold`}
+            maxWidth="2xl"
+          >
+            {item && (
+              <MarkSoldForm
+                itemId={item.id || (item as any)._id}
+                itemType={(() => {
+                  const { type } = navigationHelper.getCollectionItemParams();
+                  return type as 'psa' | 'raw' | 'sealed';
+                })()}
+                onCancel={markSoldModal.closeModal}
+                onSuccess={handleMarkSoldSuccess}
+              />
+            )}
+          </PokemonModal>
+
+          {/* Delete Confirmation Modal */}
+          <PokemonConfirmModal
+            isOpen={operations.deleteConfirmModal.isOpen}
+            onClose={operations.deleteConfirmModal.closeModal}
+            onConfirm={operations.confirmDeleteItem}
+            title="Delete Collection Item"
+            confirmMessage="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
+            confirmText="Delete Item"
+            variant="danger"
+            loading={operations.deleteConfirmModal.isConfirming}
+          />
+        </div>
+      </PokemonPageContainer>
     </PageLayout>
   );
 };

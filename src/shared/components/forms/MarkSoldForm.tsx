@@ -85,6 +85,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
       id: 'sale-info',
       title: 'Sale Information',
       icon: DollarSign,
+      className: 'space-y-4 p-6 bg-gradient-to-br from-white/[0.08] to-cyan-500/[0.08] backdrop-blur-sm border border-white/20 rounded-xl',
       fields: [
         {
           type: 'number',
@@ -96,10 +97,11 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             required: 'Sale price is required',
             min: { value: 0.01, message: 'Price must be greater than 0' },
           },
-          leftIcon: <DollarSign className="w-4 h-4" />,
+          leftIcon: <DollarSign className="w-4 h-4 text-cyan-400" />,
           step: 0.01,
           min: 0.01,
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'select',
@@ -117,6 +119,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
                   : method,
           })),
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'select',
@@ -129,6 +132,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             label: method,
           })),
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'select',
@@ -141,6 +145,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             label: source,
           })),
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'date',
@@ -149,6 +154,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           required: true,
           validation: { required: 'Sale date is required' },
           fullWidth: true,
+          variant: 'default',
         },
       ],
     },
@@ -156,6 +162,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
       id: 'buyer-info',
       title: 'Buyer Information',
       description: 'Required for sent items',
+      className: 'space-y-4 p-6 bg-gradient-to-br from-white/[0.05] to-purple-500/[0.08] backdrop-blur-sm border border-white/20 rounded-xl',
       fields: [
         {
           type: 'input',
@@ -169,6 +176,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           },
           validation: { required: 'Buyer name is required' },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'input',
@@ -182,6 +190,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           },
           validation: { required: 'Buyer name is required' },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'input',
@@ -195,6 +204,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           },
           validation: { required: 'Street address is required' },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'input',
@@ -208,6 +218,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           },
           validation: { required: 'Postal code is required' },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'input',
@@ -221,6 +232,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
           },
           validation: { required: 'City is required' },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'tel',
@@ -233,6 +245,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             operator: '=',
           },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'email',
@@ -245,6 +258,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             operator: '=',
           },
           fullWidth: true,
+          variant: 'default',
         },
         {
           type: 'input',
@@ -257,6 +271,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
             operator: '=',
           },
           fullWidth: true,
+          variant: 'default',
         },
       ],
     },
@@ -282,8 +297,17 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Error Display */}
-      <FormErrorMessage error={error?.message} variant="toast" />
+      {/* Error Display with unified styling */}
+      {error?.message && (
+        <div className="mb-6">
+          <FormErrorMessage 
+            error={error.message} 
+            variant="toast" 
+            dismissible={true}
+            onDismiss={clearError}
+          />
+        </div>
+      )}
 
       <PokemonForm
         formType="sale"
@@ -300,6 +324,7 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
         variant="glass"
         layout="sections"
         spacing="normal"
+        className="backdrop-blur-xl border-white/20 shadow-[0_8px_32px_0_rgba(6,182,212,0.15)]"
       />
     </div>
   );

@@ -408,11 +408,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               );
               return (
                 <div key={preview.id} className="relative group">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                  <div className="bg-gray-100 rounded-lg overflow-hidden max-h-48">
                     <img
                       src={preview.url}
                       alt="Preview"
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-auto object-contain max-h-48 transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
                   <button

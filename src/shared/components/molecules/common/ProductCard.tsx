@@ -10,12 +10,12 @@
  * - Reusability: Can be used across different product displays
  * - Design System Integration: Uses consistent styling patterns
  *
- * REFACTORED: Now uses BaseCard for consistent card styling and behavior
+ * REFACTORED: Now uses PokemonCard for unified design system styling
  */
 
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { BaseCard } from './BaseCard';
+import { ImageCollectionCard } from './ImageCollectionCard';
 import { IProduct } from '../../../domain/models/product';
 
 interface ProductCardProps {
@@ -32,84 +32,59 @@ const ProductCard: React.FC<ProductCardProps> = ({
   convertToDKK,
   className = '',
 }) => {
+  const convertedPrice = product.price ? convertToDKK(parseFloat(product.price)) : 0;
+  
+  const handleExternalLink = () => {
+    if (product.url) {
+      window.open(product.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
-    <BaseCard
-      variant="glass"
-      size="md"
+    <ImageCollectionCard
+      title={product.productName}
+      subtitle={product.setProductName || 'Unknown SetProduct'}
+      imageUrl={undefined} // Products typically don't have images in this context
+      price={convertedPrice}
+      badge={{
+        text: product.category?.replace(/-/g, ' ') || 'Unknown',
+        variant: 'info',
+      }}
+      actions={[
+        ...(product.url
+          ? [
+              {
+                label: 'View Product',
+                onClick: handleExternalLink,
+                icon: <ExternalLink className="w-4 h-4" />,
+                variant: 'primary' as const,
+              },
+            ]
+          : []),
+      ]}
+      extraDetails={[
+        ...(product.price
+          ? [
+              { label: 'EUR Price', value: `€${product.price}` },
+              { label: 'DKK Price', value: `${convertedPrice} DKK` },
+            ]
+          : []),
+        {
+          label: 'Available',
+          value: product.available > 0 ? `${product.available} in stock` : 'Out of stock',
+        },
+        ...(product.lastUpdated
+          ? [
+              {
+                label: 'Updated',
+                value: new Date(product.lastUpdated).toLocaleDateString(),
+              },
+            ]
+          : []),
+      ]}
       interactive={true}
-      className={`group ${className}`}
-      elevated={true}
-    >
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-bold text-[var(--theme-text-primary)] text-lg leading-tight line-clamp-2 group-hover:text-[var(--theme-status-success)] transition-colors duration-300">
-            {product.productName}
-          </h3>
-          <p className="text-[var(--theme-text-secondary)] font-medium mt-1">
-            {product.setProductName || 'Unknown SetProduct'}
-          </p>
-          <span className="inline-block px-3 py-1 text-xs font-bold bg-gradient-to-r from-[var(--theme-status-success)]/50 to-teal-900/50 text-[var(--theme-status-success)] rounded-full mt-2 border border-[var(--theme-status-success)]/30">
-            {product.category?.replace(/-/g, ' ') || 'Unknown'}
-          </span>
-        </div>
-
-        <div className="space-y-3 pt-3 border-t border-[var(--theme-border)]">
-          {product.price && (
-            <div className="flex justify-between items-center">
-              <span className="text-[var(--theme-text-secondary)] font-medium">
-                Price:
-              </span>
-              <div className="text-right">
-                <div className="font-bold text-[var(--theme-text-primary)]">
-                  {convertToDKK(parseFloat(product.price))} DKK
-                </div>
-                <div className="text-xs text-[var(--theme-text-muted)]">
-                  €{product.price}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-between items-center">
-            <span className="text-[var(--theme-text-secondary)] font-medium">
-              Available:
-            </span>
-            <span
-              className={`font-bold px-2 py-1 rounded-lg text-sm ${
-                product.available > 0
-                  ? 'text-[var(--theme-status-success)] bg-[var(--theme-status-success)]/30 border border-[var(--theme-status-success)]/30'
-                  : 'text-[var(--theme-status-error)] bg-[var(--theme-status-error)]/30 border border-[var(--theme-status-error)]/30'
-              }`}
-            >
-              {product.available > 0
-                ? `${product.available} in stock`
-                : 'Out of stock'}
-            </span>
-          </div>
-
-          {product.lastUpdated && (
-            <div className="text-xs text-[var(--theme-text-muted)] text-center pt-2">
-              Updated: {new Date(product.lastUpdated).toLocaleDateString()}
-            </div>
-          )}
-        </div>
-
-        {/* External Link */}
-        {product.url && (
-          <div className="pt-3 border-t border-[var(--theme-border)]">
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group/link"
-            >
-              <ExternalLink className="w-4 h-4 mr-2 group-hover/link:scale-110 transition-transform duration-300" />
-              View Product
-            </a>
-          </div>
-        )}
-      </div>
-    </BaseCard>
+      className={className}
+    />
   );
 };
 
