@@ -59,7 +59,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   // State management - Following SRP
   const [previews, setPreviews] = useState<ImagePreview[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [ctrlPressed, setCtrlPressed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadAreaRef = useRef<HTMLDivElement>(null);
 
   // Simple aspect ratio analysis state (replaced missing hook)
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -269,6 +271,80 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   }, [disabled]);
 
+  // Handle clipboard paste
+  const handlePaste = useCallback(
+    async (e: ClipboardEvent) => {
+      if (disabled) return;
+      
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      const imageFiles: File[] = [];
+      
+      // Check clipboard items for images
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) {
+            // Create a new File with a meaningful name
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const extension = file.type.split('/')[1] || 'png';
+            const newFile = new File([file], `pasted-image-${timestamp}.${extension}`, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            imageFiles.push(newFile);
+          }
+        }
+      }
+
+      if (imageFiles.length > 0) {
+        e.preventDefault();
+        await handleFileDrop(imageFiles);
+      }
+    },
+    [disabled, handleFileDrop]
+  );
+
+  // Add clipboard event listeners when upload area is focused/hovered
+  useEffect(() => {
+    const uploadArea = uploadAreaRef.current;
+    if (!uploadArea || disabled) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Track Ctrl key state for visual feedback
+      if (e.ctrlKey || e.metaKey) {
+        setCtrlPressed(true);
+      }
+      
+      // Listen for Ctrl+V or Cmd+V
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        // Focus the upload area to ensure paste event is captured
+        uploadArea.focus();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      // Reset Ctrl key state
+      if (!e.ctrlKey && !e.metaKey) {
+        setCtrlPressed(false);
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    uploadArea.addEventListener('paste', handlePaste);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      uploadArea.removeEventListener('paste', handlePaste);
+    };
+  }, [handlePaste, disabled]);
+
   // Reset previews when existingImageUrls changes, but preserve new uploads
   useEffect(() => {
     // Remove duplicates from existingImageUrls
@@ -324,19 +400,22 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       {/* Rest of component continues with drag/drop zone and preview grid... */}
       {/* Main upload area */}
       <div
+        ref={uploadAreaRef}
+        tabIndex={disabled ? -1 : 0}
         className={cn(
-          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300',
+          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
           {
             'border-blue-400 bg-blue-50/50': dragActive && !disabled,
-            'border-gray-300 hover:border-gray-400': !dragActive && !disabled,
-            'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60':
-              disabled,
+            'border-green-400 bg-green-50/50': ctrlPressed && !dragActive && !disabled,
+            'border-gray-300 hover:border-gray-400': !dragActive && !ctrlPressed && !disabled,
+            'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60': disabled,
           }
         )}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        title={disabled ? '' : 'Drag & drop, click to browse, or Ctrl+V to paste images'}
       >
         <input
           ref={fileInputRef}
@@ -361,7 +440,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <p className="text-lg font-medium text-gray-700 mb-2">
               ✨ Drop your images here!
             </p>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 mb-2">
               or{' '}
               <button
                 type="button"
@@ -371,6 +450,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               >
                 browse files
               </button>
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              📋 <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Ctrl+V</kbd> to paste images from clipboard
             </p>
             <p className="text-xs text-gray-400">
               Supports {acceptedTypes.join(', ')} • Max {maxFileSize}MB per file

@@ -64,43 +64,37 @@ export const PokemonPageContainer: React.FC<PokemonPageContainerProps> = ({
           <div className="absolute inset-0 bg-neural" />
 
           {/* Secondary Quantum Particles */}
-          <div
-            className="absolute inset-0 animate-bounce"
-            style={{
-              animationDuration: '6s',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23a855f7' fill-opacity='0.05'%3E%3Ccircle cx='100' cy='50' r='1.5'/%3E%3Ccircle cx='50' cy='100' r='1'/%3E%3Ccircle cx='150' cy='100' r='1.5'/%3E%3Ccircle cx='100' cy='150' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
+          <div className="absolute inset-0 quantum-particles" />
 
           {/* Holographic Grid Overlay */}
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `linear-gradient(90deg, transparent 98%, rgba(6, 182, 212, 0.1) 100%), linear-gradient(transparent 98%, rgba(168, 85, 247, 0.1) 100%)`,
-              backgroundSize: '40px 40px',
-            }}
-          />
+          <div className="absolute inset-0 opacity-30 holographic-grid" />
         </div>
       )}
 
       {/* Floating Particle Systems */}
       {withParticles && (
         <div className="particles">
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className="particle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 6 + 2}px`,
-                height: `${Math.random() * 6 + 2}px`,
-                background: `radial-gradient(circle, ${['#06b6d4', '#a855f7', '#ec4899', '#10b981'][Math.floor(Math.random() * 4)]}, transparent)`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${Math.random() * 4 + 3}s`,
-              }}
-            />
-          ))}
+          {[...Array(15)].map((_, i) => {
+            const colors = ['particle-cyan', 'particle-purple', 'particle-pink', 'particle-emerald'];
+            const sizes = ['particle-sm', 'particle-md', 'particle-lg'];
+            const colorClass = colors[Math.floor(Math.random() * colors.length)];
+            const sizeClass = sizes[Math.floor(Math.random() * sizes.length)];
+            const delay = Math.floor(Math.random() * 3);
+            const duration = Math.floor(Math.random() * 4) + 3;
+            
+            return (
+              <div
+                key={i}
+                className={`particle ${colorClass} ${sizeClass}`}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                }}
+              />
+            );
+          })}
         </div>
       )}
 

@@ -18,6 +18,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '../../../utils';
 import { PokemonButton } from '../../atoms/design-system/PokemonButton';
+import { pokemonCardVariants, pokemonBadgeVariants } from '../../atoms/design-system/unifiedVariants';
 
 export interface ImageCollectionCardAction {
   label: string;
@@ -86,51 +87,31 @@ export const ImageCollectionCard: React.FC<ImageCollectionCardProps> = ({
   onClick,
   className = '',
 }) => {
-  const baseClasses = [
-    'w-full relative overflow-hidden backdrop-blur-xl border border-white/[0.15]',
-    'shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] transition-all duration-500 group',
-    'bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12]',
-    'rounded-[1.5rem]',
-    interactive && !disabled && [
-      'cursor-pointer',
-      'hover:scale-[1.02] hover:-translate-y-1',
-      'active:scale-[0.98] active:translate-y-0',
-      'hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)]',
-      'focus-within:ring-2 focus-within:ring-cyan-500/50',
-    ],
+  // Use unified card variants instead of custom glassmorphism
+  const cardClasses = pokemonCardVariants({
+    variant,
+    size,
+    interactive: interactive && !disabled
+  });
+
+  const stateClasses = [
+    'w-full group',
     disabled && 'opacity-50 pointer-events-none',
     loading && 'animate-pulse',
-  ].flat().filter(Boolean).join(' ');
-
-  const sizeClasses = {
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8'
-  };
+  ].filter(Boolean).join(' ');
 
   const formatPrice = (price: number) => {
     return `$${price.toLocaleString()}`;
   };
 
   const getBadgeClasses = (variant?: string) => {
-    const baseClasses = 'px-2 py-1 text-xs rounded';
-    switch (variant) {
-      case 'success':
-        return `${baseClasses} bg-emerald-500/20 text-emerald-400`;
-      case 'warning': 
-        return `${baseClasses} bg-yellow-500/20 text-yellow-400`;
-      case 'danger':
-        return `${baseClasses} bg-red-500/20 text-red-400`;
-      case 'info':
-        return `${baseClasses} bg-cyan-500/20 text-cyan-400`;
-      default:
-        return `${baseClasses} bg-white/20 text-white`;
-    }
+    const badgeVariant = variant === 'info' ? 'primary' : (variant as any) || 'default';
+    return pokemonBadgeVariants({ variant: badgeVariant });
   };
 
   return (
     <div
-      className={cn(baseClasses, sizeClasses[size], className)}
+      className={cn(cardClasses, stateClasses, className)}
       onClick={onClick}
     >
       {/* Hover effects */}

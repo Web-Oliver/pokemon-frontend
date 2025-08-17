@@ -250,10 +250,176 @@ export const pokemonCardVariants = cva(
   }
 );
 
+// === POKEMON SEARCH INPUT VARIANTS ===
+export const pokemonSearchInputVariants = cva(
+  [
+    'w-full pl-10 pr-10 py-3 rounded-xl',
+    'text-white placeholder-cyan-200/50',
+    'focus:outline-none focus:ring-2 focus:ring-cyan-400/30',
+    'hover:border-white/30 transition-all duration-300',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
+  ].join(' '),
+  {
+    variants: {
+      variant: {
+        default: [
+          'bg-white/10 backdrop-blur-sm border border-white/20',
+          'focus:border-cyan-400/30',
+        ].join(' '),
+        
+        glass: [
+          'bg-zinc-900/80 backdrop-blur-xl border border-cyan-500/20',
+          'focus:border-cyan-400/50',
+        ].join(' '),
+        
+        solid: [
+          'bg-zinc-800 border border-zinc-600',
+          'focus:border-cyan-400',
+        ].join(' '),
+      },
+      
+      size: {
+        sm: 'py-2 text-sm',
+        md: 'py-3 text-base',
+        lg: 'py-4 text-lg',
+      },
+    },
+    
+    defaultVariants: {
+      variant: "default",
+      size: "md",
+    },
+  }
+);
+
+// === POKEMON SELECT VARIANTS ===
+export const pokemonSelectVariants = cva(
+  [
+    'block w-full appearance-none cursor-pointer rounded-lg',
+    'transition-all duration-300 focus:outline-none focus:ring-2',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
+  ].join(' '),
+  {
+    variants: {
+      variant: {
+        default: [
+          'bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50',
+          'text-white focus:border-cyan-500/60 focus:ring-cyan-500/30',
+          'hover:border-cyan-500/40',
+        ].join(' '),
+        
+        glass: [
+          'bg-white/10 backdrop-blur-sm border border-white/20',
+          'text-white focus:border-cyan-400/50 focus:ring-cyan-400/30',
+          'hover:border-white/30',
+        ].join(' '),
+        
+        solid: [
+          'bg-zinc-800 border border-zinc-600',
+          'text-white focus:border-cyan-400 focus:ring-cyan-400/50',
+          'hover:border-zinc-500',
+        ].join(' '),
+      },
+      
+      size: {
+        sm: 'h-8 px-3 text-sm',
+        md: 'h-10 px-4 text-base',
+        lg: 'h-12 px-6 text-lg',
+      },
+    },
+    
+    defaultVariants: {
+      variant: "default",
+      size: "md",
+    },
+  }
+);
+
+// === POKEMON BADGE VARIANTS ===
+export const pokemonBadgeVariants = cva(
+  [
+    'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+    'transition-all duration-200',
+  ].join(' '),
+  {
+    variants: {
+      variant: {
+        default: 'bg-zinc-700/50 text-zinc-300 border border-zinc-600/50',
+        primary: 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30',
+        secondary: 'bg-purple-500/20 text-purple-300 border border-purple-400/30',
+        success: 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30',
+        warning: 'bg-amber-500/20 text-amber-300 border border-amber-400/30',
+        danger: 'bg-red-500/20 text-red-300 border border-red-400/30',
+        outline: 'bg-transparent text-zinc-300 border border-zinc-500',
+        solid: 'bg-zinc-700 text-white border-0',
+      },
+      
+      size: {
+        sm: 'px-1.5 py-0.5 text-xs',
+        md: 'px-2 py-1 text-xs',
+        lg: 'px-3 py-1.5 text-sm',
+      },
+    },
+    
+    defaultVariants: {
+      variant: "default",
+      size: "md",
+    },
+  }
+);
+
+// === POKEMON ICON VARIANTS ===
+export const pokemonIconVariants = cva(
+  [
+    'inline-flex items-center justify-center transition-all duration-200',
+  ].join(' '),
+  {
+    variants: {
+      variant: {
+        default: 'text-zinc-400',
+        primary: 'text-cyan-400',
+        secondary: 'text-purple-400',
+        success: 'text-emerald-400',
+        warning: 'text-amber-400',
+        danger: 'text-red-400',
+        glass: 'text-white/70',
+        cosmic: 'text-cyan-300',
+      },
+      
+      size: {
+        xs: 'w-3 h-3',
+        sm: 'w-4 h-4',
+        md: 'w-5 h-5',
+        lg: 'w-6 h-6',
+        xl: 'w-8 h-8',
+        '2xl': 'w-10 h-10',
+      },
+      
+      effect: {
+        none: '',
+        glow: 'filter drop-shadow-[0_0_8px_currentColor]',
+        pulse: 'animate-pulse',
+        spin: 'animate-spin',
+        bounce: 'animate-bounce',
+      },
+    },
+    
+    defaultVariants: {
+      variant: "default",
+      size: "md",
+      effect: "none",
+    },
+  }
+);
+
 // Export all variants
 export const UNIFIED_VARIANTS = {
   button: pokemonButtonVariants,
   input: pokemonInputVariants,
   modal: pokemonModalVariants,
   card: pokemonCardVariants,
+  searchInput: pokemonSearchInputVariants,
+  select: pokemonSelectVariants,
+  badge: pokemonBadgeVariants,
+  icon: pokemonIconVariants,
 } as const;

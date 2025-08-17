@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { cn } from '../../../utils';
+import { pokemonCardVariants } from './unifiedVariants';
 
 export interface PokemonCardProps {
   children?: React.ReactNode;
@@ -135,85 +136,33 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   // Determine final variant based on props
   const finalVariant = cosmic ? 'cosmic' : variant;
 
-  // Base glassmorphism foundation - used everywhere
-  const baseClasses = [
-    'relative overflow-hidden',
-    'backdrop-blur-xl',
-    'border border-white/[0.15]',
-    'shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]',
-    'transition-all duration-500',
-    'group',
+  // Use unified variants instead of hardcoded styles
+  const baseVariantClasses = pokemonCardVariants({
+    variant: finalVariant,
+    size: compact ? 'sm' : size,
+    interactive: interactive || Boolean(onClick || onView || onToggle)
+  });
+
+  // Additional state classes
+  const stateClasses = [
+    'relative overflow-hidden group',
     isDragging && 'opacity-50 rotate-2 scale-105',
-    compact && 'min-h-0', // Override default min-height for compact variant
-  ]
-    .filter(Boolean)
-    .join(' ');
+    compact && 'min-h-0',
+  ].filter(Boolean).join(' ');
 
-  // Enhanced variant styles - consolidates all background patterns
-  const variantClasses = {
-    glass: [
-      'bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12]',
-      'hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)]',
-    ].join(' '),
-    solid: ['bg-zinc-900/90 backdrop-blur-sm', 'hover:bg-zinc-800/95'].join(
-      ' '
-    ),
-    outline: [
-      'bg-transparent border-zinc-700/50',
-      'hover:bg-white/[0.05] hover:border-cyan-400/30',
-    ].join(' '),
-    gradient: [
-      'bg-gradient-to-br from-cyan-500/20 via-purple-500/15 to-pink-500/20',
-      'hover:from-cyan-500/30 hover:via-purple-500/25 hover:to-pink-500/30',
-    ].join(' '),
-    cosmic: [
-      'bg-gradient-to-br from-zinc-800/80 via-cyan-900/30 to-purple-900/30',
-      'border-cyan-600/50',
-      'hover:border-cyan-500 hover:bg-cyan-900/30',
-      'hover:shadow-[0_12px_40px_0_rgba(34,211,238,0.4)]',
-    ].join(' '),
-  };
-
-  // Enhanced size system - includes compact variants
-  const sizeClasses = {
-    xs: compact ? 'p-2 rounded-lg' : 'p-3 rounded-xl',
-    sm: compact ? 'p-3 rounded-xl' : 'p-4 rounded-xl',
-    md: compact ? 'p-4 rounded-xl' : 'p-6 rounded-[1.5rem]',
-    lg: compact ? 'p-5 rounded-[1.5rem]' : 'p-8 rounded-[2rem]',
-    xl: compact ? 'p-6 rounded-[2rem]' : 'p-12 rounded-[2.5rem]',
-  };
-
-  // Status colors with DBA selection state
+  // Status overlays using design tokens
   const statusClasses = {
-    active:
-      'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
-    draft:
-      'border-amber-400/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10',
-    sold: 'border-purple-400/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10',
-    completed:
-      'border-emerald-400/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
+    active: 'border-emerald-400/30 bg-emerald-500/5',
+    draft: 'border-amber-400/30 bg-amber-500/5', 
+    sold: 'border-purple-400/30 bg-purple-500/5',
+    completed: 'border-emerald-400/30 bg-emerald-500/5',
     success: 'border-emerald-400/30',
-    warning: 'border-amber-400/30',
+    warning: 'border-amber-400/30', 
     danger: 'border-red-400/30',
   };
 
-  // DBA selection state
-  const selectionClasses = isSelected
-    ? 'border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.3)]'
-    : '';
-
-  // Interactive states - enhanced for different card types
-  const interactiveClasses =
-    interactive || onClick || onView || onToggle
-      ? [
-          'cursor-pointer',
-          'hover:scale-[1.02] hover:-translate-y-1',
-          'active:scale-[0.98] active:translate-y-0',
-          'focus-within:ring-2 focus-within:ring-cyan-500/50',
-        ].join(' ')
-      : '';
-
-  // Loading state
+  // Selection and loading states
+  const selectionClasses = isSelected ? 'border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.3)]' : '';
   const loadingClasses = loading ? 'animate-pulse pointer-events-none' : '';
 
   // Metric card color schemes
@@ -233,15 +182,13 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
     return `bg-gradient-to-br ${schemes[colorScheme]}`;
   };
 
-  // Combine all classes
+  // Combine all classes using unified variants
   const finalClassName = cn(
-    baseClasses,
-    variantClasses[finalVariant],
-    sizeClasses[size],
+    baseVariantClasses,
+    stateClasses,
     status && statusClasses[status],
     selectionClasses,
     cardType === 'metric' && getMetricColors(),
-    interactiveClasses,
     loadingClasses,
     className
   );

@@ -107,29 +107,29 @@ export const useSearch = (query: string, config: SearchConfig) => {
           displayName = `${item.setName} (${item.year || 'Unknown Year'})`;
         } else if (searchType === 'cards') {
           const cardName = item.cardName || 'Unknown Card';
-          // Safe property access to prevent circular references
-          let setName = 'Unknown Set';
           
+          // Create clean display name WITHOUT card number - number will be shown in badge
+          displayName = cardName;
+          
+          // Still extract set name for the component to display separately
           try {
             // Backend can return set name in multiple ways:
             // 1. Populated setId object with setName
             // 2. Direct setDisplayName field (from MongoDB query)
             // 3. Direct setName field
             if (item.setDisplayName && typeof item.setDisplayName === 'string') {
-              setName = String(item.setDisplayName);
+              // Store set name in data for component to access
+              item.setName = String(item.setDisplayName);
             } else if (item.setId && typeof item.setId === 'object' && item.setId.setName) {
-              setName = String(item.setId.setName);
+              item.setName = String(item.setId.setName);
             } else if (item.setName && typeof item.setName === 'string') {
-              setName = String(item.setName);
+              // Set name already exists, keep it
             } else if (typeof item.setId === 'string') {
-              setName = item.setId;
+              item.setName = item.setId;
             }
           } catch (error) {
             console.warn('[SEARCH] Error accessing set name:', error);
-            setName = 'Unknown Set';
           }
-          const number = item.cardNumber || '???';
-          displayName = `${cardName} #${number} (${setName})`;
         } else if (searchType === 'products') {
           const productName = item.productName || item.name || 'Unknown Product';
           const category = item.category || '';

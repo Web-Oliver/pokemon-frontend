@@ -9,6 +9,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Loader2, Search } from 'lucide-react';
 import { useSearch } from '../../../hooks/useSearch';
+import { pokemonSearchInputVariants } from './unifiedVariants';
+import { cn } from '../../../utils';
 import type { SearchType } from '../../../hooks/useSearch';
 
 interface SearchResult {
@@ -27,6 +29,8 @@ interface SearchInputProps {
   disabled?: boolean;
   parentId?: string; // For hierarchical search (setId for cards)
   className?: string;
+  variant?: 'default' | 'glass' | 'solid';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -37,7 +41,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onInputChange,
   disabled = false,
   parentId,
-  className = ''
+  className = '',
+  variant = 'default',
+  size = 'md'
 }) => {
   const [query, setQuery] = useState(value);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -123,7 +129,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full pl-10 pr-10 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-cyan-200/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/30 focus:border-cyan-400/30 hover:bg-white/15 hover:border-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={cn(pokemonSearchInputVariants({ variant, size }), className)}
         />
         {loading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-spin" />
@@ -168,7 +174,43 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                   : 'hover:bg-white/10 text-white hover:backdrop-blur-sm'
               }`}
             >
-              <div className="font-medium">{result.displayName}</div>
+              <div className="flex items-center justify-between">
+                <div className="font-medium text-white">{result.displayName}</div>
+                {(() => {
+                  try {
+                    // Show card number and variety prominently for cards
+                    if (result.type === 'card' && result.data) {
+                      const cardNumber = result.data.cardNumber || result.data.cardNumb;
+                      const variety = result.data.variety;
+                      
+                      if (cardNumber || variety) {
+                        return (
+                          <div className="flex items-center gap-2">
+                            {cardNumber && (
+                              <span className="px-2 py-1 bg-blue-500/30 text-blue-200 text-xs rounded-md font-mono">
+                                #{cardNumber}
+                              </span>
+                            )}
+                            {variety && (
+                              <span className={`px-2 py-1 text-xs rounded-md font-medium ${
+                                variety.toLowerCase().includes('holo') 
+                                  ? 'bg-yellow-500/30 text-yellow-200 border border-yellow-400/30' 
+                                  : 'bg-gray-500/30 text-gray-200 border border-gray-400/30'
+                              }`}>
+                                {variety}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  } catch (error) {
+                    console.warn('[SEARCH INPUT] Error accessing card details:', error);
+                    return null;
+                  }
+                })()}
+              </div>
               {(() => {
                 try {
                   // Safe property access to prevent circular references
