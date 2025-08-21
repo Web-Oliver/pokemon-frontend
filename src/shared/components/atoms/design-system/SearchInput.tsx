@@ -138,7 +138,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-[9999] mt-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
           {loading && (
             <div className="px-4 py-3 text-center text-cyan-200">
               <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2 text-cyan-400" />

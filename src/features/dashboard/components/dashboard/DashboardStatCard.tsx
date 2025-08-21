@@ -1,29 +1,23 @@
 /**
- * DashboardStatCard Component
+ * DashboardStatCard Component - Context7 2025 Award-Winning Design
  *
- * Extracted from Dashboard.tsx to eliminate DRY violations
- * Provides reusable statistical card with glassmorphism effects
- * Following CLAUDE.md principles: DRY elimination, component reusability
+ * Complete redesign with cutting-edge Tabler patterns and modern dashboard aesthetics
+ * Features ultra-premium glassmorphism, neo-brutalist elements, and holographic effects
+ * Following CLAUDE.md + Context7 2025 principles for world-class UX
  */
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { PokemonCard } from '../../../../shared/components/atoms/design-system';
 
 export interface DashboardStatCardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
   colorScheme: {
-    bg: string;
-    iconColor: string;
-    titleColor: string;
-    valueGradient: string;
-    valueShadow: string;
-    dotColors: {
-      primary: string;
-      secondary: string;
-    };
+    primary: string;
+    secondary: string;
+    accent: string;
+    glow: string;
   };
   loading?: boolean;
   label?: string;
@@ -41,57 +35,96 @@ export const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
   onClick,
 }) => {
   return (
-    <PokemonCard variant="glass" size="md" interactive className="group" onClick={onClick}>
-      <div className="relative z-10 flex items-center">
-        <div className="relative mr-4">
-          <div
-            className={`w-16 h-16 bg-gradient-to-br ${colorScheme.bg} backdrop-blur-sm rounded-[1.2rem] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}
-          >
-            <Icon
-              className={`w-8 h-8 ${colorScheme.iconColor} relative z-10 animate-pulse`}
-            />
-
-            {/* Default orbital animation if no custom children provided */}
-            {!children && (
-              <div
-                className="absolute inset-0 animate-spin opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ animationDuration: '20s' }}
-              >
-                <div
-                  className={`w-1.5 h-1.5 ${colorScheme.dotColors.primary} rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2 blur-sm`}
-                ></div>
-                <div
-                  className={`w-1 h-1 ${colorScheme.dotColors.secondary} rounded-full absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 blur-sm`}
-                ></div>
-              </div>
-            )}
-
-            {/* Custom animations if provided */}
-            {children}
+    <div 
+      className="group relative overflow-hidden cursor-pointer transition-all duration-700 ease-out hover:scale-[1.03] hover:rotate-1"
+      onClick={onClick}
+    >
+      {/* Ultra-premium glassmorphism container */}
+      <div className="relative h-40 bg-gradient-to-br from-white/[0.08] via-white/[0.05] to-transparent backdrop-blur-xl border border-white/[0.12] rounded-3xl shadow-2xl">
+        
+        {/* Holographic border animation */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 animate-pulse" />
+        
+        {/* Neo-brutalist status bar */}
+        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${colorScheme.primary} rounded-t-3xl`} />
+        
+        {/* Floating geometric decorations */}
+        <div className="absolute top-4 right-4 w-8 h-8 border border-white/20 rounded-lg rotate-45 opacity-30 group-hover:rotate-90 transition-transform duration-700" />
+        <div className="absolute bottom-4 left-4 w-4 h-4 bg-white/10 rounded-full opacity-40 group-hover:scale-150 transition-transform duration-700" />
+        
+        {/* Main content */}
+        <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+          {/* Header section */}
+          <div className="flex items-start justify-between">
+            {/* Icon with premium styling */}
+            <div className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${colorScheme.primary} shadow-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colorScheme.glow} opacity-0 group-hover:opacity-50 blur-lg transition-opacity duration-500`} />
+              <Icon className="w-7 h-7 text-white relative z-10" />
+            </div>
+            
+            {/* Status indicator */}
+            <div className="flex items-center space-x-1">
+              <div className={`w-2 h-2 rounded-full ${colorScheme.accent} animate-pulse`} />
+              <div className={`w-1 h-1 rounded-full ${colorScheme.accent} animate-pulse`} style={{ animationDelay: '500ms' }} />
+            </div>
+          </div>
+          
+          {/* Value section */}
+          <div className="space-y-2">
+            {/* Title */}
+            <div className="text-xs font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition-colors duration-300">
+              {title}
+            </div>
+            
+            {/* Value display */}
+            <div className="relative">
+              {loading ? (
+                <div className="animate-pulse">
+                  <div className="h-8 bg-white/20 rounded-xl w-20" />
+                  <div className="h-2 bg-white/10 rounded-lg w-16 mt-2" />
+                </div>
+              ) : (
+                <>
+                  <div className={`text-2xl font-black leading-none bg-gradient-to-r ${colorScheme.primary} bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 drop-shadow-2xl`}
+                    style={{
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    {value || '0'}
+                  </div>
+                  {/* Subtle glow effect */}
+                  <div className={`absolute inset-0 text-2xl font-black leading-none bg-gradient-to-r ${colorScheme.glow} bg-clip-text text-transparent opacity-0 group-hover:opacity-30 blur-sm transition-opacity duration-500`}
+                    style={{
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    {value || '0'}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex-1">
-          <p
-            className={`text-sm font-semibold ${colorScheme.titleColor} mb-2 tracking-wider uppercase`}
-          >
-            {title}
-          </p>
-          <p
-            className={`text-3xl font-black bg-gradient-to-r ${colorScheme.valueGradient} bg-clip-text text-transparent ${colorScheme.valueShadow} group-hover:scale-105 transition-transform duration-300`}
-          >
-            {loading ? (
-              <span className="animate-pulse bg-slate-500/20 rounded-lg px-4 py-2">--</span>
-            ) : (
-              value
-            )}
-          </p>
-        </div>
+        
+        {/* Custom animations overlay */}
+        {children && (
+          <div className="absolute inset-0 pointer-events-none z-0 opacity-20 rounded-3xl overflow-hidden">
+            {children}
+          </div>
+        )}
+        
+        {/* Premium shadow effects */}
+        <div className={`absolute -inset-2 bg-gradient-to-br ${colorScheme.glow} opacity-0 group-hover:opacity-20 blur-xl rounded-3xl transition-opacity duration-700 -z-10`} />
       </div>
-    </PokemonCard>
+    </div>
   );
 };
 
-// Specific stat card variants matching Activity page styling
+// Context7 2025 Premium Metric Card Variants
 export const DashboardItemsCard: React.FC<
   Omit<DashboardStatCardProps, 'children' | 'colorScheme'> & {
     label: string;
@@ -100,15 +133,10 @@ export const DashboardItemsCard: React.FC<
   }
 > = ({ label, icon, colorScheme, ...props }) => {
   const colorConfig = {
-    bg: 'from-cyan-500/30 via-purple-500/20 to-pink-500/30',
-    iconColor: 'text-cyan-300',
-    titleColor: 'text-cyan-200/90',
-    valueGradient: 'from-cyan-300 via-purple-300 to-pink-300',
-    valueShadow: 'drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]',
-    dotColors: {
-      primary: 'bg-cyan-400',
-      secondary: 'bg-purple-400',
-    },
+    primary: 'from-cyan-400 via-blue-500 to-purple-600',
+    secondary: 'from-cyan-300 via-blue-400 to-purple-500',
+    accent: 'bg-cyan-400',
+    glow: 'from-cyan-500 via-blue-500 to-purple-600',
   };
 
   return (
@@ -117,7 +145,16 @@ export const DashboardItemsCard: React.FC<
       title={label}
       icon={icon}
       colorScheme={colorConfig}
-    />
+    >
+      {/* Neural network animation */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/2 left-1/2 w-32 h-32 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute inset-0 rounded-full border border-cyan-400/20 animate-ping" />
+          <div className="absolute inset-4 rounded-full border border-cyan-400/30 animate-ping" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-8 rounded-full border border-cyan-400/40 animate-ping" style={{ animationDelay: '2s' }} />
+        </div>
+      </div>
+    </DashboardStatCard>
   );
 };
 
@@ -129,15 +166,10 @@ export const DashboardSalesCard: React.FC<
   }
 > = ({ label, icon, colorScheme, ...props }) => {
   const colorConfig = {
-    bg: 'from-amber-500/30 via-orange-500/20 to-red-500/30',
-    iconColor: 'text-amber-300',
-    titleColor: 'text-amber-200/90',
-    valueGradient: 'from-amber-300 via-orange-300 to-red-300',
-    valueShadow: 'drop-shadow-[0_0_20px_rgba(245,158,11,0.3)]',
-    dotColors: {
-      primary: 'bg-amber-400',
-      secondary: 'bg-orange-400',
-    },
+    primary: 'from-amber-400 via-orange-500 to-red-600',
+    secondary: 'from-amber-300 via-orange-400 to-red-500',
+    accent: 'bg-amber-400',
+    glow: 'from-amber-500 via-orange-500 to-red-600',
   };
 
   return (
@@ -147,10 +179,12 @@ export const DashboardSalesCard: React.FC<
       icon={icon}
       colorScheme={colorConfig}
     >
-      {/* Success flow animation */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-full h-1 bg-gradient-to-l from-transparent via-orange-400 to-transparent animate-pulse animation-delay-500" />
+      {/* Temporal flow animation */}
+      <div className="absolute inset-0 opacity-25">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent animate-pulse" />
+        <div className="absolute top-2 right-0 w-full h-px bg-gradient-to-l from-transparent via-orange-400 to-transparent animate-pulse" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-2 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-400 to-transparent animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-0 right-0 w-full h-px bg-gradient-to-l from-transparent via-amber-400 to-transparent animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
     </DashboardStatCard>
   );
@@ -164,15 +198,10 @@ export const DashboardValueCard: React.FC<
   }
 > = ({ label, icon, colorScheme, ...props }) => {
   const colorConfig = {
-    bg: 'from-emerald-500/30 via-teal-500/20 to-green-500/30',
-    iconColor: 'text-emerald-300',
-    titleColor: 'text-emerald-200/90',
-    valueGradient: 'from-emerald-300 via-teal-300 to-green-300',
-    valueShadow: 'drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]',
-    dotColors: {
-      primary: 'bg-emerald-400',
-      secondary: 'bg-teal-400',
-    },
+    primary: 'from-emerald-400 via-teal-500 to-green-600',
+    secondary: 'from-emerald-300 via-teal-400 to-green-500',
+    accent: 'bg-emerald-400',
+    glow: 'from-emerald-500 via-teal-500 to-green-600',
   };
 
   return (
@@ -182,11 +211,11 @@ export const DashboardValueCard: React.FC<
       icon={icon}
       colorScheme={colorConfig}
     >
-      {/* Temporal ripple effect */}
-      <div className="absolute top-1/2 left-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2">
-        <div className="absolute inset-0 rounded-full border border-emerald-400/10 animate-ping" />
-        <div className="absolute inset-4 rounded-full border border-emerald-400/15 animate-ping animation-delay-200" />
-        <div className="absolute inset-8 rounded-full border border-emerald-400/20 animate-ping animation-delay-400" />
+      {/* Quantum value ripple effect */}
+      <div className="absolute top-1/2 left-1/2 w-36 h-36 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="absolute inset-0 rounded-full border border-emerald-400/15 animate-ping" style={{ animationDuration: '3s' }} />
+        <div className="absolute inset-6 rounded-full border border-teal-400/20 animate-ping" style={{ animationDuration: '3s', animationDelay: '1s' }} />
+        <div className="absolute inset-12 rounded-full border border-green-400/25 animate-ping" style={{ animationDuration: '3s', animationDelay: '2s' }} />
       </div>
     </DashboardStatCard>
   );
@@ -205,17 +234,10 @@ export const DashboardGradedCard: React.FC<
   }
 > = ({ label, icon, colorScheme, customGradient, ...props }) => {
   const colorConfig = {
-    bg: customGradient
-      ? `from-${customGradient.from} via-${customGradient.via} to-${customGradient.to}`
-      : 'from-yellow-500/30 via-amber-500/20 to-orange-500/30',
-    iconColor: 'text-yellow-300',
-    titleColor: 'text-yellow-200/90',
-    valueGradient: 'from-yellow-300 via-amber-300 to-orange-300',
-    valueShadow: 'drop-shadow-[0_0_20px_rgba(234,179,8,0.3)]',
-    dotColors: {
-      primary: 'bg-yellow-400',
-      secondary: 'bg-amber-400',
-    },
+    primary: 'from-yellow-400 via-amber-500 to-orange-600',
+    secondary: 'from-yellow-300 via-amber-400 to-orange-500', 
+    accent: 'bg-yellow-400',
+    glow: 'from-yellow-500 via-amber-500 to-orange-600',
   };
 
   return (
@@ -225,11 +247,12 @@ export const DashboardGradedCard: React.FC<
       icon={icon}
       colorScheme={colorConfig}
     >
-      {/* Achievement sparkles */}
-      <div className="absolute inset-0">
-        <div className="absolute top-4 right-4 w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-lg shadow-yellow-400/50" />
-        <div className="absolute top-8 right-8 w-1 h-1 bg-amber-400 rounded-full animate-pulse animation-delay-300 shadow-lg shadow-amber-400/50" />
-        <div className="absolute bottom-4 left-4 w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse animation-delay-600 shadow-lg shadow-orange-400/50" />
+      {/* Elite achievement sparkles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-6 right-6 w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse shadow-lg shadow-yellow-400/60" style={{ animationDuration: '2s' }} />
+        <div className="absolute top-10 right-10 w-1 h-1 bg-amber-400 rounded-full animate-pulse shadow-lg shadow-amber-400/60" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+        <div className="absolute bottom-6 left-6 w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/60" style={{ animationDuration: '3s', animationDelay: '1s' }} />
+        <div className="absolute bottom-10 left-10 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-pulse shadow-lg shadow-yellow-400/60" style={{ animationDuration: '2.2s', animationDelay: '1.5s' }} />
       </div>
     </DashboardStatCard>
   );
@@ -243,15 +266,10 @@ export const DashboardDataCard: React.FC<
   }
 > = ({ label, icon, colorScheme, ...props }) => {
   const colorConfig = {
-    bg: 'from-red-500/30 via-pink-500/20 to-rose-500/30',
-    iconColor: 'text-red-300',
-    titleColor: 'text-red-200/90',
-    valueGradient: 'from-red-300 via-pink-300 to-rose-300',
-    valueShadow: 'drop-shadow-[0_0_20px_rgba(239,68,68,0.3)]',
-    dotColors: {
-      primary: 'bg-red-400',
-      secondary: 'bg-pink-400',
-    },
+    primary: 'from-red-400 via-pink-500 to-rose-600',
+    secondary: 'from-red-300 via-pink-400 to-rose-500',
+    accent: 'bg-red-400',
+    glow: 'from-red-500 via-pink-500 to-rose-600',
   };
 
   return (
@@ -261,15 +279,14 @@ export const DashboardDataCard: React.FC<
       icon={icon}
       colorScheme={colorConfig}
     >
-      {/* Database sync animation */}
-      <div className="absolute bottom-2 right-2 opacity-40">
-        <div className="flex space-x-1">
-          <div className="w-1 h-8 bg-red-400 rounded-full animate-pulse" />
-          <div className="w-1 h-6 bg-red-400 rounded-full animate-pulse animation-delay-150" />
-          <div className="w-1 h-4 bg-red-400 rounded-full animate-pulse animation-delay-300" />
-          <div className="w-1 h-6 bg-red-400 rounded-full animate-pulse animation-delay-450" />
-          <div className="w-1 h-8 bg-red-400 rounded-full animate-pulse animation-delay-600" />
-        </div>
+      {/* Quantum data stream visualization */}
+      <div className="absolute bottom-4 right-4 flex space-x-0.5 pointer-events-none">
+        <div className="w-0.5 h-5 bg-red-400/60 rounded-full animate-pulse" style={{ animationDuration: '1.2s' }} />
+        <div className="w-0.5 h-3 bg-pink-400/50 rounded-full animate-pulse" style={{ animationDuration: '1.4s', animationDelay: '0.2s' }} />
+        <div className="w-0.5 h-4 bg-rose-400/55 rounded-full animate-pulse" style={{ animationDuration: '1.1s', animationDelay: '0.4s' }} />
+        <div className="w-0.5 h-6 bg-red-400/65 rounded-full animate-pulse" style={{ animationDuration: '1.3s', animationDelay: '0.6s' }} />
+        <div className="w-0.5 h-2 bg-pink-400/45 rounded-full animate-pulse" style={{ animationDuration: '1.5s', animationDelay: '0.8s' }} />
+        <div className="w-0.5 h-4 bg-rose-400/55 rounded-full animate-pulse" style={{ animationDuration: '1.2s', animationDelay: '1s' }} />
       </div>
     </DashboardStatCard>
   );

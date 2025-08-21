@@ -102,6 +102,19 @@ const DbaExport = lazy(
     )
 );
 
+// OCR Demo (separate chunk)
+const OcrDemo = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ocr-demo" */ '../shared/examples/OcrIntegrationExample'
+    )
+);
+
+// OCR Features (separate chunk for specialized functionality)
+const OcrMatching = lazy(
+  () => import(/* webpackChunkName: "ocr-features" */ '../features/ocr-matching/pages/OcrMatching')
+);
+
 // Context7 Pattern: Main App component with useTransition for smooth navigation
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -197,6 +210,11 @@ function App() {
         return <Activity />;
       case '/dba-export':
         return <DbaExport />;
+      case '/ocr-demo':
+        return <OcrDemo />;
+      case '/ocr':
+      case '/ocr-matching':
+        return <OcrMatching />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;

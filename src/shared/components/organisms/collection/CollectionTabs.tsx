@@ -247,7 +247,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
       // Performance optimization: Remove Framer Motion animations
       // These were causing 76 extra renders and 253ms of "other time"
       return (
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 max-w-full mx-auto p-4 sm:p-6 md:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 md:gap-12 lg:gap-14 max-w-full mx-auto p-6 sm:p-8 md:p-10">
           {data.map((item: CollectionItem, index: number) => {
             const itemType = getItemType(item, activeTab);
             // Ensure absolutely unique key by combining ID with index as fallback
@@ -302,7 +302,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
                 <PokemonCard
                   cardType="collection"
                   variant="glass"
-                  size="md"
+                  size="lg"
                   interactive={true}
                   title={formatCardName(itemName)}
                   subtitle={setName}

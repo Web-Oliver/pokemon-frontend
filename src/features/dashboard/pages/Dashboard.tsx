@@ -125,7 +125,7 @@ const Dashboard: React.FC = () => {
             </PokemonCard>
 
             {/* Context7 2025 Futuristic Neural Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
               <DashboardItemsCard
                 value={statsLoading ? 0 : totalItems}
                 loading={statsLoading}
@@ -182,45 +182,45 @@ const Dashboard: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   <div
                     onClick={() => navigationHelper.navigateTo('/add-item')}
-                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)]"
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(6,182,212,0.3)] text-center"
                   >
                     <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Plus className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300 text-center">
                       Add New Item
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-zinc-400 font-medium text-center">
                       Add cards or products
                     </p>
                   </div>
 
                   <div
                     onClick={() => navigationHelper.navigateTo('/sales-analytics')}
-                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)]"
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(16,185,129,0.3)] text-center"
                   >
                     <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <BarChart3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors duration-300 text-center">
                       View Analytics
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-zinc-400 font-medium text-center">
                       Sales and trends
                     </p>
                   </div>
 
                   <div
                     onClick={() => navigationHelper.navigateTo('/collection')}
-                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)]"
+                    className="group p-8 bg-gradient-to-br from-white/[0.12] via-cyan-500/[0.08] to-purple-500/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-[1.5rem] hover:scale-105 transition-all duration-500 cursor-pointer hover:shadow-[0_12px_40px_0_rgba(168,85,247,0.3)] text-center"
                   >
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl shadow-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       <Grid3X3 className="w-8 h-8 text-white" />
                     </div>
-                    <p className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors duration-300">
+                    <p className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors duration-300 text-center">
                       Browse Collection
                     </p>
-                    <p className="text-sm text-zinc-400 font-medium">
+                    <p className="text-sm text-zinc-400 font-medium text-center">
                       View all items
                     </p>
                   </div>

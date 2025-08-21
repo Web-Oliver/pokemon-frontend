@@ -21,6 +21,7 @@ import {
   TrendingUp,
   X,
   Zap,
+  Camera,
 } from 'lucide-react';
 
 // ThemeToggle component removed as it doesn't exist in the current structure
@@ -144,6 +145,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       color: 'from-violet-400 to-purple-400',
       bgColor: 'bg-gradient-to-br from-violet-500 to-purple-600',
       textColor: 'text-violet-400',
+    },
+    {
+      name: 'OCR',
+      href: '/ocr',
+      icon: Camera,
+      color: 'from-pink-400 to-rose-400',
+      bgColor: 'bg-gradient-to-br from-pink-500 to-rose-600',
+      textColor: 'text-pink-400',
     },
   ];
 

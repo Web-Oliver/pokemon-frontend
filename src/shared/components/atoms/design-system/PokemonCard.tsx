@@ -256,11 +256,11 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
     return (
       <div className="space-y-3">
         {images && images.length > 0 && (
-          <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
+          <div className="aspect-[5/7] rounded-xl overflow-hidden shadow-lg flex items-center justify-center">
             <img
               src={images[0]}
               alt={title || displayName || 'Collection item'}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
             />
           </div>
         )}

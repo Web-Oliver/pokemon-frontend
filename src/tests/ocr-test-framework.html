@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Testing Framework - Pokemon Collection</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .test-image {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .error-card {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #f44336;
+        }
+        .loading {
+            color: #FFC107;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+        }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 OCR Testing Framework - Pokemon Collection</h1>
+        <p>Testing OCR functionality with 5 Pokemon card images using Tesseract.js and Google Vision API</p>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="tesseractSuccess">0</div>
+                <div>Tesseract Success</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="visionSuccess">0</div>
+                <div>Vision API Success</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalTests">5</div>
+                <div>Total Tests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgAccuracy">0%</div>
+                <div>Avg Accuracy</div>
+            </div>
+        </div>
+
+        <button onclick="runAllTests()" id="startBtn">🚀 Start OCR Tests</button>
+        <button onclick="saveResults()" id="saveBtn" disabled>💾 Save Results</button>
+        <button onclick="clearResults()" id="clearBtn">🗑️ Clear Results</button>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <div id="progressText">Ready to start testing...</div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Test Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <div class="container">
+        <h2>🖼️ Test Images</h2>
+        <div id="testImages"></div>
+    </div>
+
+    <script>
+        const testImages = [
+            { name: 'PSA Card', path: './psa_card.jpg', type: 'PSA_LABEL' },
+            { name: 'PSA Labels', path: './labels.jpg', type: 'PSA_LABEL' },
+            { name: 'English Pokemon', path: './english_pokemon.png', type: 'ENGLISH_POKEMON' },
+            { name: 'Japanese Pokemon', path: './japanese_pokemon.png', type: 'JAPANESE_POKEMON' },
+            { name: 'English Pokemon 2', path: './english_pokemon2.png', type: 'ENGLISH_POKEMON' }
+        ];
+
+        let testResults = [];
+        let tesseractWorker = null;
+
+        // Initialize Tesseract worker
+        async function initializeTesseract() {
+            if (!tesseractWorker) {
+                tesseractWorker = await Tesseract.createWorker('eng', 1, {
+                    logger: m => console.log('[Tesseract]', m)
+                });
+            }
+            return tesseractWorker;
+        }
+
+        // Display test images
+        function displayTestImages() {
+            const container = document.getElementById('testImages');
+            container.innerHTML = testImages.map(img => `
+                <div style="display: inline-block; text-align: center; margin: 10px;">
+                    <img src="${img.path}" alt="${img.name}" class="test-image" />
+                    <div>${img.name}</div>
+                    <div style="color: #FFC107; font-size: 0.8em;">${img.type}</div>
+                </div>
+            `).join('');
+        }
+
+        // Test with Tesseract.js
+        async function testWithTesseract(imagePath, imageName) {
+            try {
+                const worker = await initializeTesseract();
+                const startTime = performance.now();
+                
+                const { data: { text, confidence } } = await worker.recognize(imagePath, {
+                    rotateAuto: true
+                });
+                
+                const endTime = performance.now();
+                const processingTime = Math.round(endTime - startTime);
+                
+                return {
+                    success: true,
+                    text: text.trim(),
+                    confidence: Math.round(confidence),
+                    processingTime,
+                    method: 'Tesseract.js'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message,
+                    method: 'Tesseract.js'
+                };
+            }
+        }
+
+        // Test with Google Vision API (via backend)
+        async function testWithVisionAPI(imagePath, imageName) {
+            try {
+                const startTime = performance.now();
+                
+                // Create form data with the image
+                const response = await fetch(imagePath);
+                const blob = await response.blob();
+                const formData = new FormData();
+                formData.append('image', blob, imageName);
+                
+                // Call backend Vision API
+                const apiResponse = await fetch('http://localhost:3000/api/ocr/vision', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const endTime = performance.now();
+                const processingTime = Math.round(endTime - startTime);
+                
+                if (!apiResponse.ok) {
+                    throw new Error(`API Error: ${apiResponse.status} ${apiResponse.statusText}`);
+                }
+                
+                const result = await apiResponse.json();
+                
+                return {
+                    success: true,
+                    text: result.text || '',
+                    confidence: result.confidence || 0,
+                    processingTime,
+                    method: 'Google Vision API'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message,
+                    method: 'Google Vision API'
+                };
+            }
+        }
+
+        // Run test for single image
+        async function runImageTest(imageInfo, index) {
+            const resultsContainer = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result-card';
+            resultDiv.innerHTML = `
+                <h3>🖼️ ${imageInfo.name} (${imageInfo.type})</h3>
+                <div class="loading">⏳ Testing with Tesseract.js...</div>
+            `;
+            resultsContainer.appendChild(resultDiv);
+
+            const imageResult = {
+                image: imageInfo.name,
+                type: imageInfo.type,
+                tesseract: null,
+                vision: null,
+                timestamp: new Date().toISOString()
+            };
+
+            // Test with Tesseract.js
+            try {
+                resultDiv.innerHTML = `
+                    <h3>🖼️ ${imageInfo.name} (${imageInfo.type})</h3>
+                    <div class="loading">⏳ Testing with Tesseract.js...</div>
+                `;
+                
+                imageResult.tesseract = await testWithTesseract(imageInfo.path, imageInfo.name);
+                
+                resultDiv.innerHTML = `
+                    <h3>🖼️ ${imageInfo.name} (${imageInfo.type})</h3>
+                    <div class="success">✅ Tesseract.js completed</div>
+                    <div class="loading">⏳ Testing with Google Vision API...</div>
+                `;
+            } catch (error) {
+                imageResult.tesseract = { success: false, error: error.message, method: 'Tesseract.js' };
+            }
+
+            // Test with Google Vision API
+            try {
+                imageResult.vision = await testWithVisionAPI(imageInfo.path, imageInfo.name);
+            } catch (error) {
+                imageResult.vision = { success: false, error: error.message, method: 'Google Vision API' };
+            }
+
+            // Display results
+            displayImageResult(resultDiv, imageResult);
+            testResults.push(imageResult);
+            updateStats();
+
+            // Update progress
+            const progress = ((index + 1) / testImages.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = 
+                `Completed ${index + 1}/${testImages.length} tests (${Math.round(progress)}%)`;
+
+            return imageResult;
+        }
+
+        // Display result for single image
+        function displayImageResult(container, result) {
+            const tesseractHtml = result.tesseract.success ? `
+                <div class="success">✅ Tesseract.js: ${result.tesseract.processingTime}ms</div>
+                <div><strong>Confidence:</strong> ${result.tesseract.confidence}%</div>
+                <div><strong>Text:</strong></div>
+                <pre>${result.tesseract.text}</pre>
+            ` : `
+                <div class="error">❌ Tesseract.js Failed: ${result.tesseract.error}</div>
+            `;
+
+            const visionHtml = result.vision.success ? `
+                <div class="success">✅ Google Vision API: ${result.vision.processingTime}ms</div>
+                <div><strong>Confidence:</strong> ${result.vision.confidence}%</div>
+                <div><strong>Text:</strong></div>
+                <pre>${result.vision.text}</pre>
+            ` : `
+                <div class="error">❌ Vision API Failed: ${result.vision.error}</div>
+            `;
+
+            container.innerHTML = `
+                <h3>🖼️ ${result.image} (${result.type})</h3>
+                ${tesseractHtml}
+                <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 15px 0;">
+                ${visionHtml}
+            `;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const tesseractSuccess = testResults.filter(r => r.tesseract?.success).length;
+            const visionSuccess = testResults.filter(r => r.vision?.success).length;
+            const totalTests = testResults.length;
+            
+            document.getElementById('tesseractSuccess').textContent = tesseractSuccess;
+            document.getElementById('visionSuccess').textContent = visionSuccess;
+            document.getElementById('totalTests').textContent = testImages.length;
+            
+            const accuracy = totalTests > 0 ? Math.round(((tesseractSuccess + visionSuccess) / (totalTests * 2)) * 100) : 0;
+            document.getElementById('avgAccuracy').textContent = accuracy + '%';
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            const startBtn = document.getElementById('startBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            startBtn.disabled = true;
+            saveBtn.disabled = true;
+            testResults = [];
+            
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressText').textContent = 'Starting tests...';
+
+            try {
+                // Initialize Tesseract worker
+                await initializeTesseract();
+                
+                // Run tests for each image
+                for (let i = 0; i < testImages.length; i++) {
+                    await runImageTest(testImages[i], i);
+                }
+                
+                document.getElementById('progressText').textContent = '✅ All tests completed!';
+                saveBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                document.getElementById('progressText').textContent = '❌ Tests failed: ' + error.message;
+            } finally {
+                startBtn.disabled = false;
+            }
+        }
+
+        // Save results to JSON
+        function saveResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                totalImages: testImages.length,
+                results: testResults,
+                summary: {
+                    tesseractSuccess: testResults.filter(r => r.tesseract?.success).length,
+                    visionSuccess: testResults.filter(r => r.vision?.success).length,
+                    totalSuccessRate: Math.round(((testResults.filter(r => r.tesseract?.success).length + 
+                                                   testResults.filter(r => r.vision?.success).length) / 
+                                                  (testResults.length * 2)) * 100)
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ocr-test-results-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear results
+        function clearResults() {
+            testResults = [];
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressText').textContent = 'Ready to start testing...';
+            updateStats();
+            document.getElementById('saveBtn').disabled = true;
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            displayTestImages();
+            updateStats();
+        };
+    </script>
+</body>
+</html>

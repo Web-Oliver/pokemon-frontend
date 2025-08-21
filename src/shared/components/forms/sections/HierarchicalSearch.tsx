@@ -231,9 +231,9 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
   const secondarySearchType = mode === 'set-card' ? 'cards' : 'products';
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6 w-full">
       {/* Primary Field */}
-      <div className="relative">
+      <div className="relative w-full">
         <label className="block text-sm font-medium text-zinc-300 mb-2">
           {primaryLabel} <span className="text-red-400">*</span>
         </label>
@@ -244,6 +244,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
           onSelect={handlePrimarySelection}
           onInputChange={handlePrimaryInputChange}
           disabled={isSubmitting}
+          className="w-full"
         />
         {errors[primaryFieldName] && (
           <p className="mt-1 text-sm text-red-400">
@@ -260,7 +261,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
       </div>
 
       {/* Secondary Field */}
-      <div className="relative">
+      <div className="relative w-full">
         <label className="block text-sm font-medium text-zinc-300 mb-2">
           {secondaryLabel} <span className="text-red-400">*</span>
         </label>
@@ -272,6 +273,7 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
           onInputChange={handleSecondaryInputChange}
           disabled={isSubmitting}
           parentId={selectedParentId}
+          className="w-full"
         />
         {errors[secondaryFieldName] && (
           <p className="mt-1 text-sm text-red-400">

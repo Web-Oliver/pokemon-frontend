@@ -77,6 +77,11 @@ const DbaExport = lazy(
   () => import(/* webpackChunkName: "export" */ '../../pages/DbaExport')
 );
 
+// OCR Features (separate chunk for specialized functionality)
+const OcrMatching = lazy(
+  () => import(/* webpackChunkName: "ocr-features" */ '../../features/ocr-matching/pages/OcrMatching')
+);
+
 // Route Configuration - Single Source of Truth for Routing Logic
 // Following Open/Closed Principle - extensible configuration
 const ROUTE_CONFIG: RouteConfig[] = [
@@ -98,6 +103,7 @@ const ROUTE_CONFIG: RouteConfig[] = [
   { path: '/analytics', component: SalesAnalytics, exact: true },
   { path: '/activity', component: Activity, exact: true },
   { path: '/dba-export', component: DbaExport, exact: true },
+  { path: '/ocr-matching', component: OcrMatching, exact: true },
 
   // Dynamic Routes - Parameterized with type safety
   {

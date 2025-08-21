@@ -16,6 +16,7 @@ import React, {
   ChangeEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -57,8 +58,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   adaptiveLayout = true,
 }) => {
   // State management - Following SRP
+  // Memoize existingImageUrls to prevent unnecessary re-renders
+  const memoizedExistingImageUrls = useMemo(() => {
+    return existingImageUrls || [];
+  }, [existingImageUrls?.join(',')]);
+
   const [previews, setPreviews] = useState<ImagePreview[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [ctrlPressed, setCtrlPressed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadAreaRef = useRef<HTMLDivElement>(null);
@@ -175,9 +181,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       if (errorMessage) {
         setError(errorMessage);
-        setTimeout(() => setError(null), 5000);
+        setTimeout(() => setError(undefined), 5000);
       } else {
-        setError(null);
+        setError(undefined);
       }
 
       // Update previews first
@@ -190,7 +196,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         if (aspectResults.length > 0) {
           setPreviews((prev) =>
             prev.map((preview) => {
-              const result = aspectResults.find((r) => r.id === preview.id);
+              const result = aspectResults.find((r) => r.index === preview.id);
               return result
                 ? { ...preview, aspectInfo: result.aspectInfo }
                 : preview;
@@ -301,7 +307,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       if (imageFiles.length > 0) {
         e.preventDefault();
-        await handleFileDrop(imageFiles);
+        await handleFileDrop(imageFiles as FileList);
       }
     },
     [disabled, handleFileDrop]
@@ -347,8 +353,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   // Reset previews when existingImageUrls changes, but preserve new uploads
   useEffect(() => {
+    if (!memoizedExistingImageUrls || memoizedExistingImageUrls.length === 0) {
+      setPreviews((current) => current.filter((p) => !p.isExisting));
+      return;
+    }
+
     // Remove duplicates from existingImageUrls
-    const uniqueUrls = Array.from(new Set(existingImageUrls));
+    const uniqueUrls = Array.from(new Set(memoizedExistingImageUrls));
 
     // Preserve any non-existing previews (newly uploaded files) and add existing ones
     setPreviews((current) => {
@@ -359,14 +370,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       const combined = [...existingPreviews, ...newUploads];
       return combined;
     });
-  }, [existingImageUrls]);
+  }, [memoizedExistingImageUrls]);
 
   // Analyze existing images when previews change - Following DIP
   useEffect(() => {
-    if (!existingImageUrls.length || !enableAspectRatioDetection) return;
+    if (!memoizedExistingImageUrls.length || !enableAspectRatioDetection) return;
 
     const analyzeExisting = async () => {
-      const aspectResults = await analyzeExistingImages(existingImageUrls);
+      const aspectResults = await analyzeExistingImages(memoizedExistingImageUrls);
       if (Array.isArray(aspectResults) && aspectResults.length > 0) {
         setPreviews((prev) =>
           prev.map((preview, index) => {
@@ -380,7 +391,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     };
 
     analyzeExisting();
-  }, [existingImageUrls, analyzeExistingImages, enableAspectRatioDetection]);
+  }, [memoizedExistingImageUrls, enableAspectRatioDetection]);
 
   // Cleanup object URLs on unmount - Following proper resource management
   useEffect(() => {
@@ -467,7 +478,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         error={error}
         variant="toast"
         dismissible
-        onDismiss={() => setError(null)}
+        onDismiss={() => setError(undefined)}
       />
 
       {/* Image previews grid */}
@@ -489,14 +500,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 preview.url
               );
               return (
-                <div key={preview.id} className="relative group">
-                  <div className="bg-gray-100 rounded-lg overflow-hidden max-h-48">
-                    <img
-                      src={preview.url}
-                      alt="Preview"
-                      className="w-full h-auto object-contain max-h-48 transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
+                <div key={preview.id} className="relative group w-fit">
+                  <img
+                    src={preview.url}
+                    alt="Preview"
+                    className="max-w-[200px] h-auto transition-transform duration-300 group-hover:scale-105"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveImage(preview.id)}
