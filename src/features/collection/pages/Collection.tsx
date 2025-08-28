@@ -26,7 +26,7 @@ import CollectionTabs, {
   TabType,
 } from '../../../shared/components/organisms/collection/CollectionTabs';
 import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
-import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
+import { useCollectionOperations } from '../../../shared/hooks';
 import { navigationHelper } from '../../../shared/utils/navigation';
 import { storageWrappers } from '../../../shared/utils/storage';
 

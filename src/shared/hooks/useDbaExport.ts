@@ -11,11 +11,12 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { unifiedApiService } from '../services/UnifiedApiService';
-import { useCollectionOperations } from './useCollectionOperations';
+import { useCollectionOperations } from '.';
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 import { queryKeys } from '../../app/lib/queryClient';
 import { CACHE_TTL } from '../../app/config/cacheConfig';
+import { useQueryInvalidation } from './useQueryInvalidation';
 
 export interface SelectedItem {
   id: string;
@@ -69,6 +70,7 @@ export const useDbaExport = () => {
   const { psaCards, rawCards, sealedProducts, loading } =
     useCollectionOperations();
   const queryClient = useQueryClient();
+  const { invalidateDbaExportQueries } = useQueryInvalidation();
 
   // State management (non-cached state)
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
@@ -465,9 +467,7 @@ export const useDbaExport = () => {
               '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
             );
           }
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.dbaSelections({ active: true }),
-          });
+          await invalidateDbaExportQueries();
           if (import.meta.env.MODE === 'development') {
             console.log(
               '[DBA EXPORT] DBA selections cache invalidated successfully'

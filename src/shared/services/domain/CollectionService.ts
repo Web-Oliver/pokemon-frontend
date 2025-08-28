@@ -8,7 +8,7 @@ import { IHttpClient } from '../base/HttpClientInterface';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../../types/common';
-import { addCacheBusting } from '../utils/responseUtils';
+import { addCacheBusting, extractResponseData } from '../utils/responseUtils';
 
 // Import parameter types from UnifiedApiService
 export interface PsaGradedCardsParams {

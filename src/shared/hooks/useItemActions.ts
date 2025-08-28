@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { handleApiError } from '../utils/helpers/errorHandler';
 import { navigationHelper } from '../utils/navigation';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
 export interface UseItemActionsOptions {
   itemType: 'psa' | 'raw' | 'sealed';
@@ -46,26 +47,26 @@ export const useItemActions = ({
 
   // Get appropriate API service based on item type
   const getApiService = useCallback(() => {
-    const collectionService = null; // TODO: Import proper collection service
+    const collectionService = unifiedApiService.collection;
 
     switch (itemType) {
       case 'psa':
         return {
-          delete: collectionService.deletePsaGradedCard,
-          markSold: collectionService.markPsaCardSold,
+          delete: (id: string) => collectionService.deletePsaGradedCard(id),
+          markSold: (id: string, details: any) => collectionService.markPsaCardSold(id, details),
           getEditPath: (id: string) =>
             `/collection/psa-graded-cards/${id}/edit`,
         };
       case 'raw':
         return {
-          delete: collectionService.deleteRawCard,
-          markSold: collectionService.markRawCardSold,
+          delete: (id: string) => collectionService.deleteRawCard(id),
+          markSold: (id: string, details: any) => collectionService.markRawCardSold(id, details),
           getEditPath: (id: string) => `/collection/raw-cards/${id}/edit`,
         };
       case 'sealed':
         return {
-          delete: collectionService.deleteSealedProduct,
-          markSold: collectionService.markSealedProductSold,
+          delete: (id: string) => collectionService.deleteSealedProduct(id),
+          markSold: (id: string, details: any) => collectionService.markSealedProductSold(id, details),
           getEditPath: (id: string) => `/collection/sealed-products/${id}/edit`,
         };
       default:

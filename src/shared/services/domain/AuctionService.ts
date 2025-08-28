@@ -6,6 +6,7 @@
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { IAuction } from '../../domain/models/auction';
+import { extractResponseData } from '../utils/responseUtils';
 
 // Import types from UnifiedApiService
 export interface AuctionsParams {
@@ -42,7 +43,7 @@ export class AuctionService extends BaseApiService implements IAuctionService {
     const response = await this.httpClient.get<IAuction[]>('/auctions', {
       params: queryParams,
     });
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async getAuctionById(id: string): Promise<IAuction> {
@@ -51,12 +52,12 @@ export class AuctionService extends BaseApiService implements IAuctionService {
 
   async createAuction(auctionData: Partial<IAuction>): Promise<IAuction> {
     const response = await this.httpClient.post<IAuction>('/auctions', auctionData);
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async updateAuction(id: string, auctionData: Partial<IAuction>): Promise<IAuction> {
     const response = await this.httpClient.put<IAuction>(`/auctions/${id}`, auctionData);
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async deleteAuction(id: string): Promise<void> {
@@ -65,7 +66,7 @@ export class AuctionService extends BaseApiService implements IAuctionService {
 
   async addItemToAuction(id: string, itemData: AddItemToAuctionData): Promise<IAuction> {
     const response = await this.httpClient.post<IAuction>(`/auctions/${id}/items`, itemData);
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async removeItemFromAuction(id: string, itemId: string, body?: any): Promise<IAuction> {
@@ -73,11 +74,11 @@ export class AuctionService extends BaseApiService implements IAuctionService {
       `/auctions/${id}/items/${itemId}`,
       { data: body }
     );
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async markAuctionItemSold(id: string, saleData: { itemId: string; itemCategory: string; soldPrice: number }): Promise<IAuction> {
     const response = await this.httpClient.put<IAuction>(`/auctions/${id}/items/sold`, saleData);
-    return response.data || response;
+    return extractResponseData(response);
   }
 }

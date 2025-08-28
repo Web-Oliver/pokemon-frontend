@@ -10,7 +10,7 @@
 
 import { useCallback, useState } from 'react';
 import { useDataFetch } from './common/useDataFetch';
-import { apiService } from '../services/ApiService';
+import { unifiedApiService } from '../services/UnifiedApiService';
 
 interface PaginationData {
   currentPage: number;
@@ -73,7 +73,7 @@ export function usePaginatedSearch<T = any>(): UsePaginatedSearchResult<T> {
         // FIXED: Ensure we always have a query parameter, even if empty
         const query = params.query !== undefined ? params.query : (params.search || '');
         console.log('[HOOK] searchSets - query:', query, 'params:', params);
-        const result = await apiService.searchSets(query);
+        const result = await unifiedApiService.search.searchSets(query);
         console.log('[HOOK] searchSets - result:', result);
         
         const transformedResult = {
@@ -102,7 +102,7 @@ export function usePaginatedSearch<T = any>(): UsePaginatedSearchResult<T> {
       await searchDataFetch.execute(async (): Promise<SearchResultData<T>> => {
         // FIXED: Ensure we always have a query parameter, even if empty
         const query = params.query !== undefined ? params.query : (params.search || '');
-        const result = await apiService.searchProducts(query);
+        const result = await unifiedApiService.search.searchProducts(query);
         
         return {
           items: result.data || [],

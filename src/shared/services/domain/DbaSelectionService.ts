@@ -37,7 +37,7 @@ export class DbaSelectionService extends BaseApiService implements IDbaSelection
     days?: number;
   }): Promise<any[]> {
     const response = await this.httpClient.get<any[]>('/dba-selections', { params });
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async addToDbaSelection(
@@ -48,13 +48,13 @@ export class DbaSelectionService extends BaseApiService implements IDbaSelection
     }>
   ): Promise<any> {
     const response = await this.httpClient.post<any>('/dba-selections', { items });
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async removeFromDbaSelection(
     items: Array<{ itemId: string; itemType: 'psa' | 'raw' | 'sealed' }>
   ): Promise<any> {
     const response = await this.httpClient.delete<any>('/dba-selections', { data: { items } });
-    return response.data || response;
+    return extractResponseData(response);
   }
 }

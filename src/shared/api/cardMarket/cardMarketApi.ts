@@ -7,7 +7,7 @@
  */
 
 import { ICardMarketReferenceProduct } from '../../domain/models/sealedProduct';
-import { unifiedHttpClient } from '../base/UnifiedHttpClient';
+import { unifiedApiClient } from '../unifiedApiClient';
 
 export interface CardMarketSearchParams {
   page?: number;
@@ -64,7 +64,7 @@ export const searchProducts = async (
     queryParams.append('availableOnly', 'true');
   }
 
-  return unifiedHttpClient.get<CardMarketSearchResponse>(
+  return unifiedApiClient.get<CardMarketSearchResponse>(
     `/api/cardmarket/search?${queryParams.toString()}`,
     {
       operation: 'fetch CardMarket products',
@@ -78,7 +78,7 @@ export const searchProducts = async (
 export const getCategories = async (): Promise<
   Array<{ name: string; count: number }>
 > => {
-  const response = await unifiedHttpClient.get<{
+  const response = await unifiedApiClient.get<{
     data: Array<{ name: string; count: number }>;
   }>('/api/cardmarket/categories', {
     operation: 'fetch CardMarket categories',
@@ -93,7 +93,7 @@ export const getCategories = async (): Promise<
 export const getCategoryDetails = async (
   category: string
 ): Promise<CategoryDetails> => {
-  const response = await unifiedHttpClient.get<{ data: CategoryDetails }>(
+  const response = await unifiedApiClient.get<{ data: CategoryDetails }>(
     `/api/cardmarket/categories/${encodeURIComponent(category)}`,
     {
       operation: `fetch CardMarket category details for ${category}`,

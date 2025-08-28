@@ -324,18 +324,4 @@ export interface Auction {
 // EXPORT ALL TYPES
 // ============================================================================
 
-export type {
-  BaseCollectionItem,
-  ItemType,
-  ItemByType,
-  SoldCollectionItem,
-  ActiveCollectionItem,
-  CollectionStatistics,
-  CollectionFilters,
-  CollectionSortOptions,
-  CardReference,
-  SetReference,
-  ProductReference,
-  AuctionItem,
-  Auction,
-};
+// Types are already exported inline above, no need for duplicate export

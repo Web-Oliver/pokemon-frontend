@@ -67,10 +67,11 @@ function isJapaneseSet(setName?: string): boolean {
 }
 
 /**
- * Format price in Norwegian Kroner
+ * Format price in Norwegian Kroner using centralized price formatter
  */
 function formatPrice(price?: number): string {
-  return price ? `${Math.round(Number(price))} Kr.` : 'N/A';
+  if (!price && price !== 0) return 'N/A';
+  return `${Math.round(Number(price))} Kr.`;
 }
 
 /**

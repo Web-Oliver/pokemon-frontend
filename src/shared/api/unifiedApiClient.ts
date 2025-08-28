@@ -21,6 +21,7 @@ import {
   transformApiResponse,
   transformRequestData,
 } from '../utils/transformers/responseTransformer';
+import { IHttpClient } from '../services/base/HttpClientInterface';
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -157,7 +158,7 @@ class DefaultOptimizationStrategy implements OptimizationStrategy {
  * Unified API client that consolidates all HTTP request patterns
  * Implements Strategy pattern for optimization and wrapper functionality
  */
-export class UnifiedApiClient {
+export class UnifiedApiClient implements IHttpClient {
   private client: AxiosInstance;
   private optimizationStrategy: OptimizationStrategy;
 

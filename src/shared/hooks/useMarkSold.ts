@@ -10,7 +10,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ISaleDetails } from '../../types/common';
-import { useCollectionOperations } from './useCollectionOperations';
+import { useCollectionOperations } from '../../../shared/hooks';
 import { useLoadingState } from './common/useLoadingState';
 import { navigationHelper } from '../utils/navigation';
 import { unifiedApiService } from '../services/UnifiedApiService';

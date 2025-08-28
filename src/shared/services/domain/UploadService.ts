@@ -28,7 +28,7 @@ export class UploadService extends BaseApiService implements IUploadService {
       },
     });
 
-    const data = response.data || response;
+    const data = extractResponseData(response);
     return data.urls || [];
   }
 
@@ -42,7 +42,7 @@ export class UploadService extends BaseApiService implements IUploadService {
       },
     });
 
-    const data = response.data || response;
+    const data = extractResponseData(response);
     return data.url || '';
   }
 }

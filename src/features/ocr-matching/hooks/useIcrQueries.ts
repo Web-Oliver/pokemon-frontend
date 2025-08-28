@@ -6,6 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OcrApiRepository } from '../infrastructure/api/OcrApiRepository';
 import { queryKeys, CACHE_TIMES } from '../../../app/lib/queryClient';
+import { useQueryInvalidation } from '../../../shared/hooks/useQueryInvalidation';
 
 const apiRepository = new OcrApiRepository();
 
@@ -51,70 +52,61 @@ export const useIcrStatus = () => {
 // ================================
 
 export const useUploadImages = () => {
-  const queryClient = useQueryClient();
+  const { invalidateIcrUploadQueries } = useQueryInvalidation();
   
   return useMutation({
     mutationFn: (imageFiles: File[]) => apiRepository.uploadImages(imageFiles),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.icr });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('uploaded') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+      // PHASE 2: Using centralized ICR upload invalidation patterns
+      invalidateIcrUploadQueries();
     },
   });
 };
 
 export const useExtractLabels = () => {
-  const queryClient = useQueryClient();
+  const { invalidateIcrExtractQueries } = useQueryInvalidation();
   
   return useMutation({
     mutationFn: (scanIds: string[]) => apiRepository.extractLabels(scanIds),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.icr });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('uploaded') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+      // PHASE 2: Using centralized ICR extract invalidation patterns
+      invalidateIcrExtractQueries();
     },
   });
 };
 
 export const useStitchImages = () => {
-  const queryClient = useQueryClient();
+  const { invalidateIcrStitchQueries } = useQueryInvalidation();
   
   return useMutation({
     mutationFn: (imageHashes: string[]) => apiRepository.stitchImages(imageHashes),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.icr });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('stitched') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStitched() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+      // PHASE 2: Using centralized ICR stitch invalidation patterns
+      invalidateIcrStitchQueries();
     },
   });
 };
 
 export const useDeleteStitchedImage = () => {
-  const queryClient = useQueryClient();
+  const { invalidateIcrUpdateQueries } = useQueryInvalidation();
   
   return useMutation({
     mutationFn: (stitchedId: string) => apiRepository.deleteStitchedImage(stitchedId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.icr });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('stitched') });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStitched() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+      // PHASE 2: Using centralized ICR update invalidation patterns
+      invalidateIcrUpdateQueries();
     },
   });
 };
 
 export const useDeleteScans = () => {
-  const queryClient = useQueryClient();
+  const { invalidateIcrMatchQueries } = useQueryInvalidation();
   
   return useMutation({
     mutationFn: (scanIds: string[]) => apiRepository.deleteScans(scanIds),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.icr });
-      queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+      // PHASE 2: Using centralized ICR match invalidation patterns
+      invalidateIcrMatchQueries();
     },
   });
 };

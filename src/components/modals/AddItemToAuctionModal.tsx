@@ -14,7 +14,7 @@ import {
   ItemSelectorModal,
   SelectableItem,
 } from './ItemSelectorModal';
-import { useCollectionOperations } from '../../shared/hooks/useCollectionOperations';
+import { useCollectionOperations } from '../../shared/hooks';
 import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
 import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
 
@@ -32,7 +32,7 @@ type CollectionItem = SelectableItem & {
   itemType: 'PsaGradedCard' | 'RawCard' | 'SealedProduct';
   setName?: string;
   dateAdded: string;
-  grade?: number; // For PSA cards
+  grade?: string; // For PSA cards
   condition?: string; // For raw cards
 } & (IPsaGradedCard | IRawCard | ISealedProduct);
 
@@ -253,7 +253,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
                 {new Intl.NumberFormat('da-DK', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
-                }).format(item.displayPrice)}{' '}
+                }).format(item.displayPrice || 0)}{' '}
                 kr.
               </div>
             </div>
@@ -278,7 +278,7 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
       onSelectItems={handleSelectItems}
       items={collectionItems}
       loading={loading}
-      error={error}
+      error={error || undefined}
       excludedItems={excludedItems}
       title="Add Items to Auction"
       emptyStateMessage={'No unsold items available in your collection.'}

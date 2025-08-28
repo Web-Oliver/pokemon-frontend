@@ -27,7 +27,7 @@ import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionMo
 import { AuctionItemCard } from '../components/auction/AuctionItemCard';
 import { ISaleDetails } from '../../../shared/domain/models/common';
 import { useAuction } from '../../../shared/hooks/useAuction';
-import { useCollectionOperations } from '../../../shared/hooks/useCollectionOperations';
+import { useCollectionOperations } from '../../../shared/hooks';
 import { useConfirmModal, useModal } from '../../../shared/hooks/useModal';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import {

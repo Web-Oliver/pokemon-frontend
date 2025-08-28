@@ -6,6 +6,7 @@
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { generateFacebookPostFromAuction } from '../../utils/formatting/facebookPostFormatter';
+import { extractResponseData } from '../utils/responseUtils';
 
 export interface IExportService {
   exportCollectionImages(itemType: 'psaGradedCards' | 'rawCards' | 'sealedProducts'): Promise<Blob>;
@@ -30,7 +31,7 @@ export class ExportService extends BaseApiService implements IExportService {
       `/export/${itemType}/images`,
       { responseType: 'blob' }
     );
-    return response instanceof Blob ? response : response.data;
+    return response instanceof Blob ? response : (response as any).data;
   }
 
   async exportAuctionImages(auctionId: string): Promise<Blob> {
@@ -38,7 +39,7 @@ export class ExportService extends BaseApiService implements IExportService {
       `/export/auctions/${auctionId}/images`,
       { responseType: 'blob' }
     );
-    return response instanceof Blob ? response : response.data;
+    return response instanceof Blob ? response : (response as any).data;
   }
 
   async exportDbaItems(): Promise<Blob> {
@@ -46,12 +47,12 @@ export class ExportService extends BaseApiService implements IExportService {
       '/export/dba-items',
       { responseType: 'blob' }
     );
-    return response instanceof Blob ? response : response.data;
+    return response instanceof Blob ? response : (response as any).data;
   }
 
   async exportToDba(exportRequest: any): Promise<any> {
     const response = await this.httpClient.post<any>('/export/dba', exportRequest);
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async downloadDbaZip(): Promise<void> {
@@ -59,7 +60,7 @@ export class ExportService extends BaseApiService implements IExportService {
       '/export/dba/zip',
       { responseType: 'blob' }
     );
-    const blob = response instanceof Blob ? response : response.data;
+    const blob = response instanceof Blob ? response : (response as any).data;
     this.downloadBlob(blob, 'dba-export.zip');
   }
 

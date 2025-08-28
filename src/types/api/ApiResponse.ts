@@ -308,8 +308,10 @@ export function transformApiResponse<T>(
   rawResponse: unknown,
   _expectedType?: string
 ): ApiResponse<T> {
-  // Handle axios response wrapper
-  const data = rawResponse?.data ?? rawResponse;
+  // Handle axios response wrapper with proper type checking
+  const data = (rawResponse && typeof rawResponse === 'object' && 'data' in rawResponse) 
+    ? (rawResponse as { data: unknown }).data 
+    : rawResponse;
 
   // Basic validation
   if (!data || typeof data !== 'object') {
@@ -323,7 +325,7 @@ export function transformApiResponse<T>(
   }
 
   // If already in correct format, return as-is
-  if (typeof data.success === 'boolean') {
+  if (typeof data === 'object' && data !== null && 'success' in data && typeof (data as any).success === 'boolean') {
     return data as ApiResponse<T>;
   }
 
@@ -342,21 +344,26 @@ export function createErrorResponse(
   error: unknown,
   operation?: string
 ): ApiErrorResponse {
+  // Type guard to check if error has expected properties
+  const errorObj = error && typeof error === 'object' ? error as any : {};
+  const response = errorObj.response && typeof errorObj.response === 'object' ? errorObj.response : {};
+  const config = errorObj.config && typeof errorObj.config === 'object' ? errorObj.config : {};
+  
   return {
     success: false,
     timestamp: new Date().toISOString(),
     error: {
       code:
-        error?.code || error?.response?.status?.toString() || 'UNKNOWN_ERROR',
+        errorObj.code || response.status?.toString() || 'UNKNOWN_ERROR',
       message:
-        error?.message ||
-        error?.response?.data?.message ||
+        errorObj.message ||
+        response.data?.message ||
         'An unexpected error occurred',
       details: {
         operation,
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        url: error?.config?.url,
+        status: response.status,
+        statusText: response.statusText,
+        url: config.url,
       },
     },
   };

@@ -13,6 +13,7 @@ import { unifiedApiService } from '../services/UnifiedApiService';
 import { log } from '../utils/performance/logger';
 import { queryKeys } from '../../app/lib/queryClient';
 import { storageWrappers } from '../utils/storage';
+import { useQueryInvalidation } from './useQueryInvalidation';
 
 import {
   createPsaCardConfig,
@@ -110,6 +111,15 @@ const validateCollectionResponse = (data: any[], type: string): any[] => {
 export const useCollectionOperations = (): UseCollectionOperationsReturn => {
   const queryClient = useQueryClient();
   const collectionApi = unifiedApiService.collection;
+  
+  // PHASE 2: Use centralized query invalidation patterns
+  const {
+    invalidateCollectionQueries,
+    invalidatePsaCardQueries,
+    invalidateRawCardQueries,
+    invalidateSealedProductQueries,
+    invalidateItemSoldQueries,
+  } = useQueryInvalidation();
 
   // Create PSA Card configuration and operations using generic hook
   const psaEntityConfig = createPsaCardConfig(collectionApi);
@@ -216,185 +226,181 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
 
   /**
    * Refresh collection data using React Query
+   * PHASE 2: Using centralized invalidation patterns
    */
   const refreshCollection = useCallback(async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() }),
-      queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() }),
-      queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() }),
-      queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() }),
-    ]);
-  }, [queryClient]);
+    await invalidateCollectionQueries();
+  }, [invalidateCollectionQueries]);
 
   // PSA Card operations with cache invalidation
+  // PHASE 2: Using centralized invalidation patterns
   const addPsaCard = useCallback(
     async (cardData: Partial<IPsaGradedCard>) => {
       try {
         const newCard = await psaOperations.add(cardData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        await invalidatePsaCardQueries();
         return newCard;
       } catch (error) {
         // Error already handled by psaOperations
         throw error;
       }
     },
-    [psaOperations, queryClient]
+    [psaOperations, invalidatePsaCardQueries]
   );
 
   const updatePsaCard = useCallback(
     async (id: string, cardData: Partial<IPsaGradedCard>) => {
       try {
         const updatedCard = await psaOperations.update(id, cardData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        await invalidatePsaCardQueries();
         return updatedCard;
       } catch (error) {
         // Error already handled by psaOperations
         throw error;
       }
     },
-    [psaOperations, queryClient]
+    [psaOperations, invalidatePsaCardQueries]
   );
 
   const deletePsaCard = useCallback(
     async (id: string) => {
       try {
         await psaOperations.delete(id);
-        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
+        await invalidatePsaCardQueries();
       } catch (error) {
         // Error already handled by psaOperations
         throw error;
       }
     },
-    [psaOperations, queryClient]
+    [psaOperations, invalidatePsaCardQueries]
   );
 
   const markPsaCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
         const soldCard = await psaOperations.markSold(id, saleDetails);
-        queryClient.invalidateQueries({ queryKey: queryKeys.psaCards() });
-        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        await invalidateItemSoldQueries('psa');
         return soldCard;
       } catch (error) {
         // Error already handled by psaOperations
         throw error;
       }
     },
-    [psaOperations, queryClient]
+    [psaOperations, invalidateItemSoldQueries]
   );
 
   // Raw Card operations with cache invalidation
+  // PHASE 2: Using centralized invalidation patterns
   const addRawCard = useCallback(
     async (cardData: Partial<IRawCard>) => {
       try {
         const newCard = await rawOperations.add(cardData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        await invalidateRawCardQueries();
         return newCard;
       } catch (error) {
         // Error already handled by rawOperations
         throw error;
       }
     },
-    [rawOperations, queryClient]
+    [rawOperations, invalidateRawCardQueries]
   );
 
   const updateRawCard = useCallback(
     async (id: string, cardData: Partial<IRawCard>) => {
       try {
         const updatedCard = await rawOperations.update(id, cardData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        await invalidateRawCardQueries();
         return updatedCard;
       } catch (error) {
         // Error already handled by rawOperations
         throw error;
       }
     },
-    [rawOperations, queryClient]
+    [rawOperations, invalidateRawCardQueries]
   );
 
   const deleteRawCard = useCallback(
     async (id: string) => {
       try {
         await rawOperations.delete(id);
-        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
+        await invalidateRawCardQueries();
       } catch (error) {
         // Error already handled by rawOperations
         throw error;
       }
     },
-    [rawOperations, queryClient]
+    [rawOperations, invalidateRawCardQueries]
   );
 
   const markRawCardSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
         const soldCard = await rawOperations.markSold(id, saleDetails);
-        queryClient.invalidateQueries({ queryKey: queryKeys.rawCards() });
-        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        await invalidateItemSoldQueries('raw');
         return soldCard;
       } catch (error) {
         // Error already handled by rawOperations
         throw error;
       }
     },
-    [rawOperations, queryClient]
+    [rawOperations, invalidateItemSoldQueries]
   );
 
   // Sealed Product operations with cache invalidation
+  // PHASE 2: Using centralized invalidation patterns
   const addSealedProduct = useCallback(
     async (productData: Partial<ISealedProduct>) => {
       try {
         const newProduct = await sealedOperations.add(productData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        await invalidateSealedProductQueries();
         return newProduct;
       } catch (error) {
         // Error already handled by sealedOperations
         throw error;
       }
     },
-    [sealedOperations, queryClient]
+    [sealedOperations, invalidateSealedProductQueries]
   );
 
   const updateSealedProduct = useCallback(
     async (id: string, productData: Partial<ISealedProduct>) => {
       try {
         const updatedProduct = await sealedOperations.update(id, productData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        await invalidateSealedProductQueries();
         return updatedProduct;
       } catch (error) {
         // Error already handled by sealedOperations
         throw error;
       }
     },
-    [sealedOperations, queryClient]
+    [sealedOperations, invalidateSealedProductQueries]
   );
 
   const deleteSealedProduct = useCallback(
     async (id: string) => {
       try {
         await sealedOperations.delete(id);
-        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
+        await invalidateSealedProductQueries();
       } catch (error) {
         // Error already handled by sealedOperations
         throw error;
       }
     },
-    [sealedOperations, queryClient]
+    [sealedOperations, invalidateSealedProductQueries]
   );
 
   const markSealedProductSold = useCallback(
     async (id: string, saleDetails: ISaleDetails) => {
       try {
         const soldProduct = await sealedOperations.markSold(id, saleDetails);
-        queryClient.invalidateQueries({ queryKey: queryKeys.sealedProducts() });
-        queryClient.invalidateQueries({ queryKey: queryKeys.soldItems() });
+        await invalidateItemSoldQueries('sealed');
         return soldProduct;
       } catch (error) {
         // Error already handled by sealedOperations
         throw error;
       }
     },
-    [sealedOperations, queryClient]
+    [sealedOperations, invalidateItemSoldQueries]
   );
 
   // Handle refresh requests from session storage
@@ -451,6 +457,7 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     imageExport.error;
 
   // Combined clear error function
+  // PHASE 2: Keeping queryClient for reset functionality (not covered by invalidation patterns)
   const clearAllErrors = useCallback(() => {
     queryClient.resetQueries({ queryKey: queryKeys.collection });
     psaOperations.clearError();
@@ -500,5 +507,158 @@ export const useCollectionOperations = (): UseCollectionOperationsReturn => {
     // General operations
     refreshCollection,
     clearError: clearAllErrors,
+  };
+};
+/**
+ * Hook for managing collection data queries
+ * Extracted from '../../../shared/hooks';
+ */
+export const useCollectionData = () => {
+  // React Query for PSA Cards
+  const {
+    data: psaCards = [],
+    isLoading: psaLoading,
+    error: psaError,
+  } = useQuery({
+    queryKey: queryKeys.psaCards(),
+    queryFn: async () => {
+      return await unifiedApiService.collection.getPsaGradedCards({
+        sold: false,
+      });
+    },
+    select: (data) => validateCollectionResponse(data, 'PSA cards'),
+  });
+
+  // React Query for Raw Cards
+  const {
+    data: rawCards = [],
+    isLoading: rawLoading,
+    error: rawError,
+  } = useQuery({
+    queryKey: queryKeys.rawCards(),
+    queryFn: async () => {
+      return await unifiedApiService.collection.getRawCards({ sold: false });
+    },
+    select: (data) => validateCollectionResponse(data, 'raw cards'),
+  });
+
+  // React Query for Sealed Products
+  const {
+    data: sealedProducts = [],
+    isLoading: sealedLoading,
+    error: sealedError,
+  } = useQuery({
+    queryKey: queryKeys.sealedProducts(),
+    queryFn: async () => {
+      return await unifiedApiService.collection.getSealedProducts({
+        sold: false,
+      });
+    },
+    select: (data) => validateCollectionResponse(data, 'sealed products'),
+  });
+
+  // React Query for Sold Items
+  const {
+    data: soldItems = [],
+    isLoading: soldLoading,
+    error: soldError,
+  } = useQuery({
+    queryKey: queryKeys.soldItems(),
+    queryFn: async () => {
+      const [soldPsaCards, soldRawCards, soldSealedProducts] =
+        await Promise.all([
+          unifiedApiService.collection.getPsaGradedCards({ sold: true }),
+          unifiedApiService.collection.getRawCards({ sold: true }),
+          unifiedApiService.collection.getSealedProducts({ sold: true }),
+        ]);
+
+      return [
+        ...validateCollectionResponse(soldPsaCards, 'sold PSA cards'),
+        ...validateCollectionResponse(soldRawCards, 'sold raw cards'),
+        ...validateCollectionResponse(
+          soldSealedProducts,
+          'sold sealed products'
+        ),
+      ];
+    },
+  });
+
+  // Determine overall loading state
+  const isLoading = psaLoading || rawLoading || sealedLoading || soldLoading;
+
+  // Determine overall error state
+  const overallError =
+    psaError?.message ||
+    rawError?.message ||
+    sealedError?.message ||
+    soldError?.message;
+
+  return {
+    psaCards,
+    rawCards,
+    sealedProducts,
+    soldItems,
+    loading: isLoading,
+    error: overallError,
+  };
+};
+
+/**
+ * Hook for managing collection cache invalidation and refresh operations
+ * Extracted from '../../../shared/hooks';
+ */
+export const useCollectionCache = () => {
+  const queryClient = useQueryClient();
+  
+  // Use centralized query invalidation patterns
+  const { invalidateCollectionQueries } = useQueryInvalidation();
+
+  /**
+   * Refresh collection data using React Query
+   * Using centralized invalidation patterns
+   */
+  const refreshCollection = useCallback(async () => {
+    await invalidateCollectionQueries();
+  }, [invalidateCollectionQueries]);
+
+  // Handle refresh requests from session storage
+  useEffect(() => {
+    const needsRefresh = storageWrappers.session.getItem(
+      'collectionNeedsRefresh'
+    );
+    if (needsRefresh === 'true') {
+      storageWrappers.session.removeItem('collectionNeedsRefresh');
+      log(
+        'Collection refresh requested via sessionStorage, invalidating queries...'
+      );
+      setTimeout(() => {
+        refreshCollection();
+      }, 200);
+    }
+  }, [refreshCollection]);
+
+  // Listen for collection update events (triggered when items are added from other pages)
+  useEffect(() => {
+    const handleCollectionUpdate = () => {
+      log('Collection update event received, refreshing data...');
+      refreshCollection();
+    };
+
+    // Listen for custom collection update events
+    window.addEventListener('collectionUpdated', handleCollectionUpdate);
+
+    return () => {
+      window.removeEventListener('collectionUpdated', handleCollectionUpdate);
+    };
+  }, [refreshCollection]);
+
+  // Combined clear error function
+  const clearAllErrors = useCallback(() => {
+    queryClient.resetQueries({ queryKey: queryKeys.collection });
+  }, [queryClient]);
+
+  return {
+    refreshCollection,
+    clearAllErrors,
   };
 };

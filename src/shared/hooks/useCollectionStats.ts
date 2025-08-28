@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { useCollectionOperations } from './useCollectionOperations';
+import { useCollectionOperations } from '../../../shared/hooks';
 import { displayPrice } from '../utils';
 
 export interface CollectionStats {

@@ -43,7 +43,16 @@ export { useGenericCrudOperations } from './crud/useGenericCrudOperations';
 // ========== THEME HOOKS ==========
 export { useTheme } from './theme/useTheme';
 
-// ========== COLLECTION HOOKS ==========
+// ========== COLLECTION HOOKS (REFACTORED) ==========
+// Focused entity hooks (SRP compliance)
+export { 
+  usePsaCardOperations,
+  useRawCardOperations, 
+  useSealedProductOperations,
+  useCollectionOverview as useCollectionOperations // Drop-in replacement
+} from './collection';
+
+// Existing focused hooks
 export { useCollectionItem } from './collection/useCollectionItem';
 export { useItemOperations } from './collection/useItemOperations';
 export { usePriceManagement } from './collection/usePriceManagement';

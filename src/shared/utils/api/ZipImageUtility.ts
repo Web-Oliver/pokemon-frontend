@@ -9,7 +9,7 @@
  * - DIP: Depends on abstractions via interfaces
  */
 
-import { unifiedHttpClient } from '../../services/base/UnifiedHttpClient';
+import { unifiedApiClient } from '../../api/unifiedApiClient';
 
 export interface ZipImageConfig {
   imageUrls: string[];
@@ -51,7 +51,7 @@ export class ZipImageUtility {
     const imagePromises = imageUrls.map(async (url, index) => {
       try {
         // For external image URLs, use the underlying axios instance to get blob response
-        const axiosInstance = unifiedHttpClient.getAxiosInstance();
+        const axiosInstance = unifiedApiClient.getAxiosInstance();
         const response = await axiosInstance.get(url, {
           responseType: 'blob',
         });

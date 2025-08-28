@@ -29,6 +29,8 @@ export {
   safeArrayAccess,
   deepClone,
   isEmpty,
+  isDevelopment,
+  isProduction,
 } from '../core';
 
 // Re-export cn from single source of truth
@@ -103,19 +105,7 @@ export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
   }
 };
 
-/**
- * Check if running in development environment
- */
-export const isDevelopment = (): boolean => {
-  return import.meta.env.MODE === 'development';
-};
-
-/**
- * Check if running in production environment
- */
-export const isProduction = (): boolean => {
-  return import.meta.env.MODE === 'production';
-};
+// isDevelopment and isProduction now imported from core utilities above
 
 /**
  * Retry utility function

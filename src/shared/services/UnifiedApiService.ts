@@ -15,7 +15,7 @@
  * Architecture: NO CIRCULAR DEPENDENCIES - this service imports nothing from other services
  */
 
-import { unifiedHttpClient } from './base/UnifiedHttpClient';
+import { unifiedApiClient } from '../api/unifiedApiClient';
 import { generateFacebookPostFromAuction } from '../utils/formatting/facebookPostFormatter';
 
 // Domain Models
@@ -398,8 +398,6 @@ export interface IDbaSelectionService {
  * After: Lightweight orchestrator delegating to focused domain services
  */
 
-import { unifiedHttpClient } from './base/UnifiedHttpClient';
-
 // Domain Services (SOLID SRP - Single Responsibility Principle)
 import { AuctionService } from './domain/AuctionService';
 import { CollectionService } from './domain/CollectionService';
@@ -439,13 +437,13 @@ export class UnifiedApiService {
 
   constructor() {
     // Initialize domain services with shared HTTP client (DIP - Dependency Inversion)
-    this.auctions = new AuctionService(unifiedHttpClient);
-    this.collection = new CollectionService(unifiedHttpClient);
-    this.search = new SearchService(unifiedHttpClient);
-    this.export = new ExportService(unifiedHttpClient);
-    this.upload = new UploadService(unifiedHttpClient);
-    this.status = new StatusService(unifiedHttpClient);
-    this.dbaSelection = new DbaSelectionService(unifiedHttpClient);
+    this.auctions = new AuctionService(unifiedApiClient);
+    this.collection = new CollectionService(unifiedApiClient);
+    this.search = new SearchService(unifiedApiClient);
+    this.export = new ExportService(unifiedApiClient);
+    this.upload = new UploadService(unifiedApiClient);
+    this.status = new StatusService(unifiedApiClient);
+    this.dbaSelection = new DbaSelectionService(unifiedApiClient);
   }
 
   /**

@@ -7,6 +7,7 @@
 
 import { useCallback } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQueryInvalidation } from '../../../shared/hooks/useQueryInvalidation';
 import { 
   OcrApiRepository, 
   IcrUploadResponse,
@@ -56,6 +57,9 @@ interface UseIcrMatchingReturn {
 export const useOcrMatching = (): UseIcrMatchingReturn => {
   const queryClient = useQueryClient();
   const apiRepository = new OcrApiRepository();
+  
+  // PHASE 2: Use centralized OCR invalidation patterns
+  const { invalidateOcrQueries, invalidateCollectionQueries } = useQueryInvalidation();
 
 
   // ================================
@@ -65,29 +69,24 @@ export const useOcrMatching = (): UseIcrMatchingReturn => {
   const uploadMutation = useMutation({
     mutationFn: (imageFiles: File[]) => apiRepository.uploadImages(imageFiles),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Ensure fresh data for next step
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
-      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
   const extractMutation = useMutation({
     mutationFn: (scanIds: string[]) => apiRepository.extractLabels(scanIds),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Force fresh data for next step
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
   const stitchMutation = useMutation({
     mutationFn: (imageHashes: string[]) => apiRepository.stitchImages(imageHashes),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data for OCR step
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
@@ -95,10 +94,8 @@ export const useOcrMatching = (): UseIcrMatchingReturn => {
     mutationFn: ({ imageHashes, stitchedImagePath }: { imageHashes: string[], stitchedImagePath?: string }) => 
       apiRepository.processOcr(imageHashes, stitchedImagePath),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data for text distribution step
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
@@ -106,39 +103,32 @@ export const useOcrMatching = (): UseIcrMatchingReturn => {
     mutationFn: ({ imageHashes, ocrResult }: { imageHashes: string[], ocrResult?: IcrOcrResult }) => 
       apiRepository.distributeText(imageHashes, ocrResult),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data for card matching step
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
   const matchMutation = useMutation({
     mutationFn: (imageHashes: string[]) => apiRepository.matchCards(imageHashes),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data for final results
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
-      queryClient.invalidateQueries({ queryKey: ['card-matches'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
   const deleteScansMutation = useMutation({
     mutationFn: (scanIds: string[]) => apiRepository.deleteScans(scanIds),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data after deletion
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
-      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
   const deleteStitchedMutation = useMutation({
     mutationFn: (stitchedId: string) => apiRepository.deleteStitchedImage(stitchedId),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data after stitched image deletion
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
-      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
@@ -146,9 +136,8 @@ export const useOcrMatching = (): UseIcrMatchingReturn => {
     mutationFn: ({ imageHash, cardId }: { imageHash: string, cardId: string }) => 
       apiRepository.selectCardMatch(imageHash, cardId),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data after match selection
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['card-matches'] });
+      // PHASE 2: Using centralized OCR invalidation patterns
+      invalidateOcrQueries();
     },
   });
 
@@ -156,10 +145,9 @@ export const useOcrMatching = (): UseIcrMatchingReturn => {
     mutationFn: ({ imageHash, psaData }: { imageHash: string, psaData: IcrCreatePsaRequest }) => 
       apiRepository.createPsaCard(imageHash, psaData),
     onSuccess: () => {
-      // AGGRESSIVE INVALIDATION - Fresh data after PSA card creation
-      queryClient.invalidateQueries({ queryKey: ['scans'] });
-      queryClient.invalidateQueries({ queryKey: ['psa-cards'] });
-      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      // PHASE 2: Using centralized invalidation patterns for PSA card creation
+      invalidateOcrQueries();
+      invalidateCollectionQueries();
     },
   });
 

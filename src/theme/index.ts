@@ -24,9 +24,9 @@ export * from './hooks/useTheme';
 export * from './hooks/useVariant';
 export * from './utils/colors';
 
-// Legacy exports for backwards compatibility
-export * from './themeSystem';
-export * from './DesignSystem';
+// Legacy exports for backwards compatibility - commented out to avoid conflicts
+// export * from './themeSystem';
+// Note: DesignSystem exports removed to avoid conflicts with themeSystem
 export * from './formThemes';
 export * from './ThemeProvider';
 export * from './ThemePicker';

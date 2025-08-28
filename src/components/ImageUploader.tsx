@@ -196,7 +196,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         if (aspectResults.length > 0) {
           setPreviews((prev) =>
             prev.map((preview) => {
-              const result = aspectResults.find((r) => r.index === preview.id);
+              const result = aspectResults.find((r) => r.index === parseInt(preview.id));
               return result
                 ? { ...preview, aspectInfo: result.aspectInfo }
                 : preview;
@@ -307,7 +307,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
       if (imageFiles.length > 0) {
         e.preventDefault();
-        await handleFileDrop(imageFiles as FileList);
+        // Convert File[] to FileList-like object
+        const fileListLike = {
+          length: imageFiles.length,
+          item: (index: number) => imageFiles[index] || null,
+          *[Symbol.iterator]() {
+            for (const file of imageFiles) {
+              yield file;
+            }
+          }
+        } as FileList;
+        await handleFileDrop(fileListLike);
       }
     },
     [disabled, handleFileDrop]

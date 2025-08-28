@@ -4,11 +4,12 @@
  */
 
 import { useCallback, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { unifiedApiService, AuctionsParams, AddItemToAuctionData } from '../services/UnifiedApiService';
 import { IAuction } from '../domain/models/auction';
 import { CACHE_TIMES, queryKeys } from '../../app/lib/queryClient';
 import { handleApiError } from '../utils/helpers/errorHandler';
+import { useQueryInvalidation } from './useQueryInvalidation';
 
 export interface UseAuctionState {
   auctions: IAuction[];
@@ -52,8 +53,10 @@ export const useAuction = (
   params?: AuctionsParams,
   auctionId?: string
 ): UseAuctionHook => {
-  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
+  
+  // PHASE 2: Use centralized auction invalidation patterns
+  const { invalidateAuctionQueries, invalidateAuctionDetailQueries } = useQueryInvalidation();
 
   // Cached auctions list
   const {
@@ -91,10 +94,8 @@ export const useAuction = (
     async (newParams?: AuctionsParams) => {
       try {
         setError(null);
-        // Invalidate and refetch with new params
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.auctionsList(newParams),
-        });
+        // Use centralized auction invalidation
+        await invalidateAuctionQueries();
       } catch (err) {
         const errorMessage = 'Failed to fetch auctions';
         setError(errorMessage);
@@ -111,25 +112,24 @@ export const useAuction = (
     async (id: string) => {
       try {
         setError(null);
-        // This now just triggers a refetch of the React Query cache
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.auctionDetail(id),
-        });
+        // PHASE 2: Using centralized invalidation patterns
+        await invalidateAuctionDetailQueries(id);
       } catch (err) {
         const errorMessage = 'Failed to fetch auction';
         setError(errorMessage);
         handleApiError(err, errorMessage);
       }
     },
-    [queryClient]
+    [invalidateAuctionDetailQueries]
   );
 
   // Create auction mutation
+  // PHASE 2: Using centralized invalidation patterns
   const createAuctionMutation = useMutation({
     mutationFn: (data: Partial<IAuction>) =>
       unifiedApiService.auctions.createAuction(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionQueries();
     },
   });
 
@@ -138,8 +138,7 @@ export const useAuction = (
     mutationFn: ({ id, data }: { id: string; data: Partial<IAuction> }) =>
       unifiedApiService.auctions.updateAuction(id, data),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionDetailQueries(id);
     },
   });
 
@@ -147,7 +146,7 @@ export const useAuction = (
   const deleteAuctionMutation = useMutation({
     mutationFn: (id: string) => unifiedApiService.auctions.deleteAuction(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionQueries();
     },
   });
 
@@ -161,8 +160,7 @@ export const useAuction = (
       itemData: AddItemToAuctionData;
     }) => unifiedApiService.auctions.addItemToAuction(id, itemData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionDetailQueries(id);
     },
   });
 
@@ -178,8 +176,7 @@ export const useAuction = (
       itemCategory?: string;
     }) => unifiedApiService.auctions.removeItemFromAuction(id, itemId, itemCategory),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionDetailQueries(id);
     },
   });
 
@@ -193,8 +190,7 @@ export const useAuction = (
       saleData: { itemId: string; itemCategory: string; soldPrice: number };
     }) => unifiedApiService.auctions.markAuctionItemSold(id, saleData),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctionDetail(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+      invalidateAuctionDetailQueries(id);
     },
   });
 
@@ -325,11 +321,8 @@ export const useAuction = (
               '[useAuction] Item already removed (404), refreshing cache...'
             );
           }
-          // The mutation onSuccess will handle cache invalidation
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.auctionDetail(id),
-          });
-          queryClient.invalidateQueries({ queryKey: queryKeys.auctions });
+          // PHASE 2: Using centralized invalidation patterns
+          await invalidateAuctionDetailQueries(id);
         } else {
           const errorMessage = `Failed to remove item from auction with ID: ${id}`;
           setError(errorMessage);
@@ -337,7 +330,7 @@ export const useAuction = (
         }
       }
     },
-    [removeItemFromAuctionMutation, queryClient]
+    [removeItemFromAuctionMutation, invalidateAuctionDetailQueries]
   );
 
   /**
@@ -377,10 +370,8 @@ export const useAuction = (
         setError(null);
         const postText = await unifiedApiService.export.generateAuctionFacebookPost(id);
 
-        // Invalidate the auction detail cache to refresh with generated post
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.auctionDetail(id),
-        });
+        // PHASE 2: Using centralized invalidation patterns to refresh with generated post
+        await invalidateAuctionDetailQueries(id);
 
         return postText;
       } catch (err) {
@@ -390,7 +381,7 @@ export const useAuction = (
         throw err;
       }
     },
-    [queryClient]
+    [invalidateAuctionDetailQueries]
   );
 
   /**

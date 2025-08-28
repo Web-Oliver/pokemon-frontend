@@ -30,7 +30,7 @@ export class StatusService extends BaseApiService implements IStatusService {
 
   async getApiStatus(): Promise<ApiStatusResponse> {
     const response = await this.httpClient.get<ApiStatusResponse>('/status');
-    return response.data || response;
+    return extractResponseData(response);
   }
 
   async getDataCounts(): Promise<{
@@ -45,6 +45,6 @@ export class StatusService extends BaseApiService implements IStatusService {
       products: number;
       setProducts: number;
     }>('/status/counts');
-    return response.data || response;
+    return extractResponseData(response);
   }
 }

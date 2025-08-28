@@ -19,7 +19,7 @@
 import React from 'react';
 import { Award, Package } from 'lucide-react';
 import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
-import { useCollectionOperations } from '../../hooks/useCollectionOperations';
+import { useCollectionOperations } from '../../../shared/hooks';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../utils/validation';
 import { useFormInitialization } from '../../hooks/form/useFormInitialization';
