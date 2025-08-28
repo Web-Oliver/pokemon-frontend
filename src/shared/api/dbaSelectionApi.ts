@@ -119,8 +119,6 @@ export const getDbaSelections = async (
   });
 };
 
-// UNUSED DBA CRUD OPERATIONS REMOVED - Not used by any frontend components
-
 /**
  * Search DBA selections with parameters
  * @param searchParams - DBA selection search parameters

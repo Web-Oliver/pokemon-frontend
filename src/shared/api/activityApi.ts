@@ -528,18 +528,6 @@ export const archiveActivity = async (
   });
 };
 
-// ========== MISSING ACTIVITY ARCHIVE FUNCTIONALITY ==========
-
-/**
- * Archive old activities request interface
- */
-// UNUSED INTERFACES REMOVED - Archive functions not used by any frontend components
-
-// archiveOldActivities removed - not used by any frontend components
-
-// getArchivePreview removed - not used by any frontend components
-
-// archiveOldActivitiesWithConfirmation removed - not used by any frontend components
 
 // Export all activity operations for convenience
 export default {

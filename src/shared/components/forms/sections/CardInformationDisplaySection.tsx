@@ -113,7 +113,6 @@ const CardInformationDisplaySection: React.FC<
           value={watch('cardNumber') || ''}
           readOnly
         />
-        {/* REMOVED: baseName registration (deprecated field per user feedback) */}
         <input
           {...register('variety')}
           value={watch('variety') || ''}

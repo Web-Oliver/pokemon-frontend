@@ -42,7 +42,6 @@ interface GradingPricingSectionProps {
     cardName?: string;
     cardNumber?: string; // UPDATED: pokemonNumber → cardNumber
     variety?: string;
-    // REMOVED: baseName (deprecated field per user feedback)
   };
   // Show investment metrics instead of input fields when card is auto-filled
   showInvestmentMetrics?: boolean;
@@ -274,7 +273,6 @@ const GradingPricingSection: React.FC<GradingPricingSectionProps> = ({
                   <span className="text-white font-semibold">Card Details</span>
                 </div>
                 <div className="space-y-2 text-sm">
-                  {/* REMOVED: Base Name field (deprecated field per user feedback) */}
                   <div className="flex justify-between">
                     <span className="text-white/60">Variety</span>
                     <span className="text-white font-medium">

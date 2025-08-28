@@ -69,12 +69,6 @@ export const OcrUpdateStep: React.FC<StepComponentProps> = ({
   
   const isLoading = loadingStitched || loadingOcrCompleted;
 
-  // REMOVED AUTO-START OCR - User must manually trigger OCR processing
-  // useEffect(() => {
-  //   if (isActive && (stitchData?.stitchedLabels || stitchData?.unmatched) && !isProcessing && !ocrData) {
-  //     handleOcrProcessing();
-  //   }
-  // }, [isActive, stitchData]);
 
   // REAL OCR PROCESSING - Single Responsibility with comprehensive error handling
   const handleOcrProcessing = useCallback(async () => {

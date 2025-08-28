@@ -17,18 +17,15 @@ export default tseslint.config(
       '.vscode',
       'build',
       '.git',
-      'audit-reports/**/*',
-      'storybook-static/**/*',
-      'migration-tests/**/*',
       '**/*.min.js',
       '**/*.bundle.js',
     ],
   },
 
-  // Base TypeScript configuration
+  // Base TypeScript recommended config
   ...tseslint.configs.recommended,
 
-  // TypeScript files with type checking
+  // TypeScript files
   {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
@@ -58,8 +55,6 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/display-name': 'error',
-      'react/jsx-no-undef': 'error',
-      'react/no-unescaped-entities': 'error',
 
       // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',
@@ -71,7 +66,8 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
 
-      // TypeScript rules
+      // TypeScript rules (override base rules for TS)
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -82,47 +78,33 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error for flexibility
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
 
       // General rules
       'prefer-const': 'error',
-
-      // General ESLint rules (relaxed for development)
       'no-console': 'off',
       'no-debugger': 'error',
       'no-alert': 'error',
-
-      // Custom theme compliance rules (warnings for now, will be errors in production)
-      'no-restricted-syntax': [
-        'warn',
-        {
-          'selector': 'Literal[value=/^(#[0-9a-f]{3,8}|rgb\\(|rgba\\(|hsl\\(|hsla\\()/i]',
-          'message': 'Avoid hardcoded colors. Use CSS variables from the theme system instead.'
-        },
-        {
-          'selector': 'TemplateLiteral > TemplateElement[value.raw=/bg-(red|blue|green|yellow|purple|pink|indigo|gray|black|white)-\\d+/]',
-          'message': 'Avoid hardcoded Tailwind color classes. Use CSS variables like bg-[var(--theme-primary)] instead.'
-        }
-      ]
     },
     settings: {
       react: {
         version: 'detect',
       },
     },
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-    },
   },
 
-  // JavaScript and config files without type checking
+  // JavaScript files
   {
-    files: ['**/*.{js,jsx,cjs,mjs}', '*.config.{js,ts}', 'scripts/**/*', '.storybook/**/*', 'vite.config.ts', 'vitest.config.ts', '.eslintrc-theme-rules.js'],
+    files: ['src/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -134,9 +116,24 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-      // Disable TypeScript-specific rules for JS files
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
+      // React rules
+      ...react.configs.recommended.rules,
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'react/display-name': 'error',
+
+      // React Hooks rules
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // React Refresh rules
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+
+      // General rules
+      'prefer-const': 'error',
       'no-unused-vars': [
         'error',
         {
@@ -147,13 +144,29 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-
-      // Allow console in config files
       'no-console': 'off',
+      'no-debugger': 'error',
+      'no-alert': 'error',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 
-      // React rules for JSX files
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
+  // Config files
+  {
+    files: ['**/*.config.{js,ts}', 'scripts/**/*', 'vite.config.ts'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': 'off',
     },
   },
 

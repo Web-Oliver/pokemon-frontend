@@ -382,6 +382,4 @@ export const cacheInvalidation = {
     queryClient.invalidateQueries({ queryKey: queryKeys.icr });
     queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
   }
-
-  // UNUSED CACHE MANAGEMENT FUNCTIONS REMOVED - Not used by any frontend components
 };
