@@ -7,6 +7,7 @@ import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { ICard, ISet } from '../../domain/models/card';
 import { IProduct, ISetProduct } from '../../domain/models/product';
+import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '../utils/responseUtils';
 
 // Import search types from UnifiedApiService
 export interface CardSearchParams {
@@ -75,10 +76,9 @@ export class SearchService extends BaseApiService implements ISearchService {
 
   async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
     console.log('[API DEBUG] Calling unified /search?type=sets with params:', params);
-    try {
-      // Use unified search endpoint with type parameter
+    return this.executeWithErrorHandling('SEARCH Sets', async () => {
       const response = await this.httpClient.get<any>('/search/sets', {
-        params: {
+        params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit,
           page: params.page,
@@ -87,33 +87,19 @@ export class SearchService extends BaseApiService implements ISearchService {
           maxYear: params.maxYear,
           minPsaPopulation: params.minPsaPopulation,
           minCardCount: params.minCardCount,
-        },
+        }),
         skipTransform: true,
       });
       
-      // Extract sets from nested response structure {data: {sets: [...]}}
-      const setsData = response?.data?.sets || response?.data || [];
-      const searchResponse: SearchResponse<ISet> = {
-        data: setsData,
-        count: Array.isArray(setsData) ? setsData.length : 0,
-        success: response?.success !== false,
-        query: params.query,
-      };
-
-      console.log('[API DEBUG] Final searchResponse:', searchResponse);
-      return searchResponse;
-    } catch (error) {
-      console.error('[API DEBUG] /search?type=sets ERROR:', error);
-      return { data: [], count: 0, success: false, query: params.query };
-    }
+      return extractSearchResponse<ISet>(response, params.query);
+    });
   }
 
   async searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<ISetProduct>> {
     console.log('[API DEBUG] FIXED: Calling /set-products?q= with params:', params);
-    try {
-      // FIXED: Use direct set-products endpoint with q parameter
+    return this.executeWithErrorHandling('SEARCH Set Products', async () => {
       const response = await this.httpClient.get<any>('/set-products', {
-        params: {
+        params: buildHierarchicalParams({
           q: params.query, // Use 'q' parameter instead of 'query'
           limit: params.limit || 10,
           page: params.page || 1,
@@ -122,31 +108,19 @@ export class SearchService extends BaseApiService implements ISearchService {
           minPrice: params.minPrice,
           maxPrice: params.maxPrice,
           availableOnly: params.availableOnly,
-        },
+        }),
         skipTransform: true,
       });
 
-      const responseData = response?.data || response || [];
-      const searchResponse: SearchResponse<ISetProduct> = {
-        data: responseData,
-        count: Array.isArray(responseData) ? responseData.length : 0,
-        success: response?.success !== false,
-        query: params.query,
-      };
-
-      console.log('[API DEBUG] Final searchResponse:', searchResponse);
-      return searchResponse;
-    } catch (error) {
-      console.error('[API DEBUG] /set-products ERROR:', error);
-      return { data: [], count: 0, success: false, query: params.query };
-    }
+      return extractSearchResponse<ISetProduct>(response, params.query);
+    });
   }
 
   async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
     console.log('[API DEBUG] Calling /search/products with params:', params);
-    try {
+    return this.executeWithErrorHandling('SEARCH Products', async () => {
       const response = await this.httpClient.get<any>('/search/products', {
-        params: {
+        params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit || 10,
           page: params.page || 1,
@@ -158,28 +132,19 @@ export class SearchService extends BaseApiService implements ISearchService {
           availableOnly: params.availableOnly,
           populate: params.populate,
           exclude: params.exclude,
-        },
+        }),
         skipTransform: true,
       });
 
-      const responseData = response?.data || response || [];
-      return {
-        data: responseData,
-        count: Array.isArray(responseData) ? responseData.length : 0,
-        success: response?.success !== false,
-        query: params.query,
-      };
-    } catch (error) {
-      console.error('[API DEBUG] /search/products ERROR:', error);
-      return { data: [], count: 0, success: false, query: params.query };
-    }
+      return extractSearchResponse<IProduct>(response, params.query);
+    });
   }
 
   async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
     console.log('[API DEBUG] Calling /search/cards with params:', params);
-    try {
+    return this.executeWithErrorHandling('SEARCH Cards', async () => {
       const response = await this.httpClient.get<any>('/search/cards', {
-        params: {
+        params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit || 10,
           page: params.page || 1,
@@ -191,31 +156,25 @@ export class SearchService extends BaseApiService implements ISearchService {
           minPsaPopulation: params.minPsaPopulation,
           populate: params.populate,
           exclude: params.exclude,
-        },
+        }),
         skipTransform: true,
       });
 
+      const searchResponse = extractSearchResponse<ICard>(response, params.query);
+      
       // Handle MongoDB ObjectId filtering for hierarchical search
-      let responseData = response?.data || response || [];
-      if (params.setId && Array.isArray(responseData)) {
-        responseData = responseData.filter((card: any) => {
+      if (params.setId && Array.isArray(searchResponse.data)) {
+        searchResponse.data = searchResponse.data.filter((card: any) => {
           return card.setId === params.setId || card.set?._id === params.setId;
         });
+        searchResponse.count = searchResponse.data.length;
       }
 
-      return {
-        data: responseData,
-        count: Array.isArray(responseData) ? responseData.length : 0,
-        success: response?.success !== false,
-        query: params.query,
-      };
-    } catch (error) {
-      console.error('[API DEBUG] /search/cards ERROR:', error);
-      return { data: [], count: 0, success: false, query: params.query };
-    }
+      return searchResponse;
+    });
   }
 
-  // Hierarchical search methods
+  // Hierarchical search methods using centralized patterns
   async getCardsInSet(setId: string, query?: string): Promise<SearchResponse<ICard>> {
     return this.searchCards({
       query: query || '',
@@ -233,22 +192,16 @@ export class SearchService extends BaseApiService implements ISearchService {
   }
 
   async getCardWithContext(cardId: string): Promise<{card: ICard; relatedCards: ICard[]; setInfo: ISet}> {
-    try {
+    return this.executeWithErrorHandling('GET Card with Context', async () => {
       const response = await this.httpClient.get<any>(`/search/cards/${cardId}/context`);
-      return response?.data || response;
-    } catch (error) {
-      console.error('[API DEBUG] /search/cards/context ERROR:', error);
-      throw error;
-    }
+      return extractResponseData(response);
+    });
   }
 
   async getProductWithContext(productId: string): Promise<{product: IProduct; relatedProducts: IProduct[]; setProductInfo: ISetProduct}> {
-    try {
+    return this.executeWithErrorHandling('GET Product with Context', async () => {
       const response = await this.httpClient.get<any>(`/search/products/${productId}/context`);
-      return response?.data || response;
-    } catch (error) {
-      console.error('[API DEBUG] /search/products/context ERROR:', error);
-      throw error;
-    }
+      return extractResponseData(response);
+    });
   }
 }

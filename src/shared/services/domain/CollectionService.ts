@@ -8,6 +8,7 @@ import { IHttpClient } from '../base/HttpClientInterface';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '../../../types/common';
+import { addCacheBusting } from '../utils/responseUtils';
 
 // Import parameter types from UnifiedApiService
 export interface PsaGradedCardsParams {
@@ -76,147 +77,168 @@ export class CollectionService extends BaseApiService implements ICollectionServ
     super(httpClient, 'COLLECTION SERVICE');
   }
 
-  // Direct methods
+  // Collection overview methods using centralized response handling
   async getPsaGradedCards(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
-    const response = await this.httpClient.get<{success: boolean; data: IPsaGradedCard[]; meta?: any}>(
+    return this.getCollection<IPsaGradedCard>(
       '/collections/psa-graded-cards',
+      'GET PSA Cards',
       { params }
     );
-    return response.data || response;
   }
 
   async getRawCards(params?: RawCardsParams): Promise<IRawCard[]> {
-    const response = await this.httpClient.get<{success: boolean; data: IRawCard[]}>('/collections/raw-cards', {
-      params: {
-        ...params,
-        _t: Date.now(), // Cache busting
-      },
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        Pragma: 'no-cache',
-        Expires: '0',
-      },
-    });
-    return response.data || response;
+    return this.getCollection<IRawCard>(
+      '/collections/raw-cards',
+      'GET Raw Cards',
+      addCacheBusting({ params })
+    );
   }
 
   async getSealedProducts(params?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
-    const response = await this.httpClient.get<{success: boolean; data: ISealedProduct[]}>(
+    return this.getCollection<ISealedProduct>(
       '/collections/sealed-products',
+      'GET Sealed Products',
       { params }
     );
-    return response.data || response;
   }
 
-  // PSA Cards CRUD
+  // PSA Cards CRUD Operations
   async getPsaGradedCardById(id: string): Promise<IPsaGradedCard> {
-    const response = await this.httpClient.get<{success: boolean; data: IPsaGradedCard}>(
-      `/collections/psa-graded-cards/${id}`
+    return this.getResourceById<IPsaGradedCard>(
+      '/collections/psa-graded-cards',
+      id,
+      'GET PSA Card by ID'
     );
-    return response.data || response;
   }
 
   async getPsaCardById(id: string): Promise<IPsaGradedCard> {
-    return await this.httpClient.getById<IPsaGradedCard>('/collections/psa-graded-cards', id);
+    return this.getResourceById<IPsaGradedCard>(
+      '/collections/psa-graded-cards',
+      id,
+      'GET PSA Card by ID (alias)'
+    );
   }
 
   async createPsaCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
-    const response = await this.httpClient.post<{success: boolean; data: IPsaGradedCard}>(
+    return this.createResource<IPsaGradedCard & { [key: string]: any }>(
       '/collections/psa-graded-cards',
-      data
+      data,
+      'CREATE PSA Card',
+      '_id'
     );
-    return response.data || response;
   }
 
   async updatePsaCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
-    const response = await this.httpClient.put<{success: boolean; data: IPsaGradedCard}>(
-      `/collections/psa-graded-cards/${id}`,
-      data
+    return this.updateResource<IPsaGradedCard>(
+      '/collections/psa-graded-cards',
+      id,
+      data,
+      'UPDATE PSA Card'
     );
-    return response.data || response;
   }
 
   async deletePsaCard(id: string): Promise<void> {
-    await this.httpClient.delete(`/collections/psa-graded-cards/${id}`);
+    return this.deleteResource(
+      '/collections/psa-graded-cards',
+      id,
+      'DELETE PSA Card'
+    );
   }
 
   async markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard> {
-    const response = await this.httpClient.patch<{success: boolean; data: IPsaGradedCard}>(
-      `/collections/psa-graded-cards/${id}`,
-      { sold: true, saleDetails }
+    return this.markResourceSold<IPsaGradedCard & { sold?: boolean }>(
+      '/collections/psa-graded-cards',
+      id,
+      saleDetails,
+      'MARK PSA Card SOLD'
     );
-    return response.data || response;
   }
 
-  // Raw Cards CRUD
+  // Raw Cards CRUD Operations
   async getRawCardById(id: string): Promise<IRawCard> {
-    const response = await this.httpClient.get<{success: boolean; data: IRawCard}>(
-      `/collections/raw-cards/${id}`
+    return this.getResourceById<IRawCard>(
+      '/collections/raw-cards',
+      id,
+      'GET Raw Card by ID'
     );
-    return response.data || response;
   }
 
   async createRawCard(data: Partial<IRawCard>): Promise<IRawCard> {
-    const response = await this.httpClient.post<{success: boolean; data: IRawCard}>(
+    return this.createResource<IRawCard & { [key: string]: any }>(
       '/collections/raw-cards',
-      data
+      data,
+      'CREATE Raw Card',
+      '_id'
     );
-    return response.data || response;
   }
 
   async updateRawCard(id: string, data: Partial<IRawCard>): Promise<IRawCard> {
-    const response = await this.httpClient.put<{success: boolean; data: IRawCard}>(
-      `/collections/raw-cards/${id}`,
-      data
+    return this.updateResource<IRawCard>(
+      '/collections/raw-cards',
+      id,
+      data,
+      'UPDATE Raw Card'
     );
-    return response.data || response;
   }
 
   async deleteRawCard(id: string): Promise<void> {
-    await this.httpClient.delete(`/collections/raw-cards/${id}`);
+    return this.deleteResource(
+      '/collections/raw-cards',
+      id,
+      'DELETE Raw Card'
+    );
   }
 
   async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
-    const response = await this.httpClient.patch<{success: boolean; data: IRawCard}>(
-      `/collections/raw-cards/${id}`,
-      { sold: true, saleDetails }
+    return this.markResourceSold<IRawCard & { sold?: boolean }>(
+      '/collections/raw-cards',
+      id,
+      saleDetails,
+      'MARK Raw Card SOLD'
     );
-    return response.data || response;
   }
 
-  // Sealed Products CRUD
+  // Sealed Products CRUD Operations
   async getSealedProductById(id: string): Promise<ISealedProduct> {
-    const response = await this.httpClient.get<{success: boolean; data: ISealedProduct}>(
-      `/collections/sealed-products/${id}`
+    return this.getResourceById<ISealedProduct>(
+      '/collections/sealed-products',
+      id,
+      'GET Sealed Product by ID'
     );
-    return response.data || response;
   }
 
   async createSealedProduct(data: Partial<ISealedProduct>): Promise<ISealedProduct> {
-    const response = await this.httpClient.post<{success: boolean; data: ISealedProduct}>(
+    return this.createResource<ISealedProduct & { [key: string]: any }>(
       '/collections/sealed-products',
-      data
+      data,
+      'CREATE Sealed Product',
+      '_id'
     );
-    return response.data || response;
   }
 
   async updateSealedProduct(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct> {
-    const response = await this.httpClient.put<{success: boolean; data: ISealedProduct}>(
-      `/collections/sealed-products/${id}`,
-      data
+    return this.updateResource<ISealedProduct>(
+      '/collections/sealed-products',
+      id,
+      data,
+      'UPDATE Sealed Product'
     );
-    return response.data || response;
   }
 
   async deleteSealedProduct(id: string): Promise<void> {
-    await this.httpClient.delete(`/collections/sealed-products/${id}`);
+    return this.deleteResource(
+      '/collections/sealed-products',
+      id,
+      'DELETE Sealed Product'
+    );
   }
 
   async markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> {
-    const response = await this.httpClient.patch<{success: boolean; data: ISealedProduct}>(
-      `/collections/sealed-products/${id}`,
-      { sold: true, saleDetails }
+    return this.markResourceSold<ISealedProduct & { sold?: boolean }>(
+      '/collections/sealed-products',
+      id,
+      saleDetails,
+      'MARK Sealed Product SOLD'
     );
-    return response.data || response;
   }
 }

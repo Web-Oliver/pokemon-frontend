@@ -254,3 +254,85 @@ export abstract class BaseApiService {
     });
   }
 }
+
+/**
+ * Base CRUD Service following SOLID principles
+ * Provides standardized CRUD operations for all domain services
+ * Following CLAUDE.md SOLID/DRY refactoring plan Priority 1
+ */
+export abstract class BaseCrudService<T> extends BaseApiService {
+  protected abstract endpoint: string;
+  
+  constructor(httpClient: IHttpClient, serviceName: string) {
+    super(httpClient, serviceName);
+  }
+
+  /**
+   * Get all entities with optional parameters
+   */
+  async getAll(params?: any): Promise<T[]> {
+    return this.getCollection<T>(
+      this.endpoint,
+      `GET ${this.serviceName} collection`,
+      { params }
+    );
+  }
+
+  /**
+   * Get entity by ID
+   */
+  async getById(id: string): Promise<T> {
+    return this.getResourceById<T>(
+      this.endpoint,
+      id,
+      `GET ${this.serviceName} by ID`
+    );
+  }
+
+  /**
+   * Create new entity
+   */
+  async create(data: Partial<T>): Promise<T> {
+    return this.createResource<T & { [key: string]: any }>(
+      this.endpoint,
+      data,
+      `CREATE ${this.serviceName}`,
+      '_id' // MongoDB ObjectId field
+    );
+  }
+
+  /**
+   * Update entity by ID
+   */
+  async update(id: string, data: Partial<T>): Promise<T> {
+    return this.updateResource<T>(
+      this.endpoint,
+      id,
+      data,
+      `UPDATE ${this.serviceName}`
+    );
+  }
+
+  /**
+   * Delete entity by ID
+   */
+  async delete(id: string): Promise<void> {
+    return this.deleteResource(
+      this.endpoint,
+      id,
+      `DELETE ${this.serviceName}`
+    );
+  }
+
+  /**
+   * Mark entity as sold (for collection items)
+   */
+  async markSold(id: string, saleDetails: any): Promise<T> {
+    return this.markResourceSold<T & { sold?: boolean }>(
+      this.endpoint,
+      id,
+      saleDetails,
+      `MARK SOLD ${this.serviceName}`
+    );
+  }
+}
