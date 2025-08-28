@@ -32,7 +32,7 @@ export {
 } from '../core';
 
 // Re-export cn from single source of truth
-export { cn } from '../ui/classNameUtils';
+export { cn } from '../../../lib/utils';
 
 export {
   formatPrice,
@@ -48,7 +48,7 @@ export {
   formatTime,
   formatDateTime,
   formatBytes,
-} from './formatting';
+} from '../formatting';
 
 export {
   API_BASE_URL,

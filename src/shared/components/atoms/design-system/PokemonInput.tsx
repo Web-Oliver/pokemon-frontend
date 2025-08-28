@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Input } from '../../../ui/primitives/Input';
 import { Label } from '../../../ui/primitives/Label';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn } from "@/lib/utils"
 import { type VariantProps } from 'class-variance-authority';
 import { pokemonInputVariants } from './unifiedVariants';
 

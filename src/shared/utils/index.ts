@@ -17,9 +17,8 @@ export * from './formatting';
 export * from './validation';
 
 // Layer 3: UI utilities (may have external dependencies)
-export { conditional, multiConditional, responsive, sizeClasses, focusRing, loadingState, disabledState, errorState } from './ui/classNames';
-// Export cn function from classNameUtils (primary implementation)
-export { cn } from './ui/classNameUtils';
+// Export cn function from "@/lib/utils" 
+export { cn } from "@/lib/utils"
 export * from './ui/imageUtils';
 // Theme utilities removed - use new theme system at /src/theme/
 

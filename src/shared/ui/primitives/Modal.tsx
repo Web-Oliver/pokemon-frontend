@@ -14,7 +14,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X, AlertTriangle, Check, Info, HelpCircle } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { cn } from "../../utils/ui/classNameUtils";
+import { cn } from "@/lib/utils"
 import { Button } from "./Button";
 
 const unifiedModalVariants = cva(

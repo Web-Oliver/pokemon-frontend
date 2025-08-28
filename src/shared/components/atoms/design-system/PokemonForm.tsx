@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect } from 'react';
-import { cn } from '../../../utils/ui/classNameUtils';
+import { cn } from "@/lib/utils"
 import {
   DefaultValues,
   FieldValues,

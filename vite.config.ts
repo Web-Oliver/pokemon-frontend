@@ -5,17 +5,7 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
     plugins: [
-      react({
-        // Enable React Compiler optimizations if available
-        babel: {
-          plugins: [
-            // React Compiler for automatic memoization (Context7 pattern)
-            mode === 'production' && [
-              'babel-plugin-react-compiler',
-            ],
-          ].filter(Boolean),
-        },
-      }),
+      react(),
     ],
     server: {
       port: 5173,

@@ -43,13 +43,13 @@ import {
   VisualTheme,
 } from '../../types/themeTypes';
 // Removed broken theme import
-import { cn } from './classNameUtils';
+import { cn } from "@/lib/utils"
 
 // ================================
 // UTILITY FUNCTIONS
 // ================================
 
-// cn utility imported from classNameUtils.ts - single source of truth
+// cn utility imported from "@/lib/utils"
 
 /**
  * Generate theme-aware class names based on component configuration
