@@ -21,7 +21,7 @@
    ================================= */
 
 /* UNIFIED CSS VARIABLES - PHASE 2.1 INTEGRATION */
-@import '../theme/unified-variables.css';
+@import './unified-theme-variables.css';
 
 @tailwind base;
 @tailwind components; 

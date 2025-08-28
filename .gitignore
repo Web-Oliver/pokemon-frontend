@@ -79,3 +79,8 @@ playwright/.cache/
 
 # Vitest
 coverage/
+
+
+# Ignore the .serena cache and backup folders
+.serena/
+backup/

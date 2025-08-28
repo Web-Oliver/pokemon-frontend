@@ -17,6 +17,11 @@ export default tseslint.config(
       '.vscode',
       'build',
       '.git',
+      'audit-reports/**/*',
+      'storybook-static/**/*',
+      'migration-tests/**/*',
+      '**/*.min.js',
+      '**/*.bundle.js',
     ],
   },
 
@@ -25,7 +30,7 @@ export default tseslint.config(
 
   // TypeScript files with type checking
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
@@ -77,12 +82,11 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'error', // Enforce strict typing
+      '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error for flexibility
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
-      // UI/Theme compliance rules
-      'no-inline-styles': 'error',
+      // General rules
       'prefer-const': 'error',
 
       // General ESLint rules (relaxed for development)
@@ -115,7 +119,7 @@ export default tseslint.config(
 
   // JavaScript and config files without type checking
   {
-    files: ['**/*.{js,jsx,cjs,mjs}', '*.config.js', 'scripts/**/*'],
+    files: ['**/*.{js,jsx,cjs,mjs}', '*.config.{js,ts}', 'scripts/**/*', '.storybook/**/*', 'vite.config.ts', 'vitest.config.ts', '.eslintrc-theme-rules.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

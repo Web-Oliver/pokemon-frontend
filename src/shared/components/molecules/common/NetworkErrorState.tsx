@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
-import { EmptyState } from './EmptyState';
+import EmptyState from './EmptyState';
 
 interface NetworkErrorStateProps {
   /** Whether to show retry button */

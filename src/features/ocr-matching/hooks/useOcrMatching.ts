@@ -1,216 +1,243 @@
 /**
- * OCR Matching Hook - API integration for OCR card matching
- * 
- * Handles API calls for OCR matching, search, and approval workflow
+ * ICR Matching Hook - INDIVIDUAL ENDPOINT IMPLEMENTATION
+ * Provides ALL individual ICR processing steps as separate methods
+ * SOLID: Single Responsibility for each ICR step
+ * DRY: Centralized API call handling with proper error management
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { 
+  OcrApiRepository, 
+  IcrUploadResponse,
+  IcrExtractLabelsResponse,
+  IcrStitchResult,
+  IcrOcrResult,
+  IcrDistributeResult,
+  IcrMatchResult,
+  IcrResultsResponse, 
+  IcrStatusResponse,
+  IcrSelectMatchResponse,
+  IcrCreatePsaResponse,
+  IcrCreatePsaRequest,
+} from '../infrastructure/api/OcrApiRepository';
+import { queryKeys } from '../../../app/lib/queryClient';
 
-// Comprehensive debugging utility for frontend
-const debugLog = (context: string, message: string, data?: any) => {
-  const timestamp = new Date().toISOString();
-  const logMessage = `[${timestamp}] [OCR-FRONTEND-${context}] ${message}`;
+interface UseIcrMatchingReturn {
+  // ================================
+  // MUTATIONS
+  // ================================
   
-  if (data) {
-    console.log(logMessage, data);
-  } else {
-    console.log(logMessage);
-  }
-};
-
-interface UseOcrMatchingReturn {
-  matchOcrText: (ocrText: string, options?: any) => Promise<any>;
-  processAllPsaLabels: (options?: any) => Promise<any>;
-  deletePsaLabel: (psaLabelId: string) => Promise<any>;
-  searchSets: (query: string, options?: any) => Promise<any>;
-  searchCards: (query: string, filters?: any) => Promise<any>;
-  approveMatch: (approvalData: any) => Promise<any>;
-  editExtractedData: (ocrText: string, corrections: any) => Promise<any>;
-  getStats: () => Promise<any>;
-  loading: boolean;
-  error: string | null;
+  uploadMutation: any;
+  extractMutation: any;
+  stitchMutation: any;
+  processOcrMutation: any;
+  distributeTextMutation: any;
+  matchCardsMutation: any;
+  deleteScansMutation: any;
+  deleteStitchedMutation: any;
+  selectMatchMutation: any;
+  createPsaMutation: any;
+  
+  // ================================
+  // QUERIES
+  // ================================
+  
+  scansQuery: (options: { status?: string; limit?: number }) => { data: any; isLoading: boolean };
+  statusQuery: () => { data: any; isLoading: boolean };
+  
+  // ================================  
+  // IMAGE SERVING UTILITIES - DEPRECATED
+  // ================================
+  // Image URLs are now automatically transformed in API responses
+  // Use imageUrlService directly if manual URL construction is needed
 }
 
-export const useOcrMatching = (): UseOcrMatchingReturn => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export const useOcrMatching = (): UseIcrMatchingReturn => {
+  const queryClient = useQueryClient();
+  const apiRepository = new OcrApiRepository();
 
-  const apiCall = useCallback(async (endpoint: string, options: RequestInit = {}) => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const startTime = Date.now();
-    const fullUrl = `${baseUrl}/api/ocr${endpoint}`;
-    
-    debugLog('API_CALL_START', `Starting API call to ${endpoint}`, {
-      url: fullUrl,
-      method: options.method || 'GET',
-      hasBody: !!options.body
+
+  // ================================
+  // MUTATION HOOKS
+  // ================================
+
+  const uploadMutation = useMutation({
+    mutationFn: (imageFiles: File[]) => apiRepository.uploadImages(imageFiles),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Ensure fresh data for next step
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+    },
+  });
+
+  const extractMutation = useMutation({
+    mutationFn: (scanIds: string[]) => apiRepository.extractLabels(scanIds),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Force fresh data for next step
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+    },
+  });
+
+  const stitchMutation = useMutation({
+    mutationFn: (imageHashes: string[]) => apiRepository.stitchImages(imageHashes),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data for OCR step
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+    },
+  });
+
+  const ocrMutation = useMutation({
+    mutationFn: ({ imageHashes, stitchedImagePath }: { imageHashes: string[], stitchedImagePath?: string }) => 
+      apiRepository.processOcr(imageHashes, stitchedImagePath),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data for text distribution step
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+    },
+  });
+
+  const distributeMutation = useMutation({
+    mutationFn: ({ imageHashes, ocrResult }: { imageHashes: string[], ocrResult?: IcrOcrResult }) => 
+      apiRepository.distributeText(imageHashes, ocrResult),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data for card matching step
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+    },
+  });
+
+  const matchMutation = useMutation({
+    mutationFn: (imageHashes: string[]) => apiRepository.matchCards(imageHashes),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data for final results
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      queryClient.invalidateQueries({ queryKey: ['card-matches'] });
+    },
+  });
+
+  const deleteScansMutation = useMutation({
+    mutationFn: (scanIds: string[]) => apiRepository.deleteScans(scanIds),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data after deletion
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+    },
+  });
+
+  const deleteStitchedMutation = useMutation({
+    mutationFn: (stitchedId: string) => apiRepository.deleteStitchedImage(stitchedId),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data after stitched image deletion
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['stitched-images'] });
+      queryClient.invalidateQueries({ queryKey: ['icr-status'] });
+    },
+  });
+
+  const selectMatchMutation = useMutation({
+    mutationFn: ({ imageHash, cardId }: { imageHash: string, cardId: string }) => 
+      apiRepository.selectCardMatch(imageHash, cardId),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data after match selection
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['card-matches'] });
+    },
+  });
+
+  const createPsaMutation = useMutation({
+    mutationFn: ({ imageHash, psaData }: { imageHash: string, psaData: IcrCreatePsaRequest }) => 
+      apiRepository.createPsaCard(imageHash, psaData),
+    onSuccess: () => {
+      // AGGRESSIVE INVALIDATION - Fresh data after PSA card creation
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
+      queryClient.invalidateQueries({ queryKey: ['psa-cards'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+    },
+  });
+
+  // URL helper functions removed - now handled automatically by ImageUrlService
+
+  // ================================
+  // QUERY FUNCTION
+  // ================================
+  
+  const scansQuery = useCallback((options: { status?: string; limit?: number }) => {
+    return useQuery({
+      queryKey: ['scans', options.status, options.limit],
+      queryFn: () => apiRepository.getScans(options),
+      enabled: !!options.status,
+      staleTime: 0, // ZERO STALE TIME - Always fresh data
+      gcTime: 0, // No cache retention (replaces cacheTime in v5)
+      refetchOnMount: 'always', // Always refetch on mount
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
     });
-    
-    try {
-      setLoading(true);
-      setError(null);
+  }, [apiRepository]);
 
-      const response = await fetch(fullUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        ...options,
-      });
-
-      const responseTime = Date.now() - startTime;
-      debugLog('API_CALL_RESPONSE', `Received response from ${endpoint}`, {
-        status: response.status,
-        statusText: response.statusText,
-        responseTime,
-        ok: response.ok
-      });
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      
-      debugLog('API_CALL_SUCCESS', `API call successful for ${endpoint}`, {
-        success: result.success,
-        hasData: !!result.data,
-        dataKeys: result.data ? Object.keys(result.data) : [],
-        responseTime
-      });
-      
-      if (!result.success) {
-        throw new Error(result.error || 'API request failed');
-      }
-
-      return result.data;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      const responseTime = Date.now() - startTime;
-      
-      debugLog('API_CALL_ERROR', `API call failed for ${endpoint}`, {
-        error: errorMessage,
-        responseTime
-      });
-      
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const matchOcrText = useCallback(async (ocrText: string, options: any = {}) => {
-    return await apiCall('/match', {
-      method: 'POST',
-      body: JSON.stringify({
-        ocrText,
-        options: {
-          limit: 10,
-          ...options,
-        },
-      }),
+  // STATUS QUERY - Always fresh pipeline status
+  const statusQuery = useCallback(() => {
+    return useQuery({
+      queryKey: ['icr-status'],
+      queryFn: () => apiRepository.getStatus(),
+      staleTime: 0, // ZERO STALE TIME - Always fresh status
+      gcTime: 0, // No cache retention
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: true,
+      refetchInterval: 2000, // Auto-refresh every 2 seconds for live updates
     });
-  }, [apiCall]);
-
-  const processAllPsaLabels = useCallback(async (options: any = {}) => {
-    const params = new URLSearchParams({
-      limit: options.limit?.toString() || '50',
-      offset: options.offset?.toString() || '0',
-      forceReprocess: options.forceReprocess?.toString() || 'false',
-    });
-
-    return await apiCall(`/process-all-psa-labels?${params}`, {
-      method: 'GET',
-    });
-  }, [apiCall]);
-
-  const deletePsaLabel = useCallback(async (psaLabelId: string) => {
-    return await apiCall(`/delete-psa-label/${psaLabelId}`, {
-      method: 'DELETE',
-    });
-  }, [apiCall]);
-
-  const batchMatchOcrText = useCallback(async (ocrTexts: string[], options: any = {}) => {
-    return await apiCall('/batch-match', {
-      method: 'POST',
-      body: JSON.stringify({
-        ocrTexts,
-        options,
-      }),
-    });
-  }, [apiCall]);
-
-  const searchSets = useCallback(async (query: string = '', options: any = {}) => {
-    const params = new URLSearchParams({
-      query,
-      limit: options.limit?.toString() || '20',
-    });
-
-    return await apiCall(`/search/sets?${params}`, {
-      method: 'GET',
-    });
-  }, [apiCall]);
-
-  const searchCards = useCallback(async (query: string = '', filters: any = {}) => {
-    const params = new URLSearchParams({
-      query,
-      limit: filters.limit?.toString() || '20',
-    });
-
-    if (filters.setId) params.append('setId', filters.setId);
-    if (filters.setName) params.append('setName', filters.setName);
-
-    return await apiCall(`/search/cards?${params}`, {
-      method: 'GET',
-    });
-  }, [apiCall]);
-
-  const approveMatch = useCallback(async (approvalData: {
-    ocrText: string;
-    selectedCard: any;
-    extractedData: any;
-    confidence: number;
-    userCorrections?: any;
-    grade?: string;
-    myPrice?: number;
-  }) => {
-    return await apiCall('/approve', {
-      method: 'POST',
-      body: JSON.stringify(approvalData),
-    });
-  }, [apiCall]);
-
-  const editExtractedData = useCallback(async (ocrText: string, corrections: {
-    pokemonName?: string;
-    cardNumber?: string;
-  }) => {
-    return await apiCall('/edit-extract', {
-      method: 'POST',
-      body: JSON.stringify({
-        ocrText,
-        corrections,
-      }),
-    });
-  }, [apiCall]);
-
-  const getStats = useCallback(async () => {
-    return await apiCall('/stats', {
-      method: 'GET',
-    });
-  }, [apiCall]);
+  }, [apiRepository]);
 
   return {
-    matchOcrText,
-    processAllPsaLabels,
-    deletePsaLabel,
-    batchMatchOcrText,
-    searchSets,
-    searchCards,
-    approveMatch,
-    editExtractedData,
-    getStats,
-    loading,
-    error,
+    // ================================
+    // MUTATIONS
+    // ================================
+    uploadMutation,
+    extractMutation,
+    stitchMutation,
+    processOcrMutation: ocrMutation,
+    distributeTextMutation: distributeMutation,
+    matchCardsMutation: matchMutation,
+    deleteScansMutation,
+    deleteStitchedMutation,
+    selectMatchMutation,
+    createPsaMutation,
+    
+    // ================================
+    // QUERIES - ALWAYS FRESH DATA
+    // ================================
+    scansQuery,
+    statusQuery,
+    getScanDetails: (scanId: string) => apiRepository.getScanDetails(scanId),
+    
+    // ================================
+    // IMAGE SERVING UTILITIES - DEPRECATED
+    // ================================
+    // Image URLs are now automatically transformed in API responses
   };
 };
+
+// Export all response types for component use
+export type {
+  IcrUploadResponse,
+  IcrExtractLabelsResponse,
+  IcrStitchResult,
+  IcrOcrResult,
+  IcrDistributeResult,
+  IcrMatchResult,
+  IcrResultsResponse,
+  IcrStatusResponse,
+  IcrSelectMatchResponse,
+  IcrCreatePsaResponse,
+  IcrCreatePsaRequest
+};
+
+// Main hook export
+export { useOcrMatching as useIcrMatching };

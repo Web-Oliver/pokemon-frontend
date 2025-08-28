@@ -3,7 +3,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
 // Removed broken theme import
-import { getImageUrl, getThumbnailUrl } from '../../../utils/ui/imageUtils';
+import { getImageUrl, getThumbnailUrl, type ImageSource } from '../../../utils/ui/imageUtils';
 
 interface ImageSlideshowProps {
   images: string[];
@@ -13,6 +13,7 @@ interface ImageSlideshowProps {
   className?: string;
   showThumbnails?: boolean;
   themeColor?: string;
+  imageSource?: ImageSource;
 }
 
 export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
@@ -24,6 +25,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     className = '',
     showThumbnails = false,
     themeColor = 'dark',
+    imageSource = 'collection',
   }) => {
     // Simplified theme classes
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -129,8 +131,8 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
       img.onload = () => {
         setImageIsVertical(img.height > img.width);
       };
-      img.src = getImageUrl(imageUrl);
-    }, []);
+      img.src = getImageUrl(imageUrl, imageSource);
+    }, [imageSource]);
 
     // Check image orientation when selection changes
     useEffect(() => {
@@ -196,11 +198,12 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
             <div className="embla w-full h-full" ref={emblaMainRef}>
               <div className="embla__container flex h-full">
                 {images.map((image, index) => {
-                  const imageUrl = getImageUrl(image);
+                  const imageUrl = getImageUrl(image, imageSource);
                   // Debug logging
                   console.log(`[ImageSlideshow] Image ${index + 1}:`, {
                     originalPath: image,
                     resolvedUrl: imageUrl,
+                    imageSource: imageSource,
                     isBlob: image.startsWith('blob:'),
                     isHttp: image.startsWith('http'),
                   });
@@ -272,14 +275,14 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                         aria-label={`Go to image ${index + 1}`}
                       >
                         <img
-                          src={getThumbnailUrl(image)}
+                          src={getThumbnailUrl(image, imageSource)}
                           alt={`Thumbnail ${index + 1}`}
                           className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
                           loading="lazy"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             // Fallback to full image if thumbnail fails
-                            target.src = getImageUrl(image);
+                            target.src = getImageUrl(image, imageSource);
                             console.warn(
                               `Failed to load thumbnail, falling back to full image: ${target.src}`
                             );

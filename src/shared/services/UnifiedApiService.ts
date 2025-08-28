@@ -748,18 +748,16 @@ export class UnifiedApiService {
       params: ProductSearchParams
     ): Promise<SearchResponse<ISetProduct>> {
       console.log(
-        '[API DEBUG] Calling unified /search?type=set-products with params:',
+        '[API DEBUG] FIXED: Calling /set-products?q= with params:',
         params
       );
       try {
-        // Use unified search endpoint for set products
-        const response = await unifiedHttpClient.get<any>('/search/set-products', {
+        // FIXED: Use direct set-products endpoint with q parameter
+        const response = await unifiedHttpClient.get<any>('/set-products', {
           params: {
-            query: params.query,
-            limit: params.limit,
-            page: params.page,
-            category: params.category,
-            setName: params.setName,
+            q: params.query, // Use 'q' parameter instead of 'query'
+            limit: params.limit || 10,
+            page: params.page || 1,
           },
           skipTransform: true
         });
@@ -787,11 +785,13 @@ export class UnifiedApiService {
     async searchProducts(
       params: ProductSearchParams
     ): Promise<SearchResponse<IProduct>> {
-      console.log('[API DEBUG] Calling specific /search/products endpoint with params:', params);
+      console.log('[API DEBUG] FIXED: Using /products endpoint with params:', params);
       try {
-        const response = await unifiedHttpClient.get<any>('/search/products', {
+        // FIXED: Use working /products endpoint instead of broken /search/products
+        const response = await unifiedHttpClient.get<any>('/products', {
           params: {
-            query: params.query || '*', // Use '*' for empty queries
+            // Don't use '*' - just omit query entirely for "show all" behavior
+            ...(params.query && params.query.trim() && { q: params.query }),
             category: params.category,
             setName: params.setName,
             setProductId: params.setProductId, // Direct MongoDB ObjectId filtering
@@ -806,9 +806,8 @@ export class UnifiedApiService {
           skipTransform: true,
         });
 
-        // Backend returns {success: true, data: {products: [...], total: N, ...}}
-        const responseData = response?.data?.data || response?.data || {};
-        const productsData = responseData.products || [];
+        // Backend returns {success: true, data: [...]} directly
+        const productsData = response?.data || [];
         const searchResponse: SearchResponse<IProduct> = {
           data: productsData,
           count: responseData.total || responseData.count || productsData.length,

@@ -14,7 +14,7 @@ import { themes, ThemeName } from '@/theme/DesignSystem';
 
 // Shared Components
 import { InformationWidget } from '@/components/molecules/common/InformationWidget';
-import { EmptyState } from '@/components/molecules/common/EmptyState';
+import EmptyState from '@/components/molecules/common/EmptyState';
 
 // Services & API
 import { UnifiedApiService } from '@/services/UnifiedApiService';

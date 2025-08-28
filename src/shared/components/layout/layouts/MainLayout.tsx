@@ -154,6 +154,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       bgColor: 'bg-gradient-to-br from-pink-500 to-rose-600',
       textColor: 'text-pink-400',
     },
+    {
+      name: 'Card Matching',
+      href: '/matching',
+      icon: Zap,
+      color: 'from-yellow-400 to-orange-400',
+      bgColor: 'bg-gradient-to-br from-yellow-500 to-orange-600',
+      textColor: 'text-yellow-400',
+    },
   ];
 
   const currentPath = window.location.pathname;

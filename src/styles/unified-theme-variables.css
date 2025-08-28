@@ -45,6 +45,57 @@
   --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.2);
   --glass-blur: 12px;
+  
+  /* GLASSMORPHISM SEMANTIC SYSTEM - From Component Analysis */
+  --surface-glass: rgba(255, 255, 255, 0.1);
+  
+  /* NEURAL BACKGROUND & PARTICLE EFFECTS */
+  --neural-primary: linear-gradient(45deg, rgba(6, 182, 212, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, rgba(236, 72, 153, 0.3) 100%);
+  --neural-secondary: radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
+  --quantum-particles: linear-gradient(135deg, rgba(139, 92, 246, 0.4) 0%, rgba(59, 130, 246, 0.3) 100%);
+  --holographic-grid: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  
+  /* PARTICLE COLORS */
+  --particle-cyan: #06b6d4;
+  --particle-purple: #8b5cf6;  
+  --particle-pink: #ec4899;
+  --particle-emerald: #10b981;
+  --surface-glass-light: rgba(255, 255, 255, 0.2);
+  --border-glass: rgba(255, 255, 255, 0.2);
+  --text-glass-foreground: rgba(255, 255, 255, 1);
+  --text-glass-muted: rgba(6, 182, 212, 0.7);
+  
+  /* GRADIENT SYSTEM - Consolidates Component Patterns */
+  --gradient-cosmic: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(147, 51, 234, 0.15) 50%, rgba(236, 72, 153, 0.2) 100%);
+  --gradient-cosmic-subtle: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(147, 51, 234, 0.15) 50%, rgba(236, 72, 153, 0.15) 100%);
+  --gradient-error: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(236, 72, 153, 0.15) 50%, rgba(239, 68, 68, 0.2) 100%);
+  --gradient-success: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.15) 50%, rgba(59, 130, 246, 0.2) 100%);
+  --gradient-warning: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(249, 115, 22, 0.15) 50%, rgba(234, 179, 8, 0.2) 100%);
+  --gradient-info: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 50%, rgba(139, 92, 246, 0.2) 100%);
+  
+  /* SHADOW SYSTEM - From Component Analysis */
+  --shadow-cosmic: 0 0 80px rgba(139, 92, 246, 0.2);
+  --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.37);
+  --shadow-premium: 0 25px 50px rgba(168, 85, 247, 0.15);
+  
+  /* INTERACTIVE SYSTEM - From Component Analysis */
+  --scale-interactive: 1.02;
+  --scale-interactive-large: 1.05;
+  --rotate-interactive: 1deg;
+  --rotate-interactive-large: 3deg;
+  --transition-interactive: all 0.3s ease;
+  --transition-interactive-slow: all 0.5s ease;
+  
+  /* DENSITY SYSTEM - Consolidates Spacing Patterns */
+  --density-compact: 0.5rem;
+  --density-comfortable: 1rem;
+  --density-spacious: 1.5rem;
+  
+  /* STATUS COLORS - Semantic Alternatives */
+  --status-success: hsl(var(--pokemon-green));
+  --status-warning: hsl(var(--pokemon-yellow));
+  --status-error: 0 84% 60%;
+  --status-info: hsl(var(--pokemon-blue));
 }
 
 /* ==========================================
@@ -699,6 +750,107 @@
 [data-glassmorphism-enabled="true"] .glass-morphism {
   will-change: backdrop-filter;
   transform: translateZ(0);
+}
+
+/* ==========================================
+   NEURAL BACKGROUND & PARTICLE EFFECTS
+   ========================================== */
+
+.bg-neural {
+  background: var(--neural-primary);
+  background-size: 200% 200%;
+  animation: neural-wave 20s ease-in-out infinite;
+}
+
+.quantum-particles {
+  background: var(--quantum-particles);
+  background-size: 400% 400%;
+  animation: quantum-flow 15s ease-in-out infinite;
+}
+
+.holographic-grid {
+  background-image: 
+    var(--holographic-grid),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: grid-shimmer 10s linear infinite;
+}
+
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: particle-float 6s ease-in-out infinite;
+}
+
+.particle-cyan {
+  background: var(--particle-cyan);
+  box-shadow: 0 0 20px var(--particle-cyan);
+}
+
+.particle-purple {
+  background: var(--particle-purple);
+  box-shadow: 0 0 20px var(--particle-purple);
+}
+
+.particle-pink {
+  background: var(--particle-pink);
+  box-shadow: 0 0 20px var(--particle-pink);
+}
+
+.particle-emerald {
+  background: var(--particle-emerald);
+  box-shadow: 0 0 20px var(--particle-emerald);
+}
+
+.particle-sm {
+  width: 4px;
+  height: 4px;
+}
+
+.particle-md {
+  width: 8px;
+  height: 8px;
+}
+
+.particle-lg {
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes neural-wave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes quantum-flow {
+  0%, 100% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+@keyframes grid-shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+  25% { transform: translateY(-20px) rotate(90deg); opacity: 0.8; }
+  50% { transform: translateY(0px) rotate(180deg); opacity: 0.6; }
+  75% { transform: translateY(-10px) rotate(270deg); opacity: 0.7; }
 }
 
 /* ==========================================

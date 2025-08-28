@@ -536,7 +536,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           confirmMessage={`Are you sure you want to remove this ${
             imageToRemove.isExisting ? 'existing' : 'new'
           } image?`}
-          confirmText="Remove"
+          confirmButtonText="Remove"
           variant="danger"
           loading={isRemoving}
         />

@@ -42,6 +42,27 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
     return type as 'psa' | 'raw' | 'sealed';
   };
 
+  // Determine image source based on item workflow
+  const getImageSource = (): 'collection' | 'psa-label' => {
+    // Check if item came from OCR workflow
+    // OCR items typically have specific markers or properties
+    if ('psaLabelId' in item || 'ocrId' in item || 'ocrSourceId' in item) {
+      return 'psa-label';
+    }
+    
+    // Check if images contain PSA label ID patterns (MongoDB ObjectId format)
+    const hasPsaLabelImages = item.images?.some(img => 
+      typeof img === 'string' && /^[0-9a-f]{24}$/i.test(img)
+    );
+    
+    if (hasPsaLabelImages) {
+      return 'psa-label';
+    }
+    
+    // Default to collection for manual entries
+    return 'collection';
+  };
+
   return (
     <PokemonCard
       title="Premium Gallery"
@@ -69,6 +90,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
           showActions={true}
           enableInteractions={false}
           className="h-full"
+          imageSource={getImageSource()}
         />
       </div>
 

@@ -533,7 +533,7 @@ export function useThemeMetadata() {
  *   const { isDark } = useUnifiedTheme();
  *   return (
  *     <div className={isDark ? 'bg-gray-900 text-white' : 'bg-white text-black'}>
- *       {/* This breaks when adding new themes! */}
+ *       This breaks when adding new themes!
  *     </div>
  *   );
  * };

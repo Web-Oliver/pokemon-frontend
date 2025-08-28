@@ -93,13 +93,36 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
     setValue(secondaryFieldName, value);
   };
 
-  // Show editing message if in edit mode
+  // Show read-only values in edit mode
   if (isEditing) {
     return (
-      <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-        <p className="text-sm text-amber-400">
-          Information cannot be changed when editing. Details are locked after adding to preserve data integrity.
-        </p>
+      <div className="space-y-4">
+        {/* Primary Field (Set Name) - Read Only */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            {primaryLabel}
+          </label>
+          <div className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white font-medium">
+            {primaryValue || 'Not specified'}
+          </div>
+        </div>
+
+        {/* Secondary Field (Card Name) - Read Only */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            {secondaryLabel}
+          </label>
+          <div className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-xl text-white font-medium">
+            {secondaryValue || 'Not specified'}
+          </div>
+        </div>
+
+        {/* Info message */}
+        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+          <p className="text-xs text-amber-400">
+            Set and card information cannot be changed when editing to preserve data integrity.
+          </p>
+        </div>
       </div>
     );
   }

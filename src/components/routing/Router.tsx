@@ -78,8 +78,13 @@ const DbaExport = lazy(
 );
 
 // OCR Features (separate chunk for specialized functionality)
-const OcrMatching = lazy(
-  () => import(/* webpackChunkName: "ocr-features" */ '../../features/ocr-matching/pages/OcrMatching')
+const OcrWorkflow = lazy(
+  () => import(/* webpackChunkName: "ocr-features" */ '../../features/ocr-matching/components/OcrWorkflow')
+);
+
+// Matching Features (separate chunk for matching workflow)
+const MatchingWorkflow = lazy(
+  () => import(/* webpackChunkName: "matching-features" */ '../../features/matching/pages/MatchingWorkflow')
 );
 
 // Route Configuration - Single Source of Truth for Routing Logic
@@ -103,7 +108,9 @@ const ROUTE_CONFIG: RouteConfig[] = [
   { path: '/analytics', component: SalesAnalytics, exact: true },
   { path: '/activity', component: Activity, exact: true },
   { path: '/dba-export', component: DbaExport, exact: true },
-  { path: '/ocr-matching', component: OcrMatching, exact: true },
+  { path: '/ocr', component: OcrWorkflow, exact: true },
+  { path: '/ocr-matching', component: OcrWorkflow, exact: true },
+  { path: '/matching', component: MatchingWorkflow, exact: true },
 
   // Dynamic Routes - Parameterized with type safety
   {

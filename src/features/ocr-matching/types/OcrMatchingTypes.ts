@@ -1,148 +1,129 @@
-// OCR Matching Types - Single Responsibility: Type definitions only
+// ICR Matching Types - New Implementation for ICR Pipeline
 
-export interface ExtractedData {
-  pokemonName?: string;
-  cardNumber?: string;
+/**
+ * ICR Extracted Data from PSA label parsing
+ */
+export interface IcrExtractedData {
+  certificationNumber?: string;
+  grade?: number;
+  year?: number;
+  cardName?: string;
+  setName?: string;
+  language?: string;
+  possibleCardNumbers?: string[];
+  possiblePokemonNames?: string[];
+  modifiers?: string[];
 }
 
-export interface CardData {
-  _id: string;
+/**
+ * ICR Card Match with detailed scoring
+ */
+export interface IcrCardMatch {
+  cardId: string;
   cardName: string;
   cardNumber: string;
-  setName?: string;
-  setId?: string;
-  variety?: string;
-  rarity?: string;
-}
-
-export interface MatchData {
-  card: CardData;
-  confidence?: number;
-  matchScore?: number;
-  searchStrategy?: string;
-  reasons?: string[];
-}
-
-export interface SetRecommendation {
-  _id: string;
   setName: string;
   year?: number;
-  confidence?: number;
-  strategy?: string;
-  matchingCards?: number;
-}
-
-export interface PsaLabelResult {
-  psaLabelId: string;
-  labelImage?: string;
-  ocrText: string;
-  extractedData?: ExtractedData;
-  matches?: MatchData[];
-  confidence?: number;
-  certificationNumber?: string;
-  alreadyProcessed?: boolean;
-}
-
-export interface OcrMatchingState {
-  // Image and processing
-  selectedImage: File | null;
-  isProcessing: boolean;
-  
-  // OCR results
-  ocrText: string;
-  extractedData: ExtractedData | null;
-  
-  // Matches and recommendations
-  matches: MatchData[];
-  setRecommendations: SetRecommendation[];
   confidence: number;
-  
-  // Selection state
-  selectedMatch: MatchData | null;
-  selectedSetName: string | null;
-  filteredMatches: MatchData[] | null;
-  
-  // PSA label processing
-  showPsaLabelProcessing: boolean;
-  psaLabelResults: PsaLabelResult[];
-  selectedPsaLabel: PsaLabelResult | null;
-  
-  // Editing state
-  isEditingCard: boolean;
-  isEditing: boolean;
-  editingCardImage: string | null;
-  showCardSelector: boolean;
-  
-  // Approval form
-  showApprovalForm: boolean;
-  gradeValue: string;
-  priceValue: number;
-  dateValue: string;
+  scores: {
+    yearMatch: number;
+    pokemonMatch: number;
+    cardNumberMatch: number;
+    modifierMatch: number;
+    setVerification: number;
+  };
 }
 
-export interface OcrApiResponse {
-  text: string;
-  extractedData: ExtractedData;
-  matches: MatchData[];
-  setRecommendations: SetRecommendation[];
+/**
+ * ICR Best Match summary
+ */
+export interface IcrBestMatch {
+  cardName: string;
+  cardNumber: string;
+  setName: string;
   confidence: number;
 }
 
-export interface PsaCardApprovalData {
-  cardId: string;
-  grade: string;
+
+
+
+
+
+/**
+ * PSA Card Creation Data for ICR
+ */
+export interface IcrPsaCardCreationData {
   myPrice: number;
-  dateAdded: Date;
-  images?: string[];
-  psaLabelId?: string;
+  grade?: string;
+  dateAdded?: Date;
 }
 
-// Component Props Interfaces
-export interface OcrImageUploadProps {
-  selectedImage: File | null;
+// ICR Component Props Interfaces
+
+/**
+ * ICR Image Upload Component Props
+ */
+export interface IcrImageUploadProps {
+  selectedImages: File[];
   isProcessing: boolean;
-  onImageSelect: (file: File) => void;
-  onProcessImage: () => void;
-  onUseDemo: () => void;
+  onImagesSelect: (files: File[]) => void;
+  onProcessImages: () => void;
+  onClearImages: () => void;
 }
 
-export interface ExtractedDataDisplayProps {
-  extractedData: ExtractedData;
+/**
+ * ICR Batch Results Component Props
+ */
+export interface IcrBatchResultsProps {
+  batchResults: IcrBatchResult[];
+  batchStatus: IcrBatchStatus | null;
+  selectedScan: IcrBatchResult | null;
+  expandedScanId: string | null;
+  onScanSelect: (scan: IcrBatchResult) => void;
+  onScanExpand: (scanId: string) => void;
+  onCardMatchSelect: (scanId: string, cardId: string) => void;
+  onPsaCreate: (scanId: string) => void;
 }
 
-export interface MatchCardProps {
-  match: MatchData;
-  index: number;
+/**
+ * ICR Scan Detail Component Props
+ */
+export interface IcrScanDetailProps {
+  scan: IcrBatchResult;
+  isExpanded: boolean;
+  selectedCardMatch: IcrCardMatch | null;
+  onCardMatchSelect: (cardId: string) => void;
+  onPsaCreate: () => void;
+}
+
+/**
+ * ICR Card Match Component Props
+ */
+export interface IcrCardMatchProps {
+  cardMatch: IcrCardMatch;
   isSelected: boolean;
-  setRecommendations?: SetRecommendation[];
-  onSelect: (match: MatchData) => void;
-  onEdit: (match: MatchData) => void;
+  onSelect: (cardId: string) => void;
 }
 
-export interface SetRecommendationsProps {
-  setRecommendations: SetRecommendation[];
-  matches: MatchData[];
-  selectedSetName: string | null;
-  onSetSelect: (setName: string, filteredMatches: MatchData[]) => void;
-  onShowAllSets: () => void;
+/**
+ * ICR PSA Creation Form Props
+ */
+export interface IcrPsaCreationFormProps {
+  scanId: string;
+  isVisible: boolean;
+  onSubmit: (data: IcrPsaCardCreationData) => void;
+  onCancel: () => void;
+  loading: boolean;
 }
 
-export interface MatchResultsProps {
-  matches: MatchData[];
-  filteredMatches: MatchData[] | null;
-  selectedMatch: MatchData | null;
-  selectedSetName: string | null;
-  confidence: number;
-  setRecommendations: SetRecommendation[];
-  onMatchSelect: (match: MatchData) => void;
-  onEditMatch: (match: MatchData) => void;
-  onManualSelection: () => void;
-}
-
-export interface PsaLabelResultsProps {
-  psaLabelResults: PsaLabelResult[];
-  selectedPsaLabel: PsaLabelResult | null;
-  onSelectPsaLabel: (result: PsaLabelResult) => void;
-  onEditPsaLabel: (result: PsaLabelResult) => void;
-  onDeletePsaLabel: (psaLabelId: string) => void;
+/**
+ * ICR Action Buttons Props
+ */
+export interface IcrActionButtonsProps {
+  scanId: string;
+  matchingStatus: string;
+  onManualSelect: () => void;
+  onCreatePsa: () => void;
+  disabled?: boolean;
+  loading?: boolean;
 }

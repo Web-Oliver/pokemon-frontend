@@ -39,10 +39,10 @@ export const CACHE_TIMES = {
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
     gcTime: 1000 * 60 * 60 * 48, // 48 hours
   },
-  // Real-time data - cache for 30 seconds
+  // Real-time data - NO CACHING for ICR workflow
   REALTIME_DATA: {
-    staleTime: 1000 * 30, // 30 seconds
-    gcTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 0, // NO CACHING - Always fresh data
+    gcTime: 0, // NO CACHE RETENTION - Immediate cleanup
   },
 } as const;
 
@@ -56,7 +56,7 @@ const queryCache = new QueryCache({
     });
   },
   onSuccess: (data, query) => {
-    const isDev = (import.meta as any).env?.MODE === 'development';
+    const isDev = (import.meta as ImportMeta & { env?: { MODE?: string } }).env?.MODE === 'development';
     if (isDev) {
       log('[QUERY CACHE] Query succeeded', {
         queryKey: query.queryKey,
@@ -245,6 +245,14 @@ export const queryKeys = {
   userSettings: () => [...queryKeys.user, 'settings'] as const,
   userSession: () => [...queryKeys.user, 'session'] as const,
 
+  // === ICR/OCR PROCESSING ===
+  icr: ['icr'] as const,
+  icrScans: (status?: string, page?: number, limit?: number) =>
+    [...queryKeys.icr, 'scans', { status, page, limit }] as const,
+  icrStitched: (page?: number, limit?: number) =>
+    [...queryKeys.icr, 'stitched', { page, limit }] as const,
+  icrStatus: () => [...queryKeys.icr, 'status'] as const,
+
   // === SYSTEM & META ===
   system: ['system'] as const,
   systemStatus: () => [...queryKeys.system, 'status'] as const,
@@ -339,6 +347,41 @@ export const cacheInvalidation = {
     });
     queryClient.invalidateQueries({ queryKey: queryKeys.auctionsList() });
   },
+
+  // ICR/OCR mutations
+  onUploadScans: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.icr });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('uploaded') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+  },
+
+  onExtractLabels: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.icr });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('uploaded') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+  },
+
+  onStitchImages: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.icr });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('stitched') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStitched() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+  },
+
+  onDeleteStitchedImage: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.icr });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('extracted') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrScans('stitched') });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStitched() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+  },
+
+  onDeleteScans: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.icr });
+    queryClient.invalidateQueries({ queryKey: queryKeys.icrStatus() });
+  }
 
   // UNUSED CACHE MANAGEMENT FUNCTIONS REMOVED - Not used by any frontend components
 };

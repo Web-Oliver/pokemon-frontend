@@ -14,7 +14,7 @@ import { log } from '../shared/utils/performance/logger';
 import { Toaster } from 'react-hot-toast';
 import { PageLoading } from '../shared/components/molecules/common/LoadingStates';
 import { queryClient } from './lib/queryClient';
-import { ThemeProvider } from '../contexts/theme-context';
+import { UnifiedThemeProvider } from '../contexts/UnifiedThemeProvider';
 import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
 // Layout
@@ -102,18 +102,18 @@ const DbaExport = lazy(
     )
 );
 
-// OCR Demo (separate chunk)
-const OcrDemo = lazy(
-  () =>
-    import(
-      /* webpackChunkName: "ocr-demo" */ '../shared/examples/OcrIntegrationExample'
-    )
+
+// ICR Features (separate chunk for specialized functionality)  
+const OcrWorkflow = lazy(
+  () => import(/* webpackChunkName: "icr-features" */ '../features/ocr-matching/components/OcrWorkflow')
 );
 
-// OCR Features (separate chunk for specialized functionality)
-const OcrMatching = lazy(
-  () => import(/* webpackChunkName: "ocr-features" */ '../features/ocr-matching/pages/OcrMatching')
+// Matching Features (separate chunk for matching workflow)
+const MatchingWorkflow = lazy(
+  () => import(/* webpackChunkName: "matching-features" */ '../features/matching/pages/MatchingWorkflow')
 );
+
+// Old scan components removed - now using unified OcrWorkflow
 
 // Context7 Pattern: Main App component with useTransition for smooth navigation
 function App() {
@@ -210,11 +210,16 @@ function App() {
         return <Activity />;
       case '/dba-export':
         return <DbaExport />;
-      case '/ocr-demo':
-        return <OcrDemo />;
       case '/ocr':
       case '/ocr-matching':
-        return <OcrMatching />;
+        return <OcrWorkflow />;
+      case '/matching':
+        return <MatchingWorkflow />;
+      case '/ocr/scans':
+      case '/ocr/uploaded':
+      case '/ocr/extracted':
+      case '/ocr/stitch':
+        return <OcrWorkflow />;
       default:
         // Default to dashboard for root and unknown routes
         return <Dashboard />;
@@ -223,7 +228,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="pokemon-theme">
+      <UnifiedThemeProvider storageKey="pokemon-unified-theme-settings" enableSystemSync={true}>
         <MainLayout>
           {/* Context7 Pattern: Suspense boundary with transition state */}
           <Suspense
@@ -240,7 +245,7 @@ function App() {
             {renderPage()}
           </Suspense>
         </MainLayout>
-        {(import.meta as any).env?.MODE === 'development' && (
+        {(import.meta as ImportMeta & { env?: { MODE?: string } }).env?.MODE === 'development' && (
           <>
             <ReactQueryDevtools
               initialIsOpen={false}
@@ -286,7 +291,7 @@ function App() {
             },
           }}
         />
-      </ThemeProvider>
+      </UnifiedThemeProvider>
     </QueryClientProvider>
   );
 }

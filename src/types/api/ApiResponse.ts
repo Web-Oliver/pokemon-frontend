@@ -27,7 +27,7 @@ export interface BaseApiResponse {
  * Success Response with Data
  * Generic type-safe wrapper for successful API responses
  */
-export interface ApiSuccessResponse<T = any> extends BaseApiResponse {
+export interface ApiSuccessResponse<T = unknown> extends BaseApiResponse {
   success: true;
   data: T;
   meta?: ResponseMetadata;
@@ -42,7 +42,7 @@ export interface ApiErrorResponse extends BaseApiResponse {
   error: {
     code: string;
     message: string;
-    details?: Record<string, any>;
+    details?: Record<string, unknown>;
     stack?: string; // Only in development
   };
 }
@@ -51,7 +51,7 @@ export interface ApiErrorResponse extends BaseApiResponse {
  * Unified API Response Type
  * LSP-compliant union type for all API responses
  */
-export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
+export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 /**
  * Paginated Response Structure
@@ -123,7 +123,7 @@ export interface FileUploadResponse extends BaseApiResponse {
  * Bulk Operation Response
  * For operations affecting multiple resources
  */
-export interface BulkOperationResponse<T = any> extends BaseApiResponse {
+export interface BulkOperationResponse<T = unknown> extends BaseApiResponse {
   success: true;
   data: {
     successful: T[];
@@ -180,11 +180,10 @@ export interface ActivityResponse {
   itemId: string;
   description: string;
   timestamp: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
-export interface ActivityListResponse
-  extends PaginatedResponse<ActivityResponse> {}
+export type ActivityListResponse = PaginatedResponse<ActivityResponse>;
 
 /**
  * Card API Response Types
@@ -211,7 +210,7 @@ export interface CardResponse {
   };
 }
 
-export interface CardListResponse extends CollectionResponse<CardResponse> {}
+export type CardListResponse = CollectionResponse<CardResponse>;
 
 /**
  * Set API Response Types
@@ -225,7 +224,7 @@ export interface SetResponse {
   setUrl?: string;
 }
 
-export interface SetListResponse extends CollectionResponse<SetResponse> {}
+export type SetListResponse = CollectionResponse<SetResponse>;
 
 /**
  * Auction API Response Types
@@ -247,8 +246,7 @@ export interface AuctionResponse {
   soldValue?: number;
 }
 
-export interface AuctionListResponse
-  extends CollectionResponse<AuctionResponse> {}
+export type AuctionListResponse = CollectionResponse<AuctionResponse>;
 
 // ============================================================================
 // TYPE GUARDS FOR RUNTIME TYPE SAFETY
@@ -267,7 +265,7 @@ export function isSuccessResponse<T>(
  * Type guard to check if response is an error
  */
 export function isErrorResponse(
-  response: ApiResponse<any>
+  response: ApiResponse<unknown>
 ): response is ApiErrorResponse {
   return response.success === false && 'error' in response;
 }
@@ -276,7 +274,7 @@ export function isErrorResponse(
  * Type guard to check if response is paginated
  */
 export function isPaginatedResponse<T>(
-  response: ApiResponse<T[] | any>
+  response: ApiResponse<T[] | unknown>
 ): response is PaginatedResponse<T> {
   return (
     isSuccessResponse(response) &&
@@ -289,7 +287,7 @@ export function isPaginatedResponse<T>(
  * Type guard to check if response is a collection
  */
 export function isCollectionResponse<T>(
-  response: ApiResponse<T[] | any>
+  response: ApiResponse<T[] | unknown>
 ): response is CollectionResponse<T> {
   return (
     isSuccessResponse(response) &&
@@ -307,7 +305,7 @@ export function isCollectionResponse<T>(
  * Ensures LSP compliance and type safety
  */
 export function transformApiResponse<T>(
-  rawResponse: any,
+  rawResponse: unknown,
   _expectedType?: string
 ): ApiResponse<T> {
   // Handle axios response wrapper
@@ -341,7 +339,7 @@ export function transformApiResponse<T>(
  * Create error response from error object
  */
 export function createErrorResponse(
-  error: any,
+  error: unknown,
   operation?: string
 ): ApiErrorResponse {
   return {

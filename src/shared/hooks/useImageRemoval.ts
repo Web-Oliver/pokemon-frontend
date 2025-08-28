@@ -33,6 +33,31 @@ export const useImageRemoval = (
     setIsRemoving(true);
 
     try {
+      // For existing images, send DELETE request to backend
+      if (imageToRemove.isExisting) {
+        try {
+          // Extract filename from URL (e.g., "/uploads/collection/filename.jpg" -> "filename.jpg")
+          const urlParts = imageToRemove.url.split('/');
+          const filename = urlParts[urlParts.length - 1];
+          
+          console.log(`[useImageRemoval] Deleting existing image: ${filename}`);
+          
+          const response = await fetch(`/api/images/delete/${filename}`, {
+            method: 'DELETE',
+          });
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(`Failed to delete image from server: ${response.status} ${errorData}`);
+          }
+
+          console.log(`[useImageRemoval] Successfully deleted image from server: ${filename}`);
+        } catch (error) {
+          console.error('[useImageRemoval] Error deleting image from server:', error);
+          // Don't throw - continue with UI removal even if server deletion fails
+        }
+      }
+
       // Clean up object URL if it's a new image
       if (!imageToRemove.isExisting && imageToRemove.url.startsWith('blob:')) {
         URL.revokeObjectURL(imageToRemove.url);

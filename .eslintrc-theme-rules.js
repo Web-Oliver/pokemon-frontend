@@ -207,7 +207,7 @@ module.exports = {
               const hasAriaLabelledBy = node.attributes.some(attr =>
                 attr.name && attr.name.name === 'aria-labelledby'
               );
-              const hasRole = node.attributes.some(attr =>
+              const _hasRole = node.attributes.some(attr =>
                 attr.name && attr.name.name === 'role'
               );
 

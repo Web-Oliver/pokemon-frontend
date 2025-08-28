@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { cn } from '../../../utils';
+import { cn } from '../../../../lib/utils';
 import { pokemonCardVariants } from './unifiedVariants';
 
 export interface PokemonCardProps {

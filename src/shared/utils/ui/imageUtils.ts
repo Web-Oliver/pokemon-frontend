@@ -17,10 +17,15 @@ const getServerBaseUrl = (): string => {
 };
 
 /**
- * Converts a relative image path to a full URL
- * SRP: Only handles image URL construction
+ * Image source context for proper URL routing
  */
-export const getImageUrl = (imagePath: string): string => {
+export type ImageSource = 'collection' | 'psa-label' | 'generic';
+
+/**
+ * Converts a relative image path to a full URL with context awareness
+ * SRP: Only handles image URL construction with source context
+ */
+export const getImageUrl = (imagePath: string, source: ImageSource = 'collection'): string => {
   if (!imagePath) return '';
 
   // If already a full URL, return as-is
@@ -34,16 +39,42 @@ export const getImageUrl = (imagePath: string): string => {
   }
 
   const serverBase = getServerBaseUrl();
-  const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-
-  return `${serverBase}${cleanPath}`;
+  
+  // Route based on source context
+  switch (source) {
+    case 'collection':
+      // Fix malformed paths with doubled /api/images/ prefix
+      let cleanPath = imagePath;
+      if (cleanPath.includes('/api/images/api/images/')) {
+        // Remove the doubled prefix and keep only the last part
+        cleanPath = cleanPath.replace('/api/images/api/images/', '/');
+      } else if (cleanPath.startsWith('/api/images/')) {
+        // Remove the existing /api/images/ prefix
+        cleanPath = cleanPath.replace('/api/images/', '/');
+      } else if (!cleanPath.startsWith('/')) {
+        // Add leading slash if missing
+        cleanPath = `/${cleanPath}`;
+      }
+      
+      return `${serverBase}/api/images${cleanPath}`;
+      
+    case 'psa-label':
+      // ICR workflow PSA labels use specific endpoint based on filename
+      return `${serverBase}/api/icr/images/labels/${imagePath}`;
+      
+    case 'generic':
+    default:
+      // Generic images (fallback to old behavior)
+      const genericPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+      return `${serverBase}${genericPath}`;
+  }
 };
 
 /**
- * Converts a relative image path to a thumbnail URL
+ * Converts a relative image path to a thumbnail URL with context awareness
  * SRP: Only handles thumbnail URL construction
  */
-export const getThumbnailUrl = (imagePath: string): string => {
+export const getThumbnailUrl = (imagePath: string, source: ImageSource = 'collection'): string => {
   if (!imagePath) return '';
 
   // If already a full URL, convert to thumbnail
@@ -58,12 +89,17 @@ export const getThumbnailUrl = (imagePath: string): string => {
     return imagePath;
   }
 
-  // Create thumbnail path
+  // PSA labels don't have thumbnails, return full image
+  if (source === 'psa-label') {
+    return getImageUrl(imagePath, source);
+  }
+
+  // Create thumbnail path for collection images
   const ext = imagePath.substring(imagePath.lastIndexOf('.'));
   const nameWithoutExt = imagePath.substring(0, imagePath.lastIndexOf('.'));
   const thumbnailPath = `${nameWithoutExt}-thumb${ext}`;
 
-  return getImageUrl(thumbnailPath);
+  return getImageUrl(thumbnailPath, source);
 };
 
 export interface ImagePreview {
@@ -75,15 +111,16 @@ export interface ImagePreview {
 }
 
 /**
- * Creates a preview object for existing images
+ * Creates a preview object for existing images with context
  * SRP: Only handles existing image preview creation
  */
 export const createExistingImagePreview = (
   url: string,
-  index: number
+  index: number,
+  source: ImageSource = 'collection'
 ): ImagePreview => ({
   id: `existing-${index}-${generateId('img')}`,
-  url: getImageUrl(url),
+  url: getImageUrl(url, source),
   isExisting: true,
 });
 
@@ -152,15 +189,16 @@ export const cleanupObjectURL = (preview: ImagePreview) => {
 };
 
 /**
- * Process image URLs for consistent display 
+ * Process image URLs for consistent display with context awareness
  * Handles localhost prefix cleanup and proper URL construction
  */
 export const processImageUrl = (
-  imagePath: string | undefined
+  imagePath: string | undefined,
+  source: ImageSource = 'collection'
 ): string | undefined => {
   if (!imagePath) {
     return undefined;
   }
 
-  return getImageUrl(imagePath);
+  return getImageUrl(imagePath, source);
 };

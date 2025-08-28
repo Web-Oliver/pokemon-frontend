@@ -26,6 +26,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ImageSlideshow } from './ImageSlideshow';
+import { type ImageSource } from '../../../utils/ui/imageUtils';
 
 export interface ImageProductViewProps {
   // Core image data
@@ -54,6 +55,7 @@ export interface ImageProductViewProps {
   aspectRatio?: 'auto' | 'card' | 'square' | 'wide';
   className?: string;
   themeColor?: string;
+  imageSource?: ImageSource;
 
   // Callback functions
   onView?: () => void;
@@ -85,6 +87,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
   aspectRatio = 'card',
   className = '',
   themeColor = 'dark',
+  imageSource = 'collection',
   onView,
   onEdit,
   onDelete,
@@ -285,6 +288,7 @@ const ImageProductViewComponent: React.FC<ImageProductViewProps> = ({
           className="w-full h-full rounded-2xl"
           showThumbnails={variant === 'detail'}
           themeColor={themeColor}
+          imageSource={imageSource}
         />
       </div>
 
@@ -352,7 +356,8 @@ const arePropsEqual = (
     prevProps.showBadge === nextProps.showBadge &&
     prevProps.showPrice === nextProps.showPrice &&
     prevProps.showActions === nextProps.showActions &&
-    prevProps.enableInteractions === nextProps.enableInteractions
+    prevProps.enableInteractions === nextProps.enableInteractions &&
+    prevProps.imageSource === nextProps.imageSource
   );
 };
 

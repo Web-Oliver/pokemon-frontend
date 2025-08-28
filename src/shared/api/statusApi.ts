@@ -47,7 +47,7 @@ export const getApiStatus = async (): Promise<ApiStatusResponse> => {
     'API status'
   );
 
-  return response.data!;
+  return response;
 };
 
 /**
@@ -62,9 +62,9 @@ export const getDataCounts = async (): Promise<{
 }> => {
   const status = await getApiStatus();
   return {
-    cards: status.data.cards,
-    sets: status.data.sets,
-    products: status.data.products,
-    setProducts: status.data.setProducts,
+    cards: status.cards,
+    sets: status.sets,
+    products: status.products,
+    setProducts: status.setProducts,
   };
 };
