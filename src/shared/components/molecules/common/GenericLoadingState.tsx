@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../../hooks/use-theme';
+import { useTheme } from '../../../../theme';
 import { getElementTheme, type ThemeColor } from '../../../../lib/theme-utils';
 
 export type LoadingVariant = 'spinner' | 'skeleton' | 'shimmer';

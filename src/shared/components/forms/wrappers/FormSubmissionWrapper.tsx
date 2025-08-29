@@ -111,7 +111,9 @@ export const useFormSubmission = <TFormData = any, TSubmissionData = any>(
 
         return result;
       } catch (error) {
-        console.error(`[${logContext}] ${operationName} failed:`, error);
+        if (debug) {
+          console.error(`[${logContext}] ${operationName} failed:`, error);
+        }
         throw error; // Re-throw to maintain error handling chain
       }
     },
@@ -192,7 +194,9 @@ export const useFormSubmission = <TFormData = any, TSubmissionData = any>(
         onSuccess();
       } catch (error) {
         // Centralized error handling - errors are already logged by withSubmissionHandling
-        console.error(`[${logContext}] Form submission failed:`, error);
+        if (debug) {
+          console.error(`[${logContext}] Form submission failed:`, error);
+        }
 
         // Error handling is delegated to specialized hooks and components
         // The error will bubble up to be handled by the form's error boundary or UI

@@ -224,7 +224,7 @@ const SetSearch: React.FC = () => {
                   <div className="flex flex-col justify-end space-y-3">
                     <PokemonButton
                       variant="primary"
-                      size="md"
+                      size="default"
                       onClick={handleSearch}
                     >
                       <Search className="w-5 h-5 mr-2" />
@@ -232,7 +232,7 @@ const SetSearch: React.FC = () => {
                     </PokemonButton>
                     <PokemonButton
                       variant="glass"
-                      size="md"
+                      size="default"
                       onClick={handleClearFilters}
                     >
                       Clear
@@ -255,7 +255,7 @@ const SetSearch: React.FC = () => {
                         <PokemonCard
                           key={set._id}
                           variant="glass"
-                          size="md"
+                          size="default"
                           interactive
                           onClick={() => handleSetClick(set._id)}
                           className="group"

@@ -45,7 +45,7 @@ export interface DashboardIconProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   
   /** Color scheme for theming */
-  colorScheme?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  colorScheme?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
   
   /** Visual intensity level */
   intensity?: 'minimal' | 'standard' | 'premium';

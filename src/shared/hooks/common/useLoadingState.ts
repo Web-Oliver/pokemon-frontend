@@ -18,7 +18,8 @@ import {
   type ErrorContext,
   handleError,
 } from '../../utils/helpers/errorHandler';
-import { log } from '../../utils/performance/logger';
+import { useErrorHandler } from '@/shared/hooks/error/useErrorHandler';
+import { logInfo } from '@/shared/components/organisms/ui/toastNotifications';
 
 export interface UseLoadingStateOptions {
   initialLoading?: boolean;
@@ -90,45 +91,60 @@ export const useLoadingState = (
   const [loading, setLoadingState] = useState(initialLoading);
   const [error, setErrorState] = useState<ApplicationError | null>(null);
 
+  // Use centralized error handling instead of local error processing
+  const errorHandler = useErrorHandler({
+    defaultContext: 'LOADING_STATE',
+    showToastsDefault: false, // Don't show toasts by default for loading states
+  });
+
   const startLoading = useCallback(() => {
     setLoadingState(true);
     setErrorState(null);
     onLoadingChange?.(true);
 
-    log('[USE LOADING STATE] Loading started', errorContext);
+    // Use centralized logging
+    logInfo('LOADING_STATE', 'Loading started', errorContext);
   }, [errorContext, onLoadingChange]);
 
   const stopLoading = useCallback(() => {
     setLoadingState(false);
     onLoadingChange?.(false);
 
-    log('[USE LOADING STATE] Loading stopped', errorContext);
+    // Use centralized logging
+    logInfo('LOADING_STATE', 'Loading stopped', errorContext);
   }, [errorContext, onLoadingChange]);
 
   const setError = useCallback(
     (errorInput: string | Error | ApplicationError) => {
-      const processedError = handleError(errorInput, errorContext);
+      // Convert to ApplicationError if needed
+      const processedError = errorInput instanceof ApplicationError 
+        ? errorInput 
+        : handleError(errorInput, errorContext);
+      
       setErrorState(processedError);
       setLoadingState(false);
 
-      log('[USE LOADING STATE] Error set', {
-        error: processedError.getDebugInfo(),
+      // Use centralized error handling
+      errorHandler.handleError(processedError, {
+        context: 'LOADING_STATE_ERROR',
+        showToast: false, // Controlled by onError callback
+        metadata: errorContext,
       });
 
       onError?.(processedError);
     },
-    [errorContext, onError]
+    [errorContext, onError, errorHandler]
   );
 
   const clearError = useCallback(() => {
     setErrorState(null);
-    log('[USE LOADING STATE] Error cleared', errorContext);
+    logInfo('LOADING_STATE', 'Error cleared', errorContext);
   }, [errorContext]);
 
   const reset = useCallback(() => {
     setLoadingState(initialLoading);
     setErrorState(null);
-    log('[USE LOADING STATE] State reset', errorContext);
+    logInfo('LOADING_STATE', 'State reset', errorContext);
   }, [initialLoading, errorContext]);
 
   const withLoading = useCallback(
@@ -156,6 +172,19 @@ export const useLoadingState = (
     [startLoading, stopLoading, setError]
   );
 
+  // Enhanced withLoading that integrates with loading orchestrator
+  const withFormSubmission = useCallback(
+    async <T>(
+      operation: () => Promise<T>,
+      operationId?: string
+    ): Promise<T | undefined> => {
+      // This could be enhanced to integrate with useLoadingOrchestrator
+      // for more sophisticated loading state management
+      return withLoading(operation);
+    },
+    [withLoading]
+  );
+
   // Computed values for convenience
   const isIdle = !loading && !error;
   const hasError = error !== null;
@@ -172,14 +201,16 @@ export const useLoadingState = (
     clearError,
     reset,
 
-    // Utilities
+    // Utilities - enhanced with centralized patterns
     withLoading,
+    withFormSubmission,
+    isSubmitting: loading, // Alias for form compatibility
 
     // Computed
     isIdle,
     hasError,
   };
-};
+};;
 
 /**
  * Specialized loading state hook for data operations

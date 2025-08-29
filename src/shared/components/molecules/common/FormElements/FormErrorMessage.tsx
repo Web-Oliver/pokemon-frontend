@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useCentralizedTheme } from '../../../../utils/ui/themeConfig';
+// themeConfig import removed
 
 export interface FormErrorMessageProps {
   /** Error message(s) to display */

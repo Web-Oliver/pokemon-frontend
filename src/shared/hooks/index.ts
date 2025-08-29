@@ -28,10 +28,17 @@ export {
 
 // ========== CORE HOOKS ==========
 export { useDebounce, useDebouncedValue } from './useDebounce';
-export { useModal } from './useModal';
+// export { useModal } from './useModal'; // Removed - file no longer exists
 export { useToggle } from './common/useToggle';
 export { useDataFetch } from './common/useDataFetch';
 export { useLoadingState } from './common/useLoadingState';
+export { useAsyncOperation, useAsyncApiOperation, useAsyncFormOperation, useAsyncBackgroundOperation } from './common/useAsyncOperation';
+
+// ========== ERROR HANDLING HOOKS ==========
+export { useErrorHandler, useFormErrorHandler, useApiErrorHandler } from './error/useErrorHandler';
+
+// ========== LOADING ORCHESTRATION HOOKS ==========
+export { useLoadingOrchestrator, useFormLoadingOrchestrator, useApiLoadingOrchestrator } from './loading/useLoadingOrchestrator';
 
 // ========== FORM HOOKS ==========
 export { useGenericFormState } from './form/useGenericFormState';
@@ -41,7 +48,7 @@ export { useFormValidation } from './form/useFormValidation';
 export { useGenericCrudOperations } from './crud/useGenericCrudOperations';
 
 // ========== THEME HOOKS ==========
-export { useTheme } from './theme/useTheme';
+export { useTheme } from '../../theme';
 
 // ========== COLLECTION HOOKS (REFACTORED) ==========
 // Focused entity hooks (SRP compliance)

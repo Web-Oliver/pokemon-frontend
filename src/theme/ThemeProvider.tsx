@@ -1,65 +1,215 @@
 /**
- * THEME PROVIDER - DESIGN SYSTEM
- * Following Carbon Design System conventions and Context7 best practices
- * 
- * Clean, professional implementation
- * Industry standard naming patterns
+ * UNIFIED THEME PROVIDER
+ * Single source of truth for theme management
+ * Consolidates multiple theme provider implementations
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import {
+import React, { useEffect, useState, useCallback, ReactNode } from 'react';
+import { 
+  ThemeSettings, 
+  ThemeContextType, 
+  ThemeMode, 
+  DensityMode, 
+  AnimationLevel, 
+  GlassmorphismLevel,
   ThemeName,
   ColorScheme,
-  Density,
-  AnimationLevel,
-  ThemeSettings,
-  applyTheme,
-  saveThemeSettings,
-  loadThemeSettings,
-  getSystemColorScheme,
-  resolveTheme,
-  defaultThemeSettings,
-  isGlassTheme,
-  // getThemeDisplayName, // Commented out - unused
-} from './DesignSystem';
-
-interface ThemeContextType {
-  // Current settings
-  settings: ThemeSettings;
-  resolvedTheme: ThemeName;
-  systemColorScheme: 'light' | 'dark';
-  
-  // Theme setters
-  setTheme: (theme: ThemeName) => void;
-  setColorScheme: (scheme: ColorScheme) => void;
-  setDensity: (density: Density) => void;
-  setAnimationLevel: (level: AnimationLevel) => void;
-  setGlassmorphismEnabled: (enabled: boolean) => void;
-  setAnimationsEnabled: (enabled: boolean) => void;
-  setParticleEffectsEnabled: (enabled: boolean) => void;
-  setReduceMotion: (enabled: boolean) => void;
-  
-  // Utilities
-  resetToDefaults: () => void;
-  isSystemTheme: boolean;
-  isGlassTheme: boolean;
-  isLoaded: boolean;
-  
-  // Legacy compatibility
-  
-  density: Density;
-}
-
-const ThemeContext = createContext<ThemeContextType | null>(null);
+  DEFAULT_THEME_SETTINGS,
+  THEME_STORAGE_CONFIG
+} from './themeTypes';
+import { getThemeConfig, hasGlassmorphismSupport } from './themeDefinitions';
+import { ThemeContext } from './useTheme';
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Get system color scheme preference
+ */
+function getSystemColorScheme(): ColorScheme {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/**
+ * Load theme settings from localStorage
+ */
+function loadThemeSettings(): ThemeSettings {
+  if (typeof window === 'undefined') return DEFAULT_THEME_SETTINGS;
+  
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_CONFIG.key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Merge with defaults to ensure all properties exist
+      return { ...DEFAULT_THEME_SETTINGS, ...parsed };
+    }
+  } catch (error) {
+    console.warn('Failed to load theme settings:', error);
+  }
+  
+  return DEFAULT_THEME_SETTINGS;
+}
+
+/**
+ * Save theme settings to localStorage
+ */
+function saveThemeSettings(settings: ThemeSettings): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(THEME_STORAGE_CONFIG.key, JSON.stringify(settings));
+  } catch (error) {
+    console.warn('Failed to save theme settings:', error);
+  }
+}
+
+/**
+ * Resolve the actual color scheme based on mode and system preference
+ */
+function resolveColorScheme(mode: ThemeMode, systemColorScheme: ColorScheme): ColorScheme {
+  if (mode === 'system') {
+    return systemColorScheme;
+  }
+  return mode as ColorScheme;
+}
+
+/**
+ * Apply theme to document root with CSS variables
+ */
+function applyThemeToDocument(settings: ThemeSettings, resolvedColorScheme: ColorScheme): void {
+  if (typeof document === 'undefined') return;
+  
+  const root = document.documentElement;
+  
+  // Remove existing theme classes
+  root.classList.remove('light', 'dark');
+  
+  // Apply color scheme class
+  root.classList.add(resolvedColorScheme);
+  
+  // Apply theme name class if specified
+  if (settings.name) {
+    root.classList.add(`theme-${settings.name}`);
+  }
+  
+  // Apply density class
+  root.classList.remove('density-compact', 'density-comfortable', 'density-spacious');
+  root.classList.add(`density-${settings.density}`);
+  
+  // Apply animation level class
+  root.classList.remove('animations-none', 'animations-reduced', 'animations-normal', 'animations-enhanced');
+  root.classList.add(`animations-${settings.animationLevel}`);
+  
+  // Apply glassmorphism level class
+  root.classList.remove('glass-none', 'glass-subtle', 'glass-moderate', 'glass-intense');
+  root.classList.add(`glass-${settings.glassmorphismLevel}`);
+  
+  // Apply accessibility classes
+  root.classList.toggle('reduce-motion', settings.reduceMotion);
+  root.classList.toggle('high-contrast', settings.highContrast);
+  
+  // Apply feature classes
+  root.classList.toggle('particle-effects', settings.particleEffectsEnabled);
+  root.classList.toggle('sound-effects', settings.soundEffects);
+  
+  // Apply border radius class
+  root.classList.remove('radius-none', 'radius-small', 'radius-medium', 'radius-large', 'radius-full');
+  root.classList.add(`radius-${settings.borderRadius}`);
+  
+  // Apply CSS custom properties from theme config
+  const themeConfig = getThemeConfig(
+    settings.name || 'pokemon', 
+    resolvedColorScheme
+  );
+  
+  if (themeConfig) {
+    // Apply color variables
+    Object.entries(themeConfig.colors).forEach(([key, value]) => {
+      root.style.setProperty(`--color-${key}`, value);
+    });
+    
+    // Apply spacing variables
+    Object.entries(themeConfig.spacing).forEach(([key, value]) => {
+      root.style.setProperty(`--spacing-${key}`, value);
+    });
+    
+    // Apply border radius variables
+    Object.entries(themeConfig.borderRadius).forEach(([key, value]) => {
+      root.style.setProperty(`--border-radius-${key}`, value);
+    });
+    
+    // Apply shadow variables
+    Object.entries(themeConfig.shadows).forEach(([key, value]) => {
+      root.style.setProperty(`--shadow-${key}`, value);
+    });
+    
+    // Apply typography variables
+    Object.entries(themeConfig.typography.fontSizes).forEach(([key, value]) => {
+      root.style.setProperty(`--font-size-${key}`, value);
+    });
+    
+    Object.entries(themeConfig.typography.fontWeights).forEach(([key, value]) => {
+      root.style.setProperty(`--font-weight-${key}`, value);
+    });
+    
+    Object.entries(themeConfig.typography.lineHeights).forEach(([key, value]) => {
+      root.style.setProperty(`--line-height-${key}`, value);
+    });
+    
+    root.style.setProperty('--font-family', themeConfig.typography.fontFamily);
+    
+    // Apply effects if available
+    if (themeConfig.effects) {
+      if (themeConfig.effects.glassmorphism) {
+        Object.entries(themeConfig.effects.glassmorphism).forEach(([key, value]) => {
+          root.style.setProperty(`--glassmorphism-${key}`, value);
+        });
+      }
+      
+      if (themeConfig.effects.gradients) {
+        Object.entries(themeConfig.effects.gradients).forEach(([key, value]) => {
+          root.style.setProperty(`--gradient-${key}`, value);
+        });
+      }
+    }
+  }
+  
+  // Apply density-specific spacing
+  applyDensitySettings(settings.density);
+  
+  // Apply glassmorphism settings
+  applyGlassmorphismSettings(settings.glassmorphismEnabled || false);
+  
+  // Apply animation settings
+  applyAnimationSettings(settings);
+  
+  // Apply custom accent color if specified
+  if (settings.customAccentColor) {
+    root.style.setProperty('--color-accent-custom', settings.customAccentColor);
+  }
+  
+  // Apply custom CSS properties if specified
+  if (settings.customCSSProperties) {
+    Object.entries(settings.customCSSProperties).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
+    });
+  }
+}
+
+// ==========================================
+// PROVIDER COMPONENT
+// ==========================================
+
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<ThemeSettings>(defaultThemeSettings);
+  const [settings, setSettings] = useState<ThemeSettings>(DEFAULT_THEME_SETTINGS);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [systemColorScheme, setSystemColorScheme] = useState<'light' | 'dark'>('dark');
+  const [systemColorScheme, setSystemColorScheme] = useState<ColorScheme>('light');
 
   // Load settings on mount
   useEffect(() => {
@@ -70,34 +220,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, []);
 
   // Apply theme whenever settings change
-  // PHASE 2.1: Enhanced with density and glass intensity application
   useEffect(() => {
     if (isLoaded) {
-      const resolvedThemeName = resolveTheme(settings);
-      
-      // Apply core theme via data attributes
-      applyTheme(resolvedThemeName);
-      
-      // DENSITY-AWARE SPACING APPLICATION
-      applyDensitySettings(settings.density);
-      
-      // GLASSMORPHISM INTENSITY APPLICATION
-      applyGlassmorphismSettings(settings.glassmorphismEnabled);
-      
-      // ANIMATION PREFERENCES APPLICATION
-      applyAnimationSettings(settings);
-      
-      // Save settings
+      const resolvedColorScheme = resolveColorScheme(settings.mode, systemColorScheme);
+      applyThemeToDocument(settings, resolvedColorScheme);
       saveThemeSettings(settings);
-      
-      console.log('✅ Theme system updated:', {
-        theme: resolvedThemeName,
-        density: settings.density,
-        glass: settings.glassmorphismEnabled,
-        animations: settings.animationsEnabled
-      });
     }
-  }, [settings, isLoaded]);
+  }, [settings, isLoaded, systemColorScheme]);
 
   // Listen for system color scheme changes
   useEffect(() => {
@@ -108,15 +237,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const handleSystemThemeChange = () => {
       const newSystemScheme = getSystemColorScheme();
       setSystemColorScheme(newSystemScheme);
-      
-      // If using system color scheme, reapply theme
-      if (settings.colorScheme === 'system') {
-        const resolvedThemeName = resolveTheme(settings);
-        applyTheme(resolvedThemeName);
-      }
     };
 
-    // Add listener
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener('change', handleSystemThemeChange);
       return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
@@ -125,71 +247,110 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       mediaQuery.addListener(handleSystemThemeChange);
       return () => mediaQuery.removeListener(handleSystemThemeChange);
     }
-  }, [settings.colorScheme]);
-
-  // Theme setters
-  const setTheme = useCallback((theme: ThemeName) => {
-    setSettings(prev => ({ ...prev, theme }));
-  }, []);
-
-  const setColorScheme = useCallback((colorScheme: ColorScheme) => {
-    setSettings(prev => ({ ...prev, colorScheme }));
-  }, []);
-
-  const setDensity = useCallback((density: Density) => {
-    setSettings(prev => ({ ...prev, density }));
-  }, []);
-
-  const setAnimationLevel = useCallback((animationLevel: AnimationLevel) => {
-    setSettings(prev => ({ ...prev, animationLevel }));
-  }, []);
-
-  const setGlassmorphismEnabled = useCallback((glassmorphismEnabled: boolean) => {
-    setSettings(prev => ({ ...prev, glassmorphismEnabled }));
-  }, []);
-
-  const setAnimationsEnabled = useCallback((animationsEnabled: boolean) => {
-    setSettings(prev => ({ ...prev, animationsEnabled }));
-  }, []);
-
-  const setParticleEffectsEnabled = useCallback((particleEffectsEnabled: boolean) => {
-    setSettings(prev => ({ ...prev, particleEffectsEnabled }));
-  }, []);
-
-  const setReduceMotion = useCallback((reduceMotion: boolean) => {
-    setSettings(prev => ({ ...prev, reduceMotion }));
-  }, []);
-
-  const resetToDefaults = useCallback(() => {
-    setSettings(defaultThemeSettings);
   }, []);
 
   // Computed values
-  const resolvedThemeName = resolveTheme(settings);
-  const isSystemTheme = settings.colorScheme === 'system';
-  const isGlass = isGlassTheme(resolvedThemeName);
+  const resolvedTheme = settings.name || 'pokemon';
+  const resolvedColorScheme = resolveColorScheme(settings.mode, systemColorScheme);
+  const isDark = resolvedColorScheme === 'dark';
+  const isLight = !isDark;
+  const isSystemTheme = settings.mode === 'system';
+  const isGlassTheme = hasGlassmorphismSupport(resolvedTheme);
+
+  // Theme management functions
+  const updateSettings = useCallback((newSettings: Partial<ThemeSettings>) => {
+    setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
+
+  const setTheme = useCallback((theme: ThemeName) => {
+    updateSettings({ name: theme });
+  }, [updateSettings]);
+
+  const setMode = useCallback((mode: ThemeMode) => {
+    updateSettings({ mode });
+  }, [updateSettings]);
+
+  const setColorScheme = useCallback((colorScheme: ColorScheme) => {
+    updateSettings({ mode: colorScheme });
+  }, [updateSettings]);
+
+  const setDensity = useCallback((density: DensityMode) => {
+    updateSettings({ density });
+  }, [updateSettings]);
+
+  const setAnimationLevel = useCallback((animationLevel: AnimationLevel) => {
+    updateSettings({ animationLevel });
+  }, [updateSettings]);
+
+  const setGlassmorphismLevel = useCallback((glassmorphismLevel: GlassmorphismLevel) => {
+    updateSettings({ glassmorphismLevel });
+  }, [updateSettings]);
+
+  const setGlassmorphismEnabled = useCallback((enabled: boolean) => {
+    updateSettings({ glassmorphismEnabled: enabled });
+  }, [updateSettings]);
+
+  const setAnimationsEnabled = useCallback((enabled: boolean) => {
+    updateSettings({ animationsEnabled: enabled });
+  }, [updateSettings]);
+
+  const setParticleEffectsEnabled = useCallback((enabled: boolean) => {
+    updateSettings({ particleEffectsEnabled: enabled });
+  }, [updateSettings]);
+
+  const setReduceMotion = useCallback((enabled: boolean) => {
+    updateSettings({ 
+      reduceMotion: enabled,
+      animationLevel: enabled ? 'reduced' : 'normal'
+    });
+  }, [updateSettings]);
+
+  const setHighContrast = useCallback((enabled: boolean) => {
+    updateSettings({ highContrast: enabled });
+  }, [updateSettings]);
+
+  const setSoundEffects = useCallback((enabled: boolean) => {
+    updateSettings({ soundEffects: enabled });
+  }, [updateSettings]);
+
+  const resetToDefaults = useCallback(() => {
+    setSettings(DEFAULT_THEME_SETTINGS);
+  }, []);
 
   const contextValue: ThemeContextType = {
-    // Current settings
+    // Current state
     settings,
-    resolvedTheme: resolvedThemeName,
+    resolvedTheme,
     systemColorScheme,
     
-    // Setters
+    // Theme setters
     setTheme,
+    setMode,
     setColorScheme,
     setDensity,
     setAnimationLevel,
+    setGlassmorphismLevel,
+    
+    // Feature toggles
     setGlassmorphismEnabled,
     setAnimationsEnabled,
     setParticleEffectsEnabled,
     setReduceMotion,
+    setHighContrast,
+    setSoundEffects,
+    
+    // Bulk update
+    updateSettings,
     
     // Utilities
     resetToDefaults,
     isSystemTheme,
-    isGlassTheme: isGlass,
+    isGlassTheme,
     isLoaded,
+    
+    // Computed properties
+    isDark,
+    isLight,
     
     // Legacy compatibility
     density: settings.density,
@@ -202,52 +363,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   );
 };
 
-/**
- * Main theme hook
- */
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-};
-
-/**
- * Hook for theme name only
- */
-export const useThemeName = (): ThemeName => {
-  const { resolvedTheme } = useTheme();
-  return resolvedTheme;
-};
-
-/**
- * Hook for color scheme only
- */
-export const useColorScheme = (): { 
-  colorScheme: ColorScheme; 
-  setColorScheme: (scheme: ColorScheme) => void;
-  systemColorScheme: 'light' | 'dark';
-} => {
-  const { settings, setColorScheme, systemColorScheme } = useTheme();
-  return {
-    colorScheme: settings.colorScheme,
-    setColorScheme,
-    systemColorScheme,
-  };
-};
-
 export default ThemeProvider;
 
 // ===============================
-// PHASE 2.1: UNIFIED THEME HELPERS
+// THEME APPLICATION HELPERS
 // CSS Variable Application Functions
 // ===============================
 
 /**
  * Apply density-aware spacing to CSS variables
  */
-const applyDensitySettings = (density: Density): void => {
+const applyDensitySettings = (density: DensityMode): void => {
   const root = document.documentElement;
   
   const densityMap = {
@@ -316,6 +442,7 @@ const applyAnimationSettings = (settings: ThemeSettings): void => {
   
   // Animation duration based on level
   const durationMap = {
+    none: { fast: '0ms', normal: '0ms', slow: '0ms' },
     reduced: { fast: '50ms', normal: '100ms', slow: '150ms' },
     normal: { fast: '150ms', normal: '250ms', slow: '400ms' },
     enhanced: { fast: '200ms', normal: '350ms', slow: '600ms' }
@@ -334,6 +461,6 @@ const applyAnimationSettings = (settings: ThemeSettings): void => {
     root.style.setProperty('--animation-duration-slow', '0ms');
   }
   
-  root.setAttribute('data-animations-enabled', settings.animationsEnabled.toString());
+  root.setAttribute('data-animations-enabled', (settings.animationsEnabled ?? true).toString());
   root.setAttribute('data-reduce-motion', settings.reduceMotion.toString());
 };

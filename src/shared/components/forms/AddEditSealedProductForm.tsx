@@ -198,10 +198,12 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
           { value: 'Box-Sets', label: 'Box Sets' },
           { value: 'Boosters', label: 'Boosters' },
         ];
-        console.log(
-          '[CATEGORIES DEBUG] Setting productCategories to:',
-          categories
-        );
+        if (import.meta.env.MODE === 'development') {
+          console.log(
+            '[CATEGORIES DEBUG] Setting productCategories to:',
+            categories
+          );
+        }
         setProductCategories(categories);
       });
     };
@@ -419,10 +421,12 @@ const AddEditSealedProductForm: React.FC<AddEditSealedProductFormProps> = ({
               watch={watch}
               clearErrors={clearErrors}
               onSelectionChange={(selectedData) => {
-                console.log(
-                  '[SEALED PRODUCT] Product selection:',
-                  selectedData
-                );
+                if (import.meta.env.MODE === 'development') {
+                  console.log(
+                    '[SEALED PRODUCT] Product selection:',
+                    selectedData
+                  );
+                }
                 // Store selected product data for form submission (CRITICAL - maintains existing behavior)
                 setSelectedProductData(selectedData);
               }}

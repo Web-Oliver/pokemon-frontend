@@ -25,7 +25,8 @@ import CollectionStats from '../../../shared/components/organisms/collection/Col
 import CollectionTabs, {
   TabType,
 } from '../../../shared/components/organisms/collection/CollectionTabs';
-import { useCollectionExport } from '../../../shared/hooks/useCollectionExport';
+import { useExportOperations } from '../../../shared/hooks/export/useExportOperations';
+import { useItemSelection } from '../../../shared/hooks/export/useItemSelection';
 import { useCollectionOperations } from '../../../shared/hooks';
 import { navigationHelper } from '../../../shared/utils/navigation';
 import { storageWrappers } from '../../../shared/utils/storage';
@@ -69,15 +70,14 @@ const Collection: React.FC = () => {
     refreshCollection,
   } = useCollectionOperations();
 
-  const {
-    isExporting,
-    selectedItemsForExport,
-    exportAllItems,
-    exportSelectedItems,
+  // Use decomposed export hooks following SOLID principles
+  const { isExporting, exportAllItems, exportSelectedItems } = useExportOperations();
+  const { 
+    selectedItems: selectedItemsForExport,
     toggleItemSelection,
     selectAllItems,
     clearSelection,
-  } = useCollectionExport();
+  } = useItemSelection();
 
   // Additional check for refresh flag when component mounts
   useEffect(() => {
@@ -182,8 +182,8 @@ const Collection: React.FC = () => {
     () => (
       <div className="flex flex-wrap items-center gap-3">
         <PokemonButton
-          variant="glass"
-          size="md"
+          variant="secondary"
+          size="default"
           onClick={handleExportAllItems}
           disabled={isExporting || loading}
         >
@@ -191,8 +191,8 @@ const Collection: React.FC = () => {
           {isExporting ? 'Exporting...' : 'Export All'}
         </PokemonButton>
         <PokemonButton
-          variant="glass"
-          size="md"
+          variant="secondary"
+          size="default"
           onClick={handleOpenExportModal}
           disabled={isExporting || loading}
         >
@@ -201,7 +201,7 @@ const Collection: React.FC = () => {
         </PokemonButton>
         <PokemonButton
           variant="primary"
-          size="md"
+          size="default"
           onClick={handleAddNewItem}
         >
           <Plus className="w-5 h-5 mr-2" />

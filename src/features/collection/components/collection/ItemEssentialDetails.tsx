@@ -59,7 +59,7 @@ export const ItemEssentialDetails: React.FC<ItemEssentialDetailsProps> = ({
     <PokemonCard
       title="Essential Details"
       subtitle="Core item information"
-      variant="outlined"
+      variant="outline"
       className={`h-full ${className}`}
     >
       <div className="space-y-4">

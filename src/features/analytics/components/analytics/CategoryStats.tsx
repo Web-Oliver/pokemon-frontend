@@ -9,7 +9,7 @@
 
 import { DollarSign, Gavel, Package, Settings } from 'lucide-react';
 import React from 'react';
-import { GlassmorphismContainer } from '../effects/GlassmorphismContainer';
+import { GlassmorphismContainer } from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
 
 export interface CategoryStatsProps {
   analyticsData: any;

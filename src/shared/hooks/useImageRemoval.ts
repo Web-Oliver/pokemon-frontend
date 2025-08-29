@@ -7,6 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { ImagePreview } from '../utils/ui/imageUtils';
+import { useApiErrorHandler } from './error/useErrorHandler';
 
 export const useImageRemoval = (
   previews: ImagePreview[],
@@ -15,6 +16,7 @@ export const useImageRemoval = (
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [imageToRemove, setImageToRemove] = useState<ImagePreview | null>(null);
   const [isRemoving, setIsRemoving] = useState(false);
+  const errorHandler = useApiErrorHandler('IMAGE_REMOVAL');
 
   const handleRemoveImage = useCallback(
     (imageId: string) => {
@@ -53,7 +55,7 @@ export const useImageRemoval = (
 
           console.log(`[useImageRemoval] Successfully deleted image from server: ${filename}`);
         } catch (error) {
-          console.error('[useImageRemoval] Error deleting image from server:', error);
+          errorHandler.handleError(error, { context: 'IMAGE_DELETION', showToast: true });
           // Don't throw - continue with UI removal even if server deletion fails
         }
       }

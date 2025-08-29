@@ -14,7 +14,7 @@ import { log } from '../shared/utils/performance/logger';
 import { Toaster } from 'react-hot-toast';
 import { PageLoading } from '../shared/components/molecules/common/LoadingStates';
 import { queryClient } from './lib/queryClient';
-import { UnifiedThemeProvider } from '../contexts/UnifiedThemeProvider';
+import { ThemeProvider } from '../theme';
 import DevMonitor from '../shared/components/development/DevMonitor';
 // Cache debugging removed - overengineered development utility not needed
 // Layout
@@ -228,7 +228,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <UnifiedThemeProvider storageKey="pokemon-unified-theme-settings" enableSystemSync={true}>
+      <ThemeProvider>
         <MainLayout>
           {/* Context7 Pattern: Suspense boundary with transition state */}
           <Suspense
@@ -291,7 +291,7 @@ function App() {
             },
           }}
         />
-      </UnifiedThemeProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

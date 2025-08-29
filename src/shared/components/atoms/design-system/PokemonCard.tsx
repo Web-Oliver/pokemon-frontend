@@ -17,7 +17,7 @@ export interface PokemonCardProps {
   children?: React.ReactNode;
 
   // Base card system (original)
-  variant?: 'glass' | 'solid' | 'outline' | 'gradient' | 'cosmic';
+  variant?: 'glass' | 'solid' | 'outline' | 'cosmic';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   status?:
     | 'active'

@@ -6,7 +6,7 @@
  * DIP: Depends on theme context abstractions
  */
 
-import { useTheme } from '../../../../../theme/ThemeProvider';
+import { useTheme } from '../../../../../theme';
 import { cn } from '../../../utils';
 
 export interface AccessibilityControlsProps {

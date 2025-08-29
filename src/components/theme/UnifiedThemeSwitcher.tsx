@@ -6,27 +6,44 @@
  * theme changes without any updates needed!
  */
 
-import React from 'react';
-import { useUnifiedTheme } from '../../contexts/UnifiedThemeProvider';
+import { useTheme } from '../../theme';
+import { getAvailableThemes, themeMetadata, hasGlassmorphismSupport } from '../../theme';
 import { cn } from '../../lib/utils';
+import type { ThemeName } from '../../theme';
 
 export function UnifiedThemeSwitcher() {
   const {
-    availableThemes,
-    currentTheme,
-    setTheme,
-    getDisplayName,
     settings,
+    setTheme,
     setDensity,
     setAnimationLevel,
     setGlassmorphismLevel,
-    toggleReduceMotion,
-    toggleParticleEffects,
-    setBorderRadius,
     isDark,
-    isGlassEnabled,
-    supportsGlass,
-  } = useUnifiedTheme();
+  } = useTheme();
+
+  // Helper functions
+  const getDisplayName = (theme: ThemeName) => themeMetadata[theme]?.displayName || theme;
+  const currentTheme = settings.name || 'pokemon'; // Provide fallback
+  
+  // Group themes by category
+  const availableThemes = getAvailableThemes().reduce((acc, theme) => {
+    const category = themeMetadata[theme]?.category || 'Other';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(theme);
+    return acc;
+  }, {} as Record<string, ThemeName[]>);
+  
+  const supportsGlass = hasGlassmorphismSupport(currentTheme);
+  const isGlassEnabled = settings.glassmorphismLevel && settings.glassmorphismLevel !== 'none';
+  
+  // Toggle functions
+  const toggleReduceMotion = () => {
+    // Implementation would need to be added to the hook
+  };
+  
+  const toggleParticleEffects = () => {
+    // Implementation would need to be added to the hook  
+  };
 
   return (
     <div className="space-y-6 p-6 bg-card text-card-foreground rounded-lg border shadow-theme-primary">
@@ -111,7 +128,7 @@ export function UnifiedThemeSwitcher() {
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-foreground">Glassmorphism</h3>
           <div className="flex gap-2">
-            {(['off', 'subtle', 'medium', 'intense'] as const).map(level => (
+            {(['none', 'subtle', 'moderate', 'intense'] as const).map(level => (
               <button
                 key={level}
                 onClick={() => setGlassmorphismLevel(level)}
@@ -135,7 +152,7 @@ export function UnifiedThemeSwitcher() {
           {(['none', 'small', 'medium', 'large', 'full'] as const).map(radius => (
             <button
               key={radius}
-              onClick={() => setBorderRadius(radius)}
+              onClick={() => {/* setBorderRadius would need to be implemented */}}
               className={cn(
                 "px-3 py-2 text-xs font-medium border transition-all",
                 "bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground",

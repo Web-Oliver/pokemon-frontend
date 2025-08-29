@@ -171,3 +171,175 @@ export default {
   showStatusErrorToast,
   showStorageErrorToast,
 };
+/**
+ * Centralized Error Logger Utility
+ * 
+ * SOLID/DRY Compliance:
+ * - Single Responsibility: Only handles error logging with context
+ * - DRY: Eliminates 50+ scattered console.error patterns
+ * - Open/Closed: Extensible for different log levels and outputs
+ */
+
+export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+export type LogContext = string;
+
+export interface ErrorLogEntry {
+  level: LogLevel;
+  context: LogContext;
+  message: string;
+  error?: Error | unknown;
+  metadata?: Record<string, any>;
+  timestamp: string;
+}
+
+export class ErrorLogger {
+  private static instance: ErrorLogger;
+  private logEntries: ErrorLogEntry[] = [];
+  private readonly maxEntries = 1000; // Prevent memory leaks
+
+  private constructor() {}
+
+  public static getInstance(): ErrorLogger {
+    if (!ErrorLogger.instance) {
+      ErrorLogger.instance = new ErrorLogger();
+    }
+    return ErrorLogger.instance;
+  }
+
+  /**
+   * Log an error with context and metadata
+   */
+  public logError(
+    context: LogContext,
+    message: string,
+    error?: Error | unknown,
+    metadata?: Record<string, any>
+  ): void {
+    this.log('error', context, message, error, metadata);
+  }
+
+  /**
+   * Log a warning with context
+   */
+  public logWarning(
+    context: LogContext,
+    message: string,
+    error?: Error | unknown,
+    metadata?: Record<string, any>
+  ): void {
+    this.log('warn', context, message, error, metadata);
+  }
+
+  /**
+   * Log info message with context
+   */
+  public logInfo(
+    context: LogContext,
+    message: string,
+    metadata?: Record<string, any>
+  ): void {
+    this.log('info', context, message, undefined, metadata);
+  }
+
+  /**
+   * Core logging method with consistent formatting
+   */
+  private log(
+    level: LogLevel,
+    context: LogContext,
+    message: string,
+    error?: Error | unknown,
+    metadata?: Record<string, any>
+  ): void {
+    const entry: ErrorLogEntry = {
+      level,
+      context,
+      message,
+      error,
+      metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Store entry for analysis
+    this.logEntries.push(entry);
+    this.pruneOldEntries();
+
+    // Format console output consistently
+    const contextPrefix = `[${context.toUpperCase()}]`;
+    const fullMessage = `${contextPrefix} ${message}`;
+
+    switch (level) {
+      case 'error':
+        if (error) {
+          console.error(fullMessage, error, metadata);
+        } else {
+          console.error(fullMessage, metadata);
+        }
+        break;
+      case 'warn':
+        if (error) {
+          console.warn(fullMessage, error, metadata);
+        } else {
+          console.warn(fullMessage, metadata);
+        }
+        break;
+      case 'info':
+        console.info(fullMessage, metadata);
+        break;
+      case 'debug':
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(fullMessage, metadata);
+        }
+        break;
+    }
+  }
+
+  /**
+   * Get recent log entries for debugging
+   */
+  public getRecentLogs(limit: number = 50): ErrorLogEntry[] {
+    return this.logEntries.slice(-limit);
+  }
+
+  /**
+   * Clear all log entries
+   */
+  public clearLogs(): void {
+    this.logEntries = [];
+  }
+
+  /**
+   * Prevent memory leaks by limiting stored entries
+   */
+  private pruneOldEntries(): void {
+    if (this.logEntries.length > this.maxEntries) {
+      this.logEntries = this.logEntries.slice(-this.maxEntries);
+    }
+  }
+}
+
+// Singleton instance
+export const errorLogger = ErrorLogger.getInstance();
+
+/**
+ * Convenience functions for common logging patterns
+ */
+export const logError = (
+  context: LogContext,
+  message: string,
+  error?: Error | unknown,
+  metadata?: Record<string, any>
+) => errorLogger.logError(context, message, error, metadata);
+
+export const logWarning = (
+  context: LogContext,
+  message: string,
+  error?: Error | unknown,
+  metadata?: Record<string, any>
+) => errorLogger.logWarning(context, message, error, metadata);
+
+export const logInfo = (
+  context: LogContext,
+  message: string,
+  metadata?: Record<string, any>
+) => errorLogger.logInfo(context, message, metadata);

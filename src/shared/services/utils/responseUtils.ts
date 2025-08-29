@@ -3,6 +3,8 @@
  * Eliminates 50+ occurrences of "response.data || response" pattern
  */
 
+import { SearchResponse } from '../../types/search';
+
 /**
  * Extract data from API response - handles both direct data and wrapped responses
  */
@@ -33,12 +35,7 @@ export function extractArrayResponseData<T>(response: any): T[] {
  * Extract and validate search response with standardized format
  * Eliminates duplicate search response handling patterns
  */
-export function extractSearchResponse<T>(response: any, query?: string): {
-  data: T[];
-  count: number;
-  success: boolean;
-  query?: string;
-} {
+export function extractSearchResponse<T>(response: any, query?: string): SearchResponse<T> {
   const responseData = extractResponseData(response);
   
   // Handle nested search response structures
@@ -50,7 +47,7 @@ export function extractSearchResponse<T>(response: any, query?: string): {
     data: Array.isArray(data) ? data : [],
     count,
     success,
-    ...(query && { query })
+    query: query || ''
   };
 }
 

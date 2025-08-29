@@ -48,7 +48,6 @@ export const MarkSoldForm: React.FC<MarkSoldFormProps> = ({
     itemType,
     itemId,
     onSuccess,
-    onError: (err) => console.error('Failed to mark item as sold:', err),
   });
 
   // Handle form submission

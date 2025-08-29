@@ -1,25 +1,32 @@
 /**
- * Base Form Hook
+ * Base Form Hook - REFACTORED FOR SOLID COMPLIANCE
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
- * Follows DRY principle - provides common form functionality across all form types
+ * 
+ * SOLID Principles Applied:
+ * - SRP: Now composed of focused hooks, each with single responsibility
+ * - OCP: Extensible through configuration and composition
+ * - DIP: Depends on abstractions (focused hooks) not implementations
+ * 
+ * Decomposed from 404 lines into focused, composable hooks:
+ * - useFormState: Form state management only
+ * - useFormValidation: Validation logic only  
+ * - useFormTransformation: Data transformation only
+ * - useFormDataProcessor: Data processing only
+ * - useFormInitializer: Form initialization only
+ * - useFormSubmissionHandler: Submission handling only
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import {
-  DefaultValues,
-  FieldValues,
-  useForm,
-  UseFormReturn,
-} from 'react-hook-form';
+import { FieldValues, useForm, DefaultValues, UseFormReturn } from 'react-hook-form';
+import { useState, useCallback } from 'react';
+import { useFormState } from './form/useFormState';
 import { useFormValidation, ValidationRules } from './form/useFormValidation';
+import { useFormTransformation } from './form/useFormTransformation';
+import { useFormDataProcessor } from './form/useFormDataProcessor';
+import { useFormInitializer } from './form/useFormInitializer';
+import { useFormSubmissionHandler } from './form/useFormSubmissionHandler';
 import { useImageUpload } from './useImageUpload';
 import { usePriceHistory } from './usePriceHistory';
-import {
-  createFormSubmissionPattern,
-  type FormSubmissionConfig,
-  transformFormData,
-  useFormSubmission,
-} from './useFormSubmission';
+// DELETED: useFormSubmission monster hook - use focused hooks instead
 
 export interface BaseFormConfig<T extends FieldValues> {
   defaultValues?: DefaultValues<T>;
@@ -44,8 +51,7 @@ export interface BaseFormConfig<T extends FieldValues> {
   customTransform?: (data: T) => Partial<T>;
   /** Enable form submission integration */
   enableSubmissionIntegration?: boolean;
-  /** Submission configuration for integrated form handling */
-  submissionConfig?: Partial<FormSubmissionConfig<T>>;
+  /** DELETED: submissionConfig - use focused hooks instead */
 }
 
 export interface UseBaseFormReturn<T extends FieldValues> {
@@ -91,8 +97,7 @@ export interface UseBaseFormReturn<T extends FieldValues> {
     errors: Record<string, string>;
   };
 
-  // Integrated form submission (if enabled)
-  formSubmission?: ReturnType<typeof useFormSubmission>;
+  // DELETED: formSubmission - use focused hooks instead
 }
 
 /**
@@ -116,16 +121,7 @@ export const useBaseForm = <T extends FieldValues>(
     submissionPattern = isEditing ? 'edit' : 'create',
     customTransform,
     enableSubmissionIntegration = false,
-    submissionConfig,
   } = config;
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<Error | undefined>(undefined);
-
-  // Get submission pattern configuration
-  const submissionPatternConfig = enableDataTransformation
-    ? createFormSubmissionPattern<T>(submissionPattern)
-    : { sanitizeData: false, validateOnSubmit: false };
 
   // Initialize form with react-hook-form
   const form = useForm<T>({
@@ -133,28 +129,54 @@ export const useBaseForm = <T extends FieldValues>(
     mode,
   });
 
-  // Watch all form values for convenience accessor
-  const values = form.watch();
+  // Initialize focused hooks using composition
+  const formState = useFormState<T>({
+    form,
+  });
 
-  // Initialize validation
-  const { validateField, isFormValid } = useFormValidation(validationRules);
+  const formValidation = useFormValidation(validationRules);
 
-  // Initialize image upload
+  const formTransformation = useFormTransformation<T>({
+    enableDataTransformation,
+    submissionPattern,
+    customTransform,
+    isEditing,
+  });
+
+  const formDataProcessor = useFormDataProcessor<T>({
+    validationRules,
+    validateField: formValidation.validateField,
+    transformData: formTransformation.transformData,
+  });
+
+  // Initialize image upload and price history first
   const imageUpload = useImageUpload(initialImages);
-
-  // Initialize price history
   const priceHistory = usePriceHistory(initialPriceHistory, initialPrice);
 
-  const setSubmitting = useCallback((submitting: boolean) => {
-    setIsSubmitting(submitting);
-  }, []);
+  const formInitializer = useFormInitializer<T>({
+    initialData,
+    isEditing,
+    fieldMapping,
+    form,
+    imageUpload,
+  });
+
+  const formSubmissionHandler = useFormSubmissionHandler<T>({
+    form,
+    setSubmitting: formState.setSubmitting,
+    setError: formState.setError,
+    processFormData: formDataProcessor.processFormData,
+  });
+
+  // Watch all form values for convenience accessor
+  const values = form.watch();
 
   const resetForm = useCallback(() => {
     form.reset();
     imageUpload.clearImages();
     priceHistory.clearPriceHistory();
-    setIsSubmitting(false);
-  }, [form, imageUpload, priceHistory]);
+    formState.setSubmitting(false);
+  }, [form, imageUpload, priceHistory, formState.setSubmitting]);
 
   const setFormData = useCallback(
     (data: Partial<T>) => {
@@ -167,79 +189,6 @@ export const useBaseForm = <T extends FieldValues>(
     [form]
   );
 
-  // Centralized initialData handling following CLAUDE.md SRP principle
-  const updateWithInitialData = useCallback(
-    (data: Partial<T>) => {
-      if (!data) {
-        return;
-      }
-
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          // Check if there's a custom field mapping
-          const mapping = fieldMapping[key];
-
-          let processedValue = value;
-
-          if (typeof mapping === 'function') {
-            // Custom transformation function
-            processedValue = mapping(value);
-          } else if (typeof mapping === 'string') {
-            // Field name mapping
-            form.setValue(mapping as any, value);
-            return;
-          }
-
-          // Handle common field transformations
-          if (
-            (key.includes('Date') || key.includes('date')) &&
-            typeof value === 'string'
-          ) {
-            // Date field transformation - convert ISO timestamps to YYYY-MM-DD
-            if (value.includes('T')) {
-              processedValue = value.split('T')[0];
-            } else if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-              // Already in correct format
-              processedValue = value;
-            } else {
-              // Try to parse and format the date
-              const date = new Date(value);
-              if (!isNaN(date.getTime())) {
-                processedValue = date.toISOString().split('T')[0];
-              }
-            }
-          } else if (key.includes('Price') && typeof value === 'number') {
-            // Price field transformation to string
-            processedValue = value.toString();
-          }
-
-          form.setValue(key as any, processedValue, { shouldValidate: false });
-        }
-      });
-    },
-    [fieldMapping] // FIXED: Removed 'form' from dependencies to prevent infinite loops
-    // form.setValue is stable and doesn't need to be in the dependency array
-  );
-
-  // Handle initialData on mount and when it changes (for async loading)
-  useEffect(() => {
-    if (isEditing && initialData) {
-      updateWithInitialData(initialData);
-
-      // Update images if provided
-      if (initialData.images && Array.isArray(initialData.images)) {
-        imageUpload.setRemainingExistingImages(initialData.images as string[]);
-      }
-
-      // Update price history if provided
-      if (initialData.priceHistory && Array.isArray(initialData.priceHistory)) {
-        // This would need to be implemented in usePriceHistory if needed
-      }
-    }
-    // FIXED: Removed updateWithInitialData and imageUpload from dependencies to prevent infinite loops
-    // These functions are stable or their changes shouldn't retrigger the initialization
-  }, [isEditing, initialData]);
-
   // Convenience methods for backward compatibility
   const setValue = useCallback(
     (name: keyof T, value: any) => {
@@ -248,158 +197,31 @@ export const useBaseForm = <T extends FieldValues>(
     [form]
   );
 
-  const setError = useCallback(
-    (name: string, error: Error) => {
-      if (name === 'submit') {
-        setFormError(error);
-      } else {
-        form.setError(name as any, { message: error.message });
-      }
-    },
-    [form]
-  );
-
-  // Enhanced data transformation
-  const transformData = useCallback(
-    (data: T): T => {
-      if (!enableDataTransformation) {
-        return data;
-      }
-
-      // Apply pattern-based transformation
-      if (submissionPatternConfig.transformData) {
-        const transformed = submissionPatternConfig.transformData(data);
-        return { ...data, ...transformed };
-      }
-
-      // Apply custom transformation
-      if (customTransform) {
-        const transformed = customTransform(data);
-        return { ...data, ...transformed };
-      }
-
-      // Default transformation
-      return transformFormData(data, {
-        trimStrings: true,
-        convertNumbers: false, // Keep as strings for form handling
-        convertDates: false, // Keep as strings for form handling
-        removeEmpty: false,
-      });
-    },
-    [enableDataTransformation, submissionPatternConfig, customTransform]
-  );
-
-  // Process form data with validation
-  const processFormData = useCallback(
-    (data: T) => {
-      const transformedData = transformData(data);
-
-      if (!validationRules || Object.keys(validationRules).length === 0) {
-        return { data: transformedData, isValid: true, errors: {} };
-      }
-
-      const errors: Record<string, string> = {};
-      let isValid = true;
-
-      // Validate each field
-      Object.entries(validationRules).forEach(([fieldName, rule]) => {
-        const fieldValue = transformedData[fieldName as keyof T];
-        const error = validateField(fieldName, fieldValue);
-
-        if (error) {
-          errors[fieldName] = error;
-          isValid = false;
-        }
-      });
-
-      return { data: transformedData, isValid, errors };
-    },
-    [transformData, validationRules, validateField]
-  );
-
-  // Unified form submission handler
-  const handleUnifiedSubmit = useCallback(
-    (
-      onSubmit: (data: T) => Promise<void>,
-      options: { validate?: boolean; transform?: boolean } = {}
-    ) => {
-      const { validate = true, transform = true } = options;
-
-      return form.handleSubmit(async (data: T) => {
-        setIsSubmitting(true);
-        setFormError(undefined);
-
-        try {
-          // Process data if requested
-          const processedData = transform
-            ? processFormData(data)
-            : { data, isValid: true, errors: {} };
-
-          // Validate if requested
-          if (validate && !processedData.isValid) {
-            // Set form errors
-            Object.entries(processedData.errors).forEach(([field, error]) => {
-              form.setError(field as any, { message: error });
-            });
-
-            throw new Error('Form validation failed');
-          }
-
-          // Execute submission
-          await onSubmit(processedData.data);
-        } catch (error) {
-          const formError =
-            error instanceof Error
-              ? error
-              : new Error('Form submission failed');
-          setFormError(formError);
-          throw formError;
-        } finally {
-          setIsSubmitting(false);
-        }
-      });
-    },
-    [form, processFormData, setIsSubmitting]
-  );
-
-  // Initialize integrated form submission if enabled
-  const formSubmission =
-    enableSubmissionIntegration && submissionConfig
-      ? useFormSubmission({
-          ...submissionConfig,
-          isEditing,
-          initialData,
-          imageUpload,
-          priceHistory,
-          validationRules,
-          ...submissionPatternConfig,
-        } as FormSubmissionConfig<T>)
-      : undefined;
+  // DELETED: formSubmission integration - use focused hooks instead
 
   return {
     form,
-    isSubmitting,
+    isSubmitting: formState.isSubmitting,
 
     // Convenience accessors
     values: values as T,
     setValue,
     errors: form.formState.errors,
-    error: formError,
-    setError,
+    error: formState.error,
+    setError: formState.setError,
 
     imageUpload,
     priceHistory,
-    validateField,
-    isFormValid,
-    setSubmitting,
+    validateField: formValidation.validateField,
+    isFormValid: formValidation.isFormValid,
+    setSubmitting: formState.setSubmitting,
     resetForm,
     setFormData,
-    updateWithInitialData,
+    updateWithInitialData: formInitializer.updateWithInitialData,
 
     // Enhanced features
-    transformData,
-    handleUnifiedSubmit,
-    processFormData,
-    formSubmission,
+    transformData: formTransformation.transformData,
+    handleUnifiedSubmit: formSubmissionHandler.handleUnifiedSubmit,
+    processFormData: formDataProcessor.processFormData,
   };
 };

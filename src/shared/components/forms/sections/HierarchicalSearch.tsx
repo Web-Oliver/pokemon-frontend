@@ -15,6 +15,7 @@ import {
   UseFormWatch,
 } from 'react-hook-form';
 import SearchInput from '../../atoms/design-system/SearchInput';
+import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 
 interface HierarchicalSearchProps {
   register: UseFormRegister<any>;
@@ -52,6 +53,9 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
   secondaryPlaceholder,
 }) => {
   const [selectedParentId, setSelectedParentId] = useState<string | undefined>();
+  
+  // Use centralized error handling
+  const errorHandler = useFormErrorHandler('HIERARCHICAL_SEARCH');
 
   const primaryValue = watch(primaryFieldName) || '';
   const secondaryValue = watch(secondaryFieldName) || '';
@@ -63,11 +67,13 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
     // If user is typing something different from selected item, clear parent selection
     // This allows reselection after bidirectional auto-fill
     if (selectedParentId && value.trim() !== primaryValue.trim()) {
-      console.log('[HIERARCHICAL] Clearing parent selection due to input change:', { 
-        newValue: value.trim(), 
-        currentValue: primaryValue.trim(),
-        selectedParentId 
-      });
+      if (import.meta.env.MODE === 'development') {
+        console.log('[HIERARCHICAL] Clearing parent selection due to input change:', { 
+          newValue: value.trim(), 
+          currentValue: primaryValue.trim(),
+          selectedParentId 
+        });
+      }
       setSelectedParentId(undefined);
       
       // Also clear secondary field since parent context changed
@@ -132,7 +138,9 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
     clearErrors(primaryFieldName);
     // Use MongoDB ObjectId from result data
     const parentId = result.data._id || result.data.id || result.id;
-    console.log('[HIERARCHICAL] Setting parent ID:', parentId, 'for mode:', mode);
+    if (import.meta.env.MODE === 'development') {
+      console.log('[HIERARCHICAL] Setting parent ID:', parentId, 'for mode:', mode);
+    }
     setSelectedParentId(parentId);
     
     // Clear secondary field when primary changes to ensure proper filtering
@@ -181,35 +189,49 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
 
       // BIDIRECTIONAL: Auto-fill Set Name when card is selected - Safe circular reference handling
       let setName = '';
-      try {
-        // Check for set name in all possible backend response formats
+      const extractSetName = () => {
         if (result.data.setDisplayName && typeof result.data.setDisplayName === 'string') {
-          setName = result.data.setDisplayName;
+          return result.data.setDisplayName;
         } else if (result.data.setId && typeof result.data.setId === 'object' && result.data.setId.setName) {
-          setName = String(result.data.setId.setName);
+          return String(result.data.setId.setName);
         } else if (result.data.setName && typeof result.data.setName === 'string') {
-          setName = result.data.setName;
+          return result.data.setName;
         } else if (result.data.set && typeof result.data.set === 'string') {
-          setName = result.data.set;
+          return result.data.set;
         } else if (result.data.pokemon_set && typeof result.data.pokemon_set === 'string') {
-          setName = result.data.pokemon_set;
+          return result.data.pokemon_set;
         }
-      } catch (error) {
-        console.warn('[HIERARCHICAL] Error accessing set name for auto-fill:', error);
-        setName = '';
-      }
+        return '';
+      };
+
+      errorHandler.createAsyncErrorHandler(
+        async () => {
+          setName = extractSetName();
+          return setName;
+        },
+        {
+          context: 'SET_NAME_EXTRACTION',
+          showToast: false,
+        }
+      )();
       
       if (setName) {
-        console.log('[HIERARCHICAL] Auto-filling set name from card selection:', setName);
+        if (import.meta.env.MODE === 'development') {
+          console.log('[HIERARCHICAL] Auto-filling set name from card selection:', setName);
+        }
         setValue(primaryFieldName, setName);
         clearErrors(primaryFieldName);
         
         // CRITICAL FIX: Update selectedParentId to match the auto-filled set
         if (result.data.setId && typeof result.data.setId === 'object' && result.data.setId._id) {
-          console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId._id);
+          if (import.meta.env.MODE === 'development') {
+            console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId._id);
+          }
           setSelectedParentId(result.data.setId._id);
         } else if (result.data.setId && typeof result.data.setId === 'string') {
-          console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId);
+          if (import.meta.env.MODE === 'development') {
+            console.log('[HIERARCHICAL] Auto-updating parent ID from card selection:', result.data.setId);
+          }
           setSelectedParentId(result.data.setId);
         }
       }
@@ -218,28 +240,43 @@ const HierarchicalSearch: React.FC<HierarchicalSearchProps> = ({
     // BIDIRECTIONAL: Auto-fill SetProduct when product is selected - Safe circular reference handling
     if (mode === 'setproduct-product' && result.data) {
       let setProductName = '';
-      try {
+      const extractSetProductName = () => {
         if (result.data.setProductName && typeof result.data.setProductName === 'string') {
-          setProductName = result.data.setProductName;
+          return result.data.setProductName;
         } else if (result.data.setProductId && typeof result.data.setProductId === 'object' && result.data.setProductId.setProductName) {
-          setProductName = String(result.data.setProductId.setProductName);
+          return String(result.data.setProductId.setProductName);
         }
-      } catch (error) {
-        console.warn('[HIERARCHICAL] Error accessing set product name for auto-fill:', error);
-        setProductName = '';
-      }
+        return '';
+      };
+
+      errorHandler.createAsyncErrorHandler(
+        async () => {
+          setProductName = extractSetProductName();
+          return setProductName;
+        },
+        {
+          context: 'SET_PRODUCT_NAME_EXTRACTION',
+          showToast: false,
+        }
+      )();
       
       if (setProductName) {
-        console.log('[HIERARCHICAL] Auto-filling set product name from product selection:', setProductName);
+        if (import.meta.env.MODE === 'development') {
+          console.log('[HIERARCHICAL] Auto-filling set product name from product selection:', setProductName);
+        }
         setValue(primaryFieldName, setProductName);
         clearErrors(primaryFieldName);
         
         // CRITICAL FIX: Update selectedParentId to match the auto-filled setProduct
         if (result.data.setProductId && typeof result.data.setProductId === 'object' && result.data.setProductId._id) {
-          console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId._id);
+          if (import.meta.env.MODE === 'development') {
+            console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId._id);
+          }
           setSelectedParentId(result.data.setProductId._id);
         } else if (result.data.setProductId && typeof result.data.setProductId === 'string') {
-          console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId);
+          if (import.meta.env.MODE === 'development') {
+            console.log('[HIERARCHICAL] Auto-updating parent ID from product selection:', result.data.setProductId);
+          }
           setSelectedParentId(result.data.setProductId);
         }
       }

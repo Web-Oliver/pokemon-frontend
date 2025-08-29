@@ -5,6 +5,8 @@
  * Provides up to 90% cost reduction for Google Vision API batch requests
  */
 
+import { logError, logInfo } from '@/shared/components/organisms/ui/toastNotifications';
+
 export interface StitchingOptions {
   maxWidth?: number;
   maxHeight?: number;
@@ -70,7 +72,7 @@ export class ImageStitchingService {
 
     const mergedOptions = { ...this.DEFAULT_OPTIONS, ...options };
     
-    console.log(`[Image Stitching] Processing ${images.length} PSA labels for batch OCR`);
+    logInfo(`Processing ${images.length} PSA labels for batch OCR`);
 
     try {
       // Load and preprocess all images
@@ -109,8 +111,8 @@ export class ImageStitchingService {
       const originalSize = images.reduce((sum, img) => sum + img.size, 0);
       const compressionRatio = originalSize / stitchedFile.size;
 
-      console.log(`[Image Stitching] Created ${gridDimensions.rows}x${gridDimensions.cols} grid`);
-      console.log(`[Image Stitching] Compression ratio: ${compressionRatio.toFixed(2)}x`);
+      logInfo('IMAGE_STITCHING', `Created ${gridDimensions.rows}x${gridDimensions.cols} grid`);
+      logInfo('IMAGE_STITCHING', `Compression ratio: ${compressionRatio.toFixed(2)}x`);
 
       return {
         stitchedFile,
@@ -121,7 +123,11 @@ export class ImageStitchingService {
       };
 
     } catch (error) {
-      console.error('[Image Stitching] Failed to stitch images:', error);
+      logError('IMAGE_STITCHING', 'Failed to stitch images', error, {
+        imageCount: images.length,
+        maxWidth: mergedOptions.maxWidth,
+        maxHeight: mergedOptions.maxHeight,
+      });
       throw new Error(`Image stitching failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -164,7 +170,7 @@ export class ImageStitchingService {
       }
     }
 
-    console.log(`[Image Stitching] Split OCR into ${results.length} label results`);
+    logInfo(`Split OCR into ${results.length} label results`);
     return results;
   }
 

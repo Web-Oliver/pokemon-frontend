@@ -33,6 +33,14 @@ export {
   isProduction,
 } from '../core';
 
+// Re-export array utilities from single source of truth (eliminate duplications)
+export {
+  uniqueBy,
+  groupBy,
+  sortBy,
+  createArray,
+} from '../core/array';
+
 // Re-export cn from single source of truth
 export { cn } from '../../../lib/utils';
 
@@ -132,77 +140,7 @@ export const retry = async <T>(
   throw new Error('Retry function should not reach this point');
 };
 
-/**
- * Create array of specified length with fill value or function
- */
-export const createArray = <T>(
-  length: number,
-  fillValue: T | ((index: number) => T)
-): T[] => {
-  return Array.from({ length }, (_, index) =>
-    typeof fillValue === 'function'
-      ? (fillValue as (index: number) => T)(index)
-      : fillValue
-  );
-};
-
-/**
- * Remove duplicates from array based on key function
- */
-export const uniqueBy = <T>(array: T[], keyFn: (item: T) => any): T[] => {
-  const seen = new Set();
-  return array.filter((item) => {
-    const key = keyFn(item);
-    if (seen.has(key)) {
-      return false;
-    }
-    seen.add(key);
-    return true;
-  });
-};
-
-/**
- * Group array items by key function
- */
-export const groupBy = <T>(
-  array: T[],
-  keyFn: (item: T) => string | number
-): Record<string | number, T[]> => {
-  return array.reduce(
-    (groups, item) => {
-      const key = keyFn(item);
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key].push(item);
-      return groups;
-    },
-    {} as Record<string | number, T[]>
-  );
-};
-
-/**
- * Sort array by multiple criteria
- */
-export const sortBy = <T>(
-  array: T[],
-  ...sortFns: Array<(item: T) => any>
-): T[] => {
-  return [...array].sort((a, b) => {
-    for (const sortFn of sortFns) {
-      const aVal = sortFn(a);
-      const bVal = sortFn(b);
-
-      if (aVal < bVal) {
-        return -1;
-      }
-      if (aVal > bVal) {
-        return 1;
-      }
-    }
-    return 0;
-  });
-};
+// Array utilities now imported from ../core/array.ts to eliminate duplications
 
 /**
  * Collection Item Helper Functions

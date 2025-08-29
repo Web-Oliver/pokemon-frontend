@@ -33,7 +33,6 @@ import { useAuctionFormAdapter } from '../../../shared/hooks/form/useGenericForm
 import { log } from '../../../shared/utils/performance/logger';
 import AuctionFormContainer from '../../../shared/components/forms/containers/AuctionFormContainer';
 import AuctionItemSelectionSection from '../../../shared/components/forms/sections/AuctionItemSelectionSection';
-import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import {
   NeuralNetworkBackground,
   ParticleSystem,
@@ -55,7 +54,6 @@ interface AuctionFormData {
 // Form data interface
 
 const CreateAuction: React.FC = () => {
-  const themeConfig = useCentralizedTheme();
   const {
     createAuction,
     loading: auctionLoading,

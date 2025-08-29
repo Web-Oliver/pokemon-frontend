@@ -14,6 +14,7 @@
 import React from 'react';
 import { Camera, Image, Sparkles, Upload } from 'lucide-react';
 import ImageUploader from '../../../../components/ImageUploader';
+import { useApiErrorHandler } from '../../../hooks/error/useErrorHandler';
 
 interface ImageUploadSectionProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
@@ -34,6 +35,8 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
   title = 'Card Images',
   isVisible = true,
 }) => {
+  const errorHandler = useApiErrorHandler('IMAGE_UPLOAD_SECTION');
+  
   if (!isVisible) {
     return null;
   }
@@ -80,8 +83,16 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                     alt="Pokemon Card Preview"
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      console.error('Image failed to load:', existingImageUrls[0]);
+                      // Image load failure - using fallback display
                       e.currentTarget.style.display = 'none';
+                      errorHandler.handleError(e, {
+                        context: 'IMAGE_PREVIEW_LOAD_FAILURE',
+                        severity: 'low',
+                        showToast: false,
+                        metadata: {
+                          imageUrl: existingImageUrls[0],
+                        },
+                      });
                     }}
                   />
                 ) : (

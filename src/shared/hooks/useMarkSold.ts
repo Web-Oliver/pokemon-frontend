@@ -10,7 +10,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ISaleDetails } from '../../types/common';
-import { useCollectionOperations } from '../../../shared/hooks';
+import { useCollectionOverview } from './collection';
 import { useLoadingState } from './common/useLoadingState';
 import { navigationHelper } from '../utils/navigation';
 import { unifiedApiService } from '../services/UnifiedApiService';
@@ -55,7 +55,7 @@ export const useMarkSold = ({
   });
 
   const { updatePsaCard, updateRawCard, updateSealedProduct } =
-    useCollectionOperations();
+    useCollectionOverview();
 
   const markAsSold = useCallback(
     async (saleDetails: ISaleDetails): Promise<void> => {
@@ -155,7 +155,7 @@ export const useCollectionItemDetail = () => {
   };
 
   // Use existing collection operations hook
-  const collectionOps = useCollectionOperations();
+  const collectionOps = useCollectionOverview();
 
   // ZIP download handler
   const handleDownloadImages = async () => {

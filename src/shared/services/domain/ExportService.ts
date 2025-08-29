@@ -7,6 +7,7 @@ import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { generateFacebookPostFromAuction } from '../../utils/formatting/facebookPostFormatter';
 import { extractResponseData } from '../utils/responseUtils';
+import { logError } from '@/shared/components/organisms/ui/toastNotifications';
 
 export interface IExportService {
   exportCollectionImages(itemType: 'psaGradedCards' | 'rawCards' | 'sealedProducts'): Promise<Blob>;
@@ -74,7 +75,7 @@ export class ExportService extends BaseApiService implements IExportService {
       // Use the existing utility function
       return generateFacebookPostFromAuction(auction);
     } catch (error) {
-      console.error('Error generating Facebook post:', error);
+      logError('EXPORT_SERVICE', 'Error generating Facebook post', error, { auctionId });
       throw error;
     }
   }

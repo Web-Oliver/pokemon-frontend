@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { GlassmorphismContainer } from '../effects/GlassmorphismContainer';
+import { GlassmorphismContainer } from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
 import { ContentLoading } from '../../../../shared/components/molecules/common/LoadingStates';
 import {
   getActivityColor,

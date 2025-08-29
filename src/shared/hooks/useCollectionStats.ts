@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { useCollectionOperations } from '../../../shared/hooks';
+import { useCollectionOverview } from './collection';
 import { displayPrice } from '../utils';
 
 export interface CollectionStats {
@@ -27,7 +27,7 @@ export const useCollectionStats = (): CollectionStats & {
   loading: boolean;
 } => {
   const { psaCards, rawCards, sealedProducts, soldItems, loading } =
-    useCollectionOperations();
+    useCollectionOverview();
 
   const stats = useMemo((): CollectionStats => {
     // Ensure arrays are safe for operations (prevent undefined access errors)

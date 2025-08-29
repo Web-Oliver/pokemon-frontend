@@ -9,7 +9,7 @@
  * - Interface Segregation: Separate interfaces for different theme aspects
  */
 
-export type string =
+export type FormThemeColor =
   | 'purple'
   | 'blue'
   | 'emerald'

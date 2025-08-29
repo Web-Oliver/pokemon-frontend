@@ -18,6 +18,7 @@ import { formatCardName } from '../../../utils';
 import { getImageUrl } from '../../../utils/ui/imageUtils';
 import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
+import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
 
@@ -44,11 +45,13 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   onViewDetails,
   onMarkAsSold,
 }) => {
-  // Memoized item display name calculation - FIXED for circular reference issues
-  const itemName = useMemo(() => {
-    const itemRecord = item as Record<string, unknown>;
+  // Centralized error handling for collection item operations
+  const errorHandler = useFormErrorHandler('COLLECTION_ITEM_CARD');
 
-    try {
+  // Memoized item display name calculation with centralized error handling
+  const itemName = useMemo(() => {
+    const extractItemName = () => {
+      const itemRecord = item as Record<string, unknown>;
       let cardName = 'Unknown Item';
 
       // For PSA/Raw cards - safely access nested properties
@@ -76,17 +79,25 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
 
       // Format card name for display (remove hyphens and parentheses)
       return formatCardName(cardName);
-    } catch (error) {
-      console.error('[COLLECTION ITEM] Error extracting item name:', error);
-      return 'Unknown Item';
-    }
-  }, [item]);
-
-  // Memoized set name calculation - FIXED for circular reference issues
-  const setName = useMemo(() => {
-    const itemRecord = item as Record<string, unknown>;
+    };
 
     try {
+      return extractItemName();
+    } catch (error) {
+      errorHandler.handleError(error, {
+        context: 'ITEM_NAME_EXTRACTION',
+        showToast: false,
+        metadata: { itemType, itemId: (item as any)?._id },
+      });
+      return 'Unknown Item';
+    }
+  }, [item, itemType, errorHandler]);
+
+  // Memoized set name calculation with centralized error handling
+  const setName = useMemo(() => {
+    const extractSetName = () => {
+      const itemRecord = item as Record<string, unknown>;
+
       // For PSA/Raw cards - safely access nested properties
       const cardId = itemRecord.cardId as any;
       if (cardId && typeof cardId === 'object') {
@@ -116,11 +127,19 @@ const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
       }
 
       return 'Unknown Set';
+    };
+
+    try {
+      return extractSetName();
     } catch (error) {
-      console.error('[COLLECTION ITEM] Error extracting set name:', error);
+      errorHandler.handleError(error, {
+        context: 'SET_NAME_EXTRACTION',
+        showToast: false,
+        metadata: { itemType, itemId: (item as any)?._id },
+      });
       return 'Unknown Set';
     }
-  }, [item]);
+  }, [item, itemType, errorHandler]);
 
   // Memoized images calculation
   const images = useMemo(() => {

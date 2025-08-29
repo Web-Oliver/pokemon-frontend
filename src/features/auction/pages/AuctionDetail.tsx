@@ -28,7 +28,8 @@ import { AuctionItemCard } from '../components/auction/AuctionItemCard';
 import { ISaleDetails } from '../../../shared/domain/models/common';
 import { useAuction } from '../../../shared/hooks/useAuction';
 import { useCollectionOperations } from '../../../shared/hooks';
-import { useConfirmModal, useModal } from '../../../shared/hooks/useModal';
+// BREAKING CHANGE: useModal deleted - use modern React state instead
+import { useState } from 'react';
 import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import {
   showErrorToast,
@@ -92,11 +93,13 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
   } | null>(null);
 
   // Modal management using new hooks
-  const addItemModal = useModal();
-  const facebookPostModal = useModal();
-  const markSoldModal = useModal();
-  const deleteConfirmModal = useConfirmModal();
-  const removeItemConfirmModal = useConfirmModal();
+  // BREAKING CHANGE: Modern React state instead of useModal hook
+  const [addItemModalOpen, setAddItemModalOpen] = useState(false);
+  const [facebookPostModalOpen, setFacebookPostModalOpen] = useState(false);
+  // BREAKING CHANGE: Replace all useModal/useConfirmModal with modern state
+  const [markSoldModalOpen, setMarkSoldModalOpen] = useState(false);
+  const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false);
+  const [removeItemConfirmModalOpen, setRemoveItemConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (urlAuctionId) {

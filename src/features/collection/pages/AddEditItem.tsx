@@ -24,7 +24,6 @@ import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
 import { log } from '../../../shared/utils/performance/logger';
 import { storageWrappers } from '../../../shared/utils/storage';
 import { navigationHelper } from '../../../shared/utils/navigation';
-import { useCentralizedTheme } from '../../../shared/utils/ui/themeConfig';
 import {
   CollectionItem,
   CollectionItemService,
@@ -52,7 +51,6 @@ interface ItemTypeOptionConfig {
 const AddEditItem: React.FC = () => {
   const { loading: _collectionLoading, error: _collectionError } =
     useCollectionOperations();
-  const themeConfig = useCentralizedTheme();
   const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(
     null
   );

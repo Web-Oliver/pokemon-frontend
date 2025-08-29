@@ -12,6 +12,7 @@ import { useSearch } from '../../../hooks/useSearch';
 import { pokemonSearchInputVariants } from './unifiedVariants';
 import { cn } from '../../../utils';
 import type { SearchType } from '../../../hooks/useSearch';
+import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 
 interface SearchResult {
   id: string;
@@ -49,6 +50,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Centralized error handling for search operations
+  const errorHandler = useFormErrorHandler('SEARCH_INPUT');
 
   // Sync internal query with external value prop
   useEffect(() => {
@@ -112,6 +116,64 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         setSelectedIndex(-1);
         break;
     }
+  };
+
+  // Safe property access with centralized error handling
+  const renderCardDetails = (result: SearchResult) => {
+    const extractCardDetails = () => {
+      // Show card number and variety prominently for cards
+      const cardNumber = result.data?.cardNumber || result.data?.cardNumb || '';
+      const variety = result.data?.variety || '';
+      
+      if (cardNumber || variety) {
+        return (
+          <div className="text-xs text-cyan-200/70">
+            {cardNumber && `#${cardNumber}`}
+            {cardNumber && variety && ' • '}
+            {variety}
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return errorHandler.createAsyncErrorHandler(
+      async () => extractCardDetails(),
+      {
+        context: 'CARD_DETAILS_EXTRACTION',
+        showToast: false,
+      }
+    )();
+  };
+
+  // Safe set name access with centralized error handling
+  const renderSetName = (result: SearchResult) => {
+    const extractSetName = () => {
+      // Safe property access to prevent circular references
+      let setName = '';
+      if (result.data?.setName) {
+        setName = String(result.data.setName);
+      } else if (result.data?.setId && typeof result.data.setId === 'object' && result.data.setId.setName) {
+        setName = String(result.data.setId.setName);
+      }
+      
+      if (setName && result.type !== 'set') {
+        return (
+          <div className="text-xs text-cyan-200/70 mt-1">
+            Set: {setName}
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return errorHandler.createAsyncErrorHandler(
+      async () => extractSetName(),
+      {
+        context: 'SET_NAME_EXTRACTION', 
+        showToast: false,
+      }
+    )();
   };
 
   return (

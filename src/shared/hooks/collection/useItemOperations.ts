@@ -12,7 +12,7 @@ import { CollectionItem, ItemType } from './useCollectionItem';
 import { unifiedApiService } from '../../services/UnifiedApiService';
 import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
 import { navigationHelper } from '../../utils/navigation';
-import { useConfirmModal } from '../useModal';
+// import { useConfirmModal } from '../useModal'; // Removed - file no longer exists
 
 export interface UseItemOperationsReturn {
   handleEdit: () => void;
@@ -20,7 +20,7 @@ export interface UseItemOperationsReturn {
   confirmDeleteItem: () => Promise<void>;
   handleMarkSold: () => void;
   handleBackToCollection: () => void;
-  deleteConfirmModal: ReturnType<typeof useConfirmModal>;
+  // deleteConfirmModal: ReturnType<typeof useConfirmModal>; // Replaced with simple confirm
 }
 
 /**
@@ -32,7 +32,7 @@ export const useItemOperations = (
   type?: string,
   id?: string
 ): UseItemOperationsReturn => {
-  const deleteConfirmModal = useConfirmModal();
+  // const deleteConfirmModal = useConfirmModal(); // Replaced with simple confirm
 
   // Get URL params if not provided
   const getUrlParams = useCallback(() => {
@@ -53,10 +53,12 @@ export const useItemOperations = (
     navigationHelper.navigateToEdit.item(itemType as ItemType, itemId);
   }, [item, getUrlParams]);
 
-  // Open delete confirmation modal
+  // Open delete confirmation
   const handleDelete = useCallback(() => {
-    deleteConfirmModal.openModal();
-  }, [deleteConfirmModal]);
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      confirmDeleteItem();
+    }
+  }, []);
 
   // Confirm and execute delete operation
   const confirmDeleteItem = useCallback(async () => {
@@ -66,7 +68,7 @@ export const useItemOperations = (
       return;
     }
 
-    await deleteConfirmModal.confirmAction(async () => {
+    try {
       switch (itemType) {
         case 'psa':
           await unifiedApiService.collection.deletePsaCard(itemId);
@@ -83,8 +85,10 @@ export const useItemOperations = (
 
       showSuccessToast('Item deleted successfully');
       navigationHelper.navigateToCollection();
-    });
-  }, [item, getUrlParams, deleteConfirmModal]);
+    } catch (error) {
+      console.error('Delete failed:', error);
+    }
+  }, [item, getUrlParams]);
 
   // Open mark sold modal (modal management handled by parent)
   const handleMarkSold = useCallback(() => {
@@ -106,6 +110,6 @@ export const useItemOperations = (
     confirmDeleteItem,
     handleMarkSold,
     handleBackToCollection,
-    deleteConfirmModal,
+    // deleteConfirmModal, // Replaced with simple confirm
   };
 };

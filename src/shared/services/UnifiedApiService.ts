@@ -17,6 +17,7 @@
 
 import { unifiedApiClient } from '../api/unifiedApiClient';
 import { generateFacebookPostFromAuction } from '../utils/formatting/facebookPostFormatter';
+import { SearchResponse } from '../types/search';
 
 // Domain Models
 import { IAuction } from '../domain/models/auction';
@@ -93,12 +94,7 @@ export interface ProductSearchParams {
   exclude?: string; // For excluding specific product ID
 }
 
-export interface SearchResponse<T> {
-  success: boolean;
-  query: string;
-  count: number;
-  data: T[];
-}
+// SearchResponse now imported from ../types/search
 
 /**
  * Collection interfaces (from deprecated collectionApi)

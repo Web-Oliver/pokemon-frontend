@@ -7,8 +7,8 @@
 
 import React from 'react';
 import { Monitor, Moon, Palette, Sun, Sparkles, Zap } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
-import type { ThemeName } from './themeSystem';
+import { useTheme } from './useTheme';
+import type { ThemeName } from './themeTypes';
 
 interface ThemeOption {
   name: ThemeName;
@@ -40,24 +40,24 @@ const themeOptions: ThemeOption[] = [
     preview: { bg: 'bg-slate-900', accent: 'bg-cyan-500' },
   },
   {
-    name: 'context7-premium',
-    label: 'Context7 Premium',
+    name: 'premium',
+    label: 'Premium',
     description: 'Professional glassmorphism design',
     icon: Sparkles,
     gradient: 'from-purple-600 to-blue-600',
     preview: { bg: 'bg-slate-800', accent: 'bg-purple-500' },
   },
   {
-    name: 'context7-futuristic',
-    label: 'Context7 Futuristic',
+    name: 'neural',
+    label: 'Neural',
     description: 'Neural network patterns',
     icon: Zap,
     gradient: 'from-cyan-500 to-blue-600',
     preview: { bg: 'bg-slate-900', accent: 'bg-cyan-400' },
   },
   {
-    name: 'dba-cosmic',
-    label: 'DBA Cosmic',
+    name: 'cosmic',
+    label: 'Cosmic',
     description: 'Space-themed with cosmic gradients',
     icon: Palette,
     gradient: 'from-purple-500 to-pink-500',
@@ -80,7 +80,7 @@ export const ThemePicker: React.FC = () => {
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
       {themeOptions.map((theme) => {
         const Icon = theme.icon;
-        const isActive = settings.theme === theme.name;
+        const isActive = settings.name === theme.name;
 
         return (
           <button

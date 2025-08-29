@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { Monitor, Moon, Sparkles, Sun, Zap, Aurora, Palette } from 'lucide-react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion';
-import { useTheme } from '../../../../theme/ThemeProvider';
+import { useTheme } from '../../../../theme';
 import { ThemeName, getThemeDisplayName } from '../../../../theme/DesignSystem';
 
 interface StunningTheme {

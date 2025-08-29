@@ -7,7 +7,10 @@ import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { ICard, ISet } from '../../domain/models/card';
 import { IProduct, ISetProduct } from '../../domain/models/product';
+import { SearchResponse } from '../../types/search';
 import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '../utils/responseUtils';
+import { createApiLogger } from '../../utils/performance/apiLogger';
+import { filterCardsBySetId } from '../../utils/search/searchFilters';
 
 // Import search types from UnifiedApiService
 export interface CardSearchParams {
@@ -49,12 +52,6 @@ export interface ProductSearchParams {
   exclude?: string; // For excluding specific product ID
 }
 
-export interface SearchResponse<T> {
-  success: boolean;
-  query: string;
-  count: number;
-  data: T[];
-}
 
 export interface ISearchService {
   searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>>;
@@ -70,12 +67,14 @@ export interface ISearchService {
 }
 
 export class SearchService extends BaseApiService implements ISearchService {
+  private logger = createApiLogger('SEARCH SERVICE');
+
   constructor(httpClient: IHttpClient) {
     super(httpClient, 'SEARCH SERVICE');
   }
 
   async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
-    console.log('[API DEBUG] Calling unified /search?type=sets with params:', params);
+    this.logger.logApiCall('searchSets', params);
     return this.executeWithErrorHandling('SEARCH Sets', async () => {
       const response = await this.httpClient.get<any>('/search/sets', {
         params: buildHierarchicalParams({
@@ -96,7 +95,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   }
 
   async searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<ISetProduct>> {
-    console.log('[API DEBUG] FIXED: Calling /set-products?q= with params:', params);
+    this.logger.logApiCall('searchSetProducts', params);
     return this.executeWithErrorHandling('SEARCH Set Products', async () => {
       const response = await this.httpClient.get<any>('/set-products', {
         params: buildHierarchicalParams({
@@ -117,7 +116,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   }
 
   async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
-    console.log('[API DEBUG] Calling /search/products with params:', params);
+    this.logger.logApiCall('searchProducts', params);
     return this.executeWithErrorHandling('SEARCH Products', async () => {
       const response = await this.httpClient.get<any>('/search/products', {
         params: buildHierarchicalParams({
@@ -141,7 +140,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   }
 
   async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
-    console.log('[API DEBUG] Calling /search/cards with params:', params);
+    this.logger.logApiCall('searchCards', params);
     return this.executeWithErrorHandling('SEARCH Cards', async () => {
       const response = await this.httpClient.get<any>('/search/cards', {
         params: buildHierarchicalParams({
@@ -162,15 +161,10 @@ export class SearchService extends BaseApiService implements ISearchService {
 
       const searchResponse = extractSearchResponse<ICard>(response, params.query);
       
-      // Handle MongoDB ObjectId filtering for hierarchical search
-      if (params.setId && Array.isArray(searchResponse.data)) {
-        searchResponse.data = searchResponse.data.filter((card: any) => {
-          return card.setId === params.setId || card.set?._id === params.setId;
-        });
-        searchResponse.count = searchResponse.data.length;
-      }
-
-      return searchResponse;
+      // Apply hierarchical filtering if setId is provided
+      return params.setId 
+        ? filterCardsBySetId(searchResponse, params.setId)
+        : searchResponse;
     });
   }
 

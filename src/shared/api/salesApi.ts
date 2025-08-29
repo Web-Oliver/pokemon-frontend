@@ -60,9 +60,11 @@ const transformSalesData = (rawData: any[]): ISale[] => {
 
     // Extract item name based on item type
     if (item.itemType === 'sealedProduct') {
-      console.log('[DEBUG SALES] Processing sealed product:', item);
-      console.log('[DEBUG SALES] productId field:', item.productId);
-      console.log('[DEBUG SALES] productId type:', typeof item.productId);
+      if (import.meta.env.MODE === 'development') {
+        console.log('[DEBUG SALES] Processing sealed product:', item);
+        console.log('[DEBUG SALES] productId field:', item.productId);
+        console.log('[DEBUG SALES] productId type:', typeof item.productId);
+      }
 
       // Follow the same pattern as CollectionItemCard and useDbaExport
       itemName =
@@ -71,15 +73,19 @@ const transformSalesData = (rawData: any[]): ISale[] => {
         item.productName || // Alternative direct field
         'Unknown Sealed Product'; // Fallback
 
-      console.log('[DEBUG SALES] Final itemName:', itemName);
+      if (import.meta.env.MODE === 'development') {
+        console.log('[DEBUG SALES] Final itemName:', itemName);
+      }
 
       // If productId is just a string ID (not populated), we could potentially
       // make an API call to get the product details, but for now use fallback
       if (typeof item.productId === 'string') {
-        console.log(
-          '[DEBUG SALES] productId is unpopulated string ID:',
-          item.productId
-        );
+        if (import.meta.env.MODE === 'development') {
+          console.log(
+            '[DEBUG SALES] productId is unpopulated string ID:',
+            item.productId
+          );
+        }
         itemName = `Sealed Product (ID: ${item.productId.substring(0, 8)}...)`;
       }
     } else if (

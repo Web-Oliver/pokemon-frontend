@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { useCentralizedTheme } from '../../../../utils/ui/themeConfig';
+// themeConfig import removed
 
 interface HelperTextProps {
   helperText?: string;

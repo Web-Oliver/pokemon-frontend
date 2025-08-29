@@ -19,7 +19,8 @@ import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
 import { Label } from '../../../ui/primitives/Label';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
-import { useTheme } from '../../../../hooks/use-theme';
+import { useTheme } from '../../../../theme';
+import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 import type {
   AnimationIntensity,
   Density,
@@ -189,6 +190,9 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
   ) => {
     // Theme context integration
     const themeContext = useTheme();
+    
+    // Centralized error handling
+    const errorHandler = useFormErrorHandler('POKEMON_FORM');
 
     // Form instance - use external or create internal
     const internalForm = useForm<any>({
@@ -225,29 +229,49 @@ export const PokemonForm = forwardRef<HTMLFormElement, PokemonFormProps>(
       className
     );
 
-    // Handle form submission
+    // Handle form submission with centralized error handling
     const handleFormSubmit = async (data: any) => {
-      try {
+      const submitOperation = async () => {
         await onSubmit(data);
-      } catch (error) {
-        console.error('Form submission error:', error);
-      }
+        return data;
+      };
+
+      await errorHandler.createAsyncErrorHandler(
+        submitOperation,
+        {
+          context: 'FORM_SUBMISSION',
+          severity: 'medium',
+          toastMessage: 'Form submission failed. Please try again.',
+        }
+      )();
     };
 
-    // Auto-save functionality
+    // Auto-save functionality with centralized error handling
     useEffect(() => {
       if (!autoSave) return;
 
       const subscription = watch((data) => {
-        const timeoutId = setTimeout(() => {
-          console.log('Auto-saving form data:', data);
+        const timeoutId = setTimeout(async () => {
+          const autoSaveOperation = async () => {
+            // Auto-save logic would go here
+            return data;
+          };
+
+          await errorHandler.createAsyncErrorHandler(
+            autoSaveOperation,
+            {
+              context: 'AUTO_SAVE',
+              severity: 'low',
+              showToast: false, // Don't show toast for auto-save errors
+            }
+          )();
         }, autoSaveDelay);
 
         return () => clearTimeout(timeoutId);
       });
 
       return () => subscription.unsubscribe();
-    }, [watch, autoSave, autoSaveDelay]);
+    }, [watch, autoSave, autoSaveDelay, errorHandler]);
 
     // Render form field
     const renderField = (field: PokemonFormField) => {

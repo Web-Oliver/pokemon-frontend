@@ -748,7 +748,9 @@ export class UnifiedApiClient implements IHttpClient {
 
       // CRITICAL FIX: Allow skipping transformation for raw API access
       if (skipTransform) {
-        console.log('[HTTP CLIENT] Skipping transformation, returning raw response.data');
+        if (import.meta.env.MODE === 'development') {
+          console.log('[HTTP CLIENT] Skipping transformation, returning raw response.data');
+        }
         return response.data as T;
       }
 

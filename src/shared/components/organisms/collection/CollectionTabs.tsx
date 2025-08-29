@@ -18,6 +18,7 @@ import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
 import { formatCardName } from '../../../utils';
 import { getImageUrl } from '../../../utils/ui/imageUtils';
+import { useApiErrorHandler } from '../../../hooks/error/useErrorHandler';
 
 export type TabType =
   | 'psa-graded'
@@ -89,6 +90,7 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
     onViewItemDetail,
     onMarkAsSold,
   }) => {
+    const errorHandler = useApiErrorHandler('COLLECTION_TABS');
     // Get data for the current tab
     const getTabData = () => {
       switch (activeTab) {
@@ -224,24 +226,32 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
         const key = item.id || (item as any)._id || `fallback-${index}`;
         if (usedKeys.has(key)) {
           duplicateKeys.push(key);
-          console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
-            item,
-            index,
-            activeTab,
-            itemId: item.id,
-            itemMongoId: (item as any)._id,
-            cardId: (item as any).cardId,
-            productId: (item as any).productId,
-          });
+          if (import.meta.env.MODE === 'development') {
+            console.warn(`[COLLECTION TABS] Duplicate key detected: ${key}`, {
+              item,
+              index,
+              activeTab,
+              itemId: item.id,
+              itemMongoId: (item as any)._id,
+              cardId: (item as any).cardId,
+              productId: (item as any).productId,
+            });
+          }
         }
         usedKeys.add(key);
       });
 
       if (duplicateKeys.length > 0) {
-        console.error(
-          `[COLLECTION TABS] Found ${duplicateKeys.length} duplicate keys in ${activeTab} tab:`,
-          duplicateKeys
-        );
+        errorHandler.handleError(new Error(`Duplicate keys detected in ${activeTab} tab`), {
+          context: 'DUPLICATE_KEYS_DETECTED',
+          severity: 'medium',
+          showToast: false,
+          metadata: {
+            activeTab,
+            duplicateCount: duplicateKeys.length,
+            duplicateKeys,
+          },
+        });
       }
 
       // Performance optimization: Remove Framer Motion animations

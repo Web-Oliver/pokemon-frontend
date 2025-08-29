@@ -67,7 +67,7 @@ export const ItemImageGallery: React.FC<ItemImageGalleryProps> = ({
     <PokemonCard
       title="Premium Gallery"
       subtitle="High-resolution imagery"
-      variant="outlined"
+      variant="outline"
       className={`h-full ${className}`}
     >
       <div className="h-[300px] sm:h-[400px] md:h-[500px]">

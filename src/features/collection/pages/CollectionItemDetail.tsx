@@ -18,7 +18,7 @@ import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout
 import { PokemonPageContainer } from '../../../shared/components/atoms/design-system';
 import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
 import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
-import { useModal } from '../../../shared/hooks/useModal';
+// DELETED: useModal - use modern React state instead
 import { useCollectionItemFromUrl } from '../../../shared/hooks/collection/useCollectionItem';
 import { useItemOperations } from '../../../shared/hooks/collection/useItemOperations';
 import { usePriceManagement } from '../../../shared/hooks/collection/usePriceManagement';

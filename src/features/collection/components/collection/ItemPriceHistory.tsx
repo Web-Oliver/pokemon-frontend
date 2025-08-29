@@ -42,7 +42,7 @@ export const ItemPriceHistory: React.FC<ItemPriceHistoryProps> = ({
     <PokemonCard
       title="Value Timeline"
       subtitle="Price tracking & history"
-      variant="outlined"
+      variant="outline"
       className={`h-full ${className}`}
     >
       <div className="space-y-6">

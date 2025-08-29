@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
+// themeConfig import removed
 import {
   COSMIC_GRADIENTS,
   generateCosmicBackground,

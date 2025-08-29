@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { cn } from '../../../utils';
-import { themeUtils, useCentralizedTheme } from '../../../utils/ui/themeConfig';
+// import { themeUtils, useCentralizedTheme } // themeConfig import removed
 
 export interface BaseListItemProps {
   children?: React.ReactNode;
@@ -84,11 +84,10 @@ export const BaseListItem: React.FC<BaseListItemProps> = ({
   timelineIcon,
   itemKey,
 }) => {
-  const themeConfig = useCentralizedTheme();
-  const shouldDisableAnimations =
-    themeUtils.shouldDisableAnimations(themeConfig);
-  const shouldShowEffects = themeUtils.shouldShowParticles(themeConfig);
-  const isHighContrast = themeUtils.isHighContrast(themeConfig);
+  // Theme configuration simplified
+  const shouldDisableAnimations = false;
+  const shouldShowEffects = true;
+  const isHighContrast = false;
 
   // Base list item styling - consistent foundation
   const baseClasses = [

@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { unifiedApiService } from '../services/UnifiedApiService';
 import { useCollectionOperations } from '.';
 import { handleApiError } from '../utils/helpers/errorHandler';
+import { useApiErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
 import { queryKeys } from '../../app/lib/queryClient';
 import { CACHE_TTL } from '../../app/config/cacheConfig';
@@ -71,6 +72,7 @@ export const useDbaExport = () => {
     useCollectionOperations();
   const queryClient = useQueryClient();
   const { invalidateDbaExportQueries } = useQueryInvalidation();
+  const errorHandler = useApiErrorHandler('DBA_EXPORT');
 
   // State management (non-cached state)
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
@@ -87,17 +89,10 @@ export const useDbaExport = () => {
   } = useQuery({
     queryKey: queryKeys.dbaSelections({ active: true }),
     queryFn: async () => {
-      console.log('[DBA DEBUG] Starting getDbaSelections API call...');
-      try {
-        const result = await unifiedApiService.dbaSelection.getDbaSelections({
-          active: true,
-        });
-        console.log('[DBA DEBUG] API call successful:', result);
-        return result;
-      } catch (error) {
-        console.error('[DBA DEBUG] API call failed:', error);
-        throw error;
-      }
+      const result = await unifiedApiService.dbaSelection.getDbaSelections({
+        active: true,
+      });
+      return result;
     },
     staleTime: CACHE_TTL.COLLECTION_ITEMS, // 2 minutes - DBA selections can change
     gcTime: CACHE_TTL.COLLECTION_ITEMS * 2, // 4 minutes
@@ -132,7 +127,7 @@ export const useDbaExport = () => {
   };
 
   const getItemDisplayName = (item: any, type: string): string => {
-    try {
+    const extractDisplayName = () => {
       if (type === 'sealed') {
         // NEW: Use hierarchical SetProduct → Product structure - Safe circular reference handling
         if (item.productId && typeof item.productId === 'object' && item.productId.productName) {
@@ -153,8 +148,16 @@ export const useDbaExport = () => {
         }
         return formatCardNameForDisplay(cardName);
       }
+    };
+
+    try {
+      return extractDisplayName();
     } catch (error) {
-      console.warn('[DBA EXPORT] Error getting item display name:', error);
+      errorHandler.handleError(error, {
+        context: 'DISPLAY_NAME_EXTRACTION',
+        showToast: false,
+        metadata: { itemType: type, itemId: item.id },
+      });
       return type === 'sealed' ? 'Unknown Product' : 'Unknown Card';
     }
   };
@@ -401,40 +404,28 @@ export const useDbaExport = () => {
   // Export functions
   const handleExportToDba = async () => {
     if (selectedItems.length === 0) {
-      handleApiError(new Error('No items selected'), 'No items selected');
+      errorHandler.handleUserError('No items selected for export');
       return;
     }
 
-    setIsExporting(true);
-
-    try {
-      if (import.meta.env.MODE === 'development') {
-        console.log(
-          '[DBA EXPORT] Starting export for',
-          selectedItems.length,
-          'items'
-        );
-      }
+    const exportOperation = async () => {
+      setIsExporting(true);
 
       // Add items to DBA selection tracking
       try {
-        if (import.meta.env.MODE === 'development') {
-          console.log('[DBA EXPORT] Adding items to DBA selection tracking...');
-        }
         const itemsToAdd = selectedItems.map((item) => ({
           itemId: item.id,
           itemType: item.type,
         }));
 
         await unifiedApiService.dbaSelection.addToDbaSelection(itemsToAdd);
-        if (import.meta.env.MODE === 'development') {
-          console.log('[DBA EXPORT] Items added to DBA selection tracking');
-        }
       } catch (dbaAddError) {
-        console.warn(
-          '[DBA EXPORT] Could not add items to DBA selection tracking:',
-          dbaAddError
-        );
+        // Non-critical error - log but continue
+        errorHandler.handleError(dbaAddError, {
+          context: 'DBA_SELECTION_TRACKING',
+          severity: 'low',
+          showToast: false,
+        });
       }
 
       // Prepare export data
@@ -443,71 +434,59 @@ export const useDbaExport = () => {
         customDescription,
       };
 
-      if (import.meta.env.MODE === 'development') {
-        console.log(
-          '[DBA EXPORT] Export data being sent to backend:',
-          exportData
-        );
-        console.log('[DBA EXPORT] First selected item:', selectedItems[0]);
-      }
-
       const response = await unifiedApiService.export.exportToDba(exportData);
-
-      if (import.meta.env.MODE === 'development') {
-        console.log('[DBA EXPORT] Export successful:', response);
-      }
       setExportResult(response);
 
-      // Invalidate DBA selections cache to show countdown timers (optional)
-      // Don't let cache refresh errors block the success message
+      // Invalidate DBA selections cache (non-critical)
       setTimeout(async () => {
         try {
-          if (import.meta.env.MODE === 'development') {
-            console.log(
-              '[DBA EXPORT] Invalidating DBA selections cache to show countdown timers...'
-            );
-          }
           await invalidateDbaExportQueries();
-          if (import.meta.env.MODE === 'development') {
-            console.log(
-              '[DBA EXPORT] DBA selections cache invalidated successfully'
-            );
-          }
         } catch (dbaError) {
-          console.warn(
-            '[DBA EXPORT] Could not invalidate DBA selections cache (non-critical):',
-            dbaError
-          );
+          errorHandler.handleError(dbaError, {
+            context: 'CACHE_INVALIDATION',
+            severity: 'low',
+            showToast: false,
+          });
         }
-      }, 1000); // Delay cache refresh to prevent race conditions
+      }, 1000);
 
       const itemCount = response?.itemCount || 0;
-      if (import.meta.env.MODE === 'development') {
-        console.log('[DBA EXPORT] Final export stats:', {
-          expectedCount: selectedItems.length,
-          actualValue: response?.itemCount,
-          finalItemCount: itemCount,
-        });
-      }
       showSuccessToast(
         `DBA export generated successfully! ${itemCount} items exported and added to DBA tracking.`
       );
-    } catch (err) {
-      handleApiError(err, 'Failed to export to DBA format');
-    } finally {
-      setIsExporting(false);
-    }
+      
+      return response;
+    };
+
+    await errorHandler.createAsyncErrorHandler(
+      exportOperation,
+      {
+        context: 'DBA_EXPORT',
+        severity: 'high',
+        toastMessage: 'Failed to export to DBA format',
+      }
+    )();
+
+    setIsExporting(false);
   };
 
   const downloadZip = async () => {
-    try {
+    const downloadOperation = async () => {
       setIsExporting(true);
       await unifiedApiService.export.downloadDbaZip();
-    } catch (err) {
-      handleApiError(err, 'Failed to download DBA export');
-    } finally {
-      setIsExporting(false);
-    }
+      return true;
+    };
+
+    await errorHandler.createAsyncErrorHandler(
+      downloadOperation,
+      {
+        context: 'DBA_DOWNLOAD',
+        severity: 'high', 
+        toastMessage: 'Failed to download DBA export',
+      }
+    )();
+
+    setIsExporting(false);
   };
 
   return {
@@ -539,4 +518,4 @@ export const useDbaExport = () => {
     handleExportToDba,
     downloadZip,
   };
-};
+};;

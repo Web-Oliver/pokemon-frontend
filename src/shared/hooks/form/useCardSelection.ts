@@ -15,6 +15,7 @@
 import { useCallback } from 'react';
 import { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
 import { transformRequestData } from '../../utils/transformers/responseTransformer';
+import { useApiErrorHandler } from '../error/useErrorHandler';
 
 interface SelectedCardData {
   _id?: string;
@@ -70,6 +71,8 @@ export const useCardSelection = (config: CardSelectionConfig) => {
     debug = false,
     preserveSetName = false,
   } = config;
+  
+  const errorHandler = useApiErrorHandler(`CARD_SELECTION_${formType.toUpperCase()}`);
 
   const handleCardSelection = useCallback(
     (selectedData: SelectedCardData | null) => {
@@ -99,9 +102,15 @@ export const useCardSelection = (config: CardSelectionConfig) => {
       // Extract and store card ID
       const rawCardId = selectedData._id || selectedData.id;
       if (!rawCardId) {
-        console.error(
-          `[${formType.toUpperCase()} CARD] No ID found in selected data - card selection invalid`
-        );
+        errorHandler.handleError(new Error('No ID found in selected data'), {
+          context: 'CARD_SELECTION_INVALID',
+          severity: 'high',
+          showToast: true,
+          metadata: {
+            formType,
+            selectedData,
+          },
+        });
         return;
       }
 
@@ -121,10 +130,16 @@ export const useCardSelection = (config: CardSelectionConfig) => {
 
         onCardIdSelected(cardId);
       } catch (error) {
-        console.error(
-          `[${formType.toUpperCase()} CARD] Error processing card ID:`,
-          error
-        );
+        errorHandler.handleError(error, {
+          context: 'CARD_ID_PROCESSING',
+          severity: 'high',
+          showToast: true,
+          metadata: {
+            formType,
+            rawCardId,
+            selectedData,
+          },
+        });
         return;
       }
 

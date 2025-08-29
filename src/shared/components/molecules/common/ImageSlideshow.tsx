@@ -4,6 +4,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
 // Removed broken theme import
 import { getImageUrl, getThumbnailUrl, type ImageSource } from '../../../utils/ui/imageUtils';
+import { useApiErrorHandler } from '../../../hooks/error/useErrorHandler';
 
 interface ImageSlideshowProps {
   images: string[];
@@ -30,6 +31,7 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
     // Simplified theme classes
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [, setImageIsVertical] = useState(false);
+    const errorHandler = useApiErrorHandler('IMAGE_SLIDESHOW');
 
     // Optimize: Memoize autoplay plugins to prevent re-creation
     const autoplayPlugins = useMemo(
@@ -199,14 +201,16 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
               <div className="embla__container flex h-full">
                 {images.map((image, index) => {
                   const imageUrl = getImageUrl(image, imageSource);
-                  // Debug logging
-                  console.log(`[ImageSlideshow] Image ${index + 1}:`, {
-                    originalPath: image,
-                    resolvedUrl: imageUrl,
-                    imageSource: imageSource,
-                    isBlob: image.startsWith('blob:'),
-                    isHttp: image.startsWith('http'),
-                  });
+                  // Debug logging for development
+                  if (import.meta.env.MODE === 'development') {
+                    console.log(`[ImageSlideshow] Image ${index + 1}:`, {
+                      originalPath: image,
+                      resolvedUrl: imageUrl,
+                      imageSource: imageSource,
+                      isBlob: image.startsWith('blob:'),
+                      isHttp: image.startsWith('http'),
+                    });
+                  }
                   
                   return (
                   <div
@@ -222,16 +226,23 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
-                          console.error(`[ImageSlideshow] Failed to load image ${index + 1}:`, {
-                            originalPath: image,
-                            attemptedUrl: target.src,
-                            error: e
+                          errorHandler.handleError(e, {
+                            context: 'IMAGE_LOAD_FAILURE',
+                            severity: 'low',
+                            showToast: false,
+                            metadata: {
+                              imageIndex: index + 1,
+                              originalPath: image,
+                              attemptedUrl: target.src,
+                            },
                           });
                         }}
                         onLoad={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.opacity = '1';
-                          console.log(`[ImageSlideshow] Successfully loaded image ${index + 1}:`, target.src);
+                          if (import.meta.env.MODE === 'development') {
+                            console.log(`[ImageSlideshow] Successfully loaded image ${index + 1}:`, target.src);
+                          }
                         }}
                         style={{ opacity: 0 }}
                       />
@@ -283,9 +294,15 @@ export const ImageSlideshow: React.FC<ImageSlideshowProps> = memo(
                             const target = e.target as HTMLImageElement;
                             // Fallback to full image if thumbnail fails
                             target.src = getImageUrl(image, imageSource);
-                            console.warn(
-                              `Failed to load thumbnail, falling back to full image: ${target.src}`
-                            );
+                            errorHandler.handleError(e, {
+                              context: 'THUMBNAIL_FALLBACK',
+                              severity: 'low',
+                              showToast: false,
+                              metadata: {
+                                thumbnailIndex: index + 1,
+                                fallbackUrl: target.src,
+                              },
+                            });
                           }}
                           onLoad={(e) => {
                             const target = e.target as HTMLImageElement;
