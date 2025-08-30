@@ -11,7 +11,7 @@ import {
   DeliveryMethod,
   PaymentMethod,
   Source,
-} from '../../../shared/utils/helpers/constants';
+} from '@/shared/utils/helpers/constants';
 import {
   PokemonForm,
   PokemonFormSection,

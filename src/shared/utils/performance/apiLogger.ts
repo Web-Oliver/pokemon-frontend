@@ -72,7 +72,7 @@ export class ApiLogger {
    * Log API errors
    * Always logs errors regardless of environment
    */
-  logError(methodName: string, error: any): void {
+  logError(methodName: string, error: unknown): void {
     console.error(`${this.prefix} ${methodName} error:`, error);
   }
 

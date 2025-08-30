@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { Camera, Image, Sparkles, Upload } from 'lucide-react';
-import ImageUploader from '../../../../components/ImageUploader';
+import ImageUploader from '@/components/ImageUploader';
 import { useApiErrorHandler } from '../../../hooks/error/useErrorHandler';
 
 interface ImageUploadSectionProps {

@@ -10,13 +10,13 @@
 
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { unifiedApiService } from '../services/UnifiedApiService';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 import { useCollectionOperations } from '.';
-import { handleApiError } from '../utils/helpers/errorHandler';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
 import { useApiErrorHandler } from '@/shared/hooks/error/useErrorHandler';
-import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
-import { queryKeys } from '../../app/lib/queryClient';
-import { CACHE_TTL } from '../../app/config/cacheConfig';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
+import { queryKeys } from '@/app/lib/queryClient';
+import { CACHE_TTL } from '@/app/config/cacheConfig';
 import { useQueryInvalidation } from './useQueryInvalidation';
 
 export interface SelectedItem {

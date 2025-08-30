@@ -31,7 +31,16 @@
       "@/theme/*": ["./src/theme/*"],
       "@/styles/*": ["./src/styles/*"],
       
-      // FEATURE MODULE PATHS
+      // DOMAIN MODULE PATHS (NEW ARCHITECTURE)
+      "@/domains/*": ["./src/domains/*"],
+      "@/domains/collection/*": ["./src/domains/collection/*"],
+      "@/domains/pokemon/*": ["./src/domains/pokemon/*"],
+      "@/domains/icr/*": ["./src/domains/icr/*"],
+      "@/domains/marketplace/*": ["./src/domains/marketplace/*"],
+      "@/domains/search/*": ["./src/domains/search/*"],
+      "@/domains/system/*": ["./src/domains/system/*"],
+      
+      // LEGACY FEATURE MODULE PATHS (TO BE MIGRATED)
       "@/features/*": ["./src/features/*"],
       "@/hooks/*": ["./src/hooks/*"],
       "@/services/*": ["./src/shared/services/*"],

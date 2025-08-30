@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { OcrStep } from '../types/OcrWorkflowTypes';
+import { OcrStep } from '@/types/OcrWorkflowTypes';
 import { useOcrWorkflowContext } from '../context/OcrWorkflowContext';
 
 // STEP CONFIGURATION - DRY: Reusable step definitions

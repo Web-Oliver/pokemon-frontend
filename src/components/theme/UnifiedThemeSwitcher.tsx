@@ -6,10 +6,10 @@
  * theme changes without any updates needed!
  */
 
-import { useTheme } from '../../theme';
-import { getAvailableThemes, themeMetadata, hasGlassmorphismSupport } from '../../theme';
-import { cn } from '../../lib/utils';
-import type { ThemeName } from '../../theme';
+import { useTheme } from '@/theme';
+import { getAvailableThemes, themeMetadata, hasGlassmorphismSupport } from '@/theme';
+import { cn } from '@/lib/utils';
+import type { ThemeName } from '@/theme';
 
 export function UnifiedThemeSwitcher() {
   const {

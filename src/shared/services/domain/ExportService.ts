@@ -6,7 +6,7 @@
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { generateFacebookPostFromAuction } from '../../utils/formatting/facebookPostFormatter';
-import { extractResponseData } from '../utils/responseUtils';
+import { extractResponseData } from '@/shared/utils/responseUtils';
 import { logError } from '@/shared/components/organisms/ui/toastNotifications';
 
 export interface IExportService {

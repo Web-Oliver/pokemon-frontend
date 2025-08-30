@@ -9,18 +9,18 @@
  */
 
 import React from 'react';
-import { GlassmorphismContainer } from '../../../../shared/components/organisms/effects/GlassmorphismContainer';
-import { ContentLoading } from '../../../../shared/components/molecules/common/LoadingStates';
+import { GlassmorphismContainer } from '@/shared/components/organisms/effects/GlassmorphismContainer';
+import { ContentLoading } from '@/shared/components/molecules/common/LoadingStates';
 import {
   getActivityColor,
   getActivityIcon,
-} from '../../../shared/utils/helpers/activityHelpers';
+} from '@/shared/utils/helpers/activityHelpers';
 import {
   displayPrice,
   getRelativeTime,
-} from '../../../shared/utils';
+} from '@/shared/utils';
 import { LineChart } from 'lucide-react';
-import { Button } from '../../../../shared/ui/primitives/Button';
+import { Button } from '@/shared/ui/primitives/Button';
 
 export interface ActivityTimelineProps {
   activities: any[];

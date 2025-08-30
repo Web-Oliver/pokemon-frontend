@@ -13,16 +13,16 @@ import { Package } from 'lucide-react';
 import {
   PokemonConfirmModal,
   PokemonModal,
-} from '../../../shared/components/atoms/design-system/PokemonModal';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { PokemonPageContainer } from '../../../shared/components/atoms/design-system';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
-import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
+} from '@/shared/components/atoms/design-system/PokemonModal';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer } from '@/shared/components/atoms/design-system';
+import GenericLoadingState from '@/shared/components/molecules/common/GenericLoadingState';
+import { MarkSoldForm } from '@/shared/components/forms/MarkSoldForm';
 // DELETED: useModal - use modern React state instead
-import { useCollectionItemFromUrl } from '../../../shared/hooks/collection/useCollectionItem';
-import { useItemOperations } from '../../../shared/hooks/collection/useItemOperations';
-import { usePriceManagement } from '../../../shared/hooks/collection/usePriceManagement';
-import { useImageDownload } from '../../../shared/hooks/collection/useImageDownload';
+import { useCollectionItemFromUrl } from '@/shared/hooks/collection/useCollectionItem';
+import { useItemOperations } from '@/shared/hooks/collection/useItemOperations';
+import { usePriceManagement } from '@/shared/hooks/collection/usePriceManagement';
+import { useImageDownload } from '@/shared/hooks/collection/useImageDownload';
 import {
   CollectionItemHeader,
   ItemEssentialDetails,
@@ -32,9 +32,9 @@ import {
   PsaCardDetailSection,
   RawCardDetailSection,
   SealedProductDetailSection,
-} from '../components/collection';
-import { getItemDisplayData } from '../../../shared/utils/helpers/itemDisplayHelpers';
-import { navigationHelper } from '../../../shared/utils/navigation';
+} from '@/shared/components/collection';
+import { getItemDisplayData } from '@/shared/utils/helpers/itemDisplayHelpers';
+import { navigationHelper } from '@/shared/utils/navigation';
 
 const CollectionItemDetail: React.FC = () => {
   // Extracted hooks for clean separation of concerns

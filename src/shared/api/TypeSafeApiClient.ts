@@ -22,7 +22,7 @@ import {
   PaginatedResponse,
   ResourceResponse,
   transformApiResponse,
-} from '../types/api/ApiResponse';
+} from '@/types/api/ApiResponse';
 import { EnhancedRequestConfig, unifiedApiClient } from './unifiedApiClient';
 
 /**
@@ -43,7 +43,7 @@ export class TypeSafeApiClient {
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<T>> {
     try {
-      const response = await unifiedApiClient.apiGet<T>(url, operation, config);
+      const response = await unifiedApiClient.get<T>(url, { operation, ...config });
       return this.ensureSuccessResponse<T>(response, operation);
     } catch (error) {
       throw this.transformError(error, operation);
@@ -65,11 +65,10 @@ export class TypeSafeApiClient {
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<TResponse>> {
     try {
-      const response = await unifiedApiClient.apiPost<TResponse>(
+      const response = await unifiedApiClient.post<TResponse>(
         url,
         data,
-        operation,
-        config
+        { operation, ...config }
       );
       return this.ensureSuccessResponse<TResponse>(response, operation);
     } catch (error) {
@@ -92,11 +91,10 @@ export class TypeSafeApiClient {
     config?: EnhancedRequestConfig
   ): Promise<ApiSuccessResponse<TResponse>> {
     try {
-      const response = await unifiedApiClient.apiPut<TResponse>(
+      const response = await unifiedApiClient.put<TResponse>(
         url,
         data,
-        operation,
-        config
+        { operation, ...config }
       );
       return this.ensureSuccessResponse<TResponse>(response, operation);
     } catch (error) {
@@ -393,7 +391,7 @@ export class TypeSafeApiClient {
   /**
    * Transform error to standard format
    */
-  private transformError(error: any, operation: string): ApiErrorResponse {
+  private transformError(error: unknown, operation: string): ApiErrorResponse {
     return createErrorResponse(error, operation);
   }
 }

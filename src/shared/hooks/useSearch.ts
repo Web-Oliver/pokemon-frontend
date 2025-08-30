@@ -8,7 +8,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useDebouncedValue } from './useDebounce';
-import { unifiedApiService } from '../services/UnifiedApiService';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 
 export type SearchType = 'sets' | 'cards' | 'products' | 'setproducts';
 

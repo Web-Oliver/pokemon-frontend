@@ -8,9 +8,9 @@
  */
 
 import { useCallback, useState } from 'react';
-import { IPsaGradedCard, IRawCard } from '../domain/models/card';
-import { ISealedProduct } from '../domain/models/sealedProduct';
-import { log } from '../utils/performance/logger';
+import { IPsaGradedCard, IRawCard } from '@/shared/domain/models/card';
+import { ISealedProduct } from '@/shared/domain/models/sealedProduct';
+import { log } from '@/shared/utils/performance/logger';
 
 export interface CollectionState {
   psaCards: IPsaGradedCard[];

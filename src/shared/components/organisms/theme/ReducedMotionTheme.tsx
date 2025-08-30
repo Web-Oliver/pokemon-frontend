@@ -7,7 +7,7 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useTheme } from '../../../../../theme';
+import { useTheme } from '@/theme';
 import { cn } from '../../../utils';
 
 export interface ReducedMotionThemeProps {

@@ -29,31 +29,31 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { useRecentActivities } from '../../../shared/hooks/useActivity';
-import { useCollectionStats } from '../../../shared/hooks/useCollectionStats';
-import { unifiedApiService } from '../../../shared/services/UnifiedApiService';
+import GenericLoadingState from '@/shared/components/molecules/common/GenericLoadingState';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { useRecentActivities } from '@/shared/hooks/useActivity';
+import { useCollectionStats } from '@/shared/hooks/useCollectionStats';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 import {
   getActivityColor,
   getActivityIcon,
-} from '../../../shared/utils/helpers/activityHelpers';
-import { navigationHelper } from '../../../shared/utils/navigation';
-import ActivityListItem from '../../../shared/components/molecules/common/ActivityListItem';
+} from '@/shared/utils/helpers/activityHelpers';
+import { navigationHelper } from '@/shared/utils/navigation';
+import ActivityListItem from '@/shared/components/molecules/common/ActivityListItem';
 
 // Import our unified design system
 import {
   PokemonButton,
   PokemonCard,
   PokemonPageContainer,
-} from '../../../shared/components/atoms/design-system';
+} from '@/shared/components/atoms/design-system';
 import {
   DashboardDataCard,
   DashboardGradedCard,
   DashboardItemsCard,
   DashboardSalesCard,
   DashboardValueCard,
-} from '../components/dashboard';
+} from '@/shared/components/dashboard';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook

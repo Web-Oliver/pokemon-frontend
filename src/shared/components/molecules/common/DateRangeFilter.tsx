@@ -17,7 +17,7 @@ import {
   getElementTheme,
   getHeaderTheme,
   string,
-} from '../../theme/formThemes';
+} from '@/theme/formThemes';
 
 export interface DateRangeState {
   startDate?: string;

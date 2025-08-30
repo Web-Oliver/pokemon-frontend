@@ -8,7 +8,7 @@
  * - Layer 1: Core/Foundation - provides storage capabilities
  */
 
-import { ItemOrderingState, SortMethod } from '../../types/ordering';
+import { ItemOrderingState, SortMethod } from '@/types/ordering';
 
 // Storage keys for different data types
 export const STORAGE_KEYS = {

@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { ImagePreview } from '../utils/ui/imageUtils';
+import { ImagePreview } from '@/shared/utils/ui/imageUtils';
 import { useApiErrorHandler } from './error/useErrorHandler';
 
 export const useImageRemoval = (

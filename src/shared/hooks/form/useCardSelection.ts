@@ -1,18 +1,19 @@
 /**
- * useCardSelection Hook
+ * useCardSelection Hook - CONSOLIDATED
  * Layer 2: Services/Hooks/Store (Business Logic & Data Orchestration)
  *
- * Centralizes card selection and auto-fill logic across PSA and Raw card forms
+ * Centralizes card selection, state management, and auto-fill logic
+ * CONSOLIDATED: Merges useCardSelection + useCardSelectionState for DRY compliance
  * Eliminates 90% duplication of selection and auto-fill patterns
  *
  * Following CLAUDE.md principles:
- * - Single Responsibility: Handles card selection logic only
- * - DRY: Eliminates repeated auto-fill code
+ * - Single Responsibility: Handles all card selection concerns
+ * - DRY: Eliminates repeated auto-fill and state code
  * - Dependency Inversion: Uses abstract form functions
  * - Open/Closed: Extensible through configuration
  */
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { UseFormClearErrors, UseFormSetValue } from 'react-hook-form';
 import { transformRequestData } from '../../utils/transformers/responseTransformer';
 import { useApiErrorHandler } from '../error/useErrorHandler';
@@ -40,264 +41,222 @@ interface CardSelectionConfig {
   /** Form type for logging and validation */
   formType: 'psa' | 'raw';
 
-  /** React Hook Form functions */
-  setValue: UseFormSetValue<any>;
-  clearErrors: UseFormClearErrors<any>;
+  /** React Hook Form functions (optional for state-only mode) */
+  setValue?: UseFormSetValue<any>;
+  clearErrors?: UseFormClearErrors<any>;
 
-  /** Callback for storing selected card ID */
-  onCardIdSelected: (cardId: string) => void;
+  /** Callback for storing selected card ID (optional for state-only mode) */
+  onCardIdSelected?: (cardId: string) => void;
 
   /** Callback for additional processing */
-  onSelectionComplete?: (selectedData: SelectedCardData) => void;
+  onCardSelected?: (cardData: SelectedCardData) => void;
 
-  /** Enable debug logging */
-  debug?: boolean;
+  /** Field mapping for auto-fill */
+  fieldMapping?: {
+    setName: string;
+    cardName: string;
+    cardNumber?: string;
+    variety?: string;
+    [key: string]: string | undefined;
+  };
 
-  /** Preserve existing setName (don't override from card data) */
-  preserveSetName?: boolean;
+  /** Enable state management mode */
+  enableStateManagement?: boolean;
+}
+
+interface UseCardSelectionReturn {
+  // State management (when enableStateManagement = true)
+  selectedCard: SelectedCardData | null;
+  setSelectedCard: (card: SelectedCardData | null) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  clearSelection: () => void;
+  
+  // Business logic (always available)
+  handleCardSelection: (cardData: SelectedCardData) => void;
+  autoFillFormFromCard: (cardData: SelectedCardData) => void;
 }
 
 /**
- * useCardSelection Hook
- * Provides a standardized card selection handler with auto-fill functionality
+ * Default field mappings for different form types
  */
-export const useCardSelection = (config: CardSelectionConfig) => {
+const DEFAULT_FIELD_MAPPINGS = {
+  psa: {
+    setName: 'setName',
+    cardName: 'cardName',
+    cardNumber: 'cardNumber',
+    variety: 'variety',
+  },
+  raw: {
+    setName: 'setName',
+    cardName: 'cardName',
+    cardNumber: 'cardNumber',
+    variety: 'variety',
+  },
+} as const;
+
+/**
+ * Consolidated Card Selection Hook
+ * Provides both state management and business logic for card selection
+ */
+export const useCardSelection = (
+  config: CardSelectionConfig
+): UseCardSelectionReturn => {
   const {
     formType,
     setValue,
     clearErrors,
     onCardIdSelected,
-    onSelectionComplete,
-    debug = false,
-    preserveSetName = false,
+    onCardSelected,
+    fieldMapping = DEFAULT_FIELD_MAPPINGS[formType],
+    enableStateManagement = false,
   } = config;
-  
+
+  // State management (only when enabled)
+  const [selectedCard, setSelectedCard] = useState<SelectedCardData | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const errorHandler = useApiErrorHandler(`CARD_SELECTION_${formType.toUpperCase()}`);
 
-  const handleCardSelection = useCallback(
-    (selectedData: SelectedCardData | null) => {
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] ===== CARD SELECTION =====`
-        );
-        console.log(
-          `[${formType.toUpperCase()} CARD] Card selection:`,
-          selectedData
-        );
+  const clearSelection = useCallback(() => {
+    if (enableStateManagement) {
+      setSelectedCard(null);
+      setSearchQuery('');
+    }
+  }, [enableStateManagement]);
+
+  /**
+   * Auto-fill form fields from selected card data
+   */
+  const autoFillFormFromCard = useCallback((cardData: SelectedCardData) => {
+    if (!setValue || !fieldMapping) return;
+
+    try {
+      const transformedData = transformRequestData(cardData);
+      
+      // Extract set name from various possible sources
+      let setName = '';
+      if (transformedData.setInfo?.setName) {
+        setName = transformedData.setInfo.setName;
+      } else if (transformedData.setId?.setName) {
+        setName = transformedData.setId.setName;
+      } else if (transformedData.setName) {
+        setName = transformedData.setName;
       }
 
-      // Handle null selection (clearing)
-      if (!selectedData) {
-        // Clear form fields when selection is cleared
-        setValue('setName', '');
-        setValue('cardName', '');
-        setValue('cardNumber', '');
-        setValue('variety', '');
-        clearErrors('setName');
-        clearErrors('cardName');
-        clearErrors('cardNumber');
-        return;
+      // Auto-fill core fields
+      if (setName && fieldMapping.setName) {
+        setValue(fieldMapping.setName, setName);
+      }
+      
+      if (transformedData.cardName && fieldMapping.cardName) {
+        setValue(fieldMapping.cardName, transformedData.cardName);
+      }
+      
+      if (transformedData.cardNumber && fieldMapping.cardNumber) {
+        setValue(fieldMapping.cardNumber, String(transformedData.cardNumber));
+      }
+      
+      if (transformedData.variety && fieldMapping.variety) {
+        setValue(fieldMapping.variety, transformedData.variety);
       }
 
-      // Extract and store card ID
-      const rawCardId = selectedData._id || selectedData.id;
-      if (!rawCardId) {
+      // Auto-fill additional mapped fields
+      Object.entries(fieldMapping).forEach(([sourceKey, formField]) => {
+        if (formField && transformedData[sourceKey] && !['setName', 'cardName', 'cardNumber', 'variety'].includes(sourceKey)) {
+          setValue(formField, transformedData[sourceKey]);
+        }
+      });
+
+      // Clear any existing errors
+      if (clearErrors) {
+        clearErrors();
+      }
+    } catch (error) {
+      errorHandler.handleError(error, {
+        context: 'CARD_AUTO_FILL',
+        showToast: true,
+      });
+    }
+  }, [setValue, fieldMapping, clearErrors, errorHandler]);
+
+  /**
+   * Handle card selection with integrated business logic
+   */
+  const handleCardSelection = useCallback((cardData: SelectedCardData) => {
+    try {
+      // Extract card ID
+      const cardId = cardData.id || cardData._id;
+      if (!cardId) {
         errorHandler.handleError(new Error('No ID found in selected data'), {
-          context: 'CARD_SELECTION_INVALID',
-          severity: 'high',
+          context: 'CARD_SELECTION',
           showToast: true,
-          metadata: {
-            formType,
-            selectedData,
-          },
         });
         return;
       }
 
-      try {
-        // Transform ObjectId to string to prevent buffer objects
-        const transformedData = transformRequestData({
-          cardId: rawCardId,
-        });
-        const cardId = transformedData.cardId || rawCardId;
+      // Update state if state management is enabled
+      if (enableStateManagement) {
+        setSelectedCard(cardData);
+      }
 
-        if (debug && import.meta.env.MODE === 'development') {
-          console.log(
-            `[${formType.toUpperCase()} CARD] Selected card ID:`,
-            cardId
-          );
-        }
-
+      // Store card ID
+      if (onCardIdSelected) {
         onCardIdSelected(cardId);
-      } catch (error) {
-        errorHandler.handleError(error, {
-          context: 'CARD_ID_PROCESSING',
-          severity: 'high',
-          showToast: true,
-          metadata: {
-            formType,
-            rawCardId,
-            selectedData,
-          },
-        });
-        return;
       }
 
-      // Auto-fill set name - handle different data structures and circular references
-      // In hierarchical search (Set -> Card), setName should already be set from set selection
-      let cardSetName: string | undefined;
+      // Auto-fill form
+      autoFillFormFromCard(cardData);
 
-      // Try multiple approaches to extract setName, handling circular references
-      try {
-        cardSetName = selectedData.setId?.setName;
-      } catch {
-        // Handle circular reference in setId
-        console.warn(
-          `[${formType.toUpperCase()} CARD] Circular reference in setId, trying alternatives`
-        );
+      // Call additional processing callback
+      if (onCardSelected) {
+        onCardSelected(cardData);
       }
-
-      // Fallback to other sources
-      if (!cardSetName) {
-        cardSetName =
-          selectedData.setDisplayName ||
-          selectedData.setInfo?.setName ||
-          selectedData.setName;
-      }
-
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] Card set name extraction:`,
-          {
-            cardSetName,
-            setDisplayName: selectedData.setDisplayName,
-            hasSetId: !!selectedData.setId,
-            setInfo: selectedData.setInfo,
-            directSetName: selectedData.setName,
-            preserveSetName,
-          }
-        );
-      }
-
-      if (!preserveSetName && cardSetName) {
-        setValue('setName', cardSetName, { shouldValidate: true });
-        clearErrors('setName');
-        if (debug && import.meta.env.MODE === 'development') {
-          console.log(
-            `[${formType.toUpperCase()} CARD] Setting Set Name from card:`,
-            cardSetName
-          );
-        }
-      } else if (debug && import.meta.env.MODE === 'development') {
-        if (preserveSetName) {
-          console.log(
-            `[${formType.toUpperCase()} CARD] Preserving existing setName (hierarchical search)`
-          );
-        } else {
-          console.log(
-            `[${formType.toUpperCase()} CARD] No setName found in card data`
-          );
-        }
-      }
-
-      // Auto-fill card name
-      if (selectedData.cardName) {
-        setValue('cardName', selectedData.cardName, { shouldValidate: true });
-        clearErrors('cardName');
-      } else if (debug && import.meta.env.MODE === 'development') {
-        console.warn(
-          `[${formType.toUpperCase()} CARD] No cardName found in selected card data`
-        );
-      }
-
-      // Auto-fill card number
-      const cardNumber = selectedData.cardNumber?.toString() || '';
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] Setting Card Number:`,
-          cardNumber
-        );
-      }
-      setValue('cardNumber', cardNumber, { shouldValidate: true });
-      clearErrors('cardNumber');
-
-
-      // Auto-fill variety
-      const varietyValue = selectedData.variety || '';
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] Setting Variety:`,
-          varietyValue
-        );
-      }
-      setValue('variety', varietyValue, { shouldValidate: true });
-      clearErrors('variety');
-
-      // Call completion callback if provided
-      if (onSelectionComplete) {
-        onSelectionComplete(selectedData);
-      }
-
-      if (debug && import.meta.env.MODE === 'development') {
-        console.log(
-          `[${formType.toUpperCase()} CARD] Card selection complete - all fields populated from card reference:`,
-          {
-            cardId: rawCardId,
-            setName: cardSetName,
-            cardName: selectedData.cardName,
-            cardNumber,
-            variety: varietyValue,
-          }
-        );
-      }
-    },
-    [
-      formType,
-      onCardIdSelected,
-      onSelectionComplete,
-      debug,
-      preserveSetName,
-      clearErrors,
-      setValue,
-    ]
-  );
+    } catch (error) {
+      errorHandler.handleError(error, {
+        context: 'CARD_SELECTION',
+        showToast: true,
+      });
+    }
+  }, [enableStateManagement, onCardIdSelected, autoFillFormFromCard, onCardSelected, errorHandler]);
 
   return {
+    // State management (for backward compatibility with useCardSelectionState)
+    selectedCard,
+    setSelectedCard,
+    searchQuery,
+    setSearchQuery,
+    isLoading,
+    setIsLoading,
+    clearSelection,
+    
+    // Business logic (main functionality)
     handleCardSelection,
+    autoFillFormFromCard,
   };
 };
 
 /**
- * Preset configurations for common card selection patterns
+ * Preset configurations for card selection patterns
+ * MIGRATED: From useCardSelectionState for backward compatibility
  */
 export const cardSelectionPresets = {
-  psa: (
-    setValue: UseFormSetValue<any>,
-    clearErrors: UseFormClearErrors<any>,
-    onCardIdSelected: (cardId: string) => void,
-    onSelectionComplete?: (data: SelectedCardData) => void
-  ): CardSelectionConfig => ({
-    formType: 'psa' as const,
-    setValue,
-    clearErrors,
-    onCardIdSelected,
-    onSelectionComplete,
-    debug: import.meta.env.MODE === 'development',
-  }),
+  rawCard: 'rawCard' as const,
+  psaCard: 'psaCard' as const,
+};
 
-  raw: (
-    setValue: UseFormSetValue<any>,
-    clearErrors: UseFormClearErrors<any>,
-    onCardIdSelected: (cardId: string) => void,
-    onSelectionComplete?: (data: SelectedCardData) => void
-  ): CardSelectionConfig => ({
-    formType: 'raw' as const,
-    setValue,
-    clearErrors,
-    onCardIdSelected,
-    onSelectionComplete,
-    debug: import.meta.env.MODE === 'development',
-  }),
+/**
+ * Helper hook for state-only card selection (backward compatibility)
+ * Use this when you only need state management without form integration
+ */
+export const useCardSelectionState = (preset: 'rawCard' | 'psaCard') => {
+  return useCardSelection({
+    formType: preset === 'psaCard' ? 'psa' : 'raw',
+    enableStateManagement: true,
+  });
 };
 
 export default useCardSelection;

@@ -22,7 +22,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useTheme } from '../../../../theme';
+import { useTheme } from '@/theme';
 
 // ===============================
 // UNIFIED INTERFACE

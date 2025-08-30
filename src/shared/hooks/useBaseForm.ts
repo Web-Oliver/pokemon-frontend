@@ -22,7 +22,7 @@ import { useFormState } from './form/useFormState';
 import { useFormValidation, ValidationRules } from './form/useFormValidation';
 import { useFormTransformation } from './form/useFormTransformation';
 import { useFormDataProcessor } from './form/useFormDataProcessor';
-import { useFormInitializer } from './form/useFormInitializer';
+import { useFormInitializer } from './form/useFormInitialization';
 import { useFormSubmissionHandler } from './form/useFormSubmissionHandler';
 import { useImageUpload } from './useImageUpload';
 import { usePriceHistory } from './usePriceHistory';

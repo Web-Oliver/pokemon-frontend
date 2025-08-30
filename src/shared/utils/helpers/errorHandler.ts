@@ -4,7 +4,7 @@ import {
   showErrorToast,
   showStatusErrorToast,
   showWarningToast,
-} from '../../components/organisms/ui/toastNotifications';
+} from '@/components/organisms/ui/toastNotifications';
 
 /**
  * Standard API Error class for new API format
@@ -58,7 +58,7 @@ export class APIError extends Error {
 /**
  * Check if error is from API response (Axios error with response data)
  */
-const isApiResponseError = (error: any): boolean => {
+const isApiResponseError = (error: unknown): boolean => {
   return (
     error &&
     typeof error === 'object' &&

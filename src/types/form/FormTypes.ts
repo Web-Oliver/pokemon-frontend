@@ -26,7 +26,9 @@ export type FormFieldValue =
   | string[]
   | number[]
   | File
-  | File[];
+  | File[]
+  | Record<string, any>
+  | any[];
 
 /**
  * Form Data Record

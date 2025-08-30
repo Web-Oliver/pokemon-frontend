@@ -6,7 +6,7 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { StepComponentProps } from '../../types/OcrWorkflowTypes';
+import { StepComponentProps } from '@/types/OcrWorkflowTypes';
 import { useOcrMatching, IcrExtractLabelsResponse } from '../../hooks/useOcrMatching';
 
 // Use real API response type

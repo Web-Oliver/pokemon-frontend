@@ -15,10 +15,10 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { ISaleDetails } from '../../types/common';
-import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
+import { ISaleDetails } from '@/types/common';
+import { showSuccessToast } from '@/components/organisms/ui/toastNotifications';
 import { log } from '../../utils/performance/logger';
-import { useAsyncOperation } from '../useAsyncOperation';
+import { useAsyncOperation } from '../common/useAsyncOperation';
 import {
   createResourceOperations,
   GenericParams,

@@ -19,13 +19,13 @@ import { PokemonButton } from './PokemonButton';
 import { PokemonInput } from './PokemonInput';
 import { Label } from '../../../ui/primitives/Label';
 import GenericLoadingState from '../../molecules/common/GenericLoadingState';
-import { useTheme } from '../../../../theme';
+import { useTheme } from '@/theme';
 import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 import type {
   AnimationIntensity,
   Density,
   VisualTheme,
-} from '../../types/themeTypes';
+} from '@/types/themeTypes';
 
 export interface PokemonFormField {
   type:

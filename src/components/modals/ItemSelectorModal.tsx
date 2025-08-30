@@ -8,12 +8,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Package, Search } from 'lucide-react';
-import { PokemonModal } from '../../shared/components/atoms/design-system/PokemonModal';
-import { PokemonButton } from '../../shared/components/atoms/design-system/PokemonButton';
-import { PokemonInput } from '../../shared/components/atoms/design-system/PokemonInput';
-import { PokemonSelect } from '../../shared/components/atoms/design-system/PokemonSelect';
-import GenericLoadingState from '../../shared/components/molecules/common/GenericLoadingState';
-import { FormErrorMessage } from '../../shared/components/molecules/common/FormElements';
+import { PokemonModal } from '@/shared/components/atoms/design-system/PokemonModal';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
+import { PokemonInput } from '@/shared/components/atoms/design-system/PokemonInput';
+import { PokemonSelect } from '@/shared/components/atoms/design-system/PokemonSelect';
+import GenericLoadingState from '@/shared/components/molecules/common/GenericLoadingState';
+import { FormErrorMessage } from '@/shared/components/molecules/common/FormElements';
 
 // Generic item interface that all selectable items must extend
 export interface SelectableItem {
@@ -303,7 +303,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
-                startIcon={
+                leftIcon={
                   <Search className="w-4 h-4 text-gray-400 dark:text-zinc-600 dark:text-zinc-500" />
                 }
               />
@@ -312,7 +312,7 @@ export function ItemSelectorModal<T extends SelectableItem>({
               <div className="w-48">
                 <PokemonSelect
                   value={filterCategory}
-                  onChange={(value) => setFilterCategory(value as string)}
+                  onChange={(e) => setFilterCategory(e.target.value)}
                   options={[
                     { value: 'all', label: 'All Categories' },
                     ...filterOptions,

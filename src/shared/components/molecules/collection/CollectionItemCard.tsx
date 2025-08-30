@@ -12,12 +12,12 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { CheckCircle, DollarSign, Eye, Package, Star } from 'lucide-react';
+import { CheckCircle, Eye } from 'lucide-react';
 import { ImageCollectionCard } from '../common/ImageCollectionCard';
-import { formatCardName } from '../../../utils';
-import { getImageUrl } from '../../../utils/ui/imageUtils';
-import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
-import { ISealedProduct } from '../../../domain/models/sealedProduct';
+import { formatCardName } from '@/shared/utils';
+import { getImageUrl } from '@/shared/utils/ui/imageUtils';
+import { IPsaGradedCard, IRawCard } from '@/shared/domain/models/card';
+import { ISealedProduct } from '@/shared/domain/models/sealedProduct';
 import { useFormErrorHandler } from '@/shared/hooks/error/useErrorHandler';
 
 export type CollectionItem = IPsaGradedCard | IRawCard | ISealedProduct;
@@ -40,7 +40,7 @@ export interface CollectionItemCardProps {
 const CollectionItemCardComponent: React.FC<CollectionItemCardProps> = ({
   item,
   itemType,
-  activeTab,
+  activeTab: _activeTab,
   showMarkAsSoldButton = true,
   onViewDetails,
   onMarkAsSold,

@@ -10,7 +10,7 @@
  */
 
 
-import { useCollectionOperations } from '../../../shared/hooks';
+import { useCollectionOperations } from '@/shared/hooks';
 import {
   createPsaCardConfig,
   createRawCardConfig,

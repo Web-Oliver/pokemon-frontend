@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useQueryInvalidation } from '../../../shared/hooks/useQueryInvalidation';
+import { useQueryInvalidation } from '@/shared/hooks/useQueryInvalidation';
 import { 
   OcrApiRepository, 
   IcrUploadResponse,
@@ -22,7 +22,7 @@ import {
   IcrCreatePsaResponse,
   IcrCreatePsaRequest,
 } from '../infrastructure/api/OcrApiRepository';
-import { queryKeys } from '../../../app/lib/queryClient';
+import { queryKeys } from '@/app/lib/queryClient';
 
 interface UseIcrMatchingReturn {
   // ================================

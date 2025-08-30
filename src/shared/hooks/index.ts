@@ -41,14 +41,14 @@ export { useErrorHandler, useFormErrorHandler, useApiErrorHandler } from './erro
 export { useLoadingOrchestrator, useFormLoadingOrchestrator, useApiLoadingOrchestrator } from './loading/useLoadingOrchestrator';
 
 // ========== FORM HOOKS ==========
-export { useGenericFormState } from './form/useGenericFormState';
+export { useGenericFormState, useFormState, useAuctionFormAdapter } from './form/useFormState';
 export { useFormValidation } from './form/useFormValidation';
 
 // ========== CRUD HOOKS ==========
 export { useGenericCrudOperations } from './crud/useGenericCrudOperations';
 
 // ========== THEME HOOKS ==========
-export { useTheme } from '../../theme';
+export { useTheme } from '@/theme';
 
 // ========== COLLECTION HOOKS (REFACTORED) ==========
 // Focused entity hooks (SRP compliance)

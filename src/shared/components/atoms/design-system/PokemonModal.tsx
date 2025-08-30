@@ -8,9 +8,9 @@ import {
   DialogDescription,
   DialogFooter 
 } from '../../../ui/primitives/Modal';
-import { ComponentSize, StandardModalProps } from '../../types/themeTypes';
+import { ComponentSize, StandardModalProps } from '@/types/themeTypes';
 import { cn } from "@/lib/utils"
-import { useTheme } from '../../../../theme';
+import { useTheme } from '@/theme';
 import { PokemonButton } from './PokemonButton';
 import { pokemonModalVariants } from './unifiedVariants';
 

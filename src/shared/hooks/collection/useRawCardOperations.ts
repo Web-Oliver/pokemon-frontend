@@ -1,14 +1,14 @@
 /**
  * Raw Card Operations Hook
  * Focused hook following SRP - handles only raw card operations
- * Extracted from '../../../shared/hooks';
+ * Extracted from "@/shared/hooks';
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { IRawCard } from '../../domain/models/card';
-import { ISaleDetails } from '../../../types/common';
+import { ISaleDetails } from '@/types/common';
 import { unifiedApiService } from '../../services/UnifiedApiService';
-import { queryKeys } from '../../../app/lib/queryClient';
+import { queryKeys } from '@/app/lib/queryClient';
 import { useQueryInvalidation } from '../useQueryInvalidation';
 import {
   createRawCardConfig,

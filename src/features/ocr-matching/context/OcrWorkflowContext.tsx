@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useOcrWorkflow } from '../hooks/useOcrWorkflow';
+import { useOcrWorkflow } from '@/shared/hooks/useOcrWorkflow';
 
 // CONTEXT TYPE - Interface Segregation
 type OcrWorkflowContextType = ReturnType<typeof useOcrWorkflow>;

@@ -6,9 +6,9 @@
 
 import { useCallback } from 'react';
 
-import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
-import { log } from '../utils/performance/logger';
-import { useAsyncOperation } from './useAsyncOperation';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
+import { log } from '@/shared/utils/performance/logger';
+import { useAsyncOperation } from './common/useAsyncOperation';
 
 export interface UseCollectionImageExportReturn {
   loading: boolean;

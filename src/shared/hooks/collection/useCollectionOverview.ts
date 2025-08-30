@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { unifiedApiService } from '../../services/UnifiedApiService';
-import { queryKeys } from '../../../app/lib/queryClient';
+import { queryKeys } from '@/app/lib/queryClient';
 import { useCollectionImageExport } from '../useCollectionImageExport';
 import { useQueryInvalidation } from '../useQueryInvalidation';
 import { usePsaCardOperations } from './usePsaCardOperations';

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { PokemonInput } from '../../atoms/design-system/PokemonInput';
 import { PokemonSelect } from '../../atoms/design-system/PokemonSelect';
-import { PriceHistoryDisplay } from '../../../../components/PriceHistoryDisplay';
+import { PriceHistoryDisplay } from '@/components/PriceHistoryDisplay';
 import { FormField } from '../fields/FormField';
 
 interface GradingPricingSectionProps {

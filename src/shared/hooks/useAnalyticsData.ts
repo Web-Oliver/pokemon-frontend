@@ -9,7 +9,7 @@
  */
 
 import { useMemo } from 'react';
-import { processActivitiesForAnalytics } from '../utils/helpers/activityHelpers';
+import { processActivitiesForAnalytics } from '@/shared/utils/helpers/activityHelpers';
 
 export interface AnalyticsData {
   typeDistribution: Record<string, number>;

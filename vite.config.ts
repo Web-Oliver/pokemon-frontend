@@ -79,8 +79,12 @@ export default defineConfig(({ mode }) => ({
           },
 
           // Context7 Performance Optimizations
-          chunkFileNames: (_chunkInfo) => {
-            // Add hash for better caching
+          chunkFileNames: (chunkInfo) => {
+            // Optimize chunk names based on facadeModuleId for better organization
+            const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : null;
+            if (facadeModuleId) {
+              return `js/${facadeModuleId.replace(/\.(tsx?|jsx?)$/, '')}-[hash].js`;
+            }
             return `js/[name]-[hash].js`;
           },
           assetFileNames: (assetInfo) => {

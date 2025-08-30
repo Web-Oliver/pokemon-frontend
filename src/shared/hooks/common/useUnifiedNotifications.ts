@@ -13,7 +13,7 @@ import {
   showSuccessToast,
   showWarningToast,  
   showErrorToast,
-} from '../../components/organisms/ui/toastNotifications';
+} from '@/components/organisms/ui/toastNotifications';
 
 export interface NotificationOptions {
   /** Duration to show notification (ms) */

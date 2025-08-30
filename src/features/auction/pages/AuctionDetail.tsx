@@ -15,35 +15,35 @@ import {
   Share,
   X,
 } from 'lucide-react';
-import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
+import AuctionItemsSection from '@/shared/components/auction/sections/AuctionItemsSection';
 import {
   PokemonConfirmModal,
   PokemonModal,
-} from '../../../shared/components/atoms/design-system/PokemonModal';
-import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
-import { MarkSoldForm } from '../../../shared/components/forms/MarkSoldForm';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionModal';
-import { AuctionItemCard } from '../components/auction/AuctionItemCard';
-import { ISaleDetails } from '../../../shared/domain/models/common';
-import { useAuction } from '../../../shared/hooks/useAuction';
-import { useCollectionOperations } from '../../../shared/hooks';
+} from '@/shared/components/atoms/design-system/PokemonModal';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
+import { MarkSoldForm } from '@/shared/components/forms/MarkSoldForm';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import AddItemToAuctionModal from '@/components/modals/AddItemToAuctionModal';
+import { AuctionItemCard } from '@/shared/components/auction/AuctionItemCard';
+import { ISaleDetails } from '@/shared/domain/models/common';
+import { useAuction } from '@/shared/hooks/useAuction';
+import { useCollectionOperations } from '@/shared/hooks';
 // BREAKING CHANGE: useModal deleted - use modern React state instead
 import { useState } from 'react';
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
 import {
   showErrorToast,
   showSuccessToast,
   showWarningToast,
-} from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from '../../../shared/utils/navigation';
+} from '@/shared/components/organisms/ui/toastNotifications';
+import { navigationHelper } from '@/shared/utils/navigation';
 import {
   formatCurrency,
   formatDate,
   getItemDisplayData,
-} from '../../../shared/utils/helpers/itemDisplayHelpers';
-import { getStatusColor } from '../../../shared/utils/helpers/auctionStatusUtils';
-import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
+} from '@/shared/utils/helpers/itemDisplayHelpers';
+import { getStatusColor } from '@/shared/utils/helpers/auctionStatusUtils';
+import { GlassmorphismContainer } from '@/shared/components/organisms/effects/GlassmorphismContainer';
 
 interface AuctionDetailProps {
   auctionId?: string;
@@ -161,7 +161,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
         addItemModal.closeModal();
         showSuccessToast('Items added to auction successfully');
         return;
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message === 'DUPLICATE_ITEM') {
           addItemModal.closeModal();
           showWarningToast('Item is already in this auction');
@@ -199,7 +199,7 @@ const AuctionDetail: React.FC<AuctionDetailProps> = ({ auctionId }) => {
       try {
         await addItemToAuction(currentAuctionId, item);
         successCount++;
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error?.message === 'DUPLICATE_ITEM') {
           duplicateFromServer++;
         } else {

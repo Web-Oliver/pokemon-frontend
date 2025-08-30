@@ -8,9 +8,9 @@
 import React from 'react';
 import { StepWizard } from './StepWizard';
 import { OcrWorkflowProvider, useOcrWorkflowContext } from '../context/OcrWorkflowContext';
-import { OcrStep } from '../types/OcrWorkflowTypes';
+import { OcrStep } from '@/types/OcrWorkflowTypes';
 import { OcrWorkflowErrorBoundary } from './error/OcrWorkflowErrorBoundary';
-import { QueryErrorBoundary } from '../../../shared/components/error/QueryErrorBoundary';
+import { QueryErrorBoundary } from '@/shared/components/error/QueryErrorBoundary';
 
 // STEP COMPONENTS - DRY: Import all step components
 import { UploadStep } from './steps/UploadStep';

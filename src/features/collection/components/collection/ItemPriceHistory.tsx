@@ -10,8 +10,8 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
-import { PriceHistoryDisplay } from '../../../../components/PriceHistoryDisplay';
+import { PokemonCard } from '@/shared/components/atoms/design-system/PokemonCard';
+import { PriceHistoryDisplay } from '@/components/PriceHistoryDisplay';
 
 export interface ItemPriceHistoryProps {
   item: CollectionItem;

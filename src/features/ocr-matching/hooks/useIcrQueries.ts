@@ -5,8 +5,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OcrApiRepository } from '../infrastructure/api/OcrApiRepository';
-import { queryKeys, CACHE_TIMES } from '../../../app/lib/queryClient';
-import { useQueryInvalidation } from '../../../shared/hooks/useQueryInvalidation';
+import { queryKeys, CACHE_TIMES } from '@/app/lib/queryClient';
+import { useQueryInvalidation } from '@/shared/hooks/useQueryInvalidation';
 
 const apiRepository = new OcrApiRepository();
 

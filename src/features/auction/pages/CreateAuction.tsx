@@ -24,24 +24,24 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Gavel } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
-import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
-import { IAuctionItem } from '../../../shared/domain/models/auction';
-import { useAuction } from '../../../shared/hooks/useAuction';
-import { useAuctionFormAdapter } from '../../../shared/hooks/form/useGenericFormStateAdapter';
-import { log } from '../../../shared/utils/performance/logger';
-import AuctionFormContainer from '../../../shared/components/forms/containers/AuctionFormContainer';
-import AuctionItemSelectionSection from '../../../shared/components/forms/sections/AuctionItemSelectionSection';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '@/shared/components/atoms/design-system';
+import UnifiedHeader from '@/shared/components/molecules/common/UnifiedHeader';
+import { IAuctionItem } from '@/shared/domain/models/auction';
+import { useAuction } from '@/shared/hooks/useAuction';
+import { useAuctionFormAdapter } from '@/shared/hooks/form/useFormState';
+import { log } from '@/shared/utils/performance/logger';
+import AuctionFormContainer from '@/shared/components/forms/containers/AuctionFormContainer';
+import AuctionItemSelectionSection from '@/shared/components/forms/sections/AuctionItemSelectionSection';
 import {
   NeuralNetworkBackground,
   ParticleSystem,
-} from '../../../shared/components/organisms/effects';
+} from '@/shared/components/organisms/effects';
 import {
   AuctionDataService,
   UnifiedCollectionItem,
-} from '../services/AuctionDataService';
-import { navigationHelper } from '../../../shared/utils/navigation';
+} from '@/shared/services/AuctionDataService';
+import { navigationHelper } from '@/shared/utils/navigation';
 
 // Form data interface
 interface AuctionFormData {

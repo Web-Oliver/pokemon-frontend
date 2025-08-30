@@ -15,7 +15,7 @@
  */
 
 import { ReactNode, useEffect } from 'react';
-import { useTheme } from '../../../../../theme';
+import { useTheme } from '@/theme';
 import { cn } from '../../../utils';
 
 // CLAUDE.md COMPLIANCE: Following SRP by separating large components into focused modules

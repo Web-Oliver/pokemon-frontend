@@ -14,7 +14,7 @@
 
 import { createResourceOperations, SALES_CONFIG } from './genericApiOperations';
 import { unifiedApiClient } from './unifiedApiClient';
-import { ISale, ISalesGraphData, ISalesSummary } from '../domain/models/sale';
+import { ISale, ISalesGraphData, ISalesSummary } from '@/shared/domain/models/sale';
 
 // ========== INTERFACES (ISP Compliance) ==========
 

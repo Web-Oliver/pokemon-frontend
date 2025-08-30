@@ -20,7 +20,7 @@ export const optimizedApiRequest = async <T>(
     retries?: number;
   }
 ): Promise<T> => {
-  const { cache = false, timeout = 30000, retries = 0 } = options || {};
+  const { timeout = 30000, retries = 0 } = options || {};
 
   let lastError: Error | null = null;
   let attempts = 0;

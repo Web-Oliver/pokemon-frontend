@@ -32,199 +32,103 @@ export interface AsyncOperationConfig {
   retryDelay?: number;
 }
 
-export interface UseAsyncOperationReturn<T> {
-  /** Execute the async operation */
-  execute: () => Promise<T | undefined>;
-  /** Current loading state */
-  isLoading: boolean;
-  /** Last error if any */
-  error: Error | null;
-  /** Last successful result */
-  result: T | null;
-  /** Retry the last operation */
-  retry: () => Promise<T | undefined>;
-  /** Clear error state */
+export interface UseAsyncOperationReturn<T = any> {
+  loading: boolean;
+  error: string | null;
+  data: T | null;
+  execute: (operation: () => Promise<T>) => Promise<T | undefined>;
+  executeWithValidation: (
+    operation: () => Promise<T>,
+    validator?: (data: T) => boolean,
+    errorMessage?: string
+  ) => Promise<T | undefined>;
   clearError: () => void;
-  /** Clear result state */
-  clearResult: () => void;
-  /** Reset all states */
+  setData: (data: T | null) => void;
   reset: () => void;
 }
 
 /**
  * Enhanced async operation hook with loading, error handling, and retry logic
  */
-export const useAsyncOperation = <T>(
-  operation: () => Promise<T>,
-  config: AsyncOperationConfig
+export const useAsyncOperation = <T = any>(
+  initialData: T | null = null
 ): UseAsyncOperationReturn<T> => {
-  const {
-    operationId,
-    context,
-    showLoading = true,
-    showErrors = true,
-    errorMessage,
-    timeout = 30000,
-    enableRetry = false,
-    maxRetries = 3,
-    retryDelay = 1000,
-  } = config;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<T | null>(initialData);
 
-  const [result, setResult] = useState<T | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-
-  const errorHandler = useErrorHandler({
-    defaultContext: context,
-    showToastsDefault: showErrors,
-  });
-
-  const loadingOrchestrator = useLoadingOrchestrator({
-    defaultContext: context,
-    globalTimeout: timeout,
-  });
-
-  const isLoading = showLoading ? loadingOrchestrator.isLoading(operationId) : false;
-
-  /**
-   * Execute the async operation with full error handling and loading state
-   */
-  const executeOperation = useCallback(
-    async (isRetry = false): Promise<T | undefined> => {
-      // Clear previous error if not a retry
-      if (!isRetry) {
-        setError(null);
-        setRetryCount(0);
-      }
-
-      // Start loading state
-      if (showLoading) {
-        loadingOrchestrator.startLoading(operationId, context, {
-          isRetry,
-          retryCount: isRetry ? retryCount + 1 : 0,
-        });
-      }
-
-      try {
-        // Execute the operation with timeout
-        const executeWithTimeout = async (): Promise<T> => {
-          const timeoutPromise = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Operation timed out')), timeout)
-          );
-          
-          return Promise.race([operation(), timeoutPromise]);
-        };
-
-        const operationResult = await executeWithTimeout();
-        
-        // Success - update states
-        setResult(operationResult);
-        setError(null);
-        
-        if (showLoading) {
-          loadingOrchestrator.endLoading(operationId);
-        }
-
-        return operationResult;
-
-      } catch (operationError) {
-        const error = operationError instanceof Error ? operationError : new Error(String(operationError));
-        
-        // Handle retry logic
-        if (enableRetry && retryCount < maxRetries) {
-          setRetryCount(prev => prev + 1);
-          
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          
-          // Attempt retry
-          return executeOperation(true);
-        }
-
-        // No more retries - handle error
-        setError(error);
-        setResult(null);
-
-        if (showLoading) {
-          loadingOrchestrator.endLoadingWithError(operationId, error);
-        }
-
-        // Use centralized error handling
-        errorHandler.handleError(error, {
-          context,
-          toastMessage: errorMessage,
-          metadata: {
-            operationId,
-            retryCount,
-            timeout,
-          },
-        });
-
-        return undefined;
-      }
-    },
-    [
-      operation,
-      operationId,
-      context,
-      showLoading,
-      showErrors,
-      errorMessage,
-      timeout,
-      enableRetry,
-      maxRetries,
-      retryDelay,
-      retryCount,
-      errorHandler,
-      loadingOrchestrator,
-    ]
-  );
-
-  /**
-   * Execute the operation (main interface)
-   */
-  const execute = useCallback(() => executeOperation(false), [executeOperation]);
-
-  /**
-   * Retry the last operation
-   */
-  const retry = useCallback(() => executeOperation(true), [executeOperation]);
-
-  /**
-   * Clear error state
-   */
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  /**
-   * Clear result state
-   */
-  const clearResult = useCallback(() => {
-    setResult(null);
-  }, []);
-
-  /**
-   * Reset all states
-   */
   const reset = useCallback(() => {
+    setLoading(false);
     setError(null);
-    setResult(null);
-    setRetryCount(0);
-    loadingOrchestrator.clearOperation(operationId);
-  }, [operationId, loadingOrchestrator]);
+    setData(initialData);
+  }, [initialData]);
+
+  const execute = useCallback(
+    async (operation: () => Promise<T>): Promise<T | undefined> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await operation();
+        setData(result);
+        setLoading(false);
+        return result;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'An error occurred';
+        setError(errorMessage);
+        setLoading(false);
+        throw err;
+      }
+    },
+    []
+  );
+
+  const executeWithValidation = useCallback(
+    async (
+      operation: () => Promise<T>,
+      validator?: (data: T) => boolean,
+      errorMessage: string = 'Data validation failed'
+    ): Promise<T | undefined> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await operation();
+
+        if (validator && !validator(result)) {
+          throw new Error(errorMessage);
+        }
+
+        setData(result);
+        setLoading(false);
+        return result;
+      } catch (err) {
+        const errorMsg =
+          err instanceof Error ? err.message : 'An error occurred';
+        setError(errorMsg);
+        setLoading(false);
+        throw err;
+      }
+    },
+    []
+  );
 
   return {
-    execute,
-    isLoading,
+    loading,
     error,
-    result,
-    retry,
+    data,
+    execute,
+    executeWithValidation,
     clearError,
-    clearResult,
+    setData,
     reset,
   };
-};
+};;
 
 /**
  * Convenience hook for API operations

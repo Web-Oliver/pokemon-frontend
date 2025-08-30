@@ -15,7 +15,7 @@ export {
 } from './useGenericCrudOperations';
 
 // Collection-specific operations
-export { useCollectionOperations } from '../../../shared/hooks';
+export { useCollectionOperations } from '@/shared/hooks';
 
 // Entity configurations
 export {

@@ -12,7 +12,7 @@
 
 import React from 'react';
 import GenericLoadingState from './GenericLoadingState';
-import { string } from '../../theme/formThemes';
+import { string } from '@/theme/formThemes';
 
 interface BaseLoadingProps {
   className?: string;

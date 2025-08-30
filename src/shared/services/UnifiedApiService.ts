@@ -15,16 +15,16 @@
  * Architecture: NO CIRCULAR DEPENDENCIES - this service imports nothing from other services
  */
 
-import { unifiedApiClient } from '../api/unifiedApiClient';
-import { generateFacebookPostFromAuction } from '../utils/formatting/facebookPostFormatter';
-import { SearchResponse } from '../types/search';
+import { unifiedApiClient } from '@/shared/api/unifiedApiClient';
+import { generateFacebookPostFromAuction } from '@/shared/utils/formatting/facebookPostFormatter';
+import { SearchResponse } from '@/types/search';
 
 // Domain Models
-import { IAuction } from '../domain/models/auction';
-import { ICard, IPsaGradedCard, IRawCard, ISet } from '../domain/models/card';
-import { ISealedProduct } from '../domain/models/sealedProduct';
-import { IProduct, ISetProduct } from '../domain/models/product';
-import { ISaleDetails } from '../../types/common';
+import { IAuction } from '@/shared/domain/models/auction';
+import { ICard, IPsaGradedCard, IRawCard, ISet } from '@/shared/domain/models/card';
+import { ISealedProduct } from '@/shared/domain/models/sealedProduct';
+import { IProduct, ISetProduct } from '@/shared/domain/models/product';
+import { ISaleDetails } from '@/types/common';
 
 // Type definitions for auction operations (replacing deprecated auctionsApi)
 export interface AuctionsParams {

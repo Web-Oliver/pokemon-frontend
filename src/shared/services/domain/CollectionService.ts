@@ -7,8 +7,8 @@ import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
-import { ISaleDetails } from '../../../types/common';
-import { addCacheBusting, extractResponseData } from '../utils/responseUtils';
+import { ISaleDetails } from '@/types/common';
+import { addCacheBusting, extractResponseData } from '@/shared/utils/responseUtils';
 
 // Import parameter types from UnifiedApiService
 export interface PsaGradedCardsParams {
@@ -240,5 +240,178 @@ export class CollectionService extends BaseApiService implements ICollectionServ
       saleDetails,
       'MARK Sealed Product SOLD'
     );
+  }
+}
+
+/**
+ * PSA Graded Cards Service
+ * Focused service following BaseCrudService pattern
+ */
+export class PsaCardService extends BaseCrudService<IPsaGradedCard> {
+  protected endpoint = '/collections/psa-graded-cards';
+
+  constructor(httpClient: IHttpClient) {
+    super(httpClient, 'PSA Card');
+  }
+
+  /**
+   * Get PSA cards with optional filtering parameters
+   */
+  async getPsaGradedCards(params?: PsaGradedCardsParams): Promise<IPsaGradedCard[]> {
+    return this.getAll(params);
+  }
+
+  /**
+   * Alias method for backward compatibility
+   */
+  async getPsaCardById(id: string): Promise<IPsaGradedCard> {
+    return this.getById(id);
+  }
+
+  /**
+   * Alias method for backward compatibility
+   */
+  async getPsaGradedCardById(id: string): Promise<IPsaGradedCard> {
+    return this.getById(id);
+  }
+
+  /**
+   * Create PSA card with proper typing
+   */
+  async createPsaCard(data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+    return this.create(data);
+  }
+
+  /**
+   * Update PSA card with proper typing
+   */
+  async updatePsaCard(id: string, data: Partial<IPsaGradedCard>): Promise<IPsaGradedCard> {
+    return this.update(id, data);
+  }
+
+  /**
+   * Delete PSA card with proper typing
+   */
+  async deletePsaCard(id: string): Promise<void> {
+    return this.delete(id);
+  }
+
+  /**
+   * Mark PSA card as sold with sale details
+   */
+  async markPsaCardSold(id: string, saleDetails: ISaleDetails): Promise<IPsaGradedCard> {
+    return this.markSold(id, saleDetails);
+  }
+}
+
+/**
+ * Raw Cards Service
+ * Focused service following BaseCrudService pattern
+ */
+export class RawCardService extends BaseCrudService<IRawCard> {
+  protected endpoint = '/collections/raw-cards';
+
+  constructor(httpClient: IHttpClient) {
+    super(httpClient, 'Raw Card');
+  }
+
+  /**
+   * Get raw cards with optional filtering parameters
+   */
+  async getRawCards(params?: RawCardsParams): Promise<IRawCard[]> {
+    return this.getCollection<IRawCard>(
+      this.endpoint,
+      'GET Raw Cards',
+      addCacheBusting({ params })
+    );
+  }
+
+  /**
+   * Create raw card with proper typing
+   */
+  async createRawCard(data: Partial<IRawCard>): Promise<IRawCard> {
+    return this.create(data);
+  }
+
+  /**
+   * Update raw card with proper typing
+   */
+  async updateRawCard(id: string, data: Partial<IRawCard>): Promise<IRawCard> {
+    return this.update(id, data);
+  }
+
+  /**
+   * Delete raw card with proper typing
+   */
+  async deleteRawCard(id: string): Promise<void> {
+    return this.delete(id);
+  }
+
+  /**
+   * Get raw card by ID - alias for consistency
+   */
+  async getRawCardById(id: string): Promise<IRawCard> {
+    return this.getById(id);
+  }
+
+  /**
+   * Mark raw card as sold with sale details
+   */
+  async markRawCardSold(id: string, saleDetails: ISaleDetails): Promise<IRawCard> {
+    return this.markSold(id, saleDetails);
+  }
+}
+
+/**
+ * Sealed Products Service
+ * Focused service following BaseCrudService pattern
+ */
+export class SealedProductService extends BaseCrudService<ISealedProduct> {
+  protected endpoint = '/collections/sealed-products';
+
+  constructor(httpClient: IHttpClient) {
+    super(httpClient, 'Sealed Product');
+  }
+
+  /**
+   * Get sealed products with optional filtering parameters
+   */
+  async getSealedProducts(params?: SealedProductCollectionParams): Promise<ISealedProduct[]> {
+    return this.getAll(params);
+  }
+
+  /**
+   * Create sealed product with proper typing
+   */
+  async createSealedProduct(data: Partial<ISealedProduct>): Promise<ISealedProduct> {
+    return this.create(data);
+  }
+
+  /**
+   * Update sealed product with proper typing
+   */
+  async updateSealedProduct(id: string, data: Partial<ISealedProduct>): Promise<ISealedProduct> {
+    return this.update(id, data);
+  }
+
+  /**
+   * Delete sealed product with proper typing
+   */
+  async deleteSealedProduct(id: string): Promise<void> {
+    return this.delete(id);
+  }
+
+  /**
+   * Get sealed product by ID - alias for consistency
+   */
+  async getSealedProductById(id: string): Promise<ISealedProduct> {
+    return this.getById(id);
+  }
+
+  /**
+   * Mark sealed product as sold with sale details
+   */
+  async markSealedProductSold(id: string, saleDetails: ISaleDetails): Promise<ISealedProduct> {
+    return this.markSold(id, saleDetails);
   }
 }

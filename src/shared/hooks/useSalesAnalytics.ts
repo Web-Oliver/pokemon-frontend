@@ -7,22 +7,22 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ISale, ISalesGraphData, ISalesSummary } from '../domain/models/sale';
+import { ISale, ISalesGraphData, ISalesSummary } from '@/shared/domain/models/sale';
 import {
   getSalesData,
   getSalesGraphData,
   getSalesSummary,
-} from '../api/salesApi';
+} from '@/shared/api/salesApi';
 import {
   aggregateByCategory,
   calculateKPIs,
   calculateTrendAnalysis,
   processGraphData,
-} from '../domain/services/SalesAnalyticsService';
-import { commonCSVColumns, exportToCSV } from '../utils/helpers/fileOperations';
-import { log } from '../utils/performance/logger';
+} from '@/shared/domain/services/SalesAnalyticsService';
+import { commonCSVColumns, exportToCSV } from '@/shared/utils/helpers/fileOperations';
+import { log } from '@/shared/utils/performance/logger';
 import { useDataFetch } from './common/useDataFetch';
-import { ApplicationError, ErrorCategory } from '../utils/helpers/errorHandler';
+import { ApplicationError, ErrorCategory } from '@/shared/utils/helpers/errorHandler';
 
 export interface DateRange {
   startDate?: string;

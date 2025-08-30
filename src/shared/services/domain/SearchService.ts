@@ -7,8 +7,8 @@ import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { ICard, ISet } from '../../domain/models/card';
 import { IProduct, ISetProduct } from '../../domain/models/product';
-import { SearchResponse } from '../../types/search';
-import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '../utils/responseUtils';
+import { SearchResponse } from '@/types/search';
+import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '@/shared/utils/responseUtils';
 import { createApiLogger } from '../../utils/performance/apiLogger';
 import { filterCardsBySetId } from '../../utils/search/searchFilters';
 

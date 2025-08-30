@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { themePresets, VisualTheme } from '../../contexts/ThemeContext';
-import { useTheme } from '../../theme';
+import { useTheme } from '@/theme';
 import { PokemonCard } from '../design-system/PokemonCard';
 import { PokemonButton } from '../design-system/PokemonButton';
 import { cn } from '../../../utils';

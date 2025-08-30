@@ -1,15 +1,82 @@
 /**
- * Response Utilities - Centralized response handling
+ * Response Utilities - Enhanced to fully utilize backend metadata
  * Eliminates 50+ occurrences of "response.data || response" pattern
+ * Now extracts all metadata fields for performance tracking and debugging
  */
 
-import { SearchResponse } from '../../types/search';
+import { SearchResponse } from '@/shared/types/search';
+import { 
+  ApiResponse, 
+  ResponseMetadata, 
+  PaginationInfo,
+  PerformanceMetrics
+} from '@/domains/system/types/ApiTypes';
+import { ErrorFactory } from '@/domains/system/services/ErrorFactory';
 
 /**
- * Extract data from API response - handles both direct data and wrapped responses
+ * Extract data from enhanced API response - now captures all metadata
  */
 export function extractResponseData<T>(response: any): T {
-  return response?.data || response;
+  const data = response?.data || response;
+  
+  // Capture metadata for debugging and monitoring
+  if (response?.meta) {
+    captureResponseMetadata(response.meta);
+  }
+  
+  return data;
+}
+
+/**
+ * Extract full API response with all metadata
+ */
+export function extractFullApiResponse<T>(response: any): ApiResponse<T> {
+  if (!response?.success && !response?.data && !response?.meta) {
+    // Handle legacy response format
+    return {
+      success: true,
+      data: response,
+      meta: {
+        operation: 'unknown',
+        entityType: 'unknown',
+        timestamp: new Date().toISOString()
+      }
+    };
+  }
+
+  return {
+    success: response.success ?? true,
+    data: response.data,
+    meta: response.meta || {
+      operation: 'unknown',
+      entityType: 'unknown',
+      timestamp: new Date().toISOString()
+    },
+    pagination: response.pagination
+  };
+}
+
+/**
+ * Capture response metadata for monitoring and debugging
+ */
+function captureResponseMetadata(meta: ResponseMetadata): void {
+  // Log processing time for performance monitoring
+  if (meta.processingTime && meta.processingTime > 1000) {
+    console.warn(`Slow API response: ${meta.operation} took ${meta.processingTime}ms`);
+  }
+  
+  // Log metrics if available
+  if (meta.metrics) {
+    const metrics = meta.metrics;
+    console.debug('API Metrics:', {
+      operation: meta.operation,
+      entity: meta.entityType,
+      dbTime: metrics.databaseQueryTime,
+      searchTime: metrics.searchTime,
+      cacheHits: metrics.cacheHits,
+      totalRecords: metrics.totalRecords
+    });
+  }
 }
 
 /**

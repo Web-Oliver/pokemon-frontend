@@ -11,8 +11,8 @@
  * - DRY: Centralized display types for reuse across features
  */
 
-import { IPsaGradedCard, IRawCard } from '../domain/models/card';
-import { ISealedProduct } from '../domain/models/sealedProduct';
+import { IPsaGradedCard, IRawCard } from '@/shared/domain/models/card';
+import { ISealedProduct } from '@/shared/domain/models/sealedProduct';
 
 /**
  * Unified collection item interface for display purposes

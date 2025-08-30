@@ -21,7 +21,7 @@ interface OptimizedImageViewProps {
   className?: string;
   fallbackIcon?: React.ReactNode;
   onLoad?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
   themeColor?: string;
 }
 

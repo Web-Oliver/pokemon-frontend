@@ -5,10 +5,10 @@
 
 import { useCallback, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { unifiedApiService, AuctionsParams, AddItemToAuctionData } from '../services/UnifiedApiService';
-import { IAuction } from '../domain/models/auction';
-import { CACHE_TIMES, queryKeys } from '../../app/lib/queryClient';
-import { handleApiError } from '../utils/helpers/errorHandler';
+import { unifiedApiService, AuctionsParams, AddItemToAuctionData } from '@/shared/services/UnifiedApiService';
+import { IAuction } from '@/shared/domain/models/auction';
+import { CACHE_TIMES, queryKeys } from '@/app/lib/queryClient';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
 import { useQueryInvalidation } from './useQueryInvalidation';
 
 export interface UseAuctionState {

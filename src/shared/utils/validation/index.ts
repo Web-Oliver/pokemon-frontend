@@ -708,6 +708,7 @@ export function validateCardFormData(data: unknown): ValidationResult<{
       grade: data.grade as number | undefined,
       condition: data.condition as string | undefined,
     },
+    errors: [],
   };
 }
 
@@ -761,6 +762,7 @@ export function validateAuctionFormData(data: unknown): ValidationResult<{
       status: data.status as 'draft' | 'active' | 'sold' | 'expired',
       items: data.items as unknown[],
     },
+    errors: [],
   };
 }
 
@@ -809,6 +811,7 @@ export function validateApiResponse<T>(
   return {
     success: true,
     data: data as { success: boolean; data?: T; error?: string },
+    errors: [],
   };
 }
 
@@ -856,6 +859,7 @@ export function validateCollectionItem(data: unknown): ValidationResult<{
       myPrice: data.myPrice as number,
       sold: data.sold as boolean,
     },
+    errors: [],
   };
 }
 
@@ -910,6 +914,7 @@ export function validateSearchParams(data: unknown): ValidationResult<{
       limit: data.limit as number | undefined,
       offset: data.offset as number | undefined,
     },
+    errors: [],
   };
 }
 
@@ -1030,6 +1035,7 @@ export function validateFileUpload(file: unknown): ValidationResult<{
       size: file.size,
       type: file.type,
     },
+    errors: [],
   };
 }
 
@@ -1282,6 +1288,18 @@ export const validateCrossField = (
 ): string | undefined => {
   if (!rule.dependsOn || rule.dependsOn.length === 0) {
     return undefined;
+  }
+
+  // Check if dependent fields exist and are valid
+  for (const dependentField of rule.dependsOn) {
+    if (!allRules[dependentField]) {
+      return `Dependent field '${dependentField}' is not defined in validation rules`;
+    }
+    
+    const dependentValue = formData[dependentField];
+    if (!dependentValue || dependentValue.trim() === '') {
+      return `Field '${dependentField}' must be filled before '${fieldName}'`;
+    }
   }
 
   const context: ValidationContext = {

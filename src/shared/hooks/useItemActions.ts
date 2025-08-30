@@ -8,14 +8,14 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { handleApiError } from '../utils/helpers/errorHandler';
-import { navigationHelper } from '../utils/navigation';
-import { unifiedApiService } from '../services/UnifiedApiService';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
+import { navigationHelper } from '@/shared/utils/navigation';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 
 export interface UseItemActionsOptions {
   itemType: 'psa' | 'raw' | 'sealed';
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }
 
 export interface UseItemActionsReturn {

@@ -16,7 +16,7 @@ import {
   getItemTitle,
   getStatusColor,
   ItemDisplayData,
-} from '../utils/helpers/itemDisplayHelpers';
+} from '@/shared/utils/helpers/itemDisplayHelpers';
 
 export interface UseItemDisplayDataReturn extends ItemDisplayData {
   // Formatted values

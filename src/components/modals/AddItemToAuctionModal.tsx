@@ -14,9 +14,7 @@ import {
   ItemSelectorModal,
   SelectableItem,
 } from './ItemSelectorModal';
-import { useCollectionOperations } from '../../shared/hooks';
-import { IPsaGradedCard, IRawCard } from '../../shared/domain/models/card';
-import { ISealedProduct } from '../../shared/domain/models/sealedProduct';
+import { useCollectionOperations } from '@/shared/hooks';
 
 interface AddItemToAuctionModalProps {
   isOpen: boolean;
@@ -34,7 +32,7 @@ type CollectionItem = SelectableItem & {
   dateAdded: string;
   grade?: string; // For PSA cards
   condition?: string; // For raw cards
-} & (IPsaGradedCard | IRawCard | ISealedProduct);
+};
 
 const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   isOpen,
@@ -148,11 +146,11 @@ const AddItemToAuctionModal: React.FC<AddItemToAuctionModalProps> = ({
   ];
 
   // Custom search filter
-  const searchFilter = (item: CollectionItem, searchTerm: string) => {
+  const searchFilter = (item: CollectionItem, searchTerm: string): boolean => {
     const term = searchTerm.toLowerCase();
     return (
       item.displayName.toLowerCase().includes(term) ||
-      (item.setName && item.setName.toLowerCase().includes(term))
+      (item.setName ? item.setName.toLowerCase().includes(term) : false)
     );
   };
 

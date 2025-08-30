@@ -22,7 +22,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '../../../../../../theme';
+import { useTheme } from '@/theme';
 
 // ===============================
 // UNIFIED INTERFACE

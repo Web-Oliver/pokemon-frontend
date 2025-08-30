@@ -10,7 +10,7 @@
 import { useCallback } from 'react';
 import { CollectionItem, ItemType } from './useCollectionItem';
 import { unifiedApiService } from '../../services/UnifiedApiService';
-import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
+import { showSuccessToast } from '@/components/organisms/ui/toastNotifications';
 import { navigationHelper } from '../../utils/navigation';
 // import { useConfirmModal } from '../useModal'; // Removed - file no longer exists
 

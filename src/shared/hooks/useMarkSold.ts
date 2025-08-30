@@ -9,13 +9,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ISaleDetails } from '../../types/common';
+import { ISaleDetails } from '@/types/common';
 import { useCollectionOverview } from './collection';
 import { useLoadingState } from './common/useLoadingState';
-import { navigationHelper } from '../utils/navigation';
-import { unifiedApiService } from '../services/UnifiedApiService';
+import { navigationHelper } from '@/shared/utils/navigation';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 
-import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
 
 interface UseMarkSoldOptions {
   /** Item type being sold */

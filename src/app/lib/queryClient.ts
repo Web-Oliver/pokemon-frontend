@@ -10,7 +10,7 @@
  */
 
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
-import { log } from '../../shared/utils/performance/logger';
+import { log } from '@/shared/utils/performance/logger';
 
 // Cache time constants for different data types
 export const CACHE_TIMES = {
@@ -62,7 +62,7 @@ const queryCache = new QueryCache({
         queryKey: query.queryKey,
         dataSize: JSON.stringify(data).length,
         cacheTime: query.options.gcTime,
-        staleTime: (query.options as any).staleTime,
+        staleTime: (query.options as { staleTime?: number }).staleTime,
       });
     }
   },
@@ -95,7 +95,7 @@ export const queryClient = new QueryClient({
       gcTime: CACHE_TIMES.COLLECTION_DATA.gcTime,
 
       // Network and retry configuration
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: Error) => {
         // Don't retry on authentication errors
         if (error?.status === 401 || error?.status === 403) {
           return false;
@@ -154,7 +154,7 @@ export const queryClient = new QueryClient({
 export const queryKeys = {
   // === COLLECTION DATA ===
   collection: ['collection'] as const,
-  psaCards: (filters?: any) =>
+  psaCards: (filters?: Record<string, unknown>) =>
     [...queryKeys.collection, 'psa-cards', filters] as const,
   rawCards: (filters?: any) =>
     [...queryKeys.collection, 'raw-cards', filters] as const,

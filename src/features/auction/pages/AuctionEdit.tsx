@@ -7,19 +7,19 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Calendar, Check, Edit3, Package, Trash2 } from 'lucide-react';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import AuctionItemsSection from '../components/auction/sections/AuctionItemsSection';
-import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
-import { PokemonConfirmModal } from '../../../shared/components/atoms/design-system/PokemonModal';
-import { GlassmorphismContainer } from '../../../shared/components/organisms/effects/GlassmorphismContainer';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import AuctionItemsSection from '@/shared/components/auction/sections/AuctionItemsSection';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
+import { PokemonConfirmModal } from '@/shared/components/atoms/design-system/PokemonModal';
+import { GlassmorphismContainer } from '@/shared/components/organisms/effects/GlassmorphismContainer';
 import CollectionItemCard, {
   CollectionItem,
-} from '../../../shared/components/molecules/collection/CollectionItemCard';
-import AddItemToAuctionModal from '../../../components/modals/AddItemToAuctionModal';
-import { useAuction } from '../../../shared/hooks/useAuction';
-import { useGenericFormState } from '../../../shared/hooks/form/useGenericFormState';
-import { showSuccessToast } from '../../../shared/components/organisms/ui/toastNotifications';
-import { navigationHelper } from '../../../shared/utils/navigation';
+} from '@/shared/components/molecules/collection/CollectionItemCard';
+import AddItemToAuctionModal from '@/components/modals/AddItemToAuctionModal';
+import { useAuction } from '@/shared/hooks/useAuction';
+import { useGenericFormState } from '@/shared/hooks/form/useFormState';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
+import { navigationHelper } from '@/shared/utils/navigation';
 
 interface AuctionEditProps {
   auctionId?: string;

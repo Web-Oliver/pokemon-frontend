@@ -9,8 +9,8 @@
 
 import React, { ReactNode } from 'react';
 import { AlertCircle, Camera, FileImage, Layers, Search } from 'lucide-react';
-import { ErrorBoundary } from '../../../../components/error/ErrorBoundary';
-import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
 
 interface OcrWorkflowError {
   step: 'upload' | 'extract' | 'stitch' | 'ocr' | 'match' | 'approve';

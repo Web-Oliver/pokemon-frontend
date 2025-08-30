@@ -16,20 +16,20 @@
 
 import { Archive, ArrowLeft, Package, Star } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
-import { useCollectionOperations } from '../../../shared/hooks';
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
-import { log } from '../../../shared/utils/performance/logger';
-import { storageWrappers } from '../../../shared/utils/storage';
-import { navigationHelper } from '../../../shared/utils/navigation';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '@/shared/components/atoms/design-system';
+import GenericLoadingState from '@/shared/components/molecules/common/GenericLoadingState';
+import { useCollectionOperations } from '@/shared/hooks';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
+import { log } from '@/shared/utils/performance/logger';
+import { storageWrappers } from '@/shared/utils/storage';
+import { navigationHelper } from '@/shared/utils/navigation';
 import {
   CollectionItem,
   CollectionItemService,
   ItemType,
-} from '../services/CollectionItemService';
-import { IPsaGradedCard, IRawCard } from '../../../shared/domain/models/card';
+} from '@/shared/services/CollectionItemService';
+import { IPsaGradedCard, IRawCard } from '@/shared/domain/models/card';
 // Lazy load form components for better bundle splitting
 const AddEditCardForm = React.lazy(
   () => import('../../../shared/components/forms/AddEditCardForm')

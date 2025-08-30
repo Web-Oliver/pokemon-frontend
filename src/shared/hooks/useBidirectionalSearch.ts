@@ -10,9 +10,9 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { unifiedApiService } from '../services/UnifiedApiService';
-import type { ICard, ISet } from '../domain/models/card';
-import type { IProduct, ISetProduct } from '../domain/models/product';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
+import type { ICard, ISet } from '@/shared/domain/models/card';
+import type { IProduct, ISetProduct } from '@/shared/domain/models/product';
 
 // ========== INTERFACES ==========
 

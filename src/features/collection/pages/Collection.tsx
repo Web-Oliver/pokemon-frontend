@@ -18,18 +18,19 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useToggle } from '../../../shared/hooks';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { CollectionItem } from '../../../shared/components/molecules/collection/CollectionItemCard';
-import CollectionStats from '../../../shared/components/organisms/collection/CollectionStats';
+import { useToggle } from '@/shared/hooks';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { CollectionItem } from '@/shared/components/molecules/collection/CollectionItemCard';
+import CollectionStats from '@/shared/components/organisms/collection/CollectionStats';
 import CollectionTabs, {
   TabType,
-} from '../../../shared/components/organisms/collection/CollectionTabs';
-import { useExportOperations } from '../../../shared/hooks/export/useExportOperations';
-import { useItemSelection } from '../../../shared/hooks/export/useItemSelection';
-import { useCollectionOperations } from '../../../shared/hooks';
-import { navigationHelper } from '../../../shared/utils/navigation';
-import { storageWrappers } from '../../../shared/utils/storage';
+} from '@/shared/components/organisms/collection/CollectionTabs';
+import { useExportOperations } from '@/shared/hooks/export/useExportOperations';
+import { useItemSelection } from '@/shared/hooks/export/useItemSelection';
+import { useCollectionOperations } from '@/shared/hooks';
+import { navigationHelper } from '@/shared/utils/navigation';
+import { storageWrappers } from '@/shared/utils/storage';
+import { handleError, createError } from '@/shared/utils/helpers/errorHandler';
 
 // Import unified design system
 import {
@@ -37,7 +38,7 @@ import {
   PokemonModal,
   PokemonPageContainer,
   PokemonCard,
-} from '../../../shared/components/atoms/design-system';
+} from '@/shared/components/atoms/design-system';
 // Lazy load modal/form components for better performance
 const MarkSoldForm = React.lazy(() =>
   import('../../../shared/components/forms/MarkSoldForm').then((m) => ({
@@ -107,7 +108,12 @@ const Collection: React.FC = () => {
       // Extract ID from either id or _id field (MongoDB uses _id)
       const itemId = item.id || (item as any)._id;
       if (!itemId) {
-        console.error('[COLLECTION] No ID found for item:', item);
+        handleError(
+          createError.validation('No ID found for collection item', {
+            component: 'Collection',
+            action: 'handleViewItemDetail'
+          }, { item })
+        );
         return;
       }
       navigationHelper.navigateToItemDetail(type, itemId);
@@ -121,7 +127,12 @@ const Collection: React.FC = () => {
       // Extract ID from either id or _id field (MongoDB uses _id)
       const itemId = item.id || (item as any)._id;
       if (!itemId) {
-        console.error('[COLLECTION] No ID found for item:', item);
+        handleError(
+          createError.validation('No ID found for collection item', {
+            component: 'Collection',
+            action: 'handleViewItemDetail'
+          }, { item })
+        );
         return;
       }
       setSelectedItem({

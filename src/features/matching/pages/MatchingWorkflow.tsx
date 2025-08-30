@@ -1,7 +1,7 @@
 import React from 'react';
 import { MatchingProvider } from '../context/MatchingContext';
-import { MatchingInterface } from '../components/MatchingInterface';
-import { PokemonPageContainer } from '../../../shared/components/atoms/design-system/PokemonPageContainer';
+import { MatchingInterface } from '@/shared/components/MatchingInterface';
+import { PokemonPageContainer } from '@/shared/components/atoms/design-system/PokemonPageContainer';
 
 /**
  * Dedicated Card Matching Workflow Page

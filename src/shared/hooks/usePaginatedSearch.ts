@@ -10,7 +10,7 @@
 
 import { useCallback, useState } from 'react';
 import { useDataFetch } from './common/useDataFetch';
-import { unifiedApiService } from '../services/UnifiedApiService';
+import { unifiedApiService } from '@/shared/services/UnifiedApiService';
 
 interface PaginationData {
   currentPage: number;

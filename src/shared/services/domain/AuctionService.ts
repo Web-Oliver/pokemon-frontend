@@ -6,7 +6,7 @@
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { IAuction } from '../../domain/models/auction';
-import { extractResponseData } from '../utils/responseUtils';
+import { extractResponseData } from '@/shared/utils/responseUtils';
 
 // Import types from UnifiedApiService
 export interface AuctionsParams {

@@ -8,7 +8,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { CollectionItem } from '../../types/ordering';
+import { CollectionItem } from '@/types/ordering';
 
 export interface UseItemSelectionReturn {
   /** Currently selected item IDs */

@@ -9,8 +9,8 @@
  */
 
 import { useCallback, useRef } from 'react';
-import { useAsyncOperation } from './useAsyncOperation';
-import { log } from '../utils/performance/logger';
+import { useAsyncOperation } from './common/useAsyncOperation';
+import { log } from '@/shared/utils/performance/logger';
 
 export interface FetchCollectionItemsConfig {
   /** Initial data for the hook */

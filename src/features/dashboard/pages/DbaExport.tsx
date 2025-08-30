@@ -11,15 +11,15 @@
 
 import React, { lazy, Suspense } from 'react';
 import { AlertTriangle, Archive, CheckSquare, Clock } from 'lucide-react';
-import ErrorBoundary from '../../../shared/components/organisms/ui/ErrorBoundary';
-import { PageLayout } from '../../../shared/components/layout/layouts/PageLayout';
-import { PokemonPageContainer, PokemonCard } from '../../../shared/components/atoms/design-system';
-import { useDbaExport } from '../../../shared/hooks/useDbaExport';
+import ErrorBoundary from '@/shared/components/organisms/ui/ErrorBoundary';
+import { PageLayout } from '@/shared/components/layout/layouts/PageLayout';
+import { PokemonPageContainer, PokemonCard } from '@/shared/components/atoms/design-system';
+import { useDbaExport } from '@/shared/hooks/useDbaExport';
 
 // CONSOLIDATED: Direct import instead of lazy to debug the issue
-import UnifiedHeader from '../../../shared/components/molecules/common/UnifiedHeader';
+import UnifiedHeader from '@/shared/components/molecules/common/UnifiedHeader';
 // Using unified EmptyState component
-import EmptyState from '../../../shared/components/molecules/common/EmptyState';
+import EmptyState from '@/shared/components/molecules/common/EmptyState';
 
 // Dynamic imports for heavy DBA components (code splitting optimization)
 const DbaCosmicBackground = lazy(

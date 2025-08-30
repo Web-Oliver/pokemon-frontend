@@ -248,7 +248,7 @@ export interface CompoundComponentProps extends
 }
 
 // Standard component props for atomic design system
-export type StandardComponentProps<T = {}> = T & CompoundComponentProps;
+export type StandardComponentProps<T = Record<string, unknown>> = T & CompoundComponentProps;
 
 // Specific standard props for common components
 export interface StandardButtonProps extends StandardComponentProps {
@@ -302,7 +302,12 @@ export interface ThemePreset {
 
 // Extended configuration interface
 export interface ThemeConfiguration extends ThemeSettings {
-  // Additional configuration-specific properties can go here
+  // Theme validation settings
+  strictMode?: boolean;
+  // Performance optimization flags
+  useCache?: boolean;
+  // Development helpers
+  debug?: boolean;
 }
 
 /**

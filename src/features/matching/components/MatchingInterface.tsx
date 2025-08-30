@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Check, ArrowRight, Award, Eye, Edit3 } from 'lucide-react';
-import { useMatchingWorkflow } from '../hooks/useMatchingWorkflow';
+import { useMatchingWorkflow } from '@/shared/hooks/useMatchingWorkflow';
 import { MatchingGrid } from './sections/MatchingGrid';
 import { MatchingDetailsPanel } from './sections/MatchingDetailsPanel';
-import { PokemonCard } from '../../../shared/components/atoms/design-system/PokemonCard';
-import { PokemonButton } from '../../../shared/components/atoms/design-system/PokemonButton';
-import EmptyState from '../../../shared/components/molecules/common/EmptyState';
-import NetworkErrorState from '../../../shared/components/molecules/common/NetworkErrorState';
-import GenericLoadingState from '../../../shared/components/molecules/common/GenericLoadingState';
-import { ImageProductView } from '../../../shared/components/molecules/common/ImageProductView';
+import { PokemonCard } from '@/shared/components/atoms/design-system/PokemonCard';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
+import EmptyState from '@/shared/components/molecules/common/EmptyState';
+import NetworkErrorState from '@/shared/components/molecules/common/NetworkErrorState';
+import GenericLoadingState from '@/shared/components/molecules/common/GenericLoadingState';
+import { ImageProductView } from '@/shared/components/molecules/common/ImageProductView';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 // STEP TYPES - SIMPLIFIED TO 2 STEPS (2025 UX BEST PRACTICE)
 enum MatchingStep {
@@ -131,7 +132,10 @@ export const MatchingInterface: React.FC = () => {
       const details = await getScanDetails(scan.id);
       setDetailedScan(details);
     } catch (error) {
-      console.error('Failed to load scan details:', error);
+      handleError(error, {
+        component: 'MatchingInterface',
+        action: 'loadScanDetails'
+      });
     } finally {
       setLoadingDetails(false);
     }

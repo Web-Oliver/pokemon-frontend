@@ -6,8 +6,9 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { StepComponentProps } from '../../types/OcrWorkflowTypes';
+import { StepComponentProps } from '@/types/OcrWorkflowTypes';
 import { useOcrMatching } from '../../hooks/useOcrMatching';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 interface OcrUpdateData {
   processedLabels: Array<{
@@ -187,7 +188,10 @@ export const OcrUpdateStep: React.FC<StepComponentProps> = ({
       }
 
     } catch (error) {
-      console.error('OCR Processing Error:', error);
+      handleError(error, {
+        component: 'OcrUpdateStep',
+        action: 'processOcrData'
+      });
       
       // Provide specific error messages for common issues
       let errorMessage = 'OCR processing failed due to unknown error';
@@ -335,7 +339,10 @@ export const OcrUpdateStep: React.FC<StepComponentProps> = ({
       }
 
     } catch (error) {
-      console.error('OCR Distribution Error:', error);
+      handleError(error, {
+        component: 'OcrUpdateStep',
+        action: 'distributeOcrData'
+      });
       
       let errorMessage = 'Failed to distribute OCR data to scans';
       

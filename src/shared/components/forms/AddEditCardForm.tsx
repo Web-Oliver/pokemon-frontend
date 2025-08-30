@@ -19,11 +19,11 @@
 import React from 'react';
 import { Award, Package } from 'lucide-react';
 import { IPsaGradedCard, IRawCard } from '../../../domain/models/card';
-import { useCollectionOperations } from '../../../shared/hooks';
+import { useCollectionOperations } from '@/shared/hooks';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../utils/validation';
 import { useFormInitialization } from '../../hooks/form/useFormInitialization';
-import { useCardSelection } from '../../hooks/form/useCardSelectionState';
+import { useCardSelection } from '../../hooks/form/useCardSelection';
 import { useFormSubmission } from './wrappers/FormSubmissionWrapper';
 
 // Import unified sections

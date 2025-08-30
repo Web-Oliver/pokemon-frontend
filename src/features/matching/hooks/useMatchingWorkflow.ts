@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useOcrMatching } from '../../ocr-matching/hooks/useOcrMatching';
 import { toast } from 'react-hot-toast';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 /**
  * Matching Workflow Hook
@@ -68,7 +69,10 @@ export const useMatchingWorkflow = () => {
       
       toast.success(`Successfully matched ${result.matchingResults?.length || 0} cards`);
     } catch (error) {
-      console.error('Matching failed:', error);
+      handleError(error, {
+        component: 'useMatchingWorkflow',
+        action: 'processMatching'
+      });
       toast.error('Card matching failed. Please try again.');
     } finally {
       setIsMatching(false);
@@ -112,7 +116,10 @@ export const useMatchingWorkflow = () => {
       
       return result;
     } catch (error) {
-      console.error('PSA card creation failed:', error);
+      handleError(error, {
+        component: 'useMatchingWorkflow',
+        action: 'createPsaCard'
+      });
       toast.error('Failed to create PSA graded card. Please try again.');
       throw error;
     } finally {

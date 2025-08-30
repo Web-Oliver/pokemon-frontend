@@ -10,8 +10,8 @@
 import React from 'react';
 import { Check, Edit, Star, Trash2 } from 'lucide-react';
 import { CollectionItem } from '../../hooks/collection/useCollectionItem';
-import UnifiedHeader from '../../../../shared/components/molecules/common/UnifiedHeader';
-import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
+import UnifiedHeader from '@/shared/components/molecules/common/UnifiedHeader';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
 
 export interface CollectionItemHeaderProps {
   item: CollectionItem;

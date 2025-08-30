@@ -11,7 +11,7 @@
  * DRY: Single source of truth for ALL image URL handling across the application
  */
 
-import { API_BASE_URL } from '../utils/helpers/constants';
+import { API_BASE_URL } from '@/shared/utils/helpers/constants';
 
 export interface IImageUrlService {
   getFullImageUrl(relativeUrl: string): string;

@@ -9,8 +9,8 @@
  * - Reusability: Functions can be used across different export contexts
  */
 
-import { ExportFormat, ExportItemType, OrderedExportRequest } from '../interfaces/api/IExportApiService';
-import { CollectionItem, OrderValidationResult } from '../types/ordering';
+import { ExportFormat, ExportItemType, OrderedExportRequest } from '@/shared/interfaces/api/IExportApiService';
+import { CollectionItem, OrderValidationResult } from '@/types/ordering';
 import { applyItemOrder, sortCategoriesByPrice, sortItemsByPrice, validateItemOrder } from './orderingUtils';
 
 /**

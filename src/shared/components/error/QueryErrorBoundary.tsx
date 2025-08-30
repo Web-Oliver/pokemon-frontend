@@ -10,7 +10,7 @@
 import React, { ReactNode } from 'react';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { AlertTriangle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
-import { ErrorBoundary } from '../../../components/error/ErrorBoundary';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { PokemonButton } from '../atoms/design-system/PokemonButton';
 
 interface ApiError {

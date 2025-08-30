@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Edit3, Save, Calendar, DollarSign, Award, Image as ImageIcon, Zap } from 'lucide-react';
-import { PokemonCard } from '../../../../shared/components/atoms/design-system/PokemonCard';
-import { PokemonButton } from '../../../../shared/components/atoms/design-system/PokemonButton';
-import { PokemonInput } from '../../../../shared/components/atoms/design-system/PokemonInput';
-import { PokemonSelect } from '../../../../shared/components/atoms/design-system/PokemonSelect';
-import { PokemonModal } from '../../../../shared/components/atoms/design-system/PokemonModal';
-import HierarchicalSearch from '../../../../shared/components/forms/sections/HierarchicalSearch';
-import { ImageProductView } from '../../../../shared/components/molecules/common/ImageProductView';
+import { PokemonCard } from '@/shared/components/atoms/design-system/PokemonCard';
+import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
+import { PokemonInput } from '@/shared/components/atoms/design-system/PokemonInput';
+import { PokemonSelect } from '@/shared/components/atoms/design-system/PokemonSelect';
+import { PokemonModal } from '@/shared/components/atoms/design-system/PokemonModal';
+import HierarchicalSearch from '@/shared/components/forms/sections/HierarchicalSearch';
+import { ImageProductView } from '@/shared/components/molecules/common/ImageProductView';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 interface MatchingDetailsPanelProps {
   scan: any;
@@ -101,7 +102,10 @@ export const MatchingDetailsPanel: React.FC<MatchingDetailsPanelProps> = ({
       reset();
       setSelectedMatch(null);
     } catch (error) {
-      console.error('Failed to create PSA card:', error);
+      handleError(error, {
+        component: 'MatchingDetailsPanel',
+        action: 'createPsaCard'
+      });
     }
   };
 

@@ -26,7 +26,7 @@ export * from './ui/imageUtils';
 export * from './storage';
 
 // API utilities
-export * from './api/ZipImageUtility';
+// ZipImageUtility removed - unused utility class
 
 // File utilities
 export * from './file/csvExport';

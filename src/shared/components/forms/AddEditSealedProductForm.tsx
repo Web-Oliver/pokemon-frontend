@@ -13,7 +13,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Archive, Camera, Package, TrendingUp } from 'lucide-react';
 import { ISealedProduct } from '../../../domain/models/sealedProduct';
-import { useCollectionOperations } from '../../../shared/hooks';
+import { useCollectionOperations } from '@/shared/hooks';
 import { useBaseForm } from '../../hooks/useBaseForm';
 import { commonValidationRules } from '../../utils/validation';
 import {
@@ -25,8 +25,8 @@ import { PokemonInput } from '../atoms/design-system/PokemonInput';
 import GenericLoadingState from '../molecules/common/GenericLoadingState';
 import UnifiedHeader from '../molecules/common/UnifiedHeader';
 import FormActionButtons from '../molecules/common/FormActionButtons';
-import ImageUploader from '../../../components/ImageUploader';
-import { PriceHistoryDisplay } from '../../../components/PriceHistoryDisplay';
+import ImageUploader from '@/components/ImageUploader';
+import { PriceHistoryDisplay } from '@/components/PriceHistoryDisplay';
 import { FormField } from './fields/FormField';
 import HierarchicalProductSearch from './sections/HierarchicalProductSearch';
 import {

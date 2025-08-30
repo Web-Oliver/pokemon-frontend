@@ -21,18 +21,19 @@ import React, {
   useState,
 } from 'react';
 import { Upload, X } from 'lucide-react';
-import { PokemonConfirmModal } from '../shared/components/atoms/design-system/PokemonModal';
-import { ImageAnalysisIndicator } from '../shared/components/molecules/common/ImageAnalysisIndicator';
-import { FormErrorMessage } from '../shared/components/molecules/common/FormElements';
-import { useDragAndDrop } from '../shared/hooks/useDragAndDrop';
-import { useImageRemoval } from '../shared/hooks/useImageRemoval';
+import { PokemonConfirmModal } from '@/shared/components/atoms/design-system/PokemonModal';
+import { ImageAnalysisIndicator } from '@/shared/components/molecules/common/ImageAnalysisIndicator';
+import { FormErrorMessage } from '@/shared/components/molecules/common/FormElements';
+import { useDragAndDrop } from '@/shared/hooks/useDragAndDrop';
+import { useImageRemoval } from '@/shared/hooks/useImageRemoval';
 import {
   cleanupObjectURL,
   createExistingImagePreview,
   type ImagePreview,
   processImageFiles,
-} from '../shared/utils/ui/imageUtils';
-import { cn } from '../shared/utils';
+} from '@/shared/utils/ui/imageUtils';
+import { cn } from '@/shared/utils';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 interface ImageUploaderProps {
   onImagesChange: (files: File[], remainingExistingUrls?: string[]) => void;
@@ -108,6 +109,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         setIsAnalyzing(false);
         return results;
       } catch (error) {
+        handleError(error, {
+          component: 'ImageUploader',
+          action: 'analyzeExistingImages'
+        });
         setIsAnalyzing(false);
         return [];
       }
@@ -147,6 +152,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         setIsAnalyzing(false);
         return results;
       } catch (error) {
+        handleError(error, {
+          component: 'ImageUploader',
+          action: 'analyzeExistingImages'
+        });
         setIsAnalyzing(false);
         return [];
       }

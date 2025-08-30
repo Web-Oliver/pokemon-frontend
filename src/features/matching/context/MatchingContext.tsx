@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useMatchingWorkflow } from '../hooks/useMatchingWorkflow';
+import { useMatchingWorkflow } from '@/shared/hooks/useMatchingWorkflow';
 
 interface MatchingContextType {
   scansReadyForMatching: any[];

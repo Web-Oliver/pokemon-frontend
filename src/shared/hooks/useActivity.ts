@@ -19,10 +19,10 @@ import activityApi, {
   ACTIVITY_TYPES,
   ActivityFilters,
   ActivityStats,
-} from '../api/activityApi';
-import { handleApiError } from '../utils/helpers/errorHandler';
-import { showSuccessToast } from '../components/organisms/ui/toastNotifications';
-import { log } from '../utils/performance/logger';
+} from '@/shared/api/activityApi';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
+import { log } from '@/shared/utils/performance/logger';
 
 // Context7 Hook State Interface
 interface UseActivityState {
@@ -159,7 +159,7 @@ export const useActivity = (
         }));
 
         log('[USE ACTIVITY] Activities fetched successfully:', response.meta);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error.name !== 'AbortError') {
           setState((prev) => ({
             ...prev,

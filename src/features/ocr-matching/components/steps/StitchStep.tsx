@@ -6,8 +6,9 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { StepComponentProps } from '../../types/OcrWorkflowTypes';
+import { StepComponentProps } from '@/types/OcrWorkflowTypes';
 import { useOcrMatching } from '../../hooks/useOcrMatching';
+import { handleError } from '@/shared/utils/helpers/errorHandler';
 
 interface StitchData {
   stitchedLabels: Array<{
@@ -75,7 +76,10 @@ export const StitchStep: React.FC<StepComponentProps> = ({
         console.log('🔍 Existing stitched images:', result);
         setExistingStitched(result.stitchedImages || []);
       } catch (error) {
-        console.error('Failed to load existing stitched images:', error);
+        handleError(error, {
+          component: 'StitchStep',
+          action: 'loadExistingStitchedImages'
+        });
       }
     };
     
@@ -116,7 +120,10 @@ export const StitchStep: React.FC<StepComponentProps> = ({
     });
 
     if (availableScans.length === 0) {
-      console.error('❌ ERROR: No scans available for stitching');
+      handleError(new Error('No scans available for stitching'), {
+        component: 'StitchStep',
+        action: 'validateScansAvailable'
+      });
       onError('No scans available for stitching. Please go back to extraction step.');
       return;
     }
@@ -179,11 +186,15 @@ export const StitchStep: React.FC<StepComponentProps> = ({
       const invalidHashes = imageHashes.filter(hash => !hash || typeof hash !== 'string' || hash.trim().length === 0);
       
       if (invalidHashes.length > 0 || imageHashes.length === 0) {
-        console.error('❌ ERROR: Invalid or missing imageHashes detected:', {
-          totalScans: availableScans.length,
-          totalHashes: imageHashes.length,
-          invalidHashes: invalidHashes,
-          allHashes: imageHashes
+        handleError(new Error('Invalid or missing imageHashes detected'), {
+          component: 'StitchStep',
+          action: 'validateImageHashes',
+          additionalInfo: {
+            totalScans: availableScans.length,
+            totalHashes: imageHashes.length,
+            invalidHashes: invalidHashes,
+            allHashes: imageHashes
+          }
         });
         onError(`Invalid image hashes detected. Found ${invalidHashes.length} invalid hashes out of ${imageHashes.length} total.`);
         return;
@@ -250,7 +261,10 @@ export const StitchStep: React.FC<StepComponentProps> = ({
       }
 
     } catch (error) {
-      console.error('Stitching error:', error);
+      handleError(error, {
+        component: 'StitchStep',
+        action: 'performStitching'
+      });
       onError(error instanceof Error ? error.message : 'Stitching failed');
     } finally {
       setIsProcessing(false);

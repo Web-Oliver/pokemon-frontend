@@ -10,9 +10,9 @@
 import { useCallback } from 'react';
 import { CollectionItem } from './useCollectionItem';
 
-import { handleApiError } from '../../../shared/utils/helpers/errorHandler';
-import { showSuccessToast } from '../../components/organisms/ui/toastNotifications';
-import { log } from '../../../shared/utils/performance/logger';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
+import { showSuccessToast } from '@/components/organisms/ui/toastNotifications';
+import { log } from '@/shared/utils/performance/logger';
 import { navigationHelper } from '../../utils/navigation';
 import { useDataFetch } from '../common/useDataFetch';
 

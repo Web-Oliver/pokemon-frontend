@@ -8,7 +8,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { CollectionItem, ItemCategory, ItemOrderingState, SortMethod } from '../../types/ordering';
+import { CollectionItem, ItemCategory, ItemOrderingState, SortMethod } from '@/types/ordering';
 import {
   applyItemOrder,
   generateOrderFromItems,

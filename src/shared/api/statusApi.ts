@@ -3,7 +3,7 @@
  * Layer 1: Core/Foundation/API Client (CLAUDE.md Architecture)
  *
  * @deprecated This file is deprecated. Use UnifiedApiService.status instead.
- * Import: import { unifiedApiService } from '../services/UnifiedApiService'
+ * Import: import { unifiedApiService } from '@/shared/services/UnifiedApiService'
  * Usage: unifiedApiService.status.getDataCounts(), unifiedApiService.status.getApiStatus()
  *
  * This file will be removed in a future version as part of API consolidation.

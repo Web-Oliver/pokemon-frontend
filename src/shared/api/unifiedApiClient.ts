@@ -13,15 +13,15 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_BASE_URL, HTTP_CONFIG } from '../utils/helpers/constants';
-import { handleApiError } from '../utils/helpers/errorHandler';
-import { log } from '../utils/performance/logger';
-import { optimizedApiRequest } from '../utils/transformers/apiOptimization';
+import { API_BASE_URL, HTTP_CONFIG } from '@/shared/utils/helpers/constants';
+import { handleApiError } from '@/shared/utils/helpers/errorHandler';
+import { log } from '@/shared/utils/performance/logger';
+import { optimizedApiRequest } from '@/shared/utils/transformers/apiOptimization';
 import {
   transformApiResponse,
   transformRequestData,
-} from '../utils/transformers/responseTransformer';
-import { IHttpClient } from '../services/base/HttpClientInterface';
+} from '@/shared/utils/transformers/responseTransformer';
+import { IHttpClient } from '@/shared/services/base/HttpClientInterface';
 
 // ========== UTILITY FUNCTIONS ==========
 
@@ -677,7 +677,7 @@ export class UnifiedApiClient implements IHttpClient {
    * @param error - The axios error object
    * @returns true if the request should be retried
    */
-  private shouldRetry(error: any): boolean {
+  private shouldRetry(error: unknown): boolean {
     // Don't retry if it's not a network error or server error
     if (!error.response && !error.code) {
       return false;

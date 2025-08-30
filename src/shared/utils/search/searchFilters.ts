@@ -5,7 +5,7 @@
  * Extracted from SearchService to separate API concerns from data transformation
  */
 
-import { SearchResponse } from '../../types/search';
+import { SearchResponse } from '@/types/search';
 
 /**
  * Filter search results by MongoDB ObjectId for hierarchical search
