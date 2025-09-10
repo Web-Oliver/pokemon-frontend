@@ -18,73 +18,78 @@ import { matchRoute } from './utils/routeUtils';
 
 // Context7 Lazy Loading Strategy - Performance Optimized Code Splitting
 // Critical path components (loaded immediately with Suspense boundaries)
-const Dashboard = lazy(() => import('../../features/dashboard/pages/Dashboard'));
-const Collection = lazy(() => import('../../features/collection/pages/Collection'));
+const Dashboard = lazy(() => import('@/features/dashboard/pages/Dashboard'));
+const Collection = lazy(() => import('@/domains/collection/pages/Collection'));
 
 // Secondary features (lazy loaded with prefetch hints)
 const CollectionItemDetail = lazy(
   () =>
     import(
-      /* webpackChunkName: "item-detail" */ '../../features/collection/pages/CollectionItemDetail'
+      /* webpackChunkName: "item-detail" */ '@/domains/collection/pages/CollectionItemDetail'
     )
 );
 const AddEditItem = lazy(
-  () => import(/* webpackChunkName: "forms" */ '../../features/collection/pages/AddEditItem')
+  () => import(/* webpackChunkName: "forms" */ '@/domains/collection/pages/AddEditItem')
 );
 
 // Search features (bundled together for caching)
 const SetSearch = lazy(
   () =>
-    import(/* webpackChunkName: "search-features" */ '../../features/search/pages/SetSearch')
+    import(/* webpackChunkName: "search-features" */ '@/domains/search/pages/SetSearch')
 );
 const SealedProductSearch = lazy(
   () =>
     import(
-      /* webpackChunkName: "search-features" */ '../../features/search/pages/SealedProductSearch'
+      /* webpackChunkName: "search-features" */ '@/domains/search/pages/SealedProductSearch'
     )
 );
 
 // Auction features (bundled together for better caching)
 const Auctions = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../../features/auction/pages/Auctions')
+    import(/* webpackChunkName: "auction-features" */ '@/domains/collection/pages/Auctions')
 );
 const AuctionDetail = lazy(
   () =>
     import(
-      /* webpackChunkName: "auction-features" */ '../../features/auction/pages/AuctionDetail'
+      /* webpackChunkName: "auction-features" */ '@/domains/collection/pages/AuctionDetail'
     )
 );
 const CreateAuction = lazy(
   () =>
     import(
-      /* webpackChunkName: "auction-features" */ '../../features/auction/pages/CreateAuction'
+      /* webpackChunkName: "auction-features" */ '@/domains/collection/pages/CreateAuction'
     )
 );
 const AuctionEdit = lazy(
   () =>
-    import(/* webpackChunkName: "auction-features" */ '../../features/auction/pages/AuctionEdit')
+    import(/* webpackChunkName: "auction-features" */ '@/domains/collection/pages/AuctionEdit')
 );
 
 // Analytics and heavy features (separate chunks)
 const SalesAnalytics = lazy(
-  () => import(/* webpackChunkName: "analytics" */ '../../features/analytics/pages/SalesAnalytics')
+  () => import(/* webpackChunkName: "analytics" */ '@/domains/collection/pages/SalesAnalytics')
 );
 const Activity = lazy(
-  () => import(/* webpackChunkName: "activity" */ '../../features/analytics/pages/Activity')
+  () => import(/* webpackChunkName: "activity" */ '@/domains/collection/pages/Activity')
 );
 const DbaExport = lazy(
-  () => import(/* webpackChunkName: "export" */ '../../features/dashboard/pages/DbaExport')
+  () => import(/* webpackChunkName: "export" */ '@/domains/marketplace/pages/DbaExport')
 );
 
 // OCR Features (separate chunk for specialized functionality)
 const OcrWorkflow = lazy(
-  () => import(/* webpackChunkName: "ocr-features" */ '../../features/ocr-matching/components/OcrWorkflow')
+  () => import(/* webpackChunkName: "ocr-features" */ '@/domains/icr/components/OcrWorkflow')
 );
 
 // Matching Features (separate chunk for matching workflow)
 const MatchingWorkflow = lazy(
-  () => import(/* webpackChunkName: "matching-features" */ '../../features/matching/pages/MatchingWorkflow')
+  () => import(/* webpackChunkName: "matching-features" */ '@/domains/icr/pages/MatchingWorkflow')
+);
+
+// System Features (separate chunk for system documentation)
+const ApiEndpoints = lazy(
+  () => import(/* webpackChunkName: "system-features" */ '@/domains/system/pages/ApiEndpoints')
 );
 
 // Route Configuration - Single Source of Truth for Routing Logic
@@ -111,6 +116,7 @@ const ROUTE_CONFIG: RouteConfig[] = [
   { path: '/ocr', component: OcrWorkflow, exact: true },
   { path: '/ocr-matching', component: OcrWorkflow, exact: true },
   { path: '/matching', component: MatchingWorkflow, exact: true },
+  { path: '/api-endpoints', component: ApiEndpoints, exact: true },
 
   // Dynamic Routes - Parameterized with type safety
   {

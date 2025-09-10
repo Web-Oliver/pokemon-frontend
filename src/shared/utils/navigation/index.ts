@@ -314,6 +314,15 @@ export const navigationHelper = {
   },
 
   /**
+   * Navigate to system documentation pages
+   */
+  navigateToSystem: {
+    endpoints: () => {
+      navigationHelper.navigateTo('/api-endpoints');
+    },
+  },
+
+  /**
    * Reload the current page
    * Used across multiple components
    */

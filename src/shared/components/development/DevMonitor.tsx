@@ -24,7 +24,7 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
   showConsoleLogger = true,
   showRenderTracker = true,
   showReactQueryDevtools = true,
-  showReactScan = false,
+  showReactScan = false && import.meta.env.DEV,
 }) => {
   const [isReactDevToolsConnected, setIsReactDevToolsConnected] =
     useState(false);
@@ -93,14 +93,31 @@ const DevMonitor: React.FC<DevMonitorProps> = ({
       const initReactScan = async () => {
         try {
           const { scan } = await import('react-scan');
-          scan({
-            enabled: true,
-            log: true, // Show performance logs in console
-          });
-          setIsReactScanActive(true);
-          console.log('🔍 React Scan: Initialized successfully');
+          // Enhanced error handling for CSS-in-JS and DOM access errors
+          try {
+            // Check DOM readiness before initializing React Scan
+            if (typeof document === 'undefined' || !document.documentElement) {
+              throw new Error('DOM not ready');
+            }
+
+            scan({
+              enabled: true,
+              log: true, // Show performance logs in console
+            });
+            setIsReactScanActive(true);
+            console.log('🔍 React Scan: Initialized successfully');
+          } catch (scanError) {
+            // Handle specific CSS-in-JS errors gracefully
+            const errorMessage = scanError instanceof Error ? scanError.message : String(scanError);
+            if (errorMessage.includes('cssRules') || errorMessage.includes('VariablesStore')) {
+              console.debug('🔍 React Scan: CSS-in-JS access blocked (security/CORS)', { error: errorMessage });
+            } else {
+              console.debug('🔍 React Scan: DOM access error', scanError);
+            }
+            setIsReactScanActive(false);
+          }
         } catch (error) {
-          console.warn('🔍 React Scan: Failed to initialize', error);
+          console.warn('🔍 React Scan: Failed to import', error);
         }
       };
 

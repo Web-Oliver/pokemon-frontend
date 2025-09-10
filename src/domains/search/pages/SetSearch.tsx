@@ -162,7 +162,7 @@ const SetSearch: React.FC = () => {
                       Error
                     </div>
                     <span className="text-red-300 font-medium">
-                      {error}
+                      {typeof error === 'string' ? error : error?.message || 'An error occurred'}
                     </span>
                   </div>
                 </div>

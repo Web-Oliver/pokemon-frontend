@@ -10,6 +10,8 @@
 import React from 'react';
 import { Check, Edit, Star, Trash2 } from 'lucide-react';
 import { CollectionItem } from '@/shared/hooks/collection/useCollectionItem';
+// TODO: Refactor to use UnifiedHeader to eliminate code duplication (DRY principle)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import UnifiedHeader from '@/shared/components/molecules/common/UnifiedHeader';
 import { PokemonButton } from '@/shared/components/atoms/design-system/PokemonButton';
 
@@ -86,7 +88,14 @@ export const CollectionItemHeader: React.FC<CollectionItemHeaderProps> = ({
                 </div>
                 <div className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl bg-[var(--theme-status-success)]/20 backdrop-blur-xl border border-[var(--theme-status-success)]/30 text-[var(--theme-status-success)]">
                   <span className="text-xs sm:text-sm font-bold whitespace-nowrap">
-                    {item.myPrice || '0'} kr
+                    {(() => {
+                      // Handle MongoDB Decimal128 objects
+                      const price = item.myPrice;
+                      if (price && typeof price === 'object' && price.$numberDecimal) {
+                        return parseFloat(price.$numberDecimal);
+                      }
+                      return price || '0';
+                    })()} kr
                   </span>
                 </div>
                 <div

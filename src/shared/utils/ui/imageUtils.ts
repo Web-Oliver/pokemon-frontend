@@ -43,20 +43,22 @@ export const getImageUrl = (imagePath: string, source: ImageSource = 'collection
   // Route based on source context
   switch (source) {
     case 'collection':
-      // Fix malformed paths with doubled /api/images/ prefix
-      let cleanPath = imagePath;
-      if (cleanPath.includes('/api/images/api/images/')) {
-        // Remove the doubled prefix and keep only the last part
-        cleanPath = cleanPath.replace('/api/images/api/images/', '/');
-      } else if (cleanPath.startsWith('/api/images/')) {
-        // Remove the existing /api/images/ prefix
-        cleanPath = cleanPath.replace('/api/images/', '/');
-      } else if (!cleanPath.startsWith('/')) {
-        // Add leading slash if missing
-        cleanPath = `/${cleanPath}`;
+      // Clean the path to get just the filename
+      let filename = imagePath;
+      
+      // Remove any existing prefixes to get just the filename
+      if (filename.includes('/api/images/collection/')) {
+        filename = filename.split('/api/images/collection/').pop() || filename;
+      } else if (filename.includes('/api/images/')) {
+        filename = filename.split('/api/images/').pop() || filename;
+      } else if (filename.includes('/uploads/')) {
+        filename = filename.split('/uploads/').pop() || filename;
+      } else if (filename.startsWith('/')) {
+        filename = filename.substring(1);
       }
       
-      return `${serverBase}/api/images${cleanPath}`;
+      // Return the correct collection image endpoint
+      return `${serverBase}/api/images/collection/${filename}`;
       
     case 'psa-label':
       // ICR workflow PSA labels use specific endpoint based on filename

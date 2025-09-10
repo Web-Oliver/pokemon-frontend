@@ -8,7 +8,7 @@
  * - Reusability: Components can be used independently
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Package } from 'lucide-react';
 import {
   PokemonConfirmModal,
@@ -47,13 +47,29 @@ const CollectionItemDetail: React.FC = () => {
   });
   const imageDownload = useImageDownload(item, () => getItemTitle());
 
-  // Modal for mark sold form
-  const markSoldModal = useModal();
+  // Modal states - using modern React state
+  const [isMarkSoldModalOpen, setIsMarkSoldModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle mark sold success by refreshing item data
   const handleMarkSoldSuccess = () => {
-    markSoldModal.closeModal();
+    setIsMarkSoldModalOpen(false);
     refetchItem(); // Refresh data after successful sale
+  };
+
+  // Handle delete confirmation
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await operations.confirmDeleteItem();
+      setIsDeleteConfirmModalOpen(false);
+      // No need to refetch as we're navigating away
+    } catch (error) {
+      console.error('Delete failed:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Helper functions for display (simplified)
@@ -201,8 +217,8 @@ const CollectionItemDetail: React.FC = () => {
             subtitle={getItemSubtitle()}
             setName={getSetName()}
             onEdit={operations.handleEdit}
-            onMarkSold={() => markSoldModal.openModal()}
-            onDelete={operations.handleDelete}
+            onMarkSold={() => setIsMarkSoldModalOpen(true)}
+            onDelete={() => setIsDeleteConfirmModalOpen(true)}
             onBackToCollection={operations.handleBackToCollection}
           />
 
@@ -239,8 +255,8 @@ const CollectionItemDetail: React.FC = () => {
 
           {/* Mark as Sold Modal */}
           <PokemonModal
-            isOpen={markSoldModal.isOpen}
-            onClose={markSoldModal.closeModal}
+            isOpen={isMarkSoldModalOpen}
+            onClose={() => setIsMarkSoldModalOpen(false)}
             title={`Mark "${getItemTitle()}" as Sold`}
             maxWidth="2xl"
           >
@@ -251,7 +267,7 @@ const CollectionItemDetail: React.FC = () => {
                   const { type } = navigationHelper.getCollectionItemParams();
                   return type as 'psa' | 'raw' | 'sealed';
                 })()}
-                onCancel={markSoldModal.closeModal}
+                onCancel={() => setIsMarkSoldModalOpen(false)}
                 onSuccess={handleMarkSoldSuccess}
               />
             )}
@@ -259,14 +275,14 @@ const CollectionItemDetail: React.FC = () => {
 
           {/* Delete Confirmation Modal */}
           <PokemonConfirmModal
-            isOpen={operations.deleteConfirmModal.isOpen}
-            onClose={operations.deleteConfirmModal.closeModal}
-            onConfirm={operations.confirmDeleteItem}
+            isOpen={isDeleteConfirmModalOpen}
+            onClose={() => setIsDeleteConfirmModalOpen(false)}
+            onConfirm={handleConfirmDelete}
             title="Delete Collection Item"
             confirmMessage="Are you sure you want to delete this item? This action cannot be undone and will permanently remove the item from your collection."
             confirmText="Delete Item"
             variant="danger"
-            loading={operations.deleteConfirmModal.isConfirming}
+            loading={isDeleting}
           />
         </div>
       </PokemonPageContainer>

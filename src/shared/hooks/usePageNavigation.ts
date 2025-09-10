@@ -63,6 +63,11 @@ export const usePageNavigation = () => {
     navigateTo('/dashboard');
   }, [navigateTo]);
 
+  // System documentation navigation methods
+  const navigateToApiEndpoints = useCallback(() => {
+    navigateTo('/api-endpoints');
+  }, [navigateTo]);
+
   // Add item navigation methods
   const navigateToAddItem = useCallback(
     (type?: 'psa' | 'raw' | 'sealed') => {
@@ -122,6 +127,9 @@ export const usePageNavigation = () => {
 
     // Dashboard navigation
     navigateToDashboard,
+
+    // System documentation navigation
+    navigateToApiEndpoints,
 
     // URL helpers
     extractAuctionIdFromUrl,

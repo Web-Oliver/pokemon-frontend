@@ -4,7 +4,7 @@ import {
   showErrorToast,
   showStatusErrorToast,
   showWarningToast,
-} from '@/components/organisms/ui/toastNotifications';
+} from '@/shared/components/organisms/ui/toastNotifications';
 
 /**
  * Standard API Error class for new API format

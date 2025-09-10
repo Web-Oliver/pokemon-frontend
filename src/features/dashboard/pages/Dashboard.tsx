@@ -53,7 +53,7 @@ import {
   DashboardItemsCard,
   DashboardSalesCard,
   DashboardValueCard,
-} from '@/shared/components/dashboard';
+} from '../components/dashboard';
 
 const Dashboard: React.FC = () => {
   // Context7 Recent Activities Hook
@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
     loading: statsLoading,
   } = useCollectionStats();
 
-  // NEW: Data counts from status endpoint (including SetProducts)
+  // Data counts from status endpoint (now using existing /api/status)
   const { data: dataCounts, isLoading: dataCountsLoading } = useQuery({
     queryKey: ['dataCounts'],
     queryFn: () => unifiedApiService.status.getDataCounts(),

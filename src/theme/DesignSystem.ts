@@ -353,10 +353,19 @@ export const getThemeDisplayName = (theme: ThemeName): string => {
  * PHASE 2.1: Enhanced to work with data-theme attribute switching
  */
 export const applyTheme = (theme: ThemeName): void => {
+  // Safety checks for DOM access to prevent CSS-in-JS errors
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return; // Skip during SSR
+  }
+
   const config = themes[theme];
   if (!config) return;
 
   const root = document.documentElement;
+  if (!root || !root.style) {
+    console.warn('[Theme] document.documentElement or styles not available');
+    return;
+  }
   
   // UNIFIED DATA ATTRIBUTE SWITCHING
   // Set primary theme attribute for CSS variable switching
@@ -366,25 +375,33 @@ export const applyTheme = (theme: ThemeName): void => {
   root.setAttribute('data-carbon-theme', theme);
   
   // Apply CSS custom properties for additional theme-specific variables
-  Object.entries(config).forEach(([key, value]) => {
-    if (typeof value === 'string') {
-      // Unified CSS variable naming convention
-      const cssVar = `--theme-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-      root.style.setProperty(cssVar, value);
-      
-      // Carbon compatibility variables
-      const carbonVar = `--cds-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-      root.style.setProperty(carbonVar, value);
-    }
-  });
+  try {
+    Object.entries(config).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        // Unified CSS variable naming convention
+        const cssVar = `--theme-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+        root.style.setProperty(cssVar, value);
+        
+        // Carbon compatibility variables
+        const carbonVar = `--cds-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+        root.style.setProperty(carbonVar, value);
+      }
+    });
+  } catch (error) {
+    console.warn('[Theme] Error setting CSS properties:', error);
+  }
   
   // GLASSMORPHISM SYSTEM INTEGRATION
-  if (isGlassTheme(theme)) {
-    root.setAttribute('data-glassmorphism', 'enabled');
-    root.style.setProperty('--glass-enabled', '1');
-  } else {
-    root.removeAttribute('data-glassmorphism');
-    root.style.setProperty('--glass-enabled', '0');
+  try {
+    if (isGlassTheme(theme)) {
+      root.setAttribute('data-glassmorphism', 'enabled');
+      root.style.setProperty('--glass-enabled', '1');
+    } else {
+      root.removeAttribute('data-glassmorphism');
+      root.style.setProperty('--glass-enabled', '0');
+    }
+  } catch (error) {
+    console.warn('[Theme] Error setting glassmorphism properties:', error);
   }
   
   // DENSITY AWARENESS - will be enhanced by ThemeProvider

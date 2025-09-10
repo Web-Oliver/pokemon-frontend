@@ -10,7 +10,7 @@
  */
 
 import React, { ReactNode } from 'react';
-// themeConfig import removed
+import { useTheme } from '@/theme';
 
 interface FormWrapperProps {
   children: ReactNode;
@@ -25,7 +25,7 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   className = '',
   error = false,
 }) => {
-  const themeConfig = useCentralizedTheme();
+  const theme = useTheme();
   const widthClass = fullWidth ? 'w-full' : '';
 
   // Animation duration based on theme settings

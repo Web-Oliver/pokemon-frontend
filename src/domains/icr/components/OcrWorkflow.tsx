@@ -8,7 +8,7 @@
 import React from 'react';
 import { StepWizard } from './StepWizard';
 import { OcrWorkflowProvider, useOcrWorkflowContext } from '@/domains/icr/context/OcrWorkflowContext';
-import { OcrStep } from '@/types/OcrWorkflowTypes';
+import { OcrStep } from '@/domains/icr/types/OcrWorkflowTypes';
 import { OcrWorkflowErrorBoundary } from './error/OcrWorkflowErrorBoundary';
 import { QueryErrorBoundary } from '@/shared/components/error/QueryErrorBoundary';
 

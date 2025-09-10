@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-// themeConfig import removed
+import { useTheme } from '@/theme';
 
 interface HelperTextProps {
   helperText?: string;
@@ -21,7 +21,7 @@ export const HelperText: React.FC<HelperTextProps> = ({
   helperText,
   className = '',
 }) => {
-  const themeConfig = useCentralizedTheme();
+  const theme = useTheme();
 
   if (!helperText) {
     return null;

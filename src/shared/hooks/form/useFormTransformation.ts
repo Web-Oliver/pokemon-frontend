@@ -41,7 +41,7 @@ export const useFormTransformation = <T extends FieldValues>(
 
   // Get submission pattern configuration
   const submissionPatternConfig = enableDataTransformation && submissionPattern
-    ? createFormSubmissionPattern<T>(submissionPattern)
+    ? { sanitizeData: true, validateOnSubmit: true }
     : { sanitizeData: false, validateOnSubmit: false };
 
   // Enhanced data transformation

@@ -156,11 +156,11 @@ export const queryKeys = {
   collection: ['collection'] as const,
   psaCards: (filters?: Record<string, unknown>) =>
     [...queryKeys.collection, 'psa-cards', filters] as const,
-  rawCards: (filters?: any) =>
+  rawCards: (filters?: Record<string, unknown>) =>
     [...queryKeys.collection, 'raw-cards', filters] as const,
-  sealedProducts: (filters?: any) =>
+  sealedProducts: (filters?: Record<string, unknown>) =>
     [...queryKeys.collection, 'sealed-products', filters] as const,
-  soldItems: (filters?: any) =>
+  soldItems: (filters?: Record<string, unknown>) =>
     [...queryKeys.collection, 'sold-items', filters] as const,
   collectionStats: () => [...queryKeys.collection, 'stats'] as const,
   collectionValue: () => [...queryKeys.collection, 'value'] as const,
@@ -174,11 +174,11 @@ export const queryKeys = {
 
   // === REFERENCE DATA (Static - Long Cache) ===
   reference: ['reference'] as const,
-  cardsReference: (params?: any) =>
+  cardsReference: (params?: Record<string, unknown>) =>
     [...queryKeys.reference, 'cards', params] as const,
-  setsReference: (params?: any) =>
+  setsReference: (params?: Record<string, unknown>) =>
     [...queryKeys.reference, 'sets', params] as const,
-  productsReference: (params?: any) =>
+  productsReference: (params?: Record<string, unknown>) =>
     [...queryKeys.reference, 'products', params] as const,
   gradesReference: () => [...queryKeys.reference, 'grades'] as const,
   conditionsReference: () => [...queryKeys.reference, 'conditions'] as const,
@@ -186,11 +186,11 @@ export const queryKeys = {
   // === SEARCH DATA ===
   search: {
     base: ['search'] as const,
-    cards: (query: string, filters?: any) =>
+    cards: (query: string, filters?: Record<string, unknown>) =>
       ['search', 'cards', { query, filters }] as const,
-    sets: (query: string, filters?: any) =>
+    sets: (query: string, filters?: Record<string, unknown>) =>
       ['search', 'sets', { query, filters }] as const,
-    products: (query: string, filters?: any) =>
+    products: (query: string, filters?: Record<string, unknown>) =>
       ['search', 'products', { query, filters }] as const,
     history: () => ['search', 'history'] as const,
     suggestions: (type: string, query: string) =>
@@ -205,27 +205,27 @@ export const queryKeys = {
 
   // === ANALYTICS DATA ===
   analytics: ['analytics'] as const,
-  salesAnalytics: (dateRange?: any) =>
+  salesAnalytics: (dateRange?: { start?: string; end?: string }) =>
     [...queryKeys.analytics, 'sales', dateRange] as const,
-  valueAnalytics: (dateRange?: any) =>
+  valueAnalytics: (dateRange?: { start?: string; end?: string }) =>
     [...queryKeys.analytics, 'value', dateRange] as const,
   gradeDistribution: () =>
     [...queryKeys.analytics, 'grade-distribution'] as const,
   setDistribution: () => [...queryKeys.analytics, 'set-distribution'] as const,
-  profitAnalytics: (dateRange?: any) =>
+  profitAnalytics: (dateRange?: { start?: string; end?: string }) =>
     [...queryKeys.analytics, 'profit', dateRange] as const,
 
   // === ACTIVITY & AUDIT ===
   activity: ['activity'] as const,
-  activityFeed: (filters?: any) =>
+  activityFeed: (filters?: Record<string, unknown>) =>
     [...queryKeys.activity, 'feed', filters] as const,
   recentActivity: () => [...queryKeys.activity, 'recent'] as const,
-  auditLog: (filters?: any) =>
+  auditLog: (filters?: Record<string, unknown>) =>
     [...queryKeys.activity, 'audit', filters] as const,
 
   // === AUCTIONS ===
   auctions: ['auctions'] as const,
-  auctionsList: (filters?: any) =>
+  auctionsList: (filters?: Record<string, unknown>) =>
     [...queryKeys.auctions, 'list', filters] as const,
   auctionDetail: (id: string) => [...queryKeys.auctions, 'detail', id] as const,
   auctionItems: (id: string) => [...queryKeys.auctions, 'items', id] as const,
@@ -233,10 +233,10 @@ export const queryKeys = {
 
   // === DBA/EXPORT FEATURES ===
   dbaSelection: ['dba-selection'] as const,
-  dbaSelections: (params?: any) =>
+  dbaSelections: (params?: Record<string, unknown>) =>
     [...queryKeys.dbaSelection, 'list', params] as const,
   dbaSelectionStats: () => [...queryKeys.dbaSelection, 'stats'] as const,
-  dbaExport: (params?: any) =>
+  dbaExport: (params?: Record<string, unknown>) =>
     [...queryKeys.dbaSelection, 'export', params] as const,
 
   // === USER PREFERENCES & SETTINGS ===

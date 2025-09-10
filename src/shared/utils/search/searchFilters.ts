@@ -50,7 +50,7 @@ export const filterCardsBySetId = <T extends Record<string, any>>(
   searchResponse: SearchResponse<T>,
   setId: string
 ): SearchResponse<T> => {
-  return filterByObjectId(searchResponse, 'setId', setId, 'set');
+  return filterByObjectId(searchResponse, 'setId', setId, 'setId');
 };
 
 /**

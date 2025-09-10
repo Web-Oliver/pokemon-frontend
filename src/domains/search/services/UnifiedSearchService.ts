@@ -3,7 +3,7 @@
  * Implements parallel search execution and result combination matching backend patterns
  */
 
-import { BaseCrudService } from '@/shared/services/BaseCrudService';
+import { BaseCrudService } from '@/shared/services/base/BaseApiService';
 import { 
   UnifiedSearchParams, 
   UnifiedSearchResults, 
@@ -87,27 +87,6 @@ export class UnifiedSearchService extends BaseCrudService<any> {
   }
 
   /**
-   * Relationship-based search matching backend patterns
-   */
-  async findRelatedCards(cardId: string): Promise<SearchResponse<any>> {
-    try {
-      const response = await this.client.get(`/api/search/cards/${cardId}/related`);
-      return this.processSearchResponse(response, 'related-cards', cardId);
-    } catch (error) {
-      throw ErrorFactory.createSearchError(cardId, 'related-cards');
-    }
-  }
-
-  async findRelatedProducts(productId: string): Promise<SearchResponse<any>> {
-    try {
-      const response = await this.client.get(`/api/search/products/${productId}/related`);
-      return this.processSearchResponse(response, 'related-products', productId);
-    } catch (error) {
-      throw ErrorFactory.createSearchError(productId, 'related-products');
-    }
-  }
-
-  /**
    * Search utilities matching backend endpoints
    */
   async getSearchSuggestions(
@@ -126,16 +105,6 @@ export class UnifiedSearchService extends BaseCrudService<any> {
       };
     } catch (error) {
       throw ErrorFactory.createSearchError(query, 'suggestions', { limit });
-    }
-  }
-
-  async getSearchTypes(): Promise<string[]> {
-    try {
-      const response = await this.client.get('/api/search/types');
-      const fullResponse = extractFullApiResponse<string[]>(response);
-      return fullResponse.data;
-    } catch (error) {
-      throw ErrorFactory.createSearchError('', 'types');
     }
   }
 

@@ -112,6 +112,11 @@ const MatchingWorkflow = lazy(
   () => import(/* webpackChunkName: "icr-matching" */ '@/domains/icr/pages/MatchingWorkflow')
 );
 
+// System Domain - System documentation features
+const ApiEndpoints = lazy(
+  () => import(/* webpackChunkName: "system-features" */ '@/domains/system/pages/ApiEndpoints')
+);
+
 // Old scan components removed - now using unified OcrWorkflow
 
 // Context7 Pattern: Main App component with useTransition for smooth navigation
@@ -214,6 +219,8 @@ function App() {
         return <OcrWorkflow />;
       case '/matching':
         return <MatchingWorkflow />;
+      case '/api-endpoints':
+        return <ApiEndpoints />;
       case '/ocr/scans':
       case '/ocr/uploaded':
       case '/ocr/extracted':

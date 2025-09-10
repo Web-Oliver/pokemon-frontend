@@ -89,7 +89,7 @@ const Collection: React.FC = () => {
       // Production: Debug statement removed for security
       refreshCollection();
     }
-  }, [refreshCollection]);
+  }, []); // Empty dependency array - only run on mount
 
   // Get all collection items for export functionality
   const getAllCollectionItems = useCallback((): CollectionItem[] => {

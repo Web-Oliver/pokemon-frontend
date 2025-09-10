@@ -102,7 +102,7 @@ export const useAuction = (
         handleApiError(err, errorMessage);
       }
     },
-    [queryClient]
+    [invalidateAuctionQueries]
   );
 
   /**

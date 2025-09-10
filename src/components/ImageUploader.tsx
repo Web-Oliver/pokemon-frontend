@@ -62,7 +62,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   // Memoize existingImageUrls to prevent unnecessary re-renders
   const memoizedExistingImageUrls = useMemo(() => {
     return existingImageUrls || [];
-  }, [existingImageUrls?.join(',')]);
+  }, [existingImageUrls]);
 
   const [previews, setPreviews] = useState<ImagePreview[]>([]);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -78,7 +78,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     ): Promise<
       Array<{
         index: number;
-        aspectInfo: any;
+        aspectInfo: string;
       }>
     > => {
       if (!enableAspectRatioDetection || !imageUrls?.length) {
@@ -89,7 +89,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       try {
         const results = await Promise.all(
           imageUrls.map(async (url, index) => {
-            return new Promise<{ index: number; aspectInfo: any }>(
+            return new Promise<{ index: number; aspectInfo: string }>(
               (resolve) => {
                 const img = new Image();
                 img.onload = () => {
@@ -122,8 +122,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const analyzeNewImages = useCallback(
     async (
-      images: any[]
-    ): Promise<Array<{ index: number; aspectInfo: any }>> => {
+      images: File[]
+    ): Promise<Array<{ index: number; aspectInfo: string }>> => {
       if (!enableAspectRatioDetection || !images.length) {
         return [];
       }
@@ -132,7 +132,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       try {
         const results = await Promise.all(
           images.map(async (imageFile, index) => {
-            return new Promise<{ index: number; aspectInfo: any }>(
+            return new Promise<{ index: number; aspectInfo: string }>(
               (resolve) => {
                 const img = new Image();
                 img.onload = () => {
@@ -410,7 +410,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     };
 
     analyzeExisting();
-  }, [memoizedExistingImageUrls, enableAspectRatioDetection]);
+  }, [memoizedExistingImageUrls, enableAspectRatioDetection, analyzeExistingImages]);
 
   // Cleanup object URLs on unmount - Following proper resource management
   useEffect(() => {

@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-// themeConfig import removed
+import { useTheme } from '@/theme';
 
 interface ErrorMessageProps {
   error?: string;
@@ -21,7 +21,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   error,
   className = '',
 }) => {
-  const themeConfig = useCentralizedTheme();
+  const theme = useTheme();
 
   if (!error) {
     return null;

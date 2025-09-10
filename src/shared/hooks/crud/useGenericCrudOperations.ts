@@ -16,7 +16,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { ISaleDetails } from '@/types/common';
-import { showSuccessToast } from '@/components/organisms/ui/toastNotifications';
+import { showSuccessToast } from '@/shared/components/organisms/ui/toastNotifications';
 import { log } from '../../utils/performance/logger';
 import { useAsyncOperation } from '../common/useAsyncOperation';
 import {

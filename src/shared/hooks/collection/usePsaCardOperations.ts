@@ -58,22 +58,22 @@ export const usePsaCardOperations = (): UsePsaCardOperationsReturn => {
 
   // PSA Card operations with invalidation
   const addPsaCard = async (cardData: Partial<IPsaGradedCard>) => {
-    await psaOperations.handleAdd(cardData);
+    await psaOperations.add(cardData);
     await invalidatePsaCardQueries();
   };
 
   const updatePsaCard = async (id: string, cardData: Partial<IPsaGradedCard>) => {
-    await psaOperations.handleUpdate(id, cardData);
+    await psaOperations.update(id, cardData);
     await invalidatePsaCardQueries();
   };
 
   const deletePsaCard = async (id: string) => {
-    await psaOperations.handleDelete(id);
+    await psaOperations.delete(id);
     await invalidatePsaCardQueries();
   };
 
   const markPsaCardSold = async (id: string, saleDetails: ISaleDetails) => {
-    await psaOperations.handleMarkSold(id, saleDetails);
+    await psaOperations.markSold(id, saleDetails);
     await invalidatePsaCardQueries();
   };
 

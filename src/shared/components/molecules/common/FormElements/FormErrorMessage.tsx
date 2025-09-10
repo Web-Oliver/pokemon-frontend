@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-// themeConfig import removed
+import { useTheme } from '@/theme';
 
 export interface FormErrorMessageProps {
   /** Error message(s) to display */
@@ -44,7 +44,7 @@ export const FormErrorMessage: React.FC<FormErrorMessageProps> = ({
   icon,
   animationDuration = 200,
 }) => {
-  const themeConfig = useCentralizedTheme();
+  const theme = useTheme();
 
   if (!error || (Array.isArray(error) && error.length === 0)) {
     return null;

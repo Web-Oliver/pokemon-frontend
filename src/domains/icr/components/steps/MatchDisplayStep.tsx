@@ -6,7 +6,7 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { StepComponentProps } from '@/types/OcrWorkflowTypes';
+import { StepComponentProps } from '@/domains/icr/types/OcrWorkflowTypes';
 import { useOcrMatching } from '@/domains/icr/hooks/useOcrMatching';
 
 interface MatchDisplayData {

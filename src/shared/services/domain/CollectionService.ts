@@ -3,12 +3,12 @@
  * Extracted from UnifiedApiService following SOLID principles
  */
 
-import { BaseApiService } from '../base/BaseApiService';
+import { BaseApiService, BaseCrudService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { IPsaGradedCard, IRawCard } from '../../domain/models/card';
 import { ISealedProduct } from '../../domain/models/sealedProduct';
 import { ISaleDetails } from '@/types/common';
-import { addCacheBusting, extractResponseData } from '@/shared/utils/responseUtils';
+import { addCacheBusting, extractResponseData } from '@/shared/services/utils/responseUtils';
 
 // Import parameter types from UnifiedApiService
 export interface PsaGradedCardsParams {

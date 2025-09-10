@@ -6,7 +6,7 @@
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
 import { generateFacebookPostFromAuction } from '../../utils/formatting/facebookPostFormatter';
-import { extractResponseData } from '@/shared/utils/responseUtils';
+import { extractResponseData } from '@/shared/services/utils/responseUtils';
 import { logError } from '@/shared/components/organisms/ui/toastNotifications';
 
 export interface IExportService {
@@ -29,7 +29,7 @@ export class ExportService extends BaseApiService implements IExportService {
 
   async exportCollectionImages(itemType: 'psaGradedCards' | 'rawCards' | 'sealedProducts'): Promise<Blob> {
     const response = await this.httpClient.get<Blob>(
-      `/export/${itemType}/images`,
+      `/api/export/${itemType}/images`,
       { responseType: 'blob' }
     );
     return response instanceof Blob ? response : (response as any).data;
@@ -37,7 +37,7 @@ export class ExportService extends BaseApiService implements IExportService {
 
   async exportAuctionImages(auctionId: string): Promise<Blob> {
     const response = await this.httpClient.get<Blob>(
-      `/export/auctions/${auctionId}/images`,
+      `/api/export/auctions/${auctionId}/images`,
       { responseType: 'blob' }
     );
     return response instanceof Blob ? response : (response as any).data;
@@ -45,20 +45,20 @@ export class ExportService extends BaseApiService implements IExportService {
 
   async exportDbaItems(): Promise<Blob> {
     const response = await this.httpClient.get<Blob>(
-      '/export/dba-items',
+      '/api/export/dba-items',
       { responseType: 'blob' }
     );
     return response instanceof Blob ? response : (response as any).data;
   }
 
   async exportToDba(exportRequest: any): Promise<any> {
-    const response = await this.httpClient.post<any>('/export/dba', exportRequest);
+    const response = await this.httpClient.post<any>('/api/export/dba', exportRequest);
     return extractResponseData(response);
   }
 
   async downloadDbaZip(): Promise<void> {
     const response = await this.httpClient.get<Blob>(
-      '/export/dba/zip',
+      '/api/export/dba/zip',
       { responseType: 'blob' }
     );
     const blob = response instanceof Blob ? response : (response as any).data;
@@ -69,7 +69,7 @@ export class ExportService extends BaseApiService implements IExportService {
   async generateAuctionFacebookPost(auctionId: string): Promise<string> {
     try {
       // Get auction data first
-      const auctionResponse = await this.httpClient.getById<any>('/auctions', auctionId);
+      const auctionResponse = await this.httpClient.getById<any>('/api/auctions', auctionId);
       const auction = auctionResponse.data || auctionResponse;
       
       // Use the existing utility function

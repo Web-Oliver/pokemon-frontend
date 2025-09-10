@@ -74,8 +74,18 @@ export const useCollectionOverview = (): UseCollectionOverviewReturn => {
   } = useQuery({
     queryKey: queryKeys.soldItems(),
     queryFn: async () => {
-      const response = await unifiedApiService.collection.getSoldItems();
-      return Array.isArray(response) ? response : [];
+      // Get sold items from all collection types
+      const [soldPsaCards, soldRawCards, soldSealedProducts] = await Promise.all([
+        unifiedApiService.collection.getPsaGradedCards({ sold: true }),
+        unifiedApiService.collection.getRawCards({ sold: true }),
+        unifiedApiService.collection.getSealedProducts({ sold: true }),
+      ]);
+      
+      return [
+        ...(Array.isArray(soldPsaCards) ? soldPsaCards : []),
+        ...(Array.isArray(soldRawCards) ? soldRawCards : []),
+        ...(Array.isArray(soldSealedProducts) ? soldSealedProducts : []),
+      ];
     },
     staleTime: 5 * 60 * 1000,
   });

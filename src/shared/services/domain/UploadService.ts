@@ -5,6 +5,7 @@
 
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
+import { extractResponseData } from '../utils/responseUtils';
 
 export interface IUploadService {
   uploadMultipleImages(images: File[]): Promise<string[]>;

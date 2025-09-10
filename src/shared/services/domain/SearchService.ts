@@ -8,7 +8,7 @@ import { IHttpClient } from '../base/HttpClientInterface';
 import { ICard, ISet } from '../../domain/models/card';
 import { IProduct, ISetProduct } from '../../domain/models/product';
 import { SearchResponse } from '@/types/search';
-import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '@/shared/utils/responseUtils';
+import { extractResponseData, extractSearchResponse, buildHierarchicalParams } from '@/shared/services/utils/responseUtils';
 import { createApiLogger } from '../../utils/performance/apiLogger';
 import { filterCardsBySetId } from '../../utils/search/searchFilters';
 
@@ -76,7 +76,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   async searchSets(params: SetSearchParams): Promise<SearchResponse<ISet>> {
     this.logger.logApiCall('searchSets', params);
     return this.executeWithErrorHandling('SEARCH Sets', async () => {
-      const response = await this.httpClient.get<any>('/search/sets', {
+      const response = await this.httpClient.get<any>('/api/search/sets', {
         params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit,
@@ -97,9 +97,9 @@ export class SearchService extends BaseApiService implements ISearchService {
   async searchSetProducts(params: ProductSearchParams): Promise<SearchResponse<ISetProduct>> {
     this.logger.logApiCall('searchSetProducts', params);
     return this.executeWithErrorHandling('SEARCH Set Products', async () => {
-      const response = await this.httpClient.get<any>('/set-products', {
+      const response = await this.httpClient.get<any>('/api/search/set-products', {
         params: buildHierarchicalParams({
-          q: params.query, // Use 'q' parameter instead of 'query'
+          query: params.query, // Use standard 'query' parameter
           limit: params.limit || 10,
           page: params.page || 1,
           category: params.category,
@@ -118,7 +118,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   async searchProducts(params: ProductSearchParams): Promise<SearchResponse<IProduct>> {
     this.logger.logApiCall('searchProducts', params);
     return this.executeWithErrorHandling('SEARCH Products', async () => {
-      const response = await this.httpClient.get<any>('/search/products', {
+      const response = await this.httpClient.get<any>('/api/search/products', {
         params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit || 10,
@@ -142,7 +142,7 @@ export class SearchService extends BaseApiService implements ISearchService {
   async searchCards(params: CardSearchParams): Promise<SearchResponse<ICard>> {
     this.logger.logApiCall('searchCards', params);
     return this.executeWithErrorHandling('SEARCH Cards', async () => {
-      const response = await this.httpClient.get<any>('/search/cards', {
+      const response = await this.httpClient.get<any>('/api/search/cards', {
         params: buildHierarchicalParams({
           query: params.query,
           limit: params.limit || 10,
@@ -187,14 +187,14 @@ export class SearchService extends BaseApiService implements ISearchService {
 
   async getCardWithContext(cardId: string): Promise<{card: ICard; relatedCards: ICard[]; setInfo: ISet}> {
     return this.executeWithErrorHandling('GET Card with Context', async () => {
-      const response = await this.httpClient.get<any>(`/search/cards/${cardId}/context`);
+      const response = await this.httpClient.get<any>(`/api/search/cards/${cardId}/context`);
       return extractResponseData(response);
     });
   }
 
   async getProductWithContext(productId: string): Promise<{product: IProduct; relatedProducts: IProduct[]; setProductInfo: ISetProduct}> {
     return this.executeWithErrorHandling('GET Product with Context', async () => {
-      const response = await this.httpClient.get<any>(`/search/products/${productId}/context`);
+      const response = await this.httpClient.get<any>(`/api/search/products/${productId}/context`);
       return extractResponseData(response);
     });
   }

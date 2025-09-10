@@ -301,7 +301,16 @@ export const CollectionTabs: React.FC<CollectionTabsProps> = memo(
 
             // Get other properties
             const images = (itemRecord.images as string[]) || [];
-            const price = (itemRecord.myPrice as number) || 0;
+            
+            // Handle MongoDB Decimal128 objects
+            const convertDecimalToNumber = (value: any): number => {
+              if (value && typeof value === 'object' && value.$numberDecimal) {
+                return parseFloat(value.$numberDecimal);
+              }
+              return (value as number) || 0;
+            };
+            
+            const price = convertDecimalToNumber(itemRecord.myPrice);
             const grade = itemType === 'psa' ? (itemRecord.grade as number) : undefined;
             const condition = itemType === 'raw' ? (itemRecord.condition as string) : undefined;
             const category = itemType === 'sealed' ? (itemRecord.category as string) : undefined;

@@ -147,23 +147,6 @@ export const useSmartHierarchicalSearch = () => {
     getProductWithContext: (productId: string) => 
       useProductWithContext(productId),
     
-    // Utility: Find all cards in same set as selected card
-    findRelatedCards: (cardId: string) => {
-      const cardContext = useCardWithContext(cardId);
-      return {
-        ...cardContext,
-        data: cardContext.data?.relatedCards || null,
-      };
-    },
-    
-    // Utility: Find all products in same set product as selected product
-    findRelatedProducts: (productId: string) => {
-      const productContext = useProductWithContext(productId);
-      return {
-        ...productContext,
-        data: productContext.data?.relatedProducts || null,
-      };
-    },
   };
 };
 

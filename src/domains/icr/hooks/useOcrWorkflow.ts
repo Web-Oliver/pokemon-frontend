@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { OcrStep, WorkflowState, StepState, StepNavigation } from '@/types/OcrWorkflowTypes';
+import { OcrStep, WorkflowState, StepState, StepNavigation } from '@/domains/icr/types/OcrWorkflowTypes';
 
 // INITIAL STATE - DRY: Reusable initialization
 const createInitialStepState = (): StepState => ({

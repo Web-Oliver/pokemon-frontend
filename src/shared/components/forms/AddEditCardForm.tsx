@@ -101,7 +101,8 @@ export const AddEditCardForm: React.FC<AddEditCardFormProps> = ({
   const config = cardTypeConfig[cardType];
 
   const cardSelection = useCardSelection({
-    preset: config.selectionPreset,
+    formType: config.selectionPreset === 'rawCard' ? 'raw' : 'psa',
+    enableStateManagement: true,
   });
 
   // Set up default values based on card type

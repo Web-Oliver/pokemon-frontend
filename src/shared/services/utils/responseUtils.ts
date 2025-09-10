@@ -105,13 +105,44 @@ export function extractArrayResponseData<T>(response: any): T[] {
 export function extractSearchResponse<T>(response: any, query?: string): SearchResponse<T> {
   const responseData = extractResponseData(response);
   
-  // Handle nested search response structures
-  const data = responseData?.sets || responseData?.data || responseData || [];
-  const count = responseData?.count || responseData?.total || (Array.isArray(data) ? data.length : 0);
+  // Handle nested search response structures from backend
+  let data = [];
+  
+  if (responseData?.data?.results && Array.isArray(responseData.data.results)) {
+    // Search endpoints format: { data: { data: { results: [...] } } }
+    data = responseData.data.results;
+  } else if (responseData?.results && Array.isArray(responseData.results)) {
+    // Direct results format: { data: { results: [...] } }
+    data = responseData.results;
+  } else if (responseData?.setProducts && Array.isArray(responseData.setProducts)) {
+    // Set Products endpoint format: { data: { setProducts: [...] } }
+    data = responseData.setProducts;
+  } else if (responseData?.sets && Array.isArray(responseData.sets)) {
+    // Legacy sets format: { data: { sets: [...] } }
+    data = responseData.sets;
+  } else if (responseData?.products && Array.isArray(responseData.products)) {
+    // Products format: { data: { products: [...] } }
+    data = responseData.products;
+  } else if (responseData?.cards && Array.isArray(responseData.cards)) {
+    // Cards format: { data: { cards: [...] } }
+    data = responseData.cards;
+  } else if (responseData?.data && Array.isArray(responseData.data)) {
+    // Direct array: data.data
+    data = responseData.data;
+  } else if (Array.isArray(responseData)) {
+    // Direct array response
+    data = responseData;
+  }
+  
+  const count = responseData?.data?.metadata?.totalCount || 
+                responseData?.pagination?.total || 
+                responseData?.count || 
+                responseData?.total || 
+                data.length;
   const success = responseData?.success !== false;
   
   return {
-    data: Array.isArray(data) ? data : [],
+    data,
     count,
     success,
     query: query || ''

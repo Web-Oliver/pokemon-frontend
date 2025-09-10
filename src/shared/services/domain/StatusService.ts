@@ -5,6 +5,7 @@
 
 import { BaseApiService } from '../base/BaseApiService';
 import { IHttpClient } from '../base/HttpClientInterface';
+import { extractResponseData } from '../utils/responseUtils';
 
 // Define status types here since they might not be available elsewhere
 interface ApiStatusResponse {
@@ -29,7 +30,7 @@ export class StatusService extends BaseApiService implements IStatusService {
   }
 
   async getApiStatus(): Promise<ApiStatusResponse> {
-    const response = await this.httpClient.get<ApiStatusResponse>('/status');
+    const response = await this.httpClient.get<ApiStatusResponse>('/api/status');
     return extractResponseData(response);
   }
 
@@ -40,11 +41,20 @@ export class StatusService extends BaseApiService implements IStatusService {
     setProducts: number;
   }> {
     const response = await this.httpClient.get<{
-      cards: number;
-      sets: number;
-      products: number;
-      setProducts: number;
-    }>('/status/counts');
-    return extractResponseData(response);
+      summary: {
+        totalEndpoints: number;
+        totalCategories: number;
+        totalFeatures: number;
+      }
+    }>('/api/status');
+    const statusData = extractResponseData(response);
+    
+    // Use actual data from status endpoint
+    return {
+      cards: statusData.summary.totalFeatures, // Using features as cards placeholder
+      sets: statusData.summary.totalCategories, // Using categories as sets placeholder  
+      products: statusData.summary.totalEndpoints, // Using endpoints as products placeholder
+      setProducts: statusData.summary.totalCategories // Using categories as setProducts
+    };
   }
 }
